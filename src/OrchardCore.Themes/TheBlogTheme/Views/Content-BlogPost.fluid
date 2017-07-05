@@ -30,5 +30,5 @@
 {% assign contentsMetadata = Content | item_named: "Contents_Metadata" %}
 {% assign bodyAspect = ContentItem | body_aspect %}
 
-{% Display shape: contentsMetadata %}
-{% Display shape: bodyAspect %}
+{% Display contentsMetadata %}
+{% Display bodyAspect %}

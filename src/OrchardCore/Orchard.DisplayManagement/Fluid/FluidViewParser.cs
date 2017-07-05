@@ -33,6 +33,9 @@ namespace Orchard.DisplayManagement.Fluid
                 case "SetMetadata":
                     return BuildSetMetadataStatement(tag);
 
+                case "SetProperty":
+                    return BuildSetPropertyStatement(tag);
+
                 case "zone":
                     return BuildZoneStatement(tag);
 
@@ -71,22 +74,36 @@ namespace Orchard.DisplayManagement.Fluid
 
         private RenderTitleSegmentsStatement BuildRenderTitleSegmentsStatement(ParseTreeNode tag)
         {
-            return new RenderTitleSegmentsStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
+            var segment = BuildExpression(tag.ChildNodes[0]);
+            var expression = tag.ChildNodes.Count > 1 ? BuildArgumentsExpression(tag.ChildNodes[1]) : null;
+            return new RenderTitleSegmentsStatement(segment, expression);
         }
 
         private DisplayStatement BuildDisplayStatement(ParseTreeNode tag)
         {
-            return new DisplayStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
+            var shape = BuildExpression(tag.ChildNodes[0]);
+            return new DisplayStatement(shape);
         }
 
         private ClearAlternates BuildClearAlternatesStatement(ParseTreeNode tag)
         {
-            return new ClearAlternates();
+            var shape = BuildExpression(tag.ChildNodes[0]);
+            return new ClearAlternates(shape);
         }
 
         private SetMetadataStatement BuildSetMetadataStatement(ParseTreeNode tag)
         {
-            return new SetMetadataStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
+            var shape = BuildExpression(tag.ChildNodes[0]);
+            return new SetMetadataStatement(shape, BuildArgumentsExpression(tag.ChildNodes[1]));
+        }
+
+        private SetPropertyStatement BuildSetPropertyStatement(ParseTreeNode tag)
+        {
+            var obj = BuildExpression(tag.ChildNodes[0]);
+            var name = BuildExpression(tag.ChildNodes[1]);
+            var value = BuildExpression(tag.ChildNodes[2]);
+
+            return new SetPropertyStatement(obj, name, value);
         }
 
         private ZoneStatement BuildZoneStatement(ParseTreeNode tag)

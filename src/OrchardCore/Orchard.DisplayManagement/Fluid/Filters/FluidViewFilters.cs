@@ -21,7 +21,7 @@ namespace Orchard.DisplayManagement.Fluid.Filters
             filters.AddFilter("item_remove", ItemRemove);
             filters.AddFilter("item_named", ItemNamed);
             filters.AddFilter("item_prefixed", ItemPrefixed);
-            filters.AddFilter("item_tostring", ItemToString);
+            filters.AddFilter("shape_string", ShapeString);
             filters.AddFilter("remove_tags", RemoveTags);
             filters.AddFilter("prop_named", PropNamed);
             filters.AddFilter("date_time", DateTime);
@@ -100,9 +100,9 @@ namespace Orchard.DisplayManagement.Fluid.Filters
             return NilValue.Instance;
         }
 
-        public static FluidValue ItemToString(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static FluidValue ShapeString(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            var page = FluidViewTemplate.EnsureFluidPage(context, "item_tostring");
+            var page = FluidViewTemplate.EnsureFluidPage(context, "shape_string");
             return new StringValue(page.DisplayAsync(input.ToObjectValue()).GetAwaiter().GetResult().ToString());
         }
 

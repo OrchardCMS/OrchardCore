@@ -18,4 +18,4 @@
     </header>
 {% endzone %}
 
-{% Display shape: Content %}
+{% Display Content %}

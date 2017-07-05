@@ -16,5 +16,4 @@
     </header>
 {% endzone %}
 
-{% assign content = Content | item_remove: type: "BodyPart" %}
-{% Display shape: content %}
+{% Display Content | item_remove: type: "BodyPart" %}

@@ -48,13 +48,6 @@ namespace Orchard.DisplayManagement.Fluid
             var path = page.ViewContext.ExecutingFilePath.Replace(RazorViewEngine.ViewExtension, ViewExtension);
             var fileProvider = page.GetService<IFluidViewFileProviderAccessor>().FileProvider;
 
-            var modelType = ((object)page.Model)?.GetType();
-
-            if (page.Model is IShape && !FluidValue.TypeMappings.TryGetValue(modelType, out var value))
-            {
-                FluidValue.TypeMappings.Add(modelType, obj => new ObjectValue(obj));
-            }
-
             var template = Parse(path, fileProvider);
 
             var context = new TemplateContext();
@@ -77,10 +70,31 @@ namespace Orchard.DisplayManagement.Fluid
             modelState["IsValid"] = page.ViewContext.ModelState.IsValid;
             context.LocalScope.SetValue("ModelState", modelState);
 
+            var modelType = ((object)page.Model)?.GetType();
+
+            if (page.Model is IShape && !FluidValue.TypeMappings.TryGetValue(modelType, out var value))
+            {
+                FluidValue.TypeMappings.Add(modelType, obj => new ObjectValue(obj));
+            }
+
             if (modelType != null)
             {
                 context.MemberAccessStrategy.Register(modelType);
                 context.LocalScope.SetValue("Model", page.Model);
+
+                if (page.Model is Shape && page.Model.Items.Count > 0)
+                {
+                    foreach (var item in page.Model.Items)
+                    {
+                        var itemType = ((object)item).GetType();
+
+                        if (!FluidValue.TypeMappings.TryGetValue(itemType, out value))
+                        {
+                            FluidValue.TypeMappings.Add(itemType, obj => new ObjectValue(obj));
+                            context.MemberAccessStrategy.Register(itemType);
+                        }
+                    }
+                }
 
                 if (page.Model is Shape && page.Model.Properties.Count > 0)
                 {
@@ -88,14 +102,10 @@ namespace Orchard.DisplayManagement.Fluid
                     {
                         var propType = ((object)prop.Value).GetType();
 
-                        if (Type.GetTypeCode(propType) == TypeCode.Object)
-                        {
-                            context.MemberAccessStrategy.Register(((object)prop.Value).GetType());
-                        }
-
                         if (prop.Value is IShape && !FluidValue.TypeMappings.TryGetValue(propType, out value))
                         {
                             FluidValue.TypeMappings.Add(propType, obj => new ObjectValue(obj));
+                            context.MemberAccessStrategy.Register(propType);
                         }
 
                         context.LocalScope.SetValue(prop.Key, prop.Value);

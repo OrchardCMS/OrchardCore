@@ -13,7 +13,6 @@ namespace Orchard.DisplayManagement.Fluid
         {
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<FluidViewOptions>, FluidViewOptionsSetup>());
-
             services.TryAddSingleton<IFluidViewFileProviderAccessor, FluidViewFileProviderAccessor>();
             services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, FluidViewsFeatureProvider>();
 

@@ -1,0 +1,4 @@
+﻿<article class="{{ Model.Classes | join: " " }}">
+    <img class="img-responsive" src="{{ ContentItem.Content.Image.Image.Text }}" alt="{{ ContentItem.Content.Image.Caption.Text }}"/>
+    <span class="caption text-muted">{{ ContentItem.Content.Image.Caption.Text }}</span>
+</article>

@@ -12,17 +12,23 @@ namespace Orchard.DisplayManagement.Fluid.Statements
     {
         private readonly ArgumentsExpression _arguments;
 
-        public RenderTitleSegmentsStatement(ArgumentsExpression arguments)
+        public RenderTitleSegmentsStatement(Expression segment, ArgumentsExpression arguments)
         {
+            Segment = segment;
             _arguments = arguments;
         }
+
+        public Expression Segment { get; }
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             var page = FluidViewTemplate.EnsureFluidPage(context, "RenderTitleSegments");
-            var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
-            var segment = new HtmlString(arguments.At(0).ToStringValue());
+            var segment = new HtmlString((await Segment.EvaluateAsync(context)).ToStringValue());
+
+            var arguments = _arguments == null ? new FilterArguments()
+                : (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
+
             var position = arguments.HasNamed("position") ? arguments["position"].ToStringValue() : "0";
             var separator = arguments.HasNamed("separator") ? new HtmlString(arguments["separator"].ToStringValue()) : null;
 

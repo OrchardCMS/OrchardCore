@@ -1,8 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    {% assign siteName = Site.SiteName | t %}
-    <title>{% RenderTitleSegments siteName, position: "before", separator: "-" %}</title>
+    <title>{% RenderTitleSegments Site.SiteName | t position: "before", separator: "-" %}</title>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

@@ -1,14 +1,10 @@
 ﻿{% for item in ContentItems %}
-    {% Display shape: item %}
+    {% Display item %}
 {% endfor %}
 
-{% comment %}
-@{ 
-    Pager.PreviousText = T["← Newer Posts"];
-    Pager.NextText = T["Older Posts →"];
-    Pager.PreviousClass = "previous";
-    Pager.NextClass = "next";
-}
-{% endcomment %}
+{% SetProperty Pager "PreviousText" = "← Newer Posts" | t %}
+{% SetProperty Pager "NextText" = "Older Posts →" | t %}
+{% SetProperty Pager "PreviousClass" = "previous" | t %}
+{% SetProperty Pager "NextClass" = "next" | t %}
 
-{% Display shape: Pager %}
+{% Display Pager %}

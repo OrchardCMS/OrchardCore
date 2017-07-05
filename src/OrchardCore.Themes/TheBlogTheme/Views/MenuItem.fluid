@@ -1,12 +1,12 @@
-﻿{% ClearAlternates %}
-{% SetMetadata type: "MenuItemLink" %}
+﻿{% ClearAlternates Model %}
+{% SetMetadata Model type: "MenuItemLink" %}
 
 <li {% if Model.HasItems == true %}class="dropdown"{% endif %}>
-    {% Display shape: Model %}
+    {% Display Model %}
     {% if Model.HasItems == true %}
         <ul class="dropdown-menu">
             {% for item in Model.Items %}
-                {% Display shape: item %}
+                {% Display item %}
             {% endfor %}
         </ul>
     {% endif %}

@@ -13,15 +13,20 @@ namespace Orchard.DisplayManagement.Fluid
             RenderSection.Rule = "RenderSection" + FilterArguments;
 
             var RenderTitleSegments = new NonTerminal("RenderTitleSegments");
-            RenderTitleSegments.Rule = "RenderTitleSegments" + FilterArguments;
+            RenderTitleSegments.Rule = "RenderTitleSegments" + Expression + FilterArguments;
+            RenderTitleSegments.Rule |= "RenderTitleSegments" + Expression;
 
             var Display = new NonTerminal("Display");
-            Display.Rule = "Display" + FilterArguments;
+            Display.Rule = "Display" + Expression;
 
-            var ClearAlternates = ToTerm("ClearAlternates");
+            var ClearAlternates = new NonTerminal("ClearAlternates");
+            ClearAlternates.Rule = "ClearAlternates" + Expression;
 
             var SetMetadata = new NonTerminal("SetMetadata");
-            SetMetadata.Rule = "SetMetadata" + FilterArguments;
+            SetMetadata.Rule = "SetMetadata" + Expression + FilterArguments;
+
+            var SetProperty = new NonTerminal("SetProperty");
+            SetProperty.Rule = "SetProperty" + Expression + Expression + "=" + Expression;
 
             var Zone = new NonTerminal("zone");
             Zone.Rule = "zone" + FilterArguments;
@@ -41,14 +46,14 @@ namespace Orchard.DisplayManagement.Fluid
             Menu.Rule = "menu" + FilterArguments;
 
             KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments
-                | Display | ClearAlternates | SetMetadata
+                | Display | ClearAlternates | SetMetadata | SetProperty
                 | Zone | ZoneEnd | Script | ScriptEnd | Style | Resources
                 | Menu;
 
             // Prevent the text from being added in the parsed tree.
             // Only Identifier and Arguments will be in the tree.
             MarkPunctuation("RenderSection", "RenderTitleSegments",
-                "Display", "SetMetadata",
+                "Display", "ClearAlternates", "SetMetadata", "SetProperty",
                 "zone", "script", "style", "resources",
                 "menu");
         }

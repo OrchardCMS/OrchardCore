@@ -3,22 +3,28 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Orchard.DisplayManagement.Shapes;
 
 namespace Orchard.DisplayManagement.Fluid.Statements
 {
     public class ClearAlternates : Statement
     {
-        public override Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public ClearAlternates(Expression shape)
         {
-            var model = (dynamic)context.LocalScope.GetValue("Model").ToObjectValue();
+            Shape = shape;
+        }
 
-            if (model is IShape && model.Metadata.Alternates.Count > 0)
+        public Expression Shape { get; }
+
+        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+        {
+            var shape = (await Shape.EvaluateAsync(context)).ToObjectValue() as IShape;
+
+            if (shape?.Metadata.Alternates.Count > 0)
             {
-                ((ShapeMetadata)model.Metadata).Alternates.Clear();
+                shape.Metadata.Alternates.Clear();
             }
 
-            return Task.FromResult(Completion.Normal);
+            return Completion.Normal;
         }
     }
 }
