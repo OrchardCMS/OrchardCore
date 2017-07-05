@@ -59,6 +59,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Scripting\Orchard.Scripting.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Settings\Orchard.Settings.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Setup\Orchard.Setup.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Templates\Orchard.Templates.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Tenants\Orchard.Tenants.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Themes\Orchard.Themes.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Title\Orchard.Title.csproj" PrivateAssets="none" />
