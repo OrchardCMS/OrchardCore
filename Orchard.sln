@@ -287,6 +287,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PCCOM.Distrib.WebAPIBundle"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PCCOM.Distrib.WebAPI.WebClients", "src\OrchardCore.DistribWebAPI\Modules\PCCOM.Distrib.WebAPI.WebClients\PCCOM.Distrib.WebAPI.WebClients.csproj", "{ED74E0D7-5EFC-4250-B9EB-B01024BF15A7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PCCOM.Distrib.WebAPI.Invoices", "src\OrchardCore.DistribWebAPI\Modules\PCCOM.Distrib.WebAPI.Invoices\PCCOM.Distrib.WebAPI.Invoices.csproj", "{42422058-0544-4D41-B769-6A4B62F72ED5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
