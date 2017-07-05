@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
@@ -126,6 +127,7 @@ namespace Orchard.OpenId
             });
 
             services.AddScoped<IConfigureOptions<OpenIddictOptions>, OpenIdConfiguration>();
+            services.AddSingleton<IConfigureOptions<CorsOptions>, OpenIdCorsConfiguration>();
         }
     }
 }

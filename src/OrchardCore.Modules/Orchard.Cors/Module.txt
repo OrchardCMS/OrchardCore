@@ -1,0 +1,19 @@
+﻿Name: Cors
+AntiForgery: enabled
+Author: The Orchard Team
+Website: http://orchardproject.net
+Version: 2.0.x
+OrchardVersion: 2.0.x
+Description: Adds Cross-Origin Resource Sharing
+Priority: 1
+Category: Security
+Features:
+    Orchard.Cors:
+        Name: Cors
+        Description: Feature Adds CORS services.
+        Category: Security
+    Orchard.Cors.Mvc:
+        Name: Cors Mvc
+        Description: Feature allows apply CORS policies per Mvc Controller or Action.
+        Dependencies: Orchard.Cors
+        Category: Security

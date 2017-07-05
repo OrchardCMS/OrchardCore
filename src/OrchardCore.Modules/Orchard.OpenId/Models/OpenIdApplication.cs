@@ -68,6 +68,11 @@ namespace Orchard.OpenId.Models
         public bool AllowRefreshTokenFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
         public bool AllowHybridFlow { get; set; }
+
+        /// <summary>
+        /// Cross site Origins, who can make Requests
+        /// </summary>
+        public string[] AllowedOrigins { get; set; }
     }
 
     public enum ClientType

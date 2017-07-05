@@ -2,6 +2,7 @@
 using AspNet.Security.OAuth.Validation;
 using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -29,6 +30,7 @@ namespace Orchard.OpenId.Controllers
         [AcceptVerbs("GET", "POST")]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
+        [EnableCors(Constants.OpenIdConnectUserInfoPolicy)]
         public async Task<IActionResult> Me()
         {
             // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override

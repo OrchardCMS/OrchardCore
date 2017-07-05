@@ -128,6 +128,18 @@
             <div class="hint">@T["It skips the user-consent screen after login in identity server."]</div>
         </div>
     </div>
+    
+    <div id="AllowedOriginsGroup" class="form-group collapse">
+        <div asp-validation-class-for="AllowedOrigins">
+            <label asp-for="AllowedOrigins">@T["Allowed Origins"]</label>
+            <span asp-validation-for="AllowedOrigins" class="text-danger"></span>
+            @Html.TextBox(Html.IdFor(m => m.AllowedOrigins), Model.AllowedOrigins != null ? string.Join(", ", Model.AllowedOrigins.Select(origin => origin.ToString())) : string.Empty, new {@class = "form-control", autofocus = "autofocus"})
+            <div class="hint">
+                @T["Please list allowed Origins absolute urls via commas, e.g. http://foo.com, https://bazz.org."]<br/>
+                @T["More info:"]<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS">https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS</a>
+            </div>
+        </div>
+    </div>
 
     <div class="form-group collapse" id="RoleGroup" name="RoleGroup">
         <h6>@T["Client Credentials Roles"]</h6>
@@ -261,6 +273,7 @@
         });
 
         function refreshFlows() {
+            refreshCorsConfiguration();
             refreshRoleGroup();
             refreshAllowRefreshTokenFlowVisibility();
             refreshRedirectSettings();
@@ -291,6 +304,14 @@
             else {
                 skipConsent.prop("checked", false);
                 redirectSection.collapse("hide");
+            }
+        }
+        function refreshCorsConfiguration() {
+            var allowedOriginsSection = $("#AllowedOriginsGroup");
+            if ($("#AllowClientCredentialsFlow").prop('checked') || $("#AllowPasswordFlow").prop('checked') || $("#AllowRefreshTokenFlow").prop('checked')) {
+                allowedOriginsSection.collapse("show");
+            } else {
+                allowedOriginsSection.collapse("hide");
             }
         }
     };

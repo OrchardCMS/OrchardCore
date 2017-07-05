@@ -137,7 +137,8 @@ namespace Orchard.OpenId.Controllers
                 AllowClientCredentialsFlow = application.AllowClientCredentialsFlow,
                 AllowImplicitFlow = application.AllowImplicitFlow,
                 AllowPasswordFlow = application.AllowPasswordFlow,
-                AllowRefreshTokenFlow = application.AllowRefreshTokenFlow
+                AllowRefreshTokenFlow = application.AllowRefreshTokenFlow,
+                AllowedOrigins = application.AllowedOrigins
             };
 
             ViewData["OpenIdSettings"] = openIdSettings;
@@ -211,6 +212,7 @@ namespace Orchard.OpenId.Controllers
             application.AllowPasswordFlow = model.AllowPasswordFlow;
             application.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
             application.AllowHybridFlow = model.AllowHybridFlow;
+            application.AllowedOrigins = model.AllowedOrigins;
 
             application.RoleNames = new List<string>();
             if (application.Type == ClientType.Confidential && application.AllowClientCredentialsFlow)
@@ -310,7 +312,8 @@ namespace Orchard.OpenId.Controllers
                 AllowImplicitFlow = model.AllowImplicitFlow,
                 AllowPasswordFlow = model.AllowPasswordFlow,
                 AllowRefreshTokenFlow = model.AllowRefreshTokenFlow,
-                AllowHybridFlow = model.AllowHybridFlow
+                AllowHybridFlow = model.AllowHybridFlow,
+                AllowedOrigins = model.AllowedOrigins
             };
 
             await _applicationManager.CreateAsync(application, model.ClientSecret, HttpContext.RequestAborted);

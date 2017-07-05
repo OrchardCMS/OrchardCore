@@ -9,6 +9,8 @@ using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -132,6 +134,7 @@ namespace Orchard.OpenId.Controllers
 
         [ActionName(nameof(Authorize))]
         [HttpPost, FormValueRequired("submit.Accept")]
+        [EnableCors(Constants.OpenIdConnectAuthPolicy)]
         public async Task<IActionResult> Accept()
         {
             var response = HttpContext.GetOpenIdConnectResponse();
@@ -217,6 +220,7 @@ namespace Orchard.OpenId.Controllers
         [AllowAnonymous, HttpPost]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
+        [EnableCors(Constants.OpenIdConnectAuthPolicy)]
         public async Task<IActionResult> Token()
         {
             // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override

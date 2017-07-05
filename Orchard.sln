@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26606.0
+VisualStudioVersion = 15.0.26430.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules.Cms", "OrchardCore.Modules.Cms", "{90030E85-0C4F-456F-B879-443E8A3F220D}"
 EndProject
@@ -249,19 +249,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aspects", "Aspects", "{3398
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Tokens.Content.Abstractions", "src\OrchardCore\Orchard.Tokens.Content.Abstractions\Orchard.Tokens.Content.Abstractions.csproj", "{677113F9-C548-4EB8-B248-E03BF967FA22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchard.Logging.NLog", "src\OrchardCore\Orchard.Logging.NLog\Orchard.Logging.NLog.csproj", "{00677E44-3048-4BAA-8F97-B577CC0EB788}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Logging.NLog", "src\OrchardCore\Orchard.Logging.NLog\Orchard.Logging.NLog.csproj", "{00677E44-3048-4BAA-8F97-B577CC0EB788}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchard.Queries", "src\OrchardCore.Modules\Orchard.Queries\Orchard.Queries.csproj", "{4FC00B36-DF0A-400F-8E1A-E700B5D58F98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Queries", "src\OrchardCore.Modules\Orchard.Queries\Orchard.Queries.csproj", "{4FC00B36-DF0A-400F-8E1A-E700B5D58F98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchard.Liquid.Abstractions", "src\OrchardCore\Orchard.Liquid.Abstractions\Orchard.Liquid.Abstractions.csproj", "{2DF44392-8882-46B1-8061-61DDBCA358BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Liquid.Abstractions", "src\OrchardCore\Orchard.Liquid.Abstractions\Orchard.Liquid.Abstractions.csproj", "{2DF44392-8882-46B1-8061-61DDBCA358BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchard.Lucene.Abstractions", "src\OrchardCore\Orchard.Lucene.Abstractions\Orchard.Lucene.Abstractions.csproj", "{78F13261-B843-4590-8DD5-E9491874D0CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Lucene.Abstractions", "src\OrchardCore\Orchard.Lucene.Abstractions\Orchard.Lucene.Abstractions.csproj", "{78F13261-B843-4590-8DD5-E9491874D0CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchard.Liquid", "src\OrchardCore.Modules\Orchard.Liquid\Orchard.Liquid.csproj", "{F8973BF9-4F56-4A59-9153-72BEDB6AB269}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Liquid", "src\OrchardCore.Modules\Orchard.Liquid\Orchard.Liquid.csproj", "{F8973BF9-4F56-4A59-9153-72BEDB6AB269}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchard.Lucene.Core", "src\OrchardCore\Orchard.Lucene.Core\Orchard.Lucene.Core.csproj", "{F621B369-15FD-4923-98AD-17740C24CD5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Lucene.Core", "src\OrchardCore\Orchard.Lucene.Core\Orchard.Lucene.Core.csproj", "{F621B369-15FD-4923-98AD-17740C24CD5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchard.Queries.Abstractions", "src\OrchardCore\Orchard.Queries.Abstractions\Orchard.Queries.Abstractions.csproj", "{AEB44D2A-1493-4550-8B13-EB611B1FB12C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Queries.Abstractions", "src\OrchardCore\Orchard.Queries.Abstractions\Orchard.Queries.Abstractions.csproj", "{AEB44D2A-1493-4550-8B13-EB611B1FB12C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Entities", "src\OrchardCore\Orchard.Entities\Orchard.Entities.csproj", "{875C2E27-A131-44AF-9130-6C6CD93317C9}"
 EndProject
@@ -270,6 +270,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Tokens.Core", "src\OrchardCore\Orchard.Tokens.Core\Orchard.Tokens.Core.csproj", "{5F6C21D3-7D8B-4CAE-9298-CA6791A13FC0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Diagnostics.Elm", "src\OrchardCore.Modules\Orchard.Diagnostics.Elm\Orchard.Diagnostics.Elm.csproj", "{A1B6C857-7844-433E-B28A-9A86600771A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Cors", "src\OrchardCore.Modules\Orchard.Cors\Orchard.Cors.csproj", "{1D2EF8FF-72D6-48C6-8E2B-54F5E28F90C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -753,6 +755,10 @@ Global
 		{A1B6C857-7844-433E-B28A-9A86600771A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1B6C857-7844-433E-B28A-9A86600771A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1B6C857-7844-433E-B28A-9A86600771A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D2EF8FF-72D6-48C6-8E2B-54F5E28F90C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D2EF8FF-72D6-48C6-8E2B-54F5E28F90C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D2EF8FF-72D6-48C6-8E2B-54F5E28F90C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D2EF8FF-72D6-48C6-8E2B-54F5E28F90C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -890,5 +896,6 @@ Global
 		{391F8D42-43B0-4DA5-A727-083ABBA55510} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{5F6C21D3-7D8B-4CAE-9298-CA6791A13FC0} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{A1B6C857-7844-433E-B28A-9A86600771A2} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
+		{1D2EF8FF-72D6-48C6-8E2B-54F5E28F90C0} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 	EndGlobalSection
 EndGlobal
