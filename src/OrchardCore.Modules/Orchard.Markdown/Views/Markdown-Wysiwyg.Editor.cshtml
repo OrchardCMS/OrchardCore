@@ -1,4 +1,4 @@
-﻿@using Orchard.Markdown.ViewModels;
+@using Orchard.Markdown.ViewModels;
 @model MarkdownPartViewModel
 
 <script name="simplemde" depends-on="admin" asp-src="/Orchard.Markdown/Scripts/simplemde.min.js" at="Foot"></script>
@@ -16,6 +16,8 @@
             element: document.getElementById("@Html.IdFor(m => m.Markdown)"),
             forceSync: true
         });
+
+        $(document).trigger('simplemde:initialize', [simplemde]);
 
         simplemde.codemirror.on('change', function () {
             $(document).trigger('contentpreview:render');

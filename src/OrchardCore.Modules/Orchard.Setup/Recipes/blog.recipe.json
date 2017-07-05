@@ -55,11 +55,10 @@
             "Orchard.Lists",
             "Orchard.Liquid",
             "Orchard.Markdown",
+            "Orchard.Media",
             "Orchard.Menu",
-        "Orchard.Queries",
+            "Orchard.Queries",
             "Orchard.Title",
-            "Orchard.Tokens",
-            "Orchard.Tokens.Content",
             "Orchard.Widgets",
 
             // Themes
@@ -119,7 +118,7 @@
                                 "Tokenized": false,
                                 "Template": null
                             },
-                            "Pattern": "{{slug}}",
+                            "Pattern": "{{ ContentItem | display_text | slugify }}",
                             "AllowCustomPath": "True",
                             "ShowHomepageOption": "True",
                             "Position": "1"
@@ -138,7 +137,6 @@
                                 "Template": null
                             },
                             "BodyPartSettings": {
-                                "RenderTokens": false,
                                 "Editor": "Wysiwyg"
                             },
                             "Position": "3"
@@ -184,7 +182,7 @@
                             "Tokenized": false,
                             "Template": null
                         },
-                        "Pattern": "{{slug}}",
+                        "Pattern": "{{ ContentItem | display_text | slugify }}",
                         "AllowCustomPath": "True",
                         "ShowHomepageOption": "False",
                         "Position": "1"
@@ -246,7 +244,7 @@
                                 "Tokenized": false,
                                 "Template": null
                             },
-                            "Pattern": "{{#container}}{{slug}}/{{/container}}{{slug}}",
+                            "Pattern": "{{ ContentItem | container | display_text | slugify }}/{{ ContentItem | display_text | slugify }}",
                             "AllowCustomPath": "False",
                             "ShowHomepageOption": "False"
                         }
@@ -265,7 +263,6 @@
                                 "Template": null
                             },
                             "MarkdownPartSettings": {
-                                "RenderTokens": false,
                                 "Editor": "Wysiwyg"
                             }
                         }
@@ -311,7 +308,7 @@
                                 "Tokenized": false,
                                 "Template": null
                             },
-                            "Pattern": "{{slug}}",
+                            "Pattern": "{{ ContentItem | display_text | slugify }}",
                             "AllowCustomPath": "False",
                             "ShowHomepageOption": "True"
                         }
@@ -355,7 +352,7 @@
                 "Settings": {
                     "Creatable": "False",
                     "Draftable": "True",
-                    "Listable": "True",
+                    "Listable": "False",
                     "Securable": "True",
                     "Stereotype": "Widget"
                 },
@@ -382,7 +379,7 @@
                 "Settings": {
                     "Creatable": "False",
                     "Draftable": "True",
-                    "Listable": "True",
+                    "Listable": "False",
                     "Securable": "True",
                     "Stereotype": "Widget"
                 },
@@ -421,10 +418,10 @@
                 "DisplayName": "Image",
                 "Settings": {
                     "Creatable": "False",
-                    "Draftable": "True",
-                    "Listable": "True",
-                    "Securable": "True",
-                    "Stereotype": "Widget"
+                    "Draftable": "False",
+                    "Listable": "False",
+                    "Securable": "False",
+                    "Stereotype": null
                 },
                 "ContentTypePartDefinitionRecords": [
                     {
@@ -442,7 +439,7 @@
                 "Settings": {
                     "Creatable": "False",
                     "Draftable": "True",
-                    "Listable": "True",
+                    "Listable": "False",
                     "Securable": "True",
                     "Stereotype": "Widget"
                 },
@@ -462,7 +459,7 @@
                 "Settings": {
                     "Creatable": "False",
                     "Draftable": "True",
-                    "Listable": "True",
+                    "Listable": "False",
                     "Securable": "True",
                     "Stereotype": "Widget"
                 },
@@ -507,7 +504,7 @@
                                 "Tokenized": false,
                                 "Template": null
                             },
-                            "Pattern": "{{slug}}",
+                            "Pattern": "{{ ContentItem | display_text | slugify }}",
                             "AllowCustomPath": "False",
                             "ShowHomepageOption": "True"
                         }

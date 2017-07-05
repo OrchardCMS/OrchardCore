@@ -1,4 +1,4 @@
-﻿<zone name="Header">
+<zone name="Header">
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
     <header class="intro-header" style="background-image: url('https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/home-bg.jpg')">
@@ -8,7 +8,7 @@
                     <div class="site-heading">
                         <h1>@Model.ContentItem.Content.TitlePart.Title</h1>
                         <hr class="small">
-                        <span class="subheading">@Html.Raw(Model.ContentItem.Content.BodyPart.Body)</span>
+                        <span class="subheading">@await DisplayAsync(Model.Content.Named("BodyPart"))</span>
                     </div>
                 </div>
             </div>

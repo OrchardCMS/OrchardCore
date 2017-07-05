@@ -1,7 +1,4 @@
-﻿using Orchard.Tokens.Content.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Orchard.Liquid.Services;
 using Xunit;
 
 namespace Orchard.Tests.Tokens.Content

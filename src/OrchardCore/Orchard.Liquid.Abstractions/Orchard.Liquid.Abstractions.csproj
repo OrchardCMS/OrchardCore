@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fluid.Core" Version="1.0.0-beta-32" />
+    <PackageReference Include="Fluid.Core" Version="1.0.0-beta-84" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="1.1.2" />
   </ItemGroup>
 </Project>

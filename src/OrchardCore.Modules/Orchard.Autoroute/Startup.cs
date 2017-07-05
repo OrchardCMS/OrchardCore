@@ -19,7 +19,6 @@ using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
 using Orchard.Indexing;
 using Orchard.Security.Permissions;
-using Orchard.Tokens;
 using YesSql.Indexes;
 using YesSql;
 
@@ -42,8 +41,6 @@ namespace Orchard.Autoroute
 
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
             services.AddScoped<IContentAliasProvider, AutorouteAliasProvider>();
-
-            services.AddNullTokenizer();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

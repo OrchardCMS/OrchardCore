@@ -1,11 +1,15 @@
-﻿@model Orchard.Markdown.ViewModels.DisplayMarkdownFieldViewModel
-@inject Orchard.Tokens.Services.ITokenizer Tokenizer
-@using Orchard.ContentManagement.Metadata.Models
+﻿@using Fluid;
+@model Orchard.Markdown.ViewModels.DisplayMarkdownFieldViewModel
+@inject Orchard.Liquid.ILiquidTemplateManager TemplateManager
+
+@Model.PartFieldDefinition.DisplayName():
 
 @{
     string markdown = Model.Field.Markdown;
     var html = Markdig.Markdown.ToHtml(markdown ?? "");
+
+    var templateContext = new TemplateContext();
+    templateContext.SetValue("ContentItem", Model.MarkdownPart.ContentItem);
+
+    await TemplateManager.RenderAsync(html, Output, NullEncoder.Default, templateContext);
 }
-
-@Model.PartFieldDefinition.DisplayName(): @Html.Raw(html)
-

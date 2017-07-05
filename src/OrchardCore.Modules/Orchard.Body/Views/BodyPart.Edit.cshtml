@@ -1,9 +1,10 @@
-﻿@using Orchard.Body.ViewModels;
+@using Orchard.Body.ViewModels;
 @model BodyPartViewModel
 
 @{ 
     // Morph the current shape to the correct editor shape based on its Editor property
     var shape = Model as Orchard.DisplayManagement.IShape;
+    shape.Metadata.Wrappers.Clear();
     shape.Metadata.Alternates.Clear();
     shape.Metadata.Type = "Body_Editor";
 
