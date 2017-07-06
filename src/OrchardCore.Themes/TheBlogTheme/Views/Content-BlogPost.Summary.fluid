@@ -1,5 +1,5 @@
 ﻿<div class="post-preview">
-    <a href="{{ '~/' | append: ContentItem.Content.AutoroutePart.Path | href }}">
+    <a href="{{ '~/' | href + ContentItem.Content.AutoroutePart.Path }}">
         <h2 class="post-title">
             {{ ContentItem.Content.TitlePart.Title }}
         </h2>

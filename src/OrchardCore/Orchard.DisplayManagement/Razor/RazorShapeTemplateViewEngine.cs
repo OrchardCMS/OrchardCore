@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,6 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
-using Orchard.DisplayManagement.Fluid;
 using Orchard.DisplayManagement.Implementation;
 
 namespace Orchard.DisplayManagement.Razor
@@ -20,18 +20,21 @@ namespace Orchard.DisplayManagement.Razor
     public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
     {
         private readonly IOptions<MvcViewOptions> _viewEngine;
+        private readonly List<string> _templateFileExtensions = new List<string>(new[] { RazorViewEngine.ViewExtension });
 
         public RazorShapeTemplateViewEngine(
-            IOptions<MvcViewOptions> options)
+            IOptions<MvcViewOptions> options,
+            IEnumerable<IRazorViewExtensionProvider> viewExtensionProviders)
         {
             _viewEngine = options;
+            _templateFileExtensions.AddRange(viewExtensionProviders.Select(x => x.ViewExtension));
         }
 
         public IEnumerable<string> TemplateFileExtensions
         {
             get
             {
-                return new[] { RazorViewEngine.ViewExtension, FluidViewTemplate.ViewExtension };
+                return _templateFileExtensions;
             }
         }
 

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Fluid.Internal;
+using Orchard.DisplayManagement.Razor;
 
 namespace Orchard.DisplayManagement.Fluid
 {
@@ -15,6 +16,7 @@ namespace Orchard.DisplayManagement.Fluid
                 ServiceDescriptor.Transient<IConfigureOptions<FluidViewOptions>, FluidViewOptionsSetup>());
             services.TryAddSingleton<IFluidViewFileProviderAccessor, FluidViewFileProviderAccessor>();
             services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, FluidViewsFeatureProvider>();
+            services.AddScoped<IRazorViewExtensionProvider, FluidViewExtensionProvider>();
 
             return services;
         }

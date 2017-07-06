@@ -20,5 +20,3 @@
 
 {% Display Content | i: "Contents_Metadata" %}
 {% Display ContentItem | body_aspect %}
-
-{{ ContentItem.Content | p: ContentItem.ContentType }}
