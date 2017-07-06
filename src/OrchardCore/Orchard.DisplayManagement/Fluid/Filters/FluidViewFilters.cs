@@ -5,7 +5,6 @@ using Fluid.Values;
 using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Mvc.Utilities;
-using Newtonsoft.Json.Linq;
 
 namespace Orchard.DisplayManagement.Fluid.Filters
 {
@@ -18,13 +17,12 @@ namespace Orchard.DisplayManagement.Fluid.Filters
             filters.AddFilter("is_nil", IsNil);
             filters.AddFilter("or_default", OrDefault);
             filters.AddFilter("body_aspect", BodyAspect);
-            filters.AddFilter("item_remove", ItemRemove);
-            filters.AddFilter("item_named", ItemNamed);
+            filters.AddFilter("i", ItemNamed);
             filters.AddFilter("item_prefixed", ItemPrefixed);
             filters.AddFilter("shape_string", ShapeString);
             filters.AddFilter("remove_tags", RemoveTags);
-            filters.AddFilter("prop_named", PropNamed);
             filters.AddFilter("date_time", DateTime);
+            filters.AddFilter("p", PropNamed);
 
             return filters;
         }
@@ -67,13 +65,6 @@ namespace Orchard.DisplayManagement.Fluid.Filters
             return new ObjectValue(page.New.BodyAspect(input.ToObjectValue()));
         }
 
-        public static FluidValue ItemRemove(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            var shape = input.ToObjectValue() as Shape;
-            shape?.Remove(arguments.At(0).ToStringValue());
-            return input;
-        }
-
         public static FluidValue ItemNamed(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var shape = input.ToObjectValue() as Shape;
@@ -112,11 +103,6 @@ namespace Orchard.DisplayManagement.Fluid.Filters
             return new StringValue(input.ToStringValue().RemoveTags(htmlDecode));
         }
 
-        public static FluidValue PropNamed(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            return new ObjectValue(((dynamic)input.ToObjectValue())[arguments.At(0).ToStringValue()]);
-        }
-
         public static FluidValue DateTime(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var dateTime = input.ToObjectValue() as DateTime?;
@@ -133,6 +119,11 @@ namespace Orchard.DisplayManagement.Fluid.Filters
             }
 
             return input;
+        }
+
+        public static FluidValue PropNamed(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            return new ObjectValue(((dynamic)input.ToObjectValue())[arguments.At(0).ToStringValue()]);
         }
     }
 }

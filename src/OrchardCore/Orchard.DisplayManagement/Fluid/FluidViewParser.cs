@@ -33,6 +33,9 @@ namespace Orchard.DisplayManagement.Fluid
                 case "SetMetadata":
                     return BuildSetMetadataStatement(tag);
 
+                case "RemoveItem":
+                    return BuildRemoveItemStatement(tag);
+
                 case "SetProperty":
                     return BuildSetPropertyStatement(tag);
 
@@ -69,7 +72,9 @@ namespace Orchard.DisplayManagement.Fluid
 
         private RenderSectionStatement BuildRenderSectionStatement(ParseTreeNode tag)
         {
-            return new RenderSectionStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
+            var identifier = tag.ChildNodes[0].Token.ValueString;
+            var arguments = tag.ChildNodes.Count > 1 ? BuildArgumentsExpression(tag.ChildNodes[1]) : null;
+            return new RenderSectionStatement(identifier, arguments);
         }
 
         private RenderTitleSegmentsStatement BuildRenderTitleSegmentsStatement(ParseTreeNode tag)
@@ -95,6 +100,13 @@ namespace Orchard.DisplayManagement.Fluid
         {
             var shape = BuildExpression(tag.ChildNodes[0]);
             return new SetMetadataStatement(shape, BuildArgumentsExpression(tag.ChildNodes[1]));
+        }
+
+        private RemoveItemStatement BuildRemoveItemStatement(ParseTreeNode tag)
+        {
+            var shape = BuildExpression(tag.ChildNodes[0]);
+            var name = BuildExpression(tag.ChildNodes[1]);
+            return new RemoveItemStatement(shape, name);
         }
 
         private SetPropertyStatement BuildSetPropertyStatement(ParseTreeNode tag)

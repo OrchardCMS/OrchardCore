@@ -2,9 +2,9 @@
     {% Display item %}
 {% endfor %}
 
-{% SetProperty Pager "PreviousText" = "← Newer Posts" | t %}
-{% SetProperty Pager "NextText" = "Older Posts →" | t %}
-{% SetProperty Pager "PreviousClass" = "previous" | t %}
-{% SetProperty Pager "NextClass" = "next" | t %}
+{% SetProperty Pager:"PreviousText" = "← Newer Posts" | t %}
+{% SetProperty Pager:"NextText" = "Older Posts →" | t %}
+{% SetProperty Pager:"PreviousClass" = "previous" | t %}
+{% SetProperty Pager:"NextClass" = "next" | t %}
 
 {% Display Pager %}

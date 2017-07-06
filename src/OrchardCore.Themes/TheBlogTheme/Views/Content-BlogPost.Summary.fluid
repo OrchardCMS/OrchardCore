@@ -1,0 +1,19 @@
+﻿<div class="post-preview">
+    <a href="{{ '~/' | append: ContentItem.Content.AutoroutePart.Path | href }}">
+        <h2 class="post-title">
+            {{ ContentItem.Content.TitlePart.Title }}
+        </h2>
+        {% if ContentItem.Content.BlogPost.Subtitle | is_nil != true %}
+        <h3 class="post-subtitle">
+            {{ Model.ContentItem.Content.BlogPost.Subtitle.Text }}
+        </h3>
+        {% endif %}
+    </a>
+    <p class="post-meta">
+        {% assign format = "MMMM dd, yyyy" | t %}
+        {% assign dateTime = ContentItem.CreatedUtc | date_time: format: format %}
+        {% assign owner = "<a href=\"#\">" + ContentItem.Owner + "</a>" %}
+        {{ "Posted by {0} on {1}" | t: owner, dateTime | raw }}
+    </p>
+</div>
+<hr>

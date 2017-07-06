@@ -16,4 +16,6 @@
     </header>
 {% endzone %}
 
-{% Display Content | item_remove: type: "BodyPart" %}
+{% RemoveItem Content "BodyPart" %}
+
+{% Display Content %}

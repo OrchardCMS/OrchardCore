@@ -13,18 +13,19 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 {
     public class ShapeStatement : Statement
     {
-        private readonly string _name;
         private readonly ArgumentsExpression _arguments;
 
         public ShapeStatement(string name, ArgumentsExpression arguments)
         {
-            _name = name;
+            Name = name;
             _arguments = arguments;
         }
 
+        public string Name { get; }
+
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var page = FluidViewTemplate.EnsureFluidPage(context, _name);
+            var page = FluidViewTemplate.EnsureFluidPage(context, Name);
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
             var attributes = new TagHelperAttributeList();
@@ -37,7 +38,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var tagHelperContext = new TagHelperContext(attributes,
                 new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
-            var tagHelperOutput = new TagHelperOutput(_name, attributes, (_, e) =>
+            var tagHelperOutput = new TagHelperOutput(Name, attributes, (_, e) =>
                 Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
 
             var shapeTagHelper = new ShapeTagHelper(page.GetService<IShapeFactory>(),

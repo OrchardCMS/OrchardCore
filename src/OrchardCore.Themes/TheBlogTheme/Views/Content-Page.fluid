@@ -1,4 +1,4 @@
-﻿{% assign typePart = ContentItem.Content | prop_named: ContentItem.ContentType %}
+﻿{% assign typePart = ContentItem.Content | p: ContentItem.ContentType %}
 
 {% zone name: "Header" %}
     <!-- Page Header -->
@@ -18,8 +18,7 @@
     </header>
 {% endzone %}
 
-{% assign contentsMetadata = Content | item_named: "Contents_Metadata" %}
-{% assign bodyAspect = ContentItem | body_aspect %}
+{% Display Content | i: "Contents_Metadata" %}
+{% Display ContentItem | body_aspect %}
 
-{% Display contentsMetadata %}
-{% Display bodyAspect %}
+{{ ContentItem.Content | p: ContentItem.ContentType }}

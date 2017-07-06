@@ -35,8 +35,8 @@
         <div class="container-fluid">
             <div class="navbar-header page-scroll">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">@T["Toggle navigation"]</span>
-                    "Menu" <i class="fa fa-bars"></i>
+                    <span class="sr-only">{{ "Toggle navigation" | t }}</span>
+                    Menu <i class="fa fa-bars"></i>
                 </button>
                 <a class="navbar-brand" href= {{ "~/" | href }}>{{ Site.SiteName }}</a>
             </div>
@@ -50,7 +50,7 @@
         <!-- /.container -->
     </nav>
 
-    {% RenderSection "Header", required: false %}
+    {% RenderSection Header required: false %}
 
     <div class="container">
         <div class="row">
@@ -63,7 +63,7 @@
     <footer>
         <div class="container">
             <div class="row">
-                {% RenderSection "Footer", required: false %}
+                {% RenderSection Footer required: false %}
             </div>
         </div>
     </footer>
