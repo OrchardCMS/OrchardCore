@@ -1,5 +1,5 @@
 ﻿<div class="post-preview">
-    <a href="{{ '~/' | href + ContentItem.Content.AutoroutePart.Path }}">
+    {% a display_for:ContentItem %}
         <h2 class="post-title">
             {{ ContentItem.Content.TitlePart.Title }}
         </h2>
@@ -8,7 +8,7 @@
             {{ Model.ContentItem.Content.BlogPost.Subtitle.Text }}
         </h3>
         {% endif %}
-    </a>
+    {% enda %}
     <p class="post-meta">
         {% assign format = "MMMM dd, yyyy" | t %}
         {% assign dateTime = ContentItem.CreatedUtc | date_time: format: format %}

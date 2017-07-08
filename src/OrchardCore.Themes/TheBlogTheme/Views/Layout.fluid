@@ -5,20 +5,24 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link type="image/x-icon" rel="shortcut icon" href="TheBlogTheme/favicon.ico" />
+    {% link type:"image/x-icon", rel:"shortcut icon", asp_src:"/TheBlogTheme/favicon.ico" %}
 
     {% script asp_name:"jquery", use_cdn:"true", at:"Foot" %}
 
-    <script asp-name="bootstrap" use-cdn="true" at="Foot"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    <script asp-src="/TheBlogTheme/Scripts/clean-blog.min.js" debug-src="/TheBlogTheme/Scripts/clean-blog.js" at="Foot"></script>
+    {% script at:"Foot" %}
+        var foo = "bar";
+    {% endscript %}
 
-    <link rel="stylesheet" href="/TheBlogTheme/Styles/blog.min.css">
+    {% script asp_name:"bootstrap", use_cdn:"true", at:"Foot" %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script asp-src:"/TheBlogTheme/Scripts/clean-blog.min.js" debug-src="/TheBlogTheme/Scripts/clean-blog.js" at="Foot"></script>
+
+    {% link rel:"stylesheet", asp_src:"/TheBlogTheme/Styles/blog.min.css" %}
 
     <!-- Custom Fonts -->
     {% style asp_name:"font-awesome", use_cdn:"true" %}
-    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    {% link asp_src:'https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic', rel:'stylesheet', type:'text/css' %}
+    {% link asp_src:'https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800', rel:'stylesheet', type:'text/css' %}
 
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>

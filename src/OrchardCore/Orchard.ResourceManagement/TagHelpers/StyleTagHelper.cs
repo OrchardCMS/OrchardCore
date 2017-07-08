@@ -6,7 +6,7 @@ namespace Orchard.ResourceManagement.TagHelpers
 
     [HtmlTargetElement("style", Attributes = NameAttributeName)]
     [HtmlTargetElement("style", Attributes = SrcAttributeName)]
-    public class StyletTagHelper : TagHelper
+    public class StyleTagHelper : TagHelper
     {
         private const string NameAttributeName = "asp-name";
         private const string SrcAttributeName = "asp-src";
@@ -32,7 +32,7 @@ namespace Orchard.ResourceManagement.TagHelpers
 
         private readonly IResourceManager _resourceManager;
 
-        public StyletTagHelper(IResourceManager resourceManager)
+        public StyleTagHelper(IResourceManager resourceManager)
         {
             _resourceManager = resourceManager;
         }

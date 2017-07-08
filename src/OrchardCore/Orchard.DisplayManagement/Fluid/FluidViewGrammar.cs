@@ -40,6 +40,13 @@ namespace Orchard.DisplayManagement.Fluid
             Script.Rule = "script" + FilterArguments;
             var ScriptEnd = ToTerm("endscript");
 
+            var ContentLink = new NonTerminal("a");
+            ContentLink.Rule = "a" + FilterArguments;
+            var ContentLinkEnd = ToTerm("enda");
+
+            var Link = new NonTerminal("link");
+            Link.Rule = "link" + FilterArguments;
+
             var Style = new NonTerminal("style");
             Style.Rule = "style" + FilterArguments;
 
@@ -51,14 +58,14 @@ namespace Orchard.DisplayManagement.Fluid
 
             KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments
                 | Display | ClearAlternates | SetMetadata | RemoveItem | SetProperty
-                | Zone | ZoneEnd | Script | ScriptEnd | Style | Resources
+                | Zone | ZoneEnd | ContentLink | ContentLinkEnd | Link | Script | ScriptEnd | Style | Resources
                 | Menu;
 
             // Prevent the text from being added in the parsed tree.
             // Only Identifier and Arguments will be in the tree.
             MarkPunctuation("RenderSection", "RenderTitleSegments", "Display",
                 "ClearAlternates", "SetMetadata", "RemoveItem", "SetProperty",
-                "zone", "script", "style", "resources", "menu");
+                "zone", "a", "link", "script", "style", "resources", "menu");
         }
     }
 }

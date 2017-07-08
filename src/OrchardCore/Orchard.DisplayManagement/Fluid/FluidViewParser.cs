@@ -51,11 +51,16 @@ namespace Orchard.DisplayManagement.Fluid
                 case "endscript":
                     return BuildScriptStatement(null);
 
-                case "style":
-                    return BuildStyleStatement(tag);
+                case "a":
+                    return BuildContentLinkStatement(tag);
 
+                case "enda":
+                    return BuildContentLinkStatement(null);
+
+                case "link":
+                case "style":
                 case "resources":
-                    return BuildResourcesStatement(tag);
+                    return BuildTagHelperStatement(tag);
 
                 case "menu":
                     return BuildShapeStatement(tag);
@@ -148,7 +153,7 @@ namespace Orchard.DisplayManagement.Fluid
             throw new ParseException($"Unexpected tag: ${_currentContext.Tag.Term.Name} not matching script tag.");
         }
 
-        private ScriptStatement BuildScriptStatement(ParseTreeNode tag)
+        private TagHelperStatement BuildScriptStatement(ParseTreeNode tag)
         {
             if (tag != null)
             {
@@ -159,7 +164,7 @@ namespace Orchard.DisplayManagement.Fluid
                         var name = node.FindToken().ValueString;
                         if (name == "asp_name" || name == "asp_source")
                         {
-                            return new ScriptStatement(BuildArgumentsExpression(tag.ChildNodes[0]), null);
+                            return new TagHelperStatement(tag.Term.Name, BuildArgumentsExpression(tag.ChildNodes[0]), null);
                         }
                     }
 
@@ -176,8 +181,8 @@ namespace Orchard.DisplayManagement.Fluid
 
                 if (_currentContext.Tag.Term.Name == "script")
                 {
-                    var statement = new ScriptStatement(BuildArgumentsExpression(
-                        _currentContext.Tag.ChildNodes[0]), _currentContext.Statements);
+                    var statement = new TagHelperStatement(_currentContext.Tag.Term.Name,
+                        BuildArgumentsExpression(_currentContext.Tag.ChildNodes[0]), _currentContext.Statements);
 
                     ExitBlock();
                     return statement;
@@ -187,14 +192,39 @@ namespace Orchard.DisplayManagement.Fluid
             throw new ParseException($"Unexpected tag: ${_currentContext.Tag.Term.Name} not matching script tag.");
         }
 
-        private StyleStatement BuildStyleStatement(ParseTreeNode tag)
+        private TagHelperStatement BuildContentLinkStatement(ParseTreeNode tag)
         {
-            return new StyleStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
+            if (tag != null)
+            {
+                if (tag?.Term.Name == "a")
+                {
+                    EnterBlock(tag);
+                    return null;
+                }
+            }
+            else
+            {
+                if (_currentContext.Tag == null)
+                {
+                    return null;
+                }
+
+                if (_currentContext.Tag.Term.Name == "a")
+                {
+                    var statement = new TagHelperStatement(_currentContext.Tag.Term.Name,
+                        BuildArgumentsExpression(_currentContext.Tag.ChildNodes[0]), _currentContext.Statements);
+
+                    ExitBlock();
+                    return statement;
+                }
+            }
+
+            throw new ParseException($"Unexpected tag: ${_currentContext.Tag.Term.Name} not matching script tag.");
         }
 
-        private ResourcesStatement BuildResourcesStatement(ParseTreeNode tag)
+        private TagHelperStatement BuildTagHelperStatement(ParseTreeNode tag)
         {
-            return new ResourcesStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
+            return new TagHelperStatement(tag.Term.Name, BuildArgumentsExpression(tag.ChildNodes[0]), null);
         }
 
         private ShapeStatement BuildShapeStatement(ParseTreeNode tag)
