@@ -439,7 +439,7 @@ namespace Orchard.Workflows.Controllers
                         }
                     }
                     // Remove any workflows with no awaiting activities.
-                    if (!workflowRecord.AwaitingActivities.Any())
+                    if (workflowRecord.AwaitingActivities.Count > 0)
                     {
                         workflowDefinition.Workflows.Remove(workflowRecord);
                     }
@@ -464,7 +464,6 @@ namespace Orchard.Workflows.Controllers
             return View();
         }
 
-        //[Themed(false)]
         [HttpPost]
         public async Task<IActionResult> RenderActivity(ActivityViewModel model)
         {
@@ -494,8 +493,7 @@ namespace Orchard.Workflows.Controllers
 
             shape.Metadata.Alternates.Add("Activity__" + activity.Name);
 
-            //return new ShapeResult(this, shape);
-            return null;
+            return View(shape);
         }
 
         public async Task<IActionResult> EditActivity(string localId, string clientId, ActivityViewModel model)
