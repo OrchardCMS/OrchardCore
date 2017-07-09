@@ -37,11 +37,11 @@ namespace Orchard.DisplayManagement.Fluid
             var ZoneEnd = ToTerm("endzone");
 
             var Script = new NonTerminal("script");
-            Script.Rule = "script" + FilterArguments;
+            Script.Rule = "script" + FilterArguments | "script" + FilterArguments + "/";
             var ScriptEnd = ToTerm("endscript");
 
             var ContentLink = new NonTerminal("a");
-            ContentLink.Rule = "a" + FilterArguments;
+            ContentLink.Rule = "a" + FilterArguments | "a" + FilterArguments + "/";
             var ContentLinkEnd = ToTerm("enda");
 
             var Link = new NonTerminal("link");
@@ -53,19 +53,26 @@ namespace Orchard.DisplayManagement.Fluid
             var Resources = new NonTerminal("resources");
             Resources.Rule = "resources" + FilterArguments;
 
+            var Meta = new NonTerminal("meta");
+            Meta.Rule = "meta" + FilterArguments;
+
             var Menu = new NonTerminal("menu");
             Menu.Rule = "menu" + FilterArguments;
 
             KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments
-                | Display | ClearAlternates | SetMetadata | RemoveItem | SetProperty
-                | Zone | ZoneEnd | ContentLink | ContentLinkEnd | Link | Script | ScriptEnd | Style | Resources
+                | Display | ClearAlternates | SetMetadata | RemoveItem | SetProperty | Zone | ZoneEnd
+                | ContentLink | ContentLinkEnd | Link | Script | ScriptEnd | Style | Resources | Meta
                 | Menu;
+
+            var SelfClosed = new NonTerminal("selfClosed");
+            Tag.Rule |= ToTerm("{%") + KnownTags + SelfClosed + ToTerm("%}");
+            SelfClosed.Rule = Empty | "/";
 
             // Prevent the text from being added in the parsed tree.
             // Only Identifier and Arguments will be in the tree.
-            MarkPunctuation("RenderSection", "RenderTitleSegments", "Display",
-                "ClearAlternates", "SetMetadata", "RemoveItem", "SetProperty",
-                "zone", "a", "link", "script", "style", "resources", "menu");
+            MarkPunctuation("SelfClosed", "RenderSection", "RenderTitleSegments", "Display",
+                "ClearAlternates", "SetMetadata", "RemoveItem", "SetProperty", "zone",
+                "a", "link", "script", "style", "resources", "meta", "menu");
         }
     }
 }

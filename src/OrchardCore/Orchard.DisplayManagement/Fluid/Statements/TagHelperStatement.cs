@@ -7,6 +7,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
+using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Razor;
 using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
@@ -22,18 +23,20 @@ namespace Orchard.DisplayManagement.Fluid.Statements
         private static object _synLock = new object();
 
         private readonly ArgumentsExpression _arguments;
+        private readonly string _baseType;
 
-        public TagHelperStatement(string name, ArgumentsExpression arguments, IList<Statement> statements) : base(statements)
+        public TagHelperStatement(string name, ArgumentsExpression arguments, IList<Statement> statements, string baseType = null) : base(statements)
         {
             Name = name;
             _arguments = arguments;
+            _baseType = baseType;
         }
 
         public string Name { get; }
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var page = FluidViewTemplate.EnsureFluidPage(context, "resources");
+            var page = FluidViewTemplate.EnsureFluidPage(context, Name);
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
             if (_tagHelperTypes == null)
@@ -47,11 +50,11 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
                         var tagHelpersTypes = new List<TypeInfo>(partManager.ApplicationParts
                             .Where(x => x is TagHelperApplicationPart)
-                            .SelectMany(x => ((TagHelperApplicationPart)x).Types))
+                            .SelectMany(x => ((TagHelperApplicationPart)x).Types));
 
-                            // non registered tag helpers
-                            .Union(resolver.Resolve("Orchard.Contents", SourceLocation.Zero, new ErrorSink())
-                                .Select(x => x.GetTypeInfo()));
+                        // tag helpers which are not yet registered in applicationParts
+                        tagHelpersTypes = tagHelpersTypes.Union(resolver.Resolve("Orchard.Contents", SourceLocation.Zero, new ErrorSink())
+                            .Select(x => x.GetTypeInfo())).ToList();
 
                         _tagHelperTypes = tagHelpersTypes.ToDictionary(
                             typeInfo =>
@@ -72,7 +75,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
                 }
             }
 
-            if (!_tagHelperTypes.TryGetValue(Name, out var tagHelperType))
+            if (!_tagHelperTypes.TryGetValue(_baseType ?? Name, out var tagHelperType))
             {
                 return Completion.Normal;
             }
@@ -88,20 +91,27 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var descriptors = page.GetService<ITagHelperDescriptorFactory>().CreateDescriptors(
                 tagHelperType.GetTypeInfo().Assembly.GetName().Name, tagHelperType, new ErrorSink());
 
-            var tagHelperDescriptor = descriptors.FirstOrDefault(x => x.TagName == Name);
+            var tagHelperDescriptor = descriptors.FirstOrDefault(x => x.TagName == (_baseType ?? Name));
 
             if (tagHelperDescriptor != null)
             {
                 var attributes = new TagHelperAttributeList();
 
+                if (_baseType != null && tagHelperDescriptor.Attributes.Any(x => x.PropertyName == "Type"))
+                {
+                    arguments.Add("Type", new StringValue(Name));
+                }
+
                 foreach (var name in arguments.Names)
                 {
+                    var attributeName = name.Replace("_", "-");
+                    var found = false;
+
                     foreach (var attribute in tagHelperDescriptor.Attributes)
                     {
-                        var attributeName = name.Replace("_", "-");
-
                         if (attribute.IsNameMatch(attributeName))
                         {
+                            found = true;
                             var property = tagHelperType.GetProperty(attribute.PropertyName);
 
                             if (attribute.IsEnum)
@@ -111,25 +121,28 @@ namespace Orchard.DisplayManagement.Fluid.Statements
                             }
                             else if (attribute.IsStringProperty)
                             {
-                                //attributes.Add(new TagHelperAttribute(attribute.PropertyName, arguments[name].ToStringValue()));
                                 property.SetValue(tagHelper, arguments[name].ToStringValue(), null);
                             }
                             else if (property.PropertyType == typeof(Boolean))
                             {
                                 var value = Convert.ToBoolean(arguments[name].ToStringValue());
-                                //attributes.Add(new TagHelperAttribute(attribute.PropertyName, value));
                                 property.SetValue(tagHelper, value, null);
                             }
+
                             // Todo: implement attribute.IsIndexer
+
                             else
                             {
                                 property.SetValue(tagHelper, arguments[name].ToObjectValue(), null);
                             }
+
+                            break;
                         }
-                        else
-                        {
-                            //attributes.Add(new TagHelperAttribute(attributeName, arguments[name].ToObjectValue()));
-                        }
+                    }
+
+                    if (!found)
+                    {
+                        attributes.Add(new TagHelperAttribute(attributeName, arguments[name].ToObjectValue()));
                     }
                 }
 

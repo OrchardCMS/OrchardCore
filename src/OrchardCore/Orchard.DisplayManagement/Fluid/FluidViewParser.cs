@@ -40,30 +40,35 @@ namespace Orchard.DisplayManagement.Fluid
                     return BuildSetPropertyStatement(tag);
 
                 case "zone":
-                    return BuildZoneStatement(tag);
+                    EnterBlock(tag);
+                    return null;
 
                 case "endzone":
-                    return BuildZoneStatement(null);
-
-                case "script":
-                    return BuildScriptStatement(tag);
-
-                case "endscript":
-                    return BuildScriptStatement(null);
-
-                case "a":
-                    return BuildContentLinkStatement(tag);
-
-                case "enda":
-                    return BuildContentLinkStatement(null);
+                    return BuildZoneStatement();
 
                 case "link":
                 case "style":
                 case "resources":
+                case "meta":
                     return BuildTagHelperStatement(tag);
 
+                case "script":
+                case "a":
+
+                    if (tag.ChildNodes.Count > 1 && tag.ChildNodes[1].FindTokenAndGetText() == "/")
+                    {
+                        return BuildTagHelperStatement(tag);
+                    }
+
+                    EnterBlock(tag);
+                    return null;
+
+                case "endscript":
+                case "enda":
+                    return BuildTagHelperStatement(null);
+
                 case "menu":
-                    return BuildShapeStatement(tag);
+                    return BuildTagHelperStatement(tag, "shape");
 
                 default:
                     return base.BuildTagStatement(node);
@@ -123,108 +128,43 @@ namespace Orchard.DisplayManagement.Fluid
             return new SetPropertyStatement(obj, name, value);
         }
 
-        private ZoneStatement BuildZoneStatement(ParseTreeNode tag)
+        private ZoneStatement BuildZoneStatement()
+        {
+            if (_currentContext?.Tag.Term.Name == "zone")
+            {
+                var statement = new ZoneStatement(BuildArgumentsExpression(
+                    _currentContext.Tag.ChildNodes[0]), _currentContext.Statements);
+
+                ExitBlock();
+                return statement;
+            }
+
+            var unexpectedTag = _currentContext?.Tag.Term.Name ?? "undefined";
+            throw new ParseException($"Unexpected tag: ${unexpectedTag} not matching zone tag.");
+        }
+
+        private TagHelperStatement BuildTagHelperStatement(ParseTreeNode tag, string baseType = null)
         {
             if (tag != null)
             {
-                if (tag?.Term.Name == "zone")
-                {
-                    EnterBlock(tag);
-                    return null;
-                }
+                var statement = new TagHelperStatement(tag.Term.Name,
+                    BuildArgumentsExpression(tag.ChildNodes[0]), null, baseType);
+
+                    return statement;
             }
             else
             {
-                if (_currentContext.Tag == null)
+                if (_currentContext == null)
                 {
                     return null;
                 }
 
-                if (_currentContext.Tag.Term.Name == "zone")
-                {
-                    var statement = new ZoneStatement(BuildArgumentsExpression(
-                        _currentContext.Tag.ChildNodes[0]), _currentContext.Statements);
+                var statement = new TagHelperStatement(_currentContext.Tag.Term.Name,
+                    BuildArgumentsExpression(_currentContext.Tag.ChildNodes[0]), _currentContext.Statements, baseType);
 
-                    ExitBlock();
-                    return statement;
-                }
+                ExitBlock();
+                return statement;
             }
-
-            throw new ParseException($"Unexpected tag: ${_currentContext.Tag.Term.Name} not matching script tag.");
-        }
-
-        private TagHelperStatement BuildScriptStatement(ParseTreeNode tag)
-        {
-            if (tag != null)
-            {
-                if (tag?.Term.Name == "script")
-                {
-                    foreach (var node in tag.ChildNodes[0].ChildNodes)
-                    {
-                        var name = node.FindToken().ValueString;
-                        if (name == "asp_name" || name == "asp_source")
-                        {
-                            return new TagHelperStatement(tag.Term.Name, BuildArgumentsExpression(tag.ChildNodes[0]), null);
-                        }
-                    }
-
-                    EnterBlock(tag);
-                    return null;
-                }
-            }
-            else
-            {
-                if (_currentContext.Tag == null)
-                {
-                    return null;
-                }
-
-                if (_currentContext.Tag.Term.Name == "script")
-                {
-                    var statement = new TagHelperStatement(_currentContext.Tag.Term.Name,
-                        BuildArgumentsExpression(_currentContext.Tag.ChildNodes[0]), _currentContext.Statements);
-
-                    ExitBlock();
-                    return statement;
-                }
-            }
-
-            throw new ParseException($"Unexpected tag: ${_currentContext.Tag.Term.Name} not matching script tag.");
-        }
-
-        private TagHelperStatement BuildContentLinkStatement(ParseTreeNode tag)
-        {
-            if (tag != null)
-            {
-                if (tag?.Term.Name == "a")
-                {
-                    EnterBlock(tag);
-                    return null;
-                }
-            }
-            else
-            {
-                if (_currentContext.Tag == null)
-                {
-                    return null;
-                }
-
-                if (_currentContext.Tag.Term.Name == "a")
-                {
-                    var statement = new TagHelperStatement(_currentContext.Tag.Term.Name,
-                        BuildArgumentsExpression(_currentContext.Tag.ChildNodes[0]), _currentContext.Statements);
-
-                    ExitBlock();
-                    return statement;
-                }
-            }
-
-            throw new ParseException($"Unexpected tag: ${_currentContext.Tag.Term.Name} not matching script tag.");
-        }
-
-        private TagHelperStatement BuildTagHelperStatement(ParseTreeNode tag)
-        {
-            return new TagHelperStatement(tag.Term.Name, BuildArgumentsExpression(tag.ChildNodes[0]), null);
         }
 
         private ShapeStatement BuildShapeStatement(ParseTreeNode tag)
