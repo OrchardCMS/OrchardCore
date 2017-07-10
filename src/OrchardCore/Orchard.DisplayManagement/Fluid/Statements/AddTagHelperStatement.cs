@@ -8,19 +8,19 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 {
     public class AddTagHelperStatement : Statement
     {
-        public AddTagHelperStatement(string name, string assemblyName)
+        public AddTagHelperStatement(string name, string assembly)
         {
             Name = name;
-            AssemblyName = assemblyName;
+            Assembly = assembly;
         }
 
         public string Name { get; }
-        public string AssemblyName { get; }
+        public string Assembly { get; }
 
         public override Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             var page = FluidViewTemplate.EnsureFluidPage(context, "AddTagHelper");
-            TagHelperStatement.RegisterTagHelper(page, Name, AssemblyName);
+            TagHelperStatement.RegisterTagHelper(page, Name, Assembly);
             return Task.FromResult(Completion.Normal);
         }
     }
