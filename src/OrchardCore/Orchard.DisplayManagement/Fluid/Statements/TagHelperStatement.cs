@@ -149,15 +149,15 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
             if (!types.Any())
             {
-                _types["initialized"] = typeof(object);
+                _types["notempty"] = typeof(object);
                 return;
             }
 
-            var assemblies = types.Select(type => type.Assembly.GetName().Name);
+            var assemblies = types.Select(type => type.Assembly.GetName().Name).Distinct();
 
             foreach (var type in types)
             {
-                _types[GetTagName(type)] = type.AsType();
+                _types[GetTagName(type.AsType())] = type.AsType();
             }
 
             foreach (var assembly in assemblies)
@@ -170,47 +170,47 @@ namespace Orchard.DisplayManagement.Fluid.Statements
         {
             EnsureTagHelpers(page);
 
-            if (name != "*" && _types.TryGetValue(name, out var tagHelperType))
-            {
-                return;
-            }
-            else if (_assemblies.Contains(assembly))
+            if (name != "*" && _types.TryGetValue(name, out var tagHelperType) || _assemblies.Contains(assembly))
             {
                 return;
             }
 
             var resolver = page.GetService<ITagHelperTypeResolver>();
 
-            var tagHelperTypes = resolver.Resolve(assembly, SourceLocation.Zero, new ErrorSink())
-                .Select(type => type.GetTypeInfo()).ToList();
+            var types = resolver.Resolve(assembly, SourceLocation.Zero, new ErrorSink()).ToList();
 
             if (name == "*")
             {
                 _assemblies.Add(assembly);
 
-                foreach (var type in tagHelperTypes)
+                foreach (var type in types)
                 {
-                    _types[GetTagName(type)] = type.AsType();
+                    _types[GetTagName(type)] = type;
                 }
             }
             else
             {
-                var type = tagHelperTypes.FirstOrDefault(typeInfo => GetTagName(typeInfo) == name);
+                var type = types.FirstOrDefault(t => GetTagName(t) == name);
 
                 if (type != null)
                 {
-                    _types[GetTagName(type)] = type.AsType();
+                    _types[GetTagName(type)] = type;
+
+                    if (!types.Except(_types.Values).Any())
+                    {
+                        _assemblies.Add(assembly);
+                    }
                 }
             }
         }
 
-        internal static string GetTagName(TypeInfo typeInfo)
+        internal static string GetTagName(Type type)
         {
-            var attributes = typeInfo.CustomAttributes.Where(a =>
-                a.AttributeType == typeof(HtmlTargetElementAttribute));
+            var attributes = type.GetTypeInfo().CustomAttributes.Where(
+                a => a.AttributeType == typeof(HtmlTargetElementAttribute));
 
-            return !attributes.Any() ? typeInfo.Name : attributes.FirstOrDefault()
-                .ConstructorArguments.FirstOrDefault().Value.ToString();
+            return attributes.Any() ? attributes.FirstOrDefault().ConstructorArguments
+                .FirstOrDefault().Value.ToString() : type.GetTypeInfo().Name;
         }
     }
 }
