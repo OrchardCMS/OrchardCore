@@ -1,0 +1,2 @@
+﻿{% AddTagHelper "*", "Orchard.Menu" %}
+{% AddTagHelper "*", "Orchard.Contents" %}

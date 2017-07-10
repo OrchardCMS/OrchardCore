@@ -46,16 +46,21 @@ namespace Orchard.DisplayManagement.Fluid
                 case "endzone":
                     return BuildZoneStatement();
 
+                case "AddTagHelper":
+                    return BuildAddTagHelperStatement(tag);
+
                 case "link":
                 case "style":
                 case "resources":
                 case "meta":
+                case "shape":
+                case "menu":
                     return BuildTagHelperStatement(tag);
 
-                case "script":
                 case "a":
+                case "script":
 
-                    if (tag.ChildNodes.Count > 1 && tag.ChildNodes[1].FindTokenAndGetText() == "/")
+                    if (tag.ChildNodes.Count > 1 && tag.ChildNodes[1].FindToken().ValueString == "/")
                     {
                         return BuildTagHelperStatement(tag);
                     }
@@ -63,12 +68,9 @@ namespace Orchard.DisplayManagement.Fluid
                     EnterBlock(tag);
                     return null;
 
-                case "endscript":
                 case "enda":
+                case "endscript":
                     return BuildTagHelperStatement(null);
-
-                case "menu":
-                    return BuildTagHelperStatement(tag, "shape");
 
                 default:
                     return base.BuildTagStatement(node);
@@ -82,9 +84,9 @@ namespace Orchard.DisplayManagement.Fluid
 
         private RenderSectionStatement BuildRenderSectionStatement(ParseTreeNode tag)
         {
-            var identifier = tag.ChildNodes[0].Token.ValueString;
+            var name = tag.ChildNodes[0].Token.ValueString;
             var arguments = tag.ChildNodes.Count > 1 ? BuildArgumentsExpression(tag.ChildNodes[1]) : null;
-            return new RenderSectionStatement(identifier, arguments);
+            return new RenderSectionStatement(name, arguments);
         }
 
         private RenderTitleSegmentsStatement BuildRenderTitleSegmentsStatement(ParseTreeNode tag)
@@ -143,12 +145,19 @@ namespace Orchard.DisplayManagement.Fluid
             throw new ParseException($"Unexpected tag: ${unexpectedTag} not matching zone tag.");
         }
 
-        private TagHelperStatement BuildTagHelperStatement(ParseTreeNode tag, string baseType = null)
+        private AddTagHelperStatement BuildAddTagHelperStatement(ParseTreeNode tag)
+        {
+            var name = tag.ChildNodes[0].FindToken().ValueString;
+            var assembly = tag.ChildNodes[1].FindToken().ValueString;
+            return new AddTagHelperStatement(name, assembly);
+        }
+
+        private TagHelperStatement BuildTagHelperStatement(ParseTreeNode tag)
         {
             if (tag != null)
             {
                 var statement = new TagHelperStatement(tag.Term.Name,
-                    BuildArgumentsExpression(tag.ChildNodes[0]), null, baseType);
+                    BuildArgumentsExpression(tag.ChildNodes[0]), null);
 
                     return statement;
             }
@@ -160,7 +169,7 @@ namespace Orchard.DisplayManagement.Fluid
                 }
 
                 var statement = new TagHelperStatement(_currentContext.Tag.Term.Name,
-                    BuildArgumentsExpression(_currentContext.Tag.ChildNodes[0]), _currentContext.Statements, baseType);
+                    BuildArgumentsExpression(_currentContext.Tag.ChildNodes[0]), _currentContext.Statements);
 
                 ExitBlock();
                 return statement;

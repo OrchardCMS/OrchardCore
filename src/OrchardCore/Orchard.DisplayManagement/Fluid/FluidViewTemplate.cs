@@ -48,6 +48,22 @@ namespace Orchard.DisplayManagement.Fluid
             var path = page.ViewContext.ExecutingFilePath.Replace(RazorViewEngine.ViewExtension, ViewExtension);
             var fileProvider = page.GetService<IFluidViewFileProviderAccessor>().FileProvider;
 
+            var viewImportLocations = ViewHierarchyUtility.GetViewImportsLocations(
+                path.Replace(ViewExtension, RazorViewEngine.ViewExtension))
+                .Select(x => x.Replace(RazorViewEngine.ViewExtension, ViewExtension));
+
+            IFluidTemplate viewImportsTemplate = null;
+            foreach (var location in viewImportLocations)
+            {
+                var fileInfo = fileProvider.GetFileInfo(location);
+
+                if (fileInfo.Exists)
+                {
+                    viewImportsTemplate = Parse(location, fileProvider);
+                }
+            }
+
+            path = path.Replace(RazorViewEngine.ViewExtension, ViewExtension);
             var template = Parse(path, fileProvider);
 
             var context = new TemplateContext();
@@ -111,6 +127,11 @@ namespace Orchard.DisplayManagement.Fluid
                         context.LocalScope.SetValue(prop.Key, prop.Value);
                     }
                 }
+            }
+
+            if (viewImportsTemplate != null)
+            {
+                await viewImportsTemplate.RenderAsync(context);
             }
 
             page.WriteLiteral(await template.RenderAsync(context));

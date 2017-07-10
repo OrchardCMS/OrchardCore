@@ -36,13 +36,16 @@ namespace Orchard.DisplayManagement.Fluid
             Zone.Rule = "zone" + FilterArguments;
             var ZoneEnd = ToTerm("endzone");
 
-            var Script = new NonTerminal("script");
-            Script.Rule = "script" + FilterArguments | "script" + FilterArguments + "/";
-            var ScriptEnd = ToTerm("endscript");
+            var AddTagHelper = new NonTerminal("AddTagHelper");
+            AddTagHelper.Rule = "AddTagHelper" + Term + "," + Term;
 
             var ContentLink = new NonTerminal("a");
             ContentLink.Rule = "a" + FilterArguments | "a" + FilterArguments + "/";
             var ContentLinkEnd = ToTerm("enda");
+
+            var Script = new NonTerminal("script");
+            Script.Rule = "script" + FilterArguments | "script" + FilterArguments + "/";
+            var ScriptEnd = ToTerm("endscript");
 
             var Link = new NonTerminal("link");
             Link.Rule = "link" + FilterArguments;
@@ -56,13 +59,16 @@ namespace Orchard.DisplayManagement.Fluid
             var Meta = new NonTerminal("meta");
             Meta.Rule = "meta" + FilterArguments;
 
+            var Shape = new NonTerminal("shape");
+            Shape.Rule = "shape" + FilterArguments;
+
             var Menu = new NonTerminal("menu");
             Menu.Rule = "menu" + FilterArguments;
 
-            KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments
-                | Display | ClearAlternates | SetMetadata | RemoveItem | SetProperty | Zone | ZoneEnd
-                | ContentLink | ContentLinkEnd | Link | Script | ScriptEnd | Style | Resources | Meta
-                | Menu;
+            KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments | Display
+                | ClearAlternates | SetMetadata | RemoveItem | SetProperty | Zone | ZoneEnd
+                | AddTagHelper | ContentLink | ContentLinkEnd | Script | ScriptEnd | Link
+                | Style | Resources | Meta | Shape | Menu;
 
             var SelfClosed = new NonTerminal("selfClosed");
             Tag.Rule |= ToTerm("{%") + KnownTags + SelfClosed + ToTerm("%}");
@@ -70,9 +76,11 @@ namespace Orchard.DisplayManagement.Fluid
 
             // Prevent the text from being added in the parsed tree.
             // Only Identifier and Arguments will be in the tree.
-            MarkPunctuation("SelfClosed", "RenderSection", "RenderTitleSegments", "Display",
+            MarkPunctuation(",",
+                "SelfClosed", "RenderSection", "RenderTitleSegments", "Display",
                 "ClearAlternates", "SetMetadata", "RemoveItem", "SetProperty", "zone",
-                "a", "link", "script", "style", "resources", "meta", "menu");
+                "AddTagHelper", "a", "script", "link", "style", "resources", "meta",
+                "shape", "menu");
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,6 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Razor;
 using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
@@ -19,17 +19,15 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 {
     public class TagHelperStatement : TagStatement
     {
-        private static Dictionary<string, Type> _tagHelperTypes;
-        private static object _synLock = new object();
+        private static ConcurrentDictionary<string, Type> _types = new ConcurrentDictionary<string, Type>();
+        private static ConcurrentBag<string> _assemblies = new ConcurrentBag<string>();
 
         private readonly ArgumentsExpression _arguments;
-        private readonly string _baseType;
 
-        public TagHelperStatement(string name, ArgumentsExpression arguments, IList<Statement> statements, string baseType = null) : base(statements)
+        public TagHelperStatement(string name, ArgumentsExpression arguments, IList<Statement> statements) : base(statements)
         {
             Name = name;
             _arguments = arguments;
-            _baseType = baseType;
         }
 
         public string Name { get; }
@@ -39,43 +37,9 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var page = FluidViewTemplate.EnsureFluidPage(context, Name);
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
-            if (_tagHelperTypes == null)
-            {
-                lock (_synLock)
-                {
-                    if (_tagHelperTypes == null)
-                    {
-                        var partManager = page.GetService<ApplicationPartManager>();
-                        var resolver = page.GetService<ITagHelperTypeResolver>();
+            EnsureTagHelpers(page);
 
-                        var tagHelpersTypes = new List<TypeInfo>(partManager.ApplicationParts
-                            .Where(x => x is TagHelperApplicationPart)
-                            .SelectMany(x => ((TagHelperApplicationPart)x).Types));
-
-                        // tag helpers which are not yet registered in applicationParts
-                        tagHelpersTypes = tagHelpersTypes.Union(resolver.Resolve("Orchard.Contents", SourceLocation.Zero, new ErrorSink())
-                            .Select(x => x.GetTypeInfo())).ToList();
-
-                        _tagHelperTypes = tagHelpersTypes.ToDictionary(
-                            typeInfo =>
-                            {
-                                var attributes = typeInfo.CustomAttributes
-                                    .Where(a => a.AttributeType == typeof(HtmlTargetElementAttribute));
-
-                                if (attributes.Any())
-                                {
-                                    return attributes.FirstOrDefault().ConstructorArguments
-                                        .FirstOrDefault().Value.ToString();
-                                }
-
-                                return typeInfo.Name;
-                            },
-                            typeInfo => typeInfo.AsType());
-                    }
-                }
-            }
-
-            if (!_tagHelperTypes.TryGetValue(_baseType ?? Name, out var tagHelperType))
+            if (!_types.TryGetValue(Name, out var tagHelperType))
             {
                 return Completion.Normal;
             }
@@ -91,16 +55,11 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var descriptors = page.GetService<ITagHelperDescriptorFactory>().CreateDescriptors(
                 tagHelperType.GetTypeInfo().Assembly.GetName().Name, tagHelperType, new ErrorSink());
 
-            var tagHelperDescriptor = descriptors.FirstOrDefault(x => x.TagName == (_baseType ?? Name));
+            var tagHelperDescriptor = descriptors.FirstOrDefault(x => x.TagName == Name);
 
             if (tagHelperDescriptor != null)
             {
                 var attributes = new TagHelperAttributeList();
-
-                if (_baseType != null && tagHelperDescriptor.Attributes.Any(x => x.PropertyName == "Type"))
-                {
-                    arguments.Add("Type", new StringValue(Name));
-                }
 
                 foreach (var name in arguments.Names)
                 {
@@ -175,6 +134,83 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             }
 
             return Completion.Normal;
+        }
+
+        internal static void EnsureTagHelpers(FluidPage page)
+        {
+            if (!_types.IsEmpty)
+            {
+                return;
+            }
+
+            var types = page.GetService<ApplicationPartManager>().ApplicationParts
+                .Where(part => part is TagHelperApplicationPart)
+                .SelectMany(part => ((TagHelperApplicationPart)part).Types);
+
+            if (!types.Any())
+            {
+                _types["initialized"] = typeof(object);
+                return;
+            }
+
+            var assemblies = types.Select(type => type.Assembly.GetName().Name);
+
+            foreach (var type in types)
+            {
+                _types[GetTagName(type)] = type.AsType();
+            }
+
+            foreach (var assembly in assemblies)
+            {
+                _assemblies.Add(assembly);
+            }
+        }
+
+        internal static void RegisterTagHelper(FluidPage page, string name, string assembly)
+        {
+            EnsureTagHelpers(page);
+
+            if (name != "*" && _types.TryGetValue(name, out var tagHelperType))
+            {
+                return;
+            }
+            else if (_assemblies.Contains(assembly))
+            {
+                return;
+            }
+
+            var resolver = page.GetService<ITagHelperTypeResolver>();
+
+            var tagHelperTypes = resolver.Resolve(assembly, SourceLocation.Zero, new ErrorSink())
+                .Select(type => type.GetTypeInfo()).ToList();
+
+            if (name == "*")
+            {
+                _assemblies.Add(assembly);
+
+                foreach (var type in tagHelperTypes)
+                {
+                    _types[GetTagName(type)] = type.AsType();
+                }
+            }
+            else
+            {
+                var type = tagHelperTypes.FirstOrDefault(typeInfo => GetTagName(typeInfo) == name);
+
+                if (type != null)
+                {
+                    _types[GetTagName(type)] = type.AsType();
+                }
+            }
+        }
+
+        internal static string GetTagName(TypeInfo typeInfo)
+        {
+            var attributes = typeInfo.CustomAttributes.Where(a =>
+                a.AttributeType == typeof(HtmlTargetElementAttribute));
+
+            return !attributes.Any() ? typeInfo.Name : attributes.FirstOrDefault()
+                .ConstructorArguments.FirstOrDefault().Value.ToString();
         }
     }
 }
