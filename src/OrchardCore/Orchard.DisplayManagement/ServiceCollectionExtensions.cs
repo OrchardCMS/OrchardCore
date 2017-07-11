@@ -36,23 +36,7 @@ namespace Orchard.DisplayManagement
         /// <returns></returns>
         public static IServiceCollection AddThemingHost(this IServiceCollection services)
         {
-		    services.Configure<MvcOptions>((options) =>
-            {
-                options.Filters.Add(typeof(ModelBinderAccessorFilter));
-            });
-
-            services.Configure<RazorViewEngineOptions>(options =>
-            {
-                options.FileProviders.Add(new ThemingFileProvider());
-            });
-
-            services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, ThemingViewsFeatureProvider>();
-            services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
-            services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
-
             services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
-            services.AddSingleton<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
-
             services.AddSingleton<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
 
             return services;
@@ -62,8 +46,20 @@ namespace Orchard.DisplayManagement
         {
 		    services.Configure<MvcOptions>((options) =>
             {
+                options.Filters.Add(typeof(ModelBinderAccessorFilter));
                 options.Filters.Add(typeof(NotifyFilter));
             });
+
+            services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
+
+            services.Configure<RazorViewEngineOptions>(options =>
+            {
+                options.FileProviders.Add(new ThemingFileProvider());
+            });
+
+            services.AddSingleton<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
+            services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, ThemingViewsFeatureProvider>();
+            services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
 
             services.AddScoped<IShapeTemplateHarvester, BasicShapeTemplateHarvester>();
             services.AddTransient<IShapeTableManager, DefaultShapeTableManager>();
