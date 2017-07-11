@@ -28,8 +28,8 @@ namespace Orchard.DisplayManagement.Fluid
 
             if (!FluidValue.TypeMappings.TryGetValue(typeof(JObject), out var value))
             {
-                //FluidValue.TypeMappings.Add(typeof(JObject), o => new ObjectValue(o));
-                //FluidValue.TypeMappings.Add(typeof(JValue), o => FluidValue.Create(((JValue)o).Value));
+                FluidValue.TypeMappings.Add(typeof(JObject), o => new ObjectValue(o));
+                FluidValue.TypeMappings.Add(typeof(JValue), o => FluidValue.Create(((JValue)o).Value));
             }
 
             if (!FluidValue.TypeMappings.TryGetValue(typeof(DateTime?), out value))
