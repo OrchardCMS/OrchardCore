@@ -19,7 +19,7 @@ namespace Orchard.DisplayManagement.Fluid
 {
     public class FluidViewTemplate : FluidTemplate<ActivatorFluidParserFactory<FluidViewParser>>
     {
-        public static readonly string ViewExtension = ".fluid";
+        public static readonly string ViewExtension = ".liquid";
         private static readonly MemoryCache Cache = new MemoryCache(new MemoryCacheOptions());
 
         static FluidViewTemplate()
