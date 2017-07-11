@@ -1,2 +1,4 @@
-﻿{% AddTagHelper "menu", "Orchard.Menu" %}
-{% AddTagHelper "*", "Orchard.Contents" %}
+﻿{% AddTagHelper "*", "Orchard.Contents" %}
+{% AddTagHelper "*", "Orchard.DisplayManagement" %}
+{% AddTagHelper "*", "Orchard.ResourceManagement" %}
+{% AddTagHelper "*", "Orchard.Menu" %}

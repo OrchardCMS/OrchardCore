@@ -20,7 +20,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
         public override Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             var page = FluidViewTemplate.EnsureFluidPage(context, "AddTagHelper");
-            TagHelperStatement.RegisterTagHelper(page, Name, Assembly);
+            TagHelperStatement.Register(page, Name, Assembly);
             return Task.FromResult(Completion.Normal);
         }
     }
