@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
@@ -25,7 +25,6 @@ namespace Orchard.Commons
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddThemingHost();
             services.AddDeferredTasks();
             services.AddDataAccess();
             services.AddBackgroundTasks();
