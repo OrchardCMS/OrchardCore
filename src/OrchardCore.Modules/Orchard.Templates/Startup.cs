@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -16,6 +17,9 @@ namespace Orchard.Templates
         {
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<FluidViewOptions>, TemplateFluidViewOptions>());
+
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, TemplateRazorViewOptions>());
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>, TemplateShapeTemplateOptions>());
