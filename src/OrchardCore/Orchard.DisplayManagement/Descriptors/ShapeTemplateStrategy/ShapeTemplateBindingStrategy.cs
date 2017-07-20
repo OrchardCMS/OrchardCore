@@ -3,15 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
-using Microsoft.Extensions.FileProviders;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
@@ -65,8 +62,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
             var activeExtensions = Once(enabledFeatures);
 
-            var matcher = new Matcher();
-
             if (!_viewEnginesByExtension.Any())
             {
                 foreach (var viewEngine in _shapeTemplateViewEngines)
@@ -79,11 +74,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                         }
                     }
                 }
-            }
-
-            foreach (var extension in _viewEnginesByExtension.Keys)
-            {
-                matcher.AddInclude("*" + extension);
             }
 
             var hits = activeExtensions.Select(extensionDescriptor =>
