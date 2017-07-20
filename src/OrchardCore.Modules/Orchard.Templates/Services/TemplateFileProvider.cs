@@ -3,8 +3,7 @@ using System.IO;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 using Orchard.DisplayManagement.Fluid;
-using Orchard.DisplayManagement.Theming;
-
+using Orchard.Settings;
 namespace Orchard.Templates.Services
 {
     /// <summary>
@@ -13,28 +12,30 @@ namespace Orchard.Templates.Services
     public class TemplateFileProvider : IFileProvider
     {
         private TemplatesManager _templatesManager;
-        private IThemeManager _themanager;
+        private readonly ISiteService _siteService;
 
-        public TemplateFileProvider(TemplatesManager templatesManager, IThemeManager themanager)
+        public TemplateFileProvider(TemplatesManager templatesManager, ISiteService siteService)
         {
             _templatesManager = templatesManager;
-            _themanager = themanager;
+            _siteService = siteService;
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
             var entries = new List<IFileInfo>();
 
-            var themePath = _themanager.GetThemeAsync().GetAwaiter().GetResult().SubPath.Replace("\\", "/");
+            var themeName = (string)_siteService.GetSiteSettingsAsync()
+                .GetAwaiter().GetResult().Properties["CurrentThemeName"];
 
-            if (subpath.EndsWith(string.Format("{0}/{1}", themePath, "Views")))
+            if (subpath.EndsWith(string.Format("{0}/{1}", themeName, "Views")))
             {
                 var templatesDocument = _templatesManager.GetTemplatesDocumentAsync().GetAwaiter().GetResult();
 
                 foreach (var template in templatesDocument.Templates)
                 {
                     entries.Add(new DisplayManagement.Fluid.Internal.ContentFileInfo(
-                        string.Format("{0}{1}", template.Key, FluidViewTemplate.ViewExtension),
+                        //string.Format("{0}{1}", template.Key, FluidViewTemplate.ViewExtension),
+                        template.Key,
                         template.Value.Content));
                 }
             }
@@ -44,20 +45,28 @@ namespace Orchard.Templates.Services
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (Path.GetExtension(subpath) != FluidViewTemplate.ViewExtension)
+            //if (Path.GetExtension(subpath) != FluidViewTemplate.ViewExtension)
+            //{
+            //    return null;
+            //}
+
+            var themeName = (string)_siteService.GetSiteSettingsAsync()
+                .GetAwaiter().GetResult().Properties["CurrentThemeName"];
+
+            var themeViewsPath = string.Format("{0}/Views/", themeName);
+
+            if (subpath.Contains(themeViewsPath))
             {
-                return null;
-            }
+                var index = subpath.IndexOf(themeViewsPath);
+                var name = subpath.Substring(index + themeViewsPath.Length);
 
-            var name = Path.GetFileNameWithoutExtension(subpath);
-
-            var templatesDocument = _templatesManager.GetTemplatesDocumentAsync().GetAwaiter().GetResult();
-
-            if (templatesDocument.Templates.TryGetValue(name, out var template))
-            {
-                return new DisplayManagement.Fluid.Internal.ContentFileInfo(
-                    string.Format("{0}{1}", name, FluidViewTemplate.ViewExtension),
-                    template.Content);
+                if (_templatesManager.GetTemplatesDocumentAsync().GetAwaiter().GetResult()
+                    .Templates.TryGetValue(name, out var template))
+                {
+                    return new DisplayManagement.Fluid.Internal.ContentFileInfo(
+                        string.Format("{0}{1}", name, FluidViewTemplate.ViewExtension),
+                        template.Content);
+                }
             }
 
             return null;
@@ -65,18 +74,26 @@ namespace Orchard.Templates.Services
 
         public IChangeToken Watch(string filter)
         {
-            if (Path.GetExtension(filter) != FluidViewTemplate.ViewExtension)
+            //if (Path.GetExtension(subpath) != FluidViewTemplate.ViewExtension)
+            //{
+            //    return null;
+            //}
+
+            var themeName = (string)_siteService.GetSiteSettingsAsync()
+                .GetAwaiter().GetResult().Properties["CurrentThemeName"];
+
+            var themeViewsPath = string.Format("{0}/Views/", themeName);
+
+            if (filter.Contains(themeViewsPath))
             {
-                return null;
-            }
+                var index = filter.IndexOf(themeViewsPath);
+                var name = filter.Substring(index + themeViewsPath.Length);
 
-            var name = Path.GetFileNameWithoutExtension(filter);
-
-            var templatesDocument = _templatesManager.GetTemplatesDocumentAsync().GetAwaiter().GetResult();
-
-            if (templatesDocument.Templates.TryGetValue(name, out var template))
-            {
-                return _templatesManager.ChangeToken;
+                if (_templatesManager.GetTemplatesDocumentAsync().GetAwaiter().GetResult()
+                    .Templates.TryGetValue(name, out var template))
+                {
+                    return _templatesManager.ChangeToken;
+                }
             }
 
             return null;
