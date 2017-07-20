@@ -4,8 +4,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
-using Microsoft.Extensions.FileSystemGlobbing;
-using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Fluid.Internal;
 using Orchard.Environment.Extensions;
@@ -32,20 +30,12 @@ namespace Orchard.DisplayManagement.Fluid
                 {
                     _paths = new List<string>();
 
-                    var matcher = new Matcher();
-                    matcher.AddInclude("/**/Views/**/*" + FluidViewTemplate.ViewExtension);
-
                     foreach (var option in expanderOptionsAccessor.Value.Options)
                     {
-                        var fileInfo = fileProviderAccessor.FileProvider.GetFileInfo(option.SearchPath);
-                        var directoryInfo = new DirectoryInfo(fileInfo.PhysicalPath);
-
-                        if (directoryInfo.Exists)
-                        {
-                            var files = matcher.Execute(new DirectoryInfoWrapper(directoryInfo)).Files;
-                            var searchPath = option.SearchPath.Replace("\\", "/").Trim('/');
-                            _paths.AddRange(files.Select(f => '/' + searchPath + '/' + f.Path));
-                        }
+                        var searchPath = option.SearchPath.Replace("\\", "/").Trim('/');
+                        var filePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
+                            searchPath, new[] { FluidViewTemplate.ViewExtension });
+                        _paths.AddRange(filePaths.Select(p => string.Format("/{0}", p)));
                     }
                 }
             }

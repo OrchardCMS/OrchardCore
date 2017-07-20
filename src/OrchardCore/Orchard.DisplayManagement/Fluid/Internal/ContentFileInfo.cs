@@ -16,21 +16,9 @@ namespace Orchard.DisplayManagement.Fluid.Internal
             _content = Encoding.UTF8.GetBytes(content);
         }
 
-        public bool Exists
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool Exists => true;
 
-        public bool IsDirectory
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool IsDirectory => false;
 
         public DateTimeOffset LastModified
         {
@@ -56,13 +44,7 @@ namespace Orchard.DisplayManagement.Fluid.Internal
             }
         }
 
-        public string PhysicalPath
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public string PhysicalPath => null;
 
         public Stream CreateReadStream()
         {

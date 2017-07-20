@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy;
 using Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy;
@@ -44,11 +46,6 @@ namespace Orchard.DisplayManagement
             services.Configure<RazorViewEngineOptions>(options =>
             {
                 options.FileProviders.Add(new ThemingFileProvider());
-            });
-
-            services.AddFluidViews().Configure<FluidViewOptions>(options =>
-            {
-                //options.FileProviders.Add();
             });
 
             services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, ThemingViewsFeatureProvider>();
@@ -94,6 +91,15 @@ namespace Orchard.DisplayManagement
 
             services.AddScoped(typeof(IPluralStringLocalizer<>), typeof(PluralStringLocalizer<>));
             services.AddShapeAttributes<DateTimeShapes>();
+
+            services.AddFluidViews().Configure<FluidViewOptions>(o =>
+            {
+                //o.FileProviders.Add();
+            });
+
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>, ShapeTemplateOptionsSetup>());
+            services.TryAddSingleton<IShapeTemplateFileProviderAccessor, ShapeTemplateFileProviderAccessor>();
 
             return services;
         }

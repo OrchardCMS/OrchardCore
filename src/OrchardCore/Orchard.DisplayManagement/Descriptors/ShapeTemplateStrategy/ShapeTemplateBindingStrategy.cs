@@ -5,14 +5,13 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileSystemGlobbing;
-using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
+using Microsoft.Extensions.FileProviders;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
@@ -20,7 +19,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
     {
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IShapeTemplateFileProviderAccessor _fileProviderAccessor;
         private readonly ILogger _logger;
         private readonly IShellFeaturesManager _shellFeaturesManager;
 
@@ -32,13 +31,13 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             IShellFeaturesManager shellFeaturesManager,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IOptions<MvcViewOptions> options,
-            IHostingEnvironment hostingEnvironment,
+            IShapeTemplateFileProviderAccessor fileProviderAccessor,
             ILogger<DefaultShapeTableManager> logger)
         {
             _harvesters = harvesters;
             _shellFeaturesManager = shellFeaturesManager;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
-            _hostingEnvironment = hostingEnvironment;
+            _fileProviderAccessor = fileProviderAccessor;
             _logger = logger;
         }
 
@@ -96,33 +95,14 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
                 {
-                    var subPathFileInfo = _hostingEnvironment
-                        .GetExtensionFileInfo(extensionDescriptor, subPath);
+                    var relativePath = string.Format("{0}/{1}", extensionDescriptor
+                        .SubPath.Replace("\\", "/").Trim('/'), subPath);
 
-                    var directoryInfo = new DirectoryInfo(subPathFileInfo.PhysicalPath);
+                    var filePaths = _fileProviderAccessor.FileProvider.GetViewFilePaths(
+                        relativePath, _viewEnginesByExtension.Keys.ToArray(),
+                        inViewsFolder: true, inDepth: false).ToArray();
 
-                    var relativePath = Path.Combine(extensionDescriptor.SubPath, subPath);
-
-                    if (!directoryInfo.Exists)
-                    {
-                        return new
-                        {
-                            harvesterInfo.harvester,
-                            subPath,
-                            relativePath,
-                            files = new IFileInfo[0]
-                        };
-                    }
-
-                    var matches = matcher
-                        .Execute(new DirectoryInfoWrapper(directoryInfo))
-                        .Files;
-
-                    var files = matches
-                        .Select(match => _hostingEnvironment
-                            .GetExtensionFileInfo(extensionDescriptor, Path.Combine(subPath, match.Path))).ToArray();
-
-                    return new { harvesterInfo.harvester, subPath, relativePath, files };
+                    return new { harvesterInfo.harvester, subPath, filePaths };
                 })).ToList();
 
                 if (_logger.IsEnabled(LogLevel.Information))
@@ -131,11 +111,11 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 }
                 var fileContexts = pathContexts.SelectMany(pathContext => _shapeTemplateViewEngines.SelectMany(ve =>
                 {
-                    return pathContext.files.Select(
-                        file => new
+                    return pathContext.filePaths.Select(
+                        filePath => new
                         {
-                            fileName = Path.GetFileNameWithoutExtension(file.Name),
-                            relativePath = Path.Combine(pathContext.relativePath, file.Name),
+                            fileName = Path.GetFileNameWithoutExtension(filePath),
+                            relativePath = filePath,
                             pathContext
                         });
                 }));

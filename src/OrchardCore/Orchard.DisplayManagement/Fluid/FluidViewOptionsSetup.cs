@@ -17,11 +17,11 @@ namespace Orchard.DisplayManagement.Fluid
         {
         }
 
-        private static void ConfigureFluid(FluidViewOptions fluidOptions, IHostingEnvironment hostingEnvironment)
+        private static void ConfigureFluid(FluidViewOptions options, IHostingEnvironment hostingEnvironment)
         {
             if (hostingEnvironment.ContentRootFileProvider != null)
             {
-                fluidOptions.FileProviders.Add(hostingEnvironment.ContentRootFileProvider);
+                options.FileProviders.Add(hostingEnvironment.ContentRootFileProvider);
             }
         }
     }
