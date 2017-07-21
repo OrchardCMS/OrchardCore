@@ -2,7 +2,7 @@
 using Orchard.DisplayManagement.Theming;
 using System;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.Localization;
 namespace Orchard.Themes.Services
 {
     /// <summary>
@@ -16,11 +16,13 @@ namespace Orchard.Themes.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public SiteThemeSelector(
+            IStringLocalizer<SiteThemeSelector> t,
             ISiteThemeService siteThemeService, 
             IHttpContextAccessor httpContextAccessor)
         {
             _siteThemeService = siteThemeService;
             _httpContextAccessor = httpContextAccessor;
+            T = t;
         }
 
         public async Task<ThemeSelectorResult> GetThemeAsync()
@@ -37,5 +39,17 @@ namespace Orchard.Themes.Services
                 ThemeName = currentThemeName
             };
         }
+        IStringLocalizer T { get; set; }
+        public bool CanSet { get { return true; } }
+        public void SetTheme(string themeName)
+        {
+            _siteThemeService.SetSiteThemeAsync(themeName);
+        }
+
+        public string Tag { get { return "site"; } }
+
+        public LocalizedString DisplayName { get { return T["SiteTheme"]; } }
+
+        public string Name { get { return "siteTheme"; } }
     }
 }

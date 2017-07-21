@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Configuration;
-
+using System.Collections.Generic;
+using System.Linq;
+using System;
 namespace Orchard.Environment.Extensions.Manifests
 {
     public class NotFoundManifestInfo : IManifestInfo
@@ -17,6 +19,10 @@ namespace Orchard.Environment.Extensions.Manifests
         public string Name => null;
         public string Description => null;
         public string Type => null;
+        public string Author => null;
+        public string Website => null;
+        public Version Version => null;
+        public IEnumerable<string> Tags => Enumerable.Empty<string>();
         public IConfigurationRoot ConfigurationRoot => null;
     }
 }
