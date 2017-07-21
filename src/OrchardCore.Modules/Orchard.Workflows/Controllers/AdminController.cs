@@ -493,7 +493,7 @@ namespace Orchard.Workflows.Controllers
 
             shape.Metadata.Alternates.Add("Activity__" + activity.Name);
 
-            return View(shape);
+            return View("RenderActivity", shape);
         }
 
         public async Task<IActionResult> EditActivity(string localId, string clientId, ActivityViewModel model)

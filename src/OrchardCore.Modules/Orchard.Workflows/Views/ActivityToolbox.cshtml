@@ -20,3 +20,19 @@
         </li>
     }   
 </ul> 
+@* Render script to initialize a new jsplumb shape in the form of activities['activity-name'].create() *@
+<script type="text/javascript" depends-on="admin" at="Foot">
+        //<![CDATA[
+        var activities = { @foreach (var activity in allActivities) { <text>
+            '@activity.Name': {
+                outcomes: [@Html.Raw(String.Join(",", activity.GetPossibleOutcomes(new WorkflowContext(), new ActivityContext()).Where(x => !String.IsNullOrEmpty(x.Value)).Select(x => "{ Id: " + Json.Serialize(x.Name) + ", Label: " + Json.Serialize(x.Value) + " }").ToArray()))],
+                category: @Json.Serialize(activity.Category.Value),
+                description: @Json.Serialize(activity.Description.Value),
+                IsEvent: @(activity.IsEvent ? "true" : "false"),
+                hasForm: @(!String.IsNullOrWhiteSpace(activity.Form) ? "true" : "false")
+            },</text>
+                           }
+
+        };
+        //]]>
+</script>

@@ -109,7 +109,6 @@
             type: 'POST',
             url: renderActivityUrl,
             data: { name: name, state: state, __RequestVerificationToken: requestAntiForgeryToken },
-            async: false,
             success: function(data) {
                 var dom = $($.parseHTML($.trim(data)));
 

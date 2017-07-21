@@ -4,11 +4,11 @@
 <form asp-action="EditActivity" method="post">
 
     @* Render the dynamic form *@
-    @*if (Model.Form != null) {
+    @if (Model.Form != null) {
     <fieldset>
-        @DisplayChildren(Model.Form)
+        @await DisplayAsync(Model.Form)
     </fieldset>
-    }*@
+    }
 
     <fieldset>
         <button class="primaryAction" type="submit" name="_submit.Save" value="@T["Save"]">@T["Save"]</button>

@@ -51,7 +51,7 @@
 
 @foreach (var activity in Model.AllActivities)
 {
-    <style asp-src="/Orchard.Workflows/Styles/workflows-@(activity.Name).css" at="Head"></style>
+    <style asp-src="/Orchard.Workflows/Styles/workflows-activity-@(activity.Name).css" at="Head"></style>
 }
 
 <script type="text/javascript" depends-on="admin"  at="Foot">
