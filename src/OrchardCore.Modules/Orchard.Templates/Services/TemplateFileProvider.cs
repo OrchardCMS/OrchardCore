@@ -39,7 +39,7 @@ namespace Orchard.Templates.Services
                 }
             }
 
-            return new EnumerableDirectoryContents(entries);
+            return new DirectoryContents(entries);
         }
 
         public IFileInfo GetFileInfo(string subpath)

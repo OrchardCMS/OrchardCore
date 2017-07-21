@@ -20,28 +20,19 @@ namespace Orchard.DisplayManagement.FileProviders
 
         public long Length
         {
-            get
-            {
-                return _content.Length;
-            }
+            get { return _content.Length; }
         }
 
         public string PhysicalPath => null;
 
         public string Name
         {
-            get
-            {
-                return _name;
-            }
+            get { return _name; }
         }
 
         public DateTimeOffset LastModified
         {
-            get
-            {
-                return DateTimeOffset.MinValue;
-            }
+            get { return DateTimeOffset.MinValue; }
         }
 
         public bool IsDirectory => false;

@@ -5,11 +5,11 @@ using Microsoft.Extensions.FileProviders;
 
 namespace Orchard.DisplayManagement.FileProviders
 {
-    public class EnumerableDirectoryContents : IDirectoryContents
+    public class DirectoryContents : IDirectoryContents
     {
         private readonly IEnumerable<IFileInfo> _entries;
 
-        public EnumerableDirectoryContents(IEnumerable<IFileInfo> entries)
+        public DirectoryContents(IEnumerable<IFileInfo> entries)
         {
             _entries = entries ?? throw new ArgumentNullException(nameof(entries));
         }
