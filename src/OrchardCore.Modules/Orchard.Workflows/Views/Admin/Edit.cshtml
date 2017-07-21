@@ -56,11 +56,11 @@
 
 <script type="text/javascript" depends-on="admin"  at="Foot">
     //<![CDATA[
-    var renderActivityUrl = '';
-    var editActivityUrl = '';
-    var stateUrl = '';
+    var renderActivityUrl = @Json.Serialize(Url.Action("RenderActivity", "Admin", new { area = "Orchard.Workflows" }));
+    var editActivityUrl = @Json.Serialize(Url.Action("EditActivity", "Admin", new { area = "Orchard.Workflows" }));
+    var stateUrl = @Json.Serialize(Url.Action("State", "Admin", new { area = "Orchard.Workflows" }));
     var requestAntiForgeryToken = $("[name='__RequestVerificationToken']").first().val();
-    var localId = '';
+    var localId = @Json.Serialize(Model.LocalId);
     var updatedActivityClientId = null;
     var updatedActivityState = null;
     var awaitingRecords = [];
