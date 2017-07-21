@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using Orchard.DisplayManagement.Implementation;
@@ -20,13 +22,16 @@ namespace Orchard.DisplayManagement.Razor
     public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
     {
         private readonly IOptions<MvcViewOptions> _viewEngine;
+        private readonly IRazorViewEngineFileProviderAccessor _fileProviderAccessor;
         private readonly List<string> _templateFileExtensions = new List<string>(new[] { RazorViewEngine.ViewExtension });
 
         public RazorShapeTemplateViewEngine(
             IOptions<MvcViewOptions> options,
+            IRazorViewEngineFileProviderAccessor fileProviderAccessor,
             IEnumerable<IRazorViewExtensionProvider> viewExtensionProviders)
         {
             _viewEngine = options;
+            _fileProviderAccessor = fileProviderAccessor;
             _templateFileExtensions.AddRange(viewExtensionProviders.Select(x => x.ViewExtension));
         }
 
@@ -41,6 +46,17 @@ namespace Orchard.DisplayManagement.Razor
         public Task<IHtmlContent> RenderAsync(string relativePath, DisplayContext displayContext)
         {
             var viewName = "/" + relativePath;
+
+            if (Path.GetExtension(viewName) == RazorViewEngine.ViewExtension)
+            {
+                var fileInfo = _fileProviderAccessor.FileProvider.GetFileInfo(viewName);
+
+                if (!fileInfo.Exists)
+                {
+                    return Task.FromResult((IHtmlContent) new HtmlString($"<h1>{ Path.GetFileName(viewName) }</h1>"));
+                }
+            }
+
             viewName = viewName.Replace(Path.GetExtension(viewName), RazorViewEngine.ViewExtension);
 
             if (displayContext.ViewContext.View != null)

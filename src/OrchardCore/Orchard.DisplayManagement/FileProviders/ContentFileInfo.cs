@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.FileProviders;
 
-namespace Orchard.DisplayManagement.Fluid.Internal
+namespace Orchard.DisplayManagement.FileProviders
 {
     public class ContentFileInfo : IFileInfo
     {
@@ -18,16 +18,6 @@ namespace Orchard.DisplayManagement.Fluid.Internal
 
         public bool Exists => true;
 
-        public bool IsDirectory => false;
-
-        public DateTimeOffset LastModified
-        {
-            get
-            {
-                return DateTimeOffset.MinValue;
-            }
-        }
-
         public long Length
         {
             get
@@ -35,6 +25,8 @@ namespace Orchard.DisplayManagement.Fluid.Internal
                 return _content.Length;
             }
         }
+
+        public string PhysicalPath => null;
 
         public string Name
         {
@@ -44,7 +36,15 @@ namespace Orchard.DisplayManagement.Fluid.Internal
             }
         }
 
-        public string PhysicalPath => null;
+        public DateTimeOffset LastModified
+        {
+            get
+            {
+                return DateTimeOffset.MinValue;
+            }
+        }
+
+        public bool IsDirectory => false;
 
         public Stream CreateReadStream()
         {

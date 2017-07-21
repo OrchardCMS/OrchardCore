@@ -48,6 +48,14 @@ namespace Orchard.DisplayManagement.Fluid
             var path = page.ViewContext.ExecutingFilePath.Replace(RazorViewEngine.ViewExtension, ViewExtension);
             var fileProvider = page.GetService<IFluidViewFileProviderAccessor>().FileProvider;
 
+            var fileInfo = fileProvider.GetFileInfo(path);
+
+            if (!fileInfo.Exists)
+            {
+                page.WriteLiteral($"<h1>{ Path.GetFileName(path) }</h1>");
+                return;
+            }
+
             var viewImportLocations = ViewHierarchyUtility.GetViewImportsLocations(
                 path.Replace(ViewExtension, RazorViewEngine.ViewExtension))
                 .Select(x => x.Replace(RazorViewEngine.ViewExtension, ViewExtension));
@@ -55,7 +63,7 @@ namespace Orchard.DisplayManagement.Fluid
             IFluidTemplate viewImportsTemplate = null;
             foreach (var location in viewImportLocations)
             {
-                var fileInfo = fileProvider.GetFileInfo(location);
+                fileInfo = fileProvider.GetFileInfo(location);
 
                 if (fileInfo.Exists)
                 {

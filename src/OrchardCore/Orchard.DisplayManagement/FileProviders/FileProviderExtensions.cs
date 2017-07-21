@@ -3,23 +3,25 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.FileProviders;
 
-namespace Orchard.DisplayManagement
+namespace Orchard.DisplayManagement.FileProviders
 {
     public static class FileProviderExtensions
     {
-        public static IEnumerable<string> GetViewFilePaths(this IFileProvider fileProvider, string subPath, string[] extensions, bool inViewsFolder = false, bool inDepth = true)
+        public static IEnumerable<string> GetViewFilePaths(this IFileProvider fileProvider,
+            string subPath, string[] extensions, bool inViewsFolder = false, bool inDepth = true)
         {
             var contents = fileProvider.GetDirectoryContents(subPath);
 
             if (!inViewsFolder && inDepth)
             {
-                var viewsFolder = contents.FirstOrDefault(x => x.Name == "Views" && x.IsDirectory);
+                var viewsFolder = contents.FirstOrDefault(c => c.Name == "Views" && c.IsDirectory);
 
                 if (viewsFolder != null)
                 {
-                    foreach (var file in GetViewFilePaths(fileProvider, string.Format("{0}/{1}", subPath, viewsFolder.Name), extensions, true))
+                    foreach (var filePath in GetViewFilePaths(fileProvider, string.Format("{0}/{1}",
+                        subPath, viewsFolder.Name), extensions, inViewsFolder: true))
                     {
-                        yield return file;
+                        yield return filePath;
                     }
 
                     yield break;
@@ -30,9 +32,10 @@ namespace Orchard.DisplayManagement
             {
                 if (content.IsDirectory && inDepth)
                 {
-                    foreach (var file in GetViewFilePaths(fileProvider, string.Format("{0}/{1}", subPath, content.Name), extensions, inViewsFolder))
+                    foreach (var filePath in GetViewFilePaths(fileProvider, string.Format("{0}/{1}",
+                        subPath, content.Name), extensions, inViewsFolder))
                     {
-                        yield return file;
+                        yield return filePath;
                     }
                 }
                 else if (inViewsFolder)

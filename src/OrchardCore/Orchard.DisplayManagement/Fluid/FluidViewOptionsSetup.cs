@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Orchard.DisplayManagement.Fluid
@@ -6,22 +7,24 @@ namespace Orchard.DisplayManagement.Fluid
     /// <summary>
     /// Sets up default options for <see cref="FluidViewOptions"/>.
     /// </summary>
-    public class FluidViewOptionsSetup : ConfigureOptions<FluidViewOptions>
+    public class FluidViewOptionsSetup : IConfigureOptions<FluidViewOptions>
     {
+        private readonly IHostingEnvironment _hostingEnvironment;
+
         /// <summary>
         /// Initializes a new instance of <see cref="FluidViewOptions"/>.
         /// </summary>
         /// <param name="hostingEnvironment"><see cref="IHostingEnvironment"/> for the application.</param>
         public FluidViewOptionsSetup(IHostingEnvironment hostingEnvironment)
-            : base(options => ConfigureFluid(options, hostingEnvironment))
         {
+            _hostingEnvironment = hostingEnvironment ?? throw new ArgumentNullException(nameof(hostingEnvironment));
         }
 
-        private static void ConfigureFluid(FluidViewOptions options, IHostingEnvironment hostingEnvironment)
+        public void Configure(FluidViewOptions options)
         {
-            if (hostingEnvironment.ContentRootFileProvider != null)
+            if (_hostingEnvironment.ContentRootFileProvider != null)
             {
-                options.FileProviders.Add(hostingEnvironment.ContentRootFileProvider);
+                options.FileProviders.Add(_hostingEnvironment.ContentRootFileProvider);
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
@@ -6,22 +7,24 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
     /// <summary>
     /// Sets up default options for <see cref="ShapeTemplateViewOptions"/>.
     /// </summary>
-    public class ShapeTemplateOptionsSetup : ConfigureOptions<ShapeTemplateOptions>
+    public class ShapeTemplateOptionsSetup : IConfigureOptions<ShapeTemplateOptions>
     {
+        private readonly IHostingEnvironment _hostingEnvironment;
+
         /// <summary>
         /// Initializes a new instance of <see cref="ShapeTemplateViewOptions"/>.
         /// </summary>
         /// <param name="hostingEnvironment"><see cref="IHostingEnvironment"/> for the application.</param>
         public ShapeTemplateOptionsSetup(IHostingEnvironment hostingEnvironment)
-            : base(options => ConfigureShapeTemplate(options, hostingEnvironment))
         {
+            _hostingEnvironment = hostingEnvironment ?? throw new ArgumentNullException(nameof(hostingEnvironment));
         }
 
-        private static void ConfigureShapeTemplate(ShapeTemplateOptions options, IHostingEnvironment hostingEnvironment)
+        public void Configure(ShapeTemplateOptions options)
         {
-            if (hostingEnvironment.ContentRootFileProvider != null)
+            if (_hostingEnvironment.ContentRootFileProvider != null)
             {
-                options.FileProviders.Add(hostingEnvironment.ContentRootFileProvider);
+                options.FileProviders.Add(_hostingEnvironment.ContentRootFileProvider);
             }
         }
     }

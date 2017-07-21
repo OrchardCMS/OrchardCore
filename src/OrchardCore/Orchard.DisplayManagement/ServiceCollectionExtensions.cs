@@ -48,6 +48,8 @@ namespace Orchard.DisplayManagement
                 options.FileProviders.Add(new ThemingFileProvider());
             });
 
+            services.AddFluidViews();
+
             services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, ThemingViewsFeatureProvider>();
             services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
             services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
@@ -74,6 +76,10 @@ namespace Orchard.DisplayManagement
             services.AddScoped<IShapeTableProvider, ShapePlacementParsingStrategy>();
             services.AddScoped<IShapeTableProvider, ShapeTemplateBindingStrategy>();
 
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>, ShapeTemplateOptionsSetup>());
+            services.TryAddSingleton<IShapeTemplateFileProviderAccessor, ShapeTemplateFileProviderAccessor>();
+
             services.AddShapeAttributes<CoreShapes>();
             services.AddScoped<IShapeTableProvider, CoreShapesTableProvider>();
             services.AddShapeAttributes<ZoneShapes>();
@@ -91,15 +97,6 @@ namespace Orchard.DisplayManagement
 
             services.AddScoped(typeof(IPluralStringLocalizer<>), typeof(PluralStringLocalizer<>));
             services.AddShapeAttributes<DateTimeShapes>();
-
-            services.AddFluidViews().Configure<FluidViewOptions>(o =>
-            {
-                //o.FileProviders.Add();
-            });
-
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>, ShapeTemplateOptionsSetup>());
-            services.TryAddSingleton<IShapeTemplateFileProviderAccessor, ShapeTemplateFileProviderAccessor>();
 
             return services;
         }

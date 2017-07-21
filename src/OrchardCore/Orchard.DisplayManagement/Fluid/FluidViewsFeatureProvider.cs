@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.Options;
+using Orchard.DisplayManagement.FileProviders;
 using Orchard.DisplayManagement.Fluid.Internal;
 using Orchard.Environment.Extensions;
 

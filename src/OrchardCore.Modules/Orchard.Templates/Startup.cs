@@ -15,14 +15,19 @@ namespace Orchard.Templates
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<FluidViewOptions>, TemplateFluidViewOptions>());
+            services.AddScoped<ITemplateFileProvider, TemplateFileProvider>();
 
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, TemplateRazorViewOptions>());
+                ServiceDescriptor.Transient<IConfigureOptions<FluidViewOptions>,
+                TemplateOptionsSetup<FluidViewOptions>>());
 
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>, TemplateShapeTemplateOptions>());
+                ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>,
+                TemplateOptionsSetup<RazorViewEngineOptions>>());
+
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>,
+                TemplateOptionsSetup<ShapeTemplateOptions>>());
 
             services.AddScoped<TemplatesManager>();
             services.AddScoped<IPermissionProvider, Permissions>();

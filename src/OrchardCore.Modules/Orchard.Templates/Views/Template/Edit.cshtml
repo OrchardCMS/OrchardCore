@@ -1,4 +1,4 @@
-@model TemplateViewModel
+﻿@model TemplateViewModel
 
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/javascript/javascript.min.js" at="Foot"></script>
@@ -17,7 +17,7 @@
         <label asp-for="Name">@T["Name"]</label>
         <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>
         <input asp-for="Name" class="form-control" autofocus />
-        <span class="hint">@T["The name of the template."]</span>
+        <span class="hint">@T["The name of the template used as a subpath under the front end theme."]</span>
     </div>
 
     <div class="form-group" asp-validation-class-for="Description">
@@ -29,7 +29,7 @@
     <div class="form-group" asp-validation-class-for="Content">
         <label asp-for="Content">@T["Content"]</label>
         <textarea asp-for="Content" rows="10" class="form-control"></textarea>
-        <span class="hint">@T["The Liquid template."]</span>
+        <span class="hint">@T["The Liquid or Razor template."]</span>
     </div>
 
     <fieldset>

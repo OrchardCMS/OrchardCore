@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Extensions.FileProviders;
 
-namespace Orchard.Templates.Services
+namespace Orchard.DisplayManagement.FileProviders
 {
-    internal class EnumerableDirectoryContents : IDirectoryContents
+    public class EnumerableDirectoryContents : IDirectoryContents
     {
         private readonly IEnumerable<IFileInfo> _entries;
 
