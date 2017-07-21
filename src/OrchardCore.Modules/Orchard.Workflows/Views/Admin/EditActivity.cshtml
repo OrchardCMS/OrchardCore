@@ -20,7 +20,7 @@
 
 <script type="text/javascript" at="Head">
 //<![CDATA[
-var requestAntiForgeryToken = '''' + $("[name='__RequestVerificationToken']")["value"] + '''';
+var requestAntiForgeryToken = $("[name='__RequestVerificationToken']").first().val();
 var localId = '@Model.LocalId';
 //]]>
 </script>

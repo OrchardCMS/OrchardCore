@@ -54,12 +54,12 @@
     <style asp-src="/Orchard.Workflows/Styles/workflows-@(activity.Name).css" at="Head"></style>
 }
 
-<script type="text/javascript" depends-on="jQuery">
+<script type="text/javascript" depends-on="admin"  at="Foot">
     //<![CDATA[
     var renderActivityUrl = '';
     var editActivityUrl = '';
     var stateUrl = '';
-    var requestAntiForgeryToken = '''' + $("[name='__RequestVerificationToken']")["value"] + '''';
+    var requestAntiForgeryToken = $("[name='__RequestVerificationToken']").first().val();
     var localId = '';
     var updatedActivityClientId = null;
     var updatedActivityState = null;

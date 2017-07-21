@@ -41,7 +41,7 @@ var updateActivities = function(localId) {
     }
 
     // activities        
-    if (updatedActivityState != null) {
+    if (updatedActivityState !== null) {
         for (var i = 0; i < workflow.Activities.length; i++) {
             var activity = workflow.Activities[i];
 
