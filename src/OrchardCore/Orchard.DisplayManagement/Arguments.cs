@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +34,7 @@ namespace Orchard.DisplayManagement
         {
             readonly List<T> _arguments;
             readonly List<string> _names;
+            readonly T[] _positional;
 
             public NamedEnumerable(IEnumerable<T> arguments, IEnumerable<string> names)
             {
@@ -44,6 +45,12 @@ namespace Orchard.DisplayManagement
 
                 _arguments = arguments.ToList();
                 _names = names.ToList();
+
+                _positional = Array.Empty<T>();
+                if (_arguments.Count != _names.Count)
+                {
+                    _positional = _arguments.Take(_arguments.Count - _names.Count).ToArray();
+                }                
             }
 
             IEnumerator IEnumerable.GetEnumerator()
@@ -58,7 +65,7 @@ namespace Orchard.DisplayManagement
 
             IEnumerable<T> INamedEnumerable<T>.Positional
             {
-                get { return _arguments.Take(_arguments.Count() - _names.Count()); }
+                get { return _positional; }
             }
 
             IDictionary<string, T> INamedEnumerable<T>.Named

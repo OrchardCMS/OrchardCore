@@ -202,7 +202,7 @@ namespace Orchard.DisplayManagement.Razor
 
             var zone = ThemeLayout[name];
 
-            if (required && zone != null && !zone.Items.Any())
+            if (required && zone != null && zone.Items.Count == 0)
             {
                 throw new InvalidOperationException("Zone not found: " + name);
             }

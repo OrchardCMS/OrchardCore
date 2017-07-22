@@ -30,7 +30,7 @@ namespace Orchard.ContentManagement
         void Create(ContentItem contentItem, VersionOptions options);
 
         /// <summary>
-        /// Gets the content item with the specified id
+        /// Gets the published content item with the specified id
         /// </summary>
         /// <param name="id">The id content item id to load</param>
         Task<ContentItem> GetAsync(string id);
@@ -41,6 +41,12 @@ namespace Orchard.ContentManagement
         /// <param name="id">The id content item id to load</param>
         /// <param name="options">The version option</param>
         Task<ContentItem> GetAsync(string id, VersionOptions options);
+
+        /// <summary>
+        /// Gets the content item with the specified version id
+        /// </summary>
+        /// <param name="contentItemVersionId">The content item version id</param>
+        Task<ContentItem> GetVersionAsync(string contentItemVersionId);
 
         /// <summary>
         /// Removes <see cref="ContentItem.Latest"/> and <see cref="ContentItem.Published"/> flags
@@ -105,27 +111,10 @@ namespace Orchard.ContentManagement
         /// </summary>
         public static VersionOptions AllVersions { get { return new VersionOptions { IsAllVersions = true }; } }
 
-        /// <summary>
-        /// Gets a specific version based on its number.
-        /// </summary>
-        public static VersionOptions Number(int version) { return new VersionOptions { VersionNumber = version }; }
-
-        /// <summary>
-        /// Gets a specific version based on the version record identifier.
-        /// </summary>
-        public static VersionOptions VersionRecord(int id) { return new VersionOptions { VersionRecordId = id }; }
-
-        /// <summary>
-        /// Creates a new version based on the specified version number.
-        /// </summary>
-        public static VersionOptions Restore(int version, bool publish = false) { return new VersionOptions { VersionNumber = version, IsPublished = publish }; }
-
         public bool IsLatest { get; private set; }
         public bool IsPublished { get; private set; }
         public bool IsDraft { get; private set; }
         public bool IsDraftRequired { get; private set; }
         public bool IsAllVersions { get; private set; }
-        public int VersionNumber { get; private set; }
-        public int VersionRecordId { get; private set; }
     }
 }

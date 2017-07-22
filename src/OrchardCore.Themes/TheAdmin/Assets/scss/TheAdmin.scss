@@ -1,0 +1,374 @@
+// Custom variables
+
+// Because !default means that a variable is not assigned if it already contains a value,
+// we alter the variable before importing boostrap as _variables.scss will use !default
+
+@import "src/OrchardCore.Modules/Orchard.Resources/Assets/Bootstrap/scss/bootstrap.scss";
+
+$top-nav-height: 55px;
+$left-navigation-width: 260px;
+$border-content: 1px solid rgba(0, 0, 0, 0.05);
+$link-padding-left: 16px !default;
+
+// Layout
+// -----------------------------
+
+.ta-wrapper {
+
+    .ta-navbar-top {
+        @extend .bg-faded;
+        @extend .navbar, .navbar-toggleable-md, .navbar-light, .fixed-top;
+        min-height: $top-nav-height;
+    }
+
+    .ta-navbar-brand {
+        @extend .navbar-brand;
+        margin-left: 4px;
+    }
+    // Menu toggling button
+    #navbar-toggler {
+        @extend .navbar-toggler, .navbar-toggler-right, .hidden-sm-up;
+    }
+    // Icons in the main nav bar
+    #navbar-content {
+        @extend .hidden-xs-down;
+    }
+    // The menu is hidden for sm
+    #ta-left-sidebar {
+        @extend .bg-faded;
+        width: $left-navigation-width;
+        height: 100%;
+        z-index: 1;
+        position: fixed;
+        top: $top-nav-height;
+        color: $gray-dark;
+        border-right: $border-content;
+        // Remove padding/margin from all uls
+        ul {
+            margin: 0;
+            padding: 0;
+        }
+        // Rotate the chevron's icon when the menu is active
+        input[type=checkbox]:checked + label > .chevron > i {
+            transform: rotate(90deg);
+            transition-duration: 0.2s;
+        }
+
+        input[type=checkbox] + label > .chevron > i {
+            transition-duration: 0.2s;
+        }
+        // Hide native checkbox */
+        input[type=checkbox] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        input[type=checkbox] + label + ul {
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.2s, opacity 0.2s, ease-in-out;
+            // Hide chevrons when the containing ul is hidden
+            li > label > .chevron {
+                display: none;
+            }
+        }
+
+        input[type=checkbox]:checked + label + ul {
+            overflow-y: hidden;
+            max-height: 500px; /* approximate max height */
+            opacity: 1;
+            transition: max-height 0.5s, opacity 0.5s, ease-in-out;
+            // Hide chevrons when the containing ul is open
+            li > label > .chevron {
+                display: block;
+            }
+        }
+        // Make each line a block
+        label, a {
+            position: relative;
+            display: block;
+            margin: 0;
+        }
+
+        nav > ul {
+            display: block;
+            white-space: nowrap;
+
+            li {
+                position: relative;
+                margin: 0;
+                padding: 0;
+                display: list-item;
+                list-style: none;
+                line-height: 2.5em;
+            }
+        }
+
+        .chevron {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            margin-left: -15px;
+        }
+
+        .icon {
+            padding-right: 10px;
+        }
+
+        li label,
+        li a,
+        li a:hover,
+        li a:active,
+        li a:visited {
+            color: $gray;
+            text-decoration: none;
+            padding-left: $link-padding-left - 4px;
+        }
+        // Hovering the navigation items
+        li a:hover, li label:hover {
+            background-color: $gray;
+            color: $gray-lightest;
+        }
+        // Current page
+        li.active > a {
+            background-color: $gray-light;
+            //border-left: 4px solid $gray-dark;
+            color: $gray-lightest !important;
+        }
+
+        li ul > li > a,
+        li ul > li > label {
+            background-color: $gray-lighter;
+            color: $gray !important;
+            padding-left: 2 * $link-padding-left !important;
+        }
+
+        li ul > li > a:hover,
+        li ul > li > label:hover {
+            color: $gray-lightest !important;
+        }
+
+        li ul > li ul > li > a {
+            padding-left: 3 * $link-padding-left !important;
+        }
+    }
+
+    .ta-content {
+        @extend .container-fluid;
+        margin-left: 0;
+        margin-top: $top-nav-height;
+        padding-top: 1em;
+        border-top: $border-content;
+    }
+    // When the screen is bigger than md, add a margin of the size of the menu
+    @include media-breakpoint-up(sm) {
+        .ta-content {
+            margin-left: $left-navigation-width;
+        }
+    }
+
+    @include media-breakpoint-down(xs) {
+        #ta-left-sidebar {
+            left: -$left-navigation-width;
+        }
+
+        .collapsing {
+            /*margin-left: 0;
+            transition: margin-left 0.5s ease-in-out;*/
+        }
+
+        .in {
+            /*margin-left:0;*/
+        }
+    }
+}
+
+// Forms
+// -----------------------------
+
+.hint {
+    @extend .small, .text-muted;
+}
+
+.validation-summary-errors {
+    @extend .alert, .alert-danger;
+    padding-bottom: 0;
+}
+
+.field-validation-error {
+    @extend small, .form-control-feedback;
+}
+
+.input-validation-error {
+    @extend .form-control-danger;
+}
+
+.has-validation-error {
+    @extend .has-danger;
+}
+
+// When the validation message in inside the label, add a separator
+label .field-validation-error::before {
+    content: "- ";
+}
+
+.button {
+    @extend .btn, .btn-primary;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+// Toolbar
+// ------------------------------
+
+.admin-toolbar {
+    @extend .navbar, .navbar-toggleable-md, .navbar-light, .bg-faded;
+    margin-bottom: 1em;
+}
+
+// Messages
+// ------------------------------
+
+.message {
+    @extend .alert;
+}
+
+.message-success {
+    @extend .alert-success;
+}
+
+.message-information {
+    @extend .alert-info;
+}
+
+.message-warning {
+    @extend .alert-warning;
+}
+
+.message-error {
+    @extend .alert-danger;
+}
+
+
+// Pager
+// ------------------------------
+
+ul.pager {
+    @extend .pagination;
+}
+
+ul.pager li {
+    @extend .page-item;
+}
+
+ul.pager li a {
+    @extend .page-link;
+}
+
+// Sortable
+// ------------------------------
+
+.ui-sortable-handle {
+    cursor: move;
+}
+
+.ui-sortable {
+    min-height: $font-size-base;
+}
+
+.properties {
+    @extend .w-100;
+}
+
+.related {
+    @extend .float-right;
+}
+
+// Responsive sizes
+// Creates mixins to target all breakpoints
+// ------------------------------
+.col-xs {
+    @extend .col-8, .col-sm-4, .col-md-3, .col-lg-2, .col-xl-1;
+}
+
+.col-sm {
+    @extend .col-12, .col-sm-9, .col-md-6, .col-lg-3, .col-xl-3;
+}
+
+.col-md {
+    @extend .col-12, .col-sm-12, .col-md-10, .col-lg-8, .col-xl-6;
+}
+
+.col-lg {
+    @extend .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-9;
+}
+
+.col-xl {
+    @extend .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-12;
+}
+
+// NanoScroller
+// ------------------------------
+.ta-left-sidebar-nano {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.ta-left-sidebar-nano > .nano-content {
+    position: absolute;
+    overflow: scroll;
+    overflow-x: hidden;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.ta-left-sidebar-nano > .nano-content:focus {
+    outline: thin dotted;
+}
+
+.ta-left-sidebar-nano > .nano-content::-webkit-scrollbar {
+    display: none;
+}
+
+.has-scrollbar > .nano-content::-webkit-scrollbar {
+    display: block;
+}
+
+.ta-left-sidebar-nano > .nano-pane {
+    position: absolute;
+    width: 10px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    visibility: hidden\9; /* Target only IE7 and IE8 with this hack */
+    opacity: .01;
+    -webkit-transition: .2s;
+    -moz-transition: .2s;
+    -o-transition: .2s;
+    transition: .2s;
+}
+
+.ta-left-sidebar-nano > .nano-pane > .nano-slider {
+    background: #444;
+    background: rgba(0,0,0,.5);
+    position: relative;
+    margin: 0 1px;
+}
+
+.ta-left-sidebar-nano:hover > .nano-pane, .nano-pane.active, .nano-pane.flashed {
+    visibility: visible\9; /* Target only IE7 and IE8 with this hack */
+    opacity: 0.99;
+}
+
+
+.ta-left-sidebar-nano .nano-content {
+    /* preventing last bottom item is not visible when scrolling to bottom */
+    padding-bottom: 100px;
+}
+

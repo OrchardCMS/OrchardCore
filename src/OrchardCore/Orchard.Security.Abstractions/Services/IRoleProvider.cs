@@ -7,4 +7,5 @@ namespace Orchard.Security.Services
     {
         Task<IEnumerable<string>> GetRoleNamesAsync();
     }
+
 }

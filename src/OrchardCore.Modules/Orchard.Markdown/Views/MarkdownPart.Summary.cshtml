@@ -1,0 +1,13 @@
+@model Orchard.Markdown.ViewModels.MarkdownPartViewModel
+@inject Orchard.Tokens.Services.ITokenizer Tokenizer
+
+@{
+    string markdown = Model.Markdown;
+
+    if (Model.TypePartSettings.RenderTokens)
+    {
+        markdown = Tokenizer.Tokenize(markdown, new Dictionary<string, object> { ["Content"] = Model.MarkdownPart.ContentItem });
+    }
+}
+
+@markdown.Substring(0, Math.Min(markdown.Length, 200))

@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell.Builders.Models;
 using Orchard.Events;
 
@@ -21,19 +19,16 @@ namespace Orchard.Environment.Shell.Builders
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IServiceCollection _applicationServices;
-        private readonly IHostingEnvironment _hostingEnvironment;
 
         public ShellContainerFactory(
             IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory,
             ILogger<ShellContainerFactory> logger,
-            IServiceCollection applicationServices,
-            IHostingEnvironment hostingEnvironment)
+            IServiceCollection applicationServices)
         {
             _applicationServices = applicationServices;
             _serviceProvider = serviceProvider;
             _loggerFactory = loggerFactory;
-            _hostingEnvironment = hostingEnvironment;
             _logger = logger;
         }
 
@@ -83,24 +78,21 @@ namespace Orchard.Environment.Shell.Builders
             var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider();
 
             // Index all service descriptors by their feature id
-            var featureServiceCollections = new Dictionary<IFeatureInfo, ServiceCollection>();
+            var featureAwareServiceCollection = new FeatureAwareServiceCollection(tenantServiceCollection);
 
+            var startups = moduleServiceProvider.GetServices<Microsoft.AspNetCore.Modules.IStartup>();
+
+            // IStartup instances are ordered by module dependency with an Order of 0 by default.
+            // OrderBy performs a stable sort so order is preserved among equal Order values.
+            startups = startups.OrderBy(s => s.Order);
+            
             // Let any module add custom service descriptors to the tenant
-            foreach (var startup in moduleServiceProvider.GetServices<Microsoft.AspNetCore.Modules.IStartup>())
+            foreach (var startup in startups)
             {
                 var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value.FeatureInfo;
+                featureAwareServiceCollection.SetCurrentFeature(feature);
 
-                ServiceCollection featureServiceCollection;
-                ServiceCollection startupServices = new ServiceCollection();
-
-                if (!featureServiceCollections.TryGetValue(feature, out featureServiceCollection))
-                {
-                    featureServiceCollections.Add(feature, featureServiceCollection = new ServiceCollection());
-                }
-
-                startup.ConfigureServices(startupServices);
-                tenantServiceCollection.Add(startupServices);
-                featureServiceCollection.Add(startupServices);
+                startup.ConfigureServices(featureAwareServiceCollection);
             }
 
             (moduleServiceProvider as IDisposable).Dispose();
@@ -163,7 +155,7 @@ namespace Orchard.Environment.Shell.Builders
             // Register all DIed types in ITypeFeatureProvider
             var typeFeatureProvider = shellServiceProvider.GetRequiredService<ITypeFeatureProvider>();
 
-            foreach (var featureServiceCollection in featureServiceCollections)
+            foreach (var featureServiceCollection in featureAwareServiceCollection.FeatureCollections)
             {
                 foreach (var serviceDescriptor in featureServiceCollection.Value)
                 {

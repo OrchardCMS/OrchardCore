@@ -1,4 +1,4 @@
-﻿using YesSql.Core.Sql;
+﻿using YesSql.Sql;
 
 namespace Orchard.Data.Migration
 {

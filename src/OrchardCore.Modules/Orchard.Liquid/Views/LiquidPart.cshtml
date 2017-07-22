@@ -1,0 +1,33 @@
+@using Orchard.Liquid;
+@using Fluid;
+@model Orchard.Liquid.ViewModels.LiquidPartViewModel
+@inject IEnumerable<ITemplateContextHandler> TemplateContextHandlers;
+@{
+    string liquid = Model.Liquid;
+
+    var model = new
+    {
+        ContentItem = Model.LiquidPart.ContentItem,
+        Context = Context
+    };
+
+    FluidTemplate template;
+    IEnumerable<string> errors;
+
+    if (FluidTemplate.TryParse(liquid, out template, out errors))
+    {
+        var context = new TemplateContext();
+        context.AmbientValues.Add("UrlHelper", Url);
+        context.LocalScope.SetValue("ContentItem", Model.LiquidPart.ContentItem);
+        context.LocalScope.SetValue("Context", Context);
+
+        foreach (var handler in TemplateContextHandlers)
+        {
+            handler.OnTemplateProcessing(context);
+        }
+
+        context.MemberAccessStrategy.Register(model.GetType());
+
+        @Html.Raw(await template.RenderAsync(context));
+    }
+}

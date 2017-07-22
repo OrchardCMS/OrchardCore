@@ -111,7 +111,6 @@ csx
 AppPackages/
 
 # Others
-sql/
 *.Cache
 !Orchard.Environment.Cache
 ClientBin/
@@ -166,8 +165,10 @@ build/
 /buildazure
 /buildtasks
 /artifacts
+site/
 *.sln.cache
-src/Orchard.Web/Media/*
+src/OrchardCore.Modules/**/launchSettings.json
+src/OrchardCore.Themes/**/launchSettings.json
 log.xml
 profiling/
 *.orig

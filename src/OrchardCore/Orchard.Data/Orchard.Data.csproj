@@ -1,14 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <VersionPrefix>2.0.0</VersionPrefix>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DebugType>portable</DebugType>
-    <AssemblyName>Orchard.Data</AssemblyName>
-    <PackageId>Orchard.Data</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
-    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net451+win8</PackageTargetFallback>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,13 +12,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="YesSql.Storage.Sql" Version="1.0.0-*" />
-    <PackageReference Include="MySqlConnector" Version="0.12" />
-    <PackageReference Include="Npgsql" Version="3.2.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+    <PackageReference Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1045" />
+    <PackageReference Include="YesSql.Provider.MySql" Version="1.0.0-beta-1045" />
+    <PackageReference Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1045" />
+    <PackageReference Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1045" />
   </ItemGroup>
 
 </Project>

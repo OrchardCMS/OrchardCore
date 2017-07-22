@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions;
 
-namespace Microsoft.AspNetCore.Modules
+namespace Microsoft.AspNetCore.Builder
 {
     public static class ModularApplicationBuilderExtensions
     {
@@ -49,12 +49,26 @@ namespace Microsoft.AspNetCore.Modules
                 foreach (var extension in availableExtensions)
                 {
                     var contentPath = Path.Combine(extension.ExtensionFileInfo.PhysicalPath, "Content");
+                    var contentSubPath = Path.Combine(extension.SubPath, "Content");
+
                     if (Directory.Exists(contentPath))
                     {
+                        IFileProvider fileProvider;
+                        if (env.IsDevelopment())
+                        {
+                            fileProvider = new CompositeFileProvider(
+                                new ModuleProjectContentFileProvider(env.ContentRootPath, contentSubPath),
+                                new PhysicalFileProvider(contentPath));
+                        }
+                        else
+                        {
+                            fileProvider = new PhysicalFileProvider(contentPath);
+                        }
+
                         app.UseStaticFiles(new StaticFileOptions
                         {
                             RequestPath = "/" + extension.Id,
-                            FileProvider = new PhysicalFileProvider(contentPath)
+                            FileProvider = fileProvider
                         });
                     }
                 }

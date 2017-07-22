@@ -1,0 +1,16 @@
+Name: Queries
+AntiForgery: enabled
+Author: The Orchard Team
+Website: http://orchardproject.net
+Version: 2.0.x
+OrchardVersion: 2.0.x
+Features: 
+    Orchard.Queries:
+        Name: Queries
+        Description: Provides querying capabilities.
+        Category: Content Management
+    Orchard.Queries.Sql:
+        Name: SQL Queries
+        Description: Introduces a way to create custom Queries in pure SQL.
+        Category: Content Management
+        Dependencies: Orchard.Queries

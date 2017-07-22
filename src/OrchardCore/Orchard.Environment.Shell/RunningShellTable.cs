@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace Orchard.Environment.Shell
@@ -9,34 +10,25 @@ namespace Orchard.Environment.Shell
         private readonly Dictionary<string, ShellSettings> _shellsByHostAndPrefix = new Dictionary<string, ShellSettings>(StringComparer.OrdinalIgnoreCase);
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 
-        private ShellSettings _single;
         private ShellSettings _default;
+        private bool _hasStarMapping = false;
 
         public void Add(ShellSettings settings)
         {
             _lock.EnterWriteLock();
             try
             {
-                // _single is set when there is only a single tenant
-                if (_single != null)
-                {
-                    _single = null;
-                }
-                else
-                {
-                    if (_shellsByHostAndPrefix.Count == 0)
-                    {
-                        _single = settings;
-                    }
-                }
-
                 if(ShellHelper.DefaultShellName == settings.Name)
                 {
                     _default = settings;
                 }
 
-                var hostAndPrefix = GetHostAndPrefix(settings);
-                _shellsByHostAndPrefix[hostAndPrefix] = settings;
+                var allHostsAndPrefix = GetAllHostsAndPrefix(settings);
+                foreach (var hostAndPrefix in allHostsAndPrefix)
+                {
+                    _hasStarMapping = _hasStarMapping || hostAndPrefix.StartsWith("*");
+                    _shellsByHostAndPrefix[hostAndPrefix] = settings;
+                }
             }
             finally
             {
@@ -49,17 +41,15 @@ namespace Orchard.Environment.Shell
             _lock.EnterWriteLock();
             try
             {
-                var hostAndPrefix = GetHostAndPrefix(settings);
-                _shellsByHostAndPrefix.Remove(hostAndPrefix);
+                var allHostsAndPrefix = GetAllHostsAndPrefix(settings);
+                foreach (var hostAndPrefix in allHostsAndPrefix)
+                {
+                    _shellsByHostAndPrefix.Remove(hostAndPrefix);
+                }
 
                 if (_default == settings)
                 {
                     _default = null;
-                }
-
-                if (_single == settings)
-                {
-                    _single = null;
                 }
             }
             finally
@@ -70,38 +60,91 @@ namespace Orchard.Environment.Shell
 
         public ShellSettings Match(string host, string appRelativePath)
         {
-            if (_single != null)
-            {
-                return _single;
-            }
-
             _lock.EnterReadLock();
             try
             {
-                string hostAndPrefix = GetHostAndPrefix(host, appRelativePath);
-
-                ShellSettings result;
-                if(!_shellsByHostAndPrefix.TryGetValue(hostAndPrefix, out result))
+                // Specific match?
+                if(TryMatchInternal(host, appRelativePath, out ShellSettings result))
                 {
-                    var noHostAndPrefix = GetHostAndPrefix("", appRelativePath);
-
-                    if (!_shellsByHostAndPrefix.TryGetValue(noHostAndPrefix, out result))
-                    {
-                        result = _default;
-
-                        // no specific match, then look for star mapping
-                        // TODO: implement * mapping by adding another index to match the domain with the
-                        // star mapped domain. It's done by adding the star-mapped domain in the index
-                        // when the settings are added to the shell table.
-                    }
+                    return result;
                 }
 
-                return result;
+                // Search for star mapping
+                // Optimization: only if a mapping with a '*' has been added
+
+                if (_hasStarMapping && TryMatchStarMapping(host, appRelativePath, out result))
+                {
+                    return result;
+                }
+
+                // Check if the Default tenant is a catch-all
+                if (DefaultIsCatchAll())
+                {
+                    return _default;
+                }
+
+                // Search for another catch-all 
+                if (TryMatchInternal("", "/", out result))
+                {
+                    return result;
+                }
+
+                return null;
             }
             finally
             {
                 _lock.ExitReadLock();
             }
+        }
+
+        private bool TryMatchInternal(string host, string appRelativePath, out ShellSettings result)
+        {
+            // 1. Search for Host + Prefix match
+            var hostAndPrefix = GetHostAndPrefix(host, appRelativePath);
+
+            if (!_shellsByHostAndPrefix.TryGetValue(hostAndPrefix, out result))
+            {
+                // 2. Search for Host only match
+
+                var hostAndNoPrefix = GetHostAndPrefix(host, "/");
+
+                if (!_shellsByHostAndPrefix.TryGetValue(hostAndNoPrefix, out result))
+                {
+                    // 3. Search for Prefix only match
+
+                    var noHostAndPrefix = GetHostAndPrefix("", appRelativePath);
+
+                    if (!_shellsByHostAndPrefix.TryGetValue(noHostAndPrefix, out result))
+                    {
+                        result = null;
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private bool TryMatchStarMapping(string host, string appRelativePath, out ShellSettings result)
+        {
+            if (TryMatchInternal("*." + host, appRelativePath, out result))
+            {
+                return true;
+            }
+
+            var index = -1;
+
+            // Take the longest subdomain and look for a mapping
+            while (-1 != (index = host.IndexOf('.', index + 1)))
+            {
+                if(TryMatchInternal("*" + host.Substring(index), appRelativePath, out result))
+                {
+                    return true;
+                }
+            }
+
+            result = null;
+            return false;
         }
 
         private string GetHostAndPrefix(string host, string appRelativePath)
@@ -114,7 +157,7 @@ namespace Orchard.Environment.Shell
             }
 
             // appRelativePath starts with /
-            int firstSegmentIndex = appRelativePath.IndexOf('/', 1);
+            var firstSegmentIndex = appRelativePath.IndexOf('/', 1);
             if (firstSegmentIndex > -1)
             {
                 return host + appRelativePath.Substring(0, firstSegmentIndex);
@@ -126,9 +169,25 @@ namespace Orchard.Environment.Shell
 
         }
 
-        private string GetHostAndPrefix(ShellSettings shellSettings)
+        private string[] GetAllHostsAndPrefix(ShellSettings shellSettings)
         {
-            return shellSettings.RequestUrlHost + "/" + shellSettings.RequestUrlPrefix;
+            // For each host entry return HOST/PREFIX
+
+            if (string.IsNullOrWhiteSpace(shellSettings.RequestUrlHost))
+            {
+                return new string[] { "/" + shellSettings.RequestUrlPrefix };
+            }
+
+            return shellSettings
+                .RequestUrlHost
+                .Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(ruh => ruh + "/" + shellSettings.RequestUrlPrefix ?? "")
+                .ToArray();
+        }
+
+        private bool DefaultIsCatchAll()
+        {
+            return _default != null && string.IsNullOrEmpty(_default.RequestUrlHost) && string.IsNullOrEmpty(_default.RequestUrlPrefix);
         }
     }
 }

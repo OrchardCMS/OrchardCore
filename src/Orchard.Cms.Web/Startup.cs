@@ -1,13 +1,9 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Commands;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Manifests;
-using Orchard.Environment.Shell.Data;
+using Orchard.Logging;
 
 namespace Orchard.Cms.Web
 {
@@ -30,16 +26,7 @@ namespace Orchard.Cms.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddManifestDefinition("Theme.txt", "theme");
-            services.AddExtensionLocation("Themes");
-            services.AddSitesFolder("App_Data", "Sites");
-
-            services.AddCommands();
-
-            services.AddModuleServices(configure => configure
-                .AddConfiguration(Configuration)
-                .WithDefaultFeatures("Orchard.Mvc", "Orchard.Settings", "Orchard.Setup", "Orchard.Recipes", "Orchard.Commons")
-            );
+            services.AddOrchardCms();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -50,8 +37,13 @@ namespace Orchard.Cms.Web
             }
 
             app.UseStaticFiles();
-
             loggerFactory.AddConsole(Configuration);
+            app.UseNLogWeb(loggerFactory, env);
+
+            if (env.IsDevelopment())
+            {
+                loggerFactory.AddDebug();
+            }
 
             app.UseModules();
         }

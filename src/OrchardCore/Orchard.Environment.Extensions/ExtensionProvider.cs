@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions.Features;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
 
 namespace Orchard.Environment.Extensions
 {
@@ -16,7 +15,6 @@ namespace Orchard.Environment.Extensions
         /// Initializes a new instance of a ExtensionProvider at the given root directory.
         /// </summary>
         /// <param name="hostingEnvironment">hostingEnvironment containing the fileproviders.</param>
-        /// <param name="manifestBuilder">The manifest provider.</param>
         /// <param name="featureManager">The feature manager.</param>
         public ExtensionProvider(
             IHostingEnvironment hostingEnvironment,

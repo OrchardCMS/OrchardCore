@@ -1,0 +1,46 @@
+site_name: Orchard Core Documentation
+theme: readthedocs
+
+# Repository
+repo_name: OrchardCMS/Orchard2
+repo_url: https://github.com/OrchardCMS/Orchard2
+
+# Options
+docs_dir: src
+extra_css: []
+extra_javascript: []
+
+# Extensions
+markdown_extensions:
+  - markdown.extensions.admonition
+  - markdown.extensions.def_list
+  - markdown.extensions.footnotes
+  - markdown.extensions.meta
+#  - markdown.extensions.nl2br
+  - markdown.extensions.toc(permalink=Link)
+  
+# Page tree
+pages:
+    - About Orchard Core: index.md
+    - ASP.NET Core Modules: OrchardCore/Microsoft.AspNetCore.Modules/README.md
+    - CMS Modules:
+        - Body: OrchardCore.Modules/Orchard.Body/README.md
+        - Content Fields: OrchardCore.Modules/Orchard.ContentFields/README.md
+        - Content Preview: OrchardCore.Modules/Orchard.ContentPreview/README.md
+        - Content Types: OrchardCore.Modules/Orchard.ContentTypes/README.md
+        - Markdown: OrchardCore.Modules/Orchard.Markdown/README.md
+        - Menu: OrchardCore.Modules/Orchard.Menu/README.md
+        - Navigation: OrchardCore.Modules/Orchard.Navigation/README.md
+        - Indexing: OrchardCore.Modules/Orchard.Indexing/README.md
+        - Lucene: OrchardCore.Modules/Orchard.Lucene/README.md
+        - Queries: OrchardCore.Modules/Orchard.Queries/README.md
+        - Liquid: OrchardCore.Modules/Orchard.Liquid/README.md
+    - Core Modules:
+        - Placement: OrchardCore/Orchard.DisplayManagement/README.md
+        - Dynamic Cache: OrchardCore.Modules/Orchard.DynamicCache/README.md
+        - OpenId: OrchardCore.Modules/Orchard.OpenId/README.md
+        - Recipes: OrchardCore.Modules/Orchard.Recipes/README.md
+        - Resources: OrchardCore.Modules/Orchard.Resources/README.md
+        - Roles: OrchardCore.Modules/Orchard.Roles/README.md
+        - Scripting: OrchardCore.Modules/Orchard.Scripting/README.md
+        - Setup: OrchardCore.Modules/Orchard.Setup/README.md

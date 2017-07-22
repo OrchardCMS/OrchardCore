@@ -7,7 +7,7 @@ using YamlDotNet.RepresentationModel;
 
 namespace Orchard.Parser.Yaml
 {
-    public class YamlConfigurationFileParser
+    internal class YamlConfigurationFileParser
     {
         private readonly IDictionary<string, string> _data = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private readonly Stack<string> _context = new Stack<string>();
@@ -23,7 +23,7 @@ namespace Orchard.Parser.Yaml
             if (yamlConfig.Documents.Any())
             {
                 var mapping = (YamlMappingNode)yamlConfig.Documents[0].RootNode;
-
+                
                 VisitYamlMappingNode(mapping);
             };
 
@@ -84,7 +84,7 @@ namespace Orchard.Parser.Yaml
             {
                 throw new FormatException(string.Format("FormatError_KeyIsDuplicated({0})", key));
             }
-            _data[key] = yamlNodeValue.Value;
+            _data[key] = (yamlNodeValue.Value == "~" || yamlNodeValue.Value == "null") ? null : yamlNodeValue.Value;
             ExitContext();
         }
 

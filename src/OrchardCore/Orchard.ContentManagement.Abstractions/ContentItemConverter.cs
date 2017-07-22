@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 
@@ -14,6 +14,7 @@ namespace Orchard.ContentManagement
             // Write all well-known properties
             o.Add(new JProperty(nameof(ContentItem.Id), contentItem.Id));
             o.Add(new JProperty(nameof(ContentItem.ContentItemId), contentItem.ContentItemId));
+            o.Add(new JProperty(nameof(ContentItem.ContentItemVersionId), contentItem.ContentItemVersionId));
             o.Add(new JProperty(nameof(ContentItem.ContentType), contentItem.ContentType));
             o.Add(new JProperty(nameof(ContentItem.Latest), contentItem.Latest));
             o.Add(new JProperty(nameof(ContentItem.Number), contentItem.Number));
@@ -58,6 +59,9 @@ namespace Orchard.ContentManagement
                         break;
                     case nameof(ContentItem.ContentItemId):
                         contentItem.ContentItemId = reader.ReadAsString();
+                        break;
+                    case nameof(ContentItem.ContentItemVersionId):
+                        contentItem.ContentItemVersionId = reader.ReadAsString();
                         break;
                     case nameof(ContentItem.ContentType):
                         contentItem.ContentType = reader.ReadAsString();

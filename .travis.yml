@@ -1,26 +1,18 @@
 language: csharp
-sudo: required
+sudo: false
 dist: trusty
-addons:
-  apt:
-    packages:
-    - gettext
-    - libcurl4-openssl-dev
-    - libicu-dev
-    - libssl-dev
-    - libunwind8
-    - zlib1g
+mono: none
+dotnet: 1.0.3
 env:
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-    - DOTNET_CLI_TELEMETRY_OPTOUT: 1    
-mono:
-  - 4.0.5
+    - DOTNET_CLI_TELEMETRY_OPTOUT: 1   
 os:
   - linux
   - osx
-osx_image: xcode7.1
-before_install:
-  - if test "$TRAVIS_OS_NAME" == "osx"; then brew update; brew install openssl; ln -s /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib /usr/local/lib/; ln -s /usr/local/opt/openssl/lib/libssl.1.0.0.dylib /usr/local/lib/; fi
+osx_image: xcode8.3
 script:
-  - ./build.sh --quiet verify
+  - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
+  - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
+  - dotnet build -c Release
+  - dotnet test -c Release ./test/Orchard.Tests/Orchard.Tests.csproj

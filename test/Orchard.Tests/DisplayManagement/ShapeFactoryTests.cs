@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,6 +16,7 @@ namespace Orchard.Tests.DisplayManagement
     public class ShapeFactoryTests
     {
         IServiceProvider _serviceProvider;
+        TestShapeTable _shapeTable;
 
         public ShapeFactoryTests()
         {
@@ -27,12 +28,13 @@ namespace Orchard.Tests.DisplayManagement
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
 
-            var defaultShapeTable = new TestShapeTable
+            _shapeTable = new TestShapeTable
             {
                 Descriptors = new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
             };
-            serviceCollection.AddSingleton(defaultShapeTable);
+
+            serviceCollection.AddSingleton(_shapeTable);
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
@@ -73,6 +75,45 @@ namespace Orchard.Tests.DisplayManagement
 
             Assert.Equal(1, foo.One);
             Assert.Equal("two", foo.Two);
+        }
+
+        [Fact]
+        public void ShapeFactoryUsesCustomShapeType()
+        {
+            var descriptor = new ShapeDescriptor();
+            descriptor.Creating = new List<Action<ShapeCreatingContext>>()
+            {
+                (ctx) => { ctx.Create = () => new SubShape(); }
+            };
+
+            _shapeTable.Descriptors.Add("Foo", descriptor);
+            dynamic factory = _serviceProvider.GetService<IShapeFactory>();
+            var foo = factory.Foo();
+
+            Assert.IsType<SubShape>(foo);
+        }
+
+        [Fact]
+        public void ShapeFactoryWithCustomShapeTypeAppliesArguments()
+        {
+            var descriptor = new ShapeDescriptor();
+            descriptor.Creating = new List<Action<ShapeCreatingContext>>()
+            {
+                (ctx) => { ctx.Create = () => new SubShape(); }
+            };
+
+            _shapeTable.Descriptors.Add("Foo", descriptor);
+            dynamic factory = _serviceProvider.GetService<IShapeFactory>();
+            var foo = factory.Foo(Bar: "Bar", Baz: "Baz");
+
+            Assert.Equal("Bar", foo.Bar);
+            Assert.Equal("Baz", foo.Baz);
+        }
+
+
+        private class SubShape : Shape
+        {
+
         }
     }
 }

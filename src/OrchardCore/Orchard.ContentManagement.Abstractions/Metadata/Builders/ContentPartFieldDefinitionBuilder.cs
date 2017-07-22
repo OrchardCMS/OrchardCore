@@ -28,13 +28,13 @@ namespace Orchard.ContentManagement.Metadata.Builders
 
         public ContentPartFieldDefinitionBuilder MergeSettings(JObject settings)
         {
-            _settings.Merge(settings, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union });
+            _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
             return this;
         }
 
         public ContentPartFieldDefinitionBuilder MergeSettings(object model)
         {
-            _settings.Merge(JObject.FromObject(model), new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union });
+            _settings.Merge(JObject.FromObject(model), ContentBuilderSettings.JsonMergeSettings);
             return this;
         }
 
