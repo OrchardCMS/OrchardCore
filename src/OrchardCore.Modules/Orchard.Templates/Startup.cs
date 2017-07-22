@@ -15,7 +15,7 @@ namespace Orchard.Templates
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ITemplateFileProvider, TemplateFileProvider>();
+            services.AddSingleton<ITemplateFileProvider, TemplateFileProvider>();
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<FluidViewOptions>,

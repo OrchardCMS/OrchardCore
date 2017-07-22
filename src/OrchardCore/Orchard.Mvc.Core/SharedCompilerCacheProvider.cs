@@ -48,7 +48,6 @@ namespace Orchard.Mvc
                     }
 
                     _cache = new CompilerCache(fileProviderAccessor.FileProvider, feature.Views);
-
                 }
             }
         }

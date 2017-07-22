@@ -48,7 +48,7 @@ namespace Orchard.DisplayManagement.Fluid
             {
                 if (!Path.GetFileName(path).StartsWith("_"))
                 {
-                    var viewPath = path.Replace(FluidViewTemplate.ViewExtension, RazorViewEngine.ViewExtension);
+                    var viewPath = Path.ChangeExtension(path, RazorViewEngine.ViewExtension);
                     feature.Views[viewPath] = typeof(FluidPage);
                 }
             }

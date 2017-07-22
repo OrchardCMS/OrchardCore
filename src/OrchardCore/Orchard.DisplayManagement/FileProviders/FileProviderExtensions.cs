@@ -12,6 +12,11 @@ namespace Orchard.DisplayManagement.FileProviders
         {
             var contents = fileProvider.GetDirectoryContents(subPath);
 
+            if (contents == null)
+            {
+                yield break;
+            }
+
             if (!inViewsFolder && inDepth)
             {
                 var viewsFolder = contents.FirstOrDefault(c => c.Name == "Views" && c.IsDirectory);
@@ -40,9 +45,12 @@ namespace Orchard.DisplayManagement.FileProviders
                 }
                 else if (inViewsFolder)
                 {
-                    if (extensions.Contains(Path.GetExtension(content.Name)))
+                    if (inDepth || content.Name.IndexOf("/") == -1)
                     {
-                        yield return string.Format("{0}/{1}", subPath, content.Name);
+                        if (extensions.Contains(Path.GetExtension(content.Name)))
+                        {
+                            yield return string.Format("{0}/{1}", subPath, content.Name);
+                        }
                     }
                 }
             }

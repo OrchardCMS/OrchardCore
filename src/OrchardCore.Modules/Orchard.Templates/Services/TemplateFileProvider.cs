@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 using Orchard.DisplayManagement.FileProviders;
-using Orchard.Settings;
 
 namespace Orchard.Templates.Services
 {
@@ -13,30 +16,30 @@ namespace Orchard.Templates.Services
     /// </summary>
     public class TemplateFileProvider : ITemplateFileProvider
     {
-        private readonly string _themeViewsPath;
-        private readonly TemplatesManager _templatesManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public TemplateFileProvider(ISiteService siteService, TemplatesManager templatesManager)
+        public TemplateFileProvider(IHttpContextAccessor httpContextAccessor)
         {
-            _themeViewsPath = string.Format("{0}/{1}", (string)siteService.GetSiteSettingsAsync()
-                .GetAwaiter().GetResult().Properties["CurrentThemeName"], "Views");
-
-            _templatesManager = templatesManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        private Dictionary<string, Models.Template> Templates =>
-            _templatesManager.GetTemplatesDocumentAsync().GetAwaiter().GetResult().Templates;
+        private TemplatesManager TemplatesManager => _httpContextAccessor
+            .HttpContext.RequestServices.GetRequiredService<TemplatesManager>();
+
+        private Dictionary<string, Models.Template> Templates => TemplatesManager
+            .GetTemplatesDocumentAsync().GetAwaiter().GetResult().Templates;
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
             var entries = new List<IFileInfo>();
+            var name = Path.GetFileName(subpath);
 
-            if (subpath.EndsWith(_themeViewsPath))
+            if (name == "Views")
             {
-                foreach (var template in Templates)
-                {
-                    entries.Add(new ContentFileInfo(template.Key, template.Value.Content));
-                }
+                var path = string.Format("{0}/{1}/", Path.GetFileName(Path.GetDirectoryName(subpath)), name);
+
+                entries.AddRange(Templates.Where(kv => kv.Key.StartsWith(path)).Select(kvp =>
+                    new ContentFileInfo(kvp.Key.Substring(path.Length), kvp.Value.Content)));
             }
 
             return new DirectoryContents(entries);
@@ -44,14 +47,11 @@ namespace Orchard.Templates.Services
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (subpath.Contains(_themeViewsPath))
-            {
-                var name = GetTemplateName(subpath);
+            var template = Templates.FirstOrDefault(kv => subpath.TrimStart('/').EndsWith(kv.Key));
 
-                if (Templates.TryGetValue(GetTemplateName(subpath), out var template))
-                {
-                    return new ContentFileInfo(name, template.Content);
-                }
+            if (template.Key != null)
+            {
+                return new ContentFileInfo(Path.GetFileName(template.Key), template.Value.Content);
             }
 
             return null;
@@ -59,20 +59,14 @@ namespace Orchard.Templates.Services
 
         public IChangeToken Watch(string filter)
         {
-            if (filter.Contains(_themeViewsPath))
+            var template = Templates.FirstOrDefault(kv => filter.TrimStart('/').EndsWith(kv.Key));
+
+            if (template.Key != null)
             {
-                if (Templates.TryGetValue(GetTemplateName(filter), out var template))
-                {
-                    return _templatesManager.ChangeToken;
-                }
+                return TemplatesManager.ChangeToken;
             }
 
             return null;
-        }
-
-        private string GetTemplateName(string path)
-        {
-            return path.Substring(path.IndexOf(_themeViewsPath) + _themeViewsPath.Length + 1);
         }
     }
 }

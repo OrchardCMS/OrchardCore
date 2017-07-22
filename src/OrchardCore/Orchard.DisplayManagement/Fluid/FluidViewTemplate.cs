@@ -45,7 +45,7 @@ namespace Orchard.DisplayManagement.Fluid
 
         internal static async Task RenderAsync(FluidPage page)
         {
-            var path = page.ViewContext.ExecutingFilePath.Replace(RazorViewEngine.ViewExtension, ViewExtension);
+            var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
             var fileProvider = page.GetService<IFluidViewFileProviderAccessor>().FileProvider;
 
             var fileInfo = fileProvider.GetFileInfo(path);
@@ -57,8 +57,8 @@ namespace Orchard.DisplayManagement.Fluid
             }
 
             var viewImportLocations = ViewHierarchyUtility.GetViewImportsLocations(
-                path.Replace(ViewExtension, RazorViewEngine.ViewExtension))
-                .Select(x => x.Replace(RazorViewEngine.ViewExtension, ViewExtension));
+                Path.ChangeExtension(path, RazorViewEngine.ViewExtension))
+                .Select(p => Path.ChangeExtension(p, ViewExtension));
 
             IFluidTemplate viewImportsTemplate = null;
             foreach (var location in viewImportLocations)
@@ -71,7 +71,7 @@ namespace Orchard.DisplayManagement.Fluid
                 }
             }
 
-            path = path.Replace(RazorViewEngine.ViewExtension, ViewExtension);
+            path = Path.ChangeExtension(path, ViewExtension);
             var template = Parse(path, fileProvider);
 
             var context = new TemplateContext();

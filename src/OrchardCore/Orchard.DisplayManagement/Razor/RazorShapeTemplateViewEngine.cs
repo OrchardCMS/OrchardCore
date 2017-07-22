@@ -57,7 +57,7 @@ namespace Orchard.DisplayManagement.Razor
                 }
             }
 
-            viewName = viewName.Replace(Path.GetExtension(viewName), RazorViewEngine.ViewExtension);
+            viewName = Path.ChangeExtension(viewName, RazorViewEngine.ViewExtension);
 
             if (displayContext.ViewContext.View != null)
             {
