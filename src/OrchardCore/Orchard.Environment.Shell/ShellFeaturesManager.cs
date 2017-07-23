@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Models;
 
 namespace Orchard.Environment.Shell
@@ -10,47 +11,54 @@ namespace Orchard.Environment.Shell
     public class ShellFeaturesManager : IShellFeaturesManager
     {
         private readonly IExtensionManager _extensionManager;
-        private readonly ShellDescriptor _shellDescriptor;
+        private readonly IShellDescriptorManager _shellDescriptorManager;
         private readonly IShellDescriptorFeaturesManager _shellDescriptorFeaturesManager;
 
         public ShellFeaturesManager(
             IExtensionManager extensionManager,
-            ShellDescriptor shellDescriptor,
+            IShellDescriptorManager shellDescriptorManager,
             IShellDescriptorFeaturesManager shellDescriptorFeaturesManager)
         {
             _extensionManager = extensionManager;
-            _shellDescriptor = shellDescriptor;
+            _shellDescriptorManager = shellDescriptorManager;
             _shellDescriptorFeaturesManager = shellDescriptorFeaturesManager;
         }
 
-        public Task<IEnumerable<IFeatureInfo>> GetEnabledFeaturesAsync()
+        private Task<ShellDescriptor> GetCurrentShell()
         {
-            return Task.FromResult(_extensionManager.GetFeatures().Where(f => _shellDescriptor.Features.Any(sf => sf.Id == f.Id)));
+            return _shellDescriptorManager.GetShellDescriptorAsync();
         }
 
-        public Task<IEnumerable<IFeatureInfo>> EnableFeaturesAsync(IEnumerable<IFeatureInfo> features)
+        public async Task<IEnumerable<IFeatureInfo>> GetEnabledFeaturesAsync()
         {
-            return _shellDescriptorFeaturesManager.EnableFeaturesAsync(_shellDescriptor, features);
+            var shellDescriptor = await GetCurrentShell();
+            return _extensionManager.GetFeatures().Where(f => shellDescriptor.Features.Any(sf => sf.Id == f.Id));
         }
 
-        public Task<IEnumerable<IFeatureInfo>> EnableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force)
+        public async Task<IEnumerable<IFeatureInfo>> EnableFeaturesAsync(IEnumerable<IFeatureInfo> features)
         {
-            return _shellDescriptorFeaturesManager.EnableFeaturesAsync(_shellDescriptor, features, force);
+            return await _shellDescriptorFeaturesManager.EnableFeaturesAsync(await GetCurrentShell(), features);
         }
 
-        public Task<IEnumerable<IFeatureInfo>> GetDisabledFeaturesAsync()
+        public async Task<IEnumerable<IFeatureInfo>> EnableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force)
         {
-            return Task.FromResult(_extensionManager.GetFeatures().Where(f => _shellDescriptor.Features.All(sf => sf.Id != f.Id)));
+            return await _shellDescriptorFeaturesManager.EnableFeaturesAsync(await GetCurrentShell(), features, force);
         }
 
-        public Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(IEnumerable<IFeatureInfo> features)
+        public async Task<IEnumerable<IFeatureInfo>> GetDisabledFeaturesAsync()
         {
-            return _shellDescriptorFeaturesManager.DisableFeaturesAsync(_shellDescriptor, features);
+            var shellDescriptor = await GetCurrentShell();
+            return _extensionManager.GetFeatures().Where(f => shellDescriptor.Features.All(sf => sf.Id != f.Id));
         }
 
-        public Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force)
+        public async Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(IEnumerable<IFeatureInfo> features)
         {
-            return _shellDescriptorFeaturesManager.DisableFeaturesAsync(_shellDescriptor, features, force);
+            return await _shellDescriptorFeaturesManager.DisableFeaturesAsync(await GetCurrentShell(), features);
+        }
+
+        public async Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force)
+        {
+            return await _shellDescriptorFeaturesManager.DisableFeaturesAsync(await GetCurrentShell(), features, force);
         }
     }
 }

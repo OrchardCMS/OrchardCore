@@ -172,7 +172,7 @@ namespace Orchard.Environment.Extensions
 
                 var dependencies = new HashSet<IFeatureInfo>() { feature };
                 var stack = new Stack<IFeatureInfo[]>();
-                
+
                 stack.Push(GetFeatureDependenciesFunc(feature, _allOrderedFeatureInfos));
 
                 while (stack.Count > 0)
@@ -298,7 +298,7 @@ namespace Orchard.Environment.Extensions
                         typeByExtension.Type, 
                         typeByExtension.ExtensionEntry.ExtensionInfo.Id))
                     .ToDictionary(
-                        group => group.Key, 
+                        group => group.Key,
                         group => group.Select(typesByExtension => typesByExtension.Type).ToArray());
 
                 foreach (var loadedExtension in loadedExtensions)
@@ -401,9 +401,9 @@ namespace Orchard.Environment.Extensions
                     }
 
                     var configurationRoot = configurationBuilder.Build();
-                    
+
                     var manifestInfo = new ManifestInfo(configurationRoot, manifestConfiguration.Type);
-                    
+
                     // Manifest tells you what your loading, subpath is where you are loading it
                     var extensionInfo = _extensionProvider.GetExtensionInfo(manifestInfo, manifestsubPath);
 
