@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -72,7 +72,7 @@ namespace Orchard.Templates.Controllers
 
             var model = new TemplateIndexViewModel
             {
-                Templates = templates.Select(x => new TemplateEntry { Name = x.Key, Template =x.Value }).ToList(),
+                Templates = templates.Select(x => new TemplateEntry { Name = x.Key, Template = x.Value }).ToList(),
                 Pager = pagerShape
             };
 
@@ -99,17 +99,35 @@ namespace Orchard.Templates.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (String.IsNullOrWhiteSpace(model.View))
                 {
-                    ModelState.AddModelError(nameof(TemplateViewModel.Name), T["The name is mandatory."]);
+                    ModelState.AddModelError(nameof(TemplateViewModel.Extension), T["The view is mandatory."]);
+                }
+
+                if (String.IsNullOrWhiteSpace(model.Extension))
+                {
+                    ModelState.AddModelError(nameof(TemplateViewModel.Extension), T["The extension is mandatory."]);
+                }
+
+                if (String.IsNullOrWhiteSpace(model.Theme))
+                {
+                    ModelState.AddModelError(nameof(TemplateViewModel.Theme), T["The theme is mandatory."]);
                 }
             }
 
             if (ModelState.IsValid)
             {
-                var template = new Template { Content = model.Content, Description = model.Description };
+                var template = new Template
+                {
+                    View = model.View,
+                    Extension = model.Extension,
+                    Theme = model.Theme,
+                    Content = model.Content,
+                    Description = model.Description
+                };
 
-                await _templatesManager.UpdateTemplateAsync(model.Name, template);
+                await _templatesManager.UpdateTemplateAsync(string.Format("{0}/Views/{1}{2}",
+                    model.Theme, model.View, model.Extension), template);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -136,7 +154,9 @@ namespace Orchard.Templates.Controllers
 
             var model = new TemplateViewModel
             {
-                Name = name,
+                View = template.View,
+                Extension = template.Extension,
+                Theme = template.Theme,
                 Content = template.Content,
                 Description = template.Description
             };
@@ -156,22 +176,31 @@ namespace Orchard.Templates.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (String.IsNullOrWhiteSpace(model.View))
                 {
-                    ModelState.AddModelError(nameof(TemplateViewModel.Name), T["The name is mandatory."]);
+                    ModelState.AddModelError(nameof(TemplateViewModel.View), T["The view is mandatory."]);
                 }
             }
 
-            if (!templatesDocument.Templates.ContainsKey(model.Name))
+            var path = string.Format("{0}/Views/{1}{2}", model.Theme, model.View, model.Extension);
+
+            if (!templatesDocument.Templates.ContainsKey(path))
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                var template = new Template { Content = model.Content, Description = model.Description };
+                var template = new Template
+                {
+                    View = model.View,
+                    Extension = model.Extension,
+                    Theme = model.Theme,
+                    Content = model.Content,
+                    Description = model.Description
+                };
 
-                await _templatesManager.UpdateTemplateAsync(model.Name, template);
+                await _templatesManager.UpdateTemplateAsync(path, template);
 
                 return RedirectToAction(nameof(Index));
             }

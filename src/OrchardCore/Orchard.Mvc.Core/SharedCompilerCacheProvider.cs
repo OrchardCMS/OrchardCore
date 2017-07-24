@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
@@ -15,8 +16,9 @@ namespace Orchard.Mvc
     /// </summary>
     public class SharedCompilerCacheProvider : ICompilerCacheProvider
     {
-        private static ICompilerCache _cache;
+        private static IDictionary<string, Type> _SharedViews;
         private static object _synLock = new object();
+        private readonly CompilerCache _cache;
 
         public SharedCompilerCacheProvider(
             ApplicationPartManager applicationPartManager,
@@ -24,41 +26,52 @@ namespace Orchard.Mvc
             IEnumerable<IApplicationFeatureProvider<ViewsFeature>> viewsFeatureProviders,
             IHostingEnvironment env)
         {
-            lock (_synLock)
+            if (_SharedViews == null)
             {
-                if (_cache == null)
+                lock (_synLock)
                 {
-                    var feature = new ViewsFeature();
+                    if (_SharedViews == null)
+                    {
+                        var feature = new ViewsFeature();
 
-                    var featureProviders = applicationPartManager.FeatureProviders
-                        .OfType<IApplicationFeatureProvider<ViewsFeature>>()
-                        .ToList();
+                        var featureProviders = applicationPartManager.FeatureProviders
+                            .OfType<IApplicationFeatureProvider<ViewsFeature>>()
+                            .ToList();
 
-                    featureProviders.AddRange(viewsFeatureProviders);
+                        featureProviders.AddRange(viewsFeatureProviders);
 
-                    var assemblyParts =
-                        new AssemblyPart[]
+                        var assemblyParts = new AssemblyPart[]
                         {
                             new AssemblyPart(Assembly.Load(new AssemblyName(env.ApplicationName)))
                         };
 
-                    foreach (var provider in featureProviders)
-                    {
-                        provider.PopulateFeature(assemblyParts, feature);
-                    }
+                        foreach (var provider in featureProviders)
+                        {
+                            provider.PopulateFeature(assemblyParts, feature);
+                        }
 
-                    _cache = new CompilerCache(fileProviderAccessor.FileProvider, feature.Views);
+                        _SharedViews = feature.Views;
+                    }
                 }
             }
+
+            var shellFeatureProviders = viewsFeatureProviders.OfType<IShellFeatureProvider<ViewsFeature>>();
+
+            var shellFeature = new ViewsFeature();
+
+            foreach (var provider in shellFeatureProviders)
+            {
+                provider.PopulateShellFeature(new AssemblyPart[0], shellFeature);
+            }
+
+            _cache = new CompilerCache(fileProviderAccessor.FileProvider,
+                _SharedViews.Concat(shellFeature.Views).ToDictionary(kv => kv.Key, kv => kv.Value));
         }
 
         /// <inheritdoc />
         public ICompilerCache Cache
         {
-            get
-            {
-                return _cache;
-            }
+            get { return _cache; }
         }
     }
 }

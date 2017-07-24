@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using Orchard.DisplayManagement.Implementation;
@@ -47,14 +46,11 @@ namespace Orchard.DisplayManagement.Razor
         {
             var viewName = "/" + relativePath;
 
-            if (Path.GetExtension(viewName) == RazorViewEngine.ViewExtension)
-            {
-                var fileInfo = _fileProviderAccessor.FileProvider.GetFileInfo(viewName);
+            var fileInfo = _fileProviderAccessor.FileProvider.GetFileInfo(viewName);
 
-                if (!fileInfo.Exists)
-                {
-                    return Task.FromResult((IHtmlContent) new HtmlString($"<h1>{ Path.GetFileName(viewName) }</h1>"));
-                }
+            if (!fileInfo.Exists)
+            {
+                return Task.FromResult((IHtmlContent)new HtmlString($"<h1>{ Path.GetFileName(viewName) }</h1>"));
             }
 
             viewName = Path.ChangeExtension(viewName, RazorViewEngine.ViewExtension);

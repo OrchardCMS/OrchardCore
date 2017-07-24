@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
-using Orchard.Admin;
+using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.FileProviders;
+using Orchard.Environment.Extensions;
 
 namespace Orchard.Templates.Services
 {
-    public interface ITemplateFileProvider : IFileProvider { }
+    public interface ITemplateFileProvider : IShellFileProvider { }
 
     /// <summary>
     /// This custom <see cref="IFileProvider"/> implementation provides the template contents
@@ -19,38 +20,52 @@ namespace Orchard.Templates.Services
     public class TemplateFileProvider : ITemplateFileProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly Dictionary<string, string> _viewsFolders;
+        private readonly IFileProvider _fileProvider;
 
-        public TemplateFileProvider(IHttpContextAccessor httpContextAccessor)
+        public TemplateFileProvider(
+            IHostingEnvironment hostingEnvironment,
+            IHttpContextAccessor httpContextAccessor,
+            IExtensionManager extensionManager)
         {
             _httpContextAccessor = httpContextAccessor;
+
+            // waiting for manifest tags to be able to exclude admin and hidden themes
+            _viewsFolders = extensionManager.GetExtensions().Where(e => e.Manifest.IsTheme()).ToDictionary(
+                    e => string.Format("{0}/{1}", e.SubPath.Replace('\\', '/').Trim('/'), "Views"),
+                    e => string.Format("{0}/{1}", e.Id, "Views"));
+
+            _fileProvider = hostingEnvironment.ContentRootFileProvider;
         }
 
         private TemplatesManager TemplatesManager => _httpContextAccessor
-            .HttpContext.RequestServices.GetRequiredService<TemplatesManager>();
+            .HttpContext.RequestServices.GetService<TemplatesManager>();
 
         private Dictionary<string, Models.Template> Templates => TemplatesManager
             .GetTemplatesDocumentAsync().GetAwaiter().GetResult().Templates;
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
-            var entries = new List<IFileInfo>();
-
-            if (TryGetTemplateFolderName(subpath, out var folderName))
+            if (_viewsFolders.TryGetValue(subpath.Trim('/'), out var viewsFolder))
             {
-                entries.AddRange(Templates.Where(kv => kv.Key.StartsWith(folderName)).Select(kvp =>
-                    new ContentFileInfo(kvp.Key.Substring(folderName.Length + 1), kvp.Value.Content)));
+                var entries = new List<IFileInfo>();
+
+                entries.AddRange(Templates.Where(kv => kv.Key.StartsWith(viewsFolder + '/')).Select(kvp =>
+                    new ContentFileInfo(kvp.Key.Substring(viewsFolder.Length + 1), kvp.Value.Content)));
+
+                return new DirectoryContents(entries);
             }
 
-            return new DirectoryContents(entries);
+            return new DirectoryContents(_fileProvider.GetDirectoryContents(subpath).Where(f => f.IsDirectory));
         }
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (TryGetTemplateFileName(subpath, out var fileName))
+            if (TryGetTemplatePath(subpath, out var path))
             {
-                if (Templates.TryGetValue(fileName, out var template))
+                if (Templates.TryGetValue(path, out var template))
                 {
-                    return new ContentFileInfo(Path.GetFileName(fileName), template.Content);
+                    return new ContentFileInfo(Path.GetFileName(path), template.Content);
                 }
             }
 
@@ -59,9 +74,9 @@ namespace Orchard.Templates.Services
 
         public IChangeToken Watch(string filter)
         {
-            if (TryGetTemplateFileName(filter, out var fileName))
+            if (TryGetTemplatePath(filter, out var templatePath))
             {
-                if (Templates.TryGetValue(fileName, out var template))
+                if (Templates.TryGetValue(templatePath, out var template))
                 {
                     return TemplatesManager.ChangeToken;
                 }
@@ -70,37 +85,27 @@ namespace Orchard.Templates.Services
             return null;
         }
 
-        private bool TryGetTemplateFolderName(string path, out string folderName)
+        private bool TryGetTemplatePath(string subpath, out string templatePath)
         {
-            var segments = path.TrimStart('/').Split('/');
-            var index = Array.IndexOf(segments, "Views");
+            /*var folder = _viewsFolders.FirstOrDefault(p => subpath.TrimStart('/').StartsWith(p.Key + '/'));
 
-            if (index > 1 && index == segments.Count() - 1)
+            if (folder.Key != null)
             {
-                folderName = string.Format("{0}/{1}", segments[index - 1], segments[index]);
+                templatePath = string.Format("{0}/{1}", folder.Value, subpath.TrimStart('/').Substring(folder.Key.Length + 1));
+                return true;
+            }*/
+
+            var key = _viewsFolders.Keys.FirstOrDefault(k => subpath.TrimStart('/').StartsWith(k + '/'));
+
+            if (key != null)
+            {
+                templatePath = string.Format("{0}/{1}", _viewsFolders[key],
+                    subpath.TrimStart('/').Substring(key.Length + 1));
+
                 return true;
             }
 
-            folderName = null;
-            return false;
-        }
-
-        private bool TryGetTemplateFileName(string path, out string fileName)
-        {
-            if (!AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
-            {
-                var segments = path.TrimStart('/').Split('/');
-                var index = Array.IndexOf(segments, "Views");
-
-                if (index > 1 && index < segments.Count() - 1)
-                {
-                    fileName = string.Format("{0}/{1}/{2}", segments[index - 1], segments[index],
-                        string.Join("/", segments, index + 1, segments.Count() - index - 1));
-                    return true;
-                }
-            }
-
-            fileName = null;
+            templatePath = null;
             return false;
         }
     }

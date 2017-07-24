@@ -8,35 +8,45 @@ using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.FileProviders;
 using Orchard.DisplayManagement.Fluid.Internal;
 using Orchard.Environment.Extensions;
+using Orchard.Mvc;
 
 namespace Orchard.DisplayManagement.Fluid
 {
-    public class FluidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
+    public class FluidViewsFeatureProvider : IShellFeatureProvider<ViewsFeature>
     {
-        private static List<string> _paths;
+        private static List<string> _SharedPaths;
         private static object _synLock = new object();
+        private readonly List<string> _shellPaths;
 
         public FluidViewsFeatureProvider(
             IFluidViewFileProviderAccessor fileProviderAccessor,
             IOptions<ExtensionExpanderOptions> expanderOptionsAccessor)
         {
-            if (_paths != null)
+            _shellPaths = new List<string>();
+
+            foreach (var option in expanderOptionsAccessor.Value.Options)
+            {
+                var filePaths = fileProviderAccessor.ShellFileProvider.GetViewFilePaths(
+                    option.SearchPath, new[] { FluidViewTemplate.ViewExtension });
+                _shellPaths.AddRange(filePaths.Select(p => string.Format("/{0}", p)));
+            }
+
+            if (_SharedPaths != null)
             {
                 return;
             }
 
             lock (_synLock)
             {
-                if (_paths == null)
+                if (_SharedPaths == null)
                 {
-                    _paths = new List<string>();
+                    _SharedPaths = new List<string>();
 
                     foreach (var option in expanderOptionsAccessor.Value.Options)
                     {
-                        var searchPath = option.SearchPath.Replace("\\", "/").Trim('/');
-                        var filePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
-                            searchPath, new[] { FluidViewTemplate.ViewExtension });
-                        _paths.AddRange(filePaths.Select(p => string.Format("/{0}", p)));
+                        var filePaths = fileProviderAccessor.SharedFileProvider.GetViewFilePaths(
+                            option.SearchPath, new[] { FluidViewTemplate.ViewExtension });
+                        _SharedPaths.AddRange(filePaths.Select(p => string.Format("/{0}", p)));
                     }
                 }
             }
@@ -44,7 +54,19 @@ namespace Orchard.DisplayManagement.Fluid
 
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, ViewsFeature feature)
         {
-            foreach (var path in _paths)
+            foreach (var path in _SharedPaths)
+            {
+                if (!Path.GetFileName(path).StartsWith("_"))
+                {
+                    var viewPath = Path.ChangeExtension(path, RazorViewEngine.ViewExtension);
+                    feature.Views[viewPath] = typeof(FluidPage);
+                }
+            }
+        }
+
+        public void PopulateShellFeature(IEnumerable<ApplicationPart> parts, ViewsFeature feature)
+        {
+            foreach (var path in _shellPaths)
             {
                 if (!Path.GetFileName(path).StartsWith("_"))
                 {

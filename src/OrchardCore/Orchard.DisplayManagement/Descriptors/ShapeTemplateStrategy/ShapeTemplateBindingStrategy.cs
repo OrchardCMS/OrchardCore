@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.FileProviders;
@@ -86,11 +87,8 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
                 {
-                    var relativePath = string.Format("{0}/{1}", extensionDescriptor
-                        .SubPath.Replace("\\", "/").Trim('/'), subPath);
-
-                    var filePaths = _fileProviderAccessor.FileProvider.GetViewFilePaths(
-                        relativePath, _viewEnginesByExtension.Keys.ToArray(),
+                    var filePaths = _fileProviderAccessor.FileProvider.GetViewFilePaths(Path.Combine(
+                        extensionDescriptor.SubPath, subPath), _viewEnginesByExtension.Keys.ToArray(),
                         inViewsFolder: true, inDepth: false).ToArray();
 
                     return new { harvesterInfo.harvester, subPath, filePaths };
@@ -142,13 +140,19 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                             feature.Id);
                     }
 
-                    var viewEngine = _viewEnginesByExtension[iter.shapeContext.harvestShapeInfo.Extension];
+                    var viewEngineType = _viewEnginesByExtension[iter.shapeContext.harvestShapeInfo.Extension].GetType();
 
                     builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
                         .From(feature)
                         .BoundAs(
                             hit.shapeContext.harvestShapeInfo.RelativePath, shapeDescriptor => displayContext =>
-                                viewEngine.RenderAsync(hit.shapeContext.harvestShapeInfo.RelativePath, displayContext));
+                            {
+                                var viewEngine = displayContext.ServiceProvider
+                                    .GetRequiredService<IEnumerable<IShapeTemplateViewEngine>>()
+                                    .FirstOrDefault(e => e.GetType() == viewEngineType);
+
+                                return viewEngine.RenderAsync(hit.shapeContext.harvestShapeInfo.RelativePath, displayContext);
+                            });
                 }
             }
 

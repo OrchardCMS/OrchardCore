@@ -13,11 +13,23 @@
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post">
-    <div class="form-group" asp-validation-class-for="Name">
-        <label asp-for="Name">@T["Name"]</label>
-        <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>
-        <input asp-for="Name" class="form-control" autofocus />
-        <span class="hint">@T["The name of the template used as a subpath under the front end theme."]</span>
+    <div class="form-group" asp-validation-class-for="View">
+        <label asp-for="View">@T["View"]</label>
+        <span asp-validation-for="View" class="text-danger">@T["The view name is required."]</span>
+        <input asp-for="View" class="form-control" readonly autofocus />
+        <span class="hint">@T["The view name of the template."]</span>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="Extension">
+        <label asp-for="Extension">@T["Extension"]</label>
+        <input asp-for="Extension" class="form-control" readonly autofocus />
+        <span class="hint">@T["The extension used to select the template engine."]</span>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="Theme">
+        <label asp-for="Theme">@T["Theme"]</label>
+        <input asp-for="Theme" class="form-control" readonly autofocus />
+        <span class="hint">@T["The theme used to validate the template."]</span>
     </div>
 
     <div class="form-group" asp-validation-class-for="Description">

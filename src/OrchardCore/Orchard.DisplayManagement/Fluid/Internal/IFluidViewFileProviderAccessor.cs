@@ -11,5 +11,15 @@ namespace Orchard.DisplayManagement.Fluid.Internal
         /// Gets the <see cref="IFileProvider"/> used to look up Fluid files.
         /// </summary>
         IFileProvider FileProvider { get; }
+
+        /// <summary>
+        /// Gets the <see cref="IFileProvider"/> used to look up Fluid files across all tenants.
+        /// </summary>
+        IFileProvider SharedFileProvider { get; }
+
+        /// <summary>
+        /// Gets the <see cref="IFileProvider"/> used to look up Fluid files for a given tenant.
+        /// </summary>
+        IFileProvider ShellFileProvider { get; }
     }
 }
