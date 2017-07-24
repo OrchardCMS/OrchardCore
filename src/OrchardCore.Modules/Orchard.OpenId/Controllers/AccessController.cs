@@ -9,13 +9,13 @@ using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OpenIddict.Core;
-using Orchard.Mvc.ActionConstraints;
 using Orchard.OpenId.Models;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.ViewModels;
@@ -53,7 +53,7 @@ namespace Orchard.OpenId.Controllers
             _roleManager = roleManager;
         }
 
-        [HttpGet]
+        [HttpGet, HttpPost]
         public async Task<IActionResult> Authorize()
         {
             var response = HttpContext.GetOpenIdConnectResponse();
@@ -121,6 +121,18 @@ namespace Orchard.OpenId.Controllers
                 });
             }
 
+            if (Request.HasFormContentType)
+            {
+                if (!string.IsNullOrEmpty(Request.Form["submit.Accept"]))
+                {
+                    return await IssueAccessIdentityTokensAsync(request);
+                }
+                else if (!string.IsNullOrEmpty(Request.Form["submit.Deny"]))
+                {
+                    return Forbid(OpenIdConnectServerDefaults.AuthenticationScheme);
+                }
+            }
+
             if (application.SkipConsent)
             {
                 return await IssueAccessIdentityTokensAsync(request);
@@ -132,61 +144,6 @@ namespace Orchard.OpenId.Controllers
                 RequestId = request.RequestId,
                 Scope = request.Scope
             });
-        }
-
-        [ActionName(nameof(Authorize))]
-        [HttpPost, FormValueRequired("submit.Accept")]
-        public async Task<IActionResult> Accept()
-        {
-            var response = HttpContext.GetOpenIdConnectResponse();
-            if (response != null)
-            {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = response.Error,
-                    ErrorDescription = response.ErrorDescription
-                });
-            }
-
-            // If the request is missing, this likely means that
-            // this endpoint was not enabled in the settings.
-            // In this case, simply return a 404 response.
-            var request = HttpContext.GetOpenIdConnectRequest();
-            if (request == null)
-            {
-                return NotFound();
-            }
-
-            return await IssueAccessIdentityTokensAsync(request);
-        }
-
-        [ActionName(nameof(Authorize))]
-        [HttpPost, FormValueRequired("submit.Deny")]
-        public IActionResult Deny()
-        {
-            var response = HttpContext.GetOpenIdConnectResponse();
-            if (response != null)
-            {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = response.Error,
-                    ErrorDescription = response.ErrorDescription
-                });
-            }
-
-            var request = HttpContext.GetOpenIdConnectRequest();
-            if (request == null)
-            {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = OpenIdConnectConstants.Errors.ServerError,
-                    ErrorDescription = T["The authorization server is not correctly configured."]
-                });
-            }
-
-            // Notify OpenIddict that the authorization grant has been denied by the resource owner
-            // to redirect the user agent to the client application using the appropriate response_mode.
-            return Forbid(OpenIdConnectServerDefaults.AuthenticationScheme);
         }
 
         [AllowAnonymous, HttpGet]
