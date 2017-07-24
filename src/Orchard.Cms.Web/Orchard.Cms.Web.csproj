@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="NLog.config" />
     <Content Include="NLog.config" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
