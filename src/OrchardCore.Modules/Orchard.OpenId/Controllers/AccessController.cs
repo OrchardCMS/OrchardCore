@@ -332,8 +332,8 @@ namespace Orchard.OpenId.Controllers
                 });
             }
 
-            // Ensure the user is allowed to sign in.
-            if (!await _signInManager.CanSignInAsync(user))
+            var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
+            if (result.IsNotAllowed)
             {
                 return BadRequest(new OpenIdConnectResponse
                 {
@@ -341,45 +341,21 @@ namespace Orchard.OpenId.Controllers
                     ErrorDescription = T["The specified user is not allowed to sign in."]
                 });
             }
-
-            // Reject the token request if two-factor authentication has been enabled by the user.
-            if (_userManager.SupportsUserTwoFactor && await _userManager.GetTwoFactorEnabledAsync(user))
+            else if (result.RequiresTwoFactor)
             {
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidGrant,
-                    ErrorDescription = T["The specified user is not allowed to sign in."]
+                    ErrorDescription = T["The specified user is not allowed to sign in using the password method."]
                 });
             }
-
-            // Ensure the user is not already locked out.
-            if (_userManager.SupportsUserLockout && await _userManager.IsLockedOutAsync(user))
+            else if (!result.Succeeded)
             {
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidGrant,
                     ErrorDescription = T["The username/password couple is invalid."]
                 });
-            }
-
-            // Ensure the password is valid.
-            if (!await _userManager.CheckPasswordAsync(user, request.Password))
-            {
-                if (_userManager.SupportsUserLockout)
-                {
-                    await _userManager.AccessFailedAsync(user);
-                }
-
-                return BadRequest(new OpenIdConnectResponse
-                {
-                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
-                    ErrorDescription = T["The username/password couple is invalid."]
-                });
-            }
-
-            if (_userManager.SupportsUserLockout)
-            {
-                await _userManager.ResetAccessFailedCountAsync(user);
             }
 
             var ticket = await CreateTicketAsync(request, user);
