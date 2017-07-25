@@ -16,11 +16,6 @@ namespace Orchard.OpenId.ModelBinders
             {
                 var valueAsString = valueProviderResult.FirstValue;
 
-                if (string.IsNullOrEmpty(valueAsString))
-                {
-                    return TaskCache.CompletedTask;
-                }
-
                 if (!string.IsNullOrEmpty(valueAsString))
                 {
                     var origins = valueAsString

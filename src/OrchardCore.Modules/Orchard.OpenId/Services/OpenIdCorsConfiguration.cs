@@ -20,14 +20,17 @@ namespace Orchard.OpenId.Services
 
         public void Configure(CorsOptions options)
         {
-            var openIdApplications = _openIdApplicationStore.GetAllApps().GetAwaiter().GetResult();
-            if (openIdApplications == null || !openIdApplications.Any()) return;
+            var openIdApplications = _openIdApplicationStore.GetAllApps().GetAwaiter().GetResult().ToList();
+            if (openIdApplications == null || openIdApplications.Count==0) return;
             var appOrigins = openIdApplications
                 .Where(app => (app.AllowPasswordFlow || app.AllowClientCredentialsFlow || app.AllowRefreshTokenFlow) 
                               && app.AllowedOrigins != null && app.AllowedOrigins.Any())
                 .SelectMany(app => app.AllowedOrigins)
                 .ToArray();
-            if (!appOrigins.Any()) return;
+            if (appOrigins.Length == 0)
+            {
+                return;
+            }
             
             //Auth end-points policy
             options.AddPolicy(Constants.OpenIdConnectAuthPolicy, builder => builder
