@@ -46,14 +46,29 @@ namespace Orchard.DisplayManagement.Fluid
         internal static async Task RenderAsync(FluidPage page)
         {
             var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
-            var fileProvider = page.GetService<IFluidViewFileProviderAccessor>().FileProvider;
+            var fileProviderAccessor = page.GetService<IFluidViewFileProviderAccessor>();
+            var fileInfo = fileProviderAccessor.ShellFileProvider.GetFileInfo(path);
 
-            var fileInfo = fileProvider.GetFileInfo(path);
+            IMemoryCache cache;
+            IFileProvider fileProvider;
 
-            if (!fileInfo.Exists)
+            if (fileInfo != null && fileInfo.Exists)
             {
-                page.WriteLiteral($"<h1>{ Path.GetFileName(path) }</h1>");
-                return;
+                cache = page.GetService<IMemoryCache>();
+                fileProvider = fileProviderAccessor.ShellFileProvider;
+            }
+            else
+            {
+                fileInfo = fileProviderAccessor.SharedFileProvider.GetFileInfo(path);
+
+                if (fileInfo == null || !fileInfo.Exists)
+                {
+                    page.WriteLiteral($"<h1>{ Path.GetFileName(path) }</h1>");
+                    return;
+                }
+
+                cache = Cache;
+                fileProvider = fileProviderAccessor.SharedFileProvider;
             }
 
             var viewImportLocations = ViewHierarchyUtility.GetViewImportsLocations(
@@ -63,16 +78,27 @@ namespace Orchard.DisplayManagement.Fluid
             IFluidTemplate viewImportsTemplate = null;
             foreach (var location in viewImportLocations)
             {
-                fileInfo = fileProvider.GetFileInfo(location);
+                fileInfo = fileProviderAccessor.ShellFileProvider.GetFileInfo(location);
 
-                if (fileInfo.Exists)
+                if (fileInfo != null && fileInfo.Exists)
                 {
-                    viewImportsTemplate = Parse(location, fileProvider);
+                    viewImportsTemplate = Parse(location, fileProviderAccessor.FileProvider, cache);
+                    break;
+                }
+                else
+                {
+                    fileInfo = fileProviderAccessor.SharedFileProvider.GetFileInfo(location);
+
+                    if (fileInfo != null && fileInfo.Exists)
+                    {
+                        viewImportsTemplate = Parse(location, fileProviderAccessor.FileProvider, Cache);
+                        break;
+                    }
                 }
             }
 
             path = Path.ChangeExtension(path, ViewExtension);
-            var template = Parse(path, fileProvider);
+            var template = Parse(path, fileProviderAccessor.FileProvider, cache);
 
             var context = new TemplateContext();
             context.AmbientValues.Add("FluidPage", page);
@@ -145,9 +171,9 @@ namespace Orchard.DisplayManagement.Fluid
             page.WriteLiteral(await template.RenderAsync(context));
         }
 
-        internal static IFluidTemplate Parse(string path, IFileProvider fileProvider)
+        internal static IFluidTemplate Parse(string path, IFileProvider fileProvider, IMemoryCache cache)
         {
-            return Cache.GetOrCreate(path, entry =>
+            return cache.GetOrCreate(path, entry =>
             {
                 entry.SlidingExpiration = TimeSpan.FromHours(1);
 

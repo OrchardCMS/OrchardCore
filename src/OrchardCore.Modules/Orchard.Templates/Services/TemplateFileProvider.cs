@@ -87,14 +87,6 @@ namespace Orchard.Templates.Services
 
         private bool TryGetTemplatePath(string subpath, out string templatePath)
         {
-            /*var folder = _viewsFolders.FirstOrDefault(p => subpath.TrimStart('/').StartsWith(p.Key + '/'));
-
-            if (folder.Key != null)
-            {
-                templatePath = string.Format("{0}/{1}", folder.Value, subpath.TrimStart('/').Substring(folder.Key.Length + 1));
-                return true;
-            }*/
-
             var key = _viewsFolders.Keys.FirstOrDefault(k => subpath.TrimStart('/').StartsWith(k + '/'));
 
             if (key != null)

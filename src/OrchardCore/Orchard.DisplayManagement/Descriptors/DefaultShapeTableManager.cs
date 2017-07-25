@@ -18,6 +18,7 @@ namespace Orchard.DisplayManagement.Descriptors
     {
         private static ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new ConcurrentDictionary<string, FeatureShapeDescriptor>();
 
+        private readonly string _shellName;
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IExtensionManager _extensionManager;
@@ -27,6 +28,7 @@ namespace Orchard.DisplayManagement.Descriptors
         private readonly IMemoryCache _memoryCache;
 
         public DefaultShapeTableManager(
+            ShellSettings shellSettings,
             IEnumerable<IShapeTableProvider> bindingStrategies,
             IShellFeaturesManager shellFeaturesManager,
             IExtensionManager extensionManager,
@@ -34,6 +36,7 @@ namespace Orchard.DisplayManagement.Descriptors
             ILogger<DefaultShapeTableManager> logger,
             IMemoryCache memoryCache)
         {
+            _shellName = shellSettings.Name;
             _bindingStrategies = bindingStrategies;
             _shellFeaturesManager = shellFeaturesManager;
             _extensionManager = extensionManager;
@@ -55,7 +58,8 @@ namespace Orchard.DisplayManagement.Descriptors
                 }
 
                 var excludedFeatures = _shapeDescriptors.Count == 0 ? new List<string>() :
-                    _shapeDescriptors.Select(kv => kv.Value.Feature.Id).Distinct().ToList();
+                    _shapeDescriptors.Where(kv => kv.Value.Feature.Id != themeId)
+                        .Select(kv => kv.Value.Feature.Id).Distinct().ToList();
 
                 foreach (var bindingStrategy in _bindingStrategies)
                 {
@@ -79,6 +83,7 @@ namespace Orchard.DisplayManagement.Descriptors
                     .ToList();
 
                 var descriptors = _shapeDescriptors
+                    .Where(sd => sd.Value.Shell == "" || sd.Value.Shell == _shellName)
                     .Where(sd => enabledAndOrderedFeatureIds.Contains(sd.Value.Feature.Id))
                     .Where(sd => IsModuleOrRequestedTheme(sd.Value.Feature, themeId))
                     .OrderBy(sd => enabledAndOrderedFeatureIds.IndexOf(sd.Value.Feature.Id))
@@ -115,7 +120,8 @@ namespace Orchard.DisplayManagement.Descriptors
             {
                 var firstAlteration = alterations.First();
 
-                var key = bindingStrategy.GetType().Name
+                var key = firstAlteration.Shell
+                    + bindingStrategy.GetType().Name
                     + firstAlteration.Feature.Id
                     + firstAlteration.ShapeType.ToLower();
 
@@ -123,6 +129,7 @@ namespace Orchard.DisplayManagement.Descriptors
                 {
                     var descriptor = new FeatureShapeDescriptor
                     (
+                        firstAlteration.Shell,
                         firstAlteration.Feature,
                         firstAlteration.ShapeType
                     );

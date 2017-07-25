@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions.Features;
 
@@ -11,10 +10,11 @@ namespace Orchard.DisplayManagement.Descriptors
 {
     public class ShapeAlterationBuilder
     {
-        IFeatureInfo _feature;
-        readonly string _shapeType;
-        readonly string _bindingName;
-        readonly IList<Action<ShapeDescriptor>> _configurations = new List<Action<ShapeDescriptor>>();
+        private string _shell = string.Empty;
+        private IFeatureInfo _feature;
+        private readonly string _shapeType;
+        private readonly string _bindingName;
+        private readonly IList<Action<ShapeDescriptor>> _configurations = new List<Action<ShapeDescriptor>>();
 
         public ShapeAlterationBuilder(IFeatureInfo feature, string shapeType)
         {
@@ -35,6 +35,12 @@ namespace Orchard.DisplayManagement.Descriptors
         public ShapeAlterationBuilder From(IFeatureInfo feature)
         {
             _feature = feature;
+            return this;
+        }
+
+        public ShapeAlterationBuilder ForShell(string shell)
+        {
+            _shell = shell;
             return this;
         }
 
@@ -139,7 +145,7 @@ namespace Orchard.DisplayManagement.Descriptors
 
         public ShapeAlteration Build()
         {
-            return new ShapeAlteration(_shapeType, _feature, _configurations.ToArray());
+            return new ShapeAlteration(_shell, _shapeType, _feature, _configurations.ToArray());
         }
     }
 

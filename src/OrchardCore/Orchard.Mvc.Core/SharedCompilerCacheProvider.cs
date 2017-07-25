@@ -64,8 +64,8 @@ namespace Orchard.Mvc
                 provider.PopulateShellFeature(new AssemblyPart[0], shellFeature);
             }
 
-            _cache = new CompilerCache(fileProviderAccessor.FileProvider,
-                _SharedViews.Concat(shellFeature.Views).ToDictionary(kv => kv.Key, kv => kv.Value));
+            _cache = new CompilerCache(fileProviderAccessor.FileProvider, _SharedViews
+                .Concat(shellFeature.Views).ToDictionary(kv => kv.Key, kv => kv.Value));
         }
 
         /// <inheritdoc />
