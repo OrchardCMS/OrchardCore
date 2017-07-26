@@ -11,7 +11,12 @@ namespace Orchard.DisplayManagement.Fluid
     {
         public override async Task ExecuteAsync()
         {
-            await FluidViewTemplate.RenderAsync(this);
+            await RenderAsync(this);
+        }
+
+        public static async Task RenderAsync(FluidPage page)
+        {
+            await FluidViewTemplate.RenderAsync(page);
         }
 
         public T GetService<T>()

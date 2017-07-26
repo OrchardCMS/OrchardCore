@@ -62,13 +62,21 @@ namespace Orchard.Templates.Services
             // not from the cache, from a new query not to create a new database record
             var document = await _session.Query<TemplatesDocument>().FirstOrDefaultAsync();
 
+            _signal.SignalToken($"ShapeTableToken:{document.Templates[name].Theme}");
+
             document.Templates.Remove(name);
             _session.Save(document);
 
             _memoryCache.Set(CacheKey, document);
             _signal.SignalToken(CacheKey);
         }
-        
+
+        public async Task AddTemplateAsync(string name, Template template)
+        {
+            _signal.SignalToken($"ShapeTableToken:{template.Theme}");
+            await UpdateTemplateAsync(name, template);
+        }
+
         public async Task UpdateTemplateAsync(string name, Template template)
         {
             // not from the cache, from a new query not to create a new database record

@@ -16,7 +16,7 @@ namespace Orchard.Mvc
     /// </summary>
     public class SharedCompilerCacheProvider : ICompilerCacheProvider
     {
-        private static IDictionary<string, Type> _SharedViews;
+        private static IDictionary<string, Type> _views;
         private static object _synLock = new object();
         private readonly CompilerCache _cache;
 
@@ -26,11 +26,11 @@ namespace Orchard.Mvc
             IEnumerable<IApplicationFeatureProvider<ViewsFeature>> viewsFeatureProviders,
             IHostingEnvironment env)
         {
-            if (_SharedViews == null)
+            if (_views == null)
             {
                 lock (_synLock)
                 {
-                    if (_SharedViews == null)
+                    if (_views == null)
                     {
                         var feature = new ViewsFeature();
 
@@ -50,22 +50,12 @@ namespace Orchard.Mvc
                             provider.PopulateFeature(assemblyParts, feature);
                         }
 
-                        _SharedViews = feature.Views;
+                        _views = feature.Views;
                     }
                 }
             }
 
-            var shellFeatureProviders = viewsFeatureProviders.OfType<IShellFeatureProvider<ViewsFeature>>();
-
-            var shellFeature = new ViewsFeature();
-
-            foreach (var provider in shellFeatureProviders)
-            {
-                provider.PopulateShellFeature(new AssemblyPart[0], shellFeature);
-            }
-
-            _cache = new CompilerCache(fileProviderAccessor.FileProvider, _SharedViews
-                .Concat(shellFeature.Views).ToDictionary(kv => kv.Key, kv => kv.Value));
+            _cache = new CompilerCache(fileProviderAccessor.FileProvider, _views);
         }
 
         /// <inheritdoc />

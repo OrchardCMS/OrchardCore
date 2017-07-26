@@ -118,7 +118,7 @@ namespace Orchard.Templates.Controllers
                     Description = model.Description
                 };
 
-                await _templatesManager.UpdateTemplateAsync(string.Format("{0}/Views/{1}{2}",
+                await _templatesManager.AddTemplateAsync(string.Format("{0}/Views/{1}{2}",
                     model.Theme, model.View, FluidViewTemplate.ViewExtension), template);
 
                 return RedirectToAction(nameof(Index));

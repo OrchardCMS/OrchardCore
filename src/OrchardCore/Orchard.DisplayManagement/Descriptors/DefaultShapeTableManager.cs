@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+using Orchard.Environment.Cache;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
@@ -26,6 +28,7 @@ namespace Orchard.DisplayManagement.Descriptors
         private readonly ILogger _logger;
 
         private readonly IMemoryCache _memoryCache;
+        private readonly ISignal _signal;
 
         public DefaultShapeTableManager(
             ShellSettings shellSettings,
@@ -34,7 +37,8 @@ namespace Orchard.DisplayManagement.Descriptors
             IExtensionManager extensionManager,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<DefaultShapeTableManager> logger,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            ISignal signal)
         {
             _shellName = shellSettings.Name;
             _bindingStrategies = bindingStrategies;
@@ -43,14 +47,19 @@ namespace Orchard.DisplayManagement.Descriptors
             _typeFeatureProvider = typeFeatureProvider;
             _logger = logger;
             _memoryCache = memoryCache;
+            _signal = signal;
         }
 
         public ShapeTable GetShapeTable(string themeId)
         {
             var cacheKey = $"ShapeTable:{themeId}";
+            var tokenKey = $"ShapeTableToken:{themeId}";
+
+            IChangeToken token;
+            _memoryCache.TryGetValue(tokenKey, out token);
 
             ShapeTable shapeTable;
-            if (!_memoryCache.TryGetValue(cacheKey, out shapeTable))
+            if (!_memoryCache.TryGetValue(cacheKey, out shapeTable) || token == null || token.HasChanged)
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
@@ -58,15 +67,23 @@ namespace Orchard.DisplayManagement.Descriptors
                 }
 
                 var excludedFeatures = _shapeDescriptors.Count == 0 ? new List<string>() :
-                    _shapeDescriptors.Where(kv => kv.Value.Feature.Id != themeId)
-                        .Select(kv => kv.Value.Feature.Id).Distinct().ToList();
+                    _shapeDescriptors.Select(kv => kv.Value.Feature.Id).Distinct().ToList();
 
-                var kvs = _shapeDescriptors.Where(kv => kv.Key.StartsWith(_shellName) && kv.Value.Feature.Id == themeId);
-
-                foreach (var kv in kvs)
+                if (token == null || token.HasChanged)
                 {
-                    _shapeDescriptors.TryRemove(kv.Key, out var value);
+                    excludedFeatures = excludedFeatures.Where(f => f != themeId).ToList();
+
+                    var shellThemekeys = _shapeDescriptors.Where(kv => kv.Value.Shell == _shellName &&
+                        kv.Value.Feature.Id == themeId).Select(kv => kv.Key);
+
+                    foreach (var key in shellThemekeys)
+                    {
+                        _shapeDescriptors.TryRemove(key, out var value);
+                    }
                 }
+
+                _memoryCache.Set(tokenKey, _signal.GetToken(tokenKey),
+                    new MemoryCacheEntryOptions { Priority = CacheItemPriority.NeverRemove });
 
                 foreach (var bindingStrategy in _bindingStrategies)
                 {

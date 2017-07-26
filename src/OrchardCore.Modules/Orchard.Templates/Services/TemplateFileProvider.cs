@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.FileProviders;
-using Orchard.Environment.Extensions;
 using Orchard.DisplayManagement.Fluid;
+using Orchard.Environment.Extensions;
 
 namespace Orchard.Templates.Services
 {
@@ -20,19 +20,23 @@ namespace Orchard.Templates.Services
     /// </summary>
     public class TemplateFileProvider : ITemplateFileProvider
     {
+        private static readonly string _fluidPageContent =
+            "@using Orchard.DisplayManagement.Fluid;" + System.Environment.NewLine +
+            "@inherits FluidPage" + System.Environment.NewLine +
+            "@{ await RenderAsync(this); }";
+
         private static Dictionary<string, string> _themesViewsPaths;
         private static object _synLock = new object();
 
+        private IChangeToken _templatesChangeToken;
+        private IDictionary<string, Models.Template> _templates;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IFileProvider _fileProvider;
 
         public TemplateFileProvider(
-            IHostingEnvironment hostingEnvironment,
             IHttpContextAccessor httpContextAccessor,
             IExtensionManager extensionManager)
         {
             _httpContextAccessor = httpContextAccessor;
-            _fileProvider = hostingEnvironment.ContentRootFileProvider;
 
             if (_themesViewsPaths != null)
             {
@@ -50,25 +54,25 @@ namespace Orchard.Templates.Services
             }
         }
 
-        private TemplatesManager TemplatesManager => _httpContextAccessor
-            .HttpContext.RequestServices.GetService<TemplatesManager>();
-
-        private Dictionary<string, Models.Template> Templates => TemplatesManager
-            .GetTemplatesDocumentAsync().GetAwaiter().GetResult().Templates;
+        private IDictionary<string, Models.Template> Templates => GetTemplates();
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
+            var entries = new List<IFileInfo>();
+
             if (_themesViewsPaths.TryGetValue(subpath.Trim('/'), out var viewsFolder))
             {
-                var entries = new List<IFileInfo>();
+                var templates = Templates.Where(kv => kv.Key.StartsWith(viewsFolder + '/'));
 
-                entries.AddRange(Templates.Where(kv => kv.Key.StartsWith(viewsFolder + '/')).Select(kvp =>
-                    new ContentFileInfo(kvp.Key.Substring(viewsFolder.Length + 1), kvp.Value.Content)));
+                entries.AddRange(templates.Select(kvp => new ContentFileInfo(
+                    kvp.Key.Substring(viewsFolder.Length + 1), kvp.Value.Content)));
 
-                return new DirectoryContents(entries);
+                entries.AddRange(templates.Select(kvp => new ContentFileInfo(
+                    Path.ChangeExtension(kvp.Key.Substring(viewsFolder.Length + 1), RazorViewEngine.ViewExtension),
+                    _fluidPageContent)));
             }
 
-            return new DirectoryContents(_fileProvider.GetDirectoryContents(subpath).Where(f => f.IsDirectory));
+            return new DirectoryContents(entries);
         }
 
         public IFileInfo GetFileInfo(string subpath)
@@ -77,7 +81,14 @@ namespace Orchard.Templates.Services
             {
                 if (Templates.TryGetValue(path, out var template))
                 {
-                    return new ContentFileInfo(Path.GetFileName(path), template.Content);
+                    if (Path.GetExtension(subpath) == FluidViewTemplate.ViewExtension)
+                    {
+                        return new ContentFileInfo(Path.GetFileName(path), template.Content);
+                    }
+                    else if (Path.GetExtension(subpath) == RazorViewEngine.ViewExtension)
+                    {
+                        return new ContentFileInfo(Path.GetFileName(subpath), _fluidPageContent);
+                    }
                 }
             }
 
@@ -90,26 +101,35 @@ namespace Orchard.Templates.Services
             {
                 if (Templates.TryGetValue(templatePath, out var template))
                 {
-                    return TemplatesManager.ChangeToken;
+                    return _templatesChangeToken;
                 }
             }
 
             return null;
         }
 
+        private IDictionary<string, Models.Template> GetTemplates()
+        {
+            if (_templatesChangeToken == null || _templatesChangeToken.HasChanged)
+            {
+                var templateManager = _httpContextAccessor.HttpContext.RequestServices.GetService<TemplatesManager>(); ;
+                _templates = templateManager.GetTemplatesDocumentAsync().GetAwaiter().GetResult().Templates;
+                _templatesChangeToken = templateManager.ChangeToken;
+            }
+
+            return _templates;
+        }
+
         private bool TryGetTemplatePath(string subpath, out string templatePath)
         {
-            if (subpath.EndsWith(FluidViewTemplate.ViewExtension))
+            var key = _themesViewsPaths.Keys.FirstOrDefault(k => subpath.TrimStart('/').StartsWith(k + '/'));
+
+            if (key != null)
             {
-                var key = _themesViewsPaths.Keys.FirstOrDefault(k => subpath.TrimStart('/').StartsWith(k + '/'));
+                templatePath = Path.ChangeExtension(string.Format("{0}/{1}", _themesViewsPaths[key],
+                    subpath.TrimStart('/').Substring(key.Length + 1)), FluidViewTemplate.ViewExtension);
 
-                if (key != null)
-                {
-                    templatePath = string.Format("{0}/{1}", _themesViewsPaths[key],
-                        subpath.TrimStart('/').Substring(key.Length + 1));
-
-                    return true;
-                }
+                return true;
             }
 
             templatePath = null;
