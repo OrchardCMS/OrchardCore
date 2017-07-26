@@ -2,6 +2,10 @@
 @using Orchard.Media.Settings;
 @using Orchard.ContentManagement.Metadata.Models
 
+<script asp-src="/Orchard.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs"></script>
+<style asp-src="/Orchard.Media/Styles/media.min.css" debug-src="/Orchard.Media/Styles/media.css"></style>
+<script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
+
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<MediaFieldSettings>();
     var modalMediaId = "Modal" + Html.IdFor(m => m);
@@ -70,9 +74,9 @@
         </div>
     </div>
 
-    <div class="hidden-xs-up">
-        @await DisplayAsync(New.Media_Application())
-    </div>
-
     <input type="hidden" id="getMediaItemUrl" value="@Url.Action("GetMediaItem", "Admin", new { area = "Orchard.Media" })" />
 }
+
+<script language="text/javascript">
+    initializeMediaFieldEditor(document.getElementById('@Html.IdFor(m => m)'));
+</script>

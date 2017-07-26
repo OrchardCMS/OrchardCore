@@ -255,5 +255,10 @@ namespace Orchard.Media.Controllers
 
             return Json(mediaFolder);
         }
+
+        public IActionResult MediaApplication()
+        {
+            return View();
+        }
     }
 }

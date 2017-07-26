@@ -3,268 +3,313 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-var root = {
-    name: 'Media Library',
-    path: '',
-    folder: '',
-    isDirectory: true
-}
+var initialized;
+var mediaApp;
 
-var bus = new Vue();
+$(function () {
 
-
-// define the folder component
-Vue.component('folder', {
-    template: '#folder-template',
-    props: {
-        model: Object
-    },
-    data: function () {
-        return {
-            open: false,
-            children: null, // not initialized state (for lazy-loading)
-            parent: null,
-            selected: false
-        }
-    },
-    computed: {
-        empty: function () {
-            return this.children && this.children.length == 0;
-        }
-    },
-    created: function () {
-        var self = this;
-        bus.$on('deleteFolder', function (folder) {
-            if (self.children) {
-                var index = self.children && self.children.indexOf(folder)
-                if (index > -1) {
-                    self.children.splice(index, 1)
-                    bus.$emit('folderDeleted');
-                }
-            }
-        });
-
-        bus.$on('addFolder', function (target, folder) {
-            if (self.model == target) {
-
-                bus.$emit('beforeFolderAdded', self.model);
-
-                self.children.push(folder);
-                folder.parent = self.model;
-                bus.$emit('folderAdded', folder);
-            }
-        });
-        
-        bus.$on('folderSelected', function (folder) {
-            self.selected = self.model == folder;
-        });
-    },
-    methods: {
-        toggle: function () {
-            this.open = !this.open
-            var self = this;
-            if (this.open && !this.children) {
-                $.ajax({
-                    url: $('#getFoldersUrl').val() + "?path=" + encodeURIComponent(self.model.path),
-                    method: 'GET',
-                    success: function (data) {
-                        self.children = data;
-                        self.children.forEach(function(c) { 
-                            c.parent = self.model; 
-                        });
-                    },
-                    error: function (error) {
-                        emtpy = false;
-                        alert(JSON.stringify(error));
-                    }
-                });
-            }
-        },
-        select: function () {
-            mediaApp.selectFolder(this.model);
-        }
+    if (initialized) {
+        return;
     }
-});
 
-var mediaApp = new Vue({
-    el: '#mediaApp',
-    data: {
-        selectedFolder: root,
-        mediaItems: [],
-        selectedMedia: null
-    },
-    created: function() {
-        var self = this;
-
-        bus.$on('folderDeleted', function () {
-            self.selectRoot();
-        });
-
-        bus.$on('folderAdded', function (folder) {
-            self.selectFolder(folder);
-            folder.selected = true;
-        });
-
-        bus.$on('beforeFolderAdded', function (folder) {
-            self.loadFolder(folder);
-        });
-    },
-    computed: {
-        isHome: function () {
-            return this.selectedFolder == root;
-        },
-        parents: function () {
-            var p = [];
-            parent = this.selectedFolder;
-            while (parent && parent != root) {
-                p.unshift(parent);
-                parent = parent.parent;
-            }
-            return p;
-        },
-        root: function () {
-            return root;
-        }
-    },
-    mounted: function() {
-        this.selectRoot();
-    },
-    methods: {
-        selectFolder: function (folder) {
-            this.selectedFolder = folder;
-            this.loadFolder(folder);
-            bus.$emit('folderSelected', folder);
-        },
-        uploadUrl: function () {
-            return this.selectedFolder ? $('#uploadFiles').val() + "?path=" + encodeURIComponent(this.selectedFolder.path) : null;
-        },
-        selectRoot: function () {
-            this.selectFolder(this.root);
-        },
-        loadFolder: function (folder) {
-            this.selectedMedia = null;
-            var self = this;
-            $.ajax({
-                url: $('#getMediaItemsUrl').val() + "?path=" + encodeURIComponent(folder.path),
-                method: 'GET',
-                success: function (data) {
-                    data.forEach(function (item) {
-                        item.open = false;
-                    });
-                    self.mediaItems = data;
-                },
-                error: function (error) {
-                    alert(JSON.stringify(error));
-                }
-            });
-        },
-        selectMedia: function (media) {
-            this.selectedMedia = media;
-        },
-        deleteFolder: function () {
-            var folder = this.selectedFolder
-            var self = this;
-            // The root folder can't be deleted
-            if (folder == this.root.model) {
-                return;
-            }
-
-            if (!confirm($('#deleteFolderMessage').val())) {
-                return;
-            }
-
-            $.ajax({
-                url: $('#deleteFolderUrl').val() + "?path=" + encodeURIComponent(folder.path),
-                method: 'POST',
-                data: {
-                    __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
-                },
-                success: function (data) {
-                    bus.$emit('deleteFolder', folder);
-                },
-                error: function (error) {
-                    alert(JSON.stringify(error));
-                }
-            });
-        },
-        createFolder: function () {
-            $('#createFolderModal').modal('show');
-            $('.modal-body input').val('').focus();
-        },
-        deleteMedia: function () {
-            var media = this.selectedMedia;
-            var self = this;
-
-            if (!media) {
-                return;
-            }
-
-            if (!confirm($('#deleteMediaMessage').val())) {
-                return;
-            }
-
-            $.ajax({
-                url: $('#deleteMediaUrl').val() + "?path=" + encodeURIComponent(self.selectedMedia.mediaPath),
-                method: 'POST',
-                data: {
-                    __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
-                },
-                success: function (data) {
-                    var index = self.mediaItems && self.mediaItems.indexOf(media)
-                    if (index > -1) {
-                        self.mediaItems.splice(index, 1)
-                        bus.$emit('mediaDeleted', media);
-                    }
-                },
-                error: function (error) {
-                    alert(JSON.stringify(error));
-                }
-            });
-        },
-    }
-});
-
-$('#modalFooterOk').on('click', function (e) {
-    var name = $('.modal-body input').val();
+    initialized = true;
 
     $.ajax({
-        url: $('#createFolderUrl').val() + "?path=" + encodeURIComponent(mediaApp.selectedFolder.path) + "&name=" + encodeURIComponent(name),
-        method: 'POST',
-        data: {
-            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
-        },
+        url: document.location + '/../../../Orchard.Media/Admin/MediaApplication',
+        method: 'GET',
         success: function (data) {
-            bus.$emit('addFolder', mediaApp.selectedFolder, data);
-            $('#createFolderModal').modal('hide');
+            $('.ta-content').append(data);
+
+            // TODO: Send an event when the mediaApp is ready for other component to use it: fileUpload and Vue
+            $('#fileupload').fileupload({
+                dataType: 'json',
+                url: $('#uploadFiles').val(),
+                formData: function () {
+                    var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+
+                    return [
+                        { name: 'path', value: mediaApp.selectedFolder.path },
+                        { name: '__RequestVerificationToken', value: antiForgeryToken },
+                    ]
+                },
+                done: function (e, data) {
+                    $.each(data.result.files, function (index, file) {
+                        mediaApp.mediaItems.push(file)
+                    });
+                    $('#progress .progress-bar').css(
+                        'width',
+                        0 + '%'
+                    );
+                }
+            });
+
+            mediaApp = new Vue({
+                el: '#mediaApp',
+                data: {
+                    selectedFolder: root,
+                    mediaItems: [],
+                    selectedMedia: null
+                },
+                created: function () {
+                    var self = this;
+
+                    bus.$on('folderDeleted', function () {
+                        self.selectRoot();
+                    });
+
+                    bus.$on('folderAdded', function (folder) {
+                        self.selectFolder(folder);
+                        folder.selected = true;
+                    });
+
+                    bus.$on('beforeFolderAdded', function (folder) {
+                        self.loadFolder(folder);
+                    });
+                },
+                computed: {
+                    isHome: function () {
+                        return this.selectedFolder == root;
+                    },
+                    parents: function () {
+                        var p = [];
+                        parent = this.selectedFolder;
+                        while (parent && parent != root) {
+                            p.unshift(parent);
+                            parent = parent.parent;
+                        }
+                        return p;
+                    },
+                    root: function () {
+                        return root;
+                    }
+                },
+                mounted: function () {
+                    this.selectRoot();
+                },
+                methods: {
+                    selectFolder: function (folder) {
+                        this.selectedFolder = folder;
+                        this.loadFolder(folder);
+                        bus.$emit('folderSelected', folder);
+                    },
+                    uploadUrl: function () {
+                        return this.selectedFolder ? $('#uploadFiles').val() + "?path=" + encodeURIComponent(this.selectedFolder.path) : null;
+                    },
+                    selectRoot: function () {
+                        this.selectFolder(this.root);
+                    },
+                    loadFolder: function (folder) {
+                        this.selectedMedia = null;
+                        var self = this;
+                        $.ajax({
+                            url: $('#getMediaItemsUrl').val() + "?path=" + encodeURIComponent(folder.path),
+                            method: 'GET',
+                            success: function (data) {
+                                data.forEach(function (item) {
+                                    item.open = false;
+                                });
+                                self.mediaItems = data;
+                            },
+                            error: function (error) {
+                                alert(JSON.stringify(error));
+                            }
+                        });
+                    },
+                    selectMedia: function (media) {
+                        this.selectedMedia = media;
+                    },
+                    deleteFolder: function () {
+                        var folder = this.selectedFolder
+                        var self = this;
+                        // The root folder can't be deleted
+                        if (folder == this.root.model) {
+                            return;
+                        }
+
+                        if (!confirm($('#deleteFolderMessage').val())) {
+                            return;
+                        }
+
+                        $.ajax({
+                            url: $('#deleteFolderUrl').val() + "?path=" + encodeURIComponent(folder.path),
+                            method: 'POST',
+                            data: {
+                                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+                            },
+                            success: function (data) {
+                                bus.$emit('deleteFolder', folder);
+                            },
+                            error: function (error) {
+                                alert(JSON.stringify(error));
+                            }
+                        });
+                    },
+                    createFolder: function () {
+                        $('#createFolderModal').modal('show');
+                        $('.modal-body input').val('').focus();
+                    },
+                    deleteMedia: function () {
+                        var media = this.selectedMedia;
+                        var self = this;
+
+                        if (!media) {
+                            return;
+                        }
+
+                        if (!confirm($('#deleteMediaMessage').val())) {
+                            return;
+                        }
+
+                        $.ajax({
+                            url: $('#deleteMediaUrl').val() + "?path=" + encodeURIComponent(self.selectedMedia.mediaPath),
+                            method: 'POST',
+                            data: {
+                                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+                            },
+                            success: function (data) {
+                                var index = self.mediaItems && self.mediaItems.indexOf(media)
+                                if (index > -1) {
+                                    self.mediaItems.splice(index, 1)
+                                    bus.$emit('mediaDeleted', media);
+                                }
+                            },
+                            error: function (error) {
+                                alert(JSON.stringify(error));
+                            }
+                        });
+                    },
+                }
+            });
+
+            if (displayMediaApplication) {
+                document.getElementById('mediaApp').style.display = "";
+            }
+
         },
         error: function (error) {
             alert(JSON.stringify(error));
         }
     });
-});   
 
-$(function () {
-    $('#fileupload').fileupload({
-        dataType: 'json',
-        url: $('#uploadFiles').val(),
-        formData: function() {
-            var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+    var root = {
+        name: 'Media Library',
+        path: '',
+        folder: '',
+        isDirectory: true
+    }
 
-            return [
-                {name: 'path', value: mediaApp.selectedFolder.path},
-                {name: '__RequestVerificationToken', value: antiForgeryToken},
-            ]
+    var bus = new Vue();
+
+    // define the folder component
+    Vue.component('folder', {
+        template: '\
+            <li :class="{selected: selected}">\
+                <div>\
+                    <i v-on:click="toggle" class="expand fa fa-caret-right" v-bind:class="{open: open, closed: !open, empty: empty}"></i>\
+                    <a href="javascript:;" v-on:click="select">\
+                        <i class="folder fa fa-folder"></i>\
+                        {{model.name}}\
+                    </a>\
+                </div>\
+                <ol v-show="open">\
+                    <folder v-for="folder in children"\
+                            :key="folder.path"\
+                            :model="folder">\
+                    </folder>\
+                </ol>\
+            </li>\
+            ',
+        props: {
+            model: Object
         },
-        done: function (e, data) {
-            $.each(data.result.files, function (index, file) {
-                mediaApp.mediaItems.push(file)
+        data: function () {
+            return {
+                open: false,
+                children: null, // not initialized state (for lazy-loading)
+                parent: null,
+                selected: false
+            }
+        },
+        computed: {
+            empty: function () {
+                return this.children && this.children.length == 0;
+            }
+        },
+        created: function () {
+            var self = this;
+            bus.$on('deleteFolder', function (folder) {
+                if (self.children) {
+                    var index = self.children && self.children.indexOf(folder)
+                    if (index > -1) {
+                        self.children.splice(index, 1)
+                        bus.$emit('folderDeleted');
+                    }
+                }
             });
-            $('#progress .progress-bar').css(
-                'width',
-                0 + '%'
-            );
+
+            bus.$on('addFolder', function (target, folder) {
+                if (self.model == target) {
+
+                    bus.$emit('beforeFolderAdded', self.model);
+
+                    self.children.push(folder);
+                    folder.parent = self.model;
+                    bus.$emit('folderAdded', folder);
+                }
+            });
+
+            bus.$on('folderSelected', function (folder) {
+                self.selected = self.model == folder;
+            });
+        },
+        methods: {
+            toggle: function () {
+                this.open = !this.open
+                var self = this;
+                if (this.open && !this.children) {
+                    $.ajax({
+                        url: $('#getFoldersUrl').val() + "?path=" + encodeURIComponent(self.model.path),
+                        method: 'GET',
+                        success: function (data) {
+                            self.children = data;
+                            self.children.forEach(function (c) {
+                                c.parent = self.model;
+                            });
+                        },
+                        error: function (error) {
+                            emtpy = false;
+                            alert(JSON.stringify(error));
+                        }
+                    });
+                }
+            },
+            select: function () {
+                mediaApp.selectFolder(this.model);
+            }
         }
     });
+
+    $('#modalFooterOk').on('click', function (e) {
+        var name = $('.modal-body input').val();
+
+        $.ajax({
+            url: $('#createFolderUrl').val() + "?path=" + encodeURIComponent(mediaApp.selectedFolder.path) + "&name=" + encodeURIComponent(name),
+            method: 'POST',
+            data: {
+                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+            },
+            success: function (data) {
+                bus.$emit('addFolder', mediaApp.selectedFolder, data);
+                $('#createFolderModal').modal('hide');
+            },
+            error: function (error) {
+                alert(JSON.stringify(error));
+            }
+        });
+    });
+});
+$(function () {
+
 });
 /*
  * jQuery File Upload Plugin
@@ -1976,82 +2021,79 @@ $(function () {
 
 var mediaFieldApps = [];
 
-$(function () {
+function initializeMediaFieldEditor(el) {
+    var target = $(document.getElementById($(el).data('for')));
+    var initialPaths = target.data("init");
+    var mediaItemUrl = $('#getMediaItemUrl').val();
 
-    $(".mediafield-editor").each(function () {
-        var target = $(document.getElementById($(this).data('for')));
-        var initialPaths = target.data("init");
-        var mediaItemUrl = $('#getMediaItemUrl').val();
+    var mediaFieldEditor = $(el);
+    var mediaFieldApp;
 
-        var mediaFieldEditor = $(this);
-        var mediaFieldApp;
-
-        mediaFieldApps.push(mediaFieldApp = new Vue({
-            el: mediaFieldEditor.get(0),
-            data: {
-                mediaItems: [],
-                selectedMedia: null,
-            },
-            computed: {
-                paths: {
-                    get: function () {
-                        var mediaPaths = [];
-                        this.mediaItems.forEach(function (x) { mediaPaths.push(x.mediaPath); });
-                        return JSON.stringify(mediaPaths);
-                    },
-                    set: function (values) {
-                        var self = this;
-                        var mediaPaths = values || [];
-                        mediaPaths.forEach(function (x) {
-                            $.ajax({
-                                url: mediaItemUrl + "?path=" + encodeURIComponent(x),
-                                method: 'GET',
-                                success: function (data) {
-                                    self.mediaItems.push(data);
-                                },
-                                error: function (error) {
-                                    console.log(JSON.stringify(error));
-                                }
-                            });
+    mediaFieldApps.push(mediaFieldApp = new Vue({
+        el: mediaFieldEditor.get(0),
+        data: {
+            mediaItems: [],
+            selectedMedia: null,
+        },
+        computed: {
+            paths: {
+                get: function () {
+                    var mediaPaths = [];
+                    this.mediaItems.forEach(function (x) { mediaPaths.push(x.mediaPath); });
+                    return JSON.stringify(mediaPaths);
+                },
+                set: function (values) {
+                    var self = this;
+                    var mediaPaths = values || [];
+                    mediaPaths.forEach(function (x) {
+                        $.ajax({
+                            url: mediaItemUrl + "?path=" + encodeURIComponent(x),
+                            method: 'GET',
+                            success: function (data) {
+                                self.mediaItems.push(data);
+                            },
+                            error: function (error) {
+                                console.log(JSON.stringify(error));
+                            }
                         });
-                    }
-                },
-                fileSize: function () {
-                    return Math.round(this.selectedMedia.size / 1024);
-                }
-            },
-            mounted: function () {
-                this.paths = initialPaths;
-            },
-            methods: {
-                selectMedia: function (media) {
-                    this.selectedMedia = media;
-                },
-                showModal: function (event) {
-                    $("#mediaApp").detach().appendTo('#mediaFieldModalBody .modal-body');
-                    var modal = $('#mediaFieldModalBody').modal();
-                    $('#mediaFieldSelectButton').off('click').on('click', function (v) {
-                        mediaFieldApp.mediaItems.push(mediaApp.selectedMedia);
-                        
-                        modal.modal('hide');
-                        return true;
                     });
-                },
-                removeSelected: function (event) {
-                    if (this.selectedMedia) {
-                        var index = this.mediaItems && this.mediaItems.indexOf(this.selectedMedia)
-                        if (index > -1) {
-                            this.mediaItems.splice(index, 1)
-                        }
-                    }
                 }
             },
-            watch: {
-                mediaItems: function () {
-                    // Trigger preview rendering
-                    setTimeout(function() { $(document).trigger('contentpreview:render'); }, 100);
+            fileSize: function () {
+                return Math.round(this.selectedMedia.size / 1024);
+            }
+        },
+        mounted: function () {
+            this.paths = initialPaths;
+        },
+        methods: {
+            selectMedia: function (media) {
+                this.selectedMedia = media;
+            },
+            showModal: function (event) {
+                $("#mediaApp").detach().appendTo('#mediaFieldModalBody .modal-body');
+                var modal = $('#mediaFieldModalBody').modal();
+                $('#mediaFieldSelectButton').off('click').on('click', function (v) {
+                    mediaFieldApp.mediaItems.push(mediaApp.selectedMedia);
+
+                    modal.modal('hide');
+                    return true;
+                });
+            },
+            removeSelected: function (event) {
+                if (this.selectedMedia) {
+                    var index = this.mediaItems && this.mediaItems.indexOf(this.selectedMedia)
+                    if (index > -1) {
+                        this.mediaItems.splice(index, 1)
+                    }
                 }
             }
-        }));
-    });
-});
+        },
+        watch: {
+            mediaItems: function () {
+                // Trigger preview rendering
+                setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100);
+            }
+        }
+    }));
+}

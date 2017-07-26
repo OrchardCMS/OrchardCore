@@ -1,4 +1,4 @@
-﻿@using Orchard.ContentManagement.Metadata.Settings;
+@using Orchard.ContentManagement.Metadata.Settings;
 @using Orchard.Flows.ViewModels;
 
 @model FlowPartEditViewModel
@@ -63,14 +63,17 @@
         Context.Items["FlowPart.Edit"] = new object();
         <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "Orchard.Flows"  })" />
 
-        <div style="display:none">
-        @foreach (var type in widgetContentTypes)
-        {
-            // Render a mock widget so that its resources are included in the page
-            var contentItem = ContentManager.New(type.Name);
-            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, "", Guid.NewGuid().ToString("n")));
-        }
+        <div id="editors" style="display:none">
+            @foreach (var type in widgetContentTypes)
+            {
+                // Render a mock widget so that its resources are included in the page
+                var contentItem = ContentManager.New(type.Name);
+                <div data-type="@type.Name">
+                    @await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, "", Guid.NewGuid().ToString("n")));
+                </div>
+            }
         </div>
+
 
         <script asp-src="/Orchard.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
         <style asp-src="/Orchard.Flows/Styles/flows.edit.css"></style>
