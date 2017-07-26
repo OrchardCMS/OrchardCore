@@ -9,6 +9,7 @@ using Microsoft.Extensions.Primitives;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.FileProviders;
 using Orchard.Environment.Extensions;
+using Orchard.DisplayManagement.Fluid;
 
 namespace Orchard.Templates.Services
 {
@@ -19,8 +20,10 @@ namespace Orchard.Templates.Services
     /// </summary>
     public class TemplateFileProvider : ITemplateFileProvider
     {
+        private static Dictionary<string, string> _themesViewsPaths;
+        private static object _synLock = new object();
+
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly Dictionary<string, string> _viewsFolders;
         private readonly IFileProvider _fileProvider;
 
         public TemplateFileProvider(
@@ -29,13 +32,22 @@ namespace Orchard.Templates.Services
             IExtensionManager extensionManager)
         {
             _httpContextAccessor = httpContextAccessor;
-
-            // waiting for manifest tags to be able to exclude admin and hidden themes
-            _viewsFolders = extensionManager.GetExtensions().Where(e => e.Manifest.IsTheme()).ToDictionary(
-                    e => string.Format("{0}/{1}", e.SubPath.Replace('\\', '/').Trim('/'), "Views"),
-                    e => string.Format("{0}/{1}", e.Id, "Views"));
-
             _fileProvider = hostingEnvironment.ContentRootFileProvider;
+
+            if (_themesViewsPaths != null)
+            {
+                return;
+            }
+
+            lock (_synLock)
+            {
+                if (_themesViewsPaths == null)
+                {
+                    _themesViewsPaths = extensionManager.GetExtensions().Where(e => e.Manifest.IsTheme()).ToDictionary(
+                        e => string.Format("{0}/{1}", e.SubPath.Replace('\\', '/').Trim('/'), "Views"),
+                        e => string.Format("{0}/{1}", e.Id, "Views"));
+                }
+            }
         }
 
         private TemplatesManager TemplatesManager => _httpContextAccessor
@@ -46,7 +58,7 @@ namespace Orchard.Templates.Services
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
-            if (_viewsFolders.TryGetValue(subpath.Trim('/'), out var viewsFolder))
+            if (_themesViewsPaths.TryGetValue(subpath.Trim('/'), out var viewsFolder))
             {
                 var entries = new List<IFileInfo>();
 
@@ -87,14 +99,17 @@ namespace Orchard.Templates.Services
 
         private bool TryGetTemplatePath(string subpath, out string templatePath)
         {
-            var key = _viewsFolders.Keys.FirstOrDefault(k => subpath.TrimStart('/').StartsWith(k + '/'));
-
-            if (key != null)
+            if (subpath.EndsWith(FluidViewTemplate.ViewExtension))
             {
-                templatePath = string.Format("{0}/{1}", _viewsFolders[key],
-                    subpath.TrimStart('/').Substring(key.Length + 1));
+                var key = _themesViewsPaths.Keys.FirstOrDefault(k => subpath.TrimStart('/').StartsWith(k + '/'));
 
-                return true;
+                if (key != null)
+                {
+                    templatePath = string.Format("{0}/{1}", _themesViewsPaths[key],
+                        subpath.TrimStart('/').Substring(key.Length + 1));
+
+                    return true;
+                }
             }
 
             templatePath = null;

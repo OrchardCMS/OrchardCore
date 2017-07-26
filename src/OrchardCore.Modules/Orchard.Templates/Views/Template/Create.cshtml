@@ -6,10 +6,6 @@
     // waiting for manifest tags to be able to exclude admin and hidden themes
     var themes = (await ShellFeaturesManager.GetEnabledFeaturesAsync())
         .Where(f => f.Extension.Manifest.IsTheme()).Select(e => e.Id);
-
-    var extensions = new List<string>();
-    extensions.Add(".liquid");
-    extensions.Add(".cshtml");
 }
 
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
@@ -30,17 +26,6 @@
         <span asp-validation-for="View" class="text-danger">@T["The view name is required."]</span>
         <input asp-for="View" class="form-control" autofocus/>
         <span class="hint">@T["The view name of the template."]</span>
-    </div>
-
-    <div class="form-group" asp-validation-class-for="Extension">
-        <label asp-for="Extension">@T["Extension"]</label>
-        <select asp-for="Extension" class="form-control">
-            @foreach (var extension in extensions)
-            {
-                <option value="@extension">@extension</option>
-            }
-        </select>
-        <span class="hint">@T["The extension used to select the template engine."]</span>
     </div>
 
     <div class="form-group" asp-validation-class-for="Theme">

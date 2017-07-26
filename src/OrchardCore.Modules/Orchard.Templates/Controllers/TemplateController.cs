@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Orchard.Admin;
 using Orchard.DisplayManagement;
+using Orchard.DisplayManagement.Fluid;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Navigation;
@@ -16,7 +15,6 @@ using Orchard.Settings;
 using Orchard.Templates.Models;
 using Orchard.Templates.Services;
 using Orchard.Templates.ViewModels;
-using YesSql;
 
 namespace Orchard.Templates.Controllers
 {
@@ -101,12 +99,7 @@ namespace Orchard.Templates.Controllers
             {
                 if (String.IsNullOrWhiteSpace(model.View))
                 {
-                    ModelState.AddModelError(nameof(TemplateViewModel.Extension), T["The view is mandatory."]);
-                }
-
-                if (String.IsNullOrWhiteSpace(model.Extension))
-                {
-                    ModelState.AddModelError(nameof(TemplateViewModel.Extension), T["The extension is mandatory."]);
+                    ModelState.AddModelError(nameof(TemplateViewModel.View), T["The view is mandatory."]);
                 }
 
                 if (String.IsNullOrWhiteSpace(model.Theme))
@@ -120,14 +113,13 @@ namespace Orchard.Templates.Controllers
                 var template = new Template
                 {
                     View = model.View,
-                    Extension = model.Extension,
                     Theme = model.Theme,
                     Content = model.Content,
                     Description = model.Description
                 };
 
                 await _templatesManager.UpdateTemplateAsync(string.Format("{0}/Views/{1}{2}",
-                    model.Theme, model.View, model.Extension), template);
+                    model.Theme, model.View, FluidViewTemplate.ViewExtension), template);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -155,7 +147,6 @@ namespace Orchard.Templates.Controllers
             var model = new TemplateViewModel
             {
                 View = template.View,
-                Extension = template.Extension,
                 Theme = template.Theme,
                 Content = template.Content,
                 Description = template.Description
@@ -180,9 +171,14 @@ namespace Orchard.Templates.Controllers
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.View), T["The view is mandatory."]);
                 }
+
+                if (String.IsNullOrWhiteSpace(model.Theme))
+                {
+                    ModelState.AddModelError(nameof(TemplateViewModel.Theme), T["The theme is mandatory."]);
+                }
             }
 
-            var path = string.Format("{0}/Views/{1}{2}", model.Theme, model.View, model.Extension);
+            var path = string.Format("{0}/Views/{1}{2}", model.Theme, model.View, FluidViewTemplate.ViewExtension);
 
             if (!templatesDocument.Templates.ContainsKey(path))
             {
@@ -194,7 +190,6 @@ namespace Orchard.Templates.Controllers
                 var template = new Template
                 {
                     View = model.View,
-                    Extension = model.Extension,
                     Theme = model.Theme,
                     Content = model.Content,
                     Description = model.Description
