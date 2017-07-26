@@ -61,6 +61,13 @@ namespace Orchard.DisplayManagement.Descriptors
                     _shapeDescriptors.Where(kv => kv.Value.Feature.Id != themeId)
                         .Select(kv => kv.Value.Feature.Id).Distinct().ToList();
 
+                var kvs = _shapeDescriptors.Where(kv => kv.Key.StartsWith(_shellName) && kv.Value.Feature.Id == themeId);
+
+                foreach (var kv in kvs)
+                {
+                    _shapeDescriptors.TryRemove(kv.Key, out var value);
+                }
+
                 foreach (var bindingStrategy in _bindingStrategies)
                 {
                     IFeatureInfo strategyFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
