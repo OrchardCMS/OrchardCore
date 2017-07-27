@@ -5,6 +5,7 @@ namespace Orchard.DisplayManagement.Descriptors
 {
     public interface IShapeTableManager
     {
+        string GetChangeTokenKey(string themeId);
         ShapeTable GetShapeTable(string themeId);
     }
 

@@ -50,10 +50,15 @@ namespace Orchard.DisplayManagement.Descriptors
             _signal = signal;
         }
 
+        public string GetChangeTokenKey(string themeId)
+        {
+            return $"ShapeTableToken:{themeId}";
+        }
+
         public ShapeTable GetShapeTable(string themeId)
         {
             var cacheKey = $"ShapeTable:{themeId}";
-            var tokenKey = $"ShapeTableToken:{themeId}";
+            var tokenKey = GetChangeTokenKey(themeId);
 
             IChangeToken token;
             _memoryCache.TryGetValue(tokenKey, out token);

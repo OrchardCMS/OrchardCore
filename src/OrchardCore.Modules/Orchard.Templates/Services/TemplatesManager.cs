@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
+using Orchard.DisplayManagement.Descriptors;
 using Orchard.Environment.Cache;
 using Orchard.Templates.Models;
 using YesSql;
@@ -9,14 +10,17 @@ namespace Orchard.Templates.Services
 {
     public class TemplatesManager
     {
+        private readonly IShapeTableManager _shapeTableManager;
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
         private readonly ISession _session;
 
         private const string CacheKey = nameof(TemplatesManager);
 
-        public TemplatesManager(IMemoryCache memoryCache, ISignal signal, ISession session)
+        public TemplatesManager(IShapeTableManager shapeTableManager,
+            IMemoryCache memoryCache, ISignal signal, ISession session)
         {
+            _shapeTableManager = shapeTableManager;
             _memoryCache = memoryCache;
             _signal = signal;
             _session = session;
@@ -61,8 +65,7 @@ namespace Orchard.Templates.Services
         {
             // not from the cache, from a new query not to create a new database record
             var document = await _session.Query<TemplatesDocument>().FirstOrDefaultAsync();
-
-            _signal.SignalToken($"ShapeTableToken:{document.Templates[name].Theme}");
+            _signal.SignalToken(_shapeTableManager.GetChangeTokenKey(document.Templates[name].Theme));
 
             document.Templates.Remove(name);
             _session.Save(document);
@@ -73,8 +76,8 @@ namespace Orchard.Templates.Services
 
         public async Task AddTemplateAsync(string name, Template template)
         {
-            _signal.SignalToken($"ShapeTableToken:{template.Theme}");
             await UpdateTemplateAsync(name, template);
+            _signal.SignalToken(_shapeTableManager.GetChangeTokenKey(template.Theme));
         }
 
         public async Task UpdateTemplateAsync(string name, Template template)

@@ -20,7 +20,12 @@ namespace Orchard.Tests.Stubs
             _defaultShapeTable = defaultShapeTable;
         }
 
-        public ShapeTable GetShapeTable(string themeName)
+        public string GetChangeTokenKey(string themeId)
+        {
+            return $"ShapeTableToken:{themeId}";
+        }
+
+        public ShapeTable GetShapeTable(string themeId)
         {
             return _defaultShapeTable;
         }
