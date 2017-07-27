@@ -58,11 +58,13 @@ namespace Orchard.Templates.Services
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
+            subpath = subpath.Replace("\\", "/").Trim('/');
+
             var entries = new List<IFileInfo>();
 
-            if (_themesViewsPaths.TryGetValue(subpath.Trim('/'), out var viewsFolder))
+            if (_themesViewsPaths.TryGetValue(subpath, out var viewsFolder))
             {
-                var templates = Templates.Where(kv => kv.Key.StartsWith(viewsFolder + '/'));
+                var templates = Templates.Where(kv => kv.Key.StartsWith(string.Format("{0}/", viewsFolder)));
 
                 entries.AddRange(templates.Select(kvp => new ContentFileInfo(
                     kvp.Key.Substring(viewsFolder.Length + 1), kvp.Value.Content)));
@@ -122,7 +124,9 @@ namespace Orchard.Templates.Services
 
         private bool TryGetTemplatePath(string subpath, out string templatePath)
         {
-            var key = _themesViewsPaths.Keys.FirstOrDefault(k => subpath.TrimStart('/').StartsWith(k + '/'));
+            subpath = subpath.Replace("\\", "/").TrimStart('/');
+
+            var key = _themesViewsPaths.Keys.FirstOrDefault(k => subpath.StartsWith(string.Format("{0}/", k)));
 
             if (key != null)
             {

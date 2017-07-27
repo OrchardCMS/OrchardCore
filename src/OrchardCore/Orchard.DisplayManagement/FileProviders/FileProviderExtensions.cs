@@ -7,14 +7,9 @@ namespace Orchard.DisplayManagement.FileProviders
 {
     public static class FileProviderExtensions
     {
-        public static IEnumerable<string> GetViewFilePaths(this IFileProvider fileProvider, string subPath,
-            string[] extensions, bool inViewsFolder = false, bool inDepth = true, bool normalize = true)
+        public static IEnumerable<string> GetViewFilePaths(this IFileProvider fileProvider,
+            string subPath, string[] extensions, bool inViewsFolder = false, bool inDepth = true)
         {
-            if (normalize)
-            {
-                subPath = subPath.Replace("\\", "/").Trim('/');
-            }
-
             var contents = fileProvider.GetDirectoryContents(subPath);
 
             if (contents == null)
@@ -29,7 +24,7 @@ namespace Orchard.DisplayManagement.FileProviders
                 if (viewsFolder != null)
                 {
                     foreach (var filePath in GetViewFilePaths(fileProvider, string.Format("{0}/{1}",
-                        subPath, viewsFolder.Name), extensions, inViewsFolder: true, normalize: false))
+                        subPath, viewsFolder.Name), extensions, inViewsFolder: true))
                     {
                         yield return filePath;
                     }
@@ -43,7 +38,7 @@ namespace Orchard.DisplayManagement.FileProviders
                 if (content.IsDirectory && inDepth)
                 {
                     foreach (var filePath in GetViewFilePaths(fileProvider, string.Format("{0}/{1}",
-                        subPath, content.Name), extensions, inViewsFolder, normalize: false))
+                        subPath, content.Name), extensions, inViewsFolder))
                     {
                         yield return filePath;
                     }

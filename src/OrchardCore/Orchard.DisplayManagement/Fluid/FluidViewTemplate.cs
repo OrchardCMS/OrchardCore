@@ -45,8 +45,7 @@ namespace Orchard.DisplayManagement.Fluid
 
         internal static async Task RenderAsync(FluidPage page)
         {
-            var executingFilePath = page.ViewContext.ExecutingFilePath.Replace('\\', '/');
-            var path = Path.ChangeExtension(executingFilePath, ViewExtension);
+            var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
             var fileProviderAccessor = page.GetService<IFluidViewFileProviderAccessor>();
             var fileInfo = fileProviderAccessor.ShellFileProvider.GetFileInfo(path);
 
