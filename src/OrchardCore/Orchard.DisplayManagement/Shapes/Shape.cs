@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
@@ -12,8 +12,8 @@ namespace Orchard.DisplayManagement.Shapes
 	[DebuggerTypeProxy(typeof(ShapeDebugView))]
 	public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
 	{
-		private readonly IList<string> _classes = new List<string>();
-		private readonly IDictionary<string, string> _attributes = new Dictionary<string, string>();
+		private readonly List<string> _classes = new List<string>();
+		private readonly Dictionary<string, string> _attributes = new Dictionary<string, string>();
 		private readonly List<IPositioned> _items = new List<IPositioned>();
 		private bool _sorted = false;
 

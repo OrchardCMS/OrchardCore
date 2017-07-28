@@ -31,6 +31,7 @@ namespace Orchard.Templates.Services
             {
                 shapeBinding = new ShapeBinding()
                 {
+                    ShapeDescriptor = new ShapeDescriptor() { ShapeType = shapeType },
                     BindingName = shapeType,
                     BindingSource = shapeType,
                     BindingAsync = async displayContext =>
@@ -41,10 +42,9 @@ namespace Orchard.Templates.Services
                         var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
 
                         context.LocalScope.SetValue("Context", displayContext.ViewContext);
-                        context.LocalScope.SetValue("Model", displayContext.Value);
-                        context.LocalScope.SetValue("ContentItem", ((dynamic)displayContext.Value).ContentItem);
                         context.AmbientValues.Add("UrlHelper", urlHelper);
 
+                        context.LocalScope.SetValue("Model", displayContext.Value);
                         context.MemberAccessStrategy.Register(displayContext.Value.GetType());
                         
                         var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, context);
