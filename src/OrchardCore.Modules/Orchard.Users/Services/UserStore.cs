@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Localization;
 using Orchard.Security.Services;
 using Orchard.Users.Indexes;
 using Orchard.Users.Models;
@@ -22,17 +21,14 @@ namespace Orchard.Users.Services
         private readonly ISession _session;
         private readonly IRoleProvider _roleProvider;
         private readonly ILookupNormalizer _normalizeKey;
-        private readonly IStringLocalizer<UserStore> T;
 
         public UserStore(ISession session,
             IRoleProvider roleProvider,
-            ILookupNormalizer normalizeKey,
-            IStringLocalizer<UserStore> stringLocalizer)
+            ILookupNormalizer normalizeKey)
         {
             _session = session;
             _roleProvider = roleProvider;
             _normalizeKey = normalizeKey;
-            T = stringLocalizer;
         }
 
         public void Dispose()
@@ -298,7 +294,7 @@ namespace Orchard.Users.Services
         #endregion
 
         #region IUserRoleStore<User>
-        public async Task AddToRoleAsync(User user, string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task AddToRoleAsync(User user, string normalizedRoleName, CancellationToken cancellationToken)
         {
             if (user == null)
             {
@@ -310,14 +306,14 @@ namespace Orchard.Users.Services
 
             if (string.IsNullOrWhiteSpace(roleName))
             {
-                throw new InvalidOperationException(T["Role {0} does not exist.", normalizedRoleName]);
+                throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
             }
 
             user.RoleNames.Add(roleName);
             _session.Save(roleName);
         }
 
-        public async Task RemoveFromRoleAsync(User user, string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task RemoveFromRoleAsync(User user, string normalizedRoleName, CancellationToken cancellationToken)
         {
             if (user == null)
             {
@@ -329,14 +325,14 @@ namespace Orchard.Users.Services
 
             if (string.IsNullOrWhiteSpace(roleName))
             {
-                throw new InvalidOperationException(T["Role {0} does not exist.", normalizedRoleName]);
+                throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
             }
 
             user.RoleNames.Remove(roleName);
             _session.Save(roleName);
         }
 
-        public Task<IList<string>> GetRolesAsync(User user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IList<string>> GetRolesAsync(User user, CancellationToken cancellationToken)
         {
             if (user == null)
             {
@@ -346,7 +342,7 @@ namespace Orchard.Users.Services
             return Task.FromResult<IList<string>>(user.RoleNames);
         }
 
-        public async Task<bool> IsInRoleAsync(User user, string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<bool> IsInRoleAsync(User user, string normalizedRoleName, CancellationToken cancellationToken)
         {
             if (user == null)
             {
@@ -355,7 +351,7 @@ namespace Orchard.Users.Services
 
             if (string.IsNullOrWhiteSpace(normalizedRoleName))
             {
-                throw new ArgumentException(T["Value cannot be null or empty."], nameof(normalizedRoleName));
+                throw new ArgumentException("Value cannot be null or empty.", nameof(normalizedRoleName));
             }
 
             var roleNames = await _roleProvider.GetRoleNamesAsync();
@@ -364,7 +360,7 @@ namespace Orchard.Users.Services
             return !string.IsNullOrWhiteSpace(roleName) && user.RoleNames.Contains(roleName);
         }
 
-        public async Task<IList<User>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IList<User>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(normalizedRoleName))
             {
