@@ -376,12 +376,8 @@ namespace Orchard.Users.Services
 
             if (!string.IsNullOrWhiteSpace(roleName))
             {
-                return _session.Query<User>()
-                    .ListAsync()
-                    .GetAwaiter()
-                    .GetResult()
-                    .Where(u => u.RoleNames.Contains(roleName))
-                    .ToList();
+                var users = await _session.Query<User>().ListAsync();
+                return users.Where(u => u.RoleNames.Contains(roleName)).ToList();
             }
 
             return new List<User>();
