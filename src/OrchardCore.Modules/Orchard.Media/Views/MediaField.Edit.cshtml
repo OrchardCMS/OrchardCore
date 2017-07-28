@@ -8,7 +8,7 @@
 
 <script at="Foot">
     initializeMediaApplication(false, '@Url.Action("MediaApplication", "Admin", new { area = "Orchard.Media" })');
-    initializeMediaFieldEditor(document.getElementById('@Html.IdFor(m => m)'));
+    initializeMediaFieldEditor(document.getElementById('@Html.IdFor(m => m)'), document.getElementById('@Html.IdFor(m => m)-ModalBody'), '@Url.Action("GetMediaItem", "Admin", new { area = "Orchard.Media" })');
 </script>
 
 @{
@@ -56,28 +56,21 @@
     </div>
 </div>
 
-@if (!Context.Items.ContainsKey("mediaFieldModalBody"))
-{
-    Context.Items["mediaFieldModalBody"] = new object();
-
-    <div class="modal" id="mediaFieldModalBody">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">@T["Select Media"]</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="mediaFieldSelectButton">@T["OK"]</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
-                </div>
+<div class="modal" id="@Html.IdFor(m => m)-ModalBody">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@T["Select Media"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary mediaFieldSelectButton">@T["OK"]</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
             </div>
         </div>
     </div>
-
-    <input type="hidden" id="getMediaItemUrl" value="@Url.Action("GetMediaItem", "Admin", new { area = "Orchard.Media" })" />
-}
+</div>

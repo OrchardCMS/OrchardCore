@@ -1,9 +1,8 @@
 var mediaFieldApps = [];
 
-function initializeMediaFieldEditor(el) {
+function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl) {
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
-    var mediaItemUrl = $('#getMediaItemUrl').val();
 
     var mediaFieldEditor = $(el);
     var mediaFieldApp;
@@ -50,10 +49,10 @@ function initializeMediaFieldEditor(el) {
                 this.selectedMedia = media;
             },
             showModal: function (event) {
-                $("#mediaApp").detach().appendTo('#mediaFieldModalBody .modal-body');
+                $("#mediaApp").detach().appendTo($(modalBodyElement).find('.modal-body'));
                 $("#mediaApp").show();
-                var modal = $('#mediaFieldModalBody').modal();
-                $('#mediaFieldSelectButton').off('click').on('click', function (v) {
+                var modal = $(modalBodyElement).modal();
+                $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
                     mediaFieldApp.mediaItems.push(mediaApp.selectedMedia);
 
                     modal.modal('hide');
