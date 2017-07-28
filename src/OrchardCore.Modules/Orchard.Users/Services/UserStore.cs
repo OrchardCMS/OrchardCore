@@ -342,7 +342,7 @@ namespace Orchard.Users.Services
             return Task.FromResult<IList<string>>(user.RoleNames);
         }
 
-        public async Task<bool> IsInRoleAsync(User user, string normalizedRoleName, CancellationToken cancellationToken)
+        public Task<bool> IsInRoleAsync(User user, string normalizedRoleName, CancellationToken cancellationToken)
         {
             if (user == null)
             {
@@ -354,10 +354,7 @@ namespace Orchard.Users.Services
                 throw new ArgumentException("Value cannot be null or empty.", nameof(normalizedRoleName));
             }
 
-            var roleNames = await _roleProvider.GetRoleNamesAsync();
-            var roleName = roleNames?.FirstOrDefault(r => _normalizeKey.Normalize(r) == normalizedRoleName);
-
-            return !string.IsNullOrWhiteSpace(roleName) && user.RoleNames.Contains(roleName);
+            return Task.FromResult(user.RoleNames.Contains(normalizedRoleName, StringComparer.OrdinalIgnoreCase));
         }
 
         public async Task<IList<User>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken cancellationToken)
