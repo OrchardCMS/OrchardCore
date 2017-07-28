@@ -6,6 +6,7 @@
         simplemde.toolbar[9].action = function (editor) {
             console.log('custom drawImage');
             $("#mediaApp").detach().appendTo('#mediaModalMarkdown .modal-body');
+            $("#mediaApp").show();
             var modal = $('#mediaModalMarkdown').modal();
             $('#mediaSelectButton').on('click', function (v) {
                 var cm = editor.codemirror;

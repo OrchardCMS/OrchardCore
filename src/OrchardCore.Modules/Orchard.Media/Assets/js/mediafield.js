@@ -51,6 +51,7 @@ function initializeMediaFieldEditor(el) {
             },
             showModal: function (event) {
                 $("#mediaApp").detach().appendTo('#mediaFieldModalBody .modal-body');
+                $("#mediaApp").show();
                 var modal = $('#mediaFieldModalBody').modal();
                 $('#mediaFieldSelectButton').off('click').on('click', function (v) {
                     mediaFieldApp.mediaItems.push(mediaApp.selectedMedia);

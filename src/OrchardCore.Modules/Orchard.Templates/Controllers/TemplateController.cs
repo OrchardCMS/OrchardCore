@@ -145,7 +145,7 @@ namespace Orchard.Templates.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(TemplateViewModel model)
+        public async Task<IActionResult> Edit(string sourceName, TemplateViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
@@ -162,7 +162,7 @@ namespace Orchard.Templates.Controllers
                 }
             }
 
-            if (!templatesDocument.Templates.ContainsKey(model.Name))
+            if (!templatesDocument.Templates.ContainsKey(sourceName))
             {
                 return NotFound();
             }
@@ -171,6 +171,8 @@ namespace Orchard.Templates.Controllers
             {
                 var template = new Template { Content = model.Content, Description = model.Description };
 
+
+                await _templatesManager.RemoveTemplateAsync(sourceName);
                 await _templatesManager.UpdateTemplateAsync(model.Name, template);
 
                 return RedirectToAction(nameof(Index));

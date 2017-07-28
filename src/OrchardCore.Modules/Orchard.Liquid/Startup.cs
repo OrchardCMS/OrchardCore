@@ -7,6 +7,8 @@ using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Data.Migration;
+using Orchard.DisplayManagement.Shapes;
+using Orchard.DisplayManagement.Zones;
 using Orchard.Indexing;
 using Orchard.Liquid.Drivers;
 using Orchard.Liquid.Filters;
@@ -25,10 +27,13 @@ namespace Orchard.Liquid
 
             // When accessing a property of a JObject instance
             TemplateContext.GlobalMemberAccessStrategy.Register<JObject>((obj, name) => obj[name]);
-
+            
             // Prevent JTokens from being converted to an ArrayValue as they implement IEnumerable
             FluidValue.TypeMappings.Add(typeof(JObject), o => new ObjectValue(o));
             FluidValue.TypeMappings.Add(typeof(JValue), o => FluidValue.Create(((JValue)o).Value));
+
+            FluidValue.TypeMappings.Add(typeof(ZoneHolding), o => new ObjectValue(o));
+            FluidValue.TypeMappings.Add(typeof(Shape), o => new ObjectValue(o));
         }
 
         public override void ConfigureServices(IServiceCollection services)

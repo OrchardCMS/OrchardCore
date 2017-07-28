@@ -6,7 +6,16 @@
 var initialized;
 var mediaApp;
 
-$(function () {
+var root = {
+    name: 'Media Library',
+    path: '',
+    folder: '',
+    isDirectory: true
+}
+
+var bus = new Vue();
+
+function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl) {
 
     if (initialized) {
         return;
@@ -14,34 +23,17 @@ $(function () {
 
     initialized = true;
 
+    if (!mediaApplicationUrl) {
+        console.error('mediaApplicationUrl variable is not defined');
+    }
+
     $.ajax({
-        url: document.location + '/../../../Orchard.Media/Admin/MediaApplication',
+        url: mediaApplicationUrl,
         method: 'GET',
-        success: function (data) {
-            $('.ta-content').append(data);
+        success: function (content) {
+            $('.ta-content').append(content);
 
-            // TODO: Send an event when the mediaApp is ready for other component to use it: fileUpload and Vue
-            $('#fileupload').fileupload({
-                dataType: 'json',
-                url: $('#uploadFiles').val(),
-                formData: function () {
-                    var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
-
-                    return [
-                        { name: 'path', value: mediaApp.selectedFolder.path },
-                        { name: '__RequestVerificationToken', value: antiForgeryToken },
-                    ]
-                },
-                done: function (e, data) {
-                    $.each(data.result.files, function (index, file) {
-                        mediaApp.mediaItems.push(file)
-                    });
-                    $('#progress .progress-bar').css(
-                        'width',
-                        0 + '%'
-                    );
-                }
-            });
+            $(document).trigger('mediaapplication:ready');
 
             mediaApp = new Vue({
                 el: '#mediaApp',
@@ -181,136 +173,154 @@ $(function () {
                 }
             });
 
+            console.log('mediaApp initialized');
+
             if (displayMediaApplication) {
                 document.getElementById('mediaApp').style.display = "";
             }
+
+            $(document).trigger('mediaApp:ready');
 
         },
         error: function (error) {
             alert(JSON.stringify(error));
         }
     });
+}
 
-    var root = {
-        name: 'Media Library',
-        path: '',
-        folder: '',
-        isDirectory: true
-    }
-
-    var bus = new Vue();
-
-    // define the folder component
-    Vue.component('folder', {
-        template: '\
-            <li :class="{selected: selected}">\
-                <div>\
-                    <i v-on:click="toggle" class="expand fa fa-caret-right" v-bind:class="{open: open, closed: !open, empty: empty}"></i>\
-                    <a href="javascript:;" v-on:click="select">\
-                        <i class="folder fa fa-folder"></i>\
-                        {{model.name}}\
-                    </a>\
-                </div>\
-                <ol v-show="open">\
-                    <folder v-for="folder in children"\
-                            :key="folder.path"\
-                            :model="folder">\
-                    </folder>\
-                </ol>\
-            </li>\
-            ',
-        props: {
-            model: Object
-        },
-        data: function () {
-            return {
-                open: false,
-                children: null, // not initialized state (for lazy-loading)
-                parent: null,
-                selected: false
-            }
-        },
-        computed: {
-            empty: function () {
-                return this.children && this.children.length == 0;
-            }
-        },
-        created: function () {
-            var self = this;
-            bus.$on('deleteFolder', function (folder) {
-                if (self.children) {
-                    var index = self.children && self.children.indexOf(folder)
-                    if (index > -1) {
-                        self.children.splice(index, 1)
-                        bus.$emit('folderDeleted');
-                    }
-                }
-            });
-
-            bus.$on('addFolder', function (target, folder) {
-                if (self.model == target) {
-
-                    bus.$emit('beforeFolderAdded', self.model);
-
-                    self.children.push(folder);
-                    folder.parent = self.model;
-                    bus.$emit('folderAdded', folder);
-                }
-            });
-
-            bus.$on('folderSelected', function (folder) {
-                self.selected = self.model == folder;
-            });
-        },
-        methods: {
-            toggle: function () {
-                this.open = !this.open
-                var self = this;
-                if (this.open && !this.children) {
-                    $.ajax({
-                        url: $('#getFoldersUrl').val() + "?path=" + encodeURIComponent(self.model.path),
-                        method: 'GET',
-                        success: function (data) {
-                            self.children = data;
-                            self.children.forEach(function (c) {
-                                c.parent = self.model;
-                            });
-                        },
-                        error: function (error) {
-                            emtpy = false;
-                            alert(JSON.stringify(error));
-                        }
-                    });
-                }
-            },
-            select: function () {
-                mediaApp.selectFolder(this.model);
-            }
+// <folder> component
+Vue.component('folder', {
+    template: '\
+        <li :class="{selected: selected}">\
+            <div>\
+                <i v-on:click="toggle" class="expand fa fa-caret-right" v-bind:class="{open: open, closed: !open, empty: empty}"></i>\
+                <a href="javascript:;" v-on:click="select">\
+                    <i class="folder fa fa-folder"></i>\
+                    {{model.name}}\
+                </a>\
+            </div>\
+            <ol v-show="open">\
+                <folder v-for="folder in children"\
+                        :key="folder.path"\
+                        :model="folder">\
+                </folder>\
+            </ol>\
+        </li>\
+        ',
+    props: {
+        model: Object
+    },
+    data: function () {
+        return {
+            open: false,
+            children: null, // not initialized state (for lazy-loading)
+            parent: null,
+            selected: false
         }
-    });
-
-    $('#modalFooterOk').on('click', function (e) {
-        var name = $('.modal-body input').val();
-
-        $.ajax({
-            url: $('#createFolderUrl').val() + "?path=" + encodeURIComponent(mediaApp.selectedFolder.path) + "&name=" + encodeURIComponent(name),
-            method: 'POST',
-            data: {
-                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
-            },
-            success: function (data) {
-                bus.$emit('addFolder', mediaApp.selectedFolder, data);
-                $('#createFolderModal').modal('hide');
-            },
-            error: function (error) {
-                alert(JSON.stringify(error));
+    },
+    computed: {
+        empty: function () {
+            return this.children && this.children.length == 0;
+        }
+    },
+    created: function () {
+        var self = this;
+        bus.$on('deleteFolder', function (folder) {
+            if (self.children) {
+                var index = self.children && self.children.indexOf(folder)
+                if (index > -1) {
+                    self.children.splice(index, 1)
+                    bus.$emit('folderDeleted');
+                }
             }
         });
+
+        bus.$on('addFolder', function (target, folder) {
+            if (self.model == target) {
+
+                bus.$emit('beforeFolderAdded', self.model);
+
+                self.children.push(folder);
+                folder.parent = self.model;
+                bus.$emit('folderAdded', folder);
+            }
+        });
+
+        bus.$on('folderSelected', function (folder) {
+            self.selected = self.model == folder;
+        });
+    },
+    methods: {
+        toggle: function () {
+            this.open = !this.open
+            var self = this;
+            if (this.open && !this.children) {
+                $.ajax({
+                    url: $('#getFoldersUrl').val() + "?path=" + encodeURIComponent(self.model.path),
+                    method: 'GET',
+                    success: function (data) {
+                        self.children = data;
+                        self.children.forEach(function (c) {
+                            c.parent = self.model;
+                        });
+                    },
+                    error: function (error) {
+                        emtpy = false;
+                        alert(JSON.stringify(error));
+                    }
+                });
+            }
+        },
+        select: function () {
+            mediaApp.selectFolder(this.model);
+        }
+    }
+});
+
+$('#modalFooterOk').on('click', function (e) {
+    var name = $('.modal-body input').val();
+
+    $.ajax({
+        url: $('#createFolderUrl').val() + "?path=" + encodeURIComponent(mediaApp.selectedFolder.path) + "&name=" + encodeURIComponent(name),
+        method: 'POST',
+        data: {
+            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+        },
+        success: function (data) {
+            bus.$emit('addFolder', mediaApp.selectedFolder, data);
+            $('#createFolderModal').modal('hide');
+        },
+        error: function (error) {
+            alert(JSON.stringify(error));
+        }
     });
 });
-$(function () {
 
+$(document).on('mediaApp:ready', function () {
+    console.log('setting up fileupload button');
+    $('#fileupload').fileupload({
+        dataType: 'json',
+        url: $('#uploadFiles').val(),
+        formData: function () {
+            var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+
+            return [
+                { name: 'path', value: mediaApp.selectedFolder.path },
+                { name: '__RequestVerificationToken', value: antiForgeryToken },
+            ]
+        },
+        done: function (e, data) {
+            $.each(data.result.files, function (index, file) {
+                mediaApp.mediaItems.push(file)
+            });
+            $('#progress .progress-bar').css(
+                'width',
+                0 + '%'
+            );
+        }
+    });
 });
+
 /*
  * jQuery File Upload Plugin
  * https://github.com/blueimp/jQuery-File-Upload
@@ -2072,6 +2082,7 @@ function initializeMediaFieldEditor(el) {
             },
             showModal: function (event) {
                 $("#mediaApp").detach().appendTo('#mediaFieldModalBody .modal-body');
+                $("#mediaApp").show();
                 var modal = $('#mediaFieldModalBody').modal();
                 $('#mediaFieldSelectButton').off('click').on('click', function (v) {
                     mediaFieldApp.mediaItems.push(mediaApp.selectedMedia);

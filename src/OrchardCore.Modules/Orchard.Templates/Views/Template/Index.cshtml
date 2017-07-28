@@ -24,6 +24,9 @@
                             <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                         <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
+                        <span class="hint">
+                            @T["— {0}", entry.Template.Description]
+                        </span>
                     </div>
                 </li>
             }

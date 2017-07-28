@@ -1,7 +1,16 @@
 var initialized;
 var mediaApp;
 
-$(function () {
+var root = {
+    name: 'Media Library',
+    path: '',
+    folder: '',
+    isDirectory: true
+}
+
+var bus = new Vue();
+
+function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl) {
 
     if (initialized) {
         return;
@@ -9,13 +18,17 @@ $(function () {
 
     initialized = true;
 
-    $.ajax({
-        url: document.location + '/../../../Orchard.Media/Admin/MediaApplication',
-        method: 'GET',
-        success: function (data) {
-            $('.ta-content').append(data);
+    if (!mediaApplicationUrl) {
+        console.error('mediaApplicationUrl variable is not defined');
+    }
 
-            $(document).trigger('media:ready');
+    $.ajax({
+        url: mediaApplicationUrl,
+        method: 'GET',
+        success: function (content) {
+            $('.ta-content').append(content);
+
+            $(document).trigger('mediaapplication:ready');
 
             mediaApp = new Vue({
                 el: '#mediaApp',
@@ -155,130 +168,125 @@ $(function () {
                 }
             });
 
+            console.log('mediaApp initialized');
+
             if (displayMediaApplication) {
                 document.getElementById('mediaApp').style.display = "";
             }
+
+            $(document).trigger('mediaApp:ready');
 
         },
         error: function (error) {
             alert(JSON.stringify(error));
         }
     });
+}
 
-    var root = {
-        name: 'Media Library',
-        path: '',
-        folder: '',
-        isDirectory: true
-    }
-
-    var bus = new Vue();
-
-    // define the folder component
-    Vue.component('folder', {
-        template: '\
-            <li :class="{selected: selected}">\
-                <div>\
-                    <i v-on:click="toggle" class="expand fa fa-caret-right" v-bind:class="{open: open, closed: !open, empty: empty}"></i>\
-                    <a href="javascript:;" v-on:click="select">\
-                        <i class="folder fa fa-folder"></i>\
-                        {{model.name}}\
-                    </a>\
-                </div>\
-                <ol v-show="open">\
-                    <folder v-for="folder in children"\
-                            :key="folder.path"\
-                            :model="folder">\
-                    </folder>\
-                </ol>\
-            </li>\
-            ',
-        props: {
-            model: Object
-        },
-        data: function () {
-            return {
-                open: false,
-                children: null, // not initialized state (for lazy-loading)
-                parent: null,
-                selected: false
-            }
-        },
-        computed: {
-            empty: function () {
-                return this.children && this.children.length == 0;
-            }
-        },
-        created: function () {
-            var self = this;
-            bus.$on('deleteFolder', function (folder) {
-                if (self.children) {
-                    var index = self.children && self.children.indexOf(folder)
-                    if (index > -1) {
-                        self.children.splice(index, 1)
-                        bus.$emit('folderDeleted');
-                    }
-                }
-            });
-
-            bus.$on('addFolder', function (target, folder) {
-                if (self.model == target) {
-
-                    bus.$emit('beforeFolderAdded', self.model);
-
-                    self.children.push(folder);
-                    folder.parent = self.model;
-                    bus.$emit('folderAdded', folder);
-                }
-            });
-
-            bus.$on('folderSelected', function (folder) {
-                self.selected = self.model == folder;
-            });
-        },
-        methods: {
-            toggle: function () {
-                this.open = !this.open
-                var self = this;
-                if (this.open && !this.children) {
-                    $.ajax({
-                        url: $('#getFoldersUrl').val() + "?path=" + encodeURIComponent(self.model.path),
-                        method: 'GET',
-                        success: function (data) {
-                            self.children = data;
-                            self.children.forEach(function (c) {
-                                c.parent = self.model;
-                            });
-                        },
-                        error: function (error) {
-                            emtpy = false;
-                            alert(JSON.stringify(error));
-                        }
-                    });
-                }
-            },
-            select: function () {
-                mediaApp.selectFolder(this.model);
-            }
+// <folder> component
+Vue.component('folder', {
+    template: '\
+        <li :class="{selected: selected}">\
+            <div>\
+                <i v-on:click="toggle" class="expand fa fa-caret-right" v-bind:class="{open: open, closed: !open, empty: empty}"></i>\
+                <a href="javascript:;" v-on:click="select">\
+                    <i class="folder fa fa-folder"></i>\
+                    {{model.name}}\
+                </a>\
+            </div>\
+            <ol v-show="open">\
+                <folder v-for="folder in children"\
+                        :key="folder.path"\
+                        :model="folder">\
+                </folder>\
+            </ol>\
+        </li>\
+        ',
+    props: {
+        model: Object
+    },
+    data: function () {
+        return {
+            open: false,
+            children: null, // not initialized state (for lazy-loading)
+            parent: null,
+            selected: false
         }
-    });
-
-    $('#modalFooterOk').on('click', function (e) {
-        var name = $('.modal-body input').val();
-
-        $.ajax({
-            url: $('#createFolderUrl').val() + "?path=" + encodeURIComponent(mediaApp.selectedFolder.path) + "&name=" + encodeURIComponent(name),
-            method: 'POST',
-            data: {
-                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
-            },
-            success: function (data) {
-                bus.$emit('addFolder', mediaApp.selectedFolder, data);
-                $('#createFolderModal').modal('hide');
-            },
-            error: function (error) {
-                alert(JSON.stringify(error));
+    },
+    computed: {
+        empty: function () {
+            return this.children && this.children.length == 0;
+        }
+    },
+    created: function () {
+        var self = this;
+        bus.$on('deleteFolder', function (folder) {
+            if (self.children) {
+                var index = self.children && self.children.indexOf(folder)
+                if (index > -1) {
+                    self.children.splice(index, 1)
+                    bus.$emit('folderDeleted');
+                }
             }
         });
+
+        bus.$on('addFolder', function (target, folder) {
+            if (self.model == target) {
+
+                bus.$emit('beforeFolderAdded', self.model);
+
+                self.children.push(folder);
+                folder.parent = self.model;
+                bus.$emit('folderAdded', folder);
+            }
+        });
+
+        bus.$on('folderSelected', function (folder) {
+            self.selected = self.model == folder;
+        });
+    },
+    methods: {
+        toggle: function () {
+            this.open = !this.open
+            var self = this;
+            if (this.open && !this.children) {
+                $.ajax({
+                    url: $('#getFoldersUrl').val() + "?path=" + encodeURIComponent(self.model.path),
+                    method: 'GET',
+                    success: function (data) {
+                        self.children = data;
+                        self.children.forEach(function (c) {
+                            c.parent = self.model;
+                        });
+                    },
+                    error: function (error) {
+                        emtpy = false;
+                        alert(JSON.stringify(error));
+                    }
+                });
+            }
+        },
+        select: function () {
+            mediaApp.selectFolder(this.model);
+        }
+    }
+});
+
+$('#modalFooterOk').on('click', function (e) {
+    var name = $('.modal-body input').val();
+
+    $.ajax({
+        url: $('#createFolderUrl').val() + "?path=" + encodeURIComponent(mediaApp.selectedFolder.path) + "&name=" + encodeURIComponent(name),
+        method: 'POST',
+        data: {
+            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+        },
+        success: function (data) {
+            bus.$emit('addFolder', mediaApp.selectedFolder, data);
+            $('#createFolderModal').modal('hide');
+        },
+        error: function (error) {
+            alert(JSON.stringify(error));
+        }
     });
 });

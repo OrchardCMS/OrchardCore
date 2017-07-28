@@ -62,7 +62,8 @@ namespace Orchard.Templates.Services
 
         public async Task RemoveTemplateAsync(string name)
         {
-            var document = await GetTemplatesDocumentAsync();
+            var document = await _session.Query<TemplatesDocument>().FirstOrDefaultAsync();
+
             document.Templates.Remove(name);
             _session.Save(document);
 
@@ -72,7 +73,8 @@ namespace Orchard.Templates.Services
         
         public async Task UpdateTemplateAsync(string name, Template template)
         {
-            var document = await GetTemplatesDocumentAsync();
+            var document = await _session.Query<TemplatesDocument>().FirstOrDefaultAsync();
+
             document.Templates[name] = template;
             _session.Save(document);
 

@@ -13,6 +13,9 @@
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post">
+    
+    <input type="hidden" value="@Model.Name" name="sourceName" />
+
     <div class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
         <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>

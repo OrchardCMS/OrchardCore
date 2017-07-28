@@ -42,6 +42,7 @@ namespace Orchard.Templates.Services
 
                         context.LocalScope.SetValue("Context", displayContext.ViewContext);
                         context.LocalScope.SetValue("Model", displayContext.Value);
+                        context.LocalScope.SetValue("ContentItem", ((dynamic)displayContext.Value).ContentItem);
                         context.AmbientValues.Add("UrlHelper", urlHelper);
 
                         context.MemberAccessStrategy.Register(displayContext.Value.GetType());
