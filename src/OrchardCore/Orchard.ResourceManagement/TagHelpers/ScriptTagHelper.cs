@@ -57,7 +57,9 @@ namespace Orchard.ResourceManagement.TagHelpers
                 else
                 {
                     // Anonymous declaration with dependencies, then display
-                    var name = Guid.NewGuid().ToString();
+
+                    // Using the source as the name to prevent duplicate references to the same file
+                    var name = Src.ToLowerInvariant();
 
                     var definition = _resourceManager.InlineManifest.DefineScript(name);
                     definition.SetUrl(Src, DebugSrc);
