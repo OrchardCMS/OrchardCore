@@ -38,11 +38,12 @@ $(function () {
         var type = $(this).data("widget-type");
         var target = $(this).closest('.widget-template');
         var targetId = $(this).data("target-id");
+        var flowmetadata = $(this).data("flowmetadata");
         var prefixesName = $(this).data("prefixes-name");
         var prefix = guid();
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
-            url: createEditorUrl + "/" + type + "?prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId
+            url: createEditorUrl + "/" + type + "?prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata
         })
         .done(function (data) {
             var result = JSON.parse(data);

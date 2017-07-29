@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Display.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement.Views;
 using Orchard.Flows.Models;
@@ -45,6 +48,7 @@ namespace Orchard.Flows.Drivers
             {
                 m.BagPart = bagPart;
                 m.Updater = context.Updater;
+                m.ContainedContentTypeDefinitions = GetContainedContentTypes(bagPart);
             });
         }
 
@@ -68,6 +72,20 @@ namespace Orchard.Flows.Drivers
             }
 
             return Edit(part, context);
+        }
+
+        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(BagPart bagPart)
+        {
+            var settings = GetSettings(bagPart);
+            var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
+            return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
+        }
+
+        private BagPartSettings GetSettings(BagPart bagPart)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(bagPart.ContentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "BagPart", StringComparison.Ordinal));
+            return contentTypePartDefinition.Settings.ToObject<BagPartSettings>();
         }
     }
 }

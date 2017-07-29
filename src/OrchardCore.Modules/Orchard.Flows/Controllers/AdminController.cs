@@ -61,6 +61,15 @@ namespace Orchard.Flows.Controllers
                 EditorShape = editor
             };
 
+            if (flowmetadata)
+            {
+                model.EditorShape.Metadata.Alternates.Add("Widget_Edit__Flow");
+            }
+            else
+            {
+                model.EditorShape.Metadata.Alternates.Add("Widget_Edit__Bag");
+            }
+
             return View("Display", model);
         }
     }
