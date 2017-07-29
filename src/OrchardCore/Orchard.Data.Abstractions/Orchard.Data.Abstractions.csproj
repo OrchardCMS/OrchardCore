@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.1" />
-    <PackageReference Include="YesSql.Core" Version="2.0.0-beta-1045" />
+    <PackageReference Include="YesSql.Core" Version="2.0.0-beta-1048" />
   </ItemGroup>
 
 </Project>
