@@ -20,19 +20,24 @@ namespace Orchard.Users.Services
     {
         private readonly ISession _session;
         private readonly IRoleProvider _roleProvider;
-        private readonly ILookupNormalizer _normalizeKey;
+        private readonly ILookupNormalizer _keyNormalizer;
 
         public UserStore(ISession session,
             IRoleProvider roleProvider,
-            ILookupNormalizer normalizeKey)
+            ILookupNormalizer keyNormalizer)
         {
             _session = session;
             _roleProvider = roleProvider;
-            _normalizeKey = normalizeKey;
+            _keyNormalizer = keyNormalizer;
         }
 
         public void Dispose()
         {
+        }
+
+        public string NormalizeKey(string key)
+        {
+            return _keyNormalizer == null ? key : _keyNormalizer.Normalize(key);
         }
 
         #region IUserStore<User>
@@ -302,7 +307,7 @@ namespace Orchard.Users.Services
             }
 
             var roleNames = await _roleProvider.GetRoleNamesAsync();
-            var roleName = roleNames?.FirstOrDefault(r => _normalizeKey.Normalize(r) == normalizedRoleName);
+            var roleName = roleNames?.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
 
             if (string.IsNullOrWhiteSpace(roleName))
             {
@@ -321,7 +326,7 @@ namespace Orchard.Users.Services
             }
 
             var roleNames = await _roleProvider.GetRoleNamesAsync();
-            var roleName = roleNames?.FirstOrDefault(r => _normalizeKey.Normalize(r) == normalizedRoleName);
+            var roleName = roleNames?.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
 
             if (string.IsNullOrWhiteSpace(roleName))
             {
@@ -364,16 +369,8 @@ namespace Orchard.Users.Services
                 throw new ArgumentNullException(nameof(normalizedRoleName));
             }
 
-            var roleNames = await _roleProvider.GetRoleNamesAsync();
-            var roleName = roleNames?.FirstOrDefault(r => _normalizeKey.Normalize(r) == normalizedRoleName);
-
-            if (!string.IsNullOrWhiteSpace(roleName))
-            {
-                var users = await _session.Query<User>().ListAsync();
-                return users.Where(u => u.RoleNames.Contains(roleName)).ToList();
-            }
-
-            return new List<User>();
+            var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync();
+            return users == null ? new List<User>() : users.ToList();
         }
         #endregion
     }
