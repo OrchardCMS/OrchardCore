@@ -7,8 +7,8 @@ namespace Orchard.DisplayManagement.FileProviders
 {
     public static class FileProviderExtensions
     {
-        public static IEnumerable<string> GetViewFilePaths(this IFileProvider fileProvider,
-            string subPath, string[] extensions, bool inViewsFolder = false, bool inDepth = true)
+        public static IEnumerable<string> GetViewFilePaths(this IFileProvider fileProvider, string subPath,
+            string[] extensions, string viewsFolder = null, bool inViewsFolder = false, bool inDepth = true)
         {
             var contents = fileProvider.GetDirectoryContents(subPath);
 
@@ -17,14 +17,14 @@ namespace Orchard.DisplayManagement.FileProviders
                 yield break;
             }
 
-            if (!inViewsFolder && inDepth)
+            if (!inViewsFolder && viewsFolder != null && inDepth)
             {
-                var viewsFolder = contents.FirstOrDefault(c => c.Name == "Views" && c.IsDirectory);
+                var viewsFolderInfo = contents.FirstOrDefault(c => c.Name == viewsFolder && c.IsDirectory);
 
-                if (viewsFolder != null)
+                if (viewsFolderInfo != null)
                 {
                     foreach (var filePath in GetViewFilePaths(fileProvider, string.Format("{0}/{1}",
-                        subPath, viewsFolder.Name), extensions, inViewsFolder: true))
+                        subPath, viewsFolderInfo.Name), extensions, viewsFolder, inViewsFolder: true))
                     {
                         yield return filePath;
                     }
@@ -38,7 +38,7 @@ namespace Orchard.DisplayManagement.FileProviders
                 if (content.IsDirectory && inDepth)
                 {
                     foreach (var filePath in GetViewFilePaths(fileProvider, string.Format("{0}/{1}",
-                        subPath, content.Name), extensions, inViewsFolder))
+                        subPath, content.Name), extensions, viewsFolder, inViewsFolder))
                     {
                         yield return filePath;
                     }

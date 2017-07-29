@@ -118,8 +118,8 @@ namespace Orchard.Templates.Controllers
                     Description = model.Description
                 };
 
-                await _templatesManager.AddTemplateAsync(string.Format("{0}/Views/{1}{2}",
-                    model.Theme, model.View, FluidViewTemplate.ViewExtension), template);
+                await _templatesManager.AddTemplateAsync(string.Format("{0}/{1}/{2}{3}", model.Theme,
+                    FluidViewTemplate.ViewsFolder, model.View, FluidViewTemplate.ViewExtension), template);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -178,7 +178,8 @@ namespace Orchard.Templates.Controllers
                 }
             }
 
-            var path = string.Format("{0}/Views/{1}{2}", model.Theme, model.View, FluidViewTemplate.ViewExtension);
+            var path = string.Format("{0}/{1}/{2}{3}", model.Theme, FluidViewTemplate.ViewsFolder,
+                model.View, FluidViewTemplate.ViewExtension);
 
             if (!templatesDocument.Templates.ContainsKey(path))
             {
