@@ -67,6 +67,7 @@
                                data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
                                data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
                                data-widget-type="@type.Name"
+                               data-flowmetata="true"
                                data-zone="@zone"
                                href="#">@type.DisplayName</a>
                         }
@@ -79,7 +80,7 @@
     @if (Context.Items["WidgetsListPart.Edit"] == null)
     {
         Context.Items["WidgetsListPart.Edit"] = new object();
-        <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "Orchard.Widgets"  })" />
+        <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "Orchard.Widgets" })" />
 
         <div id="editors" style="display:none">
             @foreach (var type in widgetContentTypes)

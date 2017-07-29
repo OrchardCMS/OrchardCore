@@ -1,14 +1,14 @@
 @using Orchard.ContentManagement.Metadata.Settings;
 @using Orchard.Flows.ViewModels;
 
-@model FlowPartEditViewModel
+@model BagPartEditViewModel
 
 @inject IContentManager ContentManager
 @inject Orchard.ContentManagement.MetaData.IContentDefinitionManager ContentDefinitionManager
 @inject Orchard.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 @{
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Creatable);
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
 }
 
@@ -17,7 +17,7 @@
 <fieldset class="form-group">
     <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
-        @foreach (var widget in Model.FlowPart.Widgets)
+        @foreach (var widget in Model.BagPart.ContentItems)
         {
             var prefix = Guid.NewGuid().ToString("n");
             <div class="widget-template">
@@ -28,7 +28,7 @@
                     widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
                     widgetEditor.TargetId = widgetTemplatePlaceholderId;
 
-                    widgetEditor.Metadata.Alternates.Add("Widget_Edit__Flow");
+                    widgetEditor.Metadata.Alternates.Add("Widget_Edit__Bag");
                 }
                     
                 @await DisplayAsync(widgetEditor)
@@ -42,7 +42,7 @@
 
     <div class="btn-group ">
         <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            @T["Add Widget"]
+            @T["Add Item"]
         </button>
         <div class="dropdown-menu">
             @foreach (var type in widgetContentTypes)
@@ -52,16 +52,16 @@
                    data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
                    data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
                    data-widget-type="@type.Name" 
-                   data-flowmetata="true"
+                   data-flowmetata="false"
                    href="#">@type.DisplayName</a>
             }
         </div>
     </div>
 
 
-    @if (Context.Items["FlowPart.Edit"] == null)
+    @if (Context.Items["BagPart.Edit"] == null)
     {
-        Context.Items["FlowPart.Edit"] = new object();
+        Context.Items["BagPart.Edit"] = new object();
         <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "Orchard.Flows" })" />
 
         @foreach (var type in widgetContentTypes)

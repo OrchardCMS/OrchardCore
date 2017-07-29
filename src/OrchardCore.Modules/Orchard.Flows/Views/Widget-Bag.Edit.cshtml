@@ -3,7 +3,7 @@
 
 @{
     var contentType = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Creatable);
 }
 
 <div class="widget widget-editor card my-1 @(Model.Inline != true ? "collapsed" : "")">
@@ -13,7 +13,7 @@
         @contentType
         <div class="btn-group btn-group-sm float-right" role="group">
             <div class="btn-group">
-                <button type="button" title="@T["Insert Widget"]" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button type="button" title="@T["Insert Item"]" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fa fa-plus" aria-hidden="true"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right">
