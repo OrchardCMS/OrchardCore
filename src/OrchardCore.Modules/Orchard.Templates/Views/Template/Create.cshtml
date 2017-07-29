@@ -1,11 +1,15 @@
 ﻿@model TemplateViewModel
 @using Orchard.DisplayManagement;
-@inject Orchard.Environment.Shell.IShellFeaturesManager ShellFeaturesManager;
+@inject Orchard.Environment.Extensions.IExtensionManager ExtensionManager;
 
 @{
     // waiting for manifest tags to be able to exclude admin and hidden themes
-    var themes = (await ShellFeaturesManager.GetEnabledFeaturesAsync())
-        .Where(f => f.Extension.Manifest.IsTheme()).Select(e => e.Id);
+    var themes = ExtensionManager.GetExtensions()
+        .Where(e =>
+            e.Manifest.IsTheme() &&
+            !e.Manifest.Tags.Contains("hidden") &&
+            !e.Manifest.Tags.Contains("admin"))
+        .Select(e => e.Id);
 }
 
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>

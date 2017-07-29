@@ -47,9 +47,14 @@ namespace Orchard.Templates.Services
             {
                 if (_themesViewsPaths == null)
                 {
-                    _themesViewsPaths = extensionManager.GetExtensions().Where(e => e.Manifest.IsTheme()).ToDictionary(
-                        e => string.Format("{0}/{1}", e.SubPath.Replace('\\', '/').Trim('/'), "Views"),
-                        e => string.Format("{0}/{1}", e.Id, "Views"));
+                    _themesViewsPaths = extensionManager.GetExtensions()
+                        .Where(e =>
+                            e.Manifest.IsTheme() &&
+                            !e.Manifest.Tags.Contains("hidden") &&
+                            !e.Manifest.Tags.Contains("admin"))
+                        .ToDictionary(e =>
+                            string.Format("{0}/{1}", e.SubPath.Replace('\\', '/').Trim('/'), "Views"),
+                            e => string.Format("{0}/{1}", e.Id, "Views"));
                 }
             }
         }
