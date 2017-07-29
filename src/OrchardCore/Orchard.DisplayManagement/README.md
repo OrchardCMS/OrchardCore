@@ -2,7 +2,7 @@
 
 ## Placement files
 
-Any extension can provide contain an optional `placement.json` file providing custom placement logic.
+Any extension can contain an optional `placement.json` file providing custom placement logic.
 
 ### Format
 
@@ -33,7 +33,7 @@ Placement information consists of:
 - `place` (Optional): The actual location of the shape in the rendered zone.
 - `alternates` (Optional): An array of alternate shape types to add to the current shape's metadata.
 - `wrappers` (Optional): An array of shape types to use as wrappers for the current shape.
-- `shape` (Optional): A subtitution shape type.
+- `shape` (Optional): A substitution shape type.
 
 
 ```json

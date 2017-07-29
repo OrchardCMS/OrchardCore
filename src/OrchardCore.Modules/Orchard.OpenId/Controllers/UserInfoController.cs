@@ -25,8 +25,8 @@ namespace Orchard.OpenId.Controllers
             _userManager = userManager;
         }
 
-        // GET: /Orchard.OpenId/UserInfo/Me
-        [HttpGet]
+        // GET/POST: /Orchard.OpenId/UserInfo/Me
+        [AcceptVerbs("GET", "POST")]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
         public async Task<IActionResult> Me()

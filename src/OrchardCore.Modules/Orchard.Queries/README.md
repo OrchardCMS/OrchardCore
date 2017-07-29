@@ -6,7 +6,7 @@ The queries module provide a management UI and APIs for querying data.
 
 ### Query
 
-Create a class inheriting from `Query` which will represent the state that is necessary to reprensent this new query.
+Create a class inheriting from `Query` which will represent the state that is necessary to represent this new query.
 
 ### QuerySource
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -9,14 +9,15 @@ using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Orchard.Mvc.ActionConstraints;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OpenIddict.Core;
 using Orchard.OpenId.Models;
+using Orchard.OpenId.Services;
 using Orchard.OpenId.ViewModels;
 using Orchard.Security;
 using Orchard.Users.Models;
@@ -29,27 +30,30 @@ namespace Orchard.OpenId.Controllers
         private readonly OpenIddictApplicationManager<OpenIdApplication> _applicationManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
         private readonly SignInManager<User> _signInManager;
+        private readonly IOpenIdService _openIdService;
+        private readonly RoleManager<Role> _roleManager;
         private readonly UserManager<User> _userManager;
-        private readonly IRoleClaimStore<Role> _roleStore;
         private readonly IStringLocalizer<AccessController> T;
 
         public AccessController(
             OpenIddictApplicationManager<OpenIdApplication> applicationManager,
             IOptions<IdentityOptions> identityOptions,
             IStringLocalizer<AccessController> localizer,
+            IOpenIdService openIdService,
+            RoleManager<Role> roleManager,
             SignInManager<User> signInManager,
-            UserManager<User> userManager,
-            IRoleClaimStore<Role> roleStore)
+            UserManager<User> userManager)
         {
             T = localizer;
             _applicationManager = applicationManager;
             _identityOptions = identityOptions;
+            _openIdService = openIdService;
             _signInManager = signInManager;
             _userManager = userManager;
-            _roleStore = roleStore;
+            _roleManager = roleManager;
         }
 
-        [HttpGet]
+        [HttpGet, HttpPost]
         public async Task<IActionResult> Authorize()
         {
             var response = HttpContext.GetOpenIdConnectResponse();
@@ -117,6 +121,18 @@ namespace Orchard.OpenId.Controllers
                 });
             }
 
+            if (Request.HasFormContentType)
+            {
+                if (!string.IsNullOrEmpty(Request.Form["submit.Accept"]))
+                {
+                    return await IssueAccessIdentityTokensAsync(request);
+                }
+                else if (!string.IsNullOrEmpty(Request.Form["submit.Deny"]))
+                {
+                    return Forbid(OpenIdConnectServerDefaults.AuthenticationScheme);
+                }
+            }
+
             if (application.SkipConsent)
             {
                 return await IssueAccessIdentityTokensAsync(request);
@@ -128,61 +144,6 @@ namespace Orchard.OpenId.Controllers
                 RequestId = request.RequestId,
                 Scope = request.Scope
             });
-        }
-
-        [ActionName(nameof(Authorize))]
-        [HttpPost, FormValueRequired("submit.Accept")]
-        public async Task<IActionResult> Accept()
-        {
-            var response = HttpContext.GetOpenIdConnectResponse();
-            if (response != null)
-            {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = response.Error,
-                    ErrorDescription = response.ErrorDescription
-                });
-            }
-
-            // If the request is missing, this likely means that
-            // this endpoint was not enabled in the settings.
-            // In this case, simply return a 404 response.
-            var request = HttpContext.GetOpenIdConnectRequest();
-            if (request == null)
-            {
-                return NotFound();
-            }
-
-            return await IssueAccessIdentityTokensAsync(request);
-        }
-
-        [ActionName(nameof(Authorize))]
-        [HttpPost, FormValueRequired("submit.Deny")]
-        public IActionResult Deny()
-        {
-            var response = HttpContext.GetOpenIdConnectResponse();
-            if (response != null)
-            {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = response.Error,
-                    ErrorDescription = response.ErrorDescription
-                });
-            }
-
-            var request = HttpContext.GetOpenIdConnectRequest();
-            if (request == null)
-            {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = OpenIdConnectConstants.Errors.ServerError,
-                    ErrorDescription = T["The authorization server is not correctly configured."]
-                });
-            }
-
-            // Notify OpenIddict that the authorization grant has been denied by the resource owner
-            // to redirect the user agent to the client application using the appropriate response_mode.
-            return Forbid(OpenIdConnectServerDefaults.AuthenticationScheme);
         }
 
         [AllowAnonymous, HttpGet]
@@ -342,9 +303,10 @@ namespace Orchard.OpenId.Controllers
                     OpenIdConnectConstants.Destinations.AccessToken,
                     OpenIdConnectConstants.Destinations.IdentityToken);
 
-                foreach (var claim in await _roleStore.GetClaimsAsync(await _roleStore.FindByIdAsync(roleName, HttpContext.RequestAborted)))
+                foreach (var claim in await _roleManager.GetClaimsAsync(await _roleManager.FindByIdAsync(roleName)))
                 {
-                    identity.AddClaim(claim.Type, claim.Value, OpenIdConnectConstants.Destinations.AccessToken, OpenIdConnectConstants.Destinations.IdentityToken);
+                    identity.AddClaim(claim.Type, claim.Value, OpenIdConnectConstants.Destinations.AccessToken,
+                                                               OpenIdConnectConstants.Destinations.IdentityToken);
                 }
             }
 
@@ -353,7 +315,7 @@ namespace Orchard.OpenId.Controllers
                 new AuthenticationProperties(),
                 OpenIdConnectServerDefaults.AuthenticationScheme);
 
-            ticket.SetResources(request.GetResources());
+            ticket.SetResources(await GetResourcesAsync(request));
 
             return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
         }
@@ -370,8 +332,8 @@ namespace Orchard.OpenId.Controllers
                 });
             }
 
-            // Ensure the user is allowed to sign in.
-            if (!await _signInManager.CanSignInAsync(user))
+            var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
+            if (result.IsNotAllowed)
             {
                 return BadRequest(new OpenIdConnectResponse
                 {
@@ -379,45 +341,21 @@ namespace Orchard.OpenId.Controllers
                     ErrorDescription = T["The specified user is not allowed to sign in."]
                 });
             }
-
-            // Reject the token request if two-factor authentication has been enabled by the user.
-            if (_userManager.SupportsUserTwoFactor && await _userManager.GetTwoFactorEnabledAsync(user))
+            else if (result.RequiresTwoFactor)
             {
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidGrant,
-                    ErrorDescription = T["The specified user is not allowed to sign in."]
+                    ErrorDescription = T["The specified user is not allowed to sign in using the password method."]
                 });
             }
-
-            // Ensure the user is not already locked out.
-            if (_userManager.SupportsUserLockout && await _userManager.IsLockedOutAsync(user))
+            else if (!result.Succeeded)
             {
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidGrant,
                     ErrorDescription = T["The username/password couple is invalid."]
                 });
-            }
-
-            // Ensure the password is valid.
-            if (!await _userManager.CheckPasswordAsync(user, request.Password))
-            {
-                if (_userManager.SupportsUserLockout)
-                {
-                    await _userManager.AccessFailedAsync(user);
-                }
-
-                return BadRequest(new OpenIdConnectResponse
-                {
-                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
-                    ErrorDescription = T["The username/password couple is invalid."]
-                });
-            }
-
-            if (_userManager.SupportsUserLockout)
-            {
-                await _userManager.ResetAccessFailedCountAsync(user);
             }
 
             var ticket = await CreateTicketAsync(request, user);
@@ -516,7 +454,7 @@ namespace Orchard.OpenId.Controllers
                     OpenIddictConstants.Scopes.Roles
                 }.Intersect(request.GetScopes()));
 
-                ticket.SetResources(request.GetResources());
+                ticket.SetResources(await GetResourcesAsync(request));
             }
 
             // Note: by default, claims are NOT automatically included in the access and identity tokens.
@@ -549,6 +487,21 @@ namespace Orchard.OpenId.Controllers
             }
 
             return ticket;
+        }
+
+        private async Task<IEnumerable<string>> GetResourcesAsync(OpenIdConnectRequest request)
+        {
+            var settings = await _openIdService.GetOpenIdSettingsAsync();
+
+            // If at least one resource was specified, use Intersect() to exclude values that are not
+            // listed as valid audiences in the OpenID Connect settings associated with the tenant.
+            var resources = request.GetResources();
+            if (resources.Any())
+            {
+                return resources.Intersect(settings.Audiences);
+            }
+
+            return settings.Audiences;
         }
     }
 }

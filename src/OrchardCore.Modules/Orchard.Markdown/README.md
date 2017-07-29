@@ -1,4 +1,4 @@
-﻿# Markdown (Orchard.Markdown)
+# Markdown (Orchard.Markdown)
 
 ## Editors
 

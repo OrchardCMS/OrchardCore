@@ -100,7 +100,7 @@ namespace Orchard.Environment.Shell
         private bool TryMatchInternal(string host, string appRelativePath, out ShellSettings result)
         {
             // 1. Search for Host + Prefix match
-            string hostAndPrefix = GetHostAndPrefix(host, appRelativePath);
+            var hostAndPrefix = GetHostAndPrefix(host, appRelativePath);
 
             if (!_shellsByHostAndPrefix.TryGetValue(hostAndPrefix, out result))
             {
@@ -132,7 +132,7 @@ namespace Orchard.Environment.Shell
                 return true;
             }
 
-            int index = -1;
+            var index = -1;
 
             // Take the longest subdomain and look for a mapping
             while (-1 != (index = host.IndexOf('.', index + 1)))
@@ -157,7 +157,7 @@ namespace Orchard.Environment.Shell
             }
 
             // appRelativePath starts with /
-            int firstSegmentIndex = appRelativePath.IndexOf('/', 1);
+            var firstSegmentIndex = appRelativePath.IndexOf('/', 1);
             if (firstSegmentIndex > -1)
             {
                 return host + appRelativePath.Substring(0, firstSegmentIndex);
@@ -173,7 +173,7 @@ namespace Orchard.Environment.Shell
         {
             // For each host entry return HOST/PREFIX
 
-            if (String.IsNullOrWhiteSpace(shellSettings.RequestUrlHost))
+            if (string.IsNullOrWhiteSpace(shellSettings.RequestUrlHost))
             {
                 return new string[] { "/" + shellSettings.RequestUrlPrefix };
             }
@@ -187,7 +187,7 @@ namespace Orchard.Environment.Shell
 
         private bool DefaultIsCatchAll()
         {
-            return _default != null && String.IsNullOrEmpty(_default.RequestUrlHost) && String.IsNullOrEmpty(_default.RequestUrlPrefix);
+            return _default != null && string.IsNullOrEmpty(_default.RequestUrlHost) && string.IsNullOrEmpty(_default.RequestUrlPrefix);
         }
     }
 }

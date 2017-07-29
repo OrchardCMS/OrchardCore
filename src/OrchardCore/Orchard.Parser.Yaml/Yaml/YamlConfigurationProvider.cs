@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
+using YamlDotNet.RepresentationModel;
 
 namespace Orchard.Parser.Yaml
 {
@@ -16,7 +18,7 @@ namespace Orchard.Parser.Yaml
 
         public override void Load(Stream stream)
         {
-            YamlConfigurationFileParser parser = new YamlConfigurationFileParser();
+            var parser = new YamlConfigurationFileParser();
             try
             {
                 Data = parser.Parse(stream);
@@ -78,11 +80,25 @@ namespace Orchard.Parser.Yaml
         {
             var outputWriter = new StreamWriter(outputStream);
 
-            foreach (var entry in Data)
-            {
-                outputWriter.WriteLine("{0}: {1}", entry.Key, (entry.Value ?? EmptyValue));
-            }
+            var rootNodeName = Data.ElementAt(0).Key;
 
+            var docMapping = new YamlMappingNode();
+            foreach (var item in Data.Skip(1))
+            {
+                docMapping.Add(item.Key.Replace((rootNodeName + ":"), string.Empty), (item.Value ?? EmptyValue));
+                // TODO: If contains ":" then Mapping node etc
+            }
+            
+            var yamlStream = new YamlStream(
+                new YamlDocument(
+                    new YamlMappingNode(
+                        new YamlScalarNode(rootNodeName),
+                        docMapping
+                    )
+                )
+            );
+            
+            yamlStream.Save(outputWriter);
             outputWriter.Flush();
         }
     }
