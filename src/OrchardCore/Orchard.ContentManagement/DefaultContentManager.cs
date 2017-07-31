@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.ContentManagement.MetaData;
+using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.ContentManagement.Records;
 using YesSql;
 
@@ -137,8 +138,64 @@ namespace Orchard.ContentManagement
                 }
             }
 
-            // Return item if obtained earlier in session
-            // If IsPublished is required then the test has already been checked before
+            contentItem = Load(contentItem);
+
+            if (options.IsDraftRequired)
+            {
+                // When draft is required and latest is published a new version is added
+                if (contentItem.Published)
+                {
+                    ContentItem existingVersion = null;
+                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+                    // Check if not versionable, meaning that we only use 2 versions
+                    if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true))
+                    {
+                        // Try to load the highest of the 2 closest versions
+                        // Or another existing version which might be higher
+                        existingVersion = await _session
+                            .Query<ContentItem, ContentItemIndex>(x =>
+                                x.ContentItemId == contentItem.ContentItemId &&
+                                (x.Number == contentItem.Number - 1 ||
+                                x.Number > contentItem.Number))
+                            .OrderByDescending(x => x.Number)
+                            .FirstOrDefaultAsync();
+
+                        if (existingVersion != null)
+                        {
+                            existingVersion = Load(existingVersion);
+                        }
+                    }
+
+                    // Save the previous version
+                    _session.Save(contentItem);
+
+                    // Check if an existing version has been loaded
+                    if (existingVersion != null)
+                    {
+                        // Then use it as a new draft
+                        existingVersion.Latest = true;
+                        existingVersion.Data = new JObject(contentItem.Data);
+                        contentItem.Latest = false;
+
+                        contentItem = existingVersion;
+                    }
+                    else
+                    {
+                        contentItem = await BuildNewVersionAsync(contentItem);
+                    }
+
+                }
+
+                // Save the new version
+                _session.Save(contentItem);
+            }
+
+            return contentItem;
+        }
+
+        private ContentItem Load(ContentItem contentItem)
+        {
             ContentItem recalled = null;
             if (!_contentManagerSession.RecallVersionId(contentItem.Id, out recalled))
             {
@@ -152,29 +209,10 @@ namespace Orchard.ContentManagement
                 Handlers.Invoke(handler => handler.Loading(context), _logger);
                 Handlers.Reverse().Invoke(handler => handler.Loaded(context), _logger);
 
-                contentItem = context.ContentItem;
-            }
-            else
-            {
-                contentItem = recalled;
+                return context.ContentItem;
             }
 
-            if (options.IsDraftRequired)
-            {
-                // When draft is required and latest is published a new version is added
-                if (contentItem.Published)
-                {
-                    // Save the previous version
-                    _session.Save(contentItem);
-
-                    contentItem = await BuildNewVersionAsync(contentItem);
-                }
-
-                // Save the new version
-                _session.Save(contentItem);
-            }
-
-            return contentItem;
+            return recalled;
         }
 
         public async Task<ContentItem> GetVersionAsync(string contentItemVersionId)
@@ -182,22 +220,7 @@ namespace Orchard.ContentManagement
             var contentItem = await _session.Query<ContentItem, ContentItemIndex>(x => 
                     x.ContentItemVersionId == contentItemVersionId).FirstOrDefaultAsync();
 
-            if (!_contentManagerSession.RecallVersionId(contentItem.Id, out contentItem))
-            {
-                // store in session prior to loading to avoid some problems with simple circular dependencies
-                _contentManagerSession.Store(contentItem);
-
-                // create a context with a new instance to load
-                var context = new LoadContentContext(contentItem);
-
-                // invoke handlers to acquire state, or at least establish lazy loading callbacks
-                Handlers.Invoke(handler => handler.Loading(context), _logger);
-                Handlers.Reverse().Invoke(handler => handler.Loaded(context), _logger);
-
-                contentItem = context.ContentItem;
-            }
-
-            return contentItem;
+            return Load(contentItem);
         }
 
         public async Task PublishAsync(ContentItem contentItem)

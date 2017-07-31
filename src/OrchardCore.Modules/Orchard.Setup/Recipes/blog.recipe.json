@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Blog",
   "displayName": "Blog",
   "description": "Provides a functional Blog with CMS features.",
@@ -95,6 +95,7 @@
                 "Settings": {
                     "Creatable": "True",
                     "Draftable": "True",
+                    "Versionable": "True",
                     "Listable": "True",
                     "Securable": "False",
                     "Stereotype": null
@@ -221,6 +222,7 @@
                 "Settings": {
                     "Creatable": "False",
                     "Draftable": "True",
+                    "Versionable": "True",
                     "Listable": "False",
                     "Securable": "True",
                     "Stereotype": null
@@ -286,6 +288,7 @@
                 "Settings": {
                     "Creatable": "True",
                     "Draftable": "True",
+                    "Versionable": "True",
                     "Listable": "True",
                     "Securable": "True",
                     "Stereotype": null
@@ -355,6 +358,7 @@
                 "Settings": {
                     "Creatable": "False",
                     "Draftable": "True",
+                    "Versionable": "True",
                     "Listable": "True",
                     "Securable": "True",
                     "Stereotype": "Widget"
@@ -382,6 +386,7 @@
                 "Settings": {
                     "Creatable": "False",
                     "Draftable": "True",
+                    "Versionable": "True",
                     "Listable": "True",
                     "Securable": "True",
                     "Stereotype": "Widget"
@@ -422,6 +427,7 @@
                 "Settings": {
                     "Creatable": "False",
                     "Draftable": "True",
+                    "Versionable": "True",
                     "Listable": "True",
                     "Securable": "True",
                     "Stereotype": "Widget"
@@ -442,6 +448,7 @@
                 "Settings": {
                     "Creatable": "False",
                     "Draftable": "True",
+                    "Versionable": "True",
                     "Listable": "True",
                     "Securable": "True",
                     "Stereotype": "Widget"
@@ -462,6 +469,7 @@
                 "Settings": {
                     "Creatable": "False",
                     "Draftable": "True",
+                    "Versionable": "True",
                     "Listable": "True",
                     "Securable": "True",
                     "Stereotype": "Widget"
@@ -482,6 +490,7 @@
                 "Settings": {
                     "Creatable": "True",
                     "Draftable": "True",
+                    "Versionable": "True",
                     "Listable": "True",
                     "Securable": "True",
                     "Stereotype": null

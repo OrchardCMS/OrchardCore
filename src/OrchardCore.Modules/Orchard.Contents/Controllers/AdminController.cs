@@ -509,8 +509,6 @@ namespace Orchard.Contents.Controllers
             //    returnUrl = Url.ItemDisplayUrl(contentItem);
             //}
 
-            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-
             if (returnUrl == null)
             {
                 return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });

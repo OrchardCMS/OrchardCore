@@ -83,6 +83,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "False",
             "Stereotype": null
