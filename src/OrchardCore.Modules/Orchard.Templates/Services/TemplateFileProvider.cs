@@ -21,9 +21,8 @@ namespace Orchard.Templates.Services
     public class TemplateFileProvider : ITemplateFileProvider
     {
         private static readonly string _fluidPageContent =
-            "@using Orchard.DisplayManagement.Fluid;" + System.Environment.NewLine +
-            "@inherits FluidPage" + System.Environment.NewLine +
-            "@{ await RenderAsync(this); }";
+            "@inherits Orchard.DisplayManagement.Fluid.FluidPage" +
+            System.Environment.NewLine + "@{ await RenderAsync(this); }";
 
         private static Dictionary<string, string> _themesViewsPaths;
         private static object _synLock = new object();
