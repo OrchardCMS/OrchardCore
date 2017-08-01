@@ -70,10 +70,6 @@ namespace Orchard.Templates.Services
 
                 entries.AddRange(templates.Select(kvp => new ContentFileInfo(
                     kvp.Key.Substring(viewsFolder.Length + 1), kvp.Value.Content)));
-
-                entries.AddRange(templates.Select(kvp => new ContentFileInfo(
-                    Path.ChangeExtension(kvp.Key.Substring(viewsFolder.Length + 1), RazorViewEngine.ViewExtension),
-                    _fluidPageContent)));
             }
 
             return new DirectoryContents(entries);
