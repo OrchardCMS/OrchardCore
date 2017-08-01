@@ -12,13 +12,13 @@ be converted to the corresponding HTML entities. If you need to render some raw 
 
 ## Filters
 
-### DisplayUrl
+### display_url
 
 Returns the url of the content item
 
 Input
 ```
-{{ content | DisplayUrl }}
+{{ ContentItem | display_url }}
 ```
 
 Output
@@ -26,13 +26,13 @@ Output
 /blog/my-blog-post
 ```
 
-### DisplayText
+### display_text
 
 Returns the title of the content item
 
 Input
 ```
-{{ content | DisplayText }}
+{{ ContentItem | display_text }}
 ```
 
 Output
@@ -40,14 +40,14 @@ Output
 My Blog Post
 ```
 
-### Raw
+### raw
 
 Returns the raw HTML content without any encoding. Use it when you control all the input data and want to 
 render custom HTML.
 
 Input
 ```
-{{ "<b>text</b>" | Raw }}
+{{ "<b>text</b>" | raw }}
 ```
 
 Output
@@ -56,6 +56,36 @@ Output
 ```
 
 Without the filter, the result would be `&lt;b&gt;text&lt;/b&gt;
+
+### slugify
+
+Convert a text into a string that can be used in a url.
+
+Input
+```
+{{ "This is some text" | slugify }}
+```
+
+Output
+```
+this-is-some-text
+```
+
+### container
+
+Returns the container content item of another content item.
+
+
+Input
+```
+{{ ContentItem | container | display_text }}
+```
+In this example we assume `ContentItem` represents a blog post.
+
+Output
+```
+Blog
+```
 
 ## Properties
 
@@ -122,7 +152,7 @@ To access a named query, use the name as a property on the `Queries` object like
 
 ```
 {% for item in Queries.MyQuery %}
-{{ item | DisplayText }}
+{{ item | display_text }}
 {% endfor %}
 ```
 
