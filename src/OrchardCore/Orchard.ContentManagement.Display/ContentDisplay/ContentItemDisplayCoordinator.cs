@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Modules;
@@ -140,7 +140,8 @@ namespace Orchard.ContentManagement.Display
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
-                var activator = _contentPartFactory.GetTypeActivator(typePartDefinition.Name);
+                var partTypeName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partTypeName);
                 var part = (ContentPart)contentItem.Get(activator.Type, typePartDefinition.Name) ?? activator.CreateInstance();
                 part.ContentItem = contentItem;
 
@@ -212,7 +213,8 @@ namespace Orchard.ContentManagement.Display
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
-                var activator = _contentPartFactory.GetTypeActivator(typePartDefinition.Name);
+                var partTypeName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partTypeName);
                 var part = (ContentPart)contentItem.Get(activator.Type, typePartDefinition.Name) ?? activator.CreateInstance();
                 part.ContentItem = contentItem;
 

@@ -376,9 +376,10 @@ namespace Orchard.ResourceManagement
             if (resource.Dependencies != null)
             {
                 var dependencies = from d in resource.Dependencies
-                                   let segments = d.Split('-')
-                                   let name = segments[0]
-                                   let version = segments.Length > 1 ? segments[1] : null
+                                   let escapedName = d.Replace("--", "$$") // handle "jquery-ui" where "-" is not the version separator
+                                   let segments = escapedName.Split('-')
+                                   let name = segments[0].Replace("$$", "-")
+                                   let version = segments.Length > 1 ? segments[1].Replace("$$", "-") : null
                                    select FindResource(new RequireSettings { Type = resource.Type, Name = name, Version = version });
                 foreach (var dependency in dependencies)
                 {
