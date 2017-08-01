@@ -6,15 +6,19 @@
 <style asp-src="/Orchard.Media/Styles/media.min.css" debug-src="/Orchard.Media/Styles/media.css"></style>
 <script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
 
-<script at="Foot">
-    initializeMediaApplication(false, '@Url.Action("MediaApplication", "Admin", new { area = "Orchard.Media" })');
-    initializeMediaFieldEditor(document.getElementById('@Html.IdFor(m => m)'), document.getElementById('@Html.IdFor(m => m)-ModalBody'), '@Url.Action("GetMediaItem", "Admin", new { area = "Orchard.Media" })');
-</script>
-
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<MediaFieldSettings>();
     var modalMediaId = "Modal" + Html.IdFor(m => m);
 }
+
+<script at="Foot">
+    initializeMediaApplication(false, '@Url.Action("MediaApplication", "Admin", new { area = "Orchard.Media" })');
+    initializeMediaFieldEditor(
+        document.getElementById('@Html.IdFor(m => m)'),
+        document.getElementById('@Html.IdFor(m => m)-ModalBody'),
+        '@Url.Action("GetMediaItem", "Admin", new { area = "Orchard.Media" })',
+        @(settings.Multiple ? "true" : "false"));
+</script>
 
 <div class="mediafield-editor" id="@Html.IdFor(m => m)" data-for="@Html.IdFor(m => m.Paths)">
     <div class="media-field">
@@ -29,8 +33,8 @@
 
             <nav id="media-toolbar">
                 <div class="btn-group">
-                    <a href="javascript:;" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus text-muted"></i></a>
-                    <a v-cloak v-show="selectedMedia" href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm"><i class="fa fa-trash text-muted"></i></a>
+                    <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus text-muted"></i></a>
+                    <a v-show="canRemoveMedia" href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm"><i class="fa fa-trash text-muted"></i></a>
                 </div>
                 <code class="pull-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ fileSize }}}} KB)"]</code>
             </nav>
