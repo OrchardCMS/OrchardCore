@@ -4,10 +4,13 @@
 
 @{ 
     string markdown = Model.Markdown;
-    var html = Markdig.Markdown.ToHtml(markdown ?? "");
 
-    var templateContext = new TemplateContext();
-    templateContext.SetValue("ContentItem", Model.MarkdownPart.ContentItem);
-
-    await TemplateManager.RenderAsync(html, Output, HtmlEncoder, templateContext);
+    using (var sw = new System.IO.StringWriter())
+    {
+        var templateContext = new TemplateContext();
+        templateContext.SetValue("ContentItem", Model.MarkdownPart.ContentItem);
+        await TemplateManager.RenderAsync(markdown, sw, NullEncoder.Default, templateContext);
+        markdown = sw.ToString();
+    }
 }
+@Html.Raw(Markdig.Markdown.ToHtml(markdown ?? ""));
