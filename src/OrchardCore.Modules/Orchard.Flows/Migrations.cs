@@ -26,6 +26,7 @@ namespace Orchard.Flows
         {
             _contentDefinitionManager.AlterPartDefinition("BagPart", builder => builder
                 .Attachable()
+                .Reusable()
                 .WithDescription("Provides a collection behavior for your content item."));
 
             return 2;
