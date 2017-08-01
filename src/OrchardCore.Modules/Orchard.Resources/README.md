@@ -126,7 +126,7 @@ Styles on the opposite are always injected in the header section of the HTML doc
 You can declare a new resource directly from a view, and it will be injected only once even if the view is called multiple time.
 
 ```html
-<script asp-name="foo" asp-src="foo.min.js?v=1.0" debug-src="foo.js?v=1.0" depends-on="baz-1.0" version="1.0"></script>
+<script asp-name="foo" asp-src="foo.min.js?v=1.0" debug-src="foo.js?v=1.0" depends-on="baz:1.0" version="1.0"></script>
 ```
 
 In this example we also define a dependency on the script named `baz` with the version `1.0`. If the version was not set
