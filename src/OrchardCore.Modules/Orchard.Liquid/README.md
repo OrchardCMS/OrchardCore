@@ -12,6 +12,9 @@ be converted to the corresponding HTML entities. If you need to render some raw 
 
 ## Filters
 
+All the default filters that are available in the standard Liquid syntax are available in Orchard. On top of that each Orchard module can
+provide custom filters for their own purpose. Here is a list of common filters that apply to content items.
+
 ### display_url
 
 Returns the url of the content item
@@ -39,23 +42,6 @@ Output
 ```
 My Blog Post
 ```
-
-### raw
-
-Returns the raw HTML content without any encoding. Use it when you control all the input data and want to 
-render custom HTML.
-
-Input
-```
-{{ "<b>text</b>" | raw }}
-```
-
-Output
-```
-<b>text</b>
-```
-
-Without the filter, the result would be `&lt;b&gt;text&lt;/b&gt;
 
 ### slugify
 
@@ -85,6 +71,22 @@ In this example we assume `ContentItem` represents a blog post.
 Output
 ```
 Blog
+```
+
+### local
+
+Converts a UTC date and time to the local date and time based on the site settings.
+
+Input
+```
+{{ "now" | local | date: "%c" }}
+or
+{{ ContentItem.CreatedUtc | local | date: "%c" }}
+```
+
+Output
+```
+Wednesday, 02 August 2017 11:54:48
 ```
 
 ## Properties

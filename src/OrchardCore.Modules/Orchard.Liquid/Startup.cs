@@ -49,7 +49,7 @@ namespace Orchard.Liquid
 
             services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
 
-            services.AddLiquidFilter<DateFilter>("date");
+            services.AddLiquidFilter<TimeZoneFilter>("local");
             services.AddLiquidFilter<SlugifyFilter>("slugify");
             services.AddLiquidFilter<ContainerFilter>("container");
             services.AddLiquidFilter<DisplayTextFilter>("display_text");
