@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,8 +18,7 @@ namespace Orchard.Tests.Extensions
     public class ExtensionManagerTests
     {
         private static IHostingEnvironment HostingEnvironment
-            = new StubHostingEnvironment(Path.Combine(
-                System.AppContext.BaseDirectory, "Extensions"));
+            = new StubHostingEnvironment(Path.Combine(AppContext.BaseDirectory, "Extensions"));
 
         private static IOptions<ManifestOptions> ModuleManifestOptions =
             new StubManifestOptions(
