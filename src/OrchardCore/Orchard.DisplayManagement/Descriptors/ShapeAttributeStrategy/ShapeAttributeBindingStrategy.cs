@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -174,7 +174,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
             var getter = _getters.GetOrAdd(parameter.Name, n =>
                 CallSite<Func<CallSite, object, dynamic>>.Create(
-                Binder.GetMember(
+                Microsoft.CSharp.RuntimeBinder.Binder.GetMember(
                 CSharpBinderFlags.None, n, null, new[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) })));
 
             object result = getter.Target(getter, displayContext.Value);
@@ -203,7 +203,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             return Expression.Lambda<Func<object, object>>(
                 Expression.Convert(
                     DynamicExpression.Dynamic(
-                        Binder.Convert(CSharpBinderFlags.ConvertExplicit, targetType, null),
+                        Microsoft.CSharp.RuntimeBinder.Binder.Convert(CSharpBinderFlags.ConvertExplicit, targetType, null),
                                 targetType,
                                 valueParameter
                         ),

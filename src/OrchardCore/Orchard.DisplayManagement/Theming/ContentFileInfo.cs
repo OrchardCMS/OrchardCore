@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.FileProviders;
@@ -16,53 +16,26 @@ namespace Orchard.DisplayManagement.Theming
             _content = Encoding.UTF8.GetBytes(content);
         }
 
-        public bool Exists
+        public bool Exists => true;
+
+        public long Length
         {
-            get
-            {
-                return true;
-            }
+            get { return _content.Length; }
         }
 
-        public bool IsDirectory
+        public string PhysicalPath => null;
+
+        public string Name
         {
-            get
-            {
-                return false;
-            }
+            get { return _name; }
         }
 
         public DateTimeOffset LastModified
         {
-            get
-            {
-                return DateTimeOffset.MinValue;
-            }
+            get { return DateTimeOffset.MinValue; }
         }
 
-        public long Length
-        {
-            get
-            {
-                return _content.Length;
-            }
-        }
-
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-        }
-
-        public string PhysicalPath
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public bool IsDirectory => false;
 
         public Stream CreateReadStream()
         {

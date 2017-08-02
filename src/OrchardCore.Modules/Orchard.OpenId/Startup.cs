@@ -42,6 +42,7 @@ namespace Orchard.OpenId
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            /*
             var openIdService = serviceProvider.GetService<IOpenIdService>();
             var settings = openIdService.GetOpenIdSettingsAsync().GetAwaiter().GetResult();
             if (!openIdService.IsValidOpenIdSettings(settings))
@@ -92,10 +93,12 @@ namespace Orchard.OpenId
                 template: "Admin/OpenIdApps/{id?}/{action}",
                 defaults: new { controller = "Admin" }
             );
+            */
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            /*
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IIndexProvider, OpenIdApplicationIndexProvider>();
@@ -126,6 +129,7 @@ namespace Orchard.OpenId
             });
 
             services.AddScoped<IConfigureOptions<OpenIddictOptions>, OpenIdConfiguration>();
+            */
         }
     }
 }
