@@ -168,8 +168,6 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 }
             });
 
-            console.log('mediaApp initialized');
-
             if (displayMediaApplication) {
                 document.getElementById('mediaApp').style.display = "";
             }

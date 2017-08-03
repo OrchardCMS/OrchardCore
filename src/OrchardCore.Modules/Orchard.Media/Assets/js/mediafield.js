@@ -23,18 +23,23 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                 set: function (values) {
                     var self = this;
                     var mediaPaths = values || [];
+                    var signal = $.Deferred();
                     mediaPaths.forEach(function (x, i) {
-                        $.ajax({
-                            url: mediaItemUrl + "?path=" + encodeURIComponent(x),
-                            method: 'GET',
-                            success: function (data) {
-                                Vue.set(self.mediaItems, i, data);
-                            },
-                            error: function (error) {
-                                console.log(JSON.stringify(error));
-                            }
+                        promise = $.when(signal).done(function () {
+                            $.ajax({
+                                url: mediaItemUrl + "?path=" + encodeURIComponent(x),
+                                method: 'GET',
+                                success: function (data) {
+                                    self.mediaItems.push(data);
+                                },
+                                error: function (error) {
+                                    console.log(JSON.stringify(error));
+                                }
+                            });
                         });
                     });
+
+                    signal.resolve();
                 }
             },
             fileSize: function () {
