@@ -27,7 +27,7 @@ namespace Orchard.DisplayManagement.Fluid
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            var fileInfo = _fileProviderAccessor.FileProvider.GetFileInfo(Path.ChangeExtension(subpath, FluidViewTemplate.ViewExtension));
+            var fileInfo = _fileProviderAccessor.ShellFileProvider.GetFileInfo(Path.ChangeExtension(subpath, FluidViewTemplate.ViewExtension));
 
             if (fileInfo != null && fileInfo.Exists)
             {
@@ -39,7 +39,7 @@ namespace Orchard.DisplayManagement.Fluid
 
         public IChangeToken Watch(string filter)
         {
-            return _fileProviderAccessor.FileProvider.Watch(Path.ChangeExtension(filter, FluidViewTemplate.ViewExtension));
+            return _fileProviderAccessor.ShellFileProvider.Watch(Path.ChangeExtension(filter, FluidViewTemplate.ViewExtension));
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Razor;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -25,6 +27,7 @@ namespace Orchard.DisplayManagement.Fluid
 
             services.TryAddSingleton<IFluidViewFileProviderAccessor, FluidViewFileProviderAccessor>();
             services.TryAddSingleton<IFluidViewRazorFileProvider, FluidViewRazorFileProvider>();
+            services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, FluidViewsFeatureProvider>();
             services.AddScoped<IRazorViewExtensionProvider, FluidViewExtensionProvider>();
 
             return services;
