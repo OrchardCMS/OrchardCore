@@ -2071,10 +2071,10 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                 return Math.round(this.selectedMedia.size / 1024);
             },
             canAddMedia: function () {
-                return this.mediaItems.length == 0 || (this.mediaItems.length > 0 && allowMultiple);
+                return this.mediaItems.length === 0 || this.mediaItems.length > 0 && allowMultiple;
             },
             canRemoveMedia: function () {
-                return this.selectedMedia || this.mediaItems.length == 1;
+                return this.selectedMedia || this.mediaItems.length === 1;
             }
 
         },
@@ -2100,14 +2100,14 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
             },
             removeSelected: function (event) {
                 if (this.selectedMedia) {
-                    var index = this.mediaItems && this.mediaItems.indexOf(this.selectedMedia)
+                    var index = this.mediaItems && this.mediaItems.indexOf(this.selectedMedia);
                     if (index > -1) {
-                        this.mediaItems.splice(index, 1)
+                        this.mediaItems.splice(index, 1);
                     }
                 }
                 else {
                     // The remove button can also remove a unique media item
-                    if (this.mediaItems.length == 1) {
+                    if (this.mediaItems.length === 1) {
                         this.mediaItems.splice(0, 1);
                     }
                 }
