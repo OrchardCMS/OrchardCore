@@ -4,9 +4,6 @@ using Microsoft.Extensions.Options;
 
 namespace Orchard.DisplayManagement.Fluid
 {
-    /// <summary>
-    /// Sets up default options for <see cref="FluidViewOptions"/>.
-    /// </summary>
     public class FluidViewOptionsSetup : IConfigureOptions<FluidViewOptions>
     {
         private readonly IHostingEnvironment _hostingEnvironment;

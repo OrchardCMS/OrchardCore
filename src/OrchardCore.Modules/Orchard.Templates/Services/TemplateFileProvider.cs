@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
@@ -20,10 +19,6 @@ namespace Orchard.Templates.Services
     /// </summary>
     public class TemplateFileProvider : ITemplateFileProvider
     {
-        private static readonly string _fluidPageContent =
-            "@inherits Orchard.DisplayManagement.Fluid.FluidPage" +
-            System.Environment.NewLine + "@{ await RenderAsync(this); }";
-
         private static Dictionary<string, string> _themesViewsPaths;
         private static object _synLock = new object();
 
@@ -81,14 +76,7 @@ namespace Orchard.Templates.Services
             {
                 if (Templates.TryGetValue(path, out var template))
                 {
-                    if (Path.GetExtension(subpath) == FluidViewTemplate.ViewExtension)
-                    {
-                        return new ContentFileInfo(Path.GetFileName(path), template.Content);
-                    }
-                    else if (Path.GetExtension(subpath) == RazorViewEngine.ViewExtension)
-                    {
-                        return new ContentFileInfo(Path.GetFileName(subpath), _fluidPageContent);
-                    }
+                    return new ContentFileInfo(Path.GetFileName(path), template.Content);
                 }
             }
 
@@ -128,8 +116,8 @@ namespace Orchard.Templates.Services
 
             if (key != null)
             {
-                templatePath = Path.ChangeExtension(string.Format("{0}/{1}", _themesViewsPaths[key],
-                    subpath.TrimStart('/').Substring(key.Length + 1)), FluidViewTemplate.ViewExtension);
+                templatePath = string.Format("{0}/{1}", _themesViewsPaths[key],
+                    subpath.TrimStart('/').Substring(key.Length + 1));
 
                 return true;
             }
