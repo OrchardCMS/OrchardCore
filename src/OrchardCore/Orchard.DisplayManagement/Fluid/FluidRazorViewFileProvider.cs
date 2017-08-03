@@ -6,16 +6,16 @@ using Orchard.DisplayManagement.Fluid.Internal;
 
 namespace Orchard.DisplayManagement.Fluid
 {
-    public interface IFluidViewRazorFileProvider : IFileProvider { }
+    public interface IFluidRazorViewFileProvider : IFileProvider { }
 
     /// <summary>
     /// This custom <see cref="IFileProvider"/> implementation provides a custom razor content for fluid views.
     /// </summary>
-    public class FluidViewRazorFileProvider : IFluidViewRazorFileProvider
+    public class FluidRazorViewFileProvider : IFluidRazorViewFileProvider
     {
         private readonly IFluidViewFileProviderAccessor _fileProviderAccessor;
 
-        public FluidViewRazorFileProvider(IFluidViewFileProviderAccessor fileProviderAccessor)
+        public FluidRazorViewFileProvider(IFluidViewFileProviderAccessor fileProviderAccessor)
         {
             _fileProviderAccessor = fileProviderAccessor;
         }

@@ -15,18 +15,19 @@ namespace Orchard.DisplayManagement.Fluid
         public static IServiceCollection AddFluidViews(this IServiceCollection services)
         {
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<FluidViewOptions>, FluidViewOptionsSetup>());
+                ServiceDescriptor.Transient<IConfigureOptions<FluidViewOptions>,
+                FluidViewOptionsSetup>());
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>,
-                FluidViewRazorOptionsSetup<RazorViewEngineOptions>>());
+                FluidRazorViewOptionsSetup>());
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>,
-                FluidViewRazorOptionsSetup<ShapeTemplateOptions>>());
+                FluidShapeTemplateOptionsSetup>());
 
+            services.TryAddSingleton<IFluidRazorViewFileProvider, FluidRazorViewFileProvider>();
             services.TryAddSingleton<IFluidViewFileProviderAccessor, FluidViewFileProviderAccessor>();
-            services.TryAddSingleton<IFluidViewRazorFileProvider, FluidViewRazorFileProvider>();
             services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, FluidViewsFeatureProvider>();
             services.AddScoped<IRazorViewExtensionProvider, FluidViewExtensionProvider>();
 
