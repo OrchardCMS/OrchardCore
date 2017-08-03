@@ -2053,12 +2053,12 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                 set: function (values) {
                     var self = this;
                     var mediaPaths = values || [];
-                    mediaPaths.forEach(function (x) {
+                    mediaPaths.forEach(function (x, i) {
                         $.ajax({
                             url: mediaItemUrl + "?path=" + encodeURIComponent(x),
                             method: 'GET',
                             success: function (data) {
-                                self.mediaItems.push(data);
+                                Vue.set(self.mediaItems, i, data);
                             },
                             error: function (error) {
                                 console.log(JSON.stringify(error));

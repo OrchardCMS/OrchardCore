@@ -2,10 +2,11 @@
 @using Orchard.Media.Settings;
 @using Orchard.ContentManagement.Metadata.Models
 
-<script asp-src="/Orchard.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, vuedraggable"></script>
+<script asp-src="/Orchard.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, sortable, vuedraggable"></script>
 <style asp-src="/Orchard.Media/Styles/media.min.css" debug-src="/Orchard.Media/Styles/media.css"></style>
 <script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs" at="Foot"></script>
+<script asp-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.min.js" debug-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.js" asp-name="sortable" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<MediaFieldSettings>();
@@ -32,7 +33,7 @@
 
             <input asp-for="Paths" type="hidden" class="paths" :value="paths" data-init="@Model.Paths" />
 
-            <nav id="media-toolbar">
+            <nav class="media-field-toolbar">
                 <div class="btn-group">
                     <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus text-muted"></i></a>
                     <a v-show="canRemoveMedia" href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm"><i class="fa fa-trash text-muted"></i></a>
@@ -43,7 +44,7 @@
         </fieldset>
         <fieldset class="form-group">
             <div class="media-container-main" v-cloak>
-                <draggable v-model="mediaItems" element="ol" class="row media-container-main-list">
+                <draggable :list="mediaItems" element="ol" class="row media-container-main-list">
                     <li v-for="media in mediaItems"
                         :key="media.name"
                         class="media-container-main-list-item"

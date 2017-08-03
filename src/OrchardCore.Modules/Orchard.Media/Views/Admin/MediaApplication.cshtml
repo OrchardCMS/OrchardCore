@@ -17,7 +17,8 @@
         </ul>
     </nav>
 
-    <nav id="media-toolbar" class="breadcrumb">
+
+    <nav class="media-application-toolbar breadcrumb">
         <span class="breadcrumb-item" v-bind:class="{ active: isHome}"><a :href="isHome ? null : '#'" v-on:click="selectRoot">@T["Media Library"]</a></span>
         <span v-for="(folder, i) in parents" v-cloak
                 class="breadcrumb-item"
