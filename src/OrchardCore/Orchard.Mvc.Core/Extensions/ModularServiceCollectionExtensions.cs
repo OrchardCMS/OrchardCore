@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -98,6 +99,13 @@ namespace Orchard.Mvc
             return builder.AddRazorViewEngine(options =>
             {
                 options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
+
+                var env = services.GetRequiredService<IHostingEnvironment>();
+
+                if (env.IsDevelopment())
+                {
+                    options.FileProviders.Insert(0, new ModuleProjectRazorFileProvider(env.ContentRootPath));
+                }
             });
         }
 
