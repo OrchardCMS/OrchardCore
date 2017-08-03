@@ -2071,7 +2071,7 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                 return Math.round(this.selectedMedia.size / 1024);
             },
             canAddMedia: function () {
-                return this.mediaItems.length == 0 || (this.mediaItems.length > 1 && allowMultiple);
+                return this.mediaItems.length == 0 || (this.mediaItems.length > 0 && allowMultiple);
             },
             canRemoveMedia: function () {
                 return this.selectedMedia || this.mediaItems.length == 1;

@@ -2,9 +2,10 @@
 @using Orchard.Media.Settings;
 @using Orchard.ContentManagement.Metadata.Models
 
-<script asp-src="/Orchard.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs"></script>
+<script asp-src="/Orchard.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, vuedraggable"></script>
 <style asp-src="/Orchard.Media/Styles/media.min.css" debug-src="/Orchard.Media/Styles/media.css"></style>
 <script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs" at="Foot"></script>
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<MediaFieldSettings>();
@@ -41,8 +42,8 @@
 
         </fieldset>
         <fieldset class="form-group">
-            <div id="filesApp" class="media-container-main" v-cloak>
-                <ol class="row">
+            <div class="media-container-main" v-cloak>
+                <draggable v-model="mediaItems" element="ol" class="row media-container-main-list">
                     <li v-for="media in mediaItems"
                         :key="media.name"
                         class="media-container-main-list-item"
@@ -54,7 +55,7 @@
                             </div>
                         </div>
                     </li>
-                </ol>
+                </draggable>
             </div>
         </fieldset>
     </div>
