@@ -1,5 +1,22 @@
 # Body (Orchard.Body)
 
+## Theming
+
+These shapes are available for theming
+
+### BodyPart
+
+This shape is rendered when a `BodyPart` is attached to a content item.
+The shape based class is of `BodyPartViewModel`.
+
+The following properties are available on the `BodyPartViewModel` class.
+
+| Property | Type | Description |
+| --------- | ---- |------------ |
+| `Body` | `string` | The HTML content once all tokens have been processed |
+| `BodyPart` | `BodyPart` | The `BodyPart` instance|
+| `TypePartSettings` | `BodyPartSettings` | The settings of the part |
+
 ## Editors
 
 The __Body Part__ editor can be different for each content type. In the __Body Part__ settings of a 

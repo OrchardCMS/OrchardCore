@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Orchard.Markdown.Model;
 using Orchard.Markdown.Settings;
 
@@ -7,6 +7,7 @@ namespace Orchard.Markdown.ViewModels
     public class MarkdownPartViewModel
     {
         public string Markdown { get; set; }
+        public string Html { get; set; }
 
         [BindNever]
         public MarkdownPart MarkdownPart { get; set; }

@@ -1,15 +1,6 @@
-﻿@using Fluid;
+@using Orchard.ContentManagement.Metadata.Models
 @model Orchard.Markdown.ViewModels.DisplayMarkdownFieldViewModel
-@inject Orchard.Liquid.ILiquidTemplateManager TemplateManager
 
 @Model.PartFieldDefinition.DisplayName():
 
-@{
-    string markdown = Model.Field.Markdown;
-    var html = Markdig.Markdown.ToHtml(markdown ?? "");
-
-    var templateContext = new TemplateContext();
-    templateContext.SetValue("ContentItem", Model.MarkdownPart.ContentItem);
-
-    await TemplateManager.RenderAsync(html, Output, NullEncoder.Default, templateContext);
-}
+@Html.Raw(Model.Html)
