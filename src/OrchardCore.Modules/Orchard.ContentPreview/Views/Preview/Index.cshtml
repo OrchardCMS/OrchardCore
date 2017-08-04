@@ -1,1 +1,79 @@
-@await DisplayAsync(Model)
+@{
+    Layout = null;
+    var previewId = ViewContext.RouteData.Values["id"];
+}
+
+<script asp-name="jquery" at="Foot"></script>
+
+<iframe id="iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;">
+    Your browser doesn't support iframes
+</iframe>
+
+<div id="renderPreviewUrl" style="display:none" data-value="@Url.Action("Render", "Preview", new { area = "Orchard.ContentPreview" })"></div>
+
+<resources type="Footer" />
+
+<script type="text/javascript">
+    $(function() {
+        $(window).on('storage', renderPreview);
+        iframe.contentWindow.onbeforeunload = function () { return ""; }
+        
+        // notify the editor to render the preview
+        localStorage.setItem('contentpreview:ready:@previewId', '');
+        localStorage.removeItem('contentpreview:ready:@previewId');
+    });
+
+    var renderPreviewUrl = $(document.getElementById('renderPreviewUrl')).data('value');
+    var iframe = document.getElementById('iframe');
+    var rendering;
+
+    function renderPreview(ev) {
+
+        renderRequested = true;
+
+        // Squashes all event calls into one
+        if (rendering) {
+            return;
+        }
+
+        // Pump renderPreview calls
+        while (renderRequested) {
+            renderRequested = false;
+            rendering = true;
+            try {
+                if (ev.originalEvent.key != 'contentpreview:@previewId') return; // ignore other keys
+
+                var formData = JSON.parse(ev.originalEvent.newValue);
+                if (!formData) return;
+
+                $.post(renderPreviewUrl, formData)
+                    .done(function (data) {
+                        if (!iframe || !iframe.contentWindow) {
+                            iframe.contentWindow.document.open();
+                            iframe.contentWindow.document.close();
+                        }
+
+                        iframe.contentWindow.document.body.innerHTML = '';
+                        iframe.contentWindow.document.write(data);
+                    })
+                    .fail(function (data) {
+                        if (data.responseJSON && data.responseJSON.errors) {
+                            responseJSON.errors.forEach(function (error) {
+                                console.error(error);
+                            });
+                        }
+                    })
+                    .always(function () {
+                    }
+                );
+            }
+            catch (e) {
+                console.log('Error while previewing: ' + e);
+            }
+            finally {
+                rendering = false;
+            }
+        }
+    }
+
+</script>
