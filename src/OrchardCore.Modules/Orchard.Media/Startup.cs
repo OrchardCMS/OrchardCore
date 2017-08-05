@@ -15,7 +15,6 @@ using Microsoft.Extensions.Options;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentTypes.Editors;
-using Orchard.Data.Migration;
 using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
 using Orchard.Liquid;
@@ -47,7 +46,6 @@ namespace Orchard.Media
                 return new MediaFileStore(new FileSystemStore(mediaPath, requestMediaPath));
             });
 
-            services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddSingleton<ContentPart, ImagePart>();
