@@ -246,7 +246,7 @@ namespace Orchard.Media.Controllers
 
             if (mediaFolder != null)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, "Folder already exist");
+                return StatusCode(StatusCodes.Status403Forbidden, "Folder already exists");
             }
 
             await _mediaFileStore.TryCreateFolderAsync(newPath);

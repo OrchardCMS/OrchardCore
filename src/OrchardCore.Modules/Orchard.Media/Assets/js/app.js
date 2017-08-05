@@ -98,7 +98,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 self.mediaItems = data;
                             },
                             error: function (error) {
-                                alert(JSON.stringify(error));
+                                console.error(error.responseText);
                             }
                         });
                     },
@@ -127,11 +127,12 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 bus.$emit('deleteFolder', folder);
                             },
                             error: function (error) {
-                                alert(JSON.stringify(error));
+                                console.error(error.responseText);
                             }
                         });
                     },
                     createFolder: function () {
+                        $('#createFolderModal-errors').empty();
                         $('#createFolderModal').modal('show');
                         $('.modal-body input').val('').focus();
                     },
@@ -161,10 +162,18 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 }
                             },
                             error: function (error) {
-                                alert(JSON.stringify(error));
+                                console.error(error.responseText);
                             }
                         });
                     },
+                }
+            });
+
+            $('#create-folder-name').keypress(function (e) {
+                var key = e.which;
+                if (key == 13) {  // the enter key code
+                    $('#modalFooterOk').click();
+                    return false;
                 }
             });
 
@@ -182,7 +191,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         $('#createFolderModal').modal('hide');
                     },
                     error: function (error) {
-                        alert(JSON.stringify(error));
+                        $('#createFolderModal-errors').empty();
+                        $('<div class="alert alert-danger" role="alert"></div>').text(error.responseText).appendTo($('#createFolderModal-errors'));
                     }
                 });
             });
@@ -195,7 +205,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
 
         },
         error: function (error) {
-            alert(JSON.stringify(error));
+            console.error(error.responseText);
         }
     });
 }
@@ -278,7 +288,7 @@ Vue.component('folder', {
                     },
                     error: function (error) {
                         emtpy = false;
-                        alert(JSON.stringify(error));
+                        console.error(error.responseText);
                     }
                 });
             }

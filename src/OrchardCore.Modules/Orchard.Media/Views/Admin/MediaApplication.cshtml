@@ -71,8 +71,6 @@
 <input type="hidden" id="deleteFolderMessage" value="@T["Are you sure you want to delete this folder?"]" />
 <input type="hidden" id="deleteMediaMessage" value="@T["Are you sure you want to delete this media?"]" />
 
-@*@Html.AntiForgeryToken()*@
-
 <div class="modal" id="createFolderModal" tabindex="-1" role="dialog" aria-labelledby="createFolderModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -87,6 +85,7 @@
                     <label for="input" class="form-control-label" id="input-label">@T["Folder name"]</label>
                     <input type="text" id="create-folder-name" class="form-control" >
                 </div>
+                <div id="createFolderModal-errors"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="modalFooterOk">@T["Ok"]</button>
