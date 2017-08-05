@@ -22,6 +22,11 @@ namespace Orchard.DisplayManagement.Fluid
             if (_hostingEnvironment.ContentRootFileProvider != null)
             {
                 options.FileProviders.Add(_hostingEnvironment.ContentRootFileProvider);
+
+                if (_hostingEnvironment.IsDevelopment())
+                {
+                    options.FileProviders.Insert(0, new ModuleProjectFluidFileProvider(_hostingEnvironment.ContentRootPath));
+                }
             }
         }
     }
