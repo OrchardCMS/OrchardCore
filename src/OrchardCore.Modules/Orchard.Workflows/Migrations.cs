@@ -21,6 +21,10 @@ namespace Orchard.Workflows
                 .Column<string>("Name")
             );
 
+            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowWorkflowDefinitionIndex), table => table
+                .Column<int>("DefinitionId")
+            );
+
             return 1;
         }
     }

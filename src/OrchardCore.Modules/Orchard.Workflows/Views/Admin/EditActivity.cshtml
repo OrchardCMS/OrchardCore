@@ -4,11 +4,20 @@
 <form asp-action="EditActivity" method="post">
 
     @* Render the dynamic form *@
-    @if (Model.Form != null) {
-    <fieldset>
-        @await DisplayAsync(Model.Form)
+    @if (Model.EditorShape != null)
+    {
+    <fieldset>        
+        @{
+            Model.EditorShape.Metadata.Alternates.Clear();
+            Model.EditorShape.Metadata.Alternates.Add($"Activity_Edit__{Model.EditorShape.Name}");
+        }
+        @await DisplayAsync(Model.EditorShape)
     </fieldset>
     }
+
+    @Html.Hidden("Name")
+    @Html.Hidden("LocalId")
+    @Html.Hidden("ClientId")
 
     <fieldset>
         <button class="primaryAction" type="submit" name="_submit.Save" value="@T["Save"]">@T["Save"]</button>
@@ -16,14 +25,13 @@
     </fieldset>
 </form>
 
-<script asp-name="orchard-workflows-serialize" depends-on="admin" asp-src="/Orchard.Workflows/Scripts/orchard-workflows-serialize.min.js" debug-src="/Orchard.Workflows/Scripts/orchard-workflows-serialize.js" type="text/javascript" at="Foot"></script>
-
 <script type="text/javascript" at="Head">
 //<![CDATA[
-var requestAntiForgeryToken = $("[name='__RequestVerificationToken']").first().val();
 var localId = '@Model.LocalId';
 //]]>
 </script>
+
+<script asp-name="orchard-workflows-serialize" depends-on="admin" asp-src="/Orchard.Workflows/Scripts/orchard-workflows-serialize.js" debug-src="/Orchard.Workflows/Scripts/orchard-workflows-serialize.js" type="text/javascript" at="Foot"></script>
 
 <script type="text/javascript" at="Foot">
 loadForm('@Model.LocalId', '@Model.ClientId');

@@ -12,10 +12,4 @@ namespace Orchard.Workflows.ViewModels
         public WorkflowDefinitionViewModel WorkflowDefinition { get; set; }
         public Workflow Workflow { get; set; }
     }
-
-    [Serializable]
-    public class UpdatedActivityModel {
-        public string ClientId { get; set; }
-        public string Data { get; set; }
-    }
 }

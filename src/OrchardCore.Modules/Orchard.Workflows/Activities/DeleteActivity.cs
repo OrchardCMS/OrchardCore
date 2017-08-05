@@ -6,7 +6,7 @@ using Orchard.Workflows.Services;
 
 namespace Orchard.Workflows.Activities
 {
-    public class DeleteActivity : TaskActivity
+    public class DeleteActivity : WorkflowEvent
     {
         private readonly IContentManager _contentManager;
 

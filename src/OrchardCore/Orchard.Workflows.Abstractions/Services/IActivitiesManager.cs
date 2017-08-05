@@ -7,5 +7,4 @@ namespace Orchard.Workflows.Services
         IEnumerable<IActivity> GetActivities();
         IActivity GetActivityByName(string name);
     }
-
 }

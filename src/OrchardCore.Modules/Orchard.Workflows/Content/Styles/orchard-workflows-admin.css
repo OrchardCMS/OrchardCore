@@ -40,11 +40,11 @@
     background-color: #eee;
 }
 
-._jsPlumb_connector {
+.jsplumb-connector {
     z-index: 4;
 }
 
-._jsPlumb_endpoint {
+.jsplumb-endpoint {
     z-index: 21;
     cursor: pointer;
 }
@@ -238,51 +238,4 @@
 
 .toolbox-event div {
     margin-left: 36px;
-}
-
-/* RTL */
-.dir-rtl #editor-wrapper {
-    float: right;
-}
-
-.dir-rtl #workflow-footer {
-    clear: right;
-}
-
-.dir-rtl #activity-editor {
-    margin-right: inherit;
-    margin-left: 302px;
-}
-
-/* RTL toolbox */
-
-.dir-rtl #activity-toolbox {
-    float:right;
-
-    margin-left: inherit; /* width + borders */
-    margin-right: -302px; /* width + borders */
-}
-
-    .dir-rtl #activity-toolbox .activity-toolbox-item > div {
-        padding: 0 10px 0 5px;
-    }
-
-
-.dir-rtl #activity-toolbar > div {
-    float: right;
-}
-
-    .dir-rtl #activity-toolbar > div:last-child {
-        border-right: inherit;
-        border-left: none;
-    }
-
-.dir-rtl .toolbox-task div {
-    margin-left: inherit;
-    margin-right: 36px;
-}
-
-.dir-rtl .toolbox-event div {
-    margin-left: inherit;
-    margin-right: 36px;
 }

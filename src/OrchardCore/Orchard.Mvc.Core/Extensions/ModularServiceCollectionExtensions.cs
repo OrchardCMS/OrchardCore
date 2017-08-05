@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,6 +59,7 @@ namespace Orchard.Mvc
 
             // Order important
             builder.AddJsonFormatters();
+            builder.AddCookieTempDataProvider();
 
             return services;
         }

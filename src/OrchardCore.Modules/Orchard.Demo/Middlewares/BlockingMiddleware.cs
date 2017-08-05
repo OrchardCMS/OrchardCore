@@ -20,7 +20,7 @@ namespace Orchard.Demo
             }
             else
             {
-                await _next.Invoke(httpContext);
+               await _next.Invoke(httpContext);
             }
         }
     }

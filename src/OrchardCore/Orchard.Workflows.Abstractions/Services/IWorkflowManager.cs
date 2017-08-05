@@ -16,5 +16,4 @@ namespace Orchard.Workflows.Services
         /// <param name="tokensContext">An object containing the tokens context</param>
         Task TriggerEvent(string name, IContent target, Func<Dictionary<string, object>> tokensContext);
     }
-
 }

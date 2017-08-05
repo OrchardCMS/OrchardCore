@@ -29,8 +29,9 @@
         <div id="workflow-footer"></div>
     </div>
 
-    @Html.HiddenFor(m => m.WorkflowDefinition.Id)
-    @Html.HiddenFor(m => m.LocalId)
+    @Html.Hidden("id", Model.WorkflowDefinition.Id)
+    @Html.Hidden("localId", Model.LocalId)
+    @Html.Hidden("data", String.Empty)
 
     @Html.Hidden("confirm-delete-activity", T["Are you sure you want to remove this activity?"])
     @Html.Hidden("confirm-delete-instances", T["You have running instances of this workflow, do you want to stop them?"])
@@ -43,9 +44,40 @@
     </fieldset>
 </form>
 
-<script asp-name="jsplumb" depends-on="jQuery.ui" asp-src="/Orchard.Workflows/Scripts/jsplumb.min.js" type="text/javascript" at="Foot"></script>
-<script asp-name="orchard-workflows" depends-on="admin" asp-src="/Orchard.Workflows/Scripts/orchard-workflows.min.js" debug-src="/Orchard.Workflows/Scripts/orchard-workflows.js" type="text/javascript" at="Foot"></script>
-<script asp-name="orchard-workflows-serialize" depends-on="admin" asp-src="/Orchard.Workflows/Scripts/orchard-workflows-serialize.min.js" debug-src="/Orchard.Workflows/Scripts/orchard-workflows-serialize.js" type="text/javascript" at="Foot"></script>
+<script type="text/javascript" at="Head">
+    //<![CDATA[
+    var renderActivityUrl = @Json.Serialize(Url.Action("RenderActivity", "Admin", new { area = "Orchard.Workflows" }));
+    var editActivityUrl = @Json.Serialize(Url.Action("EditActivity", "Admin", new { area = "Orchard.Workflows" }));
+    var stateUrl = @Json.Serialize(Url.Action("State", "Admin", new { area = "Orchard.Workflows" }));
+    var requestAntiForgeryToken = () => document.getElementsByName('__RequestVerificationToken')[0].value;
+    var localId = @Json.Serialize(Model.LocalId);
+    var updatedActivityClientId = null;
+    var updatedActivityState = null;
+    var awaitingRecords = [];
+
+@if (TempData.ContainsKey("UpdatedViewModel")) {
+    var model = TempData["UpdatedViewModel"];
+    if (model != null)
+    {
+        var deconstructedModel = Newtonsoft.Json.JsonConvert.DeserializeObject<Orchard.Workflows.Models.UpdatedActivityModel>(model.ToString());
+    @: updatedActivityClientId = '@(deconstructedModel.ClientId)';
+    @: updatedActivityState = '@Html.Raw(deconstructedModel.Data)';
+    }
+}
+else if (!Model.IsLocal) {
+    @: var state = @Html.Raw(Model.WorkflowDefinition.JsonData);
+    @: sessionStorage.setItem(localId, JSON.stringify(state));
+}
+
+@if (Model.Workflow != null) {
+    @: awaitingRecords = [@String.Join(",", Model.Workflow.AwaitingActivities.Select(x => x.Activity.Id.ToString()).ToArray())];
+}
+    //]]>
+</script>
+
+<script asp-name="jsplumb" depends-on="jQuery.ui" asp-src="/Orchard.Workflows/Scripts/jsplumb.min.js" type="text/javascript" version="2.4.3" at="Foot"></script>
+<script asp-name="orchard-workflows" depends-on="admin" asp-src="/Orchard.Workflows/Scripts/orchard-workflows.js" debug-src="/Orchard.Workflows/Scripts/orchard-workflows.js" type="text/javascript" at="Foot"></script>
+<script asp-name="orchard-workflows-serialize" depends-on="admin" asp-src="/Orchard.Workflows/Scripts/orchard-workflows-serialize.js" debug-src="/Orchard.Workflows/Scripts/orchard-workflows-serialize.js" type="text/javascript" at="Foot"></script>
 
 <style asp-src="/Orchard.Workflows/Styles/orchard-workflows-admin.css" at="Head"></style>
 
@@ -54,26 +86,9 @@
     <style asp-src="/Orchard.Workflows/Styles/workflows-activity-@(activity.Name).css" at="Head"></style>
 }
 
-<script type="text/javascript" depends-on="admin"  at="Foot">
+
+<script type="text/javascript" at="Foot">
     //<![CDATA[
-    var renderActivityUrl = @Json.Serialize(Url.Action("RenderActivity", "Admin", new { area = "Orchard.Workflows" }));
-    var editActivityUrl = @Json.Serialize(Url.Action("EditActivity", "Admin", new { area = "Orchard.Workflows" }));
-    var stateUrl = @Json.Serialize(Url.Action("State", "Admin", new { area = "Orchard.Workflows" }));
-    var requestAntiForgeryToken = $("[name='__RequestVerificationToken']").first().val();
-    var localId = @Json.Serialize(Model.LocalId);
-    var updatedActivityClientId = null;
-    var updatedActivityState = null;
-    var awaitingRecords = [];
-
-@if (!Model.IsLocal) {
-    @: var state = @Html.Raw(Model.WorkflowDefinition.JsonData);
-    @: sessionStorage.setItem(localId, JSON.stringify(state));
-}
-
-@if (Model.Workflow != null) {
-    @: awaitingRecords = [@String.Join(",", Model.Workflow.AwaitingActivities.Select(x => x.Activity.Id.ToString()).ToArray())];
-}
-
     $("form").submit(function (e, submit, clearWorkflows) {
         if(submit){
             saveLocal(localId);

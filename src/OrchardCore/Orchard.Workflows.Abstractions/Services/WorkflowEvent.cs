@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Orchard.Workflows.Models;
 
 namespace Orchard.Workflows.Services
 {
-    public abstract class TaskActivity : IActivity
+    public abstract class WorkflowEvent : IActivity
     {
         public abstract string Name { get; }
         public abstract LocalizedString Category { get; }
@@ -13,14 +14,17 @@ namespace Orchard.Workflows.Services
 
         public virtual bool IsEvent
         {
-            get { return false; }
+            get { return true; }
         }
-
-        public bool CanStartWorkflow { get { return false; } }
 
         public virtual string Form
         {
             get { return null; }
+        }
+
+        public virtual bool CanStartWorkflow
+        {
+            get { return false; }
         }
 
         public abstract IEnumerable<LocalizedString> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext);
@@ -30,7 +34,7 @@ namespace Orchard.Workflows.Services
             return true;
         }
 
-        public abstract IEnumerable<LocalizedString> Execute(WorkflowContext workflowContext, ActivityContext activityContext);
+        public abstract Task<IEnumerable<LocalizedString>> Execute(WorkflowContext workflowContext, ActivityContext activityContext);
 
         public virtual void OnWorkflowStarting(WorkflowContext context, CancellationToken cancellationToken = default(CancellationToken))
         {

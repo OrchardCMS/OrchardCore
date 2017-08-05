@@ -1,26 +1,27 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.Workflows.Models {
+namespace Orchard.Workflows.Models
+{
     /// <summary>
     /// Reprensents a running workflow instance.
     /// </summary>
     public class Workflow {
         public int Id { get; set; }
 
-        /// <summary>
-        /// Serialized state of the workflow.
-        /// </summary>
-        public string State { get; set; }
+        public string Name { get; set; }
+
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// List of activities the current workflow instance is waiting on 
         /// for continuing its process.
         /// </summary>
-        public IList<AwaitingActivity> AwaitingActivities { get; set; } = new List<AwaitingActivity>();
+        public IList<Activity> Activities { get; set; } = new List<Activity>();
 
         /// <summary>
-        /// Parent <see cref="WorkflowDefinitionRecord"/>
+        /// List of transitions the current workflow instance is waiting on 
+        /// for continuing its process.
         /// </summary>
-        public WorkflowDefinition Definition { get; set; }
+        public IList<Transition> Transitions { get; set; } = new List<Transition>();
     }
 }

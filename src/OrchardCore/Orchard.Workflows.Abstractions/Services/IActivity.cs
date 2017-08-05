@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Orchard.Workflows.Models;
 
@@ -30,7 +31,7 @@ namespace Orchard.Workflows.Services
         /// Executes the current activity
         /// </summary>
         /// <returns>The names of the resulting outcomes.</returns>
-        IEnumerable<LocalizedString> Execute(WorkflowContext workflowContext, ActivityContext activityContext);
+        Task<IEnumerable<LocalizedString>> Execute(WorkflowContext workflowContext, ActivityContext activityContext);
 
         /// <summary>
         /// Called on each activity when a workflow is about to start

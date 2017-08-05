@@ -1,10 +1,9 @@
-﻿namespace Orchard.Workflows.Models {
-    public class AwaitingActivity {
-        public int Id { get; set; }
-
-        public Activity Activity { get; set; }
-
-        // Parent property
-        public Workflow Workflow { get; set; }
+﻿namespace Orchard.Workflows.Models
+{
+    public class AwaitingActivity
+    {
+        public string ActivityId { get; set; }
+        public string ContentId { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿    var connectorPaintStyle = {
         lineWidth: 2,
         strokeStyle: "#999",
-        joinstyle: "round",
+        joinstyle: "round"
         //outlineColor: "white",
         //outlineWidth: 7
     };
@@ -24,6 +24,7 @@
         overlays: [["Label", { location: [3, -1.5], cssClass: "sourceEndpointLabel" }]]
     };
 
+
     jsPlumb.bind("ready", function () {
 
         jsPlumb.importDefaults({
@@ -37,7 +38,7 @@
             // the overlays to decorate each connection with.  note that the label overlay uses a function to generate the label text; in this
             // case it returns the 'labelText' member that we set on each connection in the 'init' method below.
             ConnectionOverlays: [
-                ["Arrow", { width: 12, length: 12, location: -5 }],
+                ["Arrow", { width: 12, length: 12, location: -5 }]
                 // ["Label", { location: 0.1, id: "label", cssClass: "aLabel" }]
             ],
             ConnectorZIndex: 5
@@ -92,7 +93,7 @@
 
     $("#search-box").focus().on("keyup", function (e) {
         var text = $(this).val();
-        if (text == "") {
+        if (text === "") {
             $(".activity-toolbox-item").show();
         } else {
             var lowerCaseText = text.toLowerCase();
@@ -112,13 +113,13 @@
             success: function(data) {
                 var dom = $($.parseHTML($.trim(data)));
 
-                if (dom == null) {
+                if (dom === null) {
                     return null;
                 }
 
                 dom.addClass('activity');
                 
-                if ($.inArray(id, awaitingRecords) != -1) {
+                if ($.inArray(id, awaitingRecords) !== -1) {
                     dom.addClass('awaiting');
                 }
                     
@@ -139,7 +140,7 @@
                     dropOptions: { hoverClass: "dragHover" },
                     anchor: "Continuous",
                     endpoint: "Blank",
-                    paintStyle: { fillStyle: "#558822", radius: 3 },
+                    paintStyle: { fillStyle: "#558822", radius: 3 }
                 });
 
                 var elt = dom.get(0);
@@ -162,7 +163,7 @@
                 for (i = 0; i < outcomes.length; i++) {
                     var ep = jsPlumb.addEndpoint(dom, {
                         anchor: "Continuous",
-                        connectorOverlays: [["Label", { label: outcomes[i].Label, cssClass: "connection-label" }]],
+                        connectorOverlays: [["Label", { label: outcomes[i].Label, cssClass: "connection-label" }]]
                     },
                         sourceEndpointOptions);
 
@@ -191,7 +192,6 @@
                 dom.on("click", function () {
                     var self = $(this);
                     var toolbar = $('#activity-toolbar');
-
 
                     refreshToolbar(this);
 

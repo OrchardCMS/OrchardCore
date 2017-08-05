@@ -9,7 +9,7 @@ using Orchard.Workflows.Services;
 
 namespace Orchard.Workflows.Activities
 {
-    public class NotificationActivity : TaskActivity
+    public class NotificationActivity : WorkflowTask
     {
         private readonly INotifier _notifier;
 

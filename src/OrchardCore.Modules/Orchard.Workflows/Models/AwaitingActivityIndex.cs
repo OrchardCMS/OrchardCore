@@ -8,17 +8,17 @@ namespace Orchard.Workflows.Models
         public bool ActivityStart { get; set; }
     }
 
-    public class AwaitingActivityndexProvider : IndexProvider<AwaitingActivity>
+    public class AwaitingActivityndexProvider : IndexProvider<Activity>
     {
-        public override void Describe(DescribeContext<AwaitingActivity> context)
+        public override void Describe(DescribeContext<Activity> context)
         {
             context.For<AwaitingActivityIndex>()
                 .Map(awaitingActivity =>
                 {
                     return new AwaitingActivityIndex
                     {
-                        ActivityName = awaitingActivity.Activity.Name,
-                        ActivityStart = awaitingActivity.Activity.Start
+                        ActivityName = awaitingActivity.Name,
+                        ActivityStart = awaitingActivity.Start
                     };
                 });
         }

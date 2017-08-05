@@ -1,8 +1,7 @@
-﻿namespace Orchard.Workflows.Models
+﻿using Newtonsoft.Json;
+
+namespace Orchard.Workflows.Models
 {
-    /// <summary>
-    /// Represents an activity in a <see cref="WorkflowDefinition"/>
-    /// </summary>
     public class Activity
     {
         public int Id { get; set; }
@@ -33,15 +32,16 @@
         public bool Start { get; set; }
 
         /// <summary>
-        /// The parent <see cref="WorkflowDefinition"/> 
+        /// The parent <see cref="Workflow"/> 
         /// containing this activity.
         /// </summary>
-        public WorkflowDefinition Definition { get; set; }
+        [JsonIgnore]
+        public int WorkflowDefinitionId { get; set; }
 
         /// <summary>
         /// Gets the Id which can be used on the client. 
         /// </summary>
         /// <returns>An unique Id to represent this activity on the client.</returns>
-        public string GetClientId() => string.Format("{0}_{1}", Name, Id);
+        public string ClientId => string.Format("{0}_{1}", Name, Id);
     }
 }

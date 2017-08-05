@@ -33,8 +33,8 @@
                         &nbsp;
                     </td>
                     <td>
-                        @Html.ActionLink(T("Status").ToString(), "Edit", new {id = workflow.WorkflowDefinitionRecord.Id, workflowId = workflow.Id, ReturnUrl = Html.ViewContext.HttpContext.Request.RawUrl}) |
-                        @Html.ActionLink(T("Delete").ToString(), "DeleteWorkflow", new {id = workflow.Id}, new {itemprop = "RemoveUrl UnsafeUrl", ReturnUrl = Html.ViewContext.HttpContext.Request.RawUrl})
+                        @Html.ActionLink(T["Status"].ToString(), "Edit", new {id = workflow.WorkflowDefinitionRecord.Id, workflowId = workflow.Id, ReturnUrl = Html.ViewContext.HttpContext.Request.RawUrl}) |
+                        @Html.ActionLink(T["Delete"].ToString(), "DeleteWorkflow", new {id = workflow.Id}, new {itemprop = "RemoveUrl UnsafeUrl", ReturnUrl = Html.ViewContext.HttpContext.Request.RawUrl})
                     </td>
                 </tr>
             }

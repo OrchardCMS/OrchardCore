@@ -20,9 +20,15 @@ namespace Orchard.Workflows
             services.AddScoped<IIndexProvider, ActivityIndexProvider>();
             services.AddScoped<IIndexProvider, AwaitingActivityndexProvider>();
             services.AddScoped<IIndexProvider, WorkflowDefinitionIndexProvider>();
+            services.AddScoped<IIndexProvider, WorkflowWorkflowDefinitionIndexProvider>();
 
             services.AddScoped<IActivity, DeleteActivity>();
             services.AddScoped<IActivity, NotificationActivity>();
+            services.AddScoped<IActivity, ContentCreatedActivity>();
+            services.AddScoped<IActivity, ContentUpdatedActivity>();
+            services.AddScoped<IActivity, ContentPublishedActivity>();
+            services.AddScoped<IActivity, ContentVersionedActivity>();
+            services.AddScoped<IActivity, ContentRemovedActivity>();
 
             services.AddScoped<IDataMigration, Migrations>();
 

@@ -20,13 +20,13 @@ var saveLocal = function (localId) {
     }
 
     var allConnections = jsPlumb.getConnections();
-    for (var i = 0; i < allConnections.length; i++) {
-        var connection = allConnections[i];
+    for (var ii = 0; ii < allConnections.length; ii++) {
+        var connection = allConnections[ii];
 
         workflow.Connections.push({
             SourceId: connection.sourceId,
             TargetId: connection.targetId,
-            SourceEndpoint: connection.endpoints[0].outcome.Id,
+            SourceEndpoint: connection.endpoints[0].outcome.Id
             //targetEndpoint: connection.targetEndpoint
         });
     }
@@ -36,7 +36,7 @@ var saveLocal = function (localId) {
 
 var updateActivities = function(localId) {
     var workflow = loadWorkflow(localId);
-    if (workflow == null) {
+    if (workflow === null) {
         return;
     }
 
@@ -45,7 +45,7 @@ var updateActivities = function(localId) {
         for (var i = 0; i < workflow.Activities.length; i++) {
             var activity = workflow.Activities[i];
 
-            if (updatedActivityClientId == activity.ClientId) {
+            if (updatedActivityClientId === activity.ClientId) {
                 // if an activity has been modified, update it
                 activity.State = JSON.parse(updatedActivityState);
             }
@@ -59,7 +59,7 @@ var updateActivities = function(localId) {
 
 var loadActivities = function (localId) {
     var workflow = loadWorkflow(localId);
-    if (workflow == null) {
+    if (workflow === null) {
         return;
     }
     
@@ -70,8 +70,8 @@ var loadActivities = function (localId) {
     }
 
     // connections
-    for (var i = 0; i < workflow.Connections.length; i++) {
-        var connection = workflow.Connections[i];
+    for (var ii = 0; ii < workflow.Connections.length; ii++) {
+        var connection = workflow.Connections[ii];
 
         var source = document.getElementById(connection.SourceId);
         var ep = source.endpoints[connection.SourceEndpoint];
@@ -104,14 +104,14 @@ var loadWorkflow = function(localId) {
 var getActivity = function(localId, clientId) {
 
     var workflow = loadWorkflow(localId);
-    if (workflow == null) {
+    if (workflow === null) {
         return;
     }
 
     var activity = null;
     for (var i = 0; i < workflow.Activities.length; i++) {
         var a = workflow.Activities[i];
-        if (a.ClientId == clientId) {
+        if (a.ClientId === clientId) {
             activity = a;
         }
     }
@@ -129,11 +129,11 @@ var loadForm = function(localId, clientId) {
 
 var bindForm = function(form, data) {
 
-    $.each(data, function (name, val) {
-        var $el = $('[name="' + name + '"]'),
+    $.each(data, function (index, val) {
+        var $el = $('[name="' + val.Key + '"]'),
             tagName = $el.get(0).nodeName.toLowerCase(),
             type = $el.attr('type') && $el.attr('type').toLowerCase(),
-            values = val.split(',');
+            values = val.Value;
 
         switch (tagName) {
             case 'input':
@@ -141,14 +141,14 @@ var bindForm = function(form, data) {
                     case 'checkbox':
                         $el.each(function () {
                             var self = $(this);
-                            self.attr('checked', values.indexOf(self.attr('value')) != -1);
+                            self.attr('checked', values.indexOf(self.attr('value')) !== -1);
                         });
                         break;
                     case 'radio':
-                        $el.filter('[value="' + val + '"]').attr('checked', 'checked');
+                        $el.filter('[value="' + val.Value + '"]').attr('checked', 'checked');
                         break;
                     default:
-                        $el.val(val);
+                        $el.val(val.Value);
                 }
                 break;
             case 'select':
@@ -159,7 +159,7 @@ var bindForm = function(form, data) {
                 //});
                 break;
             default:
-                $el.val(val);
+                $el.val(val.Value);
         }
     });
 };

@@ -37,7 +37,7 @@ namespace Orchard.Widgets.Controllers
         
         public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string zonesName, string zone, string targetId)
         {
-            if (String.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 return NotFound();
             }

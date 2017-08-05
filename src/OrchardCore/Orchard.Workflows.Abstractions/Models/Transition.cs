@@ -7,9 +7,9 @@
         public int Id { get; set; }
 
         /// <summary>
-        /// The source <see cref="Activity"/>
+        /// The source <see cref="Activity.Id"/>
         /// </summary>
-        public Activity SourceActivity { get; set; }
+        public string SourceActivityId { get; set; }
 
         /// <summary>
         /// The name of the endpoint on the source <see cref="Activity"/>
@@ -17,18 +17,13 @@
         public string SourceEndpoint { get; set; }
 
         /// <summary>
-        /// The destination <see cref="Activity"/>
+        /// The destination <see cref="Activity.Id"/>
         /// </summary>
-        public Activity DestinationActivity { get; set; }
+        public string DestinationActivityId { get; set; }
 
         /// <summary>
         /// The name of the endpoint on the destination <see cref="Activity"/>
         /// </summary>
         public string DestinationEndpoint { get; set; }
-
-        /// <summary>
-        /// The parent <see cref="WorkflowDefinition"/>
-        /// </summary>
-        public WorkflowDefinition Definition { get; set; }
     }
 }
