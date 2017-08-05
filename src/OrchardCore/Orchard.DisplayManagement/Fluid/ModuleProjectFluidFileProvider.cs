@@ -56,7 +56,14 @@ namespace Orchard.DisplayManagement.Fluid
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (subpath != null && _paths.ContainsKey(subpath))
+            if (subpath == null)
+            {
+                return null;
+            }
+
+            subpath = subpath.Replace("\\", "/");
+
+            if (_paths.ContainsKey(subpath))
             {
                 return new PhysicalFileInfo(new FileInfo(_paths[subpath]));
             }
@@ -66,7 +73,14 @@ namespace Orchard.DisplayManagement.Fluid
 
         public IChangeToken Watch(string filter)
         {
-            if (filter != null && _paths.ContainsKey(filter))
+            if (filter == null)
+            {
+                return null;
+            }
+
+            filter = filter.Replace("\\", "/");
+
+            if (_paths.ContainsKey(filter))
             {
                 return new PollingFileChangeToken(new FileInfo(_paths[filter]));
             }
