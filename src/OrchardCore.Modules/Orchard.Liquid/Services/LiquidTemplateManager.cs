@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using Orchard.Admin;
 
 namespace Orchard.Liquid.Services
 {
@@ -15,14 +17,19 @@ namespace Orchard.Liquid.Services
         private readonly LiquidOptions _liquidOptions;
         private readonly IServiceProvider _serviceProvider;
 
+        private readonly HttpContext _httpContext;
+
         public LiquidTemplateManager(
             IMemoryCache memoryCache,
             IOptions<LiquidOptions> options,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IHttpContextAccessor httpContextAccessor)
         {
             _memoryCache = memoryCache;
             _liquidOptions = options.Value;
             _serviceProvider = serviceProvider;
+
+            _httpContext = httpContextAccessor.HttpContext;
         }
 
         public Task RenderAsync(string source, TextWriter textWriter, TextEncoder encoder, TemplateContext context)
@@ -32,9 +39,16 @@ namespace Orchard.Liquid.Services
                 return Task.CompletedTask;
             }
 
+            // We ignore the templates for an admin view. This could be changed later on
+            // using an option.
+            if (AdminAttribute.IsApplied(_httpContext))
+            {
+                return null;
+            }
+
             var errors = Enumerable.Empty<string>();
 
-            var result = _memoryCache.GetOrCreate<IFluidTemplate>(source, (ICacheEntry e) =>
+            var result = _memoryCache.GetOrCreate(source, (ICacheEntry e) =>
             {
                 if (FluidTemplate.TryParse(source, out var parsed, out errors))
                 {
