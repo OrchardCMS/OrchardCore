@@ -49,13 +49,14 @@ namespace Orchard.DisplayManagement.Fluid
             var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
             var fileProviderAccessor = page.GetService<IFluidViewFileProviderAccessor>();
             var fileInfo = fileProviderAccessor.ShellFileProvider.GetFileInfo(path);
+            var shellCache = page.GetService<IMemoryCache>();
 
             IMemoryCache cache;
             IFileProvider fileProvider;
 
             if (fileInfo != null && fileInfo.Exists)
             {
-                cache = page.GetService<IMemoryCache>();
+                cache = shellCache;
                 fileProvider = fileProviderAccessor.ShellFileProvider;
             }
             else
@@ -83,7 +84,7 @@ namespace Orchard.DisplayManagement.Fluid
 
                 if (fileInfo != null && fileInfo.Exists)
                 {
-                    viewImportsTemplate = Parse(location, fileProviderAccessor.FileProvider, cache);
+                    viewImportsTemplate = Parse(location, fileProviderAccessor.ShellFileProvider, shellCache);
                     break;
                 }
                 else
@@ -92,14 +93,14 @@ namespace Orchard.DisplayManagement.Fluid
 
                     if (fileInfo != null && fileInfo.Exists)
                     {
-                        viewImportsTemplate = Parse(location, fileProviderAccessor.FileProvider, Cache);
+                        viewImportsTemplate = Parse(location, fileProviderAccessor.SharedFileProvider, Cache);
                         break;
                     }
                 }
             }
 
             path = Path.ChangeExtension(path, ViewExtension);
-            var template = Parse(path, fileProviderAccessor.FileProvider, cache);
+            var template = Parse(path, fileProvider, cache);
 
             var context = new TemplateContext();
             context.AmbientValues.Add("FluidPage", page);
@@ -121,47 +122,32 @@ namespace Orchard.DisplayManagement.Fluid
             modelState["IsValid"] = page.ViewContext.ModelState.IsValid;
             context.LocalScope.SetValue("ModelState", modelState);
 
-            var modelType = ((object)page.Model)?.GetType();
+            context.RegisterObject((object)page.Model);
+            context.LocalScope.SetValue("Model", page.Model);
 
-            if (page.Model is IShape && !FluidValue.TypeMappings.TryGetValue(modelType, out var value))
+            if (page.Model is Shape)
             {
-                FluidValue.TypeMappings.Add(modelType, obj => new ObjectValue(obj));
-            }
-
-            if (modelType != null)
-            {
-                context.MemberAccessStrategy.Register(modelType);
-                context.LocalScope.SetValue("Model", page.Model);
-
-                if (page.Model is Shape && page.Model.Items.Count > 0)
+                if (page.Model.Items.Count > 0)
                 {
                     foreach (var item in page.Model.Items)
                     {
-                        var itemType = ((object)item).GetType();
-
-                        if (!FluidValue.TypeMappings.TryGetValue(itemType, out value))
-                        {
-                            FluidValue.TypeMappings.Add(itemType, obj => new ObjectValue(obj));
-                            context.MemberAccessStrategy.Register(itemType);
-                        }
+                        context.RegisterObject((object)item);
                     }
                 }
 
-                if (page.Model is Shape && page.Model.Properties.Count > 0)
+                if (page.Model.Properties.Count > 0)
                 {
                     foreach (var prop in page.Model.Properties)
                     {
-                        var propType = ((object)prop.Value).GetType();
-
-                        if (prop.Value is IShape && !FluidValue.TypeMappings.TryGetValue(propType, out value))
-                        {
-                            FluidValue.TypeMappings.Add(propType, obj => new ObjectValue(obj));
-                            context.MemberAccessStrategy.Register(propType);
-                        }
-
+                        context.RegisterObject((object)prop.Value);
                         context.LocalScope.SetValue(prop.Key, prop.Value);
                     }
                 }
+            }
+
+            if (page.Model.Field != null)
+            {
+                context.RegisterObject(((object)page.Model.Field));
             }
 
             if (viewImportsTemplate != null)
@@ -206,6 +192,21 @@ namespace Orchard.DisplayManagement.Fluid
             }
 
             return (FluidPage)page;
+        }
+    }
+
+    public static class TemplateContextExtensions
+    {
+        public static void RegisterObject(this TemplateContext context, object obj)
+        {
+            var type = obj.GetType();
+
+            if (obj is IShape && !FluidValue.TypeMappings.TryGetValue(type, out var value))
+            {
+                FluidValue.TypeMappings.Add(type, o => new ObjectValue(o));
+            }
+
+            context.MemberAccessStrategy.Register(type);
         }
     }
 }

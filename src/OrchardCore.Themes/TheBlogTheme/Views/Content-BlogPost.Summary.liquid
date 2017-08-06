@@ -5,7 +5,7 @@
         </h2>
         {% if ContentItem.Content.BlogPost.Subtitle | is_nil != true %}
         <h3 class="post-subtitle">
-            {{ Model.ContentItem.Content.BlogPost.Subtitle.Text }}
+            {{ ContentItem.Content.BlogPost.Subtitle.Text }}
         </h3>
         {% endif %}
     {% enda %}
