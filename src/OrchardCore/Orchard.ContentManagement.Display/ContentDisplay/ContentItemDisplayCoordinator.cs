@@ -89,23 +89,24 @@ namespace Orchard.ContentManagement.Display
                             InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
                         }
                     }
-                }
 
-                foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
-                {
-                    foreach (var displayDriver in _fieldDisplayDrivers)
+
+                    foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
                     {
-                        try
+                        foreach (var displayDriver in _fieldDisplayDrivers)
                         {
-                            var result = await displayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
-                            if (result != null)
+                            try
                             {
-                                result.Apply(context);
+                                var result = await displayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
+                                if (result != null)
+                                {
+                                    result.Apply(context);
+                                }
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                            catch (Exception ex)
+                            {
+                                InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                            }
                         }
                     }
                 }
