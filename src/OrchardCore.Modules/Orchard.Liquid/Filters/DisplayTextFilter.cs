@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -26,7 +25,7 @@ namespace Orchard.Liquid.Filters
 
             var contentItemMetadata = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem);
 
-            return Task.FromResult<FluidValue>(new StringValue(contentItemMetadata.DisplayText));
+            return Task.FromResult<FluidValue>(new StringValue(contentItemMetadata.DisplayText ?? ""));
         }
     }
 }
