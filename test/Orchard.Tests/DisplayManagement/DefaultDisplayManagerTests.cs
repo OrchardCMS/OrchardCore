@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -290,7 +290,7 @@ namespace Orchard.Tests.DisplayManagement
         [Fact]
         public async Task DisplayingEventFiresEarlyEnoughToAddAlternateShapeBindingNames()
         {
-            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+            var htmlDisplay = _serviceProvider.GetService<IHtmlDisplay>();
 
             var shapeFoo = new Shape
             {
@@ -314,9 +314,17 @@ namespace Orchard.Tests.DisplayManagement
             AddShapeDescriptor(descriptorBar);
 
 
-            var resultNormally = await displayManager.ExecuteAsync(CreateDisplayContext(shapeFoo));
+            var resultNormally = await htmlDisplay.ExecuteAsync(CreateDisplayContext(shapeFoo));
+
+            shapeFoo = new Shape
+            {
+                Metadata = new ShapeMetadata
+                {
+                    Type = "Foo"
+                }
+            };
             descriptorFoo.Displaying = new Action<ShapeDisplayContext>[] { ctx => ctx.ShapeMetadata.Alternates.Add("Bar") };
-            var resultWithOverride = await displayManager.ExecuteAsync(CreateDisplayContext(shapeFoo));
+            var resultWithOverride = await htmlDisplay.ExecuteAsync(CreateDisplayContext(shapeFoo));
 
             Assert.Equal("alpha", resultNormally.ToString());
             Assert.Equal("beta", resultWithOverride.ToString());

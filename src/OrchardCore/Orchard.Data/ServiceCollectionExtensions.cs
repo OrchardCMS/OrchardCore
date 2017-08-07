@@ -6,15 +6,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Npgsql;
 using Orchard.Data.Migration;
 using Orchard.Environment.Shell;
-using YesSql.Indexes;
 using YesSql;
+using YesSql.Indexes;
 using YesSql.Provider.MySql;
+using YesSql.Provider.PostgreSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Provider.SqlServer;
-using YesSql.Provider.PostgreSql;
 
 namespace Orchard.Data
 {

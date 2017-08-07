@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -101,7 +102,8 @@ namespace Orchard.DisplayManagement.Implementation
             {
                 shape.Metadata.ChildContent = displayContext.ChildContent;
             }
-            else
+            
+            if (shape.Metadata.ChildContent == null)
             {
                 // now find the actual binding to render, taking alternates into account
                 ShapeBinding actualBinding;
@@ -124,13 +126,20 @@ namespace Orchard.DisplayManagement.Implementation
                 }
             }
 
-            foreach (var frameType in shape.Metadata.Wrappers)
+            // Process wrappers
+            if (shape.Metadata.Wrappers.Count > 0)
             {
-                ShapeBinding frameBinding;
-                if (TryGetDescriptorBinding(frameType, Enumerable.Empty<string>(), shapeTable, out frameBinding))
+                foreach (var frameType in shape.Metadata.Wrappers)
                 {
-                    shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, context);
+                    ShapeBinding frameBinding;
+                    if (TryGetDescriptorBinding(frameType, Enumerable.Empty<string>(), shapeTable, out frameBinding))
+                    {
+                        shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, context);
+                    }
                 }
+
+                // Clear wrappers to prevent the child content from rendering them again
+                shape.Metadata.Wrappers.Clear();
             }
 
             _shapeDisplayEvents.Invoke(sde =>
@@ -218,12 +227,27 @@ namespace Orchard.DisplayManagement.Implementation
         static IHtmlContent CoerceHtmlString(object value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             var result = value as IHtmlContent;
             if (result != null)
+            {
                 return result;
 
+                // To prevent the result from being rendered lately, we can
+                // serialize it right away. But performance seems to be better
+                // like this, until we find this is an issue.
+
+                //using (var html = new StringWriter())
+                //{
+                //    result.WriteTo(html, HtmlEncoder.Default);
+                //    return new HtmlString(html.ToString());
+                //}
+            }
+
+            // Convert to a string and HTML-encode it
             return new HtmlString(HtmlEncoder.Default.Encode(value.ToString()));
         }
 

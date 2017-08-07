@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Html;
@@ -377,7 +376,7 @@ namespace Orchard.ResourceManagement
             if (resource.Dependencies != null)
             {
                 var dependencies = from d in resource.Dependencies
-                                   let segments = d.Split('-')
+                                   let segments = d.Split(':')
                                    let name = segments[0]
                                    let version = segments.Length > 1 ? segments[1] : null
                                    select FindResource(new RequireSettings { Type = resource.Type, Name = name, Version = version });

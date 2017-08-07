@@ -48,10 +48,9 @@
         "Orchard.Lists",
         "Orchard.Liquid",
         "Orchard.Lucene",
+        "Orchard.Media",
         "Orchard.Menu",
         "Orchard.Title",
-        "Orchard.Tokens",
-        "Orchard.Tokens.Content",
         "Orchard.Widgets",
 
         // Themes
@@ -107,7 +106,7 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Pattern": "{{slug}}",
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
                 "AllowCustomPath": "True",
                 "ShowHomepageOption": "True",
                 "Position": "1"
@@ -126,7 +125,6 @@
                   "Template": null
                 },
                 "BodyPartSettings": {
-                  "RenderTokens": false,
                   "Editor": "Wysiwyg"
                 },
                 "Position": "3"

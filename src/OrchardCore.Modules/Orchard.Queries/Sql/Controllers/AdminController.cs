@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Dapper;
+using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
+using Orchard.Liquid;
 using Orchard.Queries.Sql.ViewModels;
-using Orchard.Tokens.Services;
 using YesSql;
 
 namespace Orchard.Queries.Sql.Controllers
@@ -19,18 +20,18 @@ namespace Orchard.Queries.Sql.Controllers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IStore _store;
-        private readonly ITokenizer _tokenizer;
+        private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IStringLocalizer<AdminController> _stringLocalizer;
 
         public AdminController(
             IAuthorizationService authorizationService, 
-            IStore store, 
-            ITokenizer tokenizer,
+            IStore store,
+            ILiquidTemplateManager liquidTemplateManager,
             IStringLocalizer<AdminController> stringLocalizer)
         {
             _authorizationService = authorizationService;
             _store = store;
-            _tokenizer = tokenizer;
+            _liquidTemplateManager = liquidTemplateManager;
             _stringLocalizer = stringLocalizer;
         }
 
@@ -65,7 +66,13 @@ namespace Orchard.Queries.Sql.Controllers
             var dialect = SqlDialectFactory.For(connection);
 
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
-            var tokenizedQuery = _tokenizer.Tokenize(model.DecodedQuery, parameters);
+            var templateContext = new TemplateContext();
+            foreach(var parameter in parameters)
+            {
+                templateContext.SetValue(parameter.Key, parameter.Value);
+            }
+
+            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, templateContext);
 
             if (SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, out var rawQuery, out var rawParameters, out var messages))
             {

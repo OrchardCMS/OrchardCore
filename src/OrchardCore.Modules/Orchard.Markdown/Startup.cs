@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
@@ -12,11 +12,10 @@ using Orchard.Markdown.Handlers;
 using Orchard.Markdown.Indexing;
 using Orchard.Markdown.Model;
 using Orchard.Markdown.Settings;
-using Orchard.Tokens;
 
 namespace Orchard.Markdown
 {
-	public class Startup : StartupBase
+    public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -33,8 +32,6 @@ namespace Orchard.Markdown
             services.AddScoped<IContentFieldDisplayDriver, MarkdownFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
-
-            services.AddNullTokenizer();
         }
     }
 }

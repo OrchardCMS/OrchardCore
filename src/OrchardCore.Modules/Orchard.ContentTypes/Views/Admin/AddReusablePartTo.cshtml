@@ -35,10 +35,13 @@
                     <div class="radio">
                         <label asp-for="PartSelections[i].PartName">
                             <input asp-for="SelectedPartName" id="@Html.IdFor(m => m.PartSelections[i].PartName)" value="@Model.PartSelections[i].PartName" type="radio" />
-                            @partSelection.PartDisplayName
+                            @partSelection.PartDisplayName 
+                            @if (!String.IsNullOrEmpty(partSelection.PartDescription))
+                            {
+                                <span class="hint">@T["— {0}", partSelection.PartDescription]</span>
+                            }
                         </label>
                     </div>
-                    <span class="hint">@partSelection.PartDescription</span>
                 </li>
 
                 i++;

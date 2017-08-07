@@ -1,4 +1,4 @@
-﻿@using Orchard.ContentManagement.Metadata.Settings;
+@using Orchard.ContentManagement.Metadata.Settings;
 @inject Orchard.ContentManagement.MetaData.IContentDefinitionManager ContentDefinitionManager
 
 @{
@@ -27,7 +27,7 @@
                            data-contenttypes-name="@Model.ContentTypesName"
                            data-widget-type="@type.Name" 
                            data-zone="@Model.Zone"
-                           href="#">@type.DisplayName</a>
+                           href="javascript:;">@type.DisplayName</a>
                     }
                 </div>
             </div>

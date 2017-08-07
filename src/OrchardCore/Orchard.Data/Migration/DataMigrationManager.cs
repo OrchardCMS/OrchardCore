@@ -72,8 +72,10 @@ namespace Orchard.Data.Migration
             var outOfDateMigrations = _dataMigrations.Where(dataMigration =>
             {
                 Records.DataMigration record;
-                if (currentVersions.TryGetValue(dataMigration.GetType().FullName, out record))
+                if (currentVersions.TryGetValue(dataMigration.GetType().FullName, out record) && record.Version.HasValue)
+                {
                     return CreateUpgradeLookupTable(dataMigration).ContainsKey(record.Version.Value);
+                }
 
                 return (GetCreateMethod(dataMigration) != null);
             });

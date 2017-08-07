@@ -1,13 +1,16 @@
+@using Fluid;
 @model Orchard.Markdown.ViewModels.MarkdownPartViewModel
-@inject Orchard.Tokens.Services.ITokenizer Tokenizer
+@inject Orchard.Liquid.ILiquidTemplateManager TemplateManager
 
 @{
     string markdown = Model.Markdown;
+    var html = Markdig.Markdown.ToHtml(markdown ?? "");
 
-    if (Model.TypePartSettings.RenderTokens)
-    {
-        markdown = Tokenizer.Tokenize(markdown, new Dictionary<string, object> { ["Content"] = Model.MarkdownPart.ContentItem });
-    }
+    var templateContext = new TemplateContext();
+    templateContext.SetValue("ContentItem", Model.MarkdownPart.ContentItem);
+
+    var rendered = await TemplateManager.RenderAsync(html, templateContext);
 }
 
-@markdown.Substring(0, Math.Min(markdown.Length, 200))
+
+@markdown.Substring(0, Math.Min(rendered.Length, 200))

@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="ImageSharp.Web" Version="1.0.0-alpha9" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="1.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="1.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.1" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.ContentManagement.Display\Orchard.ContentManagement.Display.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.ContentTypes.Abstractions\Orchard.ContentTypes.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Shell\Orchard.Environment.Shell.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Liquid.Abstractions\Orchard.Liquid.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Media.Abstractions\Orchard.Media.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Media.Services\Orchard.Media.Services.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.MetaWeblog.Abstractions\Orchard.MetaWeblog.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Security.Abstractions\Orchard.Security.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Security\Orchard.Security.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.StorageProviders.FileSystem\Orchard.StorageProviders.FileSystem.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.XmlRpc.Abstractions\Orchard.XmlRpc.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
