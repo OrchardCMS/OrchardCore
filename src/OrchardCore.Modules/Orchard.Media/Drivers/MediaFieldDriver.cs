@@ -16,10 +16,10 @@ namespace Orchard.Media.Drivers
     {
         public MediaFieldDisplayDriver(IStringLocalizer<MediaFieldDisplayDriver> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer S { get; set; }
 
         public override IDisplayResult Display(MediaField field, BuildFieldDisplayContext context)
         {
@@ -57,12 +57,12 @@ namespace Orchard.Media.Drivers
                 
                 if (settings.Required && field.Paths.Length < 1)
                 {
-                    updater.ModelState.AddModelError(Prefix, T["{0}: A media is required.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, S["{0}: A media is required.", context.PartFieldDefinition.DisplayName()]);
                 }
 
                 if (field.Paths.Length > 1 && !settings.Multiple)
                 {
-                    updater.ModelState.AddModelError(Prefix, T["{0}: Selecting multiple media is forbidden.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, S["{0}: Selecting multiple media is forbidden.", context.PartFieldDefinition.DisplayName()]);
                 }                
             }
 

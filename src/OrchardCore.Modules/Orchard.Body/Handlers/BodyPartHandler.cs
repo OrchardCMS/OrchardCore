@@ -28,8 +28,6 @@ namespace Orchard.Body.Handlers
 
                 var body = part.Body;
 
-                // TODO: Remove BodyAspect and render the content item with a custom display type
-
                 bodyAspect.Body = new HtmlString(body);
             });
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.Localization;
 using Orchard.Environment.Navigation;
 
@@ -8,10 +8,10 @@ namespace Orchard.Media
     {
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer S { get; set; }
         
         public void BuildNavigation(string name, NavigationBuilder builder)
         {
@@ -21,8 +21,8 @@ namespace Orchard.Media
             }
 
             builder
-                .Add(T["Content"], design => design
-                    .Add(T["Media"], "3", layers => layers
+                .Add(S["Content"], design => design
+                    .Add(S["Media"], "3", layers => layers
                         .Action("Index", "Admin", new { area = "Orchard.Media" })
                         .LocalNav()
                     ));

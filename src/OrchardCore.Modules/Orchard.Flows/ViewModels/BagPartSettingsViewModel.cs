@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Specialized;
 using Orchard.Flows.Models;
 
@@ -7,6 +8,6 @@ namespace Orchard.Flows.ViewModels
     {
         public BagPartSettings BagPartSettings { get; set; }
         public NameValueCollection ContentTypes { get; set; }
-        public string[] ContainedContentTypes { get; set; }
+        public string[] ContainedContentTypes { get; set; } = Array.Empty<string>();
     }
 }

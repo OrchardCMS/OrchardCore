@@ -21,10 +21,10 @@ namespace Orchard.Flows.Settings
             IStringLocalizer<BagPartSettingsDisplayDriver> localizer)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            TS = localizer;
+            S = localizer;
         }
 
-        public IStringLocalizer TS { get; set; }
+        public IStringLocalizer S { get; set; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
@@ -61,7 +61,7 @@ namespace Orchard.Flows.Settings
 
             if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
             {
-                context.Updater.ModelState.AddModelError(nameof(model.ContainedContentTypes), TS["At least one content type must be selected."]);
+                context.Updater.ModelState.AddModelError(nameof(model.ContainedContentTypes), S["At least one content type must be selected."]);
             }
             else
             {
