@@ -46,21 +46,25 @@ Convert the input url to create a dynamic image with the specified size argument
 
 #### Input
 
-`{{ 'animals/kittens.jpg' | media_url | resize_url: 100, 200 | img_tag }}`
+`{{ 'animals/kittens.jpg' | media_url | resize_url: 100, 240 | img_tag }}`
 
 #### Output
 
-`<img src="/media/animals/kittens.jpg?width=100&height=200" />`
+`<img src="/media/animals/kittens.jpg?width=100&height=240" />`
 
 #### Arguments
 
+The `width` and `height` arguments are limited to a specific list of values to prevent 
+malicious clients from creating too many variations of the same image. The values can be
+`16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
+
 #### width (or first argument)
 
-The width of the new image.
+The width of the new image. One of the allowed values.
 
 #### height (or second argument)
 
-The height of the new image.
+The height of the new image. One of the allowed values.
 
 #### mode (or third argument)
 
