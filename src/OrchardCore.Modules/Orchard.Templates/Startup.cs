@@ -1,13 +1,14 @@
-using System;
 using Fluid;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.ContentTypes.Editors;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.DisplayManagement.Zones;
 using Orchard.Environment.Navigation;
 using Orchard.Security.Permissions;
 using Orchard.Templates.Services;
+using Orchard.Templates.Settings;
 
 namespace Orchard.Templates
 {
@@ -57,6 +58,10 @@ namespace Orchard.Templates
             services.AddScoped<TemplatesManager>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+
+            // Template shortcuts in settings
+            services.AddScoped<IContentPartDefinitionDisplayDriver, TemplateContentPartSettingsDriver>();
+            services.AddScoped<IContentTypeDefinitionDisplayDriver, TemplateContentTypeSettingsDriver>();
         }
     }
 }
