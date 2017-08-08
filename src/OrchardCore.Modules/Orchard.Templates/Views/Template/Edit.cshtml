@@ -10,10 +10,6 @@
 <script asp-src="/Orchard.Liquid/codemirror/liquid.js" at="Foot"></script>
 <script asp-src="/Orchard.Templates/templatepreview.edit.js" at="Foot"></script>
 
-@{
-    var previewId = Guid.NewGuid();
-}
-
 <h1>@RenderTitleSegments(T["Edit Template"])</h1>
 
 <div asp-validation-summary="ModelOnly"></div>
@@ -44,13 +40,15 @@
         <div class="form-group">
             <button class="btn btn-primary" type="submit">@T["Save"]</button>
             <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
-            <a class="btn btn-secondary" href="@Url.Action("Index", "Preview", new { id = previewId, area = "Orchard.Templates" })" target="_blank">@T["Preview"]</a>
+            <a class="btn btn-secondary" href="@Url.Action("Index", "Preview", new { area = "Orchard.Templates" })" target="_blank">@T["Preview"]</a>
         </div>
     </fieldset>
 </form>
 
 <script at="Foot">
     $(function () {
-        initializeTemplatePreview('@previewId', document.getElementById('@Html.IdFor(x => x.Content)'));
+        initializeTemplatePreview(
+            document.getElementById('@Html.IdFor(x => x.Name)'),
+            document.getElementById('@Html.IdFor(x => x.Content)'));
     });
 </script>

@@ -9,28 +9,25 @@ namespace Orchard.Templates.Services
     /// </summary>
     public class PreviewTemplatesProvider
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly TemplatesDocument _templatesDocument;
 
-        public PreviewTemplatesProvider(
-            IHttpContextAccessor httpContextAccessor)
+        public PreviewTemplatesProvider(IHttpContextAccessor httpContextAccessor)
         {
-            _httpContextAccessor = httpContextAccessor;
+            var httpContext = httpContextAccessor.HttpContext;
+
+            if (!httpContext.Request.Cookies.ContainsKey("orchard:templates"))
+            {
+                return;
+            }
+
+            var template = JsonConvert.DeserializeObject<Template>(httpContext.Request.Cookies["orchard:templates"]);
+            _templatesDocument = new TemplatesDocument();
+            _templatesDocument.Templates.Add(template.Description, template);
         }
 
         public TemplatesDocument GetTemplates()
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-
-            if (!httpContext.Request.Cookies.ContainsKey("orchard:templates"))
-            {
-                return null;
-            }
-
-            var template = JsonConvert.DeserializeObject<Template>(httpContext.Request.Cookies["orchard:templates"]);
-            var templatesDocument = new TemplatesDocument();
-            templatesDocument.Templates.Add(template.Description, template);
-
-            return templatesDocument;
+            return _templatesDocument;
         }
     }
 }

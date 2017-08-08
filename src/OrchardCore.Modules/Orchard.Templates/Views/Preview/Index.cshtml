@@ -1,6 +1,6 @@
 @{
     Layout = null;
-    var previewId = ViewContext.RouteData.Values["id"];
+    Title.AddSegment(T["Template Preview"]);
 }
 
 <script asp-name="jquery" at="Foot"></script>
@@ -17,11 +17,16 @@
     var renderPreviewUrl = $(document.getElementById('renderPreviewUrl')).data('value');
 
     $(function() {
-        $(window).on('storage', renderPreview);
+        $(window).on('storage', function (ev) {
+            if (ev.key != "orchard.templates") return;
+
+            renderPreview(ev.originalEvent.newValue)
+        });
         
         // notify the editor to render the preview
-        localStorage.setItem('templates:ready:@previewId', '');
-        localStorage.removeItem('templates:ready:@previewId');
+        localStorage.setItem('orchard.templates:ready', '');
+        localStorage.removeItem('orchard.templates:ready');
+        renderPreview(localStorage.getItem('orchard.templates'));
     });
 
     var iframe = document.getElementById('iframe');
@@ -37,7 +42,7 @@
     var scrollTop;
     var rendering;
 
-    function renderPreview(ev) {
+    function renderPreview(value) {
 
         renderRequested = true;
 
@@ -51,9 +56,7 @@
             renderRequested = false;
             rendering = true;
             try {
-                if (ev.originalEvent.key != 'templates:@previewId') return; // ignore other keys
-
-                var formData = ev.originalEvent.newValue;
+                var formData = value;
                 if (!formData) return;
 
                 iframe.contentWindow.document.cookie = encodeURIComponent("orchard:templates") + "=" + encodeURIComponent(formData);
@@ -62,7 +65,7 @@
                 iframe.contentWindow.location = renderPreviewUrl;
             }
             catch (e) {
-                console.log('Error while previewing: ' + e);
+                console.error('Error while previewing: ' + e);
             }
             finally {
                 rendering = false;
