@@ -53,6 +53,7 @@ namespace Orchard.Templates
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IShapeBindingResolver, TemplatesShapeBindingResolver>();
+            services.AddScoped<PreviewTemplatesProvider>();
             services.AddScoped<TemplatesManager>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();

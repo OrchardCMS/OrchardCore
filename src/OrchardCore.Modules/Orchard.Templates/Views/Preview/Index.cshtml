@@ -1,0 +1,73 @@
+@{
+    Layout = null;
+    var previewId = ViewContext.RouteData.Values["id"];
+}
+
+<script asp-name="jquery" at="Foot"></script>
+
+<iframe id="iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;">
+    Your browser doesn't support iframes
+</iframe>
+
+<resources type="Footer" />
+
+<div id="renderPreviewUrl" style="display:none" data-value="@Url.Content("~/")"></div>
+
+<script type="text/javascript">
+    var renderPreviewUrl = $(document.getElementById('renderPreviewUrl')).data('value');
+
+    $(function() {
+        $(window).on('storage', renderPreview);
+        
+        // notify the editor to render the preview
+        localStorage.setItem('templates:ready:@previewId', '');
+        localStorage.removeItem('templates:ready:@previewId');
+    });
+
+    var iframe = document.getElementById('iframe');
+
+    iframe.onload = function () {
+        renderPreviewUrl = this.contentWindow.location;
+        $(iframe.contentWindow).scrollTop(scrollTop);
+
+        // delete the cookie once the template has been rendered
+        iframe.contentWindow.document.cookie = encodeURIComponent("orchard:templates") + "=;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+    }
+
+    var scrollTop;
+    var rendering;
+
+    function renderPreview(ev) {
+
+        renderRequested = true;
+
+        // Squashes all event calls into one
+        if (rendering) {
+            return;
+        }
+
+        // Pump renderPreview calls
+        while (renderRequested) {
+            renderRequested = false;
+            rendering = true;
+            try {
+                if (ev.originalEvent.key != 'templates:@previewId') return; // ignore other keys
+
+                var formData = ev.originalEvent.newValue;
+                if (!formData) return;
+
+                iframe.contentWindow.document.cookie = encodeURIComponent("orchard:templates") + "=" + encodeURIComponent(formData);
+
+                scrollTop = $(iframe.contentWindow).scrollTop();
+                iframe.contentWindow.location = renderPreviewUrl;
+            }
+            catch (e) {
+                console.log('Error while previewing: ' + e);
+            }
+            finally {
+                rendering = false;
+            }
+        }
+    }
+
+</script>
