@@ -22,7 +22,6 @@
   -->
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Templates\Orchard.Templates.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Queries\Orchard.Queries.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\OrchardCore.AsBundle\OrchardCore.AsBundle.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Admin\Orchard.Admin.csproj" PrivateAssets="none" />
