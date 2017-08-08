@@ -1,9 +1,11 @@
+using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 
 namespace Orchard.Liquid
 {
-    public interface ITemplateContextHandler
+    public interface ILiquidFilter
     {
-        void OnTemplateProcessing(TemplateContext context);
+        Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx);
     }
 }

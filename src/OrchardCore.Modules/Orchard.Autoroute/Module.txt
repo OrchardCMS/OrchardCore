@@ -1,8 +1,8 @@
-﻿Name: Autoroute
+Name: Autoroute
 AntiForgery: enabled
 Author: The Orchard Team
 Website: http://orchardproject.net
 Version: 2.0.x
 OrchardVersion: 2.0.x
 Category: Navigation
-Dependencies: Orchard.Contents
+Dependencies: Orchard.Contents, Orchard.Liquid

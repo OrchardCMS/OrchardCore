@@ -1,7 +1,7 @@
 @using Orchard.Liquid;
 @using Fluid;
 @model Orchard.Liquid.ViewModels.LiquidPartViewModel
-@inject IEnumerable<ITemplateContextHandler> TemplateContextHandlers;
+@inject ILiquidTemplateManager TemplateManager;
 @{
     string liquid = Model.Liquid;
 
@@ -11,23 +11,12 @@
         Context = Context
     };
 
-    FluidTemplate template;
-    IEnumerable<string> errors;
+    var context = new TemplateContext();
+    context.AmbientValues.Add("UrlHelper", Url);
+    context.LocalScope.SetValue("ContentItem", Model.LiquidPart.ContentItem);
+    context.LocalScope.SetValue("Context", Context);
 
-    if (FluidTemplate.TryParse(liquid, out template, out errors))
-    {
-        var context = new TemplateContext();
-        context.AmbientValues.Add("UrlHelper", Url);
-        context.LocalScope.SetValue("ContentItem", Model.LiquidPart.ContentItem);
-        context.LocalScope.SetValue("Context", Context);
+    context.MemberAccessStrategy.Register(model.GetType());
 
-        foreach (var handler in TemplateContextHandlers)
-        {
-            handler.OnTemplateProcessing(context);
-        }
-
-        context.MemberAccessStrategy.Register(model.GetType());
-
-        @Html.Raw(await template.RenderAsync(context));
-    }
+    await TemplateManager.RenderAsync(liquid, Output, HtmlEncoder, context);
 }

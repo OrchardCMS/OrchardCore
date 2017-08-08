@@ -1,4 +1,4 @@
-﻿@using Orchard.Body.ViewModels;
+@using Orchard.Body.ViewModels;
 @model BodyPartViewModel
 
 <script asp-name="trumbowyg" depends-on="admin" asp-src="/Orchard.Resources/Scripts/trumbowyg.min.js" debug-src="/Orchard.Resources/Scripts/trumbowyg.js" at="Foot"></script>
@@ -12,6 +12,7 @@
 
 <script at="Foot">
     $(function () {
+
         $('#@Html.IdFor(m => m.Body)').trumbowyg();
     });
 </script>

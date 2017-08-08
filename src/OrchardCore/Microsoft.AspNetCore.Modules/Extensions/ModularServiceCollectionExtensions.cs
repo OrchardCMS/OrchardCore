@@ -82,6 +82,8 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.AddScoped<IShellSettingsConfigurationProvider, FileShellSettingsConfigurationProvider>();
                 services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
+                services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
+                services.AddScoped<ShellSettingsWithTenants>();
             });
 
             return modules;

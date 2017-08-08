@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
@@ -22,6 +22,8 @@
   -->
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Liquid\Orchard.Liquid.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Media\Orchard.Media.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Queries\Orchard.Queries.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\OrchardCore.AsBundle\OrchardCore.AsBundle.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Admin\Orchard.Admin.csproj" PrivateAssets="none" />
@@ -58,11 +60,10 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Scripting\Orchard.Scripting.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Settings\Orchard.Settings.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Setup\Orchard.Setup.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Templates\Orchard.Templates.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Tenants\Orchard.Tenants.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Themes\Orchard.Themes.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Title\Orchard.Title.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Tokens\Orchard.Tokens.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Tokens.Content\Orchard.Tokens.Content.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Users\Orchard.Users.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Widgets\Orchard.Widgets.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.XmlRpc\Orchard.XmlRpc.csproj" PrivateAssets="none" />

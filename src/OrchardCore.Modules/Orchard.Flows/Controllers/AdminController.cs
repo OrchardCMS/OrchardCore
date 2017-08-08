@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -34,7 +34,7 @@ namespace Orchard.Flows.Controllers
 
         public ILogger Logger { get; set; }
         
-        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string targetId)
+        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string targetId, bool flowmetadata)
         {
             if (String.IsNullOrWhiteSpace(id))
             {
@@ -43,7 +43,11 @@ namespace Orchard.Flows.Controllers
 
             var contentItem = _contentManager.New(id);
 
-            contentItem.Weld(new FlowMetadata());
+            // Does this editor need the flow metadata editor?
+            if (flowmetadata)
+            {
+                contentItem.Weld(new FlowMetadata());
+            }
 
             var editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, htmlFieldPrefix: prefix);
 
@@ -56,6 +60,15 @@ namespace Orchard.Flows.Controllers
             {
                 EditorShape = editor
             };
+
+            if (flowmetadata)
+            {
+                model.EditorShape.Metadata.Alternates.Add("Widget_Edit__Flow");
+            }
+            else
+            {
+                model.EditorShape.Metadata.Alternates.Add("Widget_Edit__Bag");
+            }
 
             return View("Display", model);
         }
