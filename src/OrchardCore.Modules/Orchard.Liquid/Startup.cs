@@ -1,4 +1,4 @@
-using Fluid;
+﻿using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,10 +27,13 @@ namespace Orchard.Liquid
 
             // When accessing a property of a JObject instance
             TemplateContext.GlobalMemberAccessStrategy.Register<JObject>((obj, name) => obj[name]);
-            
+
             // Prevent JTokens from being converted to an ArrayValue as they implement IEnumerable
-            FluidValue.TypeMappings.Add(typeof(JObject), o => new ObjectValue(o));
-            FluidValue.TypeMappings.Add(typeof(JValue), o => FluidValue.Create(((JValue)o).Value));
+            if (!FluidValue.TypeMappings.TryGetValue(typeof(JObject), out var value))
+            {
+                FluidValue.TypeMappings.Add(typeof(JObject), o => new ObjectValue(o));
+                FluidValue.TypeMappings.Add(typeof(JValue), o => FluidValue.Create(((JValue)o).Value));
+            }
 
             FluidValue.TypeMappings.Add(typeof(ZoneHolding), o => new ObjectValue(o));
             FluidValue.TypeMappings.Add(typeof(Shape), o => new ObjectValue(o));
