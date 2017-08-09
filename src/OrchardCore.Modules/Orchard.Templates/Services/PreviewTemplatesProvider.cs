@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Orchard.Templates.Models;
@@ -9,25 +10,32 @@ namespace Orchard.Templates.Services
     /// </summary>
     public class PreviewTemplatesProvider
     {
-        private readonly TemplatesDocument _templatesDocument;
+        private readonly Lazy<TemplatesDocument> _templatesDocument;
 
         public PreviewTemplatesProvider(IHttpContextAccessor httpContextAccessor)
         {
-            var httpContext = httpContextAccessor.HttpContext;
-
-            if (!httpContext.Request.Cookies.ContainsKey("orchard:templates"))
+            _templatesDocument = new Lazy<TemplatesDocument>(() =>
             {
-                return;
-            }
 
-            var template = JsonConvert.DeserializeObject<Template>(httpContext.Request.Cookies["orchard:templates"]);
-            _templatesDocument = new TemplatesDocument();
-            _templatesDocument.Templates.Add(template.Description, template);
+                var httpContext = httpContextAccessor.HttpContext;
+
+                if (!httpContext.Request.Cookies.ContainsKey("orchard:templates"))
+                {
+                    return null;
+                }
+
+                var template = JsonConvert.DeserializeObject<Template>(httpContext.Request.Cookies["orchard:templates"]);
+                var templatesDocument = new TemplatesDocument();
+                templatesDocument.Templates.Add(template.Description, template);
+
+                return templatesDocument;
+            });
+
         }
 
         public TemplatesDocument GetTemplates()
         {
-            return _templatesDocument;
+            return _templatesDocument.Value;
         }
     }
 }

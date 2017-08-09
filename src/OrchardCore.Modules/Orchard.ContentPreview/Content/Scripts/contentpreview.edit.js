@@ -54,14 +54,12 @@ $(function () {
 
         // store the form data to pass it in the event handler
         localStorage.setItem('contentpreview:' + previewId, JSON.stringify($.param(formData)));
-
-        // the stored content can be removed as it will be part of the event
-        localStorage.removeItem('contentpreview' + previewId);
     }
 
     $(document).on('contentpreview:render', function () {        
         sendFormData();
     });
+
 
     $(window).on('storage', function (ev) {
         if (ev.originalEvent.key != 'contentpreview:ready:' + previewId) return; // ignore other keys
