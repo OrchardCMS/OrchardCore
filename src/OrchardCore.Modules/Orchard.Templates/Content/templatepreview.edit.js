@@ -26,9 +26,9 @@ function initializeTemplatePreview(nameElement, editorElement) {
     }, false);
 
     $(nameElement)
-        .on('input', storeTemplate(nameElement))
-        .on('propertychange', storeTemplate(nameElement))
-        .on('change', storeTemplate(nameElement))
+        .on('input', function () { storeTemplate(nameElement); })
+        .on('propertychange', function () { storeTemplate(nameElement); })
+        .on('change', function () { storeTemplate(nameElement); })
         .on('keyup', function (event) {
             // handle backspace
             if (event.keyCode == 46 || event.ctrlKey) {
