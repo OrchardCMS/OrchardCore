@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Fluid;
 using Fluid.Values;
@@ -12,22 +13,21 @@ namespace Orchard.DisplayManagement.Fluid.Filters
     {
         public static FilterCollection WithFluidViewFilters(this FilterCollection filters)
         {
-            filters.AddFilter("t", Localize);
-            filters.AddFilter("href", Href);
-            filters.AddFilter("is_nil", IsNil);
-            filters.AddFilter("or_default", OrDefault);
-            filters.AddFilter("body_aspect", BodyAspect);
-            filters.AddFilter("i", ItemNamed);
-            filters.AddFilter("item_prefixed", ItemPrefixed);
-            filters.AddFilter("shape_string", ShapeString);
-            filters.AddFilter("remove_tags", RemoveTags);
-            filters.AddFilter("date_time", DateTime);
-            filters.AddFilter("p", PropNamed);
+            filters.AddAsyncFilter("t", Localize);
+            filters.AddAsyncFilter("href", Href);
+            filters.AddAsyncFilter("is_nil", IsNil);
+            filters.AddAsyncFilter("or_default", OrDefault);
+            filters.AddAsyncFilter("i", ItemNamed);
+            filters.AddAsyncFilter("item_prefixed", ItemPrefixed);
+            filters.AddAsyncFilter("shape_string", ShapeString);
+            filters.AddAsyncFilter("remove_tags", RemoveTags);
+            filters.AddAsyncFilter("date_time", DateTime);
+            filters.AddAsyncFilter("p", PropNamed);
 
             return filters;
         }
 
-        public static FluidValue Localize(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static Task<FluidValue> Localize(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var page = FluidViewTemplate.EnsureFluidPage(context, "t");
             var localizer = page.GetService<IStringLocalizer<FluidPage>>();
@@ -38,40 +38,34 @@ namespace Orchard.DisplayManagement.Fluid.Filters
                 parameters.Add(arguments.At(i).ToStringValue());
             }
 
-            return new StringValue(localizer[input.ToStringValue(), parameters.ToArray()].Value);
+            return Task.FromResult<FluidValue>(new StringValue(localizer[input.ToStringValue(), parameters.ToArray()].Value));
         }
 
-        public static FluidValue Href(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static Task<FluidValue> Href(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var page = FluidViewTemplate.EnsureFluidPage(context, "href");
-            return new StringValue(page.Href(input.ToStringValue()));
+            return Task.FromResult<FluidValue>(new StringValue(page.Href(input.ToStringValue())));
         }
 
-        public static FluidValue IsNil(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static Task<FluidValue> IsNil(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            return new BooleanValue(input is NilValue);
+            return Task.FromResult<FluidValue>(new BooleanValue(input is NilValue));
         }
 
-        public static FluidValue OrDefault(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static Task<FluidValue> OrDefault(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var page = FluidViewTemplate.EnsureFluidPage(context, "or_default");
             var output = page.OrDefault(input.ToObjectValue(), arguments.At(0).ToObjectValue()).ToString();
-            return new StringValue(output);
+            return Task.FromResult<FluidValue>(new StringValue(output));
         }
 
-        public static FluidValue BodyAspect(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            var page = FluidViewTemplate.EnsureFluidPage(context, "body_aspect");
-            return new ObjectValue(page.New.BodyAspect(input.ToObjectValue()));
-        }
-
-        public static FluidValue ItemNamed(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static Task<FluidValue> ItemNamed(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var shape = input.ToObjectValue() as Shape;
-            return new ObjectValue(shape?.Named(arguments.At(0).ToStringValue()));
+            return Task.FromResult<FluidValue>(new ObjectValue(shape?.Named(arguments.At(0).ToStringValue())));
         }
 
-        public static FluidValue ItemPrefixed(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static Task<FluidValue> ItemPrefixed(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var shape = input.ToObjectValue() as Shape;
 
@@ -83,27 +77,27 @@ namespace Orchard.DisplayManagement.Fluid.Filters
 
                     if (prefixed != null && prefixed.Metadata.Prefix == arguments.At(0).ToStringValue())
                     {
-                        return new ObjectValue(prefixed);
+                        return Task.FromResult<FluidValue>(new ObjectValue(prefixed));
                     }
                 }
             }
 
-            return NilValue.Instance;
+            return Task.FromResult<FluidValue>(NilValue.Instance);
         }
 
-        public static FluidValue ShapeString(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static async Task<FluidValue> ShapeString(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var page = FluidViewTemplate.EnsureFluidPage(context, "shape_string");
-            return new StringValue(page.DisplayAsync(input.ToObjectValue()).GetAwaiter().GetResult().ToString());
+            return new StringValue((await page.DisplayAsync(input.ToObjectValue())).ToString());
         }
 
-        public static FluidValue RemoveTags(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static Task<FluidValue> RemoveTags(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var htmlDecode = arguments.HasNamed("html_decode") ? arguments["html_decode"].ToBooleanValue() : false;
-            return new StringValue(input.ToStringValue().RemoveTags(htmlDecode));
+            return Task.FromResult<FluidValue>(new StringValue(input.ToStringValue().RemoveTags(htmlDecode)));
         }
 
-        public static FluidValue DateTime(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static async Task<FluidValue> DateTime(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var dateTime = input.ToObjectValue() as DateTime?;
 
@@ -115,15 +109,15 @@ namespace Orchard.DisplayManagement.Fluid.Filters
                     ? page.New.DateTime(Utc: dateTime, Format: arguments["format"].ToStringValue())
                     : page.New.DateTime(Utc: dateTime);
 
-                return new StringValue(page.DisplayAsync(shape).GetAwaiter().GetResult().ToString());
+                return new StringValue((await page.DisplayAsync(shape)).ToString());
             }
 
             return input;
         }
 
-        public static FluidValue PropNamed(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static Task<FluidValue> PropNamed(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            return new ObjectValue(((dynamic)input.ToObjectValue())[arguments.At(0).ToStringValue()]);
+            return Task.FromResult<FluidValue>(new ObjectValue(((dynamic)input.ToObjectValue())[arguments.At(0).ToStringValue()]));
         }
     }
 }
