@@ -29,11 +29,8 @@ namespace Orchard.Liquid
             TemplateContext.GlobalMemberAccessStrategy.Register<JObject>((obj, name) => obj[name]);
 
             // Prevent JTokens from being converted to an ArrayValue as they implement IEnumerable
-            if (!FluidValue.TypeMappings.TryGetValue(typeof(JObject), out var value))
-            {
-                FluidValue.TypeMappings.Add(typeof(JObject), o => new ObjectValue(o));
-                FluidValue.TypeMappings.Add(typeof(JValue), o => FluidValue.Create(((JValue)o).Value));
-            }
+            FluidValue.TypeMappings.Add(typeof(JObject), o => new ObjectValue(o));
+            FluidValue.TypeMappings.Add(typeof(JValue), o => FluidValue.Create(((JValue)o).Value));
 
             FluidValue.TypeMappings.Add(typeof(ZoneHolding), o => new ObjectValue(o));
             FluidValue.TypeMappings.Add(typeof(Shape), o => new ObjectValue(o));

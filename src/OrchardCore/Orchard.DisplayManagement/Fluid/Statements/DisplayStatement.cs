@@ -20,7 +20,8 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var page = FluidViewTemplate.EnsureFluidPage(context, "Display");
             var shape = (await Shape.EvaluateAsync(context)).ToObjectValue();
 
-            await writer.WriteAsync((await page.DisplayAsync(shape)).ToString());
+            var htmlContent = await page.DisplayAsync(shape);
+            htmlContent.WriteTo(writer, page.HtmlEncoder);
             return Completion.Normal;
         }
     }

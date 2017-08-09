@@ -37,7 +37,7 @@ namespace Orchard.DisplayManagement.Fluid
                             option.SearchPath, new[] { FluidViewTemplate.ViewExtension },
                             FluidViewTemplate.ViewsFolder);
 
-                        _sharedPaths.AddRange(filePaths.Select(p => string.Format("/{0}", p)));
+                        _sharedPaths.AddRange(filePaths.Select(p => string.Concat('/', p)));
                     }
                 }
             }

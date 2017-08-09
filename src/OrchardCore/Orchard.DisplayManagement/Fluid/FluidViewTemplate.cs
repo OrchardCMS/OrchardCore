@@ -21,26 +21,12 @@ namespace Orchard.DisplayManagement.Fluid
     {
         public static readonly string ViewsFolder = "Views";
         public static readonly string ViewExtension = ".liquid";
-        private static readonly MemoryCache Cache = new MemoryCache(new MemoryCacheOptions());
+        public static readonly MemoryCache Cache = new MemoryCache(new MemoryCacheOptions());
 
         static FluidViewTemplate()
         {
-            TemplateContext.GlobalMemberAccessStrategy.Register<JObject>((obj, name) => obj[name]);
-
-            if (!FluidValue.TypeMappings.TryGetValue(typeof(JObject), out var value))
-            {
-                FluidValue.TypeMappings.Add(typeof(JObject), o => new ObjectValue(o));
-                FluidValue.TypeMappings.Add(typeof(JValue), o => FluidValue.Create(((JValue)o).Value));
-            }
-
-            if (!FluidValue.TypeMappings.TryGetValue(typeof(DateTime?), out value))
-            {
-                FluidValue.TypeMappings.Add(typeof(DateTime?), o => new ObjectValue(o));
-            }
-
             TemplateContext.GlobalMemberAccessStrategy.Register(typeof(ViewContext));
             TemplateContext.GlobalMemberAccessStrategy.Register<ModelStateNode>();
-
             TemplateContext.GlobalFilters.WithFluidViewFilters();
         }
 
@@ -158,12 +144,11 @@ namespace Orchard.DisplayManagement.Fluid
             page.WriteLiteral(await template.RenderAsync(context));
         }
 
-        internal static IFluidTemplate Parse(string path, IFileProvider fileProvider, IMemoryCache cache)
+        public static IFluidTemplate Parse(string path, IFileProvider fileProvider, IMemoryCache cache)
         {
             return cache.GetOrCreate(path, entry =>
             {
-                entry.SlidingExpiration = TimeSpan.FromHours(1);
-
+                entry.Priority = CacheItemPriority.NeverRemove;
                 var fileInfo = fileProvider.GetFileInfo(path);
                 entry.ExpirationTokens.Add(fileProvider.Watch(path));
 

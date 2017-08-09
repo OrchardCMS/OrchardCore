@@ -27,7 +27,8 @@ namespace Orchard.DisplayManagement.Fluid.Statements
                 : (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
             var required = arguments.HasNamed("required") ? Convert.ToBoolean(arguments["required"].ToStringValue()) : false;
-            await writer.WriteAsync((await page.RenderSectionAsync(Name, required)).ToString());
+            var htmlContent = await page.RenderSectionAsync(Name, required);
+            htmlContent.WriteTo(writer, page.HtmlEncoder);
             return Completion.Normal;
         }
     }
