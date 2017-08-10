@@ -1,9 +1,9 @@
-﻿{% assign typePart = ContentItem.Content | p: ContentItem.ContentType %}
+﻿{% assign typePart = ContentItem.Content[ContentItem.ContentType] %}
 
 {% zone name: "Header" %}
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
-    <header class="intro-header" style="background-image: url('{{ typePart.HeaderImageUrl.Text | or_default: "https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/post-bg.jpg" }}')">
+    <header class="intro-header" style="background-image: url('{{ typePart.HeaderImageUrl.Text | default: "https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/post-bg.jpg" }}')">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -18,5 +18,5 @@
     </header>
 {% endzone %}
 
-{% Display Content | i: "Contents_Metadata" %}
-{% Display Content | i: "BodyPart" %}
+{% display Content | named: "Contents_Metadata" %}
+{% display Content | named: "BodyPart" %}

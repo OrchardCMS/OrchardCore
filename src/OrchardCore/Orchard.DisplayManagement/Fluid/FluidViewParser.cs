@@ -15,29 +15,17 @@ namespace Orchard.DisplayManagement.Fluid
 
             switch (tag.Term.Name)
             {
-                case "RenderBody":
+                case "render_body":
                     return BuildRenderBodyStatement(tag);
 
-                case "RenderSection":
+                case "render_section":
                     return BuildRenderSectionStatement(tag);
 
-                case "RenderTitleSegments":
+                case "page_title":
                     return BuildRenderTitleSegmentsStatement(tag);
 
-                case "Display":
+                case "display":
                     return BuildDisplayStatement(tag);
-
-                case "ClearAlternates":
-                    return BuildClearAlternatesStatement(tag);
-
-                case "SetMetadata":
-                    return BuildSetMetadataStatement(tag);
-
-                case "RemoveItem":
-                    return BuildRemoveItemStatement(tag);
-
-                case "SetProperty":
-                    return BuildSetPropertyStatement(tag);
 
                 case "zone":
                     EnterBlock(tag);
@@ -100,34 +88,6 @@ namespace Orchard.DisplayManagement.Fluid
         {
             var shape = BuildExpression(tag.ChildNodes[0]);
             return new DisplayStatement(shape);
-        }
-
-        private ClearAlternates BuildClearAlternatesStatement(ParseTreeNode tag)
-        {
-            var shape = BuildExpression(tag.ChildNodes[0]);
-            return new ClearAlternates(shape);
-        }
-
-        private SetMetadataStatement BuildSetMetadataStatement(ParseTreeNode tag)
-        {
-            var shape = BuildExpression(tag.ChildNodes[0]);
-            return new SetMetadataStatement(shape, BuildArgumentsExpression(tag.ChildNodes[1]));
-        }
-
-        private RemoveItemStatement BuildRemoveItemStatement(ParseTreeNode tag)
-        {
-            var shape = BuildExpression(tag.ChildNodes[0]);
-            var name = BuildExpression(tag.ChildNodes[1]);
-            return new RemoveItemStatement(shape, name);
-        }
-
-        private SetPropertyStatement BuildSetPropertyStatement(ParseTreeNode tag)
-        {
-            var obj = BuildExpression(tag.ChildNodes[0]);
-            var name = BuildExpression(tag.ChildNodes[1]);
-            var value = BuildExpression(tag.ChildNodes[2]);
-
-            return new SetPropertyStatement(obj, name, value);
         }
 
         private ZoneStatement BuildZoneStatement()

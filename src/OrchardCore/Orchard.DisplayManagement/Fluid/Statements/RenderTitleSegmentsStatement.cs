@@ -22,7 +22,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var page = FluidViewTemplate.EnsureFluidPage(context, "RenderTitleSegments");
+            var page = FluidViewTemplate.EnsureFluidPage(context, "page_title");
 
             var segment = new HtmlString((await Segment.EvaluateAsync(context)).ToStringValue());
 

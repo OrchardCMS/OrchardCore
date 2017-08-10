@@ -17,7 +17,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var page = FluidViewTemplate.EnsureFluidPage(context, "Display");
+            var page = FluidViewTemplate.EnsureFluidPage(context, "display");
             var shape = (await Shape.EvaluateAsync(context)).ToObjectValue();
 
             var htmlContent = await page.DisplayAsync(shape);

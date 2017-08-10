@@ -3,7 +3,7 @@
         <h2 class="post-title">
             {{ ContentItem.Content.TitlePart.Title }}
         </h2>
-        {% if ContentItem.Content.BlogPost.Subtitle | is_nil != true %}
+        {% if ContentItem.Content.BlogPost.Subtitle.Text %}
         <h3 class="post-subtitle">
             {{ ContentItem.Content.BlogPost.Subtitle.Text }}
         </h3>

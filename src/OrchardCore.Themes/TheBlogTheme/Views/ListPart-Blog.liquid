@@ -1,10 +1,11 @@
 ﻿{% for item in ContentItems %}
-    {% Display item %}
+    {% display item %}
 {% endfor %}
 
-{% SetProperty Pager:"PreviousText" = "← Newer Posts" | t %}
-{% SetProperty Pager:"NextText" = "Older Posts →" | t %}
-{% SetProperty Pager:"PreviousClass" = "previous" | t %}
-{% SetProperty Pager:"NextClass" = "next" | t %}
+{% assign previousText = "← Newer Posts" | t %}
+{% assign nextText = "Older Posts →" | t %}
+{% assign previousClass = "previous" | t %}
+{% assign nextClass = "next" | t %}
 
-{% Display Pager %}
+{% display Pager | set_property: "PreviousText", previousText | set_property: "NextText", nextText
+    | set_property: "PreviousClass", previousClass | set_property: "NextClass", nextClass %}

@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement.Shapes;
-using Orchard.Mvc.Utilities;
 
 namespace Orchard.DisplayManagement.Fluid.Filters
 {
@@ -15,14 +14,16 @@ namespace Orchard.DisplayManagement.Fluid.Filters
         {
             filters.AddAsyncFilter("t", Localize);
             filters.AddAsyncFilter("href", Href);
-            filters.AddAsyncFilter("is_nil", IsNil);
-            filters.AddAsyncFilter("or_default", OrDefault);
-            filters.AddAsyncFilter("i", ItemNamed);
-            filters.AddAsyncFilter("item_prefixed", ItemPrefixed);
+            filters.AddAsyncFilter("named", ItemNamed);
             filters.AddAsyncFilter("shape_string", ShapeString);
-            filters.AddAsyncFilter("remove_tags", RemoveTags);
             filters.AddAsyncFilter("date_time", DateTime);
-            filters.AddAsyncFilter("p", PropNamed);
+            filters.AddAsyncFilter("clear_alternates", ClearAlternates);
+            filters.AddAsyncFilter("shape_type", ShapeType);
+            filters.AddAsyncFilter("display_type", DisplayType);
+            filters.AddAsyncFilter("shape_position", ShapePosition);
+            filters.AddAsyncFilter("shape_tab", ShapeTab);
+            filters.AddAsyncFilter("remove_item", RemoveItem);
+            filters.AddAsyncFilter("set_property", SetProperty);
 
             return filters;
         }
@@ -47,54 +48,16 @@ namespace Orchard.DisplayManagement.Fluid.Filters
             return Task.FromResult<FluidValue>(new StringValue(page.Href(input.ToStringValue())));
         }
 
-        public static Task<FluidValue> IsNil(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            return Task.FromResult<FluidValue>(new BooleanValue(input is NilValue));
-        }
-
-        public static Task<FluidValue> OrDefault(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            var page = FluidViewTemplate.EnsureFluidPage(context, "or_default");
-            var output = page.OrDefault(input.ToObjectValue(), arguments.At(0).ToObjectValue()).ToString();
-            return Task.FromResult<FluidValue>(new StringValue(output));
-        }
-
         public static Task<FluidValue> ItemNamed(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var shape = input.ToObjectValue() as Shape;
             return Task.FromResult<FluidValue>(new ObjectValue(shape?.Named(arguments.At(0).ToStringValue())));
         }
 
-        public static Task<FluidValue> ItemPrefixed(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            var shape = input.ToObjectValue() as Shape;
-
-            if (shape != null)
-            {
-                foreach (var item in shape.Items)
-                {
-                    var prefixed = item as IShape;
-
-                    if (prefixed != null && prefixed.Metadata.Prefix == arguments.At(0).ToStringValue())
-                    {
-                        return Task.FromResult<FluidValue>(new ObjectValue(prefixed));
-                    }
-                }
-            }
-
-            return Task.FromResult<FluidValue>(NilValue.Instance);
-        }
-
         public static async Task<FluidValue> ShapeString(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var page = FluidViewTemplate.EnsureFluidPage(context, "shape_string");
             return new StringValue((await page.DisplayAsync(input.ToObjectValue())).ToString());
-        }
-
-        public static Task<FluidValue> RemoveTags(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            var htmlDecode = arguments.HasNamed("html_decode") ? arguments["html_decode"].ToBooleanValue() : false;
-            return Task.FromResult<FluidValue>(new StringValue(input.ToStringValue().RemoveTags(htmlDecode)));
         }
 
         public static async Task<FluidValue> DateTime(FluidValue input, FilterArguments arguments, TemplateContext context)
@@ -115,9 +78,88 @@ namespace Orchard.DisplayManagement.Fluid.Filters
             return input;
         }
 
-        public static Task<FluidValue> PropNamed(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static Task<FluidValue> ClearAlternates(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            return Task.FromResult<FluidValue>(new ObjectValue(((dynamic)input.ToObjectValue())[arguments.At(0).ToStringValue()]));
+            var shape = input.ToObjectValue() as IShape;
+
+            if (shape?.Metadata.Alternates.Count > 0)
+            {
+                shape.Metadata.Alternates.Clear();
+            }
+
+            return Task.FromResult(input);
+        }
+
+        public static Task<FluidValue> ShapeType(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            var shape = input.ToObjectValue() as IShape;
+
+            if (shape?.Metadata != null)
+            {
+                shape.Metadata.Type = arguments.At(0).ToStringValue();
+            }
+
+            return Task.FromResult(input);
+        }
+
+        public static Task<FluidValue> DisplayType(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            var shape = input.ToObjectValue() as IShape;
+
+            if (shape?.Metadata != null)
+            {
+                shape.Metadata.DisplayType = arguments.At(0).ToStringValue();
+            }
+
+            return Task.FromResult(input);
+        }
+
+        public static Task<FluidValue> ShapePosition(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            var shape = input.ToObjectValue() as IShape;
+
+            if (shape?.Metadata != null)
+            {
+                shape.Metadata.Position = arguments.At(0).ToStringValue();
+            }
+
+            return Task.FromResult(input);
+        }
+
+        public static Task<FluidValue> ShapeTab(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            var shape = input.ToObjectValue() as IShape;
+
+            if (shape?.Metadata != null)
+            {
+                shape.Metadata.Tab = arguments.At(0).ToStringValue();
+            }
+
+            return Task.FromResult(input);
+        }
+
+        public static Task<FluidValue> RemoveItem(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            var shape = input.ToObjectValue() as Shape;
+
+            if (shape?.Items != null)
+            {
+                shape.Remove(arguments.At(0).ToStringValue());
+            }
+
+            return Task.FromResult(input);
+        }
+
+        public static Task<FluidValue> SetProperty(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            var obj = input.ToObjectValue() as dynamic;
+
+            if (obj != null)
+            {
+                obj[arguments.At(0).ToStringValue()] = arguments.At(1).ToStringValue();
+            }
+
+            return Task.FromResult(input);
         }
     }
 }

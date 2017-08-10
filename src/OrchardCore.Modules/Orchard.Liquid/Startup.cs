@@ -34,6 +34,26 @@ namespace Orchard.Liquid
 
             FluidValue.TypeMappings.Add(typeof(ZoneHolding), o => new ObjectValue(o));
             FluidValue.TypeMappings.Add(typeof(Shape), o => new ObjectValue(o));
+
+            TemplateContext.GlobalMemberAccessStrategy.Register<Shape>((o, n) =>
+            {
+                if (o.Properties.TryGetValue(n, out object result))
+                {
+                    return result;
+                }
+
+                return null;
+            });
+
+            TemplateContext.GlobalMemberAccessStrategy.Register<ZoneHolding>((o, n) =>
+            {
+                if (o.Properties.TryGetValue(n, out object result))
+                {
+                    return result;
+                }
+
+                return null;
+            });
         }
 
         public override void ConfigureServices(IServiceCollection services)

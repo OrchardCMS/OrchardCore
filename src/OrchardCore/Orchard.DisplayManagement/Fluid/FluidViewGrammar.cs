@@ -7,30 +7,18 @@ namespace Orchard.DisplayManagement.Fluid
     {
         public FluidViewGrammar() : base()
         {
-            var RenderBody = ToTerm("RenderBody");
+            var RenderBody = ToTerm("render_body");
 
-            var RenderSection = new NonTerminal("RenderSection");
-            RenderSection.Rule = "RenderSection" + Identifier + FilterArguments;
-            RenderSection.Rule |= "RenderSection" + Identifier;
+            var RenderSection = new NonTerminal("render_section");
+            RenderSection.Rule = "render_section" + Identifier + FilterArguments;
+            RenderSection.Rule |= "render_section" + Identifier;
 
-            var RenderTitleSegments = new NonTerminal("RenderTitleSegments");
-            RenderTitleSegments.Rule = "RenderTitleSegments" + Expression + FilterArguments;
-            RenderTitleSegments.Rule |= "RenderTitleSegments" + Expression;
+            var RenderTitleSegments = new NonTerminal("page_title");
+            RenderTitleSegments.Rule = "page_title" + Expression + FilterArguments;
+            RenderTitleSegments.Rule |= "page_title" + Expression;
 
-            var Display = new NonTerminal("Display");
-            Display.Rule = "Display" + Expression;
-
-            var ClearAlternates = new NonTerminal("ClearAlternates");
-            ClearAlternates.Rule = "ClearAlternates" + Expression;
-
-            var SetMetadata = new NonTerminal("SetMetadata");
-            SetMetadata.Rule = "SetMetadata" + Expression + FilterArguments;
-
-            var RemoveItem = new NonTerminal("RemoveItem");
-            RemoveItem.Rule = "RemoveItem" + Expression + Expression;
-
-            var SetProperty = new NonTerminal("SetProperty");
-            SetProperty.Rule = "SetProperty" + Expression + ToTerm(":") + Expression + "=" + Expression;
+            var Display = new NonTerminal("display");
+            Display.Rule = "display" + Expression;
 
             var Zone = new NonTerminal("zone");
             Zone.Rule = "zone" + FilterArguments;
@@ -66,19 +54,18 @@ namespace Orchard.DisplayManagement.Fluid
             Menu.Rule = "menu" + FilterArguments;
 
             KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments | Display
-                | ClearAlternates | SetMetadata | RemoveItem | SetProperty | Zone | ZoneEnd
-                | AddTagHelper | ContentLink | ContentLinkEnd | Script | ScriptEnd | Link
-                | Style | Resources | Meta | Shape | Menu;
+                | Zone | ZoneEnd | AddTagHelper | ContentLink | ContentLinkEnd
+                | Script | ScriptEnd | Link | Style | Resources | Meta
+                | Shape | Menu;
 
-            var SelfClosed = new NonTerminal("selfClosed");
+            var SelfClosed = new NonTerminal("self_closed");
             Tag.Rule |= ToTerm("{%") + KnownTags + SelfClosed + ToTerm("%}");
             SelfClosed.Rule = Empty | "/";
 
             // Prevent the text from being added in the parsed tree.
             // Only Identifier and Arguments will be in the tree.
             MarkPunctuation(",",
-                "SelfClosed", "RenderSection", "RenderTitleSegments", "Display",
-                "ClearAlternates", "SetMetadata", "RemoveItem", "SetProperty", "zone",
+                "self_closed", "render_section", "page_title", "display", "zone",
                 "AddTagHelper", "a", "script", "link", "style", "resources", "meta",
                 "shape", "menu");
         }

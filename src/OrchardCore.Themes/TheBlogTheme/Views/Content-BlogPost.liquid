@@ -1,15 +1,15 @@
-﻿{% assign fields = ContentItem.Content | p: ContentItem.ContentType %}
+﻿{% assign fields = ContentItem.Content[ContentItem.ContentType] %}
 
 {% zone name: "Header" %}
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
-    <header class="intro-header" style="background-image: url('{{ fields.HeaderImageUrl.Text | or_default: "https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/post-bg.jpg" }}')">
+    <header class="intro-header" style="background-image: url('{{ fields.HeaderImageUrl.Text | default: "https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/post-bg.jpg" }}')">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <div class="post-heading">
                         <h1>{{ ContentItem.Content.TitlePart.Title }}</h1>
-                        {% if fields.Subtitle.Text | is_nil != true %}
+                        {% if fields.Subtitle.Text %}
                         <h2 class="subheading">
                             {{ fields.Subtitle.Text }}
                         </h2>
@@ -27,5 +27,5 @@
     </header>
 {% endzone %}
 
-{% Display Content | i: "Contents_Metadata" %}
-{% Display Content | i: "MarkdownPart" %}
+{% display Content | named: "Contents_Metadata" %}
+{% display Content | named: "MarkdownPart" %}

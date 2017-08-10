@@ -8,7 +8,7 @@
                     <div class="page-heading">
                         <h1>{{ ContentItem.Content.TitlePart.Title }}</h1>
                         <hr class="small" />
-                        <span class="subheading">{% Display Content | i: "BodyPart" %}</span>
+                        <span class="subheading">{% display Content | named: "BodyPart" %}</span>
                     </div>
                 </div>
             </div>
@@ -16,6 +16,4 @@
     </header>
 {% endzone %}
 
-{% RemoveItem Content "BodyPart" %}
-
-{% Display Content %}
+{% display Content | remove_item: "BodyPart" %}

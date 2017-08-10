@@ -1,12 +1,9 @@
-﻿{% ClearAlternates Model %}
-{% SetMetadata Model type: "MenuItemLink" %}
-
-<li {% if Model.HasItems == true %}class="dropdown"{% endif %}>
-    {% Display Model %}
+﻿<li {% if Model.HasItems == true %}class="dropdown"{% endif %}>
+    {% display Model | clear_alternates | shape_type: "MenuItemLink" %}
     {% if Model.HasItems == true %}
         <ul class="dropdown-menu">
             {% for item in Model.Items %}
-                {% Display item %}
+                {% display item %}
             {% endfor %}
         </ul>
     {% endif %}

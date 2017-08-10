@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>{% RenderTitleSegments Site.SiteName | t position: "before", separator: "-" %}</title>
+    <title>{% page_title Site.SiteName position: "before", separator: "-" %}</title>
     {% meta charset:"utf-8" %}
     {% meta http_equiv:"X-UA-Compatible", content:"IE=edge" %}
     {% meta name:"viewport", content:"width=device-width, initial-scale=1.0" %}
@@ -51,12 +51,12 @@
         <!-- /.container -->
     </nav>
 
-    {% RenderSection Header required: false %}
+    {% render_section Header required: false %}
 
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                {% RenderBody %}
+                {% render_body %}
             </div>
         </div>
     </div><!-- /.container -->
@@ -64,7 +64,7 @@
     <footer>
         <div class="container">
             <div class="row">
-                {% RenderSection Footer required: false %}
+                {% render_section Footer required: false %}
             </div>
         </div>
     </footer>
