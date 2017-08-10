@@ -14,6 +14,7 @@ The following properties are available on the `BodyPartViewModel` class.
 | Property | Type | Description |
 | --------- | ---- |------------ |
 | `Body` | `string` | The HTML content once all tokens have been processed |
+| `ContentItem` | `ContentItem` | The content item of the part |
 | `BodyPart` | `BodyPart` | The `BodyPart` instance|
 | `TypePartSettings` | `BodyPartSettings` | The settings of the part |
 

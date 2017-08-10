@@ -14,6 +14,7 @@ The following properties are available on the `MarkdownPartViewModel` class.
 | Property | Type | Description |
 | --------- | ---- |------------ |
 | `Markdown` | `string` | The Markdown value once all tokens have been processed |
+| `ContentItem` | `ContentItem` | The content item of the part |
 | `Html` | `string` | The HTML content resulting from the Mardkown source |
 | `MarkdownPart` | `MarkdownPart` | The `MarkdownPart` instance|
 | `TypePartSettings` | `MarkdownPartSettings` | The settings of the part |
