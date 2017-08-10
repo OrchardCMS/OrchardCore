@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Orchard.Recipes.Models;
 using YesSql;
 
@@ -31,7 +31,7 @@ namespace Orchard.Recipes.Services
 
         public Task<RecipeResult> FindByExecutionIdAsync(string executionId)
         {
-            return _session.QueryAsync<RecipeResult, RecipeResultIndex>(x => x.ExecutionId == executionId).FirstOrDefault();
+            return _session.Query<RecipeResult, RecipeResultIndex>(x => x.ExecutionId == executionId).FirstOrDefaultAsync();
         }
 
         public Task UpdateAsync(RecipeResult recipeResult)

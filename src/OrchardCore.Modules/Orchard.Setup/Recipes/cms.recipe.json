@@ -46,11 +46,11 @@
         "Orchard.Flows",
         "Orchard.Indexing",
         "Orchard.Lists",
+        "Orchard.Liquid",
         "Orchard.Lucene",
+        "Orchard.Media",
         "Orchard.Menu",
         "Orchard.Title",
-        "Orchard.Tokens",
-        "Orchard.Tokens.Content",
         "Orchard.Widgets",
 
         // Themes
@@ -106,9 +106,9 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Pattern": "{{slug}}",
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
                 "AllowCustomPath": "True",
-                "ShowHomepageOption": "False",
+                "ShowHomepageOption": "True",
                 "Position": "1"
               }
             },
@@ -125,7 +125,6 @@
                   "Template": null
                 },
                 "BodyPartSettings": {
-                  "RenderTokens": false,
                   "Editor": "Wysiwyg"
                 },
                 "Position": "3"
@@ -155,7 +154,7 @@
       "Data": [
         {
           "ContentType": "Menu",
-          "ContentItemId": "[uuid()]",
+          "ContentItemId": "[js: uuid()]",
           "Latest": true,
           "Number": 1,
           "Published": true,
@@ -165,7 +164,7 @@
             "MenuItems": [
               {
                 "ContentType": "LinkMenuItem",
-                "ContentItemId": "[uuid()]",
+                "ContentItemId": "[js: uuid()]",
                 "LinkMenuItemPart": {
                   "Name": "Home",
                   "Url": "~/"

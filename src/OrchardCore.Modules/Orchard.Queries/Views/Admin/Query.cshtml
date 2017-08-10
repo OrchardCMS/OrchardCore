@@ -1,0 +1,78 @@
+@model Orchard.Queries.Sql.ViewModels.AdminQueryViewModel
+@using Orchard.ContentManagement;
+@inject IContentManager ContentManager
+
+@{
+    var matchAllQuery = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(@"SELECT * FROM ContentItemIndex"));
+}
+
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/codemirror.js" depends-on="admin" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/javascript/javascript.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/sql/sql.js" at="Foot"></script>
+
+<h1>@RenderTitleSegments(T["SQL Query"])</h1>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Query" method="post">
+
+            <div class="form-group">
+                <label asp-for="DecodedQuery">@T["Template"]</label>
+                <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
+                <span class="hint">@T["You can <a href=\"{0}\">click here</a> to query all content items.", Html.Raw(Url.Action("Query", "Admin", new { area = "Orchard.Queries", Query = matchAllQuery }))]</span>
+                <span class="hint">@T["The SQL query uses standard SQL92 syntax and is converted based on the actual database. Table will be prefixed automatically.</a>"]</span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Parameters">@T["Parameters"]</label>
+                <textarea asp-for="Parameters" rows="1" class="form-control"></textarea>
+                <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">@T["Query"]</button>
+            </div>
+        </form>
+    </div>
+    @if (Model.Elapsed != TimeSpan.Zero)
+    {
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="RawSql">@T["Final SQL Query"]</label>
+                <textarea asp-for="RawSql" rows="12" class="form-control"></textarea>
+                <span class="hint">@T["The query as it will be executed by the SQL database."]</span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="RawParameters">@T["Final Parameters"]</label>
+                <textarea asp-for="RawParameters" rows="1" class="form-control"></textarea>
+                <span class="hint">@T["The parameters that are sent to the SQL database."]</span>
+            </div>
+
+            <div class="form-group">
+                <a href="@Url.Action("Create", "Admin", new { area = "Orchard.Queries", id = "Sql", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
+            </div>
+        </div>
+    }
+</div>
+
+@if (Model.Documents.Any())
+{
+    <span class="text-muted">@T["Query executed in {0} ms", Model.Elapsed.TotalMilliseconds]</span>
+
+    @foreach (var document in Model.Documents)
+    {
+        <div>@Json.Serialize(document)</div>
+    }
+}
+
+<script at="Foot">
+    $(function() {
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: "text/x-sql", lineNumbers: true, viewportMargin: Infinity });
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.RawSql)'), { mode: "text/x-sql", lineNumbers: true, readonly: true, viewportMargin: Infinity });
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.RawParameters)'), { mode: "javascript", readonly: true, json: true, lineNumbers: true, viewportMargin: Infinity });
+    });
+</script>

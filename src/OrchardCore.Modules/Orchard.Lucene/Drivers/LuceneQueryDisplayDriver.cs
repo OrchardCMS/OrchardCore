@@ -48,6 +48,12 @@ namespace Orchard.Lucene.Drivers
                 model.Index = query.Index;
                 model.ReturnContentItems = query.ReturnContentItems;
                 model.Indices = _luceneIndexManager.List().ToArray();
+
+                // Extract query from the query string if we come from the main query editor
+                if (string.IsNullOrEmpty(query.Template))
+                {
+                    updater.TryUpdateModelAsync(model, "", m => m.Query);
+                }
             }).Location("Content:5");
         }
 

@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using System.Linq;
-using Orchard.DisplayManagement.Shapes;
 using System.Reflection;
-using System.Collections.Generic;
+using Orchard.DisplayManagement.Shapes;
 
 namespace Orchard.DisplayManagement.Zones
 {

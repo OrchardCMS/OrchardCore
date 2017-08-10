@@ -1,4 +1,4 @@
-﻿@using Orchard.ContentManagement.Metadata.Models
+@using Orchard.ContentManagement.Metadata.Models
 @using Orchard.ContentManagement.Metadata.Settings
 @using Orchard.ContentManagement
 
@@ -6,7 +6,7 @@
     ContentPart contentPart = Model.ContentPart;
     ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
     var description = typePartDefinition.Description();
-    var namedPart = typePartDefinition.PartDefinition.IsReusable();
+    var namedPart = typePartDefinition.PartDefinition.IsReusable() && typePartDefinition.Name != typePartDefinition.PartDefinition.Name;
 }
 
 @if (namedPart)

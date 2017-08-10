@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Castle.DynamicProxy;
+using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
 
 namespace Orchard.DisplayManagement
@@ -13,7 +14,7 @@ namespace Orchard.DisplayManagement
     /// </summary>
     public interface IShapeFactory
     {
-        IShape Create(string shapeType, Func<dynamic> shapeFactory);
+        IShape Create(string shapeType, Func<dynamic> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created);
 
         dynamic New { get; }
     }
@@ -65,9 +66,14 @@ namespace Orchard.DisplayManagement
             }
         }
 
+        public static IShape Create(this IShapeFactory factory, string shapeType, Func<dynamic> shapeFactory)
+        {
+            return factory.Create(shapeType, shapeFactory, null, null);
+        }
+
         public static IShape Create(this IShapeFactory factory, string shapeType)
         {
-            return factory.Create(shapeType, () => { return new Shape(); });
+            return factory.Create(shapeType, () => { return new Shape(); }, null, null);
         }
 
         public static IShape Create<TShape>(this IShapeFactory factory, string shapeType, Action<TShape> initialize)
@@ -92,9 +98,9 @@ namespace Orchard.DisplayManagement
 
         public static IShape Create(this IShapeFactory factory, string shapeType, INamedEnumerable<object> parameters)
         {
-            return factory.Create(shapeType, () =>
-            {
-                var shape = new Shape();
+            return factory.Create(shapeType, () => new Shape(), null, createdContext => {
+
+                var shape = createdContext.Shape;
 
                 // If only one non-Type, use it as the source object to copy
                 if (parameters != null)
@@ -115,8 +121,6 @@ namespace Orchard.DisplayManagement
                         }
                     }
                 }
-
-                return shape;
             });
         }
     }

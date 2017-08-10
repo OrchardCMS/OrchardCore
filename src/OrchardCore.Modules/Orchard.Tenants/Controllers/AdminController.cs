@@ -10,7 +10,6 @@ using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Models;
-using Orchard.Hosting;
 using Orchard.Hosting.ShellBuilders;
 using Orchard.Tenants.ViewModels;
 
@@ -135,7 +134,7 @@ namespace Orchard.Tenants.Controllers
             }
 
             var shellContext = GetShells()
-                .Where(x => String.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
+                .Where(x => string.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
             if (shellContext == null)
@@ -184,7 +183,7 @@ namespace Orchard.Tenants.Controllers
             }
 
             var shellContext = GetShells()
-                .Where(x => String.Equals(x.Settings.Name, model.Name, StringComparison.OrdinalIgnoreCase))
+                .Where(x => string.Equals(x.Settings.Name, model.Name, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
             if (shellContext == null)
@@ -241,7 +240,7 @@ namespace Orchard.Tenants.Controllers
             }
 
             var shellContext = GetShells()
-                .Where(x => String.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
+                .Where(x => string.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
             if (shellContext == null)
@@ -285,7 +284,7 @@ namespace Orchard.Tenants.Controllers
             var shellContext = _orchardHost
                 .ListShellContexts()
                 .OrderBy(x => x.Settings.Name)
-                .Where(x => String.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
+                .Where(x => string.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
             if (shellContext == null)
@@ -322,7 +321,7 @@ namespace Orchard.Tenants.Controllers
             var shellContext = _orchardHost
                 .ListShellContexts()
                 .OrderBy(x => x.Settings.Name)
-                .Where(x => String.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
+                .Where(x => string.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
             if (shellContext == null)
@@ -344,19 +343,19 @@ namespace Orchard.Tenants.Controllers
 
         private void ValidateViewModel(EditTenantViewModel model, bool newTenant)
         {
-            if (String.IsNullOrWhiteSpace(model.Name))
+            if (string.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["The tenant name is mandatory."]);
             }
 
             var allShells = GetShells();
 
-            if (newTenant && allShells.Any(tenant => String.Equals(tenant.Settings.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
+            if (newTenant && allShells.Any(tenant => string.Equals(tenant.Settings.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["A tenant with the same name already exists.", model.Name]);
             }
 
-            if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
+            if (!string.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["Invalid tenant name. Must contain characters only and no spaces."]);
             }
@@ -367,12 +366,12 @@ namespace Orchard.Tenants.Controllers
             }
 
             var allOtherShells = allShells.Where(tenant => !string.Equals(tenant.Settings.Name, model.Name, StringComparison.OrdinalIgnoreCase));
-            if (allOtherShells.Any(tenant => string.Equals(tenant.Settings.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && String.Equals(tenant.Settings.RequestUrlHost, model.RequestUrlHost, StringComparison.OrdinalIgnoreCase)))
+            if (allOtherShells.Any(tenant => string.Equals(tenant.Settings.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && string.Equals(tenant.Settings.RequestUrlHost, model.RequestUrlHost, StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["A tenant with the same host and prefix already exists.", model.Name]);
             }
 
-            if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            if (!string.IsNullOrWhiteSpace(model.RequestUrlPrefix))
             {
                 if (model.RequestUrlPrefix.Contains('/'))
                 {
@@ -388,7 +387,7 @@ namespace Orchard.Tenants.Controllers
 
         private bool IsDefaultShell()
         {
-            return String.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

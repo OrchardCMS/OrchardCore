@@ -1,18 +1,21 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Orchard.DisplayManagement.Notify;
+using Orchard.Liquid;
 using Orchard.Lucene.Services;
 using Orchard.Lucene.ViewModels;
 using Orchard.Mvc.Utilities;
-using Orchard.Tokens.Services;
 
 namespace Orchard.Lucene.Controllers
 {
@@ -24,6 +27,7 @@ namespace Orchard.Lucene.Controllers
         private readonly INotifier _notifier;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly ILuceneQueryService _queryService;
+        private readonly ILiquidTemplateManager _liquidTemplateManager;
 
         public AdminController(
             LuceneIndexManager luceneIndexManager,
@@ -31,6 +35,7 @@ namespace Orchard.Lucene.Controllers
             IAuthorizationService authorizationService,
             LuceneAnalyzerManager luceneAnalyzerManager,
             ILuceneQueryService queryService,
+            ILiquidTemplateManager liquidTemplateManager,
             INotifier notifier,
             IStringLocalizer<AdminController> s,
             IHtmlLocalizer<AdminController> h,
@@ -41,7 +46,7 @@ namespace Orchard.Lucene.Controllers
             _authorizationService = authorizationService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _queryService = queryService;
-
+            _liquidTemplateManager = liquidTemplateManager;
             _notifier = notifier;
             S = s;
             H = h;
@@ -101,6 +106,7 @@ namespace Orchard.Lucene.Controllers
                 // We call Rebuild in order to reset the index state cursor too in case the same index
                 // name was also used previously.
                 _luceneIndexingService.RebuildIndex(model.IndexName);
+                await _luceneIndexingService.ProcessContentItemsAsync();
             }
             catch (Exception e)
             {
@@ -128,6 +134,7 @@ namespace Orchard.Lucene.Controllers
             }
 
             _luceneIndexingService.ResetIndex(id);
+            await _luceneIndexingService.ProcessContentItemsAsync();
 
             _notifier.Success(H["Index <em>{0}</em> resetted successfully", id]);
 
@@ -148,6 +155,7 @@ namespace Orchard.Lucene.Controllers
             }
 
             _luceneIndexingService.RebuildIndex(id);
+            await _luceneIndexingService.ProcessContentItemsAsync();
 
             _notifier.Success(H["Index <em>{0}</em> rebuilt successfully", id]);
 
@@ -182,14 +190,14 @@ namespace Orchard.Lucene.Controllers
             return RedirectToAction("Index");
         }
 
-        public Task<IActionResult> Query(string indexName, string query, [FromServices] ITokenizer tokenizer)
+        public Task<IActionResult> Query(string indexName, string query)
         {
             query = String.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
-            return Query(new AdminQueryViewModel { IndexName = indexName, DecodedQuery = query }, tokenizer);
+            return Query(new AdminQueryViewModel { IndexName = indexName, DecodedQuery = query });
         }
 
         [HttpPost]
-        public async Task<IActionResult> Query(AdminQueryViewModel model, [FromServices] ITokenizer tokenizer)
+        public async Task<IActionResult> Query(AdminQueryViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
@@ -234,7 +242,15 @@ namespace Orchard.Lucene.Controllers
                 var analyzer = _luceneAnalyzerManager.CreateAnalyzer("standardanalyzer");
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
 
-                var tokenizedContent = tokenizer.Tokenize(model.DecodedQuery, JObject.Parse(model.Parameters));
+                var templateContext = new TemplateContext();
+                var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
+
+                foreach (var parameter in parameters)
+                {
+                    templateContext.SetValue(parameter.Key, parameter.Value);
+                }
+
+                var tokenizedContent = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, templateContext);
 
                 try
                 {

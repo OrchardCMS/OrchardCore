@@ -1,0 +1,53 @@
+@model TemplateViewModel
+
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/javascript/javascript.min.js" at="Foot"></script>
+
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/simple.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/multiplex.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/xml/xml.min.js" at="Foot"></script>
+
+<script asp-src="/Orchard.Liquid/codemirror/liquid.js" at="Foot"></script>
+<script asp-src="/Orchard.Templates/templatepreview.edit.js" at="Foot"></script>
+
+<h1>@RenderTitleSegments(T["Edit Template"])</h1>
+
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="Create" method="post">
+    <div class="form-group" asp-validation-class-for="Name">
+        <label asp-for="Name">@T["Name"]</label>
+        <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>
+        <input asp-for="Name" class="form-control" autofocus/>
+        <span class="hint">@T["The name of the template."]</span>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="Description">
+        <label asp-for="Description">@T["Description"]</label>
+        <input asp-for="Description" class="form-control" autofocus />
+        <span class="hint">@T["The description of the template."]</span>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="Content">
+        <label asp-for="Content">@T["Content"]</label>
+        <textarea asp-for="Content" rows="10" class="form-control"></textarea>
+        <span class="hint">@T["The Liquid template."]</span>
+    </div>
+
+    <fieldset>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+            <a class="btn btn-secondary" href="@Url.Action("Index", "Preview", new { area = "Orchard.Templates" })" target="_blank">@T["Preview"]</a>
+        </div>
+    </fieldset>
+</form>
+
+<script at="Foot">
+
+    $(function () {
+        initializeTemplatePreview(
+            document.getElementById('@Html.IdFor(x => x.Name)'),
+            document.getElementById('@Html.IdFor(x => x.Content)'));
+    });
+
+</script>

@@ -21,7 +21,6 @@ namespace Orchard.Markdown.Settings
             {
                 var settings = contentTypePartDefinition.GetSettings<MarkdownPartSettings>();
 
-                model.RenderTokens = settings.RenderTokens;
                 model.Editor = settings.Editor;
                 model.MarkdownPartSettings = settings;
 
@@ -38,9 +37,9 @@ namespace Orchard.Markdown.Settings
 
             var model = new MarkdownPartSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.RenderTokens, m => m.Editor))
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Editor))
             {
-                context.Builder.WithSettings(new MarkdownPartSettings { RenderTokens = model.RenderTokens, Editor = model.Editor });
+                context.Builder.WithSettings(new MarkdownPartSettings { Editor = model.Editor });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

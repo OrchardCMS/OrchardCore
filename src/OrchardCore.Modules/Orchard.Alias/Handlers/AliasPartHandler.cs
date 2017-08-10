@@ -1,33 +1,33 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using Fluid;
 using Orchard.Alias.Models;
 using Orchard.Alias.Settings;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
 using Orchard.Environment.Cache;
+using Orchard.Liquid;
 using Orchard.Settings;
-using Orchard.Tokens.Services;
 
 namespace Orchard.Alias.Handlers
 {
     public class AliasPartHandler : ContentPartHandler<AliasPart>
     {
-        private readonly ITokenizer _tokenizer;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
         private readonly ITagCache _tagCache;
+        private readonly ILiquidTemplateManager _liquidTemplateManager;
 
         public AliasPartHandler(
-            ITokenizer tokenizer, 
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
-            ITagCache tagCache)
+            ITagCache tagCache,
+            ILiquidTemplateManager liquidTemplateManager)
         {
-            _tokenizer = tokenizer;
             _contentDefinitionManager = contentDefinitionManager;
             _siteService = siteService;
             _tagCache = tagCache;
+            _liquidTemplateManager = liquidTemplateManager;
         }
         
         public override void Updated(UpdateContentContext context, AliasPart part)
@@ -42,7 +42,10 @@ namespace Orchard.Alias.Handlers
 
             if (!String.IsNullOrEmpty(pattern))
             {
-                part.Alias = _tokenizer.Tokenize(pattern, new Dictionary<string, object> { ["Content"] = part.ContentItem });
+                var templateContext = new TemplateContext();
+                templateContext.SetValue("ContentItem", part.ContentItem);
+
+                part.Alias = _liquidTemplateManager.RenderAsync(pattern, templateContext).GetAwaiter().GetResult();
             }
         }
         

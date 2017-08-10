@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
@@ -24,7 +24,7 @@ namespace Orchard.Lucene.QueryProviders
                 case JTokenType.String:
                     foreach (var term in LuceneQueryService.Tokenize(first.Name, first.Value.ToString(), context.DefaultAnalyzer))
                     {
-                        boolQuery.Add(new TermQuery(new Term(first.Name, term)), BooleanClause.Occur.SHOULD);
+                        boolQuery.Add(new TermQuery(new Term(first.Name, term)), Occur.SHOULD);
                     }
                     return boolQuery;
                 case JTokenType.Object:
@@ -36,10 +36,10 @@ namespace Orchard.Lucene.QueryProviders
                         boolQuery.Boost = boost.Value<float>();
                     }
 
-                    var occur = BooleanClause.Occur.SHOULD;
+                    var occur = Occur.SHOULD;
                     if (obj.TryGetValue("operator", out var op))
                     {
-                        occur = op.ToString() == "and" ? BooleanClause.Occur.MUST : BooleanClause.Occur.SHOULD;
+                        occur = op.ToString() == "and" ? Occur.MUST : Occur.SHOULD;
                     }
 
                     var terms = LuceneQueryService.Tokenize(first.Name, value, context.DefaultAnalyzer);

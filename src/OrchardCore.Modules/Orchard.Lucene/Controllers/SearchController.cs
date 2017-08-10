@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,11 +44,11 @@ namespace Orchard.Lucene.Controllers
         public async Task<IActionResult> Index(string id, string q, PagerParameters pagerParameters)
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            Pager pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             var indexName = "Search";
 
-            if (!String.IsNullOrWhiteSpace(id))
+            if (!string.IsNullOrWhiteSpace(id))
             {
                 indexName = id;
             }
@@ -58,7 +58,7 @@ namespace Orchard.Lucene.Controllers
                 return NotFound();
             }
 
-            if (String.IsNullOrWhiteSpace(q))
+            if (string.IsNullOrWhiteSpace(q))
             {
                 return View(new SearchIndexViewModel
                 {
@@ -92,15 +92,15 @@ namespace Orchard.Lucene.Controllers
             await _luceneIndexProvider.SearchAsync(indexName, searcher =>
             {
                 // Fetch one more result than PageSize to generate "More" links
-                TopScoreDocCollector collector = TopScoreDocCollector.Create(pager.PageSize + 1, true);
+                var collector = TopScoreDocCollector.Create(pager.PageSize + 1, true);
 
                 searcher.Search(query, collector);
-                TopDocs hits = collector.TopDocs(pager.GetStartIndex(), pager.PageSize + 1);
+                var hits = collector.GetTopDocs(pager.GetStartIndex(), pager.PageSize + 1);
 
                 foreach (var hit in hits.ScoreDocs)
                 {
                     var d = searcher.Doc(hit.Doc, IdSet);
-                    contentItemIds.Add(d.GetField("ContentItemId").StringValue);
+                    contentItemIds.Add(d.GetField("ContentItemId").GetStringValue());
                 }
 
                 return Task.CompletedTask;

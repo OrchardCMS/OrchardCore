@@ -6,8 +6,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
+using Orchard.Liquid;
 using Orchard.Queries.Drivers;
+using Orchard.Queries.Liquid;
+using Orchard.Queries.Recipes;
 using Orchard.Queries.Services;
+using Orchard.Recipes;
+using Orchard.Security.Permissions;
 
 namespace Orchard.Queries
 {
@@ -23,6 +28,8 @@ namespace Orchard.Queries
             services.AddScoped<IDisplayManager<Query>, DisplayManager<Query>>();
 
             services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
+            services.AddRecipeExecutionStep<QueryStep>();
+            services.AddScoped<IPermissionProvider, Permissions>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -33,6 +40,16 @@ namespace Orchard.Queries
                 template: "api/queries/{name}",
                 defaults: new { controller = "Api", action = "Query" }
             );
+        }
+    }
+
+
+    [RequireFeatures("Orchard.Liquid")]
+    public class LiquidStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddLiquidFilter<QueryFilter>("query");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Records;
@@ -31,7 +31,7 @@ namespace Orchard.Deployment.Steps
 
             var data = new JArray();
 
-            foreach (var contentItem in await _session.QueryAsync<ContentItem, ContentItemIndex>(x => x.Published && x.ContentType.IsIn(contentState.ContentTypes)).List())
+            foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published && x.ContentType.IsIn(contentState.ContentTypes)).ListAsync())
             {
                 data.Add(JObject.FromObject(contentItem));
             }

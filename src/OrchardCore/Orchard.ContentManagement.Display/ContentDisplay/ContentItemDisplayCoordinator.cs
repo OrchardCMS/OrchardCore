@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Modules;
@@ -89,23 +89,24 @@ namespace Orchard.ContentManagement.Display
                             InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
                         }
                     }
-                }
 
-                foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
-                {
-                    foreach (var displayDriver in _fieldDisplayDrivers)
+
+                    foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
                     {
-                        try
+                        foreach (var displayDriver in _fieldDisplayDrivers)
                         {
-                            var result = await displayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
-                            if (result != null)
+                            try
                             {
-                                result.Apply(context);
+                                var result = await displayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
+                                if (result != null)
+                                {
+                                    result.Apply(context);
+                                }
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                            catch (Exception ex)
+                            {
+                                InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                            }
                         }
                     }
                 }
@@ -140,7 +141,8 @@ namespace Orchard.ContentManagement.Display
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
-                var activator = _contentPartFactory.GetTypeActivator(typePartDefinition.Name);
+                var partTypeName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partTypeName);
                 var part = (ContentPart)contentItem.Get(activator.Type, typePartDefinition.Name) ?? activator.CreateInstance();
                 part.ContentItem = contentItem;
 
@@ -212,7 +214,8 @@ namespace Orchard.ContentManagement.Display
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
-                var activator = _contentPartFactory.GetTypeActivator(typePartDefinition.Name);
+                var partTypeName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partTypeName);
                 var part = (ContentPart)contentItem.Get(activator.Type, typePartDefinition.Name) ?? activator.CreateInstance();
                 part.ContentItem = contentItem;
 
