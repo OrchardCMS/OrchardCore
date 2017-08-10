@@ -1,18 +1,18 @@
 ﻿<div class="post-preview">
-    {% a display_for:ContentItem %}
+    {% a display_for:Model.ContentItem %}
         <h2 class="post-title">
-            {{ ContentItem.Content.TitlePart.Title }}
+            {{ Model.ContentItem.Content.TitlePart.Title }}
         </h2>
-        {% if ContentItem.Content.BlogPost.Subtitle.Text %}
+        {% if Model.ContentItem.Content.BlogPost.Subtitle.Text %}
         <h3 class="post-subtitle">
-            {{ ContentItem.Content.BlogPost.Subtitle.Text }}
+            {{ Model.ContentItem.Content.BlogPost.Subtitle.Text }}
         </h3>
         {% endif %}
     {% enda %}
     <p class="post-meta">
         {% assign format = "MMMM dd, yyyy" | t %}
-        {% assign dateTime = ContentItem.CreatedUtc | date_time: format: format %}
-        {% assign owner = "<a href=\"#\">" + ContentItem.Owner + "</a>" %}
+        {% assign dateTime = Model.ContentItem.CreatedUtc | date_time: format: format %}
+        {% assign owner = "<a href=\"#\">" + Model.ContentItem.Owner + "</a>" %}
         {{ "Posted by {0} on {1}" | t: owner, dateTime | raw }}
     </p>
 </div>

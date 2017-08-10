@@ -3,12 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Accessors;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
-using Newtonsoft.Json.Linq;
 using Orchard.DisplayManagement.Fluid.Filters;
 using Orchard.DisplayManagement.Fluid.Internal;
 using Orchard.DisplayManagement.Fluid.ModelBinding;
@@ -113,20 +113,11 @@ namespace Orchard.DisplayManagement.Fluid
 
             if (page.Model is Shape)
             {
-                if (page.Model.Items.Count > 0)
-                {
-                    foreach (var item in page.Model.Items)
-                    {
-                        context.RegisterObject((object)item);
-                    }
-                }
-
                 if (page.Model.Properties.Count > 0)
                 {
                     foreach (var prop in page.Model.Properties)
                     {
                         context.RegisterObject((object)prop.Value);
-                        context.LocalScope.SetValue(prop.Key, prop.Value);
                     }
                 }
             }
@@ -189,6 +180,19 @@ namespace Orchard.DisplayManagement.Fluid
             if (obj is IShape && !FluidValue.TypeMappings.TryGetValue(type, out var value))
             {
                 FluidValue.TypeMappings.Add(type, o => new ObjectValue(o));
+
+                if (obj is Shape)
+                {
+                    TemplateContext.GlobalMemberAccessStrategy.Register(type, "*", new DelegateAccessor((o, n) =>
+                    {
+                        if ((o as Shape).Properties.TryGetValue(n, out object result))
+                        {
+                            return result;
+                        }
+
+                        return null;
+                    }));
+                }
             }
 
             context.MemberAccessStrategy.Register(type);

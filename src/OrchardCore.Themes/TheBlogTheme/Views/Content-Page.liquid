@@ -1,4 +1,4 @@
-﻿{% assign typePart = ContentItem.Content[ContentItem.ContentType] %}
+﻿{% assign typePart = Model.ContentItem.Content[Model.ContentItem.ContentType] %}
 
 {% zone name: "Header" %}
     <!-- Page Header -->
@@ -8,7 +8,7 @@
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <div class="page-heading">
-                        <h1>{{ ContentItem.Content.TitlePart.Title }}</h1>
+                        <h1>{{ Model.ContentItem.Content.TitlePart.Title }}</h1>
                         <hr class="small" />
                         <span class="subheading">{{ typePart.Subtitle.Text }}</span>
                     </div>
@@ -18,5 +18,5 @@
     </header>
 {% endzone %}
 
-{% display Content | named: "Contents_Metadata" %}
-{% display Content | named: "BodyPart" %}
+{% display Model.Content | named: "Contents_Metadata" %}
+{% display Model.Content | named: "BodyPart" %}

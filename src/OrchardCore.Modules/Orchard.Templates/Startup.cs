@@ -9,11 +9,6 @@ namespace Orchard.Templates
 {
     public class Startup : StartupBase
     {
-        static Startup()
-        {
-
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IShapeBindingResolver, TemplatesShapeBindingResolver>();

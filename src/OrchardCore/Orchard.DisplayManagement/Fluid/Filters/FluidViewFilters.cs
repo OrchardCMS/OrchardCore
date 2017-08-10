@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.Localization;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Orchard.DisplayManagement.Shapes;
 
 namespace Orchard.DisplayManagement.Fluid.Filters
@@ -31,7 +32,15 @@ namespace Orchard.DisplayManagement.Fluid.Filters
         public static Task<FluidValue> Localize(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var page = FluidViewTemplate.EnsureFluidPage(context, "t");
-            var localizer = page.GetService<IStringLocalizer<FluidPage>>();
+            var localizer = page.GetService<IViewLocalizer>();
+            var contextable = localizer as IViewContextAware;
+
+            if (contextable == null)
+            {
+                return Task.FromResult(input);
+            }
+
+            contextable.Contextualize(page.ViewContext);
 
             var parameters = new List<object>();
             for (var i = 0; i < arguments.Count; i++)
@@ -39,7 +48,7 @@ namespace Orchard.DisplayManagement.Fluid.Filters
                 parameters.Add(arguments.At(i).ToStringValue());
             }
 
-            return Task.FromResult<FluidValue>(new StringValue(localizer[input.ToStringValue(), parameters.ToArray()].Value));
+            return Task.FromResult<FluidValue>(new StringValue(localizer.GetString(input.ToStringValue(), parameters.ToArray())));
         }
 
         public static Task<FluidValue> Href(FluidValue input, FilterArguments arguments, TemplateContext context)

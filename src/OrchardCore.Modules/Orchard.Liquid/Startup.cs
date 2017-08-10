@@ -1,6 +1,10 @@
-﻿using Fluid;
+﻿using System;
+using System.Linq;
+using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement;
@@ -9,6 +13,7 @@ using Orchard.ContentManagement.Handlers;
 using Orchard.Data.Migration;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.DisplayManagement.Zones;
+using Orchard.Environment.Extensions;
 using Orchard.Indexing;
 using Orchard.Liquid.Drivers;
 using Orchard.Liquid.Filters;
@@ -31,29 +36,6 @@ namespace Orchard.Liquid
             // Prevent JTokens from being converted to an ArrayValue as they implement IEnumerable
             FluidValue.TypeMappings.Add(typeof(JObject), o => new ObjectValue(o));
             FluidValue.TypeMappings.Add(typeof(JValue), o => FluidValue.Create(((JValue)o).Value));
-
-            FluidValue.TypeMappings.Add(typeof(ZoneHolding), o => new ObjectValue(o));
-            FluidValue.TypeMappings.Add(typeof(Shape), o => new ObjectValue(o));
-
-            TemplateContext.GlobalMemberAccessStrategy.Register<Shape>((o, n) =>
-            {
-                if (o.Properties.TryGetValue(n, out object result))
-                {
-                    return result;
-                }
-
-                return null;
-            });
-
-            TemplateContext.GlobalMemberAccessStrategy.Register<ZoneHolding>((o, n) =>
-            {
-                if (o.Properties.TryGetValue(n, out object result))
-                {
-                    return result;
-                }
-
-                return null;
-            });
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -74,8 +56,7 @@ namespace Orchard.Liquid
             services.AddLiquidFilter<ContainerFilter>("container");
             services.AddLiquidFilter<DisplayTextFilter>("display_text");
             services.AddLiquidFilter<DisplayUrlFilter>("display_url");
-            services.AddLiquidFilter<ContentUrlFilter>("content_url");
-            
+            services.AddLiquidFilter<ContentUrlFilter>("content_url");           
         }
     }
 }
