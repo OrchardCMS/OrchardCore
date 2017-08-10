@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Modules;
@@ -81,7 +81,7 @@ namespace Orchard.Users
             services.TryAddScoped<SignInManager<User>>();
 
             services.TryAddScoped<IUserStore<User>, UserStore>();
-            
+
             services.Configure<IdentityOptions>(options =>
             {
                 options.Cookies.ApplicationCookie.CookieName = "orchauth_" + _tenantName;
@@ -92,11 +92,12 @@ namespace Orchard.Users
                 options.Cookies.ApplicationCookie.DataProtectionProvider = _dataProtectionProvider;
                 options.Cookies.ExternalCookie.DataProtectionProvider = _dataProtectionProvider;
                 options.Cookies.TwoFactorRememberMeCookie.DataProtectionProvider = _dataProtectionProvider;
-                options.Cookies.TwoFactorUserIdCookie.DataProtectionProvider = _dataProtectionProvider;                
+                options.Cookies.TwoFactorUserIdCookie.DataProtectionProvider = _dataProtectionProvider;
             });
-            
+
 
             services.AddScoped<IIndexProvider, UserIndexProvider>();
+            services.AddScoped<IIndexProvider, UserByRoleNameIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();
