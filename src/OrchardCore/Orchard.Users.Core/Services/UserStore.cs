@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Orchard.Security;
+using Orchard.Security.Services;
 using Orchard.Users.Indexes;
 using Orchard.Users.Models;
 using YesSql;
@@ -18,14 +19,25 @@ namespace Orchard.Users.Services
         IUserSecurityStampStore<IUser>
     {
         private readonly ISession _session;
+        private readonly IRoleProvider _roleProvider;
+        private readonly ILookupNormalizer _keyNormalizer;
 
-        public UserStore(ISession session)
+        public UserStore(ISession session,
+            IRoleProvider roleProvider,
+            ILookupNormalizer keyNormalizer)
         {
             _session = session;
+            _roleProvider = roleProvider;
+            _keyNormalizer = keyNormalizer;
         }
 
         public void Dispose()
         {
+        }
+
+        public string NormalizeKey(string key)
+        {
+            return _keyNormalizer == null ? key : _keyNormalizer.Normalize(key);
         }
 
         #region IUserStore<IUser>
@@ -65,7 +77,7 @@ namespace Orchard.Users.Services
         public async Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             int id;
-            if(!int.TryParse(userId, out id))
+            if (!int.TryParse(userId, out id))
             {
                 return null;
             }
@@ -75,7 +87,7 @@ namespace Orchard.Users.Services
 
         public async Task<IUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _session.QueryAsync<User, UserIndex>(u => u.NormalizedUserName == normalizedUserName).FirstOrDefault();
+            return await _session.Query<User, UserIndex>(u => u.NormalizedUserName == normalizedUserName).FirstOrDefaultAsync();
         }
 
         public Task<string> GetNormalizedUserNameAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
@@ -259,7 +271,7 @@ namespace Orchard.Users.Services
 
         public async Task<IUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
         {
-            return await _session.QueryAsync<User, UserIndex>(u => u.NormalizedEmail == normalizedEmail).FirstOrDefault();
+            return await _session.Query<User, UserIndex>(u => u.NormalizedEmail == normalizedEmail).FirstOrDefaultAsync();
         }
 
         public Task<string> GetNormalizedEmailAsync(IUser user, CancellationToken cancellationToken)
@@ -287,30 +299,42 @@ namespace Orchard.Users.Services
         #endregion
 
         #region IUserRoleStore<IUser>
-        public Task AddToRoleAsync(IUser user, string roleName, CancellationToken cancellationToken)
+        public async Task AddToRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
+            }
+
+            var roleNames = await _roleProvider.GetRoleNamesAsync();
+            var roleName = roleNames?.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
+
+            if (string.IsNullOrWhiteSpace(roleName))
+            {
+                throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
             }
 
             ((User)user).RoleNames.Add(roleName);
             _session.Save(roleName);
-
-            return Task.CompletedTask;
         }
 
-        public Task RemoveFromRoleAsync(IUser user, string roleName, CancellationToken cancellationToken)
+        public async Task RemoveFromRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var roleNames = await _roleProvider.GetRoleNamesAsync();
+            var roleName = roleNames?.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
+
+            if (string.IsNullOrWhiteSpace(roleName))
+            {
+                throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
+            }
+
             ((User)user).RoleNames.Remove(roleName);
             _session.Save(roleName);
-
-            return Task.CompletedTask;
         }
 
         public Task<IList<string>> GetRolesAsync(IUser user, CancellationToken cancellationToken)
@@ -323,19 +347,30 @@ namespace Orchard.Users.Services
             return Task.FromResult<IList<string>>(((User)user).RoleNames);
         }
 
-        public Task<bool> IsInRoleAsync(IUser user, string roleName, CancellationToken cancellationToken)
+        public Task<bool> IsInRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(((User)user).RoleNames.Contains(roleName));
+            if (string.IsNullOrWhiteSpace(normalizedRoleName))
+            {
+                throw new ArgumentException("Value cannot be null or empty.", nameof(normalizedRoleName));
+            }
+
+            return Task.FromResult(((User)user).RoleNames.Contains(normalizedRoleName, StringComparer.OrdinalIgnoreCase));
         }
 
-        public Task<IList<IUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
+        public async Task<IList<IUser>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(normalizedRoleName))
+            {
+                throw new ArgumentNullException(nameof(normalizedRoleName));
+            }
+
+            var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync();
+            return users == null ? new List<IUser>() : users.ToList<IUser>();
         }
         #endregion
     }

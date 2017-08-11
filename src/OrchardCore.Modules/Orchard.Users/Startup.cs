@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
@@ -91,11 +91,12 @@ namespace Orchard.Users
                 options.Cookies.ApplicationCookie.DataProtectionProvider = _dataProtectionProvider;
                 options.Cookies.ExternalCookie.DataProtectionProvider = _dataProtectionProvider;
                 options.Cookies.TwoFactorRememberMeCookie.DataProtectionProvider = _dataProtectionProvider;
-                options.Cookies.TwoFactorUserIdCookie.DataProtectionProvider = _dataProtectionProvider;                
+                options.Cookies.TwoFactorUserIdCookie.DataProtectionProvider = _dataProtectionProvider;
             });
-            
+
 
             services.AddScoped<IIndexProvider, UserIndexProvider>();
+            services.AddScoped<IIndexProvider, UserByRoleNameIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();
