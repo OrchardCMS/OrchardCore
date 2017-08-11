@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -13,7 +13,7 @@ namespace Orchard.Liquid.Filters
             object urlHelper;
             if (!ctx.AmbientValues.TryGetValue("UrlHelper", out urlHelper))
             {
-                throw new ArgumentException("UrlHelper missing while invoking 'displayUrl'");
+                throw new ArgumentException("UrlHelper missing while invoking 'href'");
             }
 
             return Task.FromResult<FluidValue>(new StringValue(((IUrlHelper)urlHelper).Content(input.ToStringValue())));

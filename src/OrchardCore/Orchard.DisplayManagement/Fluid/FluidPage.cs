@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.DisplayManagement.Fluid
@@ -18,5 +21,13 @@ namespace Orchard.DisplayManagement.Fluid
         {
             return Context.RequestServices.GetService<T>();
         }
+
+        public object GetService(Type type)
+        {
+            return Context.RequestServices.GetService(type);
+        }
+
+        [RazorInject]
+        public IUrlHelper Url { get; private set; }
     }
 }

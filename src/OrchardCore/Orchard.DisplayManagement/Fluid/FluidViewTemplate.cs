@@ -9,10 +9,12 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Fluid.Filters;
 using Orchard.DisplayManagement.Fluid.Internal;
 using Orchard.DisplayManagement.Fluid.ModelBinding;
 using Orchard.DisplayManagement.Shapes;
+using Orchard.Liquid;
 using Orchard.Settings;
 
 namespace Orchard.DisplayManagement.Fluid
@@ -91,6 +93,8 @@ namespace Orchard.DisplayManagement.Fluid
             var context = new TemplateContext();
             context.AmbientValues.Add("FluidPage", page);
 
+            context.AmbientValues.Add("UrlHelper", page.Url);
+
             var site = await page.GetService<ISiteService>().GetSiteSettingsAsync();
             context.MemberAccessStrategy.Register(site.GetType());
             context.LocalScope.SetValue("Site", site);
@@ -130,6 +134,18 @@ namespace Orchard.DisplayManagement.Fluid
             if (viewImportsTemplate != null)
             {
                 await viewImportsTemplate.RenderAsync(context);
+            }
+
+            var liquidOptions = page.GetService<IOptions<LiquidOptions>>().Value;
+
+            foreach (var registration in liquidOptions.FilterRegistrations)
+            {
+                context.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
+                {
+                    var type = registration.Value;
+                    var filter = page.GetService(registration.Value) as ILiquidFilter;
+                    return filter.ProcessAsync(input, arguments, ctx);
+                });
             }
 
             page.WriteLiteral(await template.RenderAsync(context));

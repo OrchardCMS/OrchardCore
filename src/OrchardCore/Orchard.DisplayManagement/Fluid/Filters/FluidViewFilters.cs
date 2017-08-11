@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -14,10 +15,9 @@ namespace Orchard.DisplayManagement.Fluid.Filters
         public static FilterCollection WithFluidViewFilters(this FilterCollection filters)
         {
             filters.AddAsyncFilter("t", Localize);
-            filters.AddAsyncFilter("href", Href);
             filters.AddAsyncFilter("named", ItemNamed);
             filters.AddAsyncFilter("shape_string", ShapeString);
-            filters.AddAsyncFilter("date_time", DateTime);
+            filters.AddAsyncFilter("date_time", DateTimeShape);
             filters.AddAsyncFilter("clear_alternates", ClearAlternates);
             filters.AddAsyncFilter("shape_type", ShapeType);
             filters.AddAsyncFilter("display_type", DisplayType);
@@ -51,12 +51,6 @@ namespace Orchard.DisplayManagement.Fluid.Filters
             return Task.FromResult<FluidValue>(new StringValue(localizer.GetString(input.ToStringValue(), parameters.ToArray())));
         }
 
-        public static Task<FluidValue> Href(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            var page = FluidViewTemplate.EnsureFluidPage(context, "href");
-            return Task.FromResult<FluidValue>(new StringValue(page.Href(input.ToStringValue())));
-        }
-
         public static Task<FluidValue> ItemNamed(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var shape = input.ToObjectValue() as Shape;
@@ -69,9 +63,24 @@ namespace Orchard.DisplayManagement.Fluid.Filters
             return new StringValue((await page.DisplayAsync(input.ToObjectValue())).ToString());
         }
 
-        public static async Task<FluidValue> DateTime(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static async Task<FluidValue> DateTimeShape(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            var dateTime = input.ToObjectValue() as DateTime?;
+            var obj = input.ToObjectValue();
+            DateTime? dateTime = null;
+
+            if (obj is string stringDate)
+            {
+                var date = DateTime.Parse(stringDate, context.CultureInfo, DateTimeStyles.AssumeUniversal);
+                dateTime = new DateTime?(date);
+            }
+            else if (obj is DateTime date)
+            {
+                dateTime = new DateTime?(date);
+            }
+            else if (obj is DateTimeOffset dateTimeOffset)
+            {
+                dateTime = new DateTime?(dateTimeOffset.Date);
+            }
 
             if (dateTime.HasValue)
             {

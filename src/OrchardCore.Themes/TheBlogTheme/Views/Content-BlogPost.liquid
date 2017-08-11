@@ -9,16 +9,15 @@
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <div class="post-heading">
                         <h1>{{ Model.ContentItem.Content.TitlePart.Title }}</h1>
-                        {% if fields.Subtitle.Text %}
+                        {% if fields.Subtitle.Text.size > 0 %}
                         <h2 class="subheading">
                             {{ fields.Subtitle.Text }}
                         </h2>
                         {% endif %}
                         <span class="meta">
                             {% assign format = "MMMM dd, yyyy" | t %}
-                            {% assign dateTime = Model.ContentItem.CreatedUtc | date_time: format: format %}
-                            {% assign owner = "<a href=\"#\">" + Model.ContentItem.Owner + "</a>" %}
-                            {{ "Posted by {0} on {1}" | t: owner, dateTime | raw }}
+                            {% assign dateTime = Model.ContentItem.CreatedUtc | local | date_time: format: format %}
+                            {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
                         </span>
                     </div>
                 </div>
