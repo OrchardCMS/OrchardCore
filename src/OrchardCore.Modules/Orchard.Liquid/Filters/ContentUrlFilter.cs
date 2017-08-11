@@ -10,8 +10,7 @@ namespace Orchard.Liquid.Filters
     {
         public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            object urlHelper;
-            if (!ctx.AmbientValues.TryGetValue("UrlHelper", out urlHelper))
+            if (!ctx.AmbientValues.TryGetValue("UrlHelper", out var urlHelper))
             {
                 throw new ArgumentException("UrlHelper missing while invoking 'href'");
             }

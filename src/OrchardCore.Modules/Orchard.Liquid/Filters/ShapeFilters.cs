@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -8,6 +9,49 @@ using Orchard.DisplayManagement.Shapes;
 
 namespace Orchard.Liquid.Filters
 {
+    public class DateTimeFilter : ILiquidFilter
+    {
+        public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
+            if (!ctx.AmbientValues.TryGetValue("ShapeFactory", out dynamic shapeFactory))
+            {
+                throw new ArgumentException("ShapeFactory missing while invoking 'date_time'");
+            }
+
+            if (!ctx.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
+            {
+                throw new ArgumentException("DisplayHelper missing while invoking 'date_time'");
+            }
+
+            var obj = input.ToObjectValue();
+            DateTime? dateTime = null;
+
+            if (obj is string stringDate)
+            {
+                var date = DateTime.Parse(stringDate, ctx.CultureInfo, DateTimeStyles.AssumeUniversal);
+                dateTime = new DateTime?(date);
+            }
+            else if (obj is DateTime date)
+            {
+                dateTime = new DateTime?(date);
+            }
+            else if (obj is DateTimeOffset dateTimeOffset)
+            {
+                dateTime = new DateTime?(dateTimeOffset.Date);
+            }
+            if (dateTime.HasValue)
+            {
+                Shape shape = arguments.HasNamed("format")
+                    ? shapeFactory.DateTime(Utc: dateTime, Format: arguments["format"].ToStringValue())
+                    : shapeFactory.DateTime(Utc: dateTime);
+
+                return new StringValue((await (Task<IHtmlContent>)displayHelper(shape)).ToString());
+            }
+
+            return input;
+        }
+    }
+
     public class ShapeNamedFilter : ILiquidFilter
     {
         public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
@@ -21,8 +65,7 @@ namespace Orchard.Liquid.Filters
     {
         public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            dynamic displayHelper;
-            if (!ctx.AmbientValues.TryGetValue("DisplayHelper", out displayHelper))
+            if (!ctx.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
             {
                 throw new ArgumentException("DisplayHelper missing while invoking 'shape_string'");
             }

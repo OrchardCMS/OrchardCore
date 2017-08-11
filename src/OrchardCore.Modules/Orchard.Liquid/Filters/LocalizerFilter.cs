@@ -11,8 +11,7 @@ namespace Orchard.Liquid.Filters
     {
         public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            object localizer;
-            if (!ctx.AmbientValues.TryGetValue("ViewLocalizer", out localizer))
+            if (!ctx.AmbientValues.TryGetValue("ViewLocalizer", out var localizer))
             {
                 throw new ArgumentException("ViewLocalizer missing while invoking 't'");
             }
@@ -23,8 +22,8 @@ namespace Orchard.Liquid.Filters
                 parameters.Add(arguments.At(i).ToStringValue());
             }
 
-            return Task.FromResult<FluidValue>(new StringValue(((IViewLocalizer)localizer).GetString(input.ToStringValue(), parameters.ToArray())));
+            return Task.FromResult<FluidValue>(new StringValue(((IViewLocalizer)localizer)
+                .GetString(input.ToStringValue(), parameters.ToArray())));
         }
     }
-
  }

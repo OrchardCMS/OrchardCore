@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
-using Orchard.DisplayManagement.Fluid.Filters;
 using Orchard.DisplayManagement.Fluid.Internal;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Liquid;
@@ -23,11 +22,6 @@ namespace Orchard.DisplayManagement.Fluid
         public static readonly string ViewsFolder = "Views";
         public static readonly string ViewExtension = ".liquid";
         public static readonly MemoryCache Cache = new MemoryCache(new MemoryCacheOptions());
-
-        static FluidViewTemplate()
-        {
-            TemplateContext.GlobalFilters.WithFluidViewFilters();
-        }
 
         internal static async Task RenderAsync(FluidPage page)
         {
@@ -45,6 +39,9 @@ namespace Orchard.DisplayManagement.Fluid
             var displayHelperFactory = page.GetService<IDisplayHelperFactory>();
             var displayHelper = displayHelperFactory.CreateHelper(page.ViewContext);
             context.AmbientValues.Add("DisplayHelper", displayHelper);
+
+            var shapeFactory = page.GetService<IShapeFactory>();
+            context.AmbientValues.Add("ShapeFactory", shapeFactory);
 
             var localizer = page.GetService<IViewLocalizer>();
             var contextable = localizer as IViewContextAware;
