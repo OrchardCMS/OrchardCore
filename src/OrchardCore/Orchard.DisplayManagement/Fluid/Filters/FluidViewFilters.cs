@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Orchard.DisplayManagement.Shapes;
 
 namespace Orchard.DisplayManagement.Fluid.Filters
@@ -14,36 +11,8 @@ namespace Orchard.DisplayManagement.Fluid.Filters
     {
         public static FilterCollection WithFluidViewFilters(this FilterCollection filters)
         {
-            filters.AddAsyncFilter("t", Localize);
             filters.AddAsyncFilter("date_time", DateTimeShape);
-            filters.AddAsyncFilter("display_type", DisplayType);
-            filters.AddAsyncFilter("shape_position", ShapePosition);
-            filters.AddAsyncFilter("shape_tab", ShapeTab);
-            filters.AddAsyncFilter("set_property", SetProperty);
-
             return filters;
-        }
-
-        public static Task<FluidValue> Localize(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            var page = FluidViewTemplate.EnsureFluidPage(context, "t");
-            var localizer = page.GetService<IViewLocalizer>();
-            var contextable = localizer as IViewContextAware;
-
-            if (contextable == null)
-            {
-                return Task.FromResult(input);
-            }
-
-            contextable.Contextualize(page.ViewContext);
-
-            var parameters = new List<object>();
-            for (var i = 0; i < arguments.Count; i++)
-            {
-                parameters.Add(arguments.At(i).ToStringValue());
-            }
-
-            return Task.FromResult<FluidValue>(new StringValue(localizer.GetString(input.ToStringValue(), parameters.ToArray())));
         }
 
         public static async Task<FluidValue> DateTimeShape(FluidValue input, FilterArguments arguments, TemplateContext context)
@@ -77,54 +46,6 @@ namespace Orchard.DisplayManagement.Fluid.Filters
             }
 
             return input;
-        }
-
-        public static Task<FluidValue> DisplayType(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            var shape = input.ToObjectValue() as IShape;
-
-            if (shape?.Metadata != null)
-            {
-                shape.Metadata.DisplayType = arguments.At(0).ToStringValue();
-            }
-
-            return Task.FromResult(input);
-        }
-
-        public static Task<FluidValue> ShapePosition(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            var shape = input.ToObjectValue() as IShape;
-
-            if (shape?.Metadata != null)
-            {
-                shape.Metadata.Position = arguments.At(0).ToStringValue();
-            }
-
-            return Task.FromResult(input);
-        }
-
-        public static Task<FluidValue> ShapeTab(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            var shape = input.ToObjectValue() as IShape;
-
-            if (shape?.Metadata != null)
-            {
-                shape.Metadata.Tab = arguments.At(0).ToStringValue();
-            }
-
-            return Task.FromResult(input);
-        }
-
-        public static Task<FluidValue> SetProperty(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            var obj = input.ToObjectValue() as dynamic;
-
-            if (obj != null)
-            {
-                obj[arguments.At(0).ToStringValue()] = arguments.At(1).ToStringValue();
-            }
-
-            return Task.FromResult(input);
         }
     }
 }

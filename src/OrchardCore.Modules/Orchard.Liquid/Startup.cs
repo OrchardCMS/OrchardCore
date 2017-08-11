@@ -58,11 +58,16 @@ namespace Orchard.Liquid
             services.AddLiquidFilter<DisplayUrlFilter>("display_url");
             services.AddLiquidFilter<ContentUrlFilter>("href");
 
+            services.AddLiquidFilter<LocalizerFilter>("t");
             services.AddLiquidFilter<ShapeNamedFilter>("named");
             services.AddLiquidFilter<ShapeStringFilter>("shape_string");
             services.AddLiquidFilter<ClearAlternatesFilter>("clear_alternates");
-            services.AddLiquidFilter<RemoveItemFilter>("remove_item");
             services.AddLiquidFilter<ShapeTypeFilter>("shape_type");
+            services.AddLiquidFilter<DisplayTypeFilter>("display_type");
+            services.AddLiquidFilter<ShapePositionFilter>("shape_position");
+            services.AddLiquidFilter<ShapeTabFilter>("shape_tab");
+            services.AddLiquidFilter<RemoveItemFilter>("remove_item");
+            services.AddLiquidFilter<SetPropertyFilter>("set_property");
         }
     }
 }

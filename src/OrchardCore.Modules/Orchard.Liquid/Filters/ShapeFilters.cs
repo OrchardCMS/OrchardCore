@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Shapes;
 
@@ -48,21 +47,6 @@ namespace Orchard.Liquid.Filters
         }
     }
 
-    public class RemoveItemFilter : ILiquidFilter
-    {
-        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
-        {
-            var shape = input.ToObjectValue() as Shape;
-
-            if (shape?.Items != null)
-            {
-                shape.Remove(arguments.At(0).ToStringValue());
-            }
-
-            return Task.FromResult(input);
-        }
-    }
-
     public class ShapeTypeFilter : ILiquidFilter
     {
         public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
@@ -72,6 +56,66 @@ namespace Orchard.Liquid.Filters
             if (shape?.Metadata != null)
             {
                 shape.Metadata.Type = arguments.At(0).ToStringValue();
+            }
+
+            return Task.FromResult(input);
+        }
+    }
+
+    public class DisplayTypeFilter : ILiquidFilter
+    {
+        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
+            var shape = input.ToObjectValue() as IShape;
+
+            if (shape?.Metadata != null)
+            {
+                shape.Metadata.DisplayType = arguments.At(0).ToStringValue();
+            }
+
+            return Task.FromResult(input);
+        }
+    }
+
+    public class ShapePositionFilter : ILiquidFilter
+    {
+        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
+            var shape = input.ToObjectValue() as IShape;
+
+            if (shape?.Metadata != null)
+            {
+                shape.Metadata.Position = arguments.At(0).ToStringValue();
+            }
+
+            return Task.FromResult(input);
+        }
+    }
+
+    public class ShapeTabFilter : ILiquidFilter
+    {
+        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
+            var shape = input.ToObjectValue() as IShape;
+
+            if (shape?.Metadata != null)
+            {
+                shape.Metadata.Tab = arguments.At(0).ToStringValue();
+            }
+
+            return Task.FromResult(input);
+        }
+    }
+
+    public class RemoveItemFilter : ILiquidFilter
+    {
+        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
+            var shape = input.ToObjectValue() as Shape;
+
+            if (shape?.Items != null)
+            {
+                shape.Remove(arguments.At(0).ToStringValue());
             }
 
             return Task.FromResult(input);

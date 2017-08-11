@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Accessors;
 using Fluid.Values;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
@@ -12,7 +15,6 @@ using Orchard.DisplayManagement.Fluid.Internal;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Liquid;
 using Orchard.Settings;
-using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace Orchard.DisplayManagement.Fluid
 {
@@ -43,6 +45,15 @@ namespace Orchard.DisplayManagement.Fluid
             var displayHelperFactory = page.GetService<IDisplayHelperFactory>();
             var displayHelper = displayHelperFactory.CreateHelper(page.ViewContext);
             context.AmbientValues.Add("DisplayHelper", displayHelper);
+
+            var localizer = page.GetService<IViewLocalizer>();
+            var contextable = localizer as IViewContextAware;
+
+            if (contextable != null)
+            {
+                contextable.Contextualize(page.ViewContext);
+                context.AmbientValues.Add("ViewLocalizer", localizer);
+            }
 
             var site = await page.GetService<ISiteService>().GetSiteSettingsAsync();
             context.MemberAccessStrategy.Register(site.GetType());
