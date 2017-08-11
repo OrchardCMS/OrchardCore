@@ -90,20 +90,12 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
                 {
-                    var filePaths = _fileProviderAccessor.SharedFileProvider.GetViewFilePaths(Path.Combine(
+                    var filePaths = _fileProviderAccessor.FileProvider.GetViewFilePaths(Path.Combine(
                         extensionDescriptor.SubPath, subPath), _viewEnginesByExtension.Keys.ToArray(),
                         inViewsFolder: true, inDepth: false).ToArray();
 
-                    return new { shell = string.Empty, harvesterInfo.harvester, subPath, filePaths };
+                    return new { harvesterInfo.harvester, subPath, filePaths };
                 }))
-                .Union(harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
-                {
-                    var filePaths = _fileProviderAccessor.ShellFileProvider.GetViewFilePaths(Path.Combine(
-                        extensionDescriptor.SubPath, subPath), _viewEnginesByExtension.Keys.ToArray(),
-                        inViewsFolder: true, inDepth: false).ToArray();
-
-                    return new { shell = _shellName, harvesterInfo.harvester, subPath, filePaths };
-                })))
                 .ToList();
 
                 if (_logger.IsEnabled(LogLevel.Information))
@@ -126,7 +118,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 {
                     var harvestShapeInfo = new HarvestShapeInfo
                     {
-                        Shell = fileContext.pathContext.shell,
                         SubPath = fileContext.pathContext.subPath,
                         FileName = fileContext.fileName,
                         RelativePath = fileContext.relativePath,
@@ -157,7 +148,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                     var viewEngineType = _viewEnginesByExtension[iter.shapeContext.harvestShapeInfo.Extension].GetType();
 
                     builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
-                        .ForShell(iter.shapeContext.harvestShapeInfo.Shell)
                         .From(feature)
                         .BoundAs(
                             hit.shapeContext.harvestShapeInfo.RelativePath, shapeDescriptor => displayContext =>

@@ -34,6 +34,14 @@ namespace Orchard.DisplayManagement.Fluid.Statements
         {
             var page = FluidViewTemplate.EnsureFluidPage(context, Name);
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
+
+            // temporary code before implementing tag helpers differently
+            // here, replace what was done through '_ViewImports.liquid'
+            Register(page, "*", "Orchard.Contents");
+            Register(page, "*", "Orchard.DisplayManagement");
+            Register(page, "*", "Orchard.ResourceManagement");
+            Register(page, "*", "Orchard.Menu");
+
             var descriptor = _descriptors.FirstOrDefault(kv => kv.Key.StartsWith(Name)).Value;
 
             if (descriptor == null)

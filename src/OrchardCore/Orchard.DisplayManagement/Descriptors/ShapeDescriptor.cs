@@ -11,14 +11,12 @@ namespace Orchard.DisplayManagement.Descriptors
 {
     public class FeatureShapeDescriptor : ShapeDescriptor
     {
-        public FeatureShapeDescriptor(string shell, IFeatureInfo feature, string shapeType)
+        public FeatureShapeDescriptor(IFeatureInfo feature, string shapeType)
         {
-            Shell = shell;
             Feature = feature;
             ShapeType = shapeType;
         }
 
-        public string Shell { get; private set; } = string.Empty;
         public IFeatureInfo Feature { get; private set; }
     }
 

@@ -1,21 +1,18 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Accessors;
 using Fluid.Values;
-using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Fluid.Filters;
 using Orchard.DisplayManagement.Fluid.Internal;
-using Orchard.DisplayManagement.Fluid.ModelBinding;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Liquid;
 using Orchard.Settings;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace Orchard.DisplayManagement.Fluid
 {
@@ -27,8 +24,6 @@ namespace Orchard.DisplayManagement.Fluid
 
         static FluidViewTemplate()
         {
-            TemplateContext.GlobalMemberAccessStrategy.Register(typeof(ViewContext));
-            TemplateContext.GlobalMemberAccessStrategy.Register<ModelStateNode>();
             TemplateContext.GlobalFilters.WithFluidViewFilters();
         }
 
@@ -36,81 +31,18 @@ namespace Orchard.DisplayManagement.Fluid
         {
             var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
             var fileProviderAccessor = page.GetService<IFluidViewFileProviderAccessor>();
-            var fileInfo = fileProviderAccessor.ShellFileProvider.GetFileInfo(path);
-            var shellCache = page.GetService<IMemoryCache>();
-
-            IMemoryCache cache;
-            IFileProvider fileProvider;
-
-            if (fileInfo != null && fileInfo.Exists)
-            {
-                cache = shellCache;
-                fileProvider = fileProviderAccessor.ShellFileProvider;
-            }
-            else
-            {
-                fileInfo = fileProviderAccessor.SharedFileProvider.GetFileInfo(path);
-
-                if (fileInfo == null || !fileInfo.Exists)
-                {
-                    page.WriteLiteral($"<h1>{ Path.GetFileName(path) }</h1>");
-                    return;
-                }
-
-                cache = Cache;
-                fileProvider = fileProviderAccessor.SharedFileProvider;
-            }
-
-            var viewImportLocations = ViewHierarchyUtility.GetViewImportsLocations(
-                Path.ChangeExtension(path, RazorViewEngine.ViewExtension))
-                .Select(p => Path.ChangeExtension(p, ViewExtension));
-
-            IFluidTemplate viewImportsTemplate = null;
-            foreach (var location in viewImportLocations)
-            {
-                fileInfo = fileProviderAccessor.ShellFileProvider.GetFileInfo(location);
-
-                if (fileInfo != null && fileInfo.Exists)
-                {
-                    viewImportsTemplate = Parse(location, fileProviderAccessor.ShellFileProvider, shellCache);
-                    break;
-                }
-                else
-                {
-                    fileInfo = fileProviderAccessor.SharedFileProvider.GetFileInfo(location);
-
-                    if (fileInfo != null && fileInfo.Exists)
-                    {
-                        viewImportsTemplate = Parse(location, fileProviderAccessor.SharedFileProvider, Cache);
-                        break;
-                    }
-                }
-            }
-
-            path = Path.ChangeExtension(path, ViewExtension);
-            var template = Parse(path, fileProvider, cache);
+            var template = Parse(path, fileProviderAccessor.FileProvider, Cache);
 
             var context = new TemplateContext();
             context.AmbientValues.Add("FluidPage", page);
 
-            context.AmbientValues.Add("UrlHelper", page.Url);
+            var urlHelperFactory = page.GetService<IUrlHelperFactory>();
+            var urlHelper = urlHelperFactory.GetUrlHelper(page.ViewContext);
+            context.AmbientValues.Add("UrlHelper", urlHelper);
 
             var site = await page.GetService<ISiteService>().GetSiteSettingsAsync();
             context.MemberAccessStrategy.Register(site.GetType());
             context.LocalScope.SetValue("Site", site);
-
-            context.MemberAccessStrategy.Register(page.Context.GetType());
-            context.MemberAccessStrategy.Register(page.Context.Request.GetType());
-            context.LocalScope.SetValue("Context", page.Context);
-
-            context.LocalScope.SetValue("ViewData", page.ViewData);
-            context.LocalScope.SetValue("ViewContext", page.ViewContext);
-
-            var modelState = page.ViewContext.ModelState.ToDictionary(
-                kv => kv.Key, kv => (object)new ModelStateNode(kv.Value));
-
-            modelState["IsValid"] = page.ViewContext.ModelState.IsValid;
-            context.LocalScope.SetValue("ModelState", modelState);
 
             context.RegisterObject((object)page.Model);
             context.LocalScope.SetValue("Model", page.Model);
@@ -129,11 +61,6 @@ namespace Orchard.DisplayManagement.Fluid
             if (page.Model.Field != null)
             {
                 context.RegisterObject(((object)page.Model.Field));
-            }
-
-            if (viewImportsTemplate != null)
-            {
-                await viewImportsTemplate.RenderAsync(context);
             }
 
             var liquidOptions = page.GetService<IOptions<LiquidOptions>>().Value;

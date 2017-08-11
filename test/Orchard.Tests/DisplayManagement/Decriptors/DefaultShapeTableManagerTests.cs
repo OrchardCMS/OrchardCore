@@ -152,27 +152,12 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             public bool Exists => true;
         }
 
-        public class TestSignal : ISignal
-        {
-            public IChangeToken GetToken(string key)
-            {
-                return NullChangeToken.Singleton;
-            }
-
-            public void SignalToken(string key)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         public DefaultShapeTableManagerTests()
         {
             IServiceCollection serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging();
             serviceCollection.AddMemoryCache();
-            serviceCollection.AddSingleton<ISignal, TestSignal>();
-            serviceCollection.AddSingleton(new ShellSettings { Name = ShellHelper.DefaultShellName });
             serviceCollection.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();

@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
-using Orchard.Environment.Cache;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
@@ -20,7 +18,6 @@ namespace Orchard.DisplayManagement.Descriptors
     {
         private static ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new ConcurrentDictionary<string, FeatureShapeDescriptor>();
 
-        private readonly string _shellName;
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IExtensionManager _extensionManager;
@@ -28,43 +25,29 @@ namespace Orchard.DisplayManagement.Descriptors
         private readonly ILogger _logger;
 
         private readonly IMemoryCache _memoryCache;
-        private readonly ISignal _signal;
 
         public DefaultShapeTableManager(
-            ShellSettings shellSettings,
             IEnumerable<IShapeTableProvider> bindingStrategies,
             IShellFeaturesManager shellFeaturesManager,
             IExtensionManager extensionManager,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<DefaultShapeTableManager> logger,
-            IMemoryCache memoryCache,
-            ISignal signal)
+            IMemoryCache memoryCache)
         {
-            _shellName = shellSettings.Name;
             _bindingStrategies = bindingStrategies;
             _shellFeaturesManager = shellFeaturesManager;
             _extensionManager = extensionManager;
             _typeFeatureProvider = typeFeatureProvider;
             _logger = logger;
             _memoryCache = memoryCache;
-            _signal = signal;
-        }
-
-        public string GetChangeTokenKey(string themeId)
-        {
-            return $"ShapeTableToken:{themeId}";
         }
 
         public ShapeTable GetShapeTable(string themeId)
         {
             var cacheKey = $"ShapeTable:{themeId}";
-            var tokenKey = GetChangeTokenKey(themeId);
-
-            IChangeToken token;
-            _memoryCache.TryGetValue(tokenKey, out token);
 
             ShapeTable shapeTable;
-            if (!_memoryCache.TryGetValue(cacheKey, out shapeTable) || token == null || token.HasChanged)
+            if (!_memoryCache.TryGetValue(cacheKey, out shapeTable))
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
@@ -73,22 +56,6 @@ namespace Orchard.DisplayManagement.Descriptors
 
                 var excludedFeatures = _shapeDescriptors.Count == 0 ? new List<string>() :
                     _shapeDescriptors.Select(kv => kv.Value.Feature.Id).Distinct().ToList();
-
-                if (token == null || token.HasChanged)
-                {
-                    excludedFeatures = excludedFeatures.Where(f => f != themeId).ToList();
-
-                    var shellThemekeys = _shapeDescriptors.Where(kv => kv.Value.Shell == _shellName &&
-                        kv.Value.Feature.Id == themeId).Select(kv => kv.Key);
-
-                    foreach (var key in shellThemekeys)
-                    {
-                        _shapeDescriptors.TryRemove(key, out var value);
-                    }
-                }
-
-                _memoryCache.Set(tokenKey, _signal.GetToken(tokenKey),
-                    new MemoryCacheEntryOptions { Priority = CacheItemPriority.NeverRemove });
 
                 foreach (var bindingStrategy in _bindingStrategies)
                 {
@@ -112,7 +79,6 @@ namespace Orchard.DisplayManagement.Descriptors
                     .ToList();
 
                 var descriptors = _shapeDescriptors
-                    .Where(sd => sd.Value.Shell == "" || sd.Value.Shell == _shellName)
                     .Where(sd => enabledAndOrderedFeatureIds.Contains(sd.Value.Feature.Id))
                     .Where(sd => IsModuleOrRequestedTheme(sd.Value.Feature, themeId))
                     .OrderBy(sd => enabledAndOrderedFeatureIds.IndexOf(sd.Value.Feature.Id))
@@ -149,8 +115,7 @@ namespace Orchard.DisplayManagement.Descriptors
             {
                 var firstAlteration = alterations.First();
 
-                var key = firstAlteration.Shell
-                    + bindingStrategy.GetType().Name
+                var key = bindingStrategy.GetType().Name
                     + firstAlteration.Feature.Id
                     + firstAlteration.ShapeType.ToLower();
 
@@ -158,7 +123,6 @@ namespace Orchard.DisplayManagement.Descriptors
                 {
                     var descriptor = new FeatureShapeDescriptor
                     (
-                        firstAlteration.Shell,
                         firstAlteration.Feature,
                         firstAlteration.ShapeType
                     );

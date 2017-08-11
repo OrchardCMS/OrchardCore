@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -19,14 +18,9 @@ namespace Orchard.DisplayManagement.Fluid
                 FluidViewOptionsSetup>());
 
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>,
-                FluidRazorViewOptionsSetup>());
-
-            services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>,
                 FluidShapeTemplateOptionsSetup>());
 
-            services.TryAddSingleton<IFluidRazorViewFileProvider, FluidRazorViewFileProvider>();
             services.TryAddSingleton<IFluidViewFileProviderAccessor, FluidViewFileProviderAccessor>();
             services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, FluidViewsFeatureProvider>();
             services.AddScoped<IRazorViewExtensionProvider, FluidViewExtensionProvider>();

@@ -33,7 +33,7 @@ namespace Orchard.DisplayManagement.Fluid
 
                     foreach (var option in expanderOptionsAccessor.Value.Options)
                     {
-                        var filePaths = fileProviderAccessor.SharedFileProvider.GetViewFilePaths(
+                        var filePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
                             option.SearchPath, new[] { FluidViewTemplate.ViewExtension },
                             FluidViewTemplate.ViewsFolder);
 

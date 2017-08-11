@@ -10,7 +10,6 @@ namespace Orchard.DisplayManagement.Descriptors
 {
     public class ShapeAlterationBuilder
     {
-        private string _shell = string.Empty;
         private IFeatureInfo _feature;
         private readonly string _shapeType;
         private readonly string _bindingName;
@@ -35,12 +34,6 @@ namespace Orchard.DisplayManagement.Descriptors
         public ShapeAlterationBuilder From(IFeatureInfo feature)
         {
             _feature = feature;
-            return this;
-        }
-
-        public ShapeAlterationBuilder ForShell(string shell)
-        {
-            _shell = shell;
             return this;
         }
 
@@ -145,7 +138,7 @@ namespace Orchard.DisplayManagement.Descriptors
 
         public ShapeAlteration Build()
         {
-            return new ShapeAlteration(_shell, _shapeType, _feature, _configurations.ToArray());
+            return new ShapeAlteration(_shapeType, _feature, _configurations.ToArray());
         }
     }
 

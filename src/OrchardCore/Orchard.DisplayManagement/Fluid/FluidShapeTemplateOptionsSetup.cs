@@ -16,8 +16,7 @@ namespace Orchard.DisplayManagement.Fluid
 
         public void Configure(ShapeTemplateOptions options)
         {
-            options.FileProviders.Insert(0, _fileProviderAccessor.SharedFileProvider);
-            options.FileProviders.Insert(0, _fileProviderAccessor.ShellFileProvider);
+            options.FileProviders.Insert(0, _fileProviderAccessor.FileProvider);
         }
     }
 }
