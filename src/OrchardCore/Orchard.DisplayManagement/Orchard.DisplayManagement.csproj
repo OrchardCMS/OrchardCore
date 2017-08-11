@@ -22,8 +22,4 @@
     <PackageReference Include="System.Reflection.Extensions" Version="4.3.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Fluid\ModelBinding\" />
-  </ItemGroup>
-
 </Project>

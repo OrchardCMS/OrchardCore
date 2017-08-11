@@ -1,6 +1,5 @@
-using Fluid;
+﻿using Fluid;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
@@ -37,10 +36,8 @@ namespace Orchard.Templates.Services
                     BindingAsync = async displayContext =>
                     {
                         var context = new TemplateContext();
-                        
-                        var actionContext = new ActionContext(displayContext.ViewContext.HttpContext, displayContext.ViewContext.RouteData, displayContext.ViewContext.ActionDescriptor);
-                        var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
 
+                        var urlHelper = _urlHelperFactory.GetUrlHelper(displayContext.ViewContext);
                         context.LocalScope.SetValue("Context", displayContext.ViewContext);
                         context.AmbientValues.Add("UrlHelper", urlHelper);
 

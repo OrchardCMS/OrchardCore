@@ -40,6 +40,10 @@ namespace Orchard.DisplayManagement.Fluid
             var urlHelper = urlHelperFactory.GetUrlHelper(page.ViewContext);
             context.AmbientValues.Add("UrlHelper", urlHelper);
 
+            var displayHelperFactory = page.GetService<IDisplayHelperFactory>();
+            var displayHelper = displayHelperFactory.CreateHelper(page.ViewContext);
+            context.AmbientValues.Add("DisplayHelper", displayHelper);
+
             var site = await page.GetService<ISiteService>().GetSiteSettingsAsync();
             context.MemberAccessStrategy.Register(site.GetType());
             context.LocalScope.SetValue("Site", site);
