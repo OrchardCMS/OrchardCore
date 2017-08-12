@@ -1,8 +1,8 @@
 ﻿using Fluid;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
+using Orchard.DisplayManagement.Fluid;
 using Orchard.Liquid;
 using Orchard.Templates.Models;
 
@@ -12,16 +12,13 @@ namespace Orchard.Templates.Services
     {
         private TemplatesDocument _templatesDocument;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IUrlHelperFactory _urlHelperFactory;
 
         public TemplatesShapeBindingResolver(
             TemplatesManager templatesManager, 
-            ILiquidTemplateManager liquidTemplateManager,
-            IUrlHelperFactory urlHelperFactory)
+            ILiquidTemplateManager liquidTemplateManager)
         {
             _templatesDocument = templatesManager.GetTemplatesDocumentAsync().GetAwaiter().GetResult();
             _liquidTemplateManager = liquidTemplateManager;
-            _urlHelperFactory = urlHelperFactory;
         }
 
         public bool TryGetDescriptorBinding(string shapeType, out ShapeBinding shapeBinding)
@@ -36,14 +33,7 @@ namespace Orchard.Templates.Services
                     BindingAsync = async displayContext =>
                     {
                         var context = new TemplateContext();
-
-                        var urlHelper = _urlHelperFactory.GetUrlHelper(displayContext.ViewContext);
-                        context.LocalScope.SetValue("Context", displayContext.ViewContext);
-                        context.AmbientValues.Add("UrlHelper", urlHelper);
-
-                        context.LocalScope.SetValue("Model", displayContext.Value);
-                        context.MemberAccessStrategy.Register(displayContext.Value.GetType());
-                        
+                        FluidViewTemplate.Contextualize(displayContext, context);
                         var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, context);
                         return new HtmlString(htmlContent);
                     }

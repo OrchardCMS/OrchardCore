@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Accessors;
@@ -8,9 +9,11 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Fluid.Internal;
+using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Liquid;
 using Orchard.Settings;
@@ -32,48 +35,18 @@ namespace Orchard.DisplayManagement.Fluid
             var context = new TemplateContext();
             context.AmbientValues.Add("FluidPage", page);
 
-            var urlHelperFactory = page.GetService<IUrlHelperFactory>();
-            var urlHelper = urlHelperFactory.GetUrlHelper(page.ViewContext);
-            context.AmbientValues.Add("UrlHelper", urlHelper);
-
             var displayHelperFactory = page.GetService<IDisplayHelperFactory>();
             var displayHelper = displayHelperFactory.CreateHelper(page.ViewContext);
-            context.AmbientValues.Add("DisplayHelper", displayHelper);
 
-            var shapeFactory = page.GetService<IShapeFactory>();
-            context.AmbientValues.Add("ShapeFactory", shapeFactory);
-
-            var localizer = page.GetService<IViewLocalizer>();
-            var contextable = localizer as IViewContextAware;
-
-            if (contextable != null)
+            var displayContext = new DisplayContext()
             {
-                contextable.Contextualize(page.ViewContext);
-                context.AmbientValues.Add("ViewLocalizer", localizer);
-            }
+                ServiceProvider = page.Context.RequestServices,
+                DisplayAsync = displayHelper,
+                ViewContext = page.ViewContext,
+                Value = page.Model
+            };
 
-            var site = await page.GetService<ISiteService>().GetSiteSettingsAsync();
-            context.MemberAccessStrategy.Register(site.GetType());
-            context.LocalScope.SetValue("Site", site);
-
-            context.RegisterObject((object)page.Model);
-            context.LocalScope.SetValue("Model", page.Model);
-
-            if (page.Model is Shape)
-            {
-                if (page.Model.Properties.Count > 0)
-                {
-                    foreach (var prop in page.Model.Properties)
-                    {
-                        context.RegisterObject((object)prop.Value);
-                    }
-                }
-            }
-
-            if (page.Model.Field != null)
-            {
-                context.RegisterObject(((object)page.Model.Field));
-            }
+            Contextualize(displayContext, context);
 
             var liquidOptions = page.GetService<IOptions<LiquidOptions>>().Value;
 
@@ -88,6 +61,56 @@ namespace Orchard.DisplayManagement.Fluid
             }
 
             page.WriteLiteral(await template.RenderAsync(context));
+        }
+
+        public static async void Contextualize(DisplayContext displayContext, TemplateContext context)
+        {
+            var services = displayContext.ServiceProvider;
+            context.AmbientValues.Add("Services", services);
+
+            context.AmbientValues.Add("DisplayHelper", displayContext.DisplayAsync);
+            context.AmbientValues.Add("ViewContext", displayContext.ViewContext);
+
+            var urlHelperFactory = services.GetRequiredService<IUrlHelperFactory>();
+            var urlHelper = urlHelperFactory.GetUrlHelper(displayContext.ViewContext);
+            context.AmbientValues.Add("UrlHelper", urlHelper);
+
+            var shapeFactory = services.GetRequiredService<IShapeFactory>();
+            context.AmbientValues.Add("ShapeFactory", shapeFactory);
+
+            var localizer = services.GetRequiredService<IViewLocalizer>();
+            var contextable = localizer as IViewContextAware;
+
+            if (contextable != null)
+            {
+                contextable.Contextualize(displayContext.ViewContext);
+            }
+
+            context.AmbientValues.Add("ViewLocalizer", localizer);
+
+            var site = await services.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
+            context.MemberAccessStrategy.Register(site.GetType());
+            context.LocalScope.SetValue("Site", site);
+
+            var model = displayContext.Value as dynamic;
+            context.RegisterObject((object)model);
+            context.LocalScope.SetValue("Model", model);
+
+            if (model is Shape)
+            {
+                if (model.Properties.Count > 0)
+                {
+                    foreach (var prop in model.Properties)
+                    {
+                        context.RegisterObject((object)prop.Value);
+                    }
+                }
+            }
+
+            if (((object)model).GetType().GetProperty("Field") != null)
+            {
+                context.RegisterObject(((object)model.Field));
+            }
         }
 
         public static IFluidTemplate Parse(string path, IFileProvider fileProvider, IMemoryCache cache)

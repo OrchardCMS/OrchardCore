@@ -1,6 +1,6 @@
-﻿<li {% if Model.HasItems == true %}class="dropdown"{% endif %}>
+﻿<li {% if Model.HasItems %}class="dropdown"{% endif %}>
     {% display Model | clear_alternates | shape_type: "MenuItemLink" %}
-    {% if Model.HasItems == true %}
+    {% if Model.HasItems %}
         <ul class="dropdown-menu">
             {% for item in Model.Items %}
                 {% display item %}
