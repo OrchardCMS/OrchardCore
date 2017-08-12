@@ -7,11 +7,15 @@
     {% meta name:"viewport", content:"width=device-width, initial-scale=1.0" %}
     {% link type:"image/x-icon", rel:"shortcut icon", asp_src:"/TheBlogTheme/favicon.ico" %}
 
-    {% script asp_name:"jquery", use_cdn:"true", at:"Foot" /%}
+    {% script asp_name:"jquery", use_cdn:"true", at:"Foot" %}
 
-    {% script asp_name:"bootstrap", use_cdn:"true", at:"Foot" /%}
+    {% javascript at:"Foot" %}
+        var foo = "bar";
+    {% endjavascript %}
+
+    {% script asp_name:"bootstrap", use_cdn:"true", at:"Foot" %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    {% script asp_src:"/TheBlogTheme/Scripts/clean-blog.min.js", debug_src:"/TheBlogTheme/Scripts/clean-blog.js", at:"Foot" /%}
+    {% script asp_src:"/TheBlogTheme/Scripts/clean-blog.min.js", debug_src:"/TheBlogTheme/Scripts/clean-blog.js", at:"Foot" %}
 
     {% link rel:"stylesheet", asp_src:"/TheBlogTheme/Styles/blog.min.css" %}
 

@@ -40,21 +40,16 @@ namespace Orchard.DisplayManagement.Fluid
                 case "meta":
                 case "shape":
                 case "menu":
+                case "script":
                     return BuildTagHelperStatement(tag);
 
                 case "a":
-                case "script":
-
-                    if (tag.ChildNodes.Count > 1 && tag.ChildNodes[1].FindToken().ValueString == "/")
-                    {
-                        return BuildTagHelperStatement(tag);
-                    }
-
+                case "javascript":
                     EnterBlock(tag);
                     return null;
 
                 case "enda":
-                case "endscript":
+                case "endjavascript":
                     return BuildTagHelperStatement(null);
 
                 default:

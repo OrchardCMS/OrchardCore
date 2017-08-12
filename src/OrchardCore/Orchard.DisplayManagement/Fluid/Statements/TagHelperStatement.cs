@@ -24,7 +24,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
         public TagHelperStatement(string name, ArgumentsExpression arguments, IList<Statement> statements) : base(statements)
         {
-            Name = name;
+            Name = name.Replace("javascript", "script");
             _arguments = arguments;
         }
 

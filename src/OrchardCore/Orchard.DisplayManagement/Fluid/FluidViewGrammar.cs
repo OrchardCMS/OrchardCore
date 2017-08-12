@@ -25,12 +25,15 @@ namespace Orchard.DisplayManagement.Fluid
             var ZoneEnd = ToTerm("endzone");
 
             var ContentLink = new NonTerminal("a");
-            ContentLink.Rule = "a" + FilterArguments | "a" + FilterArguments + "/";
+            ContentLink.Rule = "a" + FilterArguments;
             var ContentLinkEnd = ToTerm("enda");
 
+            var JavaScript = new NonTerminal("javascript");
+            JavaScript.Rule = "javascript" + FilterArguments;
+            var JavaScriptEnd = ToTerm("endjavascript");
+
             var Script = new NonTerminal("script");
-            Script.Rule = "script" + FilterArguments | "script" + FilterArguments + "/";
-            var ScriptEnd = ToTerm("endscript");
+            Script.Rule = "script" + FilterArguments;
 
             var Link = new NonTerminal("link");
             Link.Rule = "link" + FilterArguments;
@@ -51,20 +54,14 @@ namespace Orchard.DisplayManagement.Fluid
             Menu.Rule = "menu" + FilterArguments;
 
             KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments | Display
-                | Zone | ZoneEnd | ContentLink | ContentLinkEnd
-                | Script | ScriptEnd | Link | Style | Resources | Meta
-                | Shape | Menu;
-
-            var SelfClosed = new NonTerminal("self_closed");
-            Tag.Rule |= ToTerm("{%") + KnownTags + SelfClosed + ToTerm("%}");
-            SelfClosed.Rule = Empty | "/";
+                | Zone | ZoneEnd | ContentLink | ContentLinkEnd | JavaScript | JavaScriptEnd
+                | Script | Link | Style | Resources | Meta | Shape | Menu;
 
             // Prevent the text from being added in the parsed tree.
             // Only Identifier and Arguments will be in the tree.
             MarkPunctuation(",",
-                "self_closed", "render_section", "page_title", "display", "zone",
-                "a", "script", "link", "style", "resources", "meta",
-                "shape", "menu");
+                "render_section", "page_title", "display", "zone", "a", "javascript",
+                "script", "link", "style", "resources", "meta", "shape", "menu");
         }
     }
 }
