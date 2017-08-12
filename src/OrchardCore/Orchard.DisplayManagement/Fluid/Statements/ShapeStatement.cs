@@ -5,6 +5,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Orchard.DisplayManagement.Fluid.Ast;
 using Orchard.DisplayManagement.TagHelpers;
@@ -25,7 +26,21 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var page = FluidViewTemplate.EnsureFluidPage(context, Name);
+            if (!context.AmbientValues.TryGetValue("ShapeFactory", out var shapeFactory))
+            {
+                throw new ArgumentException("ShapeFactory missing while invoking '" + Name + "'");
+            }
+
+            if (!context.AmbientValues.TryGetValue("DisplayHelperFactory", out var displayHelperFactory))
+            {
+                throw new ArgumentException("DisplayHelperFactory missing while invoking '" + Name + "'");
+            }
+
+            if (!context.AmbientValues.TryGetValue("ViewContext", out var viewContext))
+            {
+                throw new ArgumentException("ViewContext missing while invoking '" + Name + "'");
+            }
+
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
             var attributes = new TagHelperAttributeList();
@@ -41,12 +56,12 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var tagHelperOutput = new TagHelperOutput(Name, attributes, (_, e) =>
                 Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
 
-            var shapeTagHelper = new ShapeTagHelper(page.GetService<IShapeFactory>(),
-                page.GetService<IDisplayHelperFactory>()) { ViewContext = page.ViewContext };
+            var shapeTagHelper = new ShapeTagHelper((IShapeFactory) shapeFactory,
+                (IDisplayHelperFactory)displayHelperFactory) { ViewContext = (ViewContext)viewContext };
 
             await shapeTagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
 
-            tagHelperOutput.WriteTo(writer, page.HtmlEncoder);
+            tagHelperOutput.WriteTo(writer, HtmlEncoder.Default);
 
             return Completion.Normal;
         }

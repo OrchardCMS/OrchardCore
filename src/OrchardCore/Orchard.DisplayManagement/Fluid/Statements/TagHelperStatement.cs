@@ -8,10 +8,13 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor;
 using Microsoft.AspNetCore.Razor.Compilation.TagHelpers;
 using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Fluid.Ast;
 
 namespace Orchard.DisplayManagement.Fluid.Statements
@@ -32,15 +35,24 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var page = FluidViewTemplate.EnsureFluidPage(context, Name);
+            if (!context.AmbientValues.TryGetValue("Services", out var services))
+            {
+                throw new ArgumentException("Services missing while invoking '" + Name + "'");
+            }
+
+            if (!context.AmbientValues.TryGetValue("ViewContext", out var viewContext))
+            {
+                throw new ArgumentException("ViewContext missing while invoking '" + Name + "'");
+            }
+
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
             // temporary code before implementing tag helpers differently
             // here, replace what was done through '_ViewImports.liquid'
-            Register(page, "*", "Orchard.Contents");
-            Register(page, "*", "Orchard.DisplayManagement");
-            Register(page, "*", "Orchard.ResourceManagement");
-            Register(page, "*", "Orchard.Menu");
+            Register((IServiceProvider)services, "*", "Orchard.Contents");
+            Register((IServiceProvider)services, "*", "Orchard.DisplayManagement");
+            Register((IServiceProvider)services, "*", "Orchard.ResourceManagement");
+            Register((IServiceProvider)services, "*", "Orchard.Menu");
 
             var descriptor = _descriptors.FirstOrDefault(kv => kv.Key.StartsWith(Name)).Value;
 
@@ -50,9 +62,10 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             }
 
             var tagHelperType = Type.GetType(descriptor.TypeName + ", " + descriptor.AssemblyName);
+            var razorPage = (((ViewContext)viewContext).View as RazorView).RazorPage as RazorPage;
 
             var tagHelper = typeof(FluidPage).GetMethod("CreateTagHelper")
-                .MakeGenericMethod(tagHelperType).Invoke(page, null) as ITagHelper;
+                .MakeGenericMethod(tagHelperType).Invoke(razorPage, null) as ITagHelper;
 
             var attributes = new TagHelperAttributeList();
 
@@ -125,24 +138,24 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             tagHelperOutput.Content.AppendHtml(content.ToString());
             await tagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
 
-            tagHelperOutput.WriteTo(writer, page.HtmlEncoder);
+            tagHelperOutput.WriteTo(writer, HtmlEncoder.Default);
 
             return Completion.Normal;
         }
 
-        internal static void Register(FluidPage page, string name, string assembly)
+        internal static void Register(IServiceProvider services, string name, string assembly)
         {
             if (_descriptors.ContainsKey(name + assembly) || _descriptors.ContainsKey("*" + assembly))
             {
                 return;
             }
 
-            var resolver = page.GetService<ITagHelperTypeResolver>();
+            var resolver = services.GetRequiredService<ITagHelperTypeResolver>();
             var types = resolver.Resolve(assembly, SourceLocation.Zero, new ErrorSink()).ToList();
 
             foreach (var type in types)
             {
-                var descriptors = page.GetService<ITagHelperDescriptorFactory>().CreateDescriptors(
+                var descriptors = services.GetRequiredService<ITagHelperDescriptorFactory>().CreateDescriptors(
                     assembly, type, new ErrorSink()).GroupBy(d => d.TagName).Select(g => g.First());
 
                 if (name != "*")

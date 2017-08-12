@@ -24,12 +24,16 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var page = FluidViewTemplate.EnsureFluidPage(context, "zone");
+            if (!context.AmbientValues.TryGetValue("LayoutAccessor", out var layoutAccessor))
+            {
+                throw new ArgumentException("LayoutAccessor missing while invoking 'zone'");
+            }
+
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
             var attributes = new TagHelperAttributeList();
 
-            var zoneTagHelper = new ZoneTagHelper(page.GetService<ILayoutAccessor>());
+            var zoneTagHelper = new ZoneTagHelper((ILayoutAccessor)layoutAccessor);
 
             if (arguments.HasNamed("position"))
             {

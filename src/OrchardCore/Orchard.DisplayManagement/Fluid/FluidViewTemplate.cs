@@ -29,15 +29,14 @@ namespace Orchard.DisplayManagement.Fluid
 
         internal static async Task RenderAsync(FluidPage page)
         {
+            var services = page.Context.RequestServices;
             var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
-            var fileProviderAccessor = page.GetService<IFluidViewFileProviderAccessor>();
+            var fileProviderAccessor = services.GetRequiredService<IFluidViewFileProviderAccessor>();
             var template = Parse(path, fileProviderAccessor.FileProvider, Cache);
 
-            var displayHelper = page.GetService<IDisplayHelperFactory>().CreateHelper(page.ViewContext);
+            var displayHelper = services.GetRequiredService<IDisplayHelperFactory>().CreateHelper(page.ViewContext);
 
             var context = new TemplateContext();
-            // to be removed
-            context.AmbientValues.Add("FluidPage", page);
 
             context.Contextualize(new DisplayContext()
             {
@@ -47,14 +46,14 @@ namespace Orchard.DisplayManagement.Fluid
                 Value = page.Model
             });
 
-            var liquidOptions = page.GetService<IOptions<LiquidOptions>>().Value;
+            var liquidOptions = services.GetRequiredService<IOptions<LiquidOptions>>().Value;
 
             foreach (var registration in liquidOptions.FilterRegistrations)
             {
                 context.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
                 {
                     var type = registration.Value;
-                    var filter = page.GetService(registration.Value) as ILiquidFilter;
+                    var filter = services.GetRequiredService(registration.Value) as ILiquidFilter;
                     return filter.ProcessAsync(input, arguments, ctx);
                 });
             }
@@ -86,26 +85,17 @@ namespace Orchard.DisplayManagement.Fluid
                 }
             });
         }
-
-        // to be removed
-        public static FluidPage EnsureFluidPage(TemplateContext context, string action)
-        {
-            if (!context.AmbientValues.TryGetValue("FluidPage", out var page))
-            {
-                throw new ParseException("FluidPage missing while invoking: " + action);
-            }
-
-            return (FluidPage)page;
-        }
     }
 
     public static class TemplateContextExtensions
     {
-
         public static async void Contextualize(this TemplateContext context, DisplayContext displayContext)
         {
             var services = displayContext.ServiceProvider;
             context.AmbientValues.Add("Services", services);
+
+            var displayHelperFactory = services.GetRequiredService<IDisplayHelperFactory>();
+            context.AmbientValues.Add("DisplayHelperFactory", displayHelperFactory);
 
             context.AmbientValues.Add("DisplayHelper", displayContext.DisplayAsync);
             context.AmbientValues.Add("ViewContext", displayContext.ViewContext);
@@ -127,7 +117,10 @@ namespace Orchard.DisplayManagement.Fluid
 
             context.AmbientValues.Add("ViewLocalizer", localizer);
 
-            var layout = services.GetRequiredService<ILayoutAccessor>().GetLayout();
+            var layoutAccessor = services.GetRequiredService<ILayoutAccessor>();
+            context.AmbientValues.Add("LayoutAccessor", layoutAccessor);
+
+            var layout = layoutAccessor.GetLayout();
             context.AmbientValues.Add("ThemeLayout", layout);
 
             var site = await services.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
