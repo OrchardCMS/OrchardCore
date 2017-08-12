@@ -19,7 +19,6 @@ using Orchard.OpenId.ViewModels;
 using Orchard.Security.Services;
 using Orchard.Settings;
 using Orchard.Users;
-using Orchard.Users.Models;
 
 namespace Orchard.OpenId.Controllers
 {
@@ -161,7 +160,7 @@ namespace Orchard.OpenId.Controllers
             else if (model.UpdateClientSecret)
             {
                 var user = await _userManager.FindByNameAsync(User.Identity.Name);
-                await ValidateClientSecretAsync((User)user, model.ClientSecret, (key, message) => ModelState.AddModelError(key, message));
+                await ValidateClientSecretAsync(user, model.ClientSecret, (key, message) => ModelState.AddModelError(key, message));
             }
             
             OpenIdApplication application = null;
@@ -271,7 +270,7 @@ namespace Orchard.OpenId.Controllers
             if (model.Type == ClientType.Confidential)
             {
                 var user = await _userManager.FindByNameAsync(User.Identity.Name);
-                await ValidateClientSecretAsync((User)user, model.ClientSecret, (key, message) => ModelState.AddModelError(key, message));
+                await ValidateClientSecretAsync(user, model.ClientSecret, (key, message) => ModelState.AddModelError(key, message));
             }
             else if (model.Type == ClientType.Public && !string.IsNullOrEmpty(model.ClientSecret))
             {
@@ -322,7 +321,7 @@ namespace Orchard.OpenId.Controllers
             }
             return LocalRedirect(returnUrl);
         }
-        private async Task<bool> ValidateClientSecretAsync(User user, string password, Action<string, string> reportError)
+        private async Task<bool> ValidateClientSecretAsync(IUser user, string password, Action<string, string> reportError)
         {
             if (string.IsNullOrEmpty(password))
             {
