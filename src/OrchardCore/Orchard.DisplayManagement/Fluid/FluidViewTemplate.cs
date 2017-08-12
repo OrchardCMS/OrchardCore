@@ -32,21 +32,19 @@ namespace Orchard.DisplayManagement.Fluid
             var fileProviderAccessor = page.GetService<IFluidViewFileProviderAccessor>();
             var template = Parse(path, fileProviderAccessor.FileProvider, Cache);
 
+            var displayHelper = page.GetService<IDisplayHelperFactory>().CreateHelper(page.ViewContext);
+
             var context = new TemplateContext();
+            // to be removed
             context.AmbientValues.Add("FluidPage", page);
 
-            var displayHelperFactory = page.GetService<IDisplayHelperFactory>();
-            var displayHelper = displayHelperFactory.CreateHelper(page.ViewContext);
-
-            var displayContext = new DisplayContext()
+            context.Contextualize(new DisplayContext()
             {
                 ServiceProvider = page.Context.RequestServices,
                 DisplayAsync = displayHelper,
                 ViewContext = page.ViewContext,
                 Value = page.Model
-            };
-
-            Contextualize(displayContext, context);
+            });
 
             var liquidOptions = page.GetService<IOptions<LiquidOptions>>().Value;
 
@@ -63,7 +61,47 @@ namespace Orchard.DisplayManagement.Fluid
             page.WriteLiteral(await template.RenderAsync(context));
         }
 
-        public static async void Contextualize(DisplayContext displayContext, TemplateContext context)
+        public static IFluidTemplate Parse(string path, IFileProvider fileProvider, IMemoryCache cache)
+        {
+            return cache.GetOrCreate(path, entry =>
+            {
+                entry.Priority = CacheItemPriority.NeverRemove;
+                var fileInfo = fileProvider.GetFileInfo(path);
+                entry.ExpirationTokens.Add(fileProvider.Watch(path));
+
+                using (var stream = fileInfo.CreateReadStream())
+                {
+                    using (var sr = new StreamReader(stream))
+                    {
+                        if (TryParse(sr.ReadToEnd(), out var template, out var errors))
+                        {
+                            return template;
+                        }
+                        else
+                        {
+                            throw new Exception(String.Join(System.Environment.NewLine, errors));
+                        }
+                    }
+                }
+            });
+        }
+
+        // to be removed
+        public static FluidPage EnsureFluidPage(TemplateContext context, string action)
+        {
+            if (!context.AmbientValues.TryGetValue("FluidPage", out var page))
+            {
+                throw new ParseException("FluidPage missing while invoking: " + action);
+            }
+
+            return (FluidPage)page;
+        }
+    }
+
+    public static class TemplateContextExtensions
+    {
+
+        public static async void Contextualize(this TemplateContext context, DisplayContext displayContext)
         {
             var services = displayContext.ServiceProvider;
             context.AmbientValues.Add("Services", services);
@@ -113,44 +151,6 @@ namespace Orchard.DisplayManagement.Fluid
             }
         }
 
-        public static IFluidTemplate Parse(string path, IFileProvider fileProvider, IMemoryCache cache)
-        {
-            return cache.GetOrCreate(path, entry =>
-            {
-                entry.Priority = CacheItemPriority.NeverRemove;
-                var fileInfo = fileProvider.GetFileInfo(path);
-                entry.ExpirationTokens.Add(fileProvider.Watch(path));
-
-                using (var stream = fileInfo.CreateReadStream())
-                {
-                    using (var sr = new StreamReader(stream))
-                    {
-                        if (TryParse(sr.ReadToEnd(), out var template, out var errors))
-                        {
-                            return template;
-                        }
-                        else
-                        {
-                            throw new Exception(String.Join(System.Environment.NewLine, errors));
-                        }
-                    }
-                }
-            });
-        }
-
-        public static FluidPage EnsureFluidPage(TemplateContext context, string action)
-        {
-            if (!context.AmbientValues.TryGetValue("FluidPage", out var page))
-            {
-                throw new ParseException("FluidPage missing while invoking: " + action);
-            }
-
-            return (FluidPage)page;
-        }
-    }
-
-    public static class TemplateContextExtensions
-    {
         public static void RegisterObject(this TemplateContext context, object obj)
         {
             var type = obj.GetType();

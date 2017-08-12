@@ -33,7 +33,7 @@ namespace Orchard.Templates.Services
                     BindingAsync = async displayContext =>
                     {
                         var context = new TemplateContext();
-                        FluidViewTemplate.Contextualize(displayContext, context);
+                        context.Contextualize(displayContext);
                         var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, context);
                         return new HtmlString(htmlContent);
                     }

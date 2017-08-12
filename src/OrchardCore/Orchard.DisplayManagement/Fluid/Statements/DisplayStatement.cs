@@ -1,8 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
+using Microsoft.AspNetCore.Html;
 
 namespace Orchard.DisplayManagement.Fluid.Statements
 {
@@ -17,11 +19,14 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var page = FluidViewTemplate.EnsureFluidPage(context, "display");
-            var shape = (await Shape.EvaluateAsync(context)).ToObjectValue();
+            if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
+            {
+                throw new ArgumentException("DisplayHelper missing while invoking 'display'");
+            }
 
-            var htmlContent = await page.DisplayAsync(shape);
-            htmlContent.WriteTo(writer, page.HtmlEncoder);
+            var shape = (await Shape.EvaluateAsync(context)).ToObjectValue();
+            var htmlContent = await (Task<IHtmlContent>)displayHelper(shape);
+            htmlContent.WriteTo(writer, HtmlEncoder.Default);
             return Completion.Normal;
         }
     }
