@@ -34,9 +34,6 @@ namespace Orchard.DisplayManagement.Fluid
                 case "endzone":
                     return BuildZoneStatement();
 
-                case "AddTagHelper":
-                    return BuildAddTagHelperStatement(tag);
-
                 case "link":
                 case "style":
                 case "resources":
@@ -103,13 +100,6 @@ namespace Orchard.DisplayManagement.Fluid
 
             var unexpectedTag = _currentContext?.Tag.Term.Name ?? "undefined";
             throw new ParseException($"Unexpected tag: ${unexpectedTag} not matching zone tag.");
-        }
-
-        private AddTagHelperStatement BuildAddTagHelperStatement(ParseTreeNode tag)
-        {
-            var name = tag.ChildNodes[0].FindToken().ValueString;
-            var assembly = tag.ChildNodes[1].FindToken().ValueString;
-            return new AddTagHelperStatement(name, assembly);
         }
 
         private TagHelperStatement BuildTagHelperStatement(ParseTreeNode tag)

@@ -24,9 +24,6 @@ namespace Orchard.DisplayManagement.Fluid
             Zone.Rule = "zone" + FilterArguments;
             var ZoneEnd = ToTerm("endzone");
 
-            var AddTagHelper = new NonTerminal("AddTagHelper");
-            AddTagHelper.Rule = "AddTagHelper" + Term + "," + Term;
-
             var ContentLink = new NonTerminal("a");
             ContentLink.Rule = "a" + FilterArguments | "a" + FilterArguments + "/";
             var ContentLinkEnd = ToTerm("enda");
@@ -54,7 +51,7 @@ namespace Orchard.DisplayManagement.Fluid
             Menu.Rule = "menu" + FilterArguments;
 
             KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments | Display
-                | Zone | ZoneEnd | AddTagHelper | ContentLink | ContentLinkEnd
+                | Zone | ZoneEnd | ContentLink | ContentLinkEnd
                 | Script | ScriptEnd | Link | Style | Resources | Meta
                 | Shape | Menu;
 
@@ -66,7 +63,7 @@ namespace Orchard.DisplayManagement.Fluid
             // Only Identifier and Arguments will be in the tree.
             MarkPunctuation(",",
                 "self_closed", "render_section", "page_title", "display", "zone",
-                "AddTagHelper", "a", "script", "link", "style", "resources", "meta",
+                "a", "script", "link", "style", "resources", "meta",
                 "shape", "menu");
         }
     }
