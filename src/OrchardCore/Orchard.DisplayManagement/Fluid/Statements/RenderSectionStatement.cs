@@ -4,6 +4,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
+using Microsoft.AspNetCore.Html;
 using Orchard.DisplayManagement.Fluid.Ast;
 
 namespace Orchard.DisplayManagement.Fluid.Statements
@@ -22,13 +23,30 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var page = FluidViewTemplate.EnsureFluidPage(context, "render_section");
+            if (!context.AmbientValues.TryGetValue("ThemeLayout", out dynamic layout))
+            {
+                throw new ArgumentException("ThemeLayout missing while invoking 'render_section'");
+            }
+
+            if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
+            {
+                throw new ArgumentException("DisplayHelper missing while invoking 'render_section'");
+            }
+
             var arguments = _arguments == null ? new FilterArguments()
                 : (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
             var required = arguments.HasNamed("required") ? Convert.ToBoolean(arguments["required"].ToStringValue()) : false;
-            var htmlContent = await page.RenderSectionAsync(Name, required);
-            htmlContent.WriteTo(writer, page.HtmlEncoder);
+
+            var zone = layout[Name];
+
+            if (required && zone != null && zone.Items.Count == 0)
+            {
+                throw new InvalidOperationException("Zone not found while invoking 'render_section': " + Name);
+            }
+
+            var htmlContent = await (Task<IHtmlContent>)displayHelper(zone);
+            htmlContent.WriteTo(writer, HtmlEncoder.Default);
             return Completion.Normal;
         }
     }

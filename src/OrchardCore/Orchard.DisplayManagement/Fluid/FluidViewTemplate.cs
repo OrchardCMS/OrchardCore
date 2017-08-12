@@ -14,6 +14,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Fluid.Internal;
 using Orchard.DisplayManagement.Implementation;
+using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Liquid;
 using Orchard.Settings;
@@ -125,6 +126,9 @@ namespace Orchard.DisplayManagement.Fluid
             }
 
             context.AmbientValues.Add("ViewLocalizer", localizer);
+
+            var layout = services.GetRequiredService<ILayoutAccessor>().GetLayout();
+            context.AmbientValues.Add("ThemeLayout", layout);
 
             var site = await services.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
             context.MemberAccessStrategy.Register(site.GetType());
