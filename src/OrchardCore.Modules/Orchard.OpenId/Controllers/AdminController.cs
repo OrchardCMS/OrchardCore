@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +18,7 @@ using Orchard.OpenId.Services;
 using Orchard.OpenId.ViewModels;
 using Orchard.Security.Services;
 using Orchard.Settings;
+using Orchard.Users;
 using Orchard.Users.Models;
 
 namespace Orchard.OpenId.Controllers
@@ -34,8 +35,8 @@ namespace Orchard.OpenId.Controllers
         private readonly OpenIdApplicationStore _applicationStore;
         private readonly INotifier _notifier;
         private readonly IOpenIdService _openIdService;
-        private readonly IEnumerable<IPasswordValidator<User>> _passwordValidators;
-        private readonly UserManager<User> _userManager;
+        private readonly IEnumerable<IPasswordValidator<IUser>> _passwordValidators;
+        private readonly UserManager<IUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
 
         public AdminController(
@@ -46,8 +47,8 @@ namespace Orchard.OpenId.Controllers
             IRoleProvider roleProvider,
             OpenIddictApplicationManager<OpenIdApplication> applicationManager,
             OpenIdApplicationStore applicationStore,
-            IEnumerable<IPasswordValidator<User>> passwordValidators,
-            UserManager<User> userManager,
+            IEnumerable<IPasswordValidator<IUser>> passwordValidators,
+            UserManager<IUser> userManager,
             IOptions<IdentityOptions> identityOptions,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier,
@@ -160,7 +161,7 @@ namespace Orchard.OpenId.Controllers
             else if (model.UpdateClientSecret)
             {
                 var user = await _userManager.FindByNameAsync(User.Identity.Name);
-                await ValidateClientSecretAsync(user, model.ClientSecret, (key, message) => ModelState.AddModelError(key, message));
+                await ValidateClientSecretAsync((User)user, model.ClientSecret, (key, message) => ModelState.AddModelError(key, message));
             }
             
             OpenIdApplication application = null;
@@ -270,7 +271,7 @@ namespace Orchard.OpenId.Controllers
             if (model.Type == ClientType.Confidential)
             {
                 var user = await _userManager.FindByNameAsync(User.Identity.Name);
-                await ValidateClientSecretAsync(user, model.ClientSecret, (key, message) => ModelState.AddModelError(key, message));
+                await ValidateClientSecretAsync((User)user, model.ClientSecret, (key, message) => ModelState.AddModelError(key, message));
             }
             else if (model.Type == ClientType.Public && !string.IsNullOrEmpty(model.ClientSecret))
             {
