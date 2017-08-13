@@ -4,28 +4,26 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
+using Fluid.Tags;
 using Microsoft.AspNetCore.Html;
 
-namespace Orchard.DisplayManagement.Fluid.Statements
+namespace Orchard.DisplayManagement.Fluid.Tags
 {
-    public class DisplayStatement : Statement
+    public class RenderBodyTag : SimpleTag
     {
-        public DisplayStatement(Expression shape)
-        {
-            Shape = shape;
-        }
-
-        public Expression Shape { get; }
-
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
+            if (!context.AmbientValues.TryGetValue("ThemeLayout", out dynamic layout))
             {
-                throw new ArgumentException("DisplayHelper missing while invoking 'display'");
+                throw new ArgumentException("ThemeLayout missing while invoking 'render_body'");
             }
 
-            var shape = (await Shape.EvaluateAsync(context)).ToObjectValue();
-            var htmlContent = await (Task<IHtmlContent>)displayHelper(shape);
+            if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
+            {
+                throw new ArgumentException("DisplayHelper missing while invoking 'render_body'");
+            }
+
+            var htmlContent = await (Task<IHtmlContent>)displayHelper(layout.Content);
             htmlContent.WriteTo(writer, HtmlEncoder.Default);
             return Completion.Normal;
         }

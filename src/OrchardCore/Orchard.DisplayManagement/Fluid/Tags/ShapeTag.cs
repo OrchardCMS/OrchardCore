@@ -5,13 +5,29 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
+using Fluid.Tags;
+using Irony.Parsing;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Orchard.DisplayManagement.Fluid.Ast;
 using Orchard.DisplayManagement.TagHelpers;
 
-namespace Orchard.DisplayManagement.Fluid.Statements
+namespace Orchard.DisplayManagement.Fluid.Tags
 {
+    public class ShapeTag : ITag
+    {
+        public BnfTerm GetSyntax(FluidGrammar grammar)
+        {
+            return grammar.Identifier + grammar.FilterArguments;
+        }
+
+        public Statement Parse(ParseTreeNode node, ParserContext context)
+        {
+            var child = node.ChildNodes[0];
+            return new ShapeStatement(child.ChildNodes[0].Token.ValueString, ArgumentsExpression.Build(child.ChildNodes[1]));
+        }
+    }
+
     public class ShapeStatement : Statement
     {
         private readonly ArgumentsExpression _arguments;

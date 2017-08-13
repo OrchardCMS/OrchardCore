@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
+using Irony.Parsing;
 
 namespace Orchard.DisplayManagement.Fluid.Ast
 {
@@ -24,6 +26,11 @@ namespace Orchard.DisplayManagement.Fluid.Ast
             }
 
             return FluidValue.Create(arguments);
+        }
+
+        public static ArgumentsExpression Build(ParseTreeNode node)
+        {
+            return new ArgumentsExpression(node.ChildNodes.Select(DefaultFluidParser.BuildFilterArgument).ToArray());
         }
     }
 }

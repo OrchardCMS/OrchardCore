@@ -8,6 +8,8 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
+using Fluid.Tags;
+using Irony.Parsing;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor;
@@ -17,8 +19,35 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Fluid.Ast;
 
-namespace Orchard.DisplayManagement.Fluid.Statements
+namespace Orchard.DisplayManagement.Fluid.Tags
 {
+    public class TagHelperTag : ITag
+    {
+        public BnfTerm GetSyntax(FluidGrammar grammar)
+        {
+            return grammar.FilterArguments;
+        }
+
+        public Statement Parse(ParseTreeNode node, ParserContext context)
+        {
+            return new TagHelperStatement(node.Term.Name, ArgumentsExpression.Build(node.ChildNodes[0]), null);
+        }
+    }
+
+    public class TagHelperBlock : CustomBlock
+    {
+        public override BnfTerm GetSyntax(FluidGrammar grammar)
+        {
+            return grammar.FilterArguments;
+        }
+
+        public override Statement Parse(ParseTreeNode node, ParserContext context)
+        {
+            return new TagHelperStatement(context.CurrentBlock.Tag.Term.Name, ArgumentsExpression.Build(
+                context.CurrentBlock.Tag.ChildNodes[0]), context.CurrentBlock.Statements);
+        }
+    }
+
     public class TagHelperStatement : TagStatement
     {
         private static ConcurrentDictionary<string, TagHelperDescriptor> _descriptors = new ConcurrentDictionary<string, TagHelperDescriptor>();
@@ -148,7 +177,8 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             }
 
             var resolver = services.GetRequiredService<ITagHelperTypeResolver>();
-            var types = resolver.Resolve(assembly, SourceLocation.Zero, new ErrorSink()).ToList();
+            var types = resolver.Resolve(assembly, Microsoft.AspNetCore.Razor.SourceLocation.Zero,
+                new ErrorSink()).ToList();
 
             foreach (var type in types)
             {

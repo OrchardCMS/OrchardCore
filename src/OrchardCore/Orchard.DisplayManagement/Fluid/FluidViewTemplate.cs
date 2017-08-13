@@ -18,14 +18,33 @@ using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Liquid;
 using Orchard.Settings;
+using Orchard.DisplayManagement.Fluid.Tags;
 
 namespace Orchard.DisplayManagement.Fluid
 {
-    public class FluidViewTemplate : FluidTemplate<ActivatorFluidParserFactory<FluidViewParser>>
+    public class FluidViewTemplate : BaseFluidTemplate<FluidViewTemplate>
     {
         public static readonly string ViewsFolder = "Views";
         public static readonly string ViewExtension = ".liquid";
         public static readonly MemoryCache Cache = new MemoryCache(new MemoryCacheOptions());
+
+        static FluidViewTemplate()
+        {
+            Factory.RegisterTag<RenderBodyTag>("render_body");
+            Factory.RegisterTag<RenderSectionTag>("render_section");
+            Factory.RegisterTag<RenderTitleSegmentsTag>("page_title");
+            Factory.RegisterTag<DisplayTag>("display");
+            Factory.RegisterTag<ShapeTag>("shape");
+            Factory.RegisterTag<TagHelperTag>("link");
+            Factory.RegisterTag<TagHelperTag>("style");
+            Factory.RegisterTag<TagHelperTag>("resources");
+            Factory.RegisterTag<TagHelperTag>("meta");
+            Factory.RegisterTag<TagHelperTag>("script");
+
+            Factory.RegisterBlock<ZoneBlock>("zone");
+            Factory.RegisterBlock<TagHelperBlock>("a");
+            Factory.RegisterBlock<TagHelperBlock>("javascript");
+        }
 
         internal static async Task RenderAsync(FluidPage page)
         {

@@ -4,11 +4,29 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
+using Fluid.Tags;
+using Irony.Parsing;
 using Microsoft.AspNetCore.Html;
 using Orchard.DisplayManagement.Fluid.Ast;
 
-namespace Orchard.DisplayManagement.Fluid.Statements
+namespace Orchard.DisplayManagement.Fluid.Tags
 {
+    public class RenderSectionTag : ITag
+    {
+        public BnfTerm GetSyntax(FluidGrammar grammar)
+        {
+            return grammar.Identifier + grammar.FilterArguments;
+        }
+
+        public Statement Parse(ParseTreeNode node, ParserContext context)
+        {
+            var child = node.ChildNodes[0];
+            var name = child.ChildNodes[0].Token.ValueString;
+            var arguments = child.ChildNodes.Count > 1 ? ArgumentsExpression.Build(child.ChildNodes[1]) : null;
+            return new RenderSectionStatement(name, arguments);
+        }
+    }
+
     public class RenderSectionStatement : Statement
     {
         private readonly ArgumentsExpression _arguments;

@@ -6,13 +6,28 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
+using Fluid.Tags;
+using Irony.Parsing;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Orchard.DisplayManagement.Fluid.Ast;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.TagHelpers;
 
-namespace Orchard.DisplayManagement.Fluid.Statements
+namespace Orchard.DisplayManagement.Fluid.Tags
 {
+    public class ZoneBlock : CustomBlock
+    {
+        public override BnfTerm GetSyntax(FluidGrammar grammar)
+        {
+            return grammar.FilterArguments;
+        }
+
+        public override Statement Parse(ParseTreeNode node, ParserContext context)
+        {
+            return new ZoneStatement(ArgumentsExpression.Build(context.CurrentBlock.Tag.ChildNodes[0]), context.CurrentBlock.Statements);
+        }
+    }
+
     public class ZoneStatement : TagStatement
     {
         private readonly ArgumentsExpression _arguments;
