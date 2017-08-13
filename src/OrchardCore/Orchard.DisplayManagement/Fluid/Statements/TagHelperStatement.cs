@@ -48,11 +48,8 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
             // temporary code before implementing tag helpers differently
-            // here, replace what was done through '_ViewImports.liquid'
             Register((IServiceProvider)services, "*", "Orchard.Contents");
-            Register((IServiceProvider)services, "*", "Orchard.DisplayManagement");
             Register((IServiceProvider)services, "*", "Orchard.ResourceManagement");
-            Register((IServiceProvider)services, "*", "Orchard.Menu");
 
             var descriptor = _descriptors.FirstOrDefault(kv => kv.Key.StartsWith(Name)).Value;
 

@@ -34,12 +34,13 @@ namespace Orchard.DisplayManagement.Fluid
                 case "endzone":
                     return BuildZoneStatement();
 
+                case "shape":
+                    return BuildShapeStatement(tag);
+
                 case "link":
                 case "style":
                 case "resources":
                 case "meta":
-                case "shape":
-                case "menu":
                 case "script":
                     return BuildTagHelperStatement(tag);
 
@@ -97,6 +98,11 @@ namespace Orchard.DisplayManagement.Fluid
             throw new ParseException($"Unexpected tag: ${unexpectedTag} not matching zone tag.");
         }
 
+        private ShapeStatement BuildShapeStatement(ParseTreeNode tag)
+        {
+            return new ShapeStatement(tag.ChildNodes[0].Token.ValueString, BuildArgumentsExpression(tag.ChildNodes[1]));
+        }
+
         private TagHelperStatement BuildTagHelperStatement(ParseTreeNode tag)
         {
             if (tag != null)
@@ -119,11 +125,6 @@ namespace Orchard.DisplayManagement.Fluid
                 ExitBlock();
                 return statement;
             }
-        }
-
-        private ShapeStatement BuildShapeStatement(ParseTreeNode tag)
-        {
-            return new ShapeStatement(tag.Term.Name , BuildArgumentsExpression(tag.ChildNodes[0]));
         }
 
         protected virtual ArgumentsExpression BuildArgumentsExpression(ParseTreeNode node)

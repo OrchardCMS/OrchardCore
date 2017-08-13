@@ -48,20 +48,17 @@ namespace Orchard.DisplayManagement.Fluid
             Meta.Rule = "meta" + FilterArguments;
 
             var Shape = new NonTerminal("shape");
-            Shape.Rule = "shape" + FilterArguments;
-
-            var Menu = new NonTerminal("menu");
-            Menu.Rule = "menu" + FilterArguments;
+            Shape.Rule = "shape" + Identifier + FilterArguments;
 
             KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments | Display
                 | Zone | ZoneEnd | ContentLink | ContentLinkEnd | JavaScript | JavaScriptEnd
-                | Script | Link | Style | Resources | Meta | Shape | Menu;
+                | Script | Link | Style | Resources | Meta | Shape;
 
             // Prevent the text from being added in the parsed tree.
             // Only Identifier and Arguments will be in the tree.
             MarkPunctuation(",",
                 "render_section", "page_title", "display", "zone", "a", "javascript",
-                "script", "link", "style", "resources", "meta", "shape", "menu");
+                "script", "link", "style", "resources", "meta", "shape");
         }
     }
 }

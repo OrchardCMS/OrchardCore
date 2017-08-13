@@ -16,29 +16,29 @@ namespace Orchard.DisplayManagement.Fluid.Statements
     {
         private readonly ArgumentsExpression _arguments;
 
-        public ShapeStatement(string name, ArgumentsExpression arguments)
+        public ShapeStatement(string type, ArgumentsExpression arguments)
         {
-            Name = name;
+            Type = type;
             _arguments = arguments;
         }
 
-        public string Name { get; }
+        public string Type { get; }
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("ShapeFactory", out var shapeFactory))
             {
-                throw new ArgumentException("ShapeFactory missing while invoking '" + Name + "'");
+                throw new ArgumentException("ShapeFactory missing while invoking 'shape " + Type + "'");
             }
 
             if (!context.AmbientValues.TryGetValue("DisplayHelperFactory", out var displayHelperFactory))
             {
-                throw new ArgumentException("DisplayHelperFactory missing while invoking '" + Name + "'");
+                throw new ArgumentException("DisplayHelperFactory missing while invoking 'shape " + Type + "'");
             }
 
             if (!context.AmbientValues.TryGetValue("ViewContext", out var viewContext))
             {
-                throw new ArgumentException("ViewContext missing while invoking '" + Name + "'");
+                throw new ArgumentException("ViewContext missing while invoking 'shape " + Type + "'");
             }
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
@@ -53,7 +53,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var tagHelperContext = new TagHelperContext(attributes,
                 new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
-            var tagHelperOutput = new TagHelperOutput(Name, attributes, (_, e) =>
+            var tagHelperOutput = new TagHelperOutput(Type, attributes, (_, e) =>
                 Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
 
             var shapeTagHelper = new ShapeTagHelper((IShapeFactory) shapeFactory,
