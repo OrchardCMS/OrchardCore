@@ -165,6 +165,14 @@ namespace Orchard.DisplayManagement.Fluid
                             return result;
                         }
 
+                        foreach (var item in (o as Shape).Items)
+                        {
+                            if (item is IShape && item.Metadata.Type == n)
+                            {
+                                return item;
+                            }
+                        }
+
                         return null;
                     }));
                 }

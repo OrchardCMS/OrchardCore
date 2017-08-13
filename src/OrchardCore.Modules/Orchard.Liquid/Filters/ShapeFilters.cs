@@ -52,15 +52,6 @@ namespace Orchard.Liquid.Filters
         }
     }
 
-    public class ShapeNamedFilter : ILiquidFilter
-    {
-        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
-        {
-            var shape = input.ToObjectValue() as Shape;
-            return Task.FromResult<FluidValue>(new ObjectValue(shape?.Named(arguments.At(0).ToStringValue())));
-        }
-    }
-
     public class ShapeStringFilter : ILiquidFilter
     {
         public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)

@@ -60,7 +60,6 @@ namespace Orchard.Liquid
 
             services.AddLiquidFilter<LocalizerFilter>("t");
             services.AddLiquidFilter<DateTimeFilter>("date_time");
-            services.AddLiquidFilter<ShapeNamedFilter>("named");
             services.AddLiquidFilter<ShapeStringFilter>("shape_string");
             services.AddLiquidFilter<ClearAlternatesFilter>("clear_alternates");
             services.AddLiquidFilter<ShapeTypeFilter>("shape_type");
