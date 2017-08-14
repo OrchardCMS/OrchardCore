@@ -37,16 +37,10 @@ namespace Orchard.DisplayManagement.Fluid
             Factory.RegisterTag<RenderTitleSegmentsTag>("page_title");
             Factory.RegisterTag<DisplayTag>("display");
             Factory.RegisterTag<ShapeTag>("shape");
-
-            Factory.RegisterTag<TagHelperTag>("link");
-            Factory.RegisterTag<TagHelperTag>("style");
-            Factory.RegisterTag<TagHelperTag>("resources");
-            Factory.RegisterTag<TagHelperTag>("meta");
-            Factory.RegisterTag<TagHelperTag>("script");
+            Factory.RegisterTag<HelperTag>("helper");
 
             Factory.RegisterBlock<ZoneBlock>("zone");
-            Factory.RegisterBlock<TagHelperBlock>("a");
-            Factory.RegisterBlock<TagHelperBlock>("javascript");
+            Factory.RegisterBlock<HelperBlock>("helperblock");
 
             TemplateContext.GlobalFilters.WithFluidViewFilters();
         }

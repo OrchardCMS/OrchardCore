@@ -21,7 +21,7 @@ using Orchard.DisplayManagement.Fluid.Ast;
 
 namespace Orchard.DisplayManagement.Fluid.Tags
 {
-    public class TagHelperTag : ITag
+    public class HelperTag : ITag
     {
         public BnfTerm GetSyntax(FluidGrammar grammar)
         {
@@ -30,11 +30,11 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
         public Statement Parse(ParseTreeNode node, ParserContext context)
         {
-            return new TagHelperStatement(node.Term.Name, ArgumentsExpression.Build(node.ChildNodes[0]), null);
+            return new HelperStatement(ArgumentsExpression.Build(node.ChildNodes[0]), null);
         }
     }
 
-    public class TagHelperBlock : CustomBlock
+    public class HelperBlock : CustomBlock
     {
         public override BnfTerm GetSyntax(FluidGrammar grammar)
         {
@@ -43,35 +43,32 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
         public override Statement Parse(ParseTreeNode node, ParserContext context)
         {
-            return new TagHelperStatement(context.CurrentBlock.Tag.Term.Name, ArgumentsExpression.Build(
-                context.CurrentBlock.Tag.ChildNodes[0]), context.CurrentBlock.Statements);
+            return new HelperStatement(ArgumentsExpression.Build(context.CurrentBlock.Tag.ChildNodes[0]),
+                context.CurrentBlock.Statements);
         }
     }
 
-    public class TagHelperStatement : TagStatement
+    public class HelperStatement : TagStatement
     {
         private static ConcurrentDictionary<string, TagHelperDescriptor> _descriptors = new ConcurrentDictionary<string, TagHelperDescriptor>();
 
         private readonly ArgumentsExpression _arguments;
 
-        public TagHelperStatement(string name, ArgumentsExpression arguments, IList<Statement> statements) : base(statements)
+        public HelperStatement(ArgumentsExpression arguments, IList<Statement> statements) : base(statements)
         {
-            Name = name.Replace("javascript", "script");
             _arguments = arguments;
         }
-
-        public string Name { get; }
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("Services", out var services))
             {
-                throw new ArgumentException("Services missing while invoking '" + Name + "'");
+                throw new ArgumentException("Services missing while invoking 'helper'");
             }
 
             if (!context.AmbientValues.TryGetValue("ViewContext", out var viewContext))
             {
-                throw new ArgumentException("ViewContext missing while invoking '" + Name + "'");
+                throw new ArgumentException("ViewContext missing while invoking 'helper'");
             }
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
@@ -80,7 +77,8 @@ namespace Orchard.DisplayManagement.Fluid.Tags
             Register((IServiceProvider)services, "*", "Orchard.Contents");
             Register((IServiceProvider)services, "*", "Orchard.ResourceManagement");
 
-            var descriptor = _descriptors.FirstOrDefault(kv => kv.Key.StartsWith(Name)).Value;
+            var helper = arguments.At(0).ToStringValue();
+            var descriptor = _descriptors.FirstOrDefault(kv => kv.Key.StartsWith(helper)).Value;
 
             if (descriptor == null)
             {
@@ -158,7 +156,7 @@ namespace Orchard.DisplayManagement.Fluid.Tags
             var tagHelperContext = new TagHelperContext(attributes,
                 new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
-            var tagHelperOutput = new TagHelperOutput(Name, attributes, (_, e)
+            var tagHelperOutput = new TagHelperOutput(helper, attributes, (_, e)
                 => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content.ToString())));
 
             tagHelperOutput.Content.AppendHtml(content.ToString());
