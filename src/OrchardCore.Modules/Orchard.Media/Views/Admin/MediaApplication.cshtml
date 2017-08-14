@@ -51,7 +51,8 @@
                     class="media-container-main-list-item"
                     v-on:click="selectMedia(media)">
                     <div class="media-container-main-item" v-bind:class="{selected: selectedMedia == media}">
-                        <img v-bind:src="media.url + '?width=240&height=240'" />
+                        <img v-if="media.mime.startsWith('image')" v-bind:src="media.url + '?width=240&height=240'" v-bind:data-mime="media.mime" />
+                        <i v-else class="fa fa-file-o" v-bind:data-mime="media.mime"></i>
                         <div class="media-container-main-item-title">
                             <span class="media-filename">{{ media.name }}</span>
                         </div>

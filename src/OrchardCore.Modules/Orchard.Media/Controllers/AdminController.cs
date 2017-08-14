@@ -69,7 +69,8 @@ namespace Orchard.Media.Controllers
                 size = f.Length,
                 folder = path,
                 url = f.AbsolutePath,
-                mediaPath = f.Path
+                mediaPath = f.Path,
+                mime = MimeMapping.MimeTypes.GetMimeMapping(f.Path)
             }).ToArray());
         }
 
@@ -93,7 +94,8 @@ namespace Orchard.Media.Controllers
                 size = f.Length,
                 folder = f.Folder,
                 url = f.AbsolutePath,
-                mediaPath = f.Path
+                mediaPath = f.Path,
+                mime = MimeMapping.MimeTypes.GetMimeMapping(f.Path)
             });
         }
 

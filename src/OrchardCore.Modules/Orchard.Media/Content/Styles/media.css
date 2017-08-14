@@ -6067,6 +6067,9 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
     width: 3cm; }
     .media-container-main ol li .media-container-main-item {
       margin-bottom: 16px; }
+      .media-container-main ol li .media-container-main-item .fa {
+        font-size: 10em;
+        text-align: center; }
   .media-container-main ol img {
     max-height: 240px;
     width: 100%; }
