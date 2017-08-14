@@ -6,19 +6,21 @@ using Fluid;
 using Fluid.Accessors;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
+using Orchard.DisplayManagement.Fluid.Filters;
 using Orchard.DisplayManagement.Fluid.Internal;
+using Orchard.DisplayManagement.Fluid.Tags;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Liquid;
 using Orchard.Settings;
-using Orchard.DisplayManagement.Fluid.Tags;
 
 namespace Orchard.DisplayManagement.Fluid
 {
@@ -44,6 +46,8 @@ namespace Orchard.DisplayManagement.Fluid
             Factory.RegisterBlock<ZoneBlock>("zone");
             Factory.RegisterBlock<TagHelperBlock>("a");
             Factory.RegisterBlock<TagHelperBlock>("javascript");
+
+            TemplateContext.GlobalFilters.WithFluidViewFilters();
         }
 
         internal static async Task RenderAsync(FluidPage page)
@@ -53,17 +57,8 @@ namespace Orchard.DisplayManagement.Fluid
             var fileProviderAccessor = services.GetRequiredService<IFluidViewFileProviderAccessor>();
             var template = Parse(path, fileProviderAccessor.FileProvider, Cache);
 
-            var displayHelper = services.GetRequiredService<IDisplayHelperFactory>().CreateHelper(page.ViewContext);
-
             var context = new TemplateContext();
-
-            context.Contextualize(new DisplayContext()
-            {
-                ServiceProvider = page.Context.RequestServices,
-                DisplayAsync = displayHelper,
-                ViewContext = page.ViewContext,
-                Value = page.Model
-            });
+            context.Contextualize(page, (object)page.Model);
 
             var liquidOptions = services.GetRequiredService<IOptions<LiquidOptions>>().Value;
 
@@ -108,6 +103,20 @@ namespace Orchard.DisplayManagement.Fluid
 
     public static class TemplateContextExtensions
     {
+        public static void Contextualize(this TemplateContext context, RazorPage page, object model)
+        {
+            var services = page.Context.RequestServices;
+            var displayHelper = services.GetRequiredService<IDisplayHelperFactory>().CreateHelper(page.ViewContext);
+
+            context.Contextualize(new DisplayContext()
+            {
+                ServiceProvider = page.Context.RequestServices,
+                DisplayAsync = displayHelper,
+                ViewContext = page.ViewContext,
+                Value = model
+            });
+        }
+
         public static async void Contextualize(this TemplateContext context, DisplayContext displayContext)
         {
             var services = displayContext.ServiceProvider;

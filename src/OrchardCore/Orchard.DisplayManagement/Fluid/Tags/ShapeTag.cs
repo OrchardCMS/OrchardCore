@@ -23,8 +23,8 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
         public Statement Parse(ParseTreeNode node, ParserContext context)
         {
-            var child = node.ChildNodes[0];
-            return new ShapeStatement(child.ChildNodes[0].Token.ValueString, ArgumentsExpression.Build(child.ChildNodes[1]));
+            var args = node.ChildNodes[0];
+            return new ShapeStatement(args.ChildNodes[0].Token.ValueString, ArgumentsExpression.Build(args.ChildNodes[1]));
         }
     }
 

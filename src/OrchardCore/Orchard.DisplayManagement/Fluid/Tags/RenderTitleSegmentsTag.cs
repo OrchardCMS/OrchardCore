@@ -22,9 +22,9 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
         public Statement Parse(ParseTreeNode node, ParserContext context)
         {
-            var child = node.ChildNodes[0];
-            var segment = DefaultFluidParser.BuildExpression(child.ChildNodes[0]);
-            var expression = child.ChildNodes.Count > 1 ? ArgumentsExpression.Build(child.ChildNodes[1]) : null;
+            var args = node.ChildNodes[0];
+            var segment = DefaultFluidParser.BuildExpression(args.ChildNodes[0]);
+            var expression = args.ChildNodes.Count > 1 ? ArgumentsExpression.Build(args.ChildNodes[1]) : null;
             return new RenderTitleSegmentsStatement(segment, expression);
         }
     }

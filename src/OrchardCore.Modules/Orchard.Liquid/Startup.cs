@@ -1,19 +1,12 @@
-﻿using System;
-using System.Linq;
-using Fluid;
+﻿using Fluid;
 using Fluid.Values;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Data.Migration;
-using Orchard.DisplayManagement.Shapes;
-using Orchard.DisplayManagement.Zones;
-using Orchard.Environment.Extensions;
 using Orchard.Indexing;
 using Orchard.Liquid.Drivers;
 using Orchard.Liquid.Filters;
@@ -57,17 +50,6 @@ namespace Orchard.Liquid
             services.AddLiquidFilter<DisplayTextFilter>("display_text");
             services.AddLiquidFilter<DisplayUrlFilter>("display_url");
             services.AddLiquidFilter<ContentUrlFilter>("href");
-
-            services.AddLiquidFilter<LocalizerFilter>("t");
-            services.AddLiquidFilter<DateTimeFilter>("date_time");
-            services.AddLiquidFilter<ShapeStringFilter>("shape_string");
-            services.AddLiquidFilter<ClearAlternatesFilter>("clear_alternates");
-            services.AddLiquidFilter<ShapeTypeFilter>("shape_type");
-            services.AddLiquidFilter<DisplayTypeFilter>("display_type");
-            services.AddLiquidFilter<ShapePositionFilter>("shape_position");
-            services.AddLiquidFilter<ShapeTabFilter>("shape_tab");
-            services.AddLiquidFilter<RemoveItemFilter>("remove_item");
-            services.AddLiquidFilter<SetPropertyFilter>("set_property");
         }
     }
 }
