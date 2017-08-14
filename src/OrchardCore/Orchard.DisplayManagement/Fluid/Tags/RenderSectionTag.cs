@@ -15,15 +15,12 @@ namespace Orchard.DisplayManagement.Fluid.Tags
     {
         public BnfTerm GetSyntax(FluidGrammar grammar)
         {
-            return grammar.Identifier + grammar.FilterArguments;
+            return grammar.FilterArguments;
         }
 
         public Statement Parse(ParseTreeNode node, ParserContext context)
         {
-            var args = node.ChildNodes[0];
-            var name = args.ChildNodes[0].Token.ValueString;
-            var arguments = args.ChildNodes.Count > 1 ? ArgumentsExpression.Build(args.ChildNodes[1]) : null;
-            return new RenderSectionStatement(name, arguments);
+            return new RenderSectionStatement(ArgumentsExpression.Build(node.ChildNodes[0]));
         }
     }
 
@@ -31,13 +28,10 @@ namespace Orchard.DisplayManagement.Fluid.Tags
     {
         private readonly ArgumentsExpression _arguments;
 
-        public RenderSectionStatement(string name, ArgumentsExpression arguments)
+        public RenderSectionStatement(ArgumentsExpression arguments)
         {
-            Name = name;
             _arguments = arguments;
         }
-
-        public string Name { get; }
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
@@ -54,13 +48,13 @@ namespace Orchard.DisplayManagement.Fluid.Tags
             var arguments = _arguments == null ? new FilterArguments()
                 : (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
+            var name = arguments.At(0).ToStringValue();
             var required = arguments.HasNamed("required") ? Convert.ToBoolean(arguments["required"].ToStringValue()) : false;
-
-            var zone = layout[Name];
+            var zone = layout[name];
 
             if (required && zone != null && zone.Items.Count == 0)
             {
-                throw new InvalidOperationException("Zone not found while invoking 'render_section': " + Name);
+                throw new InvalidOperationException("Zone not found while invoking 'render_section': " + name);
             }
 
             var htmlContent = await (Task<IHtmlContent>)displayHelper(zone);

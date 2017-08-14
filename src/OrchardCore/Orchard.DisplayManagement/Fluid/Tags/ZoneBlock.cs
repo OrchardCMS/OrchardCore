@@ -47,17 +47,12 @@ namespace Orchard.DisplayManagement.Fluid.Tags
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
             var attributes = new TagHelperAttributeList();
-
             var zoneTagHelper = new ZoneTagHelper((ILayoutAccessor)layoutAccessor);
+            zoneTagHelper.Name = arguments.At(0).ToStringValue();
 
             if (arguments.HasNamed("position"))
             {
                 zoneTagHelper.Position = arguments["position"].ToStringValue();
-            }
-
-            if (arguments.HasNamed("name"))
-            {
-                zoneTagHelper.Name = arguments["name"].ToStringValue();
             }
 
             var content = new StringWriter();

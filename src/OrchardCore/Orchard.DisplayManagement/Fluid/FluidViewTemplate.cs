@@ -37,6 +37,7 @@ namespace Orchard.DisplayManagement.Fluid
             Factory.RegisterTag<RenderTitleSegmentsTag>("page_title");
             Factory.RegisterTag<DisplayTag>("display");
             Factory.RegisterTag<ShapeTag>("shape");
+
             Factory.RegisterTag<TagHelperTag>("link");
             Factory.RegisterTag<TagHelperTag>("style");
             Factory.RegisterTag<TagHelperTag>("resources");
@@ -155,24 +156,26 @@ namespace Orchard.DisplayManagement.Fluid
             context.MemberAccessStrategy.Register(site.GetType());
             context.LocalScope.SetValue("Site", site);
 
-            var model = displayContext.Value as dynamic;
-            context.RegisterObject((object)model);
+            var model = displayContext.Value;
+            context.RegisterObject(model);
             context.LocalScope.SetValue("Model", model);
 
-            if (model is Shape)
+            if (model is Shape shape)
             {
-                if (model.Properties.Count > 0)
+                if (shape.Properties.Count > 0)
                 {
-                    foreach (var prop in model.Properties)
+                    foreach (var prop in shape.Properties)
                     {
-                        context.RegisterObject((object)prop.Value);
+                        context.RegisterObject(prop.Value);
                     }
                 }
             }
 
-            if (((object)model).GetType().GetProperty("Field") != null)
+            var field = model.GetType().GetProperty("Field");
+
+            if (field != null)
             {
-                context.RegisterObject(((object)model.Field));
+                context.MemberAccessStrategy.Register(field.PropertyType);
             }
         }
 

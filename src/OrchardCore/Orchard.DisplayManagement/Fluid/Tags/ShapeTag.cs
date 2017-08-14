@@ -18,13 +18,12 @@ namespace Orchard.DisplayManagement.Fluid.Tags
     {
         public BnfTerm GetSyntax(FluidGrammar grammar)
         {
-            return grammar.Identifier + grammar.FilterArguments;
+            return grammar.FilterArguments;
         }
 
         public Statement Parse(ParseTreeNode node, ParserContext context)
         {
-            var args = node.ChildNodes[0];
-            return new ShapeStatement(args.ChildNodes[0].Token.ValueString, ArgumentsExpression.Build(args.ChildNodes[1]));
+            return new ShapeStatement(ArgumentsExpression.Build(node.ChildNodes[0]));
         }
     }
 
@@ -32,29 +31,26 @@ namespace Orchard.DisplayManagement.Fluid.Tags
     {
         private readonly ArgumentsExpression _arguments;
 
-        public ShapeStatement(string type, ArgumentsExpression arguments)
+        public ShapeStatement(ArgumentsExpression arguments)
         {
-            Type = type;
             _arguments = arguments;
         }
-
-        public string Type { get; }
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("ShapeFactory", out var shapeFactory))
             {
-                throw new ArgumentException("ShapeFactory missing while invoking 'shape " + Type + "'");
+                throw new ArgumentException("ShapeFactory missing while invoking 'shape'");
             }
 
             if (!context.AmbientValues.TryGetValue("DisplayHelperFactory", out var displayHelperFactory))
             {
-                throw new ArgumentException("DisplayHelperFactory missing while invoking 'shape " + Type + "'");
+                throw new ArgumentException("DisplayHelperFactory missing while invoking 'shape'");
             }
 
             if (!context.AmbientValues.TryGetValue("ViewContext", out var viewContext))
             {
-                throw new ArgumentException("ViewContext missing while invoking 'shape " + Type + "'");
+                throw new ArgumentException("ViewContext missing while invoking 'shape'");
             }
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
@@ -69,11 +65,15 @@ namespace Orchard.DisplayManagement.Fluid.Tags
             var tagHelperContext = new TagHelperContext(attributes,
                 new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
-            var tagHelperOutput = new TagHelperOutput(Type, attributes, (_, e) =>
+            var tagHelperOutput = new TagHelperOutput("shape", attributes, (_, e) =>
                 Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
 
             var shapeTagHelper = new ShapeTagHelper((IShapeFactory) shapeFactory,
-                (IDisplayHelperFactory)displayHelperFactory) { ViewContext = (ViewContext)viewContext };
+                (IDisplayHelperFactory)displayHelperFactory)
+                {
+                    Type = arguments.At(0).ToStringValue(),
+                    ViewContext = (ViewContext)viewContext
+                };
 
             await shapeTagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
 

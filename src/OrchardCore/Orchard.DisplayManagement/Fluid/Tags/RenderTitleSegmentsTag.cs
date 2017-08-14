@@ -17,15 +17,12 @@ namespace Orchard.DisplayManagement.Fluid.Tags
     {
         public BnfTerm GetSyntax(FluidGrammar grammar)
         {
-            return grammar.Expression + grammar.FilterArguments;
+            return grammar.FilterArguments;
         }
 
         public Statement Parse(ParseTreeNode node, ParserContext context)
         {
-            var args = node.ChildNodes[0];
-            var segment = DefaultFluidParser.BuildExpression(args.ChildNodes[0]);
-            var expression = args.ChildNodes.Count > 1 ? ArgumentsExpression.Build(args.ChildNodes[1]) : null;
-            return new RenderTitleSegmentsStatement(segment, expression);
+            return new RenderTitleSegmentsStatement(ArgumentsExpression.Build(node.ChildNodes[0]));
         }
     }
 
@@ -33,13 +30,10 @@ namespace Orchard.DisplayManagement.Fluid.Tags
     {
         private readonly ArgumentsExpression _arguments;
 
-        public RenderTitleSegmentsStatement(Expression segment, ArgumentsExpression arguments)
+        public RenderTitleSegmentsStatement(ArgumentsExpression arguments)
         {
-            Segment = segment;
             _arguments = arguments;
         }
-
-        public Expression Segment { get; }
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
@@ -50,11 +44,12 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
             var titleBuilder = ((IServiceProvider)services).GetRequiredService<IPageTitleBuilder>();
 
-            var segment = new HtmlString((await Segment.EvaluateAsync(context)).ToStringValue());
+            //var segment = new HtmlString((await Segment.EvaluateAsync(context)).ToStringValue());
 
             var arguments = _arguments == null ? new FilterArguments()
                 : (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
+            var segment = new HtmlString(arguments.At(0).ToStringValue());
             var position = arguments.HasNamed("position") ? arguments["position"].ToStringValue() : "0";
             var separator = arguments.HasNamed("separator") ? new HtmlString(arguments["separator"].ToStringValue()) : null;
 

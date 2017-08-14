@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>{% page_title Site.SiteName position: "before", separator: "-" %}</title>
+    <title>{% page_title Site.SiteName, position: "before", separator: "-" %}</title>
     {% meta charset:"utf-8" %}
     {% meta http_equiv:"X-UA-Compatible", content:"IE=edge" %}
     {% meta name:"viewport", content:"width=device-width, initial-scale=1.0" %}
@@ -48,14 +48,14 @@
 
             <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
 
-                {% shape menu alias: "alias:main-menu", cache_id: "main-menu", cache_duration: "00:05:00", cache_tag: "alias:main-menu" %}
+                {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_duration: "00:05:00", cache_tag: "alias:main-menu" %}
 
             </div><!--/.nav-collapse -->
         </div>
         <!-- /.container -->
     </nav>
 
-    {% render_section Header required: false %}
+    {% render_section "Header", required: false %}
 
     <div class="container">
         <div class="row">
@@ -68,7 +68,7 @@
     <footer>
         <div class="container">
             <div class="row">
-                {% render_section Footer required: false %}
+                {% render_section "Footer", required: false %}
             </div>
         </div>
     </footer>
