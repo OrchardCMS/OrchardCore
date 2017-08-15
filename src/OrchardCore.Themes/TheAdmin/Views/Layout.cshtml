@@ -1,4 +1,4 @@
-﻿@inject Orchard.Settings.ISiteService SiteService
+@inject Orchard.Settings.ISiteService SiteService
 @{
     var site = await SiteService.GetSiteSettingsAsync();
 }
@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/TheAdmin/Styles/TheAdmin.min.css">
     <style asp-name="font-awesome" use-cdn="true"></style>
 
-    <script asp-name="admin" asp-src="/TheAdmin/Scripts/TheAdmin.js" depends-on="jquery, jquery-ui" at="Foot"></script>
+    <script asp-name="admin" asp-src="/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jquery-ui" at="Foot"></script>
 
     <resources type="Header" />
 

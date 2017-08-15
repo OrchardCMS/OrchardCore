@@ -7,13 +7,13 @@
     ],
     "output": "Content/Styles/TheAdmin.css"
   },
-{
-  "generateSourceMaps": false,
-  "inputs": [
-      "../../OrchardCore.Modules/Orchard.Resources/Assets/Bootstrap/Js/tether.js",
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "../../OrchardCore.Modules/Orchard.Resources/Assets/Bootstrap/Js/popper.js",
       "../../OrchardCore.Modules/Orchard.Resources/Assets/Bootstrap/Js/bootstrap.js",
       "Assets/js/*.js"
-  ],
-  "output": "Content/Scripts/TheAdmin.js"
-}
+    ],
+    "output": "Content/Scripts/TheAdmin.js"
+  }
 ]

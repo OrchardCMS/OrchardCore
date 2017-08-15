@@ -1,5 +1,10 @@
 @import '../../../Orchard.Resources/Assets/Bootstrap/scss/bootstrap.scss';
 
+$gray-base: #000 !default;
+$gray-nr: lighten($gray-base, 13.5%) !default; // #222
+$gray-dark: lighten($gray-base, 20%) !default; // #333
+$gray: lighten($gray-base, 33.5%) !default; // #555
+
 .media-container {
 
     .media-container-navigation {
@@ -120,7 +125,7 @@
             }
 
             .selected {
-                @extend .card-outline-primary;
+                @extend .border-primary;
             }
         }
 
@@ -136,7 +141,7 @@
 }
 
 .media-container-main-item-title {
-    @extend .card-block;
+    @extend .card;
     
     .media-filename {
         @extend .card-text;
@@ -150,10 +155,10 @@
         @extend .col-md-4;
     }
 
-    .media-container-main-item-title {
+    /*.media-container-main-item-title {
         // Hide the filename in modals
         @extend .hidden-xl-down;
-    }
+    }*/
 }
 
 /* Toolbar */
