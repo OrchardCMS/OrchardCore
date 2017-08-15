@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Orchard.StorageProviders;
 using ISession = YesSql.ISession;
 
 namespace Orchard.Media.Controllers
@@ -63,15 +64,7 @@ namespace Orchard.Media.Controllers
 
             var files = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => !x.IsDirectory);
 
-            return Json(files.Select(f => new
-            {
-                name = f.Name,
-                size = f.Length,
-                folder = path,
-                url = f.AbsolutePath,
-                mediaPath = f.Path,
-                mime = MimeMapping.MimeTypes.GetMimeMapping(f.Path)
-            }).ToArray());
+            return Json(files.Select(CreateFileResult).ToArray());
         }
 
         public async Task<IActionResult> GetMediaItem(string path)
@@ -88,15 +81,7 @@ namespace Orchard.Media.Controllers
 
             var f = await _mediaFileStore.GetFileAsync(path);
 
-            return Json(new
-            {
-                name = f.Name,
-                size = f.Length,
-                folder = f.Folder,
-                url = f.AbsolutePath,
-                mediaPath = f.Path,
-                mime = MimeMapping.MimeTypes.GetMimeMapping(f.Path)
-            });
+            return Json(CreateFileResult(f));
         }
 
         [HttpPost]
@@ -144,14 +129,7 @@ namespace Orchard.Media.Controllers
 
                     var mediaFile = await _mediaFileStore.GetFileAsync(mediaFilePath);
 
-                    result.Add(new
-                    {
-                        name = mediaFile.Name,
-                        size = mediaFile.Length,
-                        folder = path,
-                        url = mediaFile.AbsolutePath,
-                        mediaPath = mediaFile.Path
-                    });
+                    result.Add(CreateFileResult(mediaFile));
                 }
                 catch (Exception ex)
                 {
@@ -261,6 +239,19 @@ namespace Orchard.Media.Controllers
         public IActionResult MediaApplication()
         {
             return View();
+        }
+
+        public object CreateFileResult(IFile mediaFile)
+        {
+            return new
+            {
+                name = mediaFile.Name,
+                size = mediaFile.Length,
+                folder = mediaFile.Folder,
+                url = mediaFile.AbsolutePath,
+                mediaPath = mediaFile.Path,
+                mime = MimeMapping.MimeTypes.GetMimeMapping(mediaFile.Path)
+            };
         }
     }
 }
