@@ -88,8 +88,8 @@
       "name": "ContentDefinition",
       "ContentTypes": [
         {
-          "Name": "Page",
-          "DisplayName": "Page",
+          "Name": "Article",
+          "DisplayName": "Article",
           "Hidden": false,
           "Settings": {
             "Creatable": "True",
@@ -100,8 +100,8 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "Page",
-              "Name": "Page",
+              "PartName": "Article",
+              "Name": "Article",
               "Settings": {
                 "Position": "2"
               }
@@ -450,6 +450,13 @@
               "Settings": {
                 "Position": "0"
               }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
             }
           ]
         },
@@ -494,8 +501,8 @@
           ]
         },
         {
-          "Name": "FlowPage",
-          "DisplayName": "Flow Page",
+          "Name": "Page",
+          "DisplayName": "Page",
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
@@ -505,8 +512,8 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "FlowPage",
-              "Name": "FlowPage",
+              "PartName": "Page",
+              "Name": "Page",
               "Settings": {
                 "Position": "3"
               }
@@ -549,80 +556,11 @@
       "ContentParts": [
         {
           "Name": "BlogPost",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "TextField",
-              "Name": "Subtitle",
-              "Settings": {
-                "DisplayName": "Subtitle",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
-                },
-                "Hint": null,
-                "Position": "0"
-              }
-            },
-            {
-              "FieldName": "TextField",
-              "Name": "HeaderImageUrl",
-              "Settings": {
-                "DisplayName": "Header Image Url",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
-                },
-                "Hint": "A url of the image to display in the header of the post. "
-              }
-            }
-          ]
+          "Settings": {}
         },
         {
-          "Name": "Page",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "TextField",
-              "Name": "Subtitle",
-              "Settings": {
-                "DisplayName": "Subtitle",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
-                },
-                "Hint": null
-              }
-            },
-            {
-              "FieldName": "TextField",
-              "Name": "HeaderImageUrl",
-              "Settings": {
-                "DisplayName": "Header Image Url",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
-                },
-                "Hint": "A url to the image to display in the header of the page."
-              }
-            }
-          ]
+          "Name": "Article",
+          "Settings": {}
         },
         {
           "Name": "Blockquote",
@@ -667,7 +605,9 @@
                 },
                 "Hint": null,
                 "Editor": null,
-                "Position": "0"
+                "Position": "0",
+                "Multiple": false,
+                "Required":  true
               }
             },
             {
@@ -683,7 +623,7 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Hint": null,
+                "Hint": "A description of the image used as title or alternate text",
                 "Editor": null,
                 "Position": "1"
               }
@@ -803,14 +743,6 @@
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
           "Author": "[js: parameters('AdminUsername')]",
-          "BlogPost": {
-            "Subtitle": {
-              "Text": "Problems look mighty small from 150 miles up"
-            },
-            "HeaderImageUrl": {
-              "Text": "https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/post-bg.jpg"
-            }
-          },
           "TitlePart": {
             "Title": "Man must explore, and this is exploration at its greatest"
           },
@@ -827,19 +759,11 @@
         },
         {
           "ContentItemId": "[js: uuid()]",
-          "ContentType": "Page",
+          "ContentType": "Article",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
           "Author": "[js: parameters('AdminUsername')]",
-          "Page": {
-            "Subtitle": {
-              "Text": "This is what I do"
-            },
-            "HeaderImageUrl": {
-              "Text": "https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/about-bg.jpg"
-            }
-          },
           "AutoroutePart": {
             "Path": "about",
             "SetHomepage": false

@@ -48,7 +48,7 @@ namespace Orchard.Media
 
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddSingleton<ContentPart, ImagePart>();
+            services.AddSingleton<ContentPart, ImageMediaPart>();
             services.AddMedia();
 
             services.AddLiquidFilter<MediaUrlFilter>("media_url");
