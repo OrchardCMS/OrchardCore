@@ -184,7 +184,7 @@
                 },
                 "Pattern": "{{ ContentItem | display_text | slugify }}",
                 "AllowCustomPath": "True",
-                "ShowHomepageOption": "False",
+                "ShowHomepageOption": "True",
                 "Position": "1"
               }
             },
@@ -245,7 +245,7 @@
                   "Template": null
                 },
                 "Pattern": "{{ ContentItem | container | display_text | slugify }}/{{ ContentItem | display_text | slugify }}",
-                "AllowCustomPath": "False",
+                "AllowCustomPath": "True",
                 "ShowHomepageOption": "False"
               }
             },
@@ -309,7 +309,7 @@
                   "Template": null
                 },
                 "Pattern": "{{ ContentItem | display_text | slugify }}",
-                "AllowCustomPath": "False",
+                "AllowCustomPath": "True",
                 "ShowHomepageOption": "True"
               }
             },
@@ -532,7 +532,7 @@
                   "Template": null
                 },
                 "Pattern": "{{ ContentItem | display_text | slugify }}",
-                "AllowCustomPath": "False",
+                "AllowCustomPath": "True",
                 "ShowHomepageOption": "True"
               }
             },
