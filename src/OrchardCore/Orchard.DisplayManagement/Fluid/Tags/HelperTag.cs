@@ -10,6 +10,7 @@ using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
 using Irony.Parsing;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor;
@@ -18,6 +19,7 @@ using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Fluid.Ast;
+using Orchard.Mvc;
 
 namespace Orchard.DisplayManagement.Fluid.Tags
 {
@@ -73,22 +75,43 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
-            // temporary code before implementing tag helpers differently
-            Register((IServiceProvider)services, "*", "Orchard.Contents");
-            Register((IServiceProvider)services, "*", "Orchard.ResourceManagement");
-
             var helper = arguments.At(0).ToStringValue();
             var descriptor = _descriptors.FirstOrDefault(kv => kv.Key.StartsWith(helper)).Value;
 
             if (descriptor == null)
             {
-                return Completion.Normal;
+                var types = ((IServiceProvider)services).GetRequiredService<ApplicationPartManager>()
+                   .ApplicationParts.Where(part => part is TagHelperApplicationPart)
+                   .SelectMany(part => ((TagHelperApplicationPart)part).Types);
+
+                foreach (var type in types)
+                {
+                    if (type.CustomAttributes.Count() > 0)
+                    {
+                        var attribute = type.CustomAttributes.First();
+                        if (attribute.ConstructorArguments.Count > 0)
+                        {
+                            var argument = attribute.ConstructorArguments.First();
+                            if (argument.ArgumentType == typeof(string))
+                            {
+                                Register((IServiceProvider)services, (string)argument.Value, type.Assembly.GetName().Name);
+                            }
+                        }
+                    }
+                }
+
+                descriptor = _descriptors.FirstOrDefault(kv => kv.Key.StartsWith(helper)).Value;
+
+                if (descriptor == null)
+                {
+                    return Completion.Normal;
+                }
             }
 
             var tagHelperType = Type.GetType(descriptor.TypeName + ", " + descriptor.AssemblyName);
             var razorPage = (((ViewContext)viewContext).View as RazorView).RazorPage as RazorPage;
 
-            var tagHelper = typeof(FluidPage).GetMethod("CreateTagHelper")
+            var tagHelper = typeof(RazorPage).GetMethod("CreateTagHelper")
                 .MakeGenericMethod(tagHelperType).Invoke(razorPage, null) as ITagHelper;
 
             var attributes = new TagHelperAttributeList();
