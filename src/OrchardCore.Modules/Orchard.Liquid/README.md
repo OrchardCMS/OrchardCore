@@ -12,13 +12,16 @@ be converted to the corresponding HTML entities. If you need to render some raw 
 
 ## Filters
 
-### DisplayUrl
+All the default filters that are available in the standard Liquid syntax are available in Orchard. On top of that each Orchard module can
+provide custom filters for their own purpose. Here is a list of common filters that apply to content items.
+
+### display_url
 
 Returns the url of the content item
 
 Input
 ```
-{{ content | DisplayUrl }}
+{{ ContentItem | display_url }}
 ```
 
 Output
@@ -26,13 +29,13 @@ Output
 /blog/my-blog-post
 ```
 
-### DisplayText
+### display_text
 
 Returns the title of the content item
 
 Input
 ```
-{{ content | DisplayText }}
+{{ ContentItem | display_text }}
 ```
 
 Output
@@ -40,22 +43,51 @@ Output
 My Blog Post
 ```
 
-### Raw
+### slugify
 
-Returns the raw HTML content without any encoding. Use it when you control all the input data and want to 
-render custom HTML.
+Convert a text into a string that can be used in a url.
 
 Input
 ```
-{{ "<b>text</b>" | Raw }}
+{{ "This is some text" | slugify }}
 ```
 
 Output
 ```
-<b>text</b>
+this-is-some-text
 ```
 
-Without the filter, the result would be `&lt;b&gt;text&lt;/b&gt;
+### container
+
+Returns the container content item of another content item.
+
+
+Input
+```
+{{ ContentItem | container | display_text }}
+```
+In this example we assume `ContentItem` represents a blog post.
+
+Output
+```
+Blog
+```
+
+### local
+
+Converts a UTC date and time to the local date and time based on the site settings.
+
+Input
+```
+{{ "now" | local | date: "%c" }}
+or
+{{ ContentItem.CreatedUtc | local | date: "%c" }}
+```
+
+Output
+```
+Wednesday, 02 August 2017 11:54:48
+```
 
 ## Properties
 
@@ -122,7 +154,7 @@ To access a named query, use the name as a property on the `Queries` object like
 
 ```
 {% for item in Queries.MyQuery %}
-{{ item | DisplayText }}
+{{ item | display_text }}
 {% endfor %}
 ```
 

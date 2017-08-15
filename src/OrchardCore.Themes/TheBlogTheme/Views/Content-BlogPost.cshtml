@@ -1,4 +1,4 @@
-﻿<zone name="Header">
+<zone name="Header">
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
     <header class="intro-header" style="background-image: url('@OrDefault(Model.ContentItem.Content.BlogPost.HeaderImageUrl.Text, "https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/post-bg.jpg")')">
@@ -25,4 +25,4 @@
     </header>
 </zone>
 @await DisplayAsync(Model.Content.Named("Contents_Metadata"))
-@await DisplayAsync(New.BodyAspect(ContentItem: Model.ContentItem))
+@await DisplayAsync(Model.Content.Named("MarkdownPart"))

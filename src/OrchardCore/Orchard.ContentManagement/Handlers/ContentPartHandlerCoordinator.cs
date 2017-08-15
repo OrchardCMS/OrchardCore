@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Handlers;
@@ -154,23 +154,30 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
         {
             // This method is called on Get()
             // Adds all the missing parts to a content item based on the content type definition.
+            // A part is missing if the content type is changed and an old content item is loaded, 
+            // like edited.
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
+            {
                 return;
+            }
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                if (!context.ContentItem.Has(partName))
+                var part = context.ContentItem.Get<ContentPart>(typePartDefinition.Name);
+
+                if (part == null)
                 {
-                    var part = _contentPartFactory.GetTypeActivator(partName).CreateInstance();
-                    _partHandlers.Invoke(handler => handler.Loading(context, part), Logger);
+                    part = _contentPartFactory.GetTypeActivator(partName).CreateInstance();
+                    context.ContentItem.Weld(typePartDefinition.Name, part);
                 }
+
+                _partHandlers.Invoke(handler => handler.Loading(context, part), Logger);
 
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
-                    var part = context.ContentItem.Get<ContentPart>(typePartDefinition.Name);
                     var fieldName = partFieldDefinition.Name;
 
                     if (!part.Has(fieldName))

@@ -9,6 +9,7 @@ Features:
         Name: Queries
         Description: Provides querying capabilities.
         Category: Content Management
+        Dependencies: Orchard.Liquid
     Orchard.Queries.Sql:
         Name: SQL Queries
         Description: Introduces a way to create custom Queries in pure SQL.

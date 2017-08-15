@@ -230,6 +230,13 @@ namespace Orchard.ContentTypes.Services
         public void RemovePart(string name)
         {
             var partDefinition = _contentDefinitionManager.GetPartDefinition(name);
+
+            if (partDefinition == null)
+            {
+                // Couldn't find this named part, ignore it
+                return;
+            }
+
             var fieldDefinitions = partDefinition.Fields.ToArray();
             foreach (var fieldDefinition in fieldDefinitions)
             {

@@ -18,11 +18,12 @@ $(function () {
         var targetId = $(this).data("target-id");
         var prefixesName = $(this).data("prefixes-name");
         var zonesName = $(this).data("zones-name");
+        var flowmetadata = $(this).data("flowmetadata");
         var zone = $(this).data("zone");
         var prefix = guid();
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
-            url: createEditorUrl + "/" + type + "?prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId
+            url: createEditorUrl + "/" + type + "?prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata
         })
         .done(function (data) {
             var result = JSON.parse(data);

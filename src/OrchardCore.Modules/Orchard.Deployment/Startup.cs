@@ -10,6 +10,7 @@ using Orchard.Deployment.Steps;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
+using Orchard.Security.Permissions;
 using YesSql.Indexes;
 
 namespace Orchard.Deployment
@@ -21,6 +22,8 @@ namespace Orchard.Deployment
             services.AddDeploymentServices();
 
             services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IPermissionProvider, Permissions>();
+
             services.AddScoped<IDisplayManager<DeploymentStep>, DisplayManager<DeploymentStep>>();
             services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();
 

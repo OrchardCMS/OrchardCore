@@ -1,4 +1,4 @@
-﻿using Orchard.ContentManagement.Metadata.Settings;
+using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.ContentManagement.MetaData;
 using Orchard.Data.Migration;
 
@@ -20,6 +20,16 @@ namespace Orchard.Flows
                 .WithDescription("Provides a customizable body for your content item."));
 
             return 1;
+        }
+
+        public int UpdateFrom1()
+        {
+            _contentDefinitionManager.AlterPartDefinition("BagPart", builder => builder
+                .Attachable()
+                .Reusable()
+                .WithDescription("Provides a collection behavior for your content item."));
+
+            return 2;
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Orchard.Queries
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ITemplateContextHandler, QueryFilter>();
+            services.AddLiquidFilter<QueryFilter>("query");
         }
     }
 }
