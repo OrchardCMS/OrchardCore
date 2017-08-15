@@ -12,7 +12,6 @@ using Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using Orchard.DisplayManagement.Events;
 using Orchard.DisplayManagement.Extensions;
-using Orchard.DisplayManagement.Fluid;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.LocationExpander;
@@ -58,8 +57,6 @@ namespace Orchard.DisplayManagement
             {
                 options.FileProviders.Add(new ThemingFileProvider());
             });
-
-            services.AddFluidViews();
 
             services.AddSingleton<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
             services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, ThemingViewsFeatureProvider>();

@@ -45,7 +45,7 @@ namespace Orchard.DisplayManagement.Fluid
             TemplateContext.GlobalFilters.WithFluidViewFilters();
         }
 
-        internal static async Task RenderAsync(FluidPage page)
+        internal static async Task RenderAsync(RazorPage<dynamic> page)
         {
             var services = page.Context.RequestServices;
             var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
