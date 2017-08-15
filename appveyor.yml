@@ -6,8 +6,8 @@ environment:
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
 # Install scripts. (runs after repo cloning)
 install:
-  # Download .NET Core 2.0 Preview 2 SDK and add to PATH
-  - ps: $urlCurrent = "https://dotnetcli.azureedge.net/dotnet/Sdk/2.0.0-preview2-006497/dotnet-sdk-2.0.0-preview2-006497-win-x64.zip"
+  # Download .NET Core 2.0 SDK and add to PATH
+  - ps: $urlCurrent = "https://dotnetcli.azureedge.net/dotnet/Sdk/2.0.0/dotnet-sdk-2.0.0-win-x64.zip"
   - ps: $env:DOTNET_INSTALL_DIR = "$pwd\.dotnetsdk"
   - ps: mkdir $env:DOTNET_INSTALL_DIR -Force | Out-Null
   - ps: $tempFileCurrent = [System.IO.Path]::GetTempFileName()
