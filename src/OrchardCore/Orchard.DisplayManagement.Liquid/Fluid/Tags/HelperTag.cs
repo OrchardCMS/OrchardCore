@@ -73,6 +73,13 @@ namespace Orchard.DisplayManagement.Fluid.Tags
                 throw new ArgumentException("ViewContext missing while invoking 'helper'");
             }
 
+            var razorPage = (((ViewContext)viewContext).View as RazorView)?.RazorPage as RazorPage;
+
+            if (razorPage == null)
+            {
+                return Completion.Normal;
+            }
+
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
             var helper = arguments.At(0).ToStringValue();
@@ -109,7 +116,6 @@ namespace Orchard.DisplayManagement.Fluid.Tags
             }
 
             var tagHelperType = Type.GetType(descriptor.TypeName + ", " + descriptor.AssemblyName);
-            var razorPage = (((ViewContext)viewContext).View as RazorView).RazorPage as RazorPage;
 
             var tagHelper = typeof(RazorPage).GetMethod("CreateTagHelper")
                 .MakeGenericMethod(tagHelperType).Invoke(razorPage, null) as ITagHelper;

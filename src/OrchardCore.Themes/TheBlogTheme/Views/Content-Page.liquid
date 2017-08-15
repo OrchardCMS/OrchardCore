@@ -1,6 +1,6 @@
 ﻿{% assign typePart = Model.ContentItem.Content[Model.ContentItem.ContentType] %}
 
-{% zone "Header" %}
+{% helperblock "zone", name: "Header" %}
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
     <header class="intro-header" style="background-image: url('{{ typePart.HeaderImageUrl.Text | default: "https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/post-bg.jpg" }}')">
@@ -16,7 +16,7 @@
             </div>
         </div>
     </header>
-{% endzone %}
+{% endhelperblock %}
 
 {% display Model.Content.Contents_Metadata %}
 {% display Model.Content.BodyPart %}

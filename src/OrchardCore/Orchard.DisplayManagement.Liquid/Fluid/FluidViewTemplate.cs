@@ -36,10 +36,8 @@ namespace Orchard.DisplayManagement.Fluid
             Factory.RegisterTag<RenderSectionTag>("render_section");
             Factory.RegisterTag<RenderTitleSegmentsTag>("page_title");
             Factory.RegisterTag<DisplayTag>("display");
-            Factory.RegisterTag<ShapeTag>("shape");
             Factory.RegisterTag<HelperTag>("helper");
 
-            Factory.RegisterBlock<ZoneBlock>("zone");
             Factory.RegisterBlock<HelperBlock>("helperblock");
 
             TemplateContext.GlobalFilters.WithFluidViewFilters();
