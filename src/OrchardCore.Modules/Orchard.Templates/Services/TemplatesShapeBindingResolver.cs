@@ -1,10 +1,12 @@
 ﻿using Fluid;
 using Microsoft.AspNetCore.Html;
+using Orchard.Admin;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Fluid;
 using Orchard.Liquid;
 using Orchard.Templates.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Orchard.Templates.Services
 {
@@ -12,17 +14,26 @@ namespace Orchard.Templates.Services
     {
         private TemplatesDocument _templatesDocument;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public TemplatesShapeBindingResolver(
             TemplatesManager templatesManager, 
-            ILiquidTemplateManager liquidTemplateManager)
+            ILiquidTemplateManager liquidTemplateManager,
+            IHttpContextAccessor httpContextAccessor)
         {
             _templatesDocument = templatesManager.GetTemplatesDocumentAsync().GetAwaiter().GetResult();
             _liquidTemplateManager = liquidTemplateManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public bool TryGetDescriptorBinding(string shapeType, out ShapeBinding shapeBinding)
         {
+            if (AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
+            {
+                shapeBinding = null;
+                return false;
+            }
+
             if (_templatesDocument.Templates.TryGetValue(shapeType, out var template))
             {
                 shapeBinding = new ShapeBinding()
