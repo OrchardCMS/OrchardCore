@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
-using Irony.Parsing;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Fluid.Ast;
@@ -13,29 +12,9 @@ using Orchard.DisplayManagement.Title;
 
 namespace Orchard.DisplayManagement.Fluid.Tags
 {
-    public class RenderTitleSegmentsTag : ITag
+    public class RenderTitleSegmentsTag : ArgumentsTag
     {
-        public BnfTerm GetSyntax(FluidGrammar grammar)
-        {
-            return grammar.FilterArguments;
-        }
-
-        public Statement Parse(ParseTreeNode node, ParserContext context)
-        {
-            return new RenderTitleSegmentsStatement(ArgumentsExpression.Build(node.ChildNodes[0]));
-        }
-    }
-
-    public class RenderTitleSegmentsStatement : Statement
-    {
-        private readonly ArgumentsExpression _arguments;
-
-        public RenderTitleSegmentsStatement(ArgumentsExpression arguments)
-        {
-            _arguments = arguments;
-        }
-
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
         {
             if (!context.AmbientValues.TryGetValue("Services", out var services))
             {
@@ -43,11 +22,7 @@ namespace Orchard.DisplayManagement.Fluid.Tags
             }
 
             var titleBuilder = ((IServiceProvider)services).GetRequiredService<IPageTitleBuilder>();
-
-            //var segment = new HtmlString((await Segment.EvaluateAsync(context)).ToStringValue());
-
-            var arguments = _arguments == null ? new FilterArguments()
-                : (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
+            var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
 
             var segment = new HtmlString(arguments.At(0).ToStringValue());
             var position = arguments.HasNamed("position") ? arguments["position"].ToStringValue() : "0";

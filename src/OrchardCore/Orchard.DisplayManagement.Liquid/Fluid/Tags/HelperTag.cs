@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
-using Irony.Parsing;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -23,30 +22,19 @@ using Orchard.Mvc;
 
 namespace Orchard.DisplayManagement.Fluid.Tags
 {
-    public class HelperTag : ITag
+    public class HelperTag : ArgumentsTag
     {
-        public BnfTerm GetSyntax(FluidGrammar grammar)
+        public override Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments)
         {
-            return grammar.FilterArguments;
-        }
-
-        public Statement Parse(ParseTreeNode node, ParserContext context)
-        {
-            return new HelperStatement(ArgumentsExpression.Build(node.ChildNodes[0]), null);
+            return new HelperStatement(new ArgumentsExpression(arguments)).WriteToAsync(writer, encoder, context);
         }
     }
 
-    public class HelperBlock : CustomBlock
+    public class HelperBlock : ArgumentsBlock
     {
-        public override BnfTerm GetSyntax(FluidGrammar grammar)
+        public override Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments, IList<Statement> statements)
         {
-            return grammar.FilterArguments;
-        }
-
-        public override Statement Parse(ParseTreeNode node, ParserContext context)
-        {
-            return new HelperStatement(ArgumentsExpression.Build(context.CurrentBlock.Tag.ChildNodes[0]),
-                context.CurrentBlock.Statements);
+            return new HelperStatement(new ArgumentsExpression(arguments), statements).WriteToAsync(writer, encoder, context);
         }
     }
 
@@ -56,7 +44,7 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
         private readonly ArgumentsExpression _arguments;
 
-        public HelperStatement(ArgumentsExpression arguments, IList<Statement> statements) : base(statements)
+        public HelperStatement(ArgumentsExpression arguments, IList<Statement> statements = null) : base(statements)
         {
             _arguments = arguments;
         }
@@ -172,8 +160,7 @@ namespace Orchard.DisplayManagement.Fluid.Tags
                 Completion completion = Completion.Break;
                 for (var index = 0; index < Statements.Count; index++)
                 {
-                    completion = await Statements[index].WriteToAsync(
-                        content, encoder, context);
+                    completion = await Statements[index].WriteToAsync(content, encoder, context);
 
                     if (completion != Completion.Normal)
                     {
@@ -204,8 +191,7 @@ namespace Orchard.DisplayManagement.Fluid.Tags
             }
 
             var resolver = services.GetRequiredService<ITagHelperTypeResolver>();
-            var types = resolver.Resolve(assembly, Microsoft.AspNetCore.Razor.SourceLocation.Zero,
-                new ErrorSink()).ToList();
+            var types = resolver.Resolve(assembly, SourceLocation.Zero, new ErrorSink()).ToList();
 
             foreach (var type in types)
             {

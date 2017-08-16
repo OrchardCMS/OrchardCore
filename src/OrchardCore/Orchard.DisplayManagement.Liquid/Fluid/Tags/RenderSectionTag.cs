@@ -5,35 +5,14 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
-using Irony.Parsing;
 using Microsoft.AspNetCore.Html;
 using Orchard.DisplayManagement.Fluid.Ast;
 
 namespace Orchard.DisplayManagement.Fluid.Tags
 {
-    public class RenderSectionTag : ITag
+    public class RenderSectionTag : ArgumentsTag
     {
-        public BnfTerm GetSyntax(FluidGrammar grammar)
-        {
-            return grammar.FilterArguments;
-        }
-
-        public Statement Parse(ParseTreeNode node, ParserContext context)
-        {
-            return new RenderSectionStatement(ArgumentsExpression.Build(node.ChildNodes[0]));
-        }
-    }
-
-    public class RenderSectionStatement : Statement
-    {
-        private readonly ArgumentsExpression _arguments;
-
-        public RenderSectionStatement(ArgumentsExpression arguments)
-        {
-            _arguments = arguments;
-        }
-
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
         {
             if (!context.AmbientValues.TryGetValue("ThemeLayout", out dynamic layout))
             {
@@ -45,8 +24,7 @@ namespace Orchard.DisplayManagement.Fluid.Tags
                 throw new ArgumentException("DisplayHelper missing while invoking 'render_section'");
             }
 
-            var arguments = _arguments == null ? new FilterArguments()
-                : (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
+            var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
 
             var name = arguments.At(0).ToStringValue();
             var required = arguments.HasNamed("required") ? Convert.ToBoolean(arguments["required"].ToStringValue()) : false;
@@ -57,7 +35,7 @@ namespace Orchard.DisplayManagement.Fluid.Tags
                 throw new InvalidOperationException("Zone not found while invoking 'render_section': " + name);
             }
 
-            var htmlContent = await (Task<IHtmlContent>)displayHelper(zone);
+            var htmlContent = await(Task<IHtmlContent>)displayHelper(zone);
             htmlContent.WriteTo(writer, HtmlEncoder.Default);
             return Completion.Normal;
         }
