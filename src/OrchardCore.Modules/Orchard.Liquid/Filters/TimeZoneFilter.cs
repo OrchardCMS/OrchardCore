@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using Fluid;
@@ -59,7 +59,7 @@ namespace Orchard.Liquid.Filters
 
             _localTimeZone = _localTimeZone ?? TimeZoneInfo.FindSystemTimeZoneById((await _siteService.GetSiteSettingsAsync()).TimeZone);
 
-            var local = TimeZoneInfo.ConvertTime(value, _localTimeZone);
+            var local = TimeZoneInfo.ConvertTime(value, _localTimeZone).LocalDateTime;
             
             return new ObjectValue(local);
         }

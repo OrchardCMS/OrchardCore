@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Text;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -15,7 +15,7 @@ namespace Orchard.DisplayManagement.Fluid.Filters
         public static FilterCollection WithFluidViewFilters(this FilterCollection filters)
         {
             filters.AddAsyncFilter("t", Localize);
-            filters.AddAsyncFilter("date_time", DateTimeShape);
+            filters.AddAsyncFilter("new_shape", NewShape);
             filters.AddAsyncFilter("shape_string", ShapeString);
             filters.AddAsyncFilter("clear_alternates", ClearAlternates);
             filters.AddAsyncFilter("shape_type", ShapeType);
@@ -45,44 +45,52 @@ namespace Orchard.DisplayManagement.Fluid.Filters
                 .GetString(input.ToStringValue(), parameters.ToArray())));
         }
 
-        public static async Task<FluidValue> DateTimeShape(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static Task<FluidValue> NewShape(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("ShapeFactory", out dynamic shapeFactory))
             {
                 throw new ArgumentException("ShapeFactory missing while invoking 'date_time'");
             }
 
-            if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
+            var type = input.ToStringValue();
+            var properties = new Dictionary<string, object>();
+
+            foreach (var name in arguments.Names)
             {
-                throw new ArgumentException("DisplayHelper missing while invoking 'date_time'");
+                properties.Add(LowerKebabToPascalCase(name), arguments[name].ToObjectValue());
             }
 
-            var obj = input.ToObjectValue();
-            DateTime? dateTime = null;
+            return Task.FromResult(FluidValue.Create(((IShapeFactory)shapeFactory)
+                .Create(type, Arguments.From(properties))));
+        }
 
-            if (obj is string stringDate)
+        private static string LowerKebabToPascalCase(string attribute)
+        {
+            attribute = attribute.Trim();
+            bool nextIsUpper = true;
+            var result = new StringBuilder();
+            for (int i = 0; i < attribute.Length; i++)
             {
-                var date = DateTime.Parse(stringDate, context.CultureInfo, DateTimeStyles.AssumeUniversal);
-                dateTime = new DateTime?(date);
-            }
-            else if (obj is DateTime date)
-            {
-                dateTime = new DateTime?(date);
-            }
-            else if (obj is DateTimeOffset dateTimeOffset)
-            {
-                dateTime = new DateTime?(dateTimeOffset.Date);
-            }
-            if (dateTime.HasValue)
-            {
-                Shape shape = arguments.HasNamed("format")
-                    ? shapeFactory.DateTime(Utc: dateTime, Format: arguments["format"].ToStringValue())
-                    : shapeFactory.DateTime(Utc: dateTime);
+                var c = attribute[i];
+                if (c == '-')
+                {
+                    nextIsUpper = true;
+                    continue;
+                }
 
-                return new StringValue((await (Task<IHtmlContent>)displayHelper(shape)).ToString());
+                if (nextIsUpper)
+                {
+                    result.Append(c.ToString().ToUpper());
+                }
+                else
+                {
+                    result.Append(c);
+                }
+
+                nextIsUpper = false;
             }
 
-            return input;
+            return result.ToString();
         }
 
         public static async Task<FluidValue> ShapeString(FluidValue input, FilterArguments arguments, TemplateContext context)
