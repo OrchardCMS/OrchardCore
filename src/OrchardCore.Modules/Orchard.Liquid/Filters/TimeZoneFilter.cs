@@ -59,7 +59,7 @@ namespace Orchard.Liquid.Filters
 
             _localTimeZone = _localTimeZone ?? TimeZoneInfo.FindSystemTimeZoneById((await _siteService.GetSiteSettingsAsync()).TimeZone);
 
-            var local = TimeZoneInfo.ConvertTime(value, _localTimeZone).LocalDateTime;
+            var local = TimeZoneInfo.ConvertTime(value, _localTimeZone);
             
             return new ObjectValue(local);
         }

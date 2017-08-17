@@ -11,8 +11,7 @@
     {% endhelperblock %}
     <p class="post-meta">
       {% assign format = "MMMM dd, yyyy" | t %}
-      {% assign localTime = Model.ContentItem.CreatedUtc | local %}
-      {% assign dateTime = "DateTime" | new_shape: utc: localTime, format: format | shape_string %}
+      {% assign dateTime = "DateTime" | new_shape: utc: Model.ContentItem.CreatedUtc, format: format | shape_string %}
       {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
     </p>
 </div>
