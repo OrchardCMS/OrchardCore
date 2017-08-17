@@ -2,27 +2,42 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Orchard.StorageProviders.FileSystem
 {
     public class FileSystemStore : IFileStore
     {
-        private readonly string _localPathPrefix;
+        private readonly string _localPath;
+        private readonly string _requestUrlPrefix;
+        private readonly string _pathPrefix;
         private readonly string _publicPathPrefix;
 
-        public string LocalBasePath => _localPathPrefix;
-
-        public FileSystemStore(string localPathPrefix, string publicPathPrefix)
+        public FileSystemStore(string localPath, string requestUrlPrefix, string pathPrefix)
         {
-            _localPathPrefix = localPathPrefix;
-            _publicPathPrefix = publicPathPrefix;
+            _localPath = localPath;
+            _requestUrlPrefix = NormalizePath(requestUrlPrefix ?? "/");
+
+            if (!_requestUrlPrefix.StartsWith("/"))
+            {
+                _requestUrlPrefix = "/" + _requestUrlPrefix;
+            }
+
+            _pathPrefix = pathPrefix;
+            _publicPathPrefix = Combine(_requestUrlPrefix, _pathPrefix);
         }
 
         public string Combine(params string[] paths)
         {
-            return String.Join("/", paths.Select(NormalizePath));
+            var combined = String.Join("/", paths.Select(x => NormalizePath(x).Trim('/')));
+
+            // Preserve the initial '/' if it's present
+            if (paths.Length > 0 && paths[0].StartsWith("/"))
+            {
+                combined = "/" + combined;
+            }
+
+            return combined;
         }
 
         private string NormalizePath(string path)
@@ -79,7 +94,7 @@ namespace Orchard.StorageProviders.FileSystem
                 .Select(f =>
                 {
                     var fileInfo = new DirectoryInfo(f);
-                    var fileSubPath = f.Substring(_localPathPrefix.Length);
+                    var fileSubPath = f.Substring(_localPath.Length);
                     return new FileSystemFile(fileSubPath, _publicPathPrefix, fileInfo);
                 }).ToArray()
             );
@@ -90,7 +105,7 @@ namespace Orchard.StorageProviders.FileSystem
                 .Select(f =>
                 {
                     var fileInfo = new FileInfo(f);
-                    var fileSubPath = f.Substring(_localPathPrefix.Length);
+                    var fileSubPath = f.Substring(_localPath.Length);
                     return new FileSystemFile(fileSubPath, _publicPathPrefix, fileInfo);
                 }).ToArray()
             );
@@ -141,12 +156,12 @@ namespace Orchard.StorageProviders.FileSystem
 
         public Task<IFile> MapFileAsync(string absoluteUrl)
         {
-            if (!absoluteUrl.StartsWith(_publicPathPrefix, StringComparison.OrdinalIgnoreCase))
+            if (!absoluteUrl.StartsWith(_pathPrefix, StringComparison.OrdinalIgnoreCase))
             {
                 return Task.FromResult(default(IFile));
             }
 
-            return GetFileAsync(absoluteUrl.Substring(_publicPathPrefix.Length));
+            return GetFileAsync(absoluteUrl.Substring(_pathPrefix.Length));
         }
 
         public Task<bool> TryMoveFileAsync(string oldPath, string newPath)
@@ -202,8 +217,8 @@ namespace Orchard.StorageProviders.FileSystem
         
         private string GetPhysicalPath(string subpath)
         {
-            string physicalPath = string.IsNullOrEmpty(subpath) ? _localPathPrefix : _localPathPrefix + subpath;
-            return ValidatePath(_localPathPrefix, physicalPath);
+            string physicalPath = string.IsNullOrEmpty(subpath) ? _localPath : _localPath + subpath;
+            return ValidatePath(_localPath, physicalPath);
         }
 
         /// <summary>

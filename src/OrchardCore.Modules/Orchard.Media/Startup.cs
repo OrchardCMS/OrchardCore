@@ -42,8 +42,7 @@ namespace Orchard.Media
                 var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
 
                 string mediaPath = GetMediaPath(env, shellOptions.Value, shellSettings);
-                var requestMediaPath = (string.IsNullOrEmpty(shellSettings.RequestUrlPrefix) ? "" : "/" + shellSettings.RequestUrlPrefix) + "/media";
-                return new MediaFileStore(new FileSystemStore(mediaPath, requestMediaPath));
+                return new MediaFileStore(new FileSystemStore(mediaPath, shellSettings.RequestUrlPrefix, "/media"));
             });
 
             services.AddScoped<INavigationProvider, AdminMenu>();
