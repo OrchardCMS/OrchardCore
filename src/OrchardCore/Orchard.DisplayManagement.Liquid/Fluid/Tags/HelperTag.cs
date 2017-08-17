@@ -117,7 +117,7 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
                 foreach (var attribute in descriptor.Attributes)
                 {
-                    if (attribute.IsNameMatch(attributeName))
+                    if (attribute.IsNameMatch(attributeName) || attribute.IsNameMatch("asp-" + attributeName))
                     {
                         found = true;
                         var property = tagHelperType.GetProperty(attribute.PropertyName);
