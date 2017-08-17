@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>@RenderTitleSegments(T[site.SiteName], "before")</title>
+    <title>@RenderTitleSegments(site.SiteName, "before")</title>
     <!-- Bootstrap core CSS -->
     <link href="/TheAgencyTheme/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom fonts for this template -->
@@ -22,6 +22,7 @@
     <link href="/TheAgencyTheme/css/agency.min.css" rel="stylesheet">
 </head>
 <body id="page-top">
+
     @await RenderSectionAsync("Content", required: false)
 
     <!-- Footer -->
