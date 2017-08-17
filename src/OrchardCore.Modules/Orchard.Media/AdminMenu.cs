@@ -22,7 +22,7 @@ namespace Orchard.Media
 
             builder
                 .Add(S["Content"], design => design
-                    .Add(S["Media"], "3", layers => layers
+                    .Add(S["Files"], "3", layers => layers
                         .Action("Index", "Admin", new { area = "Orchard.Media" })
                         .LocalNav()
                     ));
