@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
@@ -25,17 +24,12 @@ namespace Orchard.Data
             services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
             // Adding supported databases
-            services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true);
-            services.TryAddDataProvider(name: "Sqlite", value: "Sqlite", hasConnectionString: false);
-			services.TryAddDataProvider(name: "MySql", value: "MySql", hasConnectionString: true);
-			services.TryAddDataProvider(name: "Postgres", value: "Postgres", hasConnectionString: true);
+            TryAddSupportedDatabaseProviders(services);
 
 			// Configuring data access
-
 			services.AddSingleton<IStore>(sp =>
             {
                 var shellSettings = sp.GetService<ShellSettings>();
-                var hostingEnvironment = sp.GetService<IHostingEnvironment>();
 
                 if (shellSettings.DatabaseProvider == null)
                 {
@@ -43,28 +37,33 @@ namespace Orchard.Data
                 }
                 
                 var storeConfiguration = new Configuration();
+                var databaseProvider = shellSettings.DatabaseProvider;
 
-                switch (shellSettings.DatabaseProvider)
+                if (databaseProvider == DatabaseProviderName.SqlServer)
                 {
-                    case "SqlConnection":
-                        storeConfiguration.UseSqlServer(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
-                        break;
-                    case "Sqlite":
-                        var shellOptions = sp.GetService<IOptions<ShellOptions>>();
-                        var option = shellOptions.Value;
-                        var databaseFolder = Path.Combine(hostingEnvironment.ContentRootPath, option.ShellsRootContainerName, option.ShellsContainerName, shellSettings.Name);
-                        var databaseFile = Path.Combine(databaseFolder, "yessql.db");
-                        Directory.CreateDirectory(databaseFolder);
-                        storeConfiguration.UseSqLite($"Data Source={databaseFile};Cache=Shared", IsolationLevel.ReadUncommitted);
-                        break;
-					case "MySql":
-                        storeConfiguration.UseMySql(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
-						break;
-					case "Postgres":
-                        storeConfiguration.UsePostgreSql(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
-                        break;
-					default:
-                        throw new ArgumentException("Unknown database provider: " + shellSettings.DatabaseProvider);
+                    storeConfiguration.UseSqlServer(shellSettings.ConnectionString);
+                }
+                else if (databaseProvider == DatabaseProviderName.Sqlite)
+                {
+                    var shellOptions = sp.GetService<IOptions<ShellOptions>>();
+                    var option = shellOptions.Value;
+                    var hostingEnvironment = sp.GetService<IHostingEnvironment>();
+                    var databaseFolder = Path.Combine(hostingEnvironment.ContentRootPath, option.ShellsRootContainerName, option.ShellsContainerName, shellSettings.Name);
+                    var databaseFile = Path.Combine(databaseFolder, "yessql.db");
+                    Directory.CreateDirectory(databaseFolder);
+                    storeConfiguration.UseSqLite($"Data Source={databaseFile};Cache=Shared");
+                }
+                else if (databaseProvider == DatabaseProviderName.MySQL)
+                {
+                    storeConfiguration.UseMySql(shellSettings.ConnectionString);
+                }
+                else if (databaseProvider == DatabaseProviderName.Postgres)
+                {
+                    storeConfiguration.UsePostgreSql(shellSettings.ConnectionString);
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown database provider: {shellSettings.DatabaseProvider}");
                 }
 
                 if (!string.IsNullOrWhiteSpace(shellSettings.TablePrefix))
@@ -91,6 +90,14 @@ namespace Orchard.Data
             });
 
             return services;
+        }
+
+        private static void TryAddSupportedDatabaseProviders(IServiceCollection services)
+        {
+            services.TryAddDataProvider(DatabaseProviderName.SqlServer, DatabaseProviderName.SqlServer);
+            services.TryAddDataProvider(DatabaseProviderName.Sqlite, DatabaseProviderName.Sqlite, hasConnectionString: false);
+            services.TryAddDataProvider(DatabaseProviderName.MySQL, DatabaseProviderName.MySQL);
+            services.TryAddDataProvider(DatabaseProviderName.Postgres, DatabaseProviderName.Postgres);
         }
     }
 }
