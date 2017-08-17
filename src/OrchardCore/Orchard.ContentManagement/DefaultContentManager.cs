@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -131,10 +131,7 @@ namespace Orchard.ContentManagement
 
             if (contentItem == null)
             {
-                if (!options.IsDraftRequired)
-                {
-                    return null;
-                }
+                return null;
             }
 
             // Return item if obtained earlier in session
@@ -164,13 +161,9 @@ namespace Orchard.ContentManagement
                 // When draft is required and latest is published a new version is added
                 if (contentItem.Published)
                 {
-                    // Save the previous version
-                    _session.Save(contentItem);
-
                     contentItem = await BuildNewVersionAsync(contentItem);
                 }
 
-                // Save the new version
                 _session.Save(contentItem);
             }
 
@@ -227,15 +220,19 @@ namespace Orchard.ContentManagement
 
             if (previous != null)
             {
-                _session.Save(previous);
                 previous.Published = false;
             }
 
             contentItem.Published = true;
 
+            Handlers.Reverse().Invoke(handler => handler.Published(context), _logger);
+
             _session.Save(contentItem);
 
-            Handlers.Reverse().Invoke(handler => handler.Published(context), _logger);
+            if (previous != null)
+            {
+                _session.Save(previous);
+            }
         }
 
         public async Task UnpublishAsync(ContentItem contentItem)
@@ -276,9 +273,9 @@ namespace Orchard.ContentManagement
 
             publishedItem.Published = false;
             
-            _session.Save(publishedItem);
-
             Handlers.Reverse().Invoke(handler => handler.Unpublished(context), _logger);
+
+            _session.Save(publishedItem);
         }
 
         protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
@@ -303,12 +300,21 @@ namespace Orchard.ContentManagement
             if (latestVersion != null)
             {
                 latestVersion.Latest = false;
-                buildingContentItem.Number = latestVersion.Number + 1;
             }
-            else
-            {
-                buildingContentItem.Number = 1;
-            }
+
+            // Use the highest of the existing version and the latest which might be different
+            var versionNumber = Math.Max(latestVersion?.Number ?? 0, existingContentItem.Number);
+
+            // Look for another existing version which might be higher
+            var highestVersion = await _session
+                .Query<ContentItem, ContentItemIndex>(x =>
+                    x.ContentItemId == existingContentItem.ContentItemId &&
+                    x.Number > versionNumber)
+                .OrderByDescending(x => x.Number)
+                .FirstOrDefaultAsync();
+
+            // The new version should always be the next highest available number
+            buildingContentItem.Number = (highestVersion?.Number ?? versionNumber) + 1;
 
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
             buildingContentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem);
@@ -319,6 +325,11 @@ namespace Orchard.ContentManagement
 
             Handlers.Invoke(handler => handler.Versioning(context), _logger);
             Handlers.Reverse().Invoke(handler => handler.Versioned(context), _logger);
+
+            if (latestVersion != null)
+            {
+                _session.Save(latestVersion);
+            }
 
             return context.BuildingContentItem;
         }
@@ -399,10 +410,14 @@ namespace Orchard.ContentManagement
             {
                 version.Published = false;
                 version.Latest = false;
-                _session.Save(version);
             }
 
             Handlers.Reverse().Invoke(handler => handler.Removed(context), _logger);
+
+            foreach (var version in activeVersions)
+            {
+                _session.Save(version);
+            }
         }
 
         public async Task DiscardDraftAsync(ContentItem contentItem)
@@ -417,11 +432,12 @@ namespace Orchard.ContentManagement
             Handlers.Invoke(handler => handler.Removing(context), _logger);
 
             contentItem.Latest = false;
-            _session.Save(contentItem);
 
             Handlers.Reverse().Invoke(handler => handler.Removed(context), _logger);
 
             var publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
+
+            _session.Save(contentItem);
 
             if (publishedItem != null)
             {
