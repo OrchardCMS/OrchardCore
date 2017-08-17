@@ -16,13 +16,7 @@ namespace Orchard.StorageProviders.FileSystem
         public FileSystemStore(string localPath, string requestUrlPrefix, string pathPrefix)
         {
             _localPath = localPath;
-            _requestUrlPrefix = NormalizePath(requestUrlPrefix ?? "/");
-
-            if (!_requestUrlPrefix.StartsWith("/"))
-            {
-                _requestUrlPrefix = "/" + _requestUrlPrefix;
-            }
-
+            _requestUrlPrefix = String.IsNullOrWhiteSpace(requestUrlPrefix) ? "" : "/" + NormalizePath(requestUrlPrefix);
             _pathPrefix = pathPrefix;
             _publicPathPrefix = Combine(_requestUrlPrefix, _pathPrefix);
         }
