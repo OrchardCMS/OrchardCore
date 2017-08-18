@@ -164,7 +164,7 @@ namespace Orchard.DisplayManagement.Fluid.Filters
             return Task.FromResult(input);
         }
 
-        private static string LowerKebabToPascalCase(string attribute)
+        public static string LowerKebabToPascalCase(string attribute)
         {
             attribute = attribute.Trim();
             bool nextIsUpper = true;

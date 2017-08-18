@@ -1,4 +1,4 @@
-﻿{% helperblock "zone", name: "Header" %}
+﻿{% zone name: "Header" %}
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
     <header class="intro-header" style="background-image: url('https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/home-bg.jpg')">
@@ -14,6 +14,6 @@
             </div>
         </div>
     </header>
-{% endhelperblock %}
+{% endzone %}
 
 {% display Model.Content | remove_item: "BodyPart" %}

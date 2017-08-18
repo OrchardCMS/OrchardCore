@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
     <ProjectReference Include="..\Orchard.Liquid.Abstractions\Orchard.Liquid.Abstractions.csproj" />
+    <ProjectReference Include="..\Orchard.ResourceManagement\Orchard.ResourceManagement.csproj" />
   </ItemGroup>
 
 </Project>

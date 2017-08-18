@@ -38,6 +38,14 @@ namespace Orchard.DisplayManagement.Fluid
             Factory.RegisterTag<DisplayTag>("display");
             Factory.RegisterTag<HelperTag>("helper");
 
+            Factory.RegisterTag<NamedHelperTag>("shape");
+            Factory.RegisterTag<NamedHelperTag>("link");
+            Factory.RegisterTag<NamedHelperTag>("meta");
+            Factory.RegisterTag<NamedHelperTag>("resources");
+            Factory.RegisterTag<NamedHelperTag>("script");
+            Factory.RegisterTag<NamedHelperTag>("style");
+
+            Factory.RegisterBlock<NamedHelperBlock>("zone");
             Factory.RegisterBlock<HelperBlock>("helperblock");
 
             TemplateContext.GlobalFilters.WithFluidViewFilters();

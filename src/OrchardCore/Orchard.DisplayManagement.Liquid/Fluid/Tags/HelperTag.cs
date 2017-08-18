@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Fluid.Ast;
+using Orchard.DisplayManagement.Fluid.Filters;
 using Orchard.Mvc;
 
 namespace Orchard.DisplayManagement.Fluid.Tags
@@ -34,7 +35,7 @@ namespace Orchard.DisplayManagement.Fluid.Tags
     {
         public override Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments, IList<Statement> statements)
         {
-            return new HelperStatement(new ArgumentsExpression(arguments), statements).WriteToAsync(writer, encoder, context);
+            return new HelperStatement(new ArgumentsExpression(arguments), null, statements).WriteToAsync(writer, encoder, context);
         }
     }
 
@@ -43,10 +44,12 @@ namespace Orchard.DisplayManagement.Fluid.Tags
         private static ConcurrentDictionary<string, TagHelperDescriptor> _descriptors = new ConcurrentDictionary<string, TagHelperDescriptor>();
 
         private readonly ArgumentsExpression _arguments;
+        private readonly string _helper;
 
-        public HelperStatement(ArgumentsExpression arguments, IList<Statement> statements = null) : base(statements)
+        public HelperStatement(ArgumentsExpression arguments, string helper = null, IList<Statement> statements = null) : base(statements)
         {
             _arguments = arguments;
+            _helper = helper;
         }
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
@@ -70,7 +73,7 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
-            var helper = arguments.At(0).ToStringValue();
+            var helper = _helper ?? arguments.At(0).ToStringValue();
             var descriptor = _descriptors.FirstOrDefault(kv => kv.Key.StartsWith(helper)).Value;
 
             if (descriptor == null)
@@ -117,7 +120,8 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
                 foreach (var attribute in descriptor.Attributes)
                 {
-                    if (attribute.IsNameMatch(attributeName) || attribute.IsNameMatch("asp-" + attributeName))
+                    if (attribute.IsNameMatch(attributeName) || FluidViewFilters
+                        .LowerKebabToPascalCase(attributeName) == attribute.PropertyName)
                     {
                         found = true;
                         var property = tagHelperType.GetProperty(attribute.PropertyName);
