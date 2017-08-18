@@ -157,8 +157,10 @@ namespace Orchard.DisplayManagement.Fluid
             context.MemberAccessStrategy.Register(site.GetType());
             context.LocalScope.SetValue("Site", site);
 
-            // for testing
-            //context.CultureInfo = new CultureInfo("fr-FR");
+            if (site.Culture != null)
+            {
+                context.CultureInfo = new CultureInfo(site.Culture);
+            }
 
             var model = displayContext.Value;
             context.RegisterObject(model);
