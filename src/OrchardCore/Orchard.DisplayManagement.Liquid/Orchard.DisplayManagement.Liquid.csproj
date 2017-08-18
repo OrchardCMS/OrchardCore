@@ -7,7 +7,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
     <ProjectReference Include="..\Orchard.Liquid.Abstractions\Orchard.Liquid.Abstractions.csproj" />
-    <ProjectReference Include="..\Orchard.ResourceManagement\Orchard.ResourceManagement.csproj" />
   </ItemGroup>
 
 </Project>

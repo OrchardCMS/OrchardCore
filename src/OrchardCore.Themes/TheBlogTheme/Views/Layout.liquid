@@ -9,9 +9,9 @@
 
     {% script name:"jquery", use_cdn:"true", at:"Foot" %}
 
-    {% helperblock "script", at:"Foot" %}
+    {% block "script", at:"Foot" %}
         var foo = "bar";
-    {% endhelperblock %}
+    {% endblock %}
 
     {% script name:"bootstrap", use_cdn:"true", at:"Foot" %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>

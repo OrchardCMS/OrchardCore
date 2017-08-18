@@ -46,8 +46,9 @@ namespace Orchard.DisplayManagement.Fluid
             Factory.RegisterTag<NamedHelperTag>("script");
             Factory.RegisterTag<NamedHelperTag>("style");
 
+            Factory.RegisterBlock<HelperBlock>("block");
+            Factory.RegisterBlock<NamedHelperBlock>("a");
             Factory.RegisterBlock<NamedHelperBlock>("zone");
-            Factory.RegisterBlock<HelperBlock>("helperblock");
 
             TemplateContext.GlobalFilters.WithFluidViewFilters();
         }
