@@ -9,8 +9,6 @@
  * Copyright 2011-2017 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
-/*@import "functions";*/
-/*darken($link-color, 15%) !default;*/
 @media print {
   *,
   *::before,
@@ -162,7 +160,7 @@ a {
   background-color: transparent;
   -webkit-text-decoration-skip: objects; }
   a:hover {
-    color: #007bff;
+    color: #0056b3;
     text-decoration: underline; }
 
 a:not([href]):not([tabindex]) {
@@ -1720,7 +1718,7 @@ fieldset[disabled] a.btn {
   .btn-link:hover {
     border-color: transparent; }
   .btn-link:focus, .btn-link:hover {
-    color: #007bff;
+    color: #0056b3;
     text-decoration: underline;
     background-color: transparent; }
   .btn-link:disabled {
@@ -2762,7 +2760,7 @@ tbody.collapse.show {
   background-color: #fff;
   border: 1px solid #ddd; }
   .page-link:focus, .page-link:hover {
-    color: #007bff;
+    color: #0056b3;
     text-decoration: none;
     background-color: #e9ecef;
     border-color: #ddd; }
