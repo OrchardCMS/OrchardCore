@@ -115,13 +115,13 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
             foreach (var name in arguments.Names)
             {
+                var propertyName = FluidViewFilters.LowerKebabToPascalCase(name);
                 var attributeName = name.Replace("_", "-");
                 var found = false;
 
                 foreach (var attribute in descriptor.Attributes)
                 {
-                    if (attribute.IsNameMatch(attributeName) || FluidViewFilters
-                        .LowerKebabToPascalCase(attributeName) == attribute.PropertyName)
+                    if (propertyName == attribute.PropertyName)
                     {
                         found = true;
                         var property = tagHelperType.GetProperty(attribute.PropertyName);

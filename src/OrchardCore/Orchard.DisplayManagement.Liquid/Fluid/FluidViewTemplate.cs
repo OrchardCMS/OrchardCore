@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -38,7 +39,7 @@ namespace Orchard.DisplayManagement.Fluid
             Factory.RegisterTag<DisplayTag>("display");
             Factory.RegisterTag<HelperTag>("helper");
 
-            Factory.RegisterTag<NamedHelperTag>("shape");
+            Factory.RegisterTag<ShapeTag>("shape");
             Factory.RegisterTag<NamedHelperTag>("link");
             Factory.RegisterTag<NamedHelperTag>("meta");
             Factory.RegisterTag<NamedHelperTag>("resources");
@@ -155,6 +156,9 @@ namespace Orchard.DisplayManagement.Fluid
             var site = await services.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
             context.MemberAccessStrategy.Register(site.GetType());
             context.LocalScope.SetValue("Site", site);
+
+            // for testing
+            //context.CultureInfo = new CultureInfo("fr-FR");
 
             var model = displayContext.Value;
             context.RegisterObject(model);
