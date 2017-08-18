@@ -23,7 +23,7 @@ namespace Orchard.DisplayManagement.Fluid.Filters
             filters.AddAsyncFilter("shape_position", ShapePosition);
             filters.AddAsyncFilter("shape_tab", ShapeTab);
             filters.AddAsyncFilter("remove_item", RemoveItem);
-            filters.AddAsyncFilter("set_property", SetProperty);
+            filters.AddAsyncFilter("set_properties", SetProperties);
 
             return filters;
         }
@@ -62,35 +62,6 @@ namespace Orchard.DisplayManagement.Fluid.Filters
 
             return Task.FromResult(FluidValue.Create(((IShapeFactory)shapeFactory)
                 .Create(type, Arguments.From(properties))));
-        }
-
-        private static string LowerKebabToPascalCase(string attribute)
-        {
-            attribute = attribute.Trim();
-            bool nextIsUpper = true;
-            var result = new StringBuilder();
-            for (int i = 0; i < attribute.Length; i++)
-            {
-                var c = attribute[i];
-                if (c == '-')
-                {
-                    nextIsUpper = true;
-                    continue;
-                }
-
-                if (nextIsUpper)
-                {
-                    result.Append(c.ToString().ToUpper());
-                }
-                else
-                {
-                    result.Append(c);
-                }
-
-                nextIsUpper = false;
-            }
-
-            return result.ToString();
         }
 
         public static async Task<FluidValue> ShapeString(FluidValue input, FilterArguments arguments, TemplateContext context)
@@ -176,16 +147,50 @@ namespace Orchard.DisplayManagement.Fluid.Filters
             return Task.FromResult(input);
         }
 
-        public static Task<FluidValue> SetProperty(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static Task<FluidValue> SetProperties(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var obj = input.ToObjectValue() as dynamic;
 
             if (obj != null)
             {
-                obj[arguments.At(0).ToStringValue()] = arguments.At(1).ToStringValue();
+                var properties = new Dictionary<string, object>();
+
+                foreach (var name in arguments.Names)
+                {
+                    obj[LowerKebabToPascalCase(name)] = arguments[name].ToObjectValue();
+                }
             }
 
             return Task.FromResult(input);
+        }
+
+        private static string LowerKebabToPascalCase(string attribute)
+        {
+            attribute = attribute.Trim();
+            bool nextIsUpper = true;
+            var result = new StringBuilder();
+            for (int i = 0; i < attribute.Length; i++)
+            {
+                var c = attribute[i];
+                if (c == '_')
+                {
+                    nextIsUpper = true;
+                    continue;
+                }
+
+                if (nextIsUpper)
+                {
+                    result.Append(c.ToString().ToUpper());
+                }
+                else
+                {
+                    result.Append(c);
+                }
+
+                nextIsUpper = false;
+            }
+
+            return result.ToString();
         }
     }
 }
