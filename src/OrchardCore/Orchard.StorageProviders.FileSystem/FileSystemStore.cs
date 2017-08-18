@@ -139,7 +139,8 @@ namespace Orchard.StorageProviders.FileSystem
         {
             try
             {
-                Directory.CreateDirectory(GetPhysicalPath(subpath));
+                // Use CreateSubdirectory to ensure the directory doesn't go over its boundaries
+                new DirectoryInfo(_localPath).CreateSubdirectory(subpath);
                 return Task.FromResult(true);
             }
             catch
@@ -184,19 +185,29 @@ namespace Orchard.StorageProviders.FileSystem
             }
         }
 
-        public async Task<bool> TrySaveStreamAsync(string subpath, Stream inputStream)
+        public async Task<bool> TrySaveStreamAsync(string filename, Stream inputStream)
         {
             try
             {
-                var subfolder = Path.GetDirectoryName(subpath);
-                var mediaFolder = await GetFolderAsync(subfolder);
+                var path = Path.GetDirectoryName(filename);
+                var mediaFolder = await GetFolderAsync(path);
 
                 if (mediaFolder == null)
                 {
-                    await TryCreateFolderAsync(subfolder);
+                    await TryCreateFolderAsync(path);
                 }
 
-                using (var outputStream = File.Create(GetPhysicalPath(subpath)))
+                var fileInfo = new FileInfo(GetPhysicalPath(filename));
+
+                // Ensure the file will be in the targetted folder
+                var directoryInfo = fileInfo.Directory;
+                var rootDirectory = new DirectoryInfo(_localPath);
+                if (!directoryInfo.FullName.StartsWith(rootDirectory.FullName))
+                {
+                    throw new ArgumentException("Attemp to create a file outside of the Media folder: " + filename);
+                }
+
+                using (var outputStream = fileInfo.Create())
                 {
                     await inputStream.CopyToAsync(outputStream);
                 }
@@ -211,6 +222,8 @@ namespace Orchard.StorageProviders.FileSystem
         
         private string GetPhysicalPath(string subpath)
         {
+            subpath = "/" + NormalizePath(subpath);
+
             string physicalPath = string.IsNullOrEmpty(subpath) ? _localPath : _localPath + subpath;
             return ValidatePath(_localPath, physicalPath);
         }
