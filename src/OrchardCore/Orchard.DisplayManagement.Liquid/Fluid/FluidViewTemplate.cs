@@ -37,8 +37,8 @@ namespace Orchard.DisplayManagement.Fluid
             Factory.RegisterTag<RenderSectionTag>("render_section");
             Factory.RegisterTag<RenderTitleSegmentsTag>("page_title");
             Factory.RegisterTag<DisplayTag>("display");
-            Factory.RegisterTag<HelperTag>("helper");
 
+            Factory.RegisterTag<HelperTag>("helper");
             Factory.RegisterTag<ShapeTag>("shape");
             Factory.RegisterTag<NamedHelperTag>("link");
             Factory.RegisterTag<NamedHelperTag>("meta");
