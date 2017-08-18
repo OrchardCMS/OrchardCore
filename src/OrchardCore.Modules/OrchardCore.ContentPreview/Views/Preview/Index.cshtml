@@ -28,13 +28,13 @@
 <script type="text/javascript">
     $(function() {
         $(window).on('storage', function (ev) {
-            if (ev.originalEvent.key == 'contentpreview:@previewId') {
+            if (ev.originalEvent.key.indexOf('contentpreview:not-connected:') !== -1) {
+                $(notConnectedWarning).show();
+            }
+            else if (ev.originalEvent.key.indexOf('contentpreview:') !== -1) {
                 $(notConnectedWarning).hide();
                 renderPreview(ev.originalEvent.newValue);
                 localStorage.removeItem('contentpreview:@previewId');
-            }
-            else if (ev.originalEvent.key == 'contentpreview:not-connected:@previewId') {
-                $(notConnectedWarning).show();
             }
         });
 
