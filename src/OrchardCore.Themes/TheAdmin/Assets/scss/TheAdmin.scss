@@ -5,13 +5,6 @@
 
 @import "src/OrchardCore.Modules/Orchard.Resources/Assets/Bootstrap/scss/bootstrap.scss";
 
-$gray-darker: $gray-900;
-$gray-dark: $gray-800;
-$gray: $gray-700;
-$gray-light: $gray-600; 
-$gray-lighter: $gray-200; 
-$gray-lightest: $gray-100;
-
 $top-nav-height: 55px;
 $left-navigation-width: 260px;
 $border-content: 1px solid rgba(0, 0, 0, 0.05);
@@ -47,7 +40,7 @@ $link-padding-left: 16px !default;
         z-index: 1;
         position: fixed;
         top: $top-nav-height;
-        color: $gray-dark;
+        color: $gray-800;
         border-right: $border-content;
         // Remove padding/margin from all uls
         ul {
@@ -126,32 +119,32 @@ $link-padding-left: 16px !default;
         li a:hover,
         li a:active,
         li a:visited {
-            color: $gray;
+            color: $gray-700;
             text-decoration: none;
             padding-left: $link-padding-left - 4px;
         }
         // Hovering the navigation items
         li a:hover, li label:hover {
-            background-color: $gray;
-            color: $gray-lightest;
+            background-color: $gray-700;
+            color: $gray-100;
         }
         // Current page
         li.active > a {
-            background-color: $gray-light;
-            //border-left: 4px solid $gray-dark;
-            color: $gray-lightest !important;
+            background-color: $gray-600;
+            //border-left: 4px solid $gray-800;
+            color: $gray-100 !important;
         }
 
         li ul > li > a,
         li ul > li > label {
-            background-color: $gray-lighter;
-            color: $gray !important;
+            background-color: $gray-200;
+            color: $gray-700 !important;
             padding-left: 2 * $link-padding-left !important;
         }
 
         li ul > li > a:hover,
         li ul > li > label:hover {
-            color: $gray-lightest !important;
+            color: $gray-100 !important;
         }
 
         li ul > li ul > li > a {

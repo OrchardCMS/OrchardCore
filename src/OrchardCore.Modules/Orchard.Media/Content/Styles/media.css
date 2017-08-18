@@ -9,6 +9,7 @@
  * Copyright 2011-2017 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
+/*@import "functions";*/
 /*darken($link-color, 15%) !default;*/
 @media print {
   *,
@@ -5770,7 +5771,8 @@ a.text-dark:focus, a.text-dark:hover {
 .modal-lg {
   /*.media-container-main-item-title {
         // Hide the filename in modals
-        @extend .hidden-xl-down;
+        @extend .d-none; 
+        @extend .d-xl-block;
     }*/ }
 
 /* Toolbar */

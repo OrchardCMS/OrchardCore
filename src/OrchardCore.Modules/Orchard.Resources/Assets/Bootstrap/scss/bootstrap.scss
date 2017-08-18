@@ -5,7 +5,8 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 
-@import "functions";
+// include functions in _variables or else gulp-sass generates an error
+//@import "functions";
 @import "variables";
 @import "mixins";
 @import "print";

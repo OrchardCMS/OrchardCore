@@ -154,10 +154,10 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
     .media-container-main-list-item {
         @extend .col-md-4;
     }
-
     /*.media-container-main-item-title {
         // Hide the filename in modals
-        @extend .hidden-xl-down;
+        @extend .d-none; 
+        @extend .d-xl-block;
     }*/
 }
 

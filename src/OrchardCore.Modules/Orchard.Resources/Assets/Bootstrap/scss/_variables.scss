@@ -1,3 +1,5 @@
+// import functions here because if it in bootstrap.scss, gulp-sass generates an error
+@import "functions";
 // Variables
 //
 // Copy settings from this file into the provided `_custom.scss` to override
@@ -164,7 +166,7 @@ $body-color:    $gray-900 !default;
 
 $link-color:            theme-color("primary") !default;
 $link-decoration:       none !default;
-$link-hover-color:      $link-color !default;/*darken($link-color, 15%) !default;*/
+$link-hover-color:      darken($link-color, 15%) !default;
 $link-hover-decoration: underline !default;
 
 
