@@ -1,24 +1,23 @@
 using System;
-using System.Diagnostics;
+using AspNet.Security.OAuth.Validation;
+using AspNet.Security.OpenIdConnect.Server;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using OpenIddict;
 using Orchard.Data.Migration;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
-using Orchard.Environment.Shell;
 using Orchard.OpenId.Drivers;
 using Orchard.OpenId.Indexes;
 using Orchard.OpenId.Models;
 using Orchard.OpenId.Recipes;
 using Orchard.OpenId.Services;
-using Orchard.OpenId.Settings;
 using Orchard.Recipes;
 using Orchard.Security.Permissions;
 using Orchard.Settings;
@@ -28,64 +27,8 @@ namespace Orchard.OpenId
 {
     public class Startup : StartupBase
     {
-        private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<Startup> _logger;
-
-        public Startup(
-            ShellSettings shellSettings,
-            IDataProtectionProvider dataProtectionProvider,
-            ILogger<Startup> logger)
-        {
-            _dataProtectionProvider = dataProtectionProvider.CreateProtector(shellSettings.Name);
-            _logger = logger;
-        }
-
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            /*
-            var openIdService = serviceProvider.GetService<IOpenIdService>();
-            var settings = openIdService.GetOpenIdSettingsAsync().GetAwaiter().GetResult();
-            if (!openIdService.IsValidOpenIdSettings(settings))
-            {
-                _logger.LogWarning("The OpenID Connect module is not correctly configured.");
-                return;
-            }
-
-            builder.UseOpenIddict();
-
-            switch (settings.AccessTokenFormat)
-            {
-                case OpenIdSettings.TokenFormat.JWT:
-                {
-                    builder.UseJwtBearerAuthentication(new JwtBearerOptions
-                    {
-                        RequireHttpsMetadata = !settings.TestingModeEnabled,
-                        Authority = settings.Authority,
-                        TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidAudiences = settings.Audiences
-                        }
-                    });
-                    break;
-                }
-
-                case OpenIdSettings.TokenFormat.Encrypted:
-                {
-                    builder.UseOAuthValidation(options =>
-                    {
-                        options.Audiences.UnionWith(settings.Audiences);
-                        options.DataProtectionProvider = _dataProtectionProvider;
-                    });
-                    break;
-                }
-
-                default:
-                {
-                    Debug.Fail("An unsupported access token format was specified.");
-                    break;
-                }
-            }
-
             // Admin
             routes.MapAreaRoute(
                 name: "AdminOpenId",
@@ -93,12 +36,10 @@ namespace Orchard.OpenId
                 template: "Admin/OpenIdApps/{id?}/{action}",
                 defaults: new { controller = "Admin" }
             );
-            */
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            /*
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IIndexProvider, OpenIdApplicationIndexProvider>();
@@ -115,21 +56,35 @@ namespace Orchard.OpenId
 
             services.AddScoped<OpenIdApplicationStore>();
 
-            services.AddOpenIddict<OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>(builder =>
+            // Note: only the core OpenIddict services (e.g managers and custom stores) are registered here.
+            // The OpenIddict/JWT/validation handlers are lazily registered as active authentication handlers
+            // depending on the OpenID settings. See the OpenIdConfiguration.cs file for more information.
+            services.AddOpenIddict<OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>()
+                .AddApplicationStore<OpenIdApplicationStore>()
+                .AddAuthorizationStore<OpenIdAuthorizationStore>()
+                .AddScopeStore<OpenIdScopeStore>()
+                .AddTokenStore<OpenIdTokenStore>();
+
+            // Register the OpenIddict handler/provider in the DI container.
+            services.TryAddScoped<OpenIddictHandler>();
+            services.TryAddScoped<OpenIddictProvider<OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>>();
+
+            // Register the options initializers required by OpenIddict,
+            // the JWT handler and the aspnet-contrib validation handler.
+            services.TryAddEnumerable(new[]
             {
-                builder.AddApplicationStore<OpenIdApplicationStore>()
-                       .AddTokenStore<OpenIdTokenStore>();
+                // Orchard-specific initializers:
+                ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdConfiguration>(),
+                ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictOptions>, OpenIdConfiguration>(),
+                ServiceDescriptor.Singleton<IConfigureOptions<JwtBearerOptions>, OpenIdConfiguration>(),
+                ServiceDescriptor.Singleton<IConfigureOptions<OAuthValidationOptions>, OpenIdConfiguration>(),
 
-                builder.UseDataProtectionProvider(_dataProtectionProvider);
-
-                builder.RequireClientIdentification()
-                       .EnableRequestCaching();
-
-                builder.Configure(options => options.ApplicationCanDisplayErrors = true);
+                // Built-in initializers:
+                ServiceDescriptor.Singleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigureOptions>(),
+                ServiceDescriptor.Singleton<IPostConfigureOptions<OAuthValidationOptions>, OAuthValidationInitializer>(),
+                ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIddictOptions>, OpenIddictInitializer>(),
+                ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIddictOptions>, OpenIdConnectServerInitializer>()
             });
-
-            services.AddScoped<IConfigureOptions<OpenIddictOptions>, OpenIdConfiguration>();
-            */
         }
     }
 }
