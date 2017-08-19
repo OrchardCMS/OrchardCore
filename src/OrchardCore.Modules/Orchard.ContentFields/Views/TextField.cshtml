@@ -1,6 +1,9 @@
-﻿@model Orchard.ContentFields.ViewModels.DisplayTextFieldViewModel
+@model Orchard.ContentFields.ViewModels.DisplayTextFieldViewModel
 @using Orchard.ContentManagement.Metadata.Models
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.PartDefinition.Name).HtmlClassify();
+}
 
-<div>
-    @Model.PartFieldDefinition.DisplayName(): @Model.Field.Text
+<div class="field field-type-htmlfield field-name-@name">
+    @Model.Field.Text
 </div>
