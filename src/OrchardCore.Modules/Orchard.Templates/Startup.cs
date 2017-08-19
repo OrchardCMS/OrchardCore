@@ -6,7 +6,9 @@ using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.DisplayManagement.Zones;
 using Orchard.Environment.Navigation;
+using Orchard.Recipes;
 using Orchard.Security.Permissions;
+using Orchard.Templates.Recipes;
 using Orchard.Templates.Services;
 using Orchard.Templates.Settings;
 
@@ -58,6 +60,7 @@ namespace Orchard.Templates
             services.AddScoped<TemplatesManager>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddRecipeExecutionStep<TemplateStep>();
 
             // Template shortcuts in settings
             services.AddScoped<IContentPartDefinitionDisplayDriver, TemplateContentPartSettingsDriver>();
