@@ -1,0 +1,1875 @@
+{
+  "name": "Agency",
+  "displayName": "Agency",
+  "description": "Ready to use company website.",
+  "author": "The Orchard Team",
+  "website": "http://orchardproject.net",
+  "version": "2.0",
+  "issetuprecipe": true,
+  "categories": [ "default" ],
+  "tags": [ "agency" ],
+
+  // The variables are evaluated the first time they are accessed, and reused across steps
+  "variables": {
+    "landingContentItemId": "[js:uuid()]"
+    // "now": "[js: Date().toISOString()]"
+  },
+
+  "steps": [
+    {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        // SaaS
+        "Orchard.Mvc",
+        "Orchard.HomeRoute",
+        "Orchard.Admin",
+        "Orchard.Commons",
+        "Orchard.Diagnostics",
+        "Orchard.DynamicCache",
+        "Orchard.Modules",
+        "Orchard.Navigation",
+        "Orchard.Recipes",
+        "Orchard.Resources",
+        "Orchard.Roles",
+        "Orchard.Settings",
+        "Orchard.Themes",
+        "Orchard.Users",
+
+        // Content Management
+        "Orchard.Alias",
+        "Orchard.Autoroute",
+        "Orchard.Body",
+        "Orchard.ContentFields",
+        "Orchard.ContentPreview",
+        "Orchard.Contents",
+        "Orchard.ContentTypes",
+        "Orchard.Deployment",
+        "Orchard.Deployment.Remote",
+        "Orchard.Feeds",
+        "Orchard.Flows",
+        "Orchard.Layers",
+        "Orchard.Lists",
+        "Orchard.Liquid",
+        "Orchard.Markdown",
+        "Orchard.Media",
+        "Orchard.Menu",
+        "Orchard.Title",
+        "Orchard.Templates",
+        "Orchard.Widgets",
+
+        // Themes
+        "TheAgencyTheme",
+        "TheAdmin",
+        "SafeMode"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "TheAgencyTheme"
+    },
+    {
+      "name": "settings",
+      "HomeRoute": {
+        "Action": "Display",
+        "Controller": "Item",
+        "Area": "Orchard.Contents",
+        "ContentItemId": "[js: variables('landingContentItemId')]"
+      },
+      "LayerSettings": {
+        "Zones": [ "Footer" ]
+      }
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "Article",
+          "DisplayName": "Article",
+          "Hidden": false,
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Listable": "True",
+            "Securable": "False",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Article",
+              "Name": "Article",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
+                "ShowHomepageOption": "True",
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "BodyPart",
+              "Name": "BodyPart",
+              "Settings": {
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "BodyPartSettings": {
+                  "Editor": "Wysiwyg"
+                },
+                "Position": "3"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "LiquidPage",
+          "DisplayName": "Liquid Page",
+          "Hidden": false,
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Listable": "True",
+            "Securable": "False",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "LiquidPage",
+              "Name": "LiquidPage",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
+                "ShowHomepageOption": "True",
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "LiquidPart",
+              "Name": "LiquidPart",
+              "Settings": {
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Position": "3"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "BlogPost",
+          "DisplayName": "Blog Post",
+          "Hidden": false,
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "True",
+            "Listable": "False",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "BlogPost",
+              "Name": "BlogPost",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "Position": "1",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Pattern": "{{ ContentItem | container | display_text | slugify }}/{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
+                "ShowHomepageOption": "False"
+              }
+            },
+            {
+              "PartName": "MarkdownPart",
+              "Name": "MarkdownPart",
+              "Settings": {
+                "Position": "3",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "MarkdownPartSettings": {
+                  "Editor": "Wysiwyg"
+                }
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Blog",
+          "DisplayName": "Blog",
+          "Hidden": false,
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Listable": "True",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Blog",
+              "Name": "Blog",
+              "Settings": {
+                "Position": "0"
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "Position": "2",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
+                "ShowHomepageOption": "True"
+              }
+            },
+            {
+              "PartName": "ListPart",
+              "Name": "ListPart",
+              "Settings": {
+                "Position": "3",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "PageSize": 10,
+                "ContainedContentTypes": [
+                  "BlogPost"
+                ]
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "BodyPart",
+              "Name": "BodyPart",
+              "Settings": {}
+            }
+          ]
+        },
+        {
+          "Name": "HtmlWidget",
+          "DisplayName": "Html",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "True",
+            "Listable": "False",
+            "Securable": "True",
+            "Stereotype": "Widget"
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "HtmlWidget",
+              "Name": "HtmlWidget",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Page",
+          "DisplayName": "Page",
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Listable": "True",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Page",
+              "Name": "Page",
+              "Settings": {
+                "Position": "3"
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "Position": "1",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
+                "ShowHomepageOption": "True"
+              }
+            },
+            {
+              "PartName": "FlowPart",
+              "Name": "FlowPart",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "LandingPage",
+          "DisplayName": "Landing Page",
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Listable": "True",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "LandingPage",
+              "Name": "LandingPage",
+              "Settings": {
+                "Position": "8"
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
+                "ShowHomepageOption": "True",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "MenuItems",
+              "Settings": {
+                "DisplayName": "Menu Items",
+                "Description": "Menu items to display in the top right menu",
+                "Position": "2",
+                "ContainedContentTypes": [
+                  "MenuItem"
+                ],
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                }
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "Services",
+              "Settings": {
+                "DisplayName": "Services",
+                "Description": "Provides a collection behavior for your content item.",
+                "Position": "3",
+                "ContainedContentTypes": [
+                  "Service"
+                ],
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                }
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "Portfolio",
+              "Settings": {
+                "DisplayName": "Portfolio",
+                "Description": "Provides a collection behavior for your content item.",
+                "ContainedContentTypes": [
+                  "Project"
+                ],
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Position": "4"
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "About",
+              "Settings": {
+                "DisplayName": "About",
+                "Description": "A collection of milestones",
+                "Position": "5",
+                "ContainedContentTypes": [
+                  "Milestone"
+                ],
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                }
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "Team",
+              "Settings": {
+                "DisplayName": "Team",
+                "Description": "Team members",
+                "Position": "6",
+                "ContainedContentTypes": [
+                  "TeamMember"
+                ],
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                }
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "Clients",
+              "Settings": {
+                "DisplayName": "Clients",
+                "Description": "Provides a collection behavior for your content item.",
+                "Position": "7",
+                "ContainedContentTypes": [
+                  "Client"
+                ],
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "MenuItem",
+          "DisplayName": "Menu Item",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "False",
+            "Listable": "False",
+            "Securable": "False",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "MenuItem",
+              "Name": "MenuItem",
+              "Settings": {
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Service",
+          "DisplayName": "Service",
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Service",
+              "Name": "Service",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "BodyPart",
+              "Name": "BodyPart",
+              "Settings": {
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Project",
+          "DisplayName": "Project",
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Project",
+              "Name": "Project",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "BodyPart",
+              "Name": "BodyPart",
+              "Settings": {
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Milestone",
+          "DisplayName": "Milestone",
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Milestone",
+              "Name": "Milestone",
+              "Settings": {
+                "Position": "0"
+              }
+            },
+            {
+              "PartName": "BodyPart",
+              "Name": "BodyPart",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "1"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "TeamMember",
+          "DisplayName": "Team Member",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "False",
+            "Listable": "False",
+            "Securable": "False",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TeamMember",
+              "Name": "TeamMember",
+              "Settings": {
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Client",
+          "DisplayName": "Client",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "False",
+            "Listable": "False",
+            "Securable": "False",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Client",
+              "Name": "Client",
+              "Settings": {
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "BlogPost",
+          "Settings": {}
+        },
+        {
+          "Name": "Article",
+          "Settings": {}
+        },
+        {
+          "Name": "HtmlWidget",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "HtmlField",
+              "Name": "Content",
+              "Settings": {
+                "DisplayName": "Content",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false
+                },
+                "Hint": null,
+                "Editor": "Multiline",
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "MenuItem",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Link",
+              "Settings": {
+                "DisplayName": "Link",
+                "Hint": null,
+                "Editor": null,
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Service",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "IconClass",
+              "Settings": {
+                "DisplayName": "Icon Class",
+                "Hint": "The icon css class from font-awesome. e.g., fa-laptop, fa-shopping-cart, fa-lock",
+                "Editor": null,
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Project",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "DisplayName": "Image",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Hint": null,
+                "Required": true,
+                "Multiple": false,
+                "Position": "1"
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Category",
+              "Settings": {
+                "DisplayName": "Category",
+                "Hint": "The category that is displayed below the title",
+                "Editor": null,
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Milestone",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Date",
+              "Settings": {
+                "DisplayName": "Date",
+                "Hint": null,
+                "Editor": null,
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Position": "0"
+              }
+            },
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "DisplayName": "Image",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Hint": null,
+                "Required": true,
+                "Multiple": false,
+                "Position": "1"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "TeamMember",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Occupation",
+              "Settings": {
+                "DisplayName": "Occupation",
+                "Hint": null,
+                "Editor": null,
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Position": "0"
+              }
+            },
+            {
+              "FieldName": "MediaField",
+              "Name": "Picture",
+              "Settings": {
+                "DisplayName": "Picture",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Hint": null,
+                "Required": true,
+                "Multiple": false,
+                "Position": "1"
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Twitter",
+              "Settings": {
+                "DisplayName": "Twitter",
+                "Hint": "Twitter handle, e.g. @BillGates",
+                "Editor": null,
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Position": "2"
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Facebook",
+              "Settings": {
+                "DisplayName": "Facebook",
+                "Hint": "Facebook handle",
+                "Editor": null,
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Position": "3"
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "LinkedIn",
+              "Settings": {
+                "DisplayName": "LinkedIn",
+                "Hint": "LinkedIn handle",
+                "Editor": null,
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Position": "4"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Client",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Logo",
+              "Settings": {
+                "DisplayName": "Logo",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Hint": null,
+                "Required": true,
+                "Multiple": false,
+                "Position": "0"
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Url",
+              "Settings": {
+                "DisplayName": "Url",
+                "Hint": null,
+                "Editor": null,
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Position": "1"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "content",
+      "Data": [
+        {
+          "ContentItemId": "[js: uuid()]",
+          "ContentType": "HtmlWidget",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUsername')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "LayerMetadata": {
+            "Title": "Footer",
+            "Layer": "Always",
+            "Zone": "Footer",
+            "RenderTitle": false,
+            "Position": 10
+          },
+          "HtmlWidget": {
+            "Content": {
+              "Html": "[js:base64('PCEtLSBGb290ZXIgLS0+DQo8Zm9vdGVyPg0KICA8ZGl2IGNsYXNzPSJjb250YWluZXIiPg0KICAgIDxkaXYgY2xhc3M9InJvdyI+DQogICAgICA8ZGl2IGNsYXNzPSJjb2wtbWQtNCI+DQogICAgICAgIDxzcGFuIGNsYXNzPSJjb3B5cmlnaHQiPkNvcHlyaWdodCAmY29weTsgWW91ciBXZWJzaXRlIDIwMTc8L3NwYW4+DQogICAgICA8L2Rpdj4NCiAgICAgIDxkaXYgY2xhc3M9ImNvbC1tZC00Ij4NCiAgICAgICAgPHVsIGNsYXNzPSJsaXN0LWlubGluZSBzb2NpYWwtYnV0dG9ucyI+DQogICAgICAgICAgPGxpIGNsYXNzPSJsaXN0LWlubGluZS1pdGVtIj4NCiAgICAgICAgICAgIDxhIGhyZWY9IiMiPg0KICAgICAgICAgICAgICA8aSBjbGFzcz0iZmEgZmEtdHdpdHRlciI+PC9pPg0KICAgICAgICAgICAgPC9hPg0KICAgICAgICAgIDwvbGk+DQogICAgICAgICAgPGxpIGNsYXNzPSJsaXN0LWlubGluZS1pdGVtIj4NCiAgICAgICAgICAgIDxhIGhyZWY9IiMiPg0KICAgICAgICAgICAgICA8aSBjbGFzcz0iZmEgZmEtZmFjZWJvb2siPjwvaT4NCiAgICAgICAgICAgIDwvYT4NCiAgICAgICAgICA8L2xpPg0KICAgICAgICAgIDxsaSBjbGFzcz0ibGlzdC1pbmxpbmUtaXRlbSI+DQogICAgICAgICAgICA8YSBocmVmPSIjIj4NCiAgICAgICAgICAgICAgPGkgY2xhc3M9ImZhIGZhLWxpbmtlZGluIj48L2k+DQogICAgICAgICAgICA8L2E+DQogICAgICAgICAgPC9saT4NCiAgICAgICAgPC91bD4NCiAgICAgIDwvZGl2Pg0KICAgICAgPGRpdiBjbGFzcz0iY29sLW1kLTQiPg0KICAgICAgICA8dWwgY2xhc3M9Imxpc3QtaW5saW5lIHF1aWNrbGlua3MiPg0KICAgICAgICAgIDxsaSBjbGFzcz0ibGlzdC1pbmxpbmUtaXRlbSI+DQogICAgICAgICAgICA8YSBocmVmPSIjIj5Qcml2YWN5IFBvbGljeTwvYT4NCiAgICAgICAgICA8L2xpPg0KICAgICAgICAgIDxsaSBjbGFzcz0ibGlzdC1pbmxpbmUtaXRlbSI+DQogICAgICAgICAgICA8YSBocmVmPSIjIj5UZXJtcyBvZiBVc2U8L2E+DQogICAgICAgICAgPC9saT4NCiAgICAgICAgPC91bD4NCiAgICAgIDwvZGl2Pg0KICAgIDwvZGl2Pg0KICA8L2Rpdj4NCjwvZm9vdGVyPg0K')]"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "layers",
+      "Layers": [
+        {
+          "Name": "Always",
+          "Rule": "true",
+          "Description": "The widgets in this layer are displayed on any page of this site."
+        },
+        {
+          "Name": "Homepage",
+          "Rule": "isHomepage()",
+          "Description": "The widgets in this layer are only displayed on the homepage."
+        }
+      ]
+    },
+    {
+      "name": "media",
+      "Files": [
+        {
+          "Path": "about/1.jpg",
+          "Base64": "/9j/4AAQSkZJRgABAgAAZABkAAD/7AARRHVja3kAAQAEAAAAPAAA/+4ADkFkb2JlAGTAAAAAAf/bAIQABgQEBAUEBgUFBgkGBQYJCwgGBggLDAoKCwoKDBAMDAwMDAwQDA4PEA8ODBMTFBQTExwbGxscHx8fHx8fHx8fHwEHBwcNDA0YEBAYGhURFRofHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8f/8AAEQgAyADIAwERAAIRAQMRAf/EAJIAAAICAwEBAQAAAAAAAAAAAAIDAQQABQYHCAkBAAMBAQEAAAAAAAAAAAAAAAABAgMEBRAAAgEDAgQEBAQEBAUFAAAAAQIDABEEIRIxQVEFYSITBnGBMhSRQiMHocHRUrFiMxXw4fFygpJjc4PDEQEBAQACAgEEAgMBAAAAAAAAARECEiEDMUFRMgRxImGBE7H/2gAMAwEAAhEDEQA/APYwK8F7hiijQO1OUqwE8KqJo1U09TiwhIqbTw9GNOVNhq1cqbDAKqIqGWrlSUVINxVJEpYUwcrUQqapqpSsHxqpUWMvarlTgCxNUREpblVSosQGfpVaWM85FAwFtdaANWoMYakYrmgk3v8AGkbnlirx8evqdhHEU+o7JpYNEADTKjUU0mqKeEatxRg01WIpwqar1crOwRsRVypsDtpknZThWJUdaojVpAwCgIYitIihOlVKmoa3MVRIUAmnpYlk0uKcpYUVp6WM2m/CjRgglGnidpoLBAUw0CPrrXkR6tEzA04WBtc6U9LBLG3GkZiK1LBaeoqpE2mqtPE6YqU8Gj2mnE6mzdKZM2mqhJANMhqKeFpiiqkTakmwqpCKYktVRItaNGBcXFVpYhFtStPDNaOwxG0U+xYzbRowQA56U9LBbRTJBFPRjntluVeXHpJCX5UyGsVKw9OSOjC0YUDlVSJtGpXpVJNTb0oI5VFVInTABVSFaklQNaucUWgJ3cOFXOMTtCUYain4JALc9KRjViKVOCuDxpTQBgAbjWriUq3KlTFbSjRiOFGBm6jBqbigCB0oDKZMF6qEICnpY5gTA868ycnp9TFktzpypvEwTVWpw1Jh1oLDRIp50wIEU00auBTLDFmFPS6mCdafYurDKpGtP/oP+aARfSjvpdMMDVUTWHaaqcom8ajZ0OlX2hZUhDU0QW2g0bOlAZal1Psm1OROh21RMtQEi9GDRUYNEKAK1MnALM9ef1j1tMWd+tPqWhm7nDj475ORMkWPGu6SZ2Coq9Sx0tVTii2Tyq9k93dr7yZf9vkeVYTZnKMqkHUMCRazA3HO2tVy9dnyjjznL4blc5hypYeDXOc0YWQYzG60YeJGY9AwQzHNI8GMludSeDXNYU4LwOXNvzJPhT7I/wCZi5Jpdh0NXJ/Gn2TeBq5ANVOaL6xiW9PuXQW6q7J6pvTlKxIvVyosSRVaSNKNGJFGjEgCjRgwop6MGAKZPNnyMaIO0siose3eSbAbjZb/ABNef5erbHCfuh+4sPYcOTtva5Uk71JdJvzDHQjUsOG8/lHzrq/X9Pa7fhx/s/sdZk+Xiub3Pu/cpC3csuWcBFjCu/kCrqqgA7bDkBXo8eMnw8vlzt+a9b/Y7uKydvzMNlJmhkjYuDfcHDLdgeShQorg/c45ZXf+lz3Y9Vua5dd+JDmnpdRhzTLBB6AMOTSODFIzV29anyDFt/caPI05dvWnidMUxg8aeJ05WWjCORl60001XSqlReIwVPA1U5RN40YqpU2J1qtJljRpCAqpCtEFFPC0VqrC0QFPE6+Lvd/7n9373mZ8WBI2H2jKMa7CAJSkI03MvAFvNYVXr9E4/Pyft/YvLc+HIhw6F38zP+Ym5vfib8TXRHLT8UKzHUrqLka69LU4Vel/tHnrBldzhxlUZDY0bhWBIcxy+b+D1yft8fE11fqcste5ek3SvN7PYwQhbpR2GCGMx5UdyvFH28lX3ReIvQl5Ud4XUQgk5mjvD6mJjydaOwwxYG5ml2Kw1IfGn2LDljFGkasdPU0xYzTI1UtQWmrpTkTaYG8aqVNgw686rU9U3HKnpYkXqtLBAUaWCAqtLBAGq0n57RrdtoYWJ+o6V1OVYWMLtvxJ066UybPtmOzRTeUBVIe2tybW0PhRCrtP2vV4/emKSp+2yEmgkOu27RkgfHy8Kx/a/Br+r+T3ztuYMnCimCkbgRY8bqSv8q8u8HsceexbEg6Uuiu4ll8KOg7DEnhS6H2EGvT6lpgpYNGoFGAewHlRg0Yityp4i0QHhTwjF+FPC01T0FPCowrU00YVudVibRhR0p4WjCLTibRiMcqqROiCVUhWi21pOKLUhaeFoxTkK1+fYjIZIwpZibAeJrornXYsNxnHHyF2uo4HgDbSlxulfDbxQlBJIBYHpw22F7fjVp16D+1GQsXc58Z0FotuYkhAJst1bU/91cv7fHxK6f1eXmvXe0YQgjyYU+hchyg8HCt8tSa4OXJ6frnhe9CQUuysZ6MnSnLCohFIKfgtEEen4GpFxTwtMVzR1LsYrnrR0HYwOetHQdjENHUux6Cjqnsao8KMGnKKeJowtVIi0QSqnErRBRVTinsLSrnFF5MuOtV1LUg08JN6YFejBr4IwbnKhAGu7c1qvn8MW6z8aQzvkFSyMQY3Xhbabi4pen4xPMto8g22k+mdbeHGt2cdz+3ayL3xAgucjGnj/wDSA+3Xra3zrn/Y/F0frz+z3DtRUybH/wBSSGObpfk38q8zlHqcOTbpsA1FxSnFVrPUg4WFPCA7oNQBTkBDzk8q0nFNpW89KucYi1IJqsT2Gt6MLsai3p0RYjSoUtJHSLT0S3E0YOxqlBzqpEWjDJVzEWVN1PWqnIrxZZarsnGWWnpMAFMMZkUXY2pW4cmltkrwT8TU9/sfT7g9Qk0qcfCuHHeQkbhLuAX8fCujHK6zAzsAwkZQEjb1smoBJBVr+HWsZxs5eF+B4+BiTSS+jMJFx1Z1K2IItcX/AMKu+z7pnBt+wTP27vnbMxTttOhc67TG7bW+RU60+WcuNHG5yj23MzBgtBlkHZAZYJVSxJUMFB16bQa8/jx249G8s8r2F3TDzR+hkIW5ox2t+Bp3jZ9F8efG/FXFgufqH41O1Xg0Yi2/1QD0p+S1n26LxlH4UDsgxIed/gKqFawYx5A1UqbEjHPSq1NhqwU9ThioRQDVVvGjwRyROeVA01YrcTT6VN5wwACqnBN5pvVSJ1lMmXoBeTIY4GcGxHA/OlyuRXGbWt9csbkknxrL5a/AxNericMWbSpFfD6yXu1gi8gNTeuvXJh6tsttuSeZpEsY5kgJ2MQWFrrzB1saLC12v7ewnuOV6DMWEKvdW8w/UGxSOgDsCa5/b/Vt6eO17B3lJExk3MtsuH1UK3B9RAge976Nu0rn4fOurn8Ofx1ik3Fm2uBuUnS9jqPwrttccXciGfGkC+o3puAy2J4H+lTMq7sNgz8tD5Z5FANx5j/WleMOc792wx+758bXGQxI/K2o/A1N4RU9l+7Yr7mzgo8kZP8Ada1/40p6od9tWcb3HIzATxgrzKaH8DTvCCeytziZ3bciwWUhz+R/Kf6Uup914Qw8QL0dR3oxGg4LR1LtRiw4CnOJWsqiZRoTrRoZajQm1ATaloxR7xIExQL6sw05kCp5r4eK03r6caUWYs1udMjkmvSD4wiMejKmlrFflXU4j0MahrDjwJ40yZGxJ04qNbUaMd1+2cMhk7vkY8myeDCeSNbG+5WDq3yKVz+/6fy39P1/h7J351k9tpnlWZsOEzWS27WK2l+WoNc3D5x08741ykYDgNHdkbVDwuK7o4hjKK+U+YjgDyow9YJHeQFtVB1XlRhLuT3AyTM0SbS3M/0qZxyKvLaGDLyF0Ziyn/jSnYJWww8h3kCfUD9LcDpU1UX0crzpG2GF3PJga8bkdQdQflRh63WP7iUgCeP4sh/kaWDWxx+44M/+nIL/ANreU/xoM5pYl+ogUgD7vHvbd/CngC2dCPpBY/hRgB9+T+QCjAFu4kdBRga/M9zrGNsO15OZ5CptXI02R3WfKlMkrXPADgAOgrOxrMD9ze2tOIo0yL86slqOcaa0qb44xwAbgk9VOnGupxLQayjrQBLkFWAC/G+t/jSJ6J+1Uwi740LqQ+bBPHKjaBUjXfw8bWrD3+Z/Db0fk9r7dPh5vZ9kRV4/TaF4gQbAIfIfgLVy/FdfzHnmTE2HIkMbkwMiywjgQknmC/8Aje1d3ruxw+yZWJ9V71og9W50lDR/MSetBG703Cx+FI17t8q+qig2YNuF+YqeS+NbW3mIJ1Btf4UjMQ0yPVtKQMWShSzHmyoLKxt0P/OkZq9yk5sL+NICPdrcQPCmZUncHc8fgBSDUdx7oxcwo+g+sjmelFVGvOV41OGZHk0sOHDJ0tRIdolyNpGuhoJYTKFuPGg3ybDKdtr2vz+FdTiOHmZrHXQfKgqdFMFmWNLPKHDAjoOIuaWB7T7B7UGzO1d0KbGHbZFeJgVJlMwUtr/cCa4vby+Z/l2+rj8X/De+1o87H939xidtuNLAnqJ1/S0t4jzH50rZ1h8Ze1c73HuTv3l8GT01+0iSOMfna19xHJvMGrp9Xw5vb8iWWx14HStmR3rADjQbFmJvRShqvYg/Oko9JWNihsRqDRglbx8+E+cfW2tuHEcazaWl/dySOutlJ5aCnhL0GRuUhjYqbMKAJ82NOBvQCG7gTwpYepXOswvrepqpU/dgHX8aDazO7u7OYkeycyvP508LVITnmeNBm+vzJ4VNXBx5I/GkNMOTbnQBHIa3WmY1ymGhOtIPl2IhvN+bS3Sulxr2L6hN7gBdbkXA6mgNj2NcaTvUaDd6cm6MORcrdCA9udmN6nn8Hxnl7xgZ0aSvjRknIxsSLQaW9OSEOBztqT+NcFju1uoIJYPd2U8YH6sOKWZjcKqO0b6E/mU1M+Ieea889+Rjtvu2D8xG5lHC6NMzgA//AGEV2er4cvt/I6QkA63seNby7GFmMik/GmRiub0jW1ZQ3gBakaxA9lUjgRY/Kgxy5McUaMzDmCOmtLD1Wk74qG0Yuepo6jsrju0/3KSs/AgnXj1qsT2bk5aNwNqzaEvnKtyHBI60gRJ3hVYFTcjlyp4Oytkd3mlJF7A8hTnEuxC5Bv4CixUpgzAOetTitT98Rw1PxtWXOK41YjyPIjHjqTVSARytzhR86eA71hY660GwZFjcHhRg185KVXYq8T/EVu5VtEITzPtJF1vcXoDZR4E7YBy0QskLbciQa7WP036UeA9v9nYyZGJB3mNhLkT4Th7kk7nsWuNR5XFef7Ldx3eubNbP3BnS4/d5pwrbkgkPQOgJZdP8htU8JsXy8ND+8+Oseb2nOQaOjRa8yLNf5Wrp/X+sc37H0rUxPux4XZiyyxK4Y8bka3+YNdHD4c/P5Ckm2qQas6gXY0Yof+4QqGN+FGDUQ91LEopspvY0YWk5uXsiYyG+4WBHJqMGtdHn3IuaeDTXykJsDegtOPcprAFyLADSp6r7BOazfUxPx1owawZP/WgM+5HWkeiOXyvSw9R9wetGKZ96ULC1wOABO65+Vc/t34bevF0ZzPGnl2AghRe500J4UevaOeRMOSLsSdb6VrYmVYTJ10Nyb28KMPUHMBIUHhxoLXggKGYEflFhWznEfWkdQST/AGr1+FISOt9n5LRdzXCyWcdvy98OVAApZllUrYEjiL3v4VHOeNXw+ceq/tjgdywEWCRG+1zUT0ixHkYF45Ftr/Yprk99lrq9EsjoPdTw5GeI7lZjjTqotobiMWv8GrL1r5xzH7r+tNi4VhujxyZ0Y8QHjiXafHUmun9dh740WPlBPb3bp5TYfrQg/wDxybv/ANK6eHzY5+fxFCfvcQ0j16mtOrLspSd3mfgaeFosXuB3bX1FGHq5Bl2m2g35UYNW8xxJhvrfQMvyowa0qzHh05UYBrOwowzhk68aQEcxRzowwnN5XpYNZ92etGDUrlHnwoxUo/vD10qcVrW9w9wYeNKUZWaQgEqD5bg8Tp+Fc/slrXhV3D9xLlzEiR3ccrjaoOh18pNqz48r/LTwt+vpfdz0Y9RXVGSxjZ5DLu5aXHjSw9Oly1UgA/OjBrxrFTeSpJUn8xFaMKYksUWSpj82wixa9jblaga6vsEWU3ubtuQY7+m8byflALLuUa9bVnz/ABquH5R712nMSLOxW2loXmjg2KLlGd9xJ4eUh+IrzuT0IR70iaLN7XkxOCWy9u2/FZxsOl/ym16rh9U8/o533PmQ53tvLzYsYxjAysb1I3F1ZJE9GQq3ixvWvq+cY+y7NcV3XElxfbzKW3HF7nNAddCHhVwR8Qtdnrv9v9Ob2T+v+3ODJKt/jW7DE+uSONIxDINBaZHlOrbgTemWrv8AvGU0QjuLWIJtqQaRwgSgG99aFCGSL6tQNNMqC3nFIJaQBG1AtzHOgEtki+h08aYR9xQYxk9TSMyKbIdlEG4m9yqkG/gbhv8ACsfZJfr5acLY5jNzMmfLnH249U3DDcLBQLnb5jy4VneN+q5fsvx5LxZaQIxjikAJmsGuSoboN1r62NZS5NXm1uvvNv6RO7abE8jbS+tdXGeGV5eTIssK3hTwSmfdMx40rDeYI5VtwYggcqpAotzatpc8aCr0fAk+yyMbuE0A+1yX9DcW8oWDHR473082t6wvnw1njy9S7PJhu3ZM3ftfNyMaQxA7gDGg3KfgoFcfP6uzj/6037mSZD+7vbyLI8agySbo+KgGME63HK9aevOtZe38oo9/736PacrtsO0wT9vCyIASVZCHjcf9wW9HDe0qfZy8Y47uPehk9jyYdNssuPmRAG+1xH6MgJOtdvDj5c3Pl4xzYma/H+dbMTBKb9OtMDWZfnQWDWfTjpSGDEw43tQbDkjkaeFaj19dKZI+4NI0eufGmEHItxvSDBkm9wbDrQafuTfjejDVu55sWPGl5fSnF2jIJVr8OK20rD28NrXhyyNJld53xpJsQSru84Gx2uT9VhY9aznBerfZu5lZEErpHsPlka7Hde/0A6eJrP2cL9Fca6GHLxXk9P1V9XbciM3Tdy8x69K04ey5E3iIZBB01vXRjOU2DKNyeNLD1wVwIyOZ4Ugastx1ApyJte3dv7bFl+1u3Yc4BhysKKWcnirgbuelmUWrivLOVv8Al1zj/WRsI2bFw+z42M5QJ3KOFpBYyR+pG0ic/wC6NR0IrO+dt+zSeMO9z9wjaOLuUgEk2KmeJYhbcUFnIF7Hypa9qXCfQey/VoWh+7zY9AMYYjRSEbrurAurW52TeorTjyk8Ms1wObjphl4opBLAQ3pE6G1wCG8RXd6+Wxx85laoS+NhVpT6x5caAIM3EsKYEMjaNCKQT696ZawzMBx06imWJWa4vr8aZsM45mkE/cAggaCgIOQ6psNyvEDkDQAHIJ05UGyOQs/1BedybDTWlacUO/Z86xDDWY5aa7wBv9PcRorNryrmkluzw28/FaRYcr1BCwZCFJIccARu0+NVob4S9txIA08CtkqylVDE7g635AWKjWsvOr8J7H3CVJWCRDHgJ3F5T5Tu6nTXpU+zgTc5Eh2RyBldHBs6ac+Y610erlLEcpgUymAsDWidclcsVA41J4sQoC6oD5nO0fPSgPd+0iWT2n28tImyfDhxtjE2awBYnkAEW1/GvP5flf5dvH8Y2eBjSSdvhK6SLLjbybb74k+y2v8A7bcanl8q4zw5P3VPk9tzcjDmVjaPKVpvqOyTGuWP/kr+YVrwm+WXO5Se1d/iEmBmg+ooC4W4EgbVjNyeVxcWrHlxsqZy+rh+/wA+wx48hs+O5Q21AIuG468q7/VPq5+TUhJRdgd6t00P4VsihWe/IgjjTLBetoKCT6v4Uwz1fGmBrNzuaAlskEX4/GnhH9xw8vt06wZaenK8aShTqdkg3KfDSpnKX4O8bPlVM5HO/hTLENksdL2tQYfWNANikkX9UBio+plGg+ZBFTymzDheT3btTbYp0Zyrl3WP9LQcdRz5jrXLOPLW+xQye4iSUphR7sZVO0y+YltpJPibdac4/cCSeIzR/dRIwkUbyhK2JttI8bUWX6DSJ5oWcoXKpGSIxcsLX42NOSjW9hniOJGIpGKabYyCBrrca/yqvVPPwjkaGIAO4a8hqRWyXOCQBtNLVCjIpLMGB1Gt6Ye3Yj7ew+2MfeIxJ24OBpq7eY2vzIWuC/N/l2fST/Dqfb80ON2xWPpwk2Zd51/URCbg/wCZrVj7Plrw8Ro/dGGY8bLgzkZu54gngxZyPNPizg+mq3PnZLlSL8r1pxvx9mfOfdw3bvusDGHbmjT7gxrPGZF3bQ6lQ/g23n1Fa8+O+XPPs0XdsyPu82QMidFyUMn22TbSX0wo9Nz1twY8639c6s+XlpZi0MjQq+9AFZWH+YVtxuxnYR6+4cNb3uKZCWUf8qBifWB+FMJEnKmTPUHHlTBuPDLlTJjY675pjtjjHFieVK3BJp3du55WbnSTZLEyC0YB4qsY2qvyAtS48ZIrly2+VL1aaWbweNAYZANb6UBn3EyWaKQxsODAm3zAOtTz4Tl8q48sVpAWx2fMAyHDlweDG4/MRayeArO8LGk5RSxmVZGcAqzA7AgNrcDrccqmqbWHBU+kuVKgcqkiqxIDEgAJusVuPGs7y+x2JTF7ZEqN68Jkc6Anda5t+W4AuKrj7PvKiytjCmN6ZQTq04BsqbiFC8QdNLVc90t+CvGlxSAuL/TwNq1pOeDnduB1NSayHULa2pHH+lGDXrOL3IL2n2bkZuxcKTGyIizGwVogY1vrzvrauPr55Y6d8cXc+zp4cjtszKgkbHOLjtF5WsAyA8TYkdeNYe2eW/ruxr/dEPeYY5n7tAvcMVM7Lbt0iuxkjHp32G35fOAPEUpy+3+0c5fq4WeKaDvkOZ3DIWWeXDkijIBU+SRVUHQaor3B8K6pfGOe/O1wUkkyZEkZJZ4p5ri/5ibE/wAK6oypUk4nPqDynTThw8KOPhNQwtAxUHQ666VREiQjjTAvUPEcKCxgm/hQE+tdbcaYxt/acyp7k7fKQSsUvqPYXIVAWY28AL1Hs/Gr9f5Rq5skzTSSkljIzPuPPcSbmriKBmt8aCD6hNhegCLgaDWgJSUbgSLjpwopxVycpfTZJYyHJBit9J+OtZW1pJFfGaQXmEXq2JsCTZSRxsKmrbTPyD9tjI0eyWFQdR5to8pJa+h3eF6iQWqUcyo6MsY9W91Vj5RfU6njeqvENzgNK8MxyICJmW6+Y77W0bYR9NZ5nKeSqAxROldSH//Z"
+        }
+      ]
+    },
+    {
+      "name": "Content",
+      "data": [
+        {
+          "ContentItemId": "412twjnn0rddhzpxrmt1bv8n44",
+          "ContentItemVersionId": "4r6dvzcxk2xagyzebm9crwap5b",
+          "ContentType": "Menu",
+          "Latest": true,
+          "Number": 1,
+          "Published": true,
+          "ModifiedUtc": "2017-08-16T00:32:59.1057293Z",
+          "PublishedUtc": "2017-08-16T00:32:59.1287452Z",
+          "CreatedUtc": "2017-08-16T00:32:59.1287452Z",
+          "Owner": null,
+          "Author": null,
+          "MenuPart": {},
+          "TitlePart": {
+            "Title": "Main Menu"
+          },
+          "MenuItemsListPart": {
+            "MenuItems": [
+              {
+                "ContentType": "LinkMenuItem",
+                "ContentItemId": "4pe57e9z616j8wj85vfvp03c40",
+                "LinkMenuItemPart": {
+                  "Name": "Home",
+                  "Url": "~/"
+                }
+              }
+            ]
+          },
+          "AliasPart": {
+            "Alias": "main-menu"
+          }
+        },
+        {
+          "ContentItemId": "4deh835p7emt23gpxz15wmz5x5",
+          "ContentItemVersionId": "4jse9chj6kkjzyxcr1te1r41xx",
+          "ContentType": "LandingPage",
+          "Latest": true,
+          "Number": 16,
+          "Published": true,
+          "ModifiedUtc": "2017-08-16T23:21:36.8836967Z",
+          "PublishedUtc": "2017-08-16T23:21:37.1612415Z",
+          "CreatedUtc": "2017-08-16T00:49:29.6251921Z",
+          "Owner": null,
+          "Author": "admin",
+          "LandingPage": {},
+          "AutoroutePart": {
+            "Path": "agency-start-bootstrap-theme",
+            "SetHomepage": true
+          },
+          "TitlePart": {
+            "Title": "Agency - Start Bootstrap Theme"
+          },
+          "MenuItems": {
+            "ContentItems": [
+              {
+                "ContentItemId": "43xmbrmyss2ts0bp2g1wzxcfdj",
+                "ContentItemVersionId": "4ad6jdemq0695x34k7c088dwxx",
+                "ContentType": "MenuItem",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0237162Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "MenuItem": {
+                  "Link": {
+                    "Text": "#services"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "Services"
+                }
+              },
+              {
+                "ContentItemId": "49wky2w6dtgccz0m59vvpdvnny",
+                "ContentItemVersionId": "4tysqc8pggzhdrq5h1rcrqbg49",
+                "ContentType": "MenuItem",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0357161Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "MenuItem": {
+                  "Link": {
+                    "Text": "#portfolio"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "Portfolio"
+                }
+              },
+              {
+                "ContentItemId": "4v18zz927xshn17bp118hjxwxy",
+                "ContentItemVersionId": "4h706h7pt1tep7yk00bn5xyrwq",
+                "ContentType": "MenuItem",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0377161Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "MenuItem": {
+                  "Link": {
+                    "Text": "#about"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "About"
+                }
+              },
+              {
+                "ContentItemId": "4665xeg2gbmj3rbbar8p3pmqw5",
+                "ContentItemVersionId": "461ad86xzyc89ytevd67eg59d1",
+                "ContentType": "MenuItem",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0387161Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "MenuItem": {
+                  "Link": {
+                    "Text": "#team"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "Team"
+                }
+              }
+            ]
+          },
+          "Services": {
+            "ContentItems": [
+              {
+                "ContentItemId": "4vxbn052nxbw4vt0a1p2y4x7cd",
+                "ContentItemVersionId": "4kegmtepdzc5e1x8s2kq2yhfmj",
+                "ContentType": "Service",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0437165Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Service": {
+                  "IconClass": {
+                    "Text": "fa-shopping-cart"
+                  }
+                },
+                "BodyPart": {
+                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit."
+                },
+                "TitlePart": {
+                  "Title": "E-Commerce"
+                }
+              },
+              {
+                "ContentItemId": "4v8ckhj5cqt0h4xct4b4q0fkxg",
+                "ContentItemVersionId": "4hd6zx6hc78dnx69ave9psm0xf",
+                "ContentType": "Service",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0507163Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Service": {
+                  "IconClass": {
+                    "Text": "fa-laptop"
+                  }
+                },
+                "BodyPart": {
+                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit."
+                },
+                "TitlePart": {
+                  "Title": "Responsive Design"
+                }
+              },
+              {
+                "ContentItemId": "42qq3sqp94v1nw1gxwt881rgmc",
+                "ContentItemVersionId": "41hxdahm2qt1gzdpz0y52yw14b",
+                "ContentType": "Service",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0527169Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Service": {
+                  "IconClass": {
+                    "Text": "fa-lock"
+                  }
+                },
+                "BodyPart": {
+                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit."
+                },
+                "TitlePart": {
+                  "Title": "Web Security"
+                }
+              }
+            ]
+          },
+          "Portfolio": {
+            "ContentItems": [
+              {
+                "ContentItemId": "4bsnqcc62b8b42tmqjfgxw91x9",
+                "ContentItemVersionId": "4t1dcer2qt7qay78s1y719pdcs",
+                "ContentType": "Project",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0557279Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Project": {
+                  "Image": {
+                    "Paths": [
+                      "/portfolio/01-full.jpg"
+                    ]
+                  },
+                  "Category": {
+                    "Text": "Illustrations"
+                  }
+                },
+                "BodyPart": {
+                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                },
+                "TitlePart": {
+                  "Title": "Threads"
+                }
+              },
+              {
+                "ContentItemId": "4r0snepj4jvyrrsnr0mbk8mnwz",
+                "ContentItemVersionId": "4xbgewh09d10q4vbds1ga4f4we",
+                "ContentType": "Project",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0662276Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Project": {
+                  "Image": {
+                    "Paths": [
+                      "/portfolio/02-full.jpg"
+                    ]
+                  },
+                  "Category": {
+                    "Text": "Graphic Design"
+                  }
+                },
+                "BodyPart": {
+                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                },
+                "TitlePart": {
+                  "Title": "Explore"
+                }
+              },
+              {
+                "ContentItemId": "4xzv851mp3d327he122qt6vtn9",
+                "ContentItemVersionId": "4ffrat5th3p6hspgnzattrf1de",
+                "ContentType": "Project",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0687296Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Project": {
+                  "Image": {
+                    "Paths": [
+                      "/portfolio/03-full.jpg"
+                    ]
+                  },
+                  "Category": {
+                    "Text": "Identity"
+                  }
+                },
+                "BodyPart": {
+                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                },
+                "TitlePart": {
+                  "Title": "Finish"
+                }
+              },
+              {
+                "ContentItemId": "4p97ttjdx2yzz4k38b4yad4656",
+                "ContentItemVersionId": "4q083c90mkm3xwz3cz0r0xhanz",
+                "ContentType": "Project",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0717342Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Project": {
+                  "Image": {
+                    "Paths": [
+                      "/portfolio/04-full.jpg"
+                    ]
+                  },
+                  "Category": {
+                    "Text": "Branding"
+                  }
+                },
+                "BodyPart": {
+                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                },
+                "TitlePart": {
+                  "Title": "Lines"
+                }
+              },
+              {
+                "ContentItemId": "4qnx6jhkkp2tf562n3988nq15a",
+                "ContentItemVersionId": "4r817bnsdqndz4dqdkptsywmcp",
+                "ContentType": "Project",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0767335Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Project": {
+                  "Image": {
+                    "Paths": [
+                      "/portfolio/05-full.jpg"
+                    ]
+                  },
+                  "Category": {
+                    "Text": "Web Design"
+                  }
+                },
+                "BodyPart": {
+                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                },
+                "TitlePart": {
+                  "Title": "Southwest"
+                }
+              },
+              {
+                "ContentItemId": "4brr5gjmw4e0c0p08q700fefm0",
+                "ContentItemVersionId": "4qn0w9k2kp0ehwehvmecpcf44d",
+                "ContentType": "Project",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0797331Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Project": {
+                  "Image": {
+                    "Paths": [
+                      "/portfolio/06-full.jpg"
+                    ]
+                  },
+                  "Category": {
+                    "Text": "Photography"
+                  }
+                },
+                "BodyPart": {
+                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                },
+                "TitlePart": {
+                  "Title": "Window"
+                }
+              }
+            ]
+          },
+          "About": {
+            "ContentItems": [
+              {
+                "ContentItemId": "40mb9dsmbhh5v4g2rwp9sgyamg",
+                "ContentItemVersionId": "4n6dkmxsm7hrrydb3ehx3j40ce",
+                "ContentType": "Milestone",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0827325Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Milestone": {
+                  "Date": {
+                    "Text": "2009-2011"
+                  },
+                  "Image": {
+                    "Paths": [
+                      "/about/1.jpg"
+                    ]
+                  }
+                },
+                "BodyPart": {
+                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!"
+                },
+                "TitlePart": {
+                  "Title": "Our Humble Beginnings"
+                }
+              },
+              {
+                "ContentItemId": "4f7sr7kjyn62q7qfyremy8srnt",
+                "ContentItemVersionId": "45t1p0f1tsv6n2mws7m5tbb9dq",
+                "ContentType": "Milestone",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0857333Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Milestone": {
+                  "Date": {
+                    "Text": "MARCH 2011"
+                  },
+                  "Image": {
+                    "Paths": [
+                      "/about/2.jpg"
+                    ]
+                  }
+                },
+                "BodyPart": {
+                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!\r\n"
+                },
+                "TitlePart": {
+                  "Title": "An Agency is Born"
+                }
+              },
+              {
+                "ContentItemId": "4qjmdmz4hez273hqa76ftdmdnh",
+                "ContentItemVersionId": "43jhw7rsf0v7ax2az2vf0b0fcb",
+                "ContentType": "Milestone",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0887326Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Milestone": {
+                  "Date": {
+                    "Text": "DECEMBER 2012"
+                  },
+                  "Image": {
+                    "Paths": [
+                      "/about/3.jpg"
+                    ]
+                  }
+                },
+                "BodyPart": {
+                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!"
+                },
+                "TitlePart": {
+                  "Title": "Transition to Full Service"
+                }
+              },
+              {
+                "ContentItemId": "4sz25vvv2zzfv4ghkxp4rsgawn",
+                "ContentItemVersionId": "4s5nwde6yexxvrn42vda57e0xy",
+                "ContentType": "Milestone",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0907331Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Milestone": {
+                  "Date": {
+                    "Text": "JULY 2014"
+                  },
+                  "Image": {
+                    "Paths": [
+                      "/about/4.jpg"
+                    ]
+                  }
+                },
+                "BodyPart": {
+                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!\r\n"
+                },
+                "TitlePart": {
+                  "Title": "Phase Two Expansion"
+                }
+              }
+            ]
+          },
+          "Team": {
+            "ContentItems": [
+              {
+                "ContentItemId": "480nv1nakh4r5w8bns3768hm5z",
+                "ContentItemVersionId": "4cdhtart0q6e007rnmtnpf72nc",
+                "ContentType": "TeamMember",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0947327Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "TeamMember": {
+                  "Occupation": {
+                    "Text": "Lead Designer"
+                  },
+                  "Picture": {
+                    "Paths": [
+                      "/team/1.jpg"
+                    ]
+                  },
+                  "Twitter": {
+                    "Text": "@BillGates"
+                  },
+                  "Facebook": {
+                    "Text": "BillGates"
+                  },
+                  "LinkedIn": {
+                    "Text": "williamhgates"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "Kay Garland"
+                }
+              },
+              {
+                "ContentItemId": "4drbjbekgecf1rztg6a72f53na",
+                "ContentItemVersionId": "42sem1a3y94fm6te7gs2kmn9nj",
+                "ContentType": "TeamMember",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.0977324Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "TeamMember": {
+                  "Occupation": {
+                    "Text": "Lead Marketer"
+                  },
+                  "Picture": {
+                    "Paths": [
+                      "/team/2.jpg"
+                    ]
+                  },
+                  "Twitter": {
+                    "Text": "@BillGates"
+                  },
+                  "Facebook": {
+                    "Text": "BillGates"
+                  },
+                  "LinkedIn": {
+                    "Text": "williamhgates"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "Larry Parker"
+                }
+              },
+              {
+                "ContentItemId": "45y8whb5vyw1a60q3bhveaqbxz",
+                "ContentItemVersionId": "4a4mxdkqd3mq50p1pmkk39h557",
+                "ContentType": "TeamMember",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.1017334Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "TeamMember": {
+                  "Occupation": {
+                    "Text": "Lead Developer"
+                  },
+                  "Picture": {
+                    "Paths": [
+                      "/team/3.jpg"
+                    ]
+                  },
+                  "Twitter": {
+                    "Text": "@BillGates"
+                  },
+                  "Facebook": {
+                    "Text": "BillGates"
+                  },
+                  "LinkedIn": {
+                    "Text": "williamhgates"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "Diana Pertersen"
+                }
+              }
+            ]
+          },
+          "Clients": {
+            "ContentItems": [
+              {
+                "ContentItemId": "4fswrhbc56pm71h235dr6tb1nt",
+                "ContentItemVersionId": "49tm04zy2pcmb28h7gh1945fnd",
+                "ContentType": "Client",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.1067324Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Client": {
+                  "Logo": {
+                    "Paths": [
+                      "/logos/envato.jpg"
+                    ]
+                  },
+                  "Url": {
+                    "Text": "#"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "Envato"
+                }
+              },
+              {
+                "ContentItemId": "4h94cw2cpt2m7x478vdvmng1c5",
+                "ContentItemVersionId": "4azzte72pcg6g6299rpdthb3nc",
+                "ContentType": "Client",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.108733Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Client": {
+                  "Logo": {
+                    "Paths": [
+                      "/logos/designmodo.jpg"
+                    ]
+                  },
+                  "Url": {
+                    "Text": "#"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "Design Moto"
+                }
+              },
+              {
+                "ContentItemId": "46btvve5z7jfmw1641163x4kxf",
+                "ContentItemVersionId": "4y7s46z583y5k0rgz9fbazbjwp",
+                "ContentType": "Client",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.1107326Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Client": {
+                  "Logo": {
+                    "Paths": [
+                      "/logos/themeforest.jpg"
+                    ]
+                  },
+                  "Url": {
+                    "Text": "#"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "ThemeForest"
+                }
+              },
+              {
+                "ContentItemId": "4qbb9ba5wbph0s4g3hfhe87am9",
+                "ContentItemVersionId": "42jbndxyhp8n63tes8rzj4ya5b",
+                "ContentType": "Client",
+                "Latest": false,
+                "Number": 0,
+                "Published": false,
+                "ModifiedUtc": "2017-08-16T23:21:37.1127323Z",
+                "PublishedUtc": null,
+                "CreatedUtc": null,
+                "Owner": null,
+                "Author": "admin",
+                "Client": {
+                  "Logo": {
+                    "Paths": [
+                      "/logos/creative-market.jpg"
+                    ]
+                  },
+                  "Url": {
+                    "Text": "#"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "Creative"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "ContentItemId": "4pwy4z6fz6ar00qt0xj21k7q5c",
+          "ContentItemVersionId": "49s9hakaxmm2kt0yxhebrb11na",
+          "ContentType": "HtmlWidget",
+          "Latest": true,
+          "Number": 1,
+          "Published": true,
+          "ModifiedUtc": "2017-08-17T18:38:21.5222722Z",
+          "PublishedUtc": "2017-08-17T18:38:21.5942069Z",
+          "CreatedUtc": "2017-08-17T18:38:21.5942069Z",
+          "Owner": "admin",
+          "Author": "admin",
+          "HtmlWidget": {},
+          "BodyPart": {
+            "Body": "<!-- Footer -->\r\n<footer>\r\n  <div class=\"container\">\r\n    <div class=\"row\">\r\n      <div class=\"col-md-4\">\r\n        <span class=\"copyright\">Copyright &copy; Your Website 2017</span>\r\n      </div>\r\n      <div class=\"col-md-4\">\r\n        <ul class=\"list-inline social-buttons\">\r\n          <li class=\"list-inline-item\">\r\n            <a href=\"#\">\r\n              <i class=\"fa fa-twitter\"></i>\r\n            </a>\r\n          </li>\r\n          <li class=\"list-inline-item\">\r\n            <a href=\"#\">\r\n              <i class=\"fa fa-facebook\"></i>\r\n            </a>\r\n          </li>\r\n          <li class=\"list-inline-item\">\r\n            <a href=\"#\">\r\n              <i class=\"fa fa-linkedin\"></i>\r\n            </a>\r\n          </li>\r\n        </ul>\r\n      </div>\r\n      <div class=\"col-md-4\">\r\n        <ul class=\"list-inline quicklinks\">\r\n          <li class=\"list-inline-item\">\r\n            <a href=\"#\">Privacy Policy</a>\r\n          </li>\r\n          <li class=\"list-inline-item\">\r\n            <a href=\"#\">Terms of Use</a>\r\n          </li>\r\n        </ul>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</footer>"
+          },
+          "LayerMetadata": {
+            "Title": "Footer",
+            "RenderTitle": false,
+            "Position": 1.0,
+            "Zone": "Footer",
+            "Layer": "Always"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Templates",
+      "Templates": {
+        "Content__LandingPage": {
+          "Description": "A template for the Landing Page content type",
+          "Content": "[js:base64('eyUgaWYgTW9kZWwuQ29udGVudEl0ZW0uQ29udGVudC5NZW51SXRlbXMuQ29udGVudEl0ZW1zLnNpemUgPiAwICV9DQo8IS0tIE5hdmlnYXRpb24gLS0+DQo8bmF2IGNsYXNzPSJuYXZiYXIgbmF2YmFyLWV4cGFuZC1sZyBuYXZiYXItZGFyayBmaXhlZC10b3AiIGlkPSJtYWluTmF2Ij4NCiAgPGEgY2xhc3M9Im5hdmJhci1icmFuZCIgaHJlZj0iI3BhZ2UtdG9wIj5TdGFydCBCb290c3RyYXA8L2E+DQogIDxidXR0b24gY2xhc3M9Im5hdmJhci10b2dnbGVyIG5hdmJhci10b2dnbGVyLXJpZ2h0IiB0eXBlPSJidXR0b24iIGRhdGEtdG9nZ2xlPSJjb2xsYXBzZSIgZGF0YS10YXJnZXQ9IiNuYXZiYXJSZXNwb25zaXZlIiBhcmlhLWNvbnRyb2xzPSJuYXZiYXJSZXNwb25zaXZlIiBhcmlhLWV4cGFuZGVkPSJmYWxzZSIgYXJpYS1sYWJlbD0iVG9nZ2xlIG5hdmlnYXRpb24iPg0KICAgIE1lbnUNCiAgICA8aSBjbGFzcz0iZmEgZmEtYmFycyI+PC9pPg0KICA8L2J1dHRvbj4NCiAgPGRpdiBjbGFzcz0iY29sbGFwc2UgbmF2YmFyLWNvbGxhcHNlIiBpZD0ibmF2YmFyUmVzcG9uc2l2ZSI+DQogICAgPHVsIGNsYXNzPSJuYXZiYXItbmF2IG1sLWF1dG8iPg0KICAgICAgeyUgZm9yIG1lbnVJdGVtIGluIE1vZGVsLkNvbnRlbnRJdGVtLkNvbnRlbnQuTWVudUl0ZW1zLkNvbnRlbnRJdGVtcyAlfQ0KICAgICAgPGxpIGNsYXNzPSJuYXYtaXRlbSI+DQogICAgICAgIDxhIGNsYXNzPSJuYXYtbGluayIgaHJlZj0ie3sgbWVudUl0ZW0uTWVudUl0ZW0uTGluay5UZXh0IH19Ij57eyBtZW51SXRlbS5UaXRsZVBhcnQuVGl0bGUgfX08L2E+DQogICAgICA8L2xpPg0KICAgICAgeyUgZW5kZm9yICV9DQogICAgPC91bD4NCiAgPC9kaXY+DQo8L25hdj4NCnslIGVuZGlmICV9DQoNCjwhLS0gSGVhZGVyIC0tPg0KPGhlYWRlciBjbGFzcz0ibWFzdGhlYWQiPg0KICA8ZGl2IGNsYXNzPSJjb250YWluZXIiPg0KICAgIDxkaXYgY2xhc3M9ImludHJvLXRleHQiPg0KICAgICAgPGRpdiBjbGFzcz0iaW50cm8tbGVhZC1pbiI+V2VsY29tZSBUbyBPdXIgU3R1ZGlvITwvZGl2Pg0KICAgICAgPGRpdiBjbGFzcz0iaW50cm8taGVhZGluZyI+SXQncyBOaWNlIFRvIE1lZXQgWW91PC9kaXY+DQogICAgICA8YSBocmVmPSIjc2VydmljZXMiIGNsYXNzPSJidG4gYnRuLXhsIj5UZWxsIE1lIE1vcmU8L2E+DQogICAgPC9kaXY+DQogIDwvZGl2Pg0KPC9oZWFkZXI+DQoNCnslIGlmIE1vZGVsLkNvbnRlbnRJdGVtLkNvbnRlbnQuU2VydmljZXMuQ29udGVudEl0ZW1zLnNpemUgPiAwICV9DQo8IS0tIFNlcnZpY2VzIC0tPg0KPHNlY3Rpb24gaWQ9InNlcnZpY2VzIj4NCiAgPGRpdiBjbGFzcz0iY29udGFpbmVyIj4NCiAgICA8ZGl2IGNsYXNzPSJyb3ciPg0KICAgICAgPGRpdiBjbGFzcz0iY29sLWxnLTEyIHRleHQtY2VudGVyIj4NCiAgICAgICAgPGgyIGNsYXNzPSJzZWN0aW9uLWhlYWRpbmciPlNlcnZpY2VzPC9oMj4NCiAgICAgICAgPGgzIGNsYXNzPSJzZWN0aW9uLXN1YmhlYWRpbmcgdGV4dC1tdXRlZCI+TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQgY29uc2VjdGV0dXIuPC9oMz4NCiAgICAgIDwvZGl2Pg0KICAgIDwvZGl2Pg0KICAgIDxkaXYgY2xhc3M9InJvdyB0ZXh0LWNlbnRlciI+DQogICAgICB7JSBmb3Igc2VydmljZSBpbiBNb2RlbC5Db250ZW50SXRlbS5Db250ZW50LlNlcnZpY2VzLkNvbnRlbnRJdGVtcyAlfQ0KICAgICAgPGRpdiBjbGFzcz0iY29sLW1kLTQiPg0KICAgICAgICA8c3BhbiBjbGFzcz0iZmEtc3RhY2sgZmEtNHgiPg0KICAgICAgICAgIDxpIGNsYXNzPSJmYSBmYS1jaXJjbGUgZmEtc3RhY2stMnggdGV4dC1wcmltYXJ5Ij48L2k+DQogICAgICAgICAgPGkgY2xhc3M9ImZhIHt7IHNlcnZpY2UuU2VydmljZS5JY29uQ2xhc3MuVGV4dCB9fSBmYS1zdGFjay0xeCBmYS1pbnZlcnNlIj48L2k+DQogICAgICAgIDwvc3Bhbj4NCiAgICAgICAgPGg0IGNsYXNzPSJzZXJ2aWNlLWhlYWRpbmciPnt7IHNlcnZpY2UuVGl0bGVQYXJ0LlRpdGxlIH19PC9oND4NCiAgICAgICAgPHAgY2xhc3M9InRleHQtbXV0ZWQiPnt7IHNlcnZpY2UuQm9keVBhcnQuQm9keSB8IHJhdyB9fTwvcD4NCiAgICAgIDwvZGl2Pg0KICAgICAgeyUgZW5kZm9yICV9DQogICAgPC9kaXY+DQogIDwvZGl2Pg0KPC9zZWN0aW9uPg0KeyUgZW5kaWYgJX0NCg0KeyUgaWYgTW9kZWwuQ29udGVudEl0ZW0uQ29udGVudC5Qb3J0Zm9saW8uQ29udGVudEl0ZW1zLnNpemUgPiAwICV9DQo8IS0tIFBvcnRmb2xpbyBHcmlkIC0tPg0KPHNlY3Rpb24gY2xhc3M9ImJnLWxpZ2h0IiBpZD0icG9ydGZvbGlvIj4NCiAgPGRpdiBjbGFzcz0iY29udGFpbmVyIj4NCiAgICA8ZGl2IGNsYXNzPSJyb3ciPg0KICAgICAgPGRpdiBjbGFzcz0iY29sLWxnLTEyIHRleHQtY2VudGVyIj4NCiAgICAgICAgPGgyIGNsYXNzPSJzZWN0aW9uLWhlYWRpbmciPlBvcnRmb2xpbzwvaDI+DQogICAgICAgIDxoMyBjbGFzcz0ic2VjdGlvbi1zdWJoZWFkaW5nIHRleHQtbXV0ZWQiPkxvcmVtIGlwc3VtIGRvbG9yIHNpdCBhbWV0IGNvbnNlY3RldHVyLjwvaDM+DQogICAgICA8L2Rpdj4NCiAgICA8L2Rpdj4NCiAgICA8ZGl2IGNsYXNzPSJyb3ciPg0KICAgIHslIGZvciBwcm9qZWN0IGluIE1vZGVsLkNvbnRlbnRJdGVtLkNvbnRlbnQuUG9ydGZvbGlvLkNvbnRlbnRJdGVtcyAlfQ0KICAgICAgPGRpdiBjbGFzcz0iY29sLW1kLTQgY29sLXNtLTYgcG9ydGZvbGlvLWl0ZW0iPg0KICAgICAgICA8ZGl2IGNsYXNzPSJwb3J0Zm9saW8tbGluayIgZGF0YS10b2dnbGU9Im1vZGFsIiBocmVmPSIjcG9ydGZvbGlvTW9kYWx7eyBmb3Jsb29wLmluZGV4IH19Ij4NCiAgICAgICAgICA8ZGl2IGNsYXNzPSJwb3J0Zm9saW8taG92ZXIiPg0KICAgICAgICAgICAgPGRpdiBjbGFzcz0icG9ydGZvbGlvLWhvdmVyLWNvbnRlbnQiPg0KICAgICAgICAgICAgICA8aSBjbGFzcz0iZmEgZmEtcGx1cyBmYS0zeCI+PC9pPg0KICAgICAgICAgICAgPC9kaXY+DQogICAgICAgICAgPC9kaXY+DQogICAgICAgICAgPGltZyBjbGFzcz0iaW1nLWZsdWlkIiBzcmM9Int7IHByb2plY3QuUHJvamVjdC5JbWFnZS5QYXRocy5maXJzdCB8IG1lZGlhX3VybCB8IHJlc2l6ZV91cmw6IHdpZHRoOjQwMCwgaGVpZ2h0OiAzMDAsIG1vZGU6ICdzdHJlY2gnIH19IiBhbHQ9Int7IHByb2plY3QuVGl0bGVQYXJ0LlRpdGxlIH19Ij4NCiAgICAgICAgPC9kaXY+DQogICAgICAgIDxkaXYgY2xhc3M9InBvcnRmb2xpby1jYXB0aW9uIj4NCiAgICAgICAgICA8aDQ+e3sgcHJvamVjdC5UaXRsZVBhcnQuVGl0bGUgfX08L2g0Pg0KICAgICAgICAgIDxwIGNsYXNzPSJ0ZXh0LW11dGVkIj57eyBwcm9qZWN0LlByb2plY3QuQ2F0ZWdvcnkuVGV4dCB9fTwvcD4NCiAgICAgICAgPC9kaXY+DQogICAgICA8L2Rpdj4NCiAgICB7JSBlbmRmb3IgJX0NCiAgICA8L2Rpdj4NCiAgPC9kaXY+DQo8L3NlY3Rpb24+DQp7JSBlbmRpZiAlfQ0KDQp7JSBpZiBNb2RlbC5Db250ZW50SXRlbS5Db250ZW50LkFib3V0LkNvbnRlbnRJdGVtcy5zaXplID4gMCAlfQ0KPCEtLSBBYm91dCAtLT4NCjxzZWN0aW9uIGlkPSJhYm91dCI+DQogIDxkaXYgY2xhc3M9ImNvbnRhaW5lciI+DQogICAgPGRpdiBjbGFzcz0icm93Ij4NCiAgICAgIDxkaXYgY2xhc3M9ImNvbC1sZy0xMiB0ZXh0LWNlbnRlciI+DQogICAgICAgIDxoMiBjbGFzcz0ic2VjdGlvbi1oZWFkaW5nIj5BYm91dDwvaDI+DQogICAgICAgIDxoMyBjbGFzcz0ic2VjdGlvbi1zdWJoZWFkaW5nIHRleHQtbXV0ZWQiPkxvcmVtIGlwc3VtIGRvbG9yIHNpdCBhbWV0IGNvbnNlY3RldHVyLjwvaDM+DQogICAgICA8L2Rpdj4NCiAgICA8L2Rpdj4NCiAgICA8ZGl2IGNsYXNzPSJyb3ciPg0KICAgICAgPGRpdiBjbGFzcz0iY29sLWxnLTEyIj4NCiAgICAgICAgPHVsIGNsYXNzPSJ0aW1lbGluZSI+DQogICAgICAgICAgeyUgZm9yIG1pbGVzdG9uZSBpbiBNb2RlbC5Db250ZW50SXRlbS5Db250ZW50LkFib3V0LkNvbnRlbnRJdGVtcyAlfQ0KICAgICAgICAgIDxsaSBjbGFzcz0ieyUgY3ljbGUgJycsICd0aW1lbGluZS1pbnZlcnRlZCcgJX0iPg0KICAgICAgICAgICAgPGRpdiBjbGFzcz0idGltZWxpbmUtaW1hZ2UiPg0KICAgICAgICAgICAgICA8aW1nIGNsYXNzPSJyb3VuZGVkLWNpcmNsZSBpbWctZmx1aWQiIHNyYz0ie3sgbWlsZXN0b25lLk1pbGVzdG9uZS5JbWFnZS5QYXRocy5maXJzdCB8IG1lZGlhX3VybCB8IHJlc2l6ZV91cmw6IHdpZHRoOjE2MCwgaGVpZ2h0OiAxNjAsIG1vZGU6ICdzdHJlY2gnIH19IiBhbHQ9IiI+DQogICAgICAgICAgICA8L2Rpdj4NCiAgICAgICAgICAgIDxkaXYgY2xhc3M9InRpbWVsaW5lLXBhbmVsIj4NCiAgICAgICAgICAgICAgPGRpdiBjbGFzcz0idGltZWxpbmUtaGVhZGluZyI+DQogICAgICAgICAgICAgICAgPGg0Pnt7IG1pbGVzdG9uZS5NaWxlc3RvbmUuRGF0ZS5UZXh0IH19PC9oND4NCiAgICAgICAgICAgICAgICA8aDQgY2xhc3M9InN1YmhlYWRpbmciPnt7IG1pbGVzdG9uZS5UaXRsZVBhcnQuVGl0bGUgfX08L2g0Pg0KICAgICAgICAgICAgICA8L2Rpdj4NCiAgICAgICAgICAgICAgPGRpdiBjbGFzcz0idGltZWxpbmUtYm9keSI+DQogICAgICAgICAgICAgICAgPHAgY2xhc3M9InRleHQtbXV0ZWQiPnt7IG1pbGVzdG9uZS5Cb2R5UGFydC5Cb2R5IH19PC9wPg0KICAgICAgICAgICAgICA8L2Rpdj4NCiAgICAgICAgICAgIDwvZGl2Pg0KICAgICAgICAgIDwvbGk+DQogICAgICAgICAgeyUgZW5kZm9yICV9DQogICAgICAgICAgPGxpIGNsYXNzPSJ0aW1lbGluZS1pbnZlcnRlZCI+DQogICAgICAgICAgICA8ZGl2IGNsYXNzPSJ0aW1lbGluZS1pbWFnZSI+DQogICAgICAgICAgICAgIDxoND5CZSBQYXJ0DQogICAgICAgICAgICAgICAgPGJyPk9mIE91cg0KICAgICAgICAgICAgICAgIDxicj5TdG9yeSE8L2g0Pg0KICAgICAgICAgICAgPC9kaXY+DQogICAgICAgICAgPC9saT4NCiAgICAgICAgPC91bD4NCiAgICAgIDwvZGl2Pg0KICAgIDwvZGl2Pg0KICA8L2Rpdj4NCjwvc2VjdGlvbj4NCnslIGVuZGlmICV9DQoNCnslIGlmIE1vZGVsLkNvbnRlbnRJdGVtLkNvbnRlbnQuVGVhbS5Db250ZW50SXRlbXMuc2l6ZSA+IDAgJX0NCjwhLS0gVGVhbSAtLT4NCjxzZWN0aW9uIGNsYXNzPSJiZy1saWdodCIgaWQ9InRlYW0iPg0KICA8ZGl2IGNsYXNzPSJjb250YWluZXIiPg0KICAgIDxkaXYgY2xhc3M9InJvdyI+DQogICAgICA8ZGl2IGNsYXNzPSJjb2wtbGctMTIgdGV4dC1jZW50ZXIiPg0KICAgICAgICA8aDIgY2xhc3M9InNlY3Rpb24taGVhZGluZyI+T3VyIEFtYXppbmcgVGVhbTwvaDI+DQogICAgICAgIDxoMyBjbGFzcz0ic2VjdGlvbi1zdWJoZWFkaW5nIHRleHQtbXV0ZWQiPkxvcmVtIGlwc3VtIGRvbG9yIHNpdCBhbWV0IGNvbnNlY3RldHVyLjwvaDM+DQogICAgICA8L2Rpdj4NCiAgICA8L2Rpdj4NCiAgICA8ZGl2IGNsYXNzPSJyb3ciPg0KICAgICAgeyUgZm9yIG1lbWJlciBpbiBNb2RlbC5Db250ZW50SXRlbS5Db250ZW50LlRlYW0uQ29udGVudEl0ZW1zICV9DQogICAgICA8ZGl2IGNsYXNzPSJjb2wtc20tNCI+DQogICAgICAgIDxkaXYgY2xhc3M9InRlYW0tbWVtYmVyIj4NCiAgICAgICAgICA8aW1nIGNsYXNzPSJteC1hdXRvIHJvdW5kZWQtY2lyY2xlIiBzcmM9Int7IG1lbWJlci5UZWFtTWVtYmVyLlBpY3R1cmUuUGF0aHMuZmlyc3QgfCBtZWRpYV91cmwgfCByZXNpemVfdXJsOiB3aWR0aDoyNDAsIGhlaWdodDogMjQwLCBtb2RlOiAnc3RyZWNoJyB9fSIgYWx0PSIiPg0KICAgICAgICAgIDxoND57eyBtZW1iZXIuVGl0bGVQYXJ0LlRpdGxlIH19PC9oND4NCiAgICAgICAgICA8cCBjbGFzcz0idGV4dC1tdXRlZCI+e3sgbWVtYmVyLlRlYW1NZW1iZXIuT2NjdXBhdGlvbi5UZXh0IH19PC9wPg0KICAgICAgICAgIDx1bCBjbGFzcz0ibGlzdC1pbmxpbmUgc29jaWFsLWJ1dHRvbnMiPg0KICAgICAgICAgICAgeyUgaWYgbWVtYmVyLlRlYW1NZW1iZXIuVHdpdHRlci5UZXh0LnNpemUgPiAwICV9DQogICAgICAgICAgICA8bGkgY2xhc3M9Imxpc3QtaW5saW5lLWl0ZW0iPg0KICAgICAgICAgICAgICA8YSBocmVmPSJodHRwczovL3d3dy50d2l0dGVyLmNvbS97eyBtZW1iZXIuVGVhbU1lbWJlci5Ud2l0dGVyLlRleHQgfX0iPg0KICAgICAgICAgICAgICAgIDxpIGNsYXNzPSJmYSBmYS10d2l0dGVyIj48L2k+DQogICAgICAgICAgICAgIDwvYT4NCiAgICAgICAgICAgIDwvbGk+DQogICAgICAgICAgICB7JSBlbmRpZiAlfQ0KICAgICAgICAgICAgeyUgaWYgbWVtYmVyLlRlYW1NZW1iZXIuRmFjZWJvb2suVGV4dC5zaXplID4gMCAlfQ0KICAgICAgICAgICAgPGxpIGNsYXNzPSJsaXN0LWlubGluZS1pdGVtIj4NCiAgICAgICAgICAgICAgPGEgaHJlZj0iaHR0cHM6Ly93d3cuZmFjZWJvb2suY29tL3t7IG1lbWJlci5UZWFtTWVtYmVyLkZhY2Vib29rLlRleHQgfX0iPg0KICAgICAgICAgICAgICAgIDxpIGNsYXNzPSJmYSBmYS1mYWNlYm9vayI+PC9pPg0KICAgICAgICAgICAgICA8L2E+DQogICAgICAgICAgICA8L2xpPg0KICAgICAgICAgICAgeyUgZW5kaWYgJX0NCiAgICAgICAgICAgIHslIGlmIG1lbWJlci5UZWFtTWVtYmVyLkxpbmtlZEluLlRleHQuc2l6ZSA+IDAgJX0NCiAgICAgICAgICAgIDxsaSBjbGFzcz0ibGlzdC1pbmxpbmUtaXRlbSI+DQogICAgICAgICAgICAgIDxhIGhyZWY9Imh0dHBzOi8vd3d3LmxpbmtlZGluLmNvbS9pbi97eyBtZW1iZXIuVGVhbU1lbWJlci5MaW5rZWRJbi5UZXh0IH19Ij4NCiAgICAgICAgICAgICAgICA8aSBjbGFzcz0iZmEgZmEtbGlua2VkaW4iPjwvaT4NCiAgICAgICAgICAgICAgPC9hPg0KICAgICAgICAgICAgPC9saT4NCiAgICAgICAgICAgIHslIGVuZGlmICV9DQogICAgICAgICAgPC91bD4NCiAgICAgICAgPC9kaXY+DQogICAgICA8L2Rpdj4NCiAgICAgIHslIGVuZGZvciAlfQ0KICAgIDwvZGl2Pg0KICAgIDxkaXYgY2xhc3M9InJvdyI+DQogICAgICA8ZGl2IGNsYXNzPSJjb2wtbGctOCBteC1hdXRvIHRleHQtY2VudGVyIj4NCiAgICAgICAgPHAgY2xhc3M9ImxhcmdlIHRleHQtbXV0ZWQiPkxvcmVtIGlwc3VtIGRvbG9yIHNpdCBhbWV0LCBjb25zZWN0ZXR1ciBhZGlwaXNpY2luZyBlbGl0LiBBdXQgZWFxdWUsIGxhYm9yaW9zYW0gdmVyaXRhdGlzLCBxdW9zIG5vbiBxdWlzIGFkIHBlcnNwaWNpYXRpcywgdG90YW0gY29ycG9yaXMgZWEsIGFsaWFzIHV0IHVuZGUuPC9wPg0KICAgICAgPC9kaXY+DQogICAgPC9kaXY+DQogIDwvZGl2Pg0KPC9zZWN0aW9uPg0KeyUgZW5kaWYgJX0NCg0KeyUgaWYgTW9kZWwuQ29udGVudEl0ZW0uQ29udGVudC5DbGllbnRzLkNvbnRlbnRJdGVtcy5zaXplID4gMCAlfQ0KPCEtLSBDbGllbnRzIC0tPg0KPHNlY3Rpb24gY2xhc3M9InB5LTUiPg0KICA8ZGl2IGNsYXNzPSJjb250YWluZXIiPg0KICAgIDxkaXYgY2xhc3M9InJvdyI+DQogICAgICB7JSBmb3IgY2xpZW50IGluIE1vZGVsLkNvbnRlbnRJdGVtLkNvbnRlbnQuQ2xpZW50cy5Db250ZW50SXRlbXMgJX0NCiAgICAgIDxkaXYgY2xhc3M9ImNvbC1tZC0zIGNvbC1zbS02Ij4NCiAgICAgICAgPGEgaHJlZj0ie3sgbWVtYmVyLkNsaWVudC5VcmwuVGV4dCB9fSI+DQogICAgICAgICAgPGltZyBjbGFzcz0iaW1nLWZsdWlkIGQtYmxvY2sgbXgtYXV0byIgc3JjPSJ7eyBjbGllbnQuQ2xpZW50LkxvZ28uUGF0aHMuZmlyc3QgfCBtZWRpYV91cmwgfX0iIGFsdD0iIj4NCiAgICAgICAgPC9hPg0KICAgICAgPC9kaXY+DQogICAgICB7JSBlbmRmb3IgJX0NCiAgICA8L2Rpdj4NCiAgPC9kaXY+DQo8L3NlY3Rpb24+DQp7JSBlbmRpZiAlfQ0KDQo8IS0tIENvbnRhY3QgLS0+DQo8c2VjdGlvbiBpZD0iY29udGFjdCI+DQogIDxkaXYgY2xhc3M9ImNvbnRhaW5lciI+DQogICAgPGRpdiBjbGFzcz0icm93Ij4NCiAgICAgIDxkaXYgY2xhc3M9ImNvbC1sZy0xMiB0ZXh0LWNlbnRlciI+DQogICAgICAgIDxoMiBjbGFzcz0ic2VjdGlvbi1oZWFkaW5nIj5Db250YWN0IFVzPC9oMj4NCiAgICAgICAgPGgzIGNsYXNzPSJzZWN0aW9uLXN1YmhlYWRpbmcgdGV4dC1tdXRlZCI+TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQgY29uc2VjdGV0dXIuPC9oMz4NCiAgICAgIDwvZGl2Pg0KICAgIDwvZGl2Pg0KICAgIDxkaXYgY2xhc3M9InJvdyI+DQogICAgICA8ZGl2IGNsYXNzPSJjb2wtbGctMTIiPg0KICAgICAgICA8Zm9ybSBpZD0iY29udGFjdEZvcm0iIG5hbWU9InNlbnRNZXNzYWdlIiBub3ZhbGlkYXRlPg0KICAgICAgICAgIDxkaXYgY2xhc3M9InJvdyI+DQogICAgICAgICAgICA8ZGl2IGNsYXNzPSJjb2wtbWQtNiI+DQogICAgICAgICAgICAgIDxkaXYgY2xhc3M9ImZvcm0tZ3JvdXAiPg0KICAgICAgICAgICAgICAgIDxpbnB1dCBjbGFzcz0iZm9ybS1jb250cm9sIiBpZD0ibmFtZSIgdHlwZT0idGV4dCIgcGxhY2Vob2xkZXI9IllvdXIgTmFtZSAqIiByZXF1aXJlZCBkYXRhLXZhbGlkYXRpb24tcmVxdWlyZWQtbWVzc2FnZT0iUGxlYXNlIGVudGVyIHlvdXIgbmFtZS4iPg0KICAgICAgICAgICAgICAgIDxwIGNsYXNzPSJoZWxwLWJsb2NrIHRleHQtZGFuZ2VyIj48L3A+DQogICAgICAgICAgICAgIDwvZGl2Pg0KICAgICAgICAgICAgICA8ZGl2IGNsYXNzPSJmb3JtLWdyb3VwIj4NCiAgICAgICAgICAgICAgICA8aW5wdXQgY2xhc3M9ImZvcm0tY29udHJvbCIgaWQ9ImVtYWlsIiB0eXBlPSJlbWFpbCIgcGxhY2Vob2xkZXI9IllvdXIgRW1haWwgKiIgcmVxdWlyZWQgZGF0YS12YWxpZGF0aW9uLXJlcXVpcmVkLW1lc3NhZ2U9IlBsZWFzZSBlbnRlciB5b3VyIGVtYWlsIGFkZHJlc3MuIj4NCiAgICAgICAgICAgICAgICA8cCBjbGFzcz0iaGVscC1ibG9jayB0ZXh0LWRhbmdlciI+PC9wPg0KICAgICAgICAgICAgICA8L2Rpdj4NCiAgICAgICAgICAgICAgPGRpdiBjbGFzcz0iZm9ybS1ncm91cCI+DQogICAgICAgICAgICAgICAgPGlucHV0IGNsYXNzPSJmb3JtLWNvbnRyb2wiIGlkPSJwaG9uZSIgdHlwZT0idGVsIiBwbGFjZWhvbGRlcj0iWW91ciBQaG9uZSAqIiByZXF1aXJlZCBkYXRhLXZhbGlkYXRpb24tcmVxdWlyZWQtbWVzc2FnZT0iUGxlYXNlIGVudGVyIHlvdXIgcGhvbmUgbnVtYmVyLiI+DQogICAgICAgICAgICAgICAgPHAgY2xhc3M9ImhlbHAtYmxvY2sgdGV4dC1kYW5nZXIiPjwvcD4NCiAgICAgICAgICAgICAgPC9kaXY+DQogICAgICAgICAgICA8L2Rpdj4NCiAgICAgICAgICAgIDxkaXYgY2xhc3M9ImNvbC1tZC02Ij4NCiAgICAgICAgICAgICAgPGRpdiBjbGFzcz0iZm9ybS1ncm91cCI+DQogICAgICAgICAgICAgICAgPHRleHRhcmVhIGNsYXNzPSJmb3JtLWNvbnRyb2wiIGlkPSJtZXNzYWdlIiBwbGFjZWhvbGRlcj0iWW91ciBNZXNzYWdlICoiIHJlcXVpcmVkIGRhdGEtdmFsaWRhdGlvbi1yZXF1aXJlZC1tZXNzYWdlPSJQbGVhc2UgZW50ZXIgYSBtZXNzYWdlLiI+PC90ZXh0YXJlYT4NCiAgICAgICAgICAgICAgICA8cCBjbGFzcz0iaGVscC1ibG9jayB0ZXh0LWRhbmdlciI+PC9wPg0KICAgICAgICAgICAgICA8L2Rpdj4NCiAgICAgICAgICAgIDwvZGl2Pg0KICAgICAgICAgICAgPGRpdiBjbGFzcz0iY2xlYXJmaXgiPjwvZGl2Pg0KICAgICAgICAgICAgPGRpdiBjbGFzcz0iY29sLWxnLTEyIHRleHQtY2VudGVyIj4NCiAgICAgICAgICAgICAgPGRpdiBpZD0ic3VjY2VzcyI+PC9kaXY+DQogICAgICAgICAgICAgIDxidXR0b24gY2xhc3M9ImJ0biBidG4teGwiIHR5cGU9InN1Ym1pdCI+U2VuZCBNZXNzYWdlPC9idXR0b24+DQogICAgICAgICAgICA8L2Rpdj4NCiAgICAgICAgICA8L2Rpdj4NCiAgICAgICAgPC9mb3JtPg0KICAgICAgPC9kaXY+DQogICAgPC9kaXY+DQogIDwvZGl2Pg0KPC9zZWN0aW9uPg0KDQo8IS0tIE1vZGFscyAtLT4NCnslIGZvciBwcm9qZWN0IGluIE1vZGVsLkNvbnRlbnRJdGVtLkNvbnRlbnQuUG9ydGZvbGlvLkNvbnRlbnRJdGVtcyAlfQ0KPGRpdiBjbGFzcz0icG9ydGZvbGlvLW1vZGFsIG1vZGFsIGZhZGUiIGlkPSJwb3J0Zm9saW9Nb2RhbHt7IGZvcmxvb3AuaW5kZXggfX0iIHRhYmluZGV4PSItMSIgcm9sZT0iZGlhbG9nIiBhcmlhLWhpZGRlbj0idHJ1ZSI+DQogIDxkaXYgY2xhc3M9Im1vZGFsLWRpYWxvZyI+DQogICAgPGRpdiBjbGFzcz0ibW9kYWwtY29udGVudCI+DQogICAgICA8ZGl2IGNsYXNzPSJjbG9zZS1tb2RhbCIgZGF0YS1kaXNtaXNzPSJtb2RhbCI+DQogICAgICAgIDxkaXYgY2xhc3M9ImxyIj4NCiAgICAgICAgICA8ZGl2IGNsYXNzPSJybCI+PC9kaXY+DQogICAgICAgIDwvZGl2Pg0KICAgICAgPC9kaXY+DQogICAgICA8ZGl2IGNsYXNzPSJjb250YWluZXIiPg0KICAgICAgICA8ZGl2IGNsYXNzPSJyb3ciPg0KICAgICAgICAgIDxkaXYgY2xhc3M9ImNvbC1sZy04IG14LWF1dG8iPg0KICAgICAgICAgICAgPGRpdiBjbGFzcz0ibW9kYWwtYm9keSI+DQogICAgICAgICAgICAgIDwhLS0gUHJvamVjdCBEZXRhaWxzIEdvIEhlcmUgLS0+DQogICAgICAgICAgICAgIDxoMj57eyBwcm9qZWN0LlRpdGxlUGFydC5UaXRsZSB9fTwvaDI+DQogICAgICAgICAgICAgIDxwIGNsYXNzPSJpdGVtLWludHJvIHRleHQtbXV0ZWQiPnt7IHByb2plY3QuUHJvamVjdC5DYXRlZ29yeS5UZXh0IH19PC9wPg0KICAgICAgICAgICAgICA8aW1nIGNsYXNzPSJpbWctZmx1aWQgZC1ibG9jayBteC1hdXRvIiBzcmM9Int7IHByb2plY3QuUHJvamVjdC5JbWFnZS5QYXRocy5maXJzdCB8IG1lZGlhX3VybCB8IHJlc2l6ZV91cmw6IHdpZHRoOjQwMCwgaGVpZ2h0OiAzMDAsIG1vZGU6ICdzdHJlY2gnIH19IiBhbHQ9Int7IHByb2plY3QuVGl0bGVQYXJ0LlRpdGxlIH19Ij4NCiAgICAgICAgICAgICAgPHA+e3sgcHJvamVjdC5Cb2R5UGFydC5Cb2R5IHwgcmF3IH19PC9wPg0KICAgICAgICAgICAgICB7JSBjb21tZW50ICV9DQogICAgICAgICAgICAgIDx1bCBjbGFzcz0ibGlzdC1pbmxpbmUiPg0KICAgICAgICAgICAgICAgIDxsaT5EYXRlOiBKYW51YXJ5IDIwMTc8L2xpPg0KICAgICAgICAgICAgICAgIDxsaT5DbGllbnQ6IFRocmVhZHM8L2xpPg0KICAgICAgICAgICAgICAgIDxsaT5DYXRlZ29yeTogSWxsdXN0cmF0aW9uPC9saT4NCiAgICAgICAgICAgICAgPC91bD4NCiAgICAgICAgICAgICAgeyUgZW5kY29tbWVudCAlfQ0KICAgICAgICAgICAgICA8YnV0dG9uIGNsYXNzPSJidG4gYnRuLXByaW1hcnkiIGRhdGEtZGlzbWlzcz0ibW9kYWwiIHR5cGU9ImJ1dHRvbiI+DQogICAgICAgICAgICAgICAgPGkgY2xhc3M9ImZhIGZhLXRpbWVzIj48L2k+DQogICAgICAgICAgICAgICAgQ2xvc2UgUHJvamVjdDwvYnV0dG9uPg0KICAgICAgICAgICAgPC9kaXY+DQogICAgICAgICAgPC9kaXY+DQogICAgICAgIDwvZGl2Pg0KICAgICAgPC9kaXY+DQogICAgPC9kaXY+DQogIDwvZGl2Pg0KPC9kaXY+DQp7JSBlbmRmb3IgJX0NCg0K')]"
+        }
+      }
+    }
+
+  ]
+}
