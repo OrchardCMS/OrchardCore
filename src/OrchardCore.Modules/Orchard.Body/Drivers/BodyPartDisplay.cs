@@ -64,6 +64,7 @@ namespace Orchard.Body.Drivers
                 model.Body = writer.ToString();
             }
 
+            model.ContentItem = bodyPart.ContentItem;
             model.BodyPart = bodyPart;
             model.TypePartSettings = settings;
         }

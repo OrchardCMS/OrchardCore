@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "CMS",
   "displayName": "Content Management System",
   "description": "Provides a functional set of CMS features.",
@@ -154,7 +154,7 @@
       "Data": [
         {
           "ContentType": "Menu",
-          "ContentItemId": "[uuid()]",
+          "ContentItemId": "[js: uuid()]",
           "Latest": true,
           "Number": 1,
           "Published": true,
@@ -164,7 +164,7 @@
             "MenuItems": [
               {
                 "ContentType": "LinkMenuItem",
-                "ContentItemId": "[uuid()]",
+                "ContentItemId": "[js: uuid()]",
                 "LinkMenuItemPart": {
                   "Name": "Home",
                   "Url": "~/"

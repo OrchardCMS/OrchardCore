@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
@@ -25,6 +26,7 @@ namespace Orchard.ContentPreview.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IClock _clock;
 
         public PreviewController(
             IContentManager contentManager,
@@ -36,10 +38,12 @@ namespace Orchard.ContentPreview.Controllers
             IShapeFactory shapeFactory,
             ILogger<PreviewController> logger,
             IHtmlLocalizer<PreviewController> localizer,
-            IAuthorizationService authorizationService
+            IAuthorizationService authorizationService,
+            IClock clock
             )
         {
             _authorizationService = authorizationService;
+            _clock = clock;
             _notifier = notifier;
             _contentItemDisplayManager = contentItemDisplayManager;
             _session = session;
@@ -57,17 +61,22 @@ namespace Orchard.ContentPreview.Controllers
 
         public ILogger Logger { get; set; }
 
+        public IActionResult Index()
+        {
+            return View();
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Index(string id)
+        public async Task<IActionResult> Render()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ContentPreview))
             {
                 return Unauthorized();
             }
 
-            var contentItem = _contentManager.New(id);
+            var contentItemType = Request.Form["ContentItemType"];
+            var contentItem = _contentManager.New(contentItemType);
 
-            
             // Assign the ids from the currently edited item so that validation thinks
             // it's working on the same item. For instance if drivers are checking name unicity
             // they need to think this is the same existing item (AutoroutePart).
@@ -79,6 +88,9 @@ namespace Orchard.ContentPreview.Controllers
             contentItem.Id = contentId;
             contentItem.ContentItemId = contentItemId;
             contentItem.ContentItemVersionId = contentItemVersionId;
+            contentItem.CreatedUtc = _clock.UtcNow;
+            contentItem.ModifiedUtc = _clock.UtcNow;
+            contentItem.PublishedUtc = _clock.UtcNow;
 
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this);
 

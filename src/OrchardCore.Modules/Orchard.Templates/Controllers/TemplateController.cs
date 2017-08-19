@@ -126,7 +126,7 @@ namespace Orchard.Templates.Controllers
 
             if (!templatesDocument.Templates.ContainsKey(name))
             {
-                return NotFound();
+                return RedirectToAction("Create", new { name });
             }
 
             var template = templatesDocument.Templates[name];

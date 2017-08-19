@@ -65,6 +65,7 @@ namespace Orchard.Markdown.Drivers
                 model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
             }
 
+            model.ContentItem = markdownPart.ContentItem;
             model.MarkdownPart = markdownPart;
             model.TypePartSettings = settings;
         }

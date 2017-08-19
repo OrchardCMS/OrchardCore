@@ -117,6 +117,11 @@
             .media-container-main-item {
                 @extend .card;
                 margin-bottom: 16px;
+
+                .fa {
+                    font-size: 10em;
+                    text-align: center;
+                }
             }
 
             .selected {

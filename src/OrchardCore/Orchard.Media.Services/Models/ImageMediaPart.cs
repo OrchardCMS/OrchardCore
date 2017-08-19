@@ -1,8 +1,8 @@
-﻿using Orchard.ContentManagement;
+using Orchard.ContentManagement;
 
 namespace Orchard.Media.Models
 {
-    public class ImagePart : ContentPart
+    public class ImageMediaPart : ContentPart
     {
         public string MimeType { get; set; }
         public long Length { get; set; }
