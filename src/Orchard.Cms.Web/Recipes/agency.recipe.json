@@ -1898,30 +1898,6 @@
               }
             ]
           }
-        },
-        {
-          "ContentItemId": "4pwy4z6fz6ar00qt0xj21k7q5c",
-          "ContentItemVersionId": "49s9hakaxmm2kt0yxhebrb11na",
-          "ContentType": "HtmlWidget",
-          "Latest": true,
-          "Number": 1,
-          "Published": true,
-          "ModifiedUtc": "2017-08-17T18:38:21.5222722Z",
-          "PublishedUtc": "2017-08-17T18:38:21.5942069Z",
-          "CreatedUtc": "2017-08-17T18:38:21.5942069Z",
-          "Owner": "admin",
-          "Author": "admin",
-          "HtmlWidget": {},
-          "BodyPart": {
-            "Body": "<!-- Footer -->\r\n<footer>\r\n  <div class=\"container\">\r\n    <div class=\"row\">\r\n      <div class=\"col-md-4\">\r\n        <span class=\"copyright\">Copyright &copy; Your Website 2017</span>\r\n      </div>\r\n      <div class=\"col-md-4\">\r\n        <ul class=\"list-inline social-buttons\">\r\n          <li class=\"list-inline-item\">\r\n            <a href=\"#\">\r\n              <i class=\"fa fa-twitter\"></i>\r\n            </a>\r\n          </li>\r\n          <li class=\"list-inline-item\">\r\n            <a href=\"#\">\r\n              <i class=\"fa fa-facebook\"></i>\r\n            </a>\r\n          </li>\r\n          <li class=\"list-inline-item\">\r\n            <a href=\"#\">\r\n              <i class=\"fa fa-linkedin\"></i>\r\n            </a>\r\n          </li>\r\n        </ul>\r\n      </div>\r\n      <div class=\"col-md-4\">\r\n        <ul class=\"list-inline quicklinks\">\r\n          <li class=\"list-inline-item\">\r\n            <a href=\"#\">Privacy Policy</a>\r\n          </li>\r\n          <li class=\"list-inline-item\">\r\n            <a href=\"#\">Terms of Use</a>\r\n          </li>\r\n        </ul>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</footer>"
-          },
-          "LayerMetadata": {
-            "Title": "Footer",
-            "RenderTitle": false,
-            "Position": 1.0,
-            "Zone": "Footer",
-            "Layer": "Always"
-          }
         }
       ]
     },
