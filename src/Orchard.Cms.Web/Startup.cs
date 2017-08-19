@@ -13,6 +13,7 @@ namespace Orchard.Cms.Web
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            Microsoft.ApplicationInsights.Extensibility.Implementation.TelemetryDebugWriter.IsTracingDisabled = true;
         }
 
         public IConfiguration Configuration { get; }

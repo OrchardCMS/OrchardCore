@@ -44,6 +44,7 @@ namespace Orchard.Cms.Web
                     logging.AddNLogWeb(hostingContext.HostingEnvironment);
                 })
                 .UseStartup<Startup>()
+                .UseApplicationInsights()
                 .Build();
 
             using (host)
