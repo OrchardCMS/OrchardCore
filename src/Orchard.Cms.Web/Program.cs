@@ -1,8 +1,14 @@
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Modules;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Orchard.Hosting;
+using Orchard.Logging;
 
 namespace Orchard.Cms.Web
 {
@@ -10,10 +16,33 @@ namespace Orchard.Cms.Web
     {
         public static void Main(string[] args)
         {
-            var host = new WebHostBuilder()
-                .UseIISIntegration()
-                .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
+            var host = WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    var env = hostingContext.HostingEnvironment;
+                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                          .AddJsonFile("logging.json", optional: true, reloadOnChange: true)
+                          .AddJsonFile($"logging.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
+                    if (env.IsDevelopment())
+                    {
+                        var appAssembly = Assembly.Load(new AssemblyName(env.ApplicationName));
+                        if (appAssembly != null)
+                            config.AddUserSecrets(appAssembly, optional: true);
+                    }
+
+                    config.AddEnvironmentVariables();
+
+                    if (args?.Any() ?? false) config.AddCommandLine(args);
+                })
+                .ConfigureLogging((hostingContext, logging) =>
+                {
+                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    logging.AddConsole();
+                    logging.AddDebug();
+                    logging.AddNLogWeb(hostingContext.HostingEnvironment);
+                })
                 .UseStartup<Startup>()
                 .Build();
 
