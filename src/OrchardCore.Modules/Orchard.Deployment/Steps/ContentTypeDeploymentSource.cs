@@ -33,7 +33,11 @@ namespace Orchard.Deployment.Steps
 
             foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published && x.ContentType.IsIn(contentState.ContentTypes)).ListAsync())
             {
-                data.Add(JObject.FromObject(contentItem));
+                var objectData = JObject.FromObject(contentItem);
+
+                // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
+                objectData.Remove(nameof(ContentItem.Id));
+                data.Add(objectData);
             }
 
             if (data.HasValues)
