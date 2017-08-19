@@ -3,11 +3,6 @@
         <h2 class="post-title">
             {{ Model.ContentItem.Content.TitlePart.Title }}
         </h2>
-        {% if Model.ContentItem.Content.BlogPost.Subtitle.Text.size > 0 %}
-        <h3 class="post-subtitle">
-            {{ Model.ContentItem.Content.BlogPost.Subtitle.Text }}
-        </h3>
-        {% endif %}
     {% enda %}
     <p class="post-meta">
       {% assign format = "MMMM dd, yyyy" | t %}

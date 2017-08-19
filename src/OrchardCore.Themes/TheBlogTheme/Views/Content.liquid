@@ -1,16 +1,13 @@
-﻿{% assign fields = Model.ContentItem.Content | p: ContentItem.ContentType %}
-
-{% zone name: "Header" %}
+﻿{% zone name: "Header" %}
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
-    <header class="intro-header" style="background-image: url('{{ fields.HeaderImageUrl.Text | default: "https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/post-bg.jpg" }}')">
+    <header class="intro-header" style="background-image: url('@Href("~/TheBlogTheme/img/post-bg.jpg")')">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <div class="page-heading">
                         <h1>{{ Model.ContentItem.Content.TitlePart.Title }}</h1>
                         <hr class="small" />
-                        <span class="subheading">{{ fields.Subtitle.Text }}</span>
                     </div>
                 </div>
             </div>

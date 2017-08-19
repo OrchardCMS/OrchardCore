@@ -8,13 +8,7 @@
     <link type="image/x-icon" rel="shortcut icon" href="TheBlogTheme/favicon.ico" />
 
     {% script name:"jquery", use_cdn:"true", at:"Foot" %}
-
-    {% block "script", at:"Foot" %}
-        var foo = "bar";
-    {% endblock %}
-
-    {% script name:"bootstrap", use_cdn:"true", at:"Foot" %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    {% script name:"bootstrap", use_cdn:"true", version:"3", at:"Foot" %}
     {% script src:"/TheBlogTheme/Scripts/clean-blog.min.js", debug_src:"/TheBlogTheme/Scripts/clean-blog.js", at:"Foot" %}
 
     <link rel="stylesheet" href="/TheBlogTheme/Styles/blog.min.css">
@@ -41,7 +35,7 @@
             <div class="navbar-header page-scroll">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                     <span class="sr-only">{{ "Toggle navigation" | t }}</span>
-                    Menu <i class="fa fa-bars"></i>
+                    {{ Menu | t }} <i class="fa fa-bars"></i>
                 </button>
                 <a class="navbar-brand" href= {{ "~/" | href }}>{{ Site.SiteName }}</a>
             </div>

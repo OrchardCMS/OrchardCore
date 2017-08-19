@@ -1,19 +1,12 @@
-﻿{% assign fields = Model.ContentItem.Content[Model.ContentItem.ContentType] %}
-
-{% zone name: "Header" %}
+﻿{% zone name: "Header" %}
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
-    <header class="intro-header" style="background-image: url('{{ fields.HeaderImageUrl.Text | default: "https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/post-bg.jpg" }}')">
+    <header class="intro-header" style="background-image: url('@Href("~/TheBlogTheme/img/post-bg.jpg")')">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <div class="post-heading">
                         <h1>{{ Model.ContentItem.Content.TitlePart.Title }}</h1>
-                        {% if fields.Subtitle.Text.size > 0 %}
-                        <h2 class="subheading">
-                            {{ fields.Subtitle.Text }}
-                        </h2>
-                        {% endif %}
                         <span class="meta">
                             {% assign format = "MMMM dd, yyyy" | t %}
                             {% assign dateTime = "DateTime" | new_shape: utc: Model.ContentItem.CreatedUtc, format: format | shape_string %}
