@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -7,6 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
+    <!--TODO: remove when YesSQL will reference it-->
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.0" />
     <PackageReference Include="YesSql.Core" Version="2.0.0-beta-1048" />
   </ItemGroup>
 
