@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
@@ -9,6 +10,9 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 {
     public class NamedHelperTag : ITag
     {
+        public static readonly Dictionary<string, string> DefaultArguments = new Dictionary<string, string>();
+        private static object _synLock = new object();
+
         public BnfTerm GetSyntax(FluidGrammar grammar)
         {
             return grammar.FilterArguments;
@@ -16,8 +20,32 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
         public Statement Parse(ParseTreeNode node, ParserContext context)
         {
+            return new HelperStatement(new ArgumentsExpression(BuildArguments(node)), node.Term.Name);
+        }
+
+        public static FilterArgument[] BuildArguments(ParseTreeNode node)
+        {
             var arguments = node.ChildNodes[0].ChildNodes.Select(DefaultFluidParser.BuildFilterArgument).ToArray();
-            return new HelperStatement(new ArgumentsExpression(arguments), node.Term.Name);
+
+            var defaultArgument = node.ChildNodes[0].ChildNodes[0].ChildNodes[0];
+
+            if (defaultArgument.Term.Name != "identifier")
+            {
+                if (DefaultArguments.TryGetValue(node.Term.Name, out var name))
+                {
+                    arguments[0] = new FilterArgument(name, DefaultFluidParser.BuildTermExpression(defaultArgument));
+                }
+            }
+
+            return arguments;
+        }
+
+        public static void RegisterDefaultArgument(string tagName, string argumentName)
+        {
+            lock (_synLock)
+            {
+                DefaultArguments[tagName] = argumentName;
+            }
         }
     }
 
@@ -31,10 +59,15 @@ namespace Orchard.DisplayManagement.Fluid.Tags
         public override Statement Parse(ParseTreeNode node, ParserContext context)
         {
             var tag = context.CurrentBlock.Tag;
-            var e = context.CurrentBlock.Tag.ChildNodes[0];
-            var arguments = e.ChildNodes.Select(DefaultFluidParser.BuildFilterArgument).ToArray();
             var statements = context.CurrentBlock.Statements;
+
+            var arguments = NamedHelperTag.BuildArguments(tag);
             return new HelperStatement(new ArgumentsExpression(arguments), tag.Term.Name, statements);
+        }
+
+        public static void RegisterDefaultArgument(string tagName, string argumentName)
+        {
+            NamedHelperTag.RegisterDefaultArgument(tagName, argumentName);
         }
     }
 }

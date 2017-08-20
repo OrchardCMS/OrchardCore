@@ -39,7 +39,7 @@ namespace Orchard.DisplayManagement.Fluid
             Factory.RegisterTag<DisplayTag>("display");
 
             Factory.RegisterTag<HelperTag>("helper");
-            Factory.RegisterTag<ShapeTag>("shape");
+            Factory.RegisterTag<NamedHelperTag>("shape");
             Factory.RegisterTag<NamedHelperTag>("link");
             Factory.RegisterTag<NamedHelperTag>("meta");
             Factory.RegisterTag<NamedHelperTag>("resources");
@@ -49,6 +49,9 @@ namespace Orchard.DisplayManagement.Fluid
             Factory.RegisterBlock<HelperBlock>("block");
             Factory.RegisterBlock<NamedHelperBlock>("a");
             Factory.RegisterBlock<NamedHelperBlock>("zone");
+
+            NamedHelperTag.RegisterDefaultArgument("shape", "type");
+            NamedHelperBlock.RegisterDefaultArgument("zone", "name");
 
             TemplateContext.GlobalFilters.WithFluidViewFilters();
         }
