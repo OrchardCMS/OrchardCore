@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-beta00004" />
     <ProjectReference Include="..\Orchard.Lucene.Abstractions\Orchard.Lucene.Abstractions.csproj" />
     <ProjectReference Include="..\Orchard.Queries.Abstractions\Orchard.Queries.Abstractions.csproj" />
