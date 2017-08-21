@@ -37,26 +37,8 @@ namespace Orchard.DisplayManagement.Fluid
             FluidValue.TypeMappings.Add(typeof(Shape), o => new ObjectValue(o));
             FluidValue.TypeMappings.Add(typeof(ZoneHolding), o => new ObjectValue(o));
 
-            var shapeDelegateAccessor = new DelegateAccessor((o, n) =>
-            {
-                if ((o as Shape).Properties.TryGetValue(n, out object result))
-                {
-                    return result;
-                }
-
-                foreach (var item in (o as Shape).Items)
-                {
-                    if (item is IShape && item.Metadata.Type == n)
-                    {
-                        return item;
-                    }
-                }
-
-                return null;
-            });
-
-            TemplateContext.GlobalMemberAccessStrategy.Register<Shape>("*", shapeDelegateAccessor);
-            TemplateContext.GlobalMemberAccessStrategy.Register<ZoneHolding>("*", shapeDelegateAccessor);
+            TemplateContext.GlobalMemberAccessStrategy.Register<Shape>("*", new ShapeAccessor());
+            TemplateContext.GlobalMemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());
 
             Factory.RegisterTag<RenderBodyTag>("render_body");
             Factory.RegisterTag<RenderSectionTag>("render_section");
@@ -132,10 +114,31 @@ namespace Orchard.DisplayManagement.Fluid
         }
     }
 
+    internal class ShapeAccessor : DelegateAccessor
+    {
+        public ShapeAccessor() : base(_getter) { }
+
+        private static Func<object, string, object> _getter => (o, n) =>
+        {
+            if ((o as Shape).Properties.TryGetValue(n, out object result))
+            {
+                return result;
+            }
+
+            foreach (var item in (o as Shape).Items)
+            {
+                if (item is IShape && item.Metadata.Type == n)
+                {
+                    return item;
+                }
+            }
+
+            return null;
+        };
+    }
+
     public static class TemplateContextExtensions
     {
-        private static object _synLock = new object();
-
         public static void Contextualize(this TemplateContext context, RazorPage page, object model)
         {
             var services = page.Context.RequestServices;
