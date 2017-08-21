@@ -109,6 +109,8 @@ namespace Orchard.DisplayManagement.Fluid
 
     public static class TemplateContextExtensions
     {
+        private static object _synLock = new object();
+
         public static void Contextualize(this TemplateContext context, RazorPage page, object model)
         {
             var services = page.Context.RequestServices;
@@ -193,33 +195,41 @@ namespace Orchard.DisplayManagement.Fluid
         {
             var type = obj.GetType();
 
-            if (obj is IShape && !FluidValue.TypeMappings.TryGetValue(type, out var value))
+            context.MemberAccessStrategy.Register(type);
+
+            if (!(obj is IShape) || FluidValue.TypeMappings.TryGetValue(type, out var value))
             {
-                FluidValue.TypeMappings.Add(type, o => new ObjectValue(o));
-
-                if (obj is Shape)
-                {
-                    TemplateContext.GlobalMemberAccessStrategy.Register(type, "*", new DelegateAccessor((o, n) =>
-                    {
-                        if ((o as Shape).Properties.TryGetValue(n, out object result))
-                        {
-                            return result;
-                        }
-
-                        foreach (var item in (o as Shape).Items)
-                        {
-                            if (item is IShape && item.Metadata.Type == n)
-                            {
-                                return item;
-                            }
-                        }
-
-                        return null;
-                    }));
-                }
+                return;
             }
 
-            context.MemberAccessStrategy.Register(type);
+            lock (_synLock)
+            {
+                if (obj is IShape && !FluidValue.TypeMappings.TryGetValue(type, out value))
+                {
+                    FluidValue.TypeMappings.Add(type, o => new ObjectValue(o));
+
+                    if (obj is Shape)
+                    {
+                        TemplateContext.GlobalMemberAccessStrategy.Register(type, "*", new DelegateAccessor((o, n) =>
+                        {
+                            if ((o as Shape).Properties.TryGetValue(n, out object result))
+                            {
+                                return result;
+                            }
+
+                            foreach (var item in (o as Shape).Items)
+                            {
+                                if (item is IShape && item.Metadata.Type == n)
+                                {
+                                    return item;
+                                }
+                            }
+
+                            return null;
+                        }));
+                    }
+                }
+            }
         }
     }
 }

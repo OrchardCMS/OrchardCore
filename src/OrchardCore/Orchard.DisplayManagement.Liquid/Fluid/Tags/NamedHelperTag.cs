@@ -11,7 +11,6 @@ namespace Orchard.DisplayManagement.Fluid.Tags
     public class NamedHelperTag : ITag
     {
         public static readonly Dictionary<string, string> DefaultArguments = new Dictionary<string, string>();
-        private static object _synLock = new object();
 
         public BnfTerm GetSyntax(FluidGrammar grammar)
         {
@@ -42,10 +41,7 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
         public static void RegisterDefaultArgument(string tagName, string argumentName)
         {
-            lock (_synLock)
-            {
-                DefaultArguments[tagName] = argumentName;
-            }
+            DefaultArguments[tagName] = argumentName;
         }
     }
 
