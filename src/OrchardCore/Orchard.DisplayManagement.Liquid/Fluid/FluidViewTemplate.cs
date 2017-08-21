@@ -20,6 +20,7 @@ using Orchard.DisplayManagement.Fluid.Tags;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.Shapes;
+using Orchard.DisplayManagement.Zones;
 using Orchard.Liquid;
 using Orchard.Settings;
 
@@ -33,6 +34,30 @@ namespace Orchard.DisplayManagement.Fluid
 
         static FluidViewTemplate()
         {
+            FluidValue.TypeMappings.Add(typeof(Shape), o => new ObjectValue(o));
+            FluidValue.TypeMappings.Add(typeof(ZoneHolding), o => new ObjectValue(o));
+
+            var shapeDelegateAccessor = new DelegateAccessor((o, n) =>
+            {
+                if ((o as Shape).Properties.TryGetValue(n, out object result))
+                {
+                    return result;
+                }
+
+                foreach (var item in (o as Shape).Items)
+                {
+                    if (item is IShape && item.Metadata.Type == n)
+                    {
+                        return item;
+                    }
+                }
+
+                return null;
+            });
+
+            TemplateContext.GlobalMemberAccessStrategy.Register<Shape>("*", shapeDelegateAccessor);
+            TemplateContext.GlobalMemberAccessStrategy.Register<ZoneHolding>("*", shapeDelegateAccessor);
+
             Factory.RegisterTag<RenderBodyTag>("render_body");
             Factory.RegisterTag<RenderSectionTag>("render_section");
             Factory.RegisterTag<RenderTitleSegmentsTag>("page_title");
@@ -169,7 +194,7 @@ namespace Orchard.DisplayManagement.Fluid
             }
 
             var model = displayContext.Value;
-            context.RegisterObject(model);
+            context.MemberAccessStrategy.Register(model.GetType());
             context.LocalScope.SetValue("Model", model);
 
             if (model is Shape shape)
@@ -178,7 +203,7 @@ namespace Orchard.DisplayManagement.Fluid
                 {
                     foreach (var prop in shape.Properties)
                     {
-                        context.RegisterObject(prop.Value);
+                        context.MemberAccessStrategy.Register(prop.Value.GetType());
                     }
                 }
             }
@@ -188,47 +213,6 @@ namespace Orchard.DisplayManagement.Fluid
             if (field != null)
             {
                 context.MemberAccessStrategy.Register(field.PropertyType);
-            }
-        }
-
-        public static void RegisterObject(this TemplateContext context, object obj)
-        {
-            var type = obj.GetType();
-
-            context.MemberAccessStrategy.Register(type);
-
-            if (!(obj is IShape) || FluidValue.TypeMappings.TryGetValue(type, out var value))
-            {
-                return;
-            }
-
-            lock (_synLock)
-            {
-                if (obj is IShape && !FluidValue.TypeMappings.TryGetValue(type, out value))
-                {
-                    FluidValue.TypeMappings.Add(type, o => new ObjectValue(o));
-
-                    if (obj is Shape)
-                    {
-                        TemplateContext.GlobalMemberAccessStrategy.Register(type, "*", new DelegateAccessor((o, n) =>
-                        {
-                            if ((o as Shape).Properties.TryGetValue(n, out object result))
-                            {
-                                return result;
-                            }
-
-                            foreach (var item in (o as Shape).Items)
-                            {
-                                if (item is IShape && item.Metadata.Type == n)
-                                {
-                                    return item;
-                                }
-                            }
-
-                            return null;
-                        }));
-                    }
-                }
             }
         }
     }
