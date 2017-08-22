@@ -45,12 +45,9 @@ namespace Orchard.DisplayManagement.FileProviders
                 }
                 else if (inViewsFolder)
                 {
-                    if (inDepth || content.Name.IndexOf("/") == -1)
+                    if (extensions.Contains(Path.GetExtension(content.Name)))
                     {
-                        if (extensions.Contains(Path.GetExtension(content.Name)))
-                        {
-                            yield return string.Format("{0}/{1}", subPath, content.Name);
-                        }
+                        yield return string.Format("{0}/{1}", subPath, content.Name);
                     }
                 }
             }
