@@ -34,7 +34,7 @@ namespace Orchard.Liquid.Services
 
             var errors = Enumerable.Empty<string>();
 
-            var result = _memoryCache.GetOrCreate<IFluidTemplate>(source, (ICacheEntry e) =>
+            var result = _memoryCache.GetOrCreate<FluidTemplate>(source, (ICacheEntry e) =>
             {
                 if (FluidTemplate.TryParse(source, out var parsed, out errors))
                 {

@@ -17,9 +17,9 @@ namespace Orchard.Queries.Sql
 
         private ExponentsTable _exponentsTable = new ExponentsTable();
 
-        protected override bool ConvertValue(CompoundTokenDetails details)
+        protected override bool ConvertValue(CompoundTokenDetails details, ParsingContext context)
         {
-            if (base.ConvertValue(details) || details.Error != null)
+            if (base.ConvertValue(details, context) || details.Error != null)
             {
                 return true;
             }
