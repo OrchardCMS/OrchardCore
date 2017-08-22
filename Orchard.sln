@@ -273,7 +273,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Diagnostics.Elm", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Templates", "src\OrchardCore.Modules\Orchard.Templates\Orchard.Templates.csproj", "{AE8C2F86-C50F-4493-9BC2-6930D34E5E98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheAgencyTheme", "src\OrchardCore.Themes\TheAgencyTheme\TheAgencyTheme.csproj", "{B6864CA7-A30A-4F9C-9828-2EEF954B166A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheAgencyTheme", "src\OrchardCore.Themes\TheAgencyTheme\TheAgencyTheme.csproj", "{B6864CA7-A30A-4F9C-9828-2EEF954B166A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.CustomSettings", "src\OrchardCore.Modules\Orchard.CustomSettings\Orchard.CustomSettings.csproj", "{2E9C3A0F-C804-47A5-82FC-582FE1B6493A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -765,6 +767,10 @@ Global
 		{B6864CA7-A30A-4F9C-9828-2EEF954B166A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6864CA7-A30A-4F9C-9828-2EEF954B166A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6864CA7-A30A-4F9C-9828-2EEF954B166A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E9C3A0F-C804-47A5-82FC-582FE1B6493A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E9C3A0F-C804-47A5-82FC-582FE1B6493A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E9C3A0F-C804-47A5-82FC-582FE1B6493A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E9C3A0F-C804-47A5-82FC-582FE1B6493A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -904,6 +910,7 @@ Global
 		{A1B6C857-7844-433E-B28A-9A86600771A2} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{AE8C2F86-C50F-4493-9BC2-6930D34E5E98} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{B6864CA7-A30A-4F9C-9828-2EEF954B166A} = {AF3BADEA-CC93-4116-B3C1-F8D074EBEE4F}
+		{2E9C3A0F-C804-47A5-82FC-582FE1B6493A} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
