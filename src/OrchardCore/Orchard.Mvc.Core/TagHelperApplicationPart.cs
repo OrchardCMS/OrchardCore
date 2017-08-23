@@ -16,7 +16,7 @@ namespace Orchard.Mvc
             _assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
         }
 
-        public override string Name => _assembly.GetName().Name + ".TagHelper";
+        public override string Name => _assembly.GetName().Name + ".TagHelpers";
 
         public IEnumerable<TypeInfo> Types => _assembly.ExportedTypes
             .Select(t => t.GetTypeInfo()).Where(t => t.IsSubclassOf(typeof(TagHelper)));

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -18,24 +20,28 @@ namespace Orchard.DisplayManagement.Razor
     public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
     {
         private readonly IOptions<MvcViewOptions> _viewEngine;
+        private readonly List<string> _templateFileExtensions = new List<string>(new[] { RazorViewEngine.ViewExtension });
 
         public RazorShapeTemplateViewEngine(
-            IOptions<MvcViewOptions> options)
+            IOptions<MvcViewOptions> options,
+            IEnumerable<IRazorViewExtensionProvider> viewExtensionProviders)
         {
             _viewEngine = options;
+            _templateFileExtensions.AddRange(viewExtensionProviders.Select(x => x.ViewExtension));
         }
 
         public IEnumerable<string> TemplateFileExtensions
         {
             get
             {
-                return new[] { ".cshtml" };
+                return _templateFileExtensions;
             }
         }
 
         public Task<IHtmlContent> RenderAsync(string relativePath, DisplayContext displayContext)
         {
             var viewName = "/" + relativePath;
+            viewName = Path.ChangeExtension(viewName, RazorViewEngine.ViewExtension);
 
             if (displayContext.ViewContext.View != null)
             {

@@ -21,7 +21,7 @@ namespace Orchard.DisplayManagement.Razor
         {
             if (_displayHelper == null)
             {
-                IDisplayHelperFactory _factory = ViewContext.HttpContext.RequestServices.GetService<IDisplayHelperFactory>();
+                IDisplayHelperFactory _factory = Context.RequestServices.GetService<IDisplayHelperFactory>();
                 _displayHelper = _factory.CreateHelper(ViewContext);
             }
         }
@@ -30,7 +30,7 @@ namespace Orchard.DisplayManagement.Razor
         {
             if (_shapeFactory == null)
             {
-                _shapeFactory = ViewContext.HttpContext.RequestServices.GetService<IShapeFactory>();
+                _shapeFactory = Context.RequestServices.GetService<IShapeFactory>();
             }
         }
 
@@ -82,7 +82,7 @@ namespace Orchard.DisplayManagement.Razor
             {
                 if (_themeLayout == null)
                 {
-                    var layoutAccessor = ViewContext.HttpContext.RequestServices.GetService<ILayoutAccessor>();
+                    var layoutAccessor = Context.RequestServices.GetService<ILayoutAccessor>();
 
                     if (layoutAccessor == null)
                     {
@@ -108,7 +108,7 @@ namespace Orchard.DisplayManagement.Razor
             {
                 if (_pageTitleBuilder == null)
                 {
-                    _pageTitleBuilder = ViewContext.HttpContext.RequestServices.GetRequiredService<IPageTitleBuilder>();
+                    _pageTitleBuilder = Context.RequestServices.GetRequiredService<IPageTitleBuilder>();
                 }
 
                 return _pageTitleBuilder;
@@ -126,7 +126,7 @@ namespace Orchard.DisplayManagement.Razor
             {
                 if (_t == null)
                 {
-                    _t = ViewContext.HttpContext.RequestServices.GetRequiredService<IViewLocalizer>();
+                    _t = Context.RequestServices.GetRequiredService<IViewLocalizer>();
                     ((IViewContextAware)_t).Contextualize(this.ViewContext);
                 }
 
@@ -163,7 +163,7 @@ namespace Orchard.DisplayManagement.Razor
         /// <summary>
         /// Renders the content zone of the layout.
         /// </summary>
-        protected IHtmlContent RenderLayoutBody()
+        public IHtmlContent RenderLayoutBody()
         {
             var result = base.RenderBody();
             return result;
@@ -174,17 +174,17 @@ namespace Orchard.DisplayManagement.Razor
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <returns>A new <see cref="TagBuilder"/>.</returns>
-        protected TagBuilder Tag(dynamic shape)
+        public TagBuilder Tag(dynamic shape)
         {
             return Shape.GetTagBuilder(shape);
         }
 
-        protected TagBuilder Tag(dynamic shape, string tag)
+        public TagBuilder Tag(dynamic shape, string tag)
         {
             return Shape.GetTagBuilder(shape, tag);
         }
 
-        protected Task<IHtmlContent> RenderBodyAsync()
+        public Task<IHtmlContent> RenderBodyAsync()
         {
             return DisplayAsync(ThemeLayout.Content);
         }

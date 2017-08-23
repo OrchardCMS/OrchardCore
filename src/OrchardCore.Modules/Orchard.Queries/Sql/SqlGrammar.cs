@@ -1,4 +1,4 @@
-using Irony.Parsing;
+﻿using Irony.Parsing;
 
 namespace Orchard.Queries.Sql
 {
