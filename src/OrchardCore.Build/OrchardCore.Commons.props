@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Import Project="AspNetCoreVersion.props" />
+  <Import Project="Dependencies.props" />
 
   <PropertyGroup>
     <VersionPrefix>2.0.0</VersionPrefix>
