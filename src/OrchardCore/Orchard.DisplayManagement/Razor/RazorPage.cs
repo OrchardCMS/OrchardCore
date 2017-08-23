@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
@@ -148,17 +148,18 @@ namespace Orchard.DisplayManagement.Razor
         }
 
         /// <summary>
-        /// Adds some segments to the title and returns all segments.
+        /// Adds a segment to the title and returns all segments.
         /// </summary>
-        /// <param name="segments">The segments to add to the title.</param>
-        /// <param name="position">Optional. The position of the segments in the title.</param>
+        /// <param name="segment">The segment to add to the title.</param>
+        /// <param name="position">Optional. The position of the segment in the title.</param>
+        /// <param name="separator">The html string that should separate all segments.</param>
         /// <returns>And <see cref="IHtmlContent"/> instance representing the full title.</returns>
-        public IHtmlContent RenderTitleSegments(IEnumerable<IHtmlContent> segments, string position = "0", IHtmlContent separator = null)
+        public IHtmlContent RenderTitleSegments(string segment, string position = "0", IHtmlContent separator = null)
         {
-            Title.AddSegments(segments, position);
+            Title.AddSegment(new HtmlString(HtmlEncoder.Encode(segment)), position);
             return Title.GenerateTitle(separator);
         }
-
+        
         /// <summary>
         /// Renders the content zone of the layout.
         /// </summary>

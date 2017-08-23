@@ -31,6 +31,7 @@ namespace Orchard.Settings
             // Site Settings editor
             services.AddScoped<IDisplayManager<ISite>, DisplayManager<ISite>>();
             services.AddScoped<IDisplayDriver<ISite>, DefaultSiteSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<ISite>, ButtonsSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
         }
 

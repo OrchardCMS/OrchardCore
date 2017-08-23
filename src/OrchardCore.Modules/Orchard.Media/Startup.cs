@@ -23,8 +23,10 @@ using Orchard.Media.Fields;
 using Orchard.Media.Filters;
 using Orchard.Media.Models;
 using Orchard.Media.Processing;
+using Orchard.Media.Recipes;
 using Orchard.Media.Services;
 using Orchard.Media.Settings;
+using Orchard.Recipes;
 using Orchard.StorageProviders.FileSystem;
 
 namespace Orchard.Media
@@ -123,6 +125,8 @@ namespace Orchard.Media
             services.AddSingleton<ContentField, MediaField>();
             services.AddScoped<IContentFieldDisplayDriver, MediaFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
+
+            services.AddRecipeExecutionStep<MediaStep>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

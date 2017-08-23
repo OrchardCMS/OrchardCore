@@ -808,7 +808,7 @@
         {
           "Name": "Homepage",
           "Rule": "isHomepage()",
-          "Description": "The widgets in this layer are only displayed o the homepage."
+          "Description": "The widgets in this layer are only displayed on the homepage."
         }
       ]
     },

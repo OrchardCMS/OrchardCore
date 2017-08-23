@@ -12,6 +12,7 @@
     <ProjectReference Include="..\..\OrchardCore\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.ContentTypes.Abstractions\Orchard.ContentTypes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Recipes.Abstractions\Orchard.Recipes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.DisplayManagement.Liquid\Orchard.DisplayManagement.Liquid.csproj" />

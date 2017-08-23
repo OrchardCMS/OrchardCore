@@ -19,6 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Recipes\blog.recipe.json" />
+    <None Include="Recipes\cms.recipe.json" />
+    <None Include="Recipes\saas.recipe.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\OrchardCore\Orchard.Hosting.Console\Orchard.Hosting.Console.csproj" />
     <ProjectReference Include="..\OrchardCore\Orchard.Logging.NLog\Orchard.Logging.NLog.csproj" />
     <ProjectReference Include="..\OrchardCore\OrchardCore.Cms\OrchardCore.Cms.csproj" />

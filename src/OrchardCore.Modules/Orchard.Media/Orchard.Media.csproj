@@ -27,6 +27,7 @@
     <ProjectReference Include="..\..\OrchardCore\Orchard.Media.Abstractions\Orchard.Media.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Media.Services\Orchard.Media.Services.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.MetaWeblog.Abstractions\Orchard.MetaWeblog.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Recipes.Abstractions\Orchard.Recipes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Security.Abstractions\Orchard.Security.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Security\Orchard.Security.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.StorageProviders.FileSystem\Orchard.StorageProviders.FileSystem.csproj" />

@@ -1,7 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Orchard.ContentManagement.Metadata.Builders
 {
@@ -11,5 +9,10 @@ namespace Orchard.ContentManagement.Metadata.Builders
         /// Replace current value, even for null values, union arrays.
         /// </summary>
         public static readonly JsonMergeSettings JsonMergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union, MergeNullValueHandling = MergeNullValueHandling.Merge };
+
+        /// <summary>
+        /// A Json serializer that ignores properties which have their default values.
+        /// </summary>
+        public static readonly JsonSerializer IgnoreDefaultValuesSerializer = new JsonSerializer { DefaultValueHandling = DefaultValueHandling.Ignore };
     }
 }

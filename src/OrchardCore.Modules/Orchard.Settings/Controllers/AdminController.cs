@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Newtonsoft.Json;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
@@ -34,7 +35,7 @@ namespace Orchard.Settings.Controllers
 
         public async Task<IActionResult> Index(string groupId)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSettings))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object) groupId))
             {
                 return Unauthorized();
             }
@@ -53,12 +54,17 @@ namespace Orchard.Settings.Controllers
         [ActionName(nameof(Index))]
         public async Task<IActionResult> IndexPost(string groupId)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSettings))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object)groupId))
             {
                 return Unauthorized();
             }
 
-            var site = await _siteService.GetSiteSettingsAsync();
+            var cachedSite = await _siteService.GetSiteSettingsAsync();
+
+            // Clone the settings as the driver will update it and as it's a globally cached object
+            // it would stay this way even on validation errors.
+
+            var site = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(cachedSite, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }), cachedSite.GetType()) as ISite;
 
             var viewModel = new AdminIndexViewModel();
 
