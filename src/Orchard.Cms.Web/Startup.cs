@@ -1,25 +1,19 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NLog.Web;
 using Orchard.Logging;
 
 namespace Orchard.Cms.Web
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("logging.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"logging.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
-
-            Configuration = builder.Build();
+            Configuration = configuration;
+            Microsoft.ApplicationInsights.Extensibility.Implementation.TelemetryDebugWriter.IsTracingDisabled = true;
         }
 
         public IConfiguration Configuration { get; }
@@ -37,13 +31,7 @@ namespace Orchard.Cms.Web
             }
 
             app.UseStaticFiles();
-            loggerFactory.AddConsole(Configuration);
-            app.UseNLogWeb(loggerFactory, env);
-
-            if (env.IsDevelopment())
-            {
-                loggerFactory.AddDebug();
-            }
+            app.AddNLogWeb();
 
             app.UseModules();
         }

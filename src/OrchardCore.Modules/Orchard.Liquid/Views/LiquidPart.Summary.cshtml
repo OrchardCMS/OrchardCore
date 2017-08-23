@@ -1,9 +1,12 @@
-﻿@model Orchard.Liquid.ViewModels.LiquidPartViewModel
-@inject Orchard.Liquid.ILiquidManager LiquidManager
+@using Fluid
+@using Orchard.Liquid
+@model Orchard.Liquid.ViewModels.LiquidPartViewModel
+@inject Orchard.Liquid.ILiquidTemplateManager LiquidManager
 
 @{
     string liquid = Model.Liquid;
-    var html = LiquidManager.GetTemplate(liquid).Render();
+    var templateContext = new TemplateContext();
+    var html = await LiquidManager.RenderAsync(liquid, templateContext);
 }
 
 @liquid.Substring(0, Math.Min(html.Length, 200))
