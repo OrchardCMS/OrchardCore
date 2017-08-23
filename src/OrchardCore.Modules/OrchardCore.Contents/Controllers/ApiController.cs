@@ -1,16 +1,9 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
-using System.Threading.Tasks;
-using JsonApiSerializer;
-using JsonApiSerializer.JsonApi;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System;
-using Orchard.ContentManagement.MetaData;
-using System.Collections.Generic;
-using Orchard.ContentManagement.Api;
 using Orchard.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.Content.Controllers
@@ -19,21 +12,15 @@ namespace OrchardCore.Content.Controllers
     {
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IApiContentManager _apiContentManager;
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
 
         public ApiController(
             IContentManager contentManager,
             IAuthorizationService authorizationService,
-            IContentDefinitionManager contentDefinitionManager,
-            IApiContentManager apiContentManager,
             ITypeActivatorFactory<ContentPart> contentPartFactory)
         {
             _authorizationService = authorizationService;
             _contentManager = contentManager;
-            _contentDefinitionManager = contentDefinitionManager;
-            _apiContentManager = apiContentManager;
             _contentPartFactory = contentPartFactory;
         }
 
@@ -51,9 +38,7 @@ namespace OrchardCore.Content.Controllers
                 return Unauthorized();
             }
 
-            var item = await _apiContentManager.BuildAsync(contentItem, Url, this);
-
-            return Json(item, new JsonApiSerializerSettings());
+            return new ObjectResult(contentItem);
         }
 
         public async Task<IActionResult> GetByVersion(string contentItemId, VersionOptions versionOptions)
@@ -75,9 +60,7 @@ namespace OrchardCore.Content.Controllers
                 return Unauthorized();
             }
 
-            var item = await _apiContentManager.BuildAsync(contentItem, Url, this);
-
-            return Json(item, new JsonApiSerializerSettings());
+            return new ObjectResult(contentItem);
         }
     }
 }
