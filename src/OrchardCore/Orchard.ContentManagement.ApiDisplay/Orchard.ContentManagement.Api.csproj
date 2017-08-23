@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JsonApiSerializer" Version="0.9.16" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\Orchard.ContentManagement.Display\Orchard.ContentManagement.Display.csproj" />
+  </ItemGroup>
+
+</Project>
