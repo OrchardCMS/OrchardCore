@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -44,5 +44,4 @@ namespace Orchard.ContentManagement.Metadata.Models
                 : DisplayName;
         }
     }
-
 }

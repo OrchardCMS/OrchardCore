@@ -48,7 +48,7 @@ namespace Orchard.Flows.Drivers
             {
                 m.BagPart = bagPart;
                 m.Updater = context.Updater;
-                m.ContainedContentTypeDefinitions = GetContainedContentTypes(bagPart);
+                m.ContainedContentTypeDefinitions = GetContainedContentTypes(context.TypePartDefinition);
             });
         }
 
@@ -74,18 +74,10 @@ namespace Orchard.Flows.Drivers
             return Edit(part, context);
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(BagPart bagPart)
+        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ContentTypePartDefinition typePartDefinition)
         {
-            var settings = GetSettings(bagPart);
-            var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
-            return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
-        }
-
-        private BagPartSettings GetSettings(BagPart bagPart)
-        {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(bagPart.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "BagPart", StringComparison.Ordinal));
-            return contentTypePartDefinition.Settings.ToObject<BagPartSettings>();
-        }
+            var settings = typePartDefinition.Settings.ToObject<BagPartSettings>();
+            return settings.ContainedContentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
+        }        
     }
 }

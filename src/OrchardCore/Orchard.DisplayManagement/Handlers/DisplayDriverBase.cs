@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Orchard.DisplayManagement.Views;
@@ -65,6 +65,14 @@ namespace Orchard.DisplayManagement.Handlers
         public ShapeResult Shape(string shapeType)
         {
             return new ShapeResult(shapeType, ctx => ctx.ShapeFactory.Create(shapeType)).Prefix(Prefix);
+        }
+
+        /// <summary>
+        /// Creates a shape result from an existing shape.
+        /// </summary>
+        public ShapeResult Shape(string shapeType, dynamic shape)
+        {
+            return new ShapeResult(shapeType, ctx => shape).Prefix(Prefix);
         }
 
         /// <summary>

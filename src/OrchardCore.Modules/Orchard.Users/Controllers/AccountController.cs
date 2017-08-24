@@ -1,13 +1,12 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Orchard.Users.Models;
-using Orchard.Users.ViewModels;
 using Orchard.Users.Services;
-using Orchard.Security;
+using Orchard.Users.ViewModels;
 
 namespace Orchard.Users.Controllers
 {
@@ -16,18 +15,18 @@ namespace Orchard.Users.Controllers
     {
         private readonly IUserService _userService;
         private readonly SignInManager<IUser> _signInManager;
+        private readonly UserManager<IUser> _userManager;
         private readonly ILogger _logger;
-        private readonly string _externalCookieScheme;
 
         public AccountController(
             IUserService userService,
             SignInManager<IUser> signInManager,
-            IOptions<IdentityCookieOptions> identityCookieOptions,
+            UserManager<IUser> userManager,
             ILogger<AccountController> logger)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
             _userService = userService;
-            _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
             _logger = logger;
         }
 
@@ -36,7 +35,7 @@ namespace Orchard.Users.Controllers
         public async Task<IActionResult> Login(string returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.Authentication.SignOutAsync(_externalCookieScheme);
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
             ViewData["ReturnUrl"] = returnUrl;
             return View();

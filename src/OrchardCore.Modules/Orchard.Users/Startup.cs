@@ -1,12 +1,14 @@
 using System;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Orchard.Data.Migration;
 using Orchard.Environment.Commands;
 using Orchard.Environment.Navigation;
@@ -27,12 +29,10 @@ namespace Orchard.Users
 
         private readonly string _tenantName;
         private readonly string _tenantPrefix;
-        private readonly IdentityOptions _options;
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
-        public Startup(ShellSettings shellSettings, IOptions<IdentityOptions> options, IDataProtectionProvider dataProtectionProvider)
+        public Startup(ShellSettings shellSettings, IDataProtectionProvider dataProtectionProvider)
         {
-            _options = options.Value;
             _tenantName = shellSettings.Name;
             _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
             _dataProtectionProvider = dataProtectionProvider.CreateProtector(_tenantName);
@@ -40,13 +40,7 @@ namespace Orchard.Users
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            builder.UseIdentity();
-            builder
-                .UseCookieAuthentication(_options.Cookies.ApplicationCookie)
-                .UseCookieAuthentication(_options.Cookies.ExternalCookie)
-                .UseCookieAuthentication(_options.Cookies.TwoFactorRememberMeCookie)
-                .UseCookieAuthentication(_options.Cookies.TwoFactorUserIdCookie)
-                ;
+            builder.UseAuthentication();
 
             routes.MapAreaRoute(
                 name: "Login",
@@ -62,11 +56,44 @@ namespace Orchard.Users
 
             /// Adds the default token providers used to generate tokens for reset passwords, change email
             /// and change telephone number operations, and for two factor authentication token generation.
+            new IdentityBuilder(typeof(IUser), typeof(IRole), services).AddDefaultTokenProviders();
 
-            new IdentityBuilder(typeof(IUser), typeof(Role), services).AddDefaultTokenProviders();
+            // 'IAuthenticationSchemeProvider' is already registered at the host level.
+            // We need to register it again so it is taken into account at the tenant level.
+            services.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
+
+            services.AddAuthentication(o =>
+            {
+                o.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+                o.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+                o.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            })
+            .AddCookie(IdentityConstants.ApplicationScheme, o =>
+            {
+                o.LoginPath = new PathString("/Account/Login");
+                o.Events = new CookieAuthenticationEvents
+                {
+                    OnValidatePrincipal = async context =>
+                    {
+                        await SecurityStampValidator.ValidatePrincipalAsync(context);
+                    }
+                };
+            })
+            .AddCookie(IdentityConstants.ExternalScheme, o =>
+            {
+                o.Cookie.Name = IdentityConstants.ExternalScheme;
+                o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            })
+            .AddCookie(IdentityConstants.TwoFactorRememberMeScheme, o =>
+                o.Cookie.Name = IdentityConstants.TwoFactorRememberMeScheme)
+
+            .AddCookie(IdentityConstants.TwoFactorUserIdScheme, IdentityConstants.TwoFactorUserIdScheme, o =>
+            {
+                o.Cookie.Name = IdentityConstants.TwoFactorUserIdScheme;
+                o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            });
 
             // Identity services
-            services.TryAddSingleton<IdentityMarkerService>();
             services.TryAddScoped<IUserValidator<IUser>, UserValidator<IUser>>();
             services.TryAddScoped<IPasswordValidator<IUser>, PasswordValidator<IUser>>();
             services.TryAddScoped<IPasswordHasher<IUser>, PasswordHasher<IUser>>();
@@ -80,20 +107,28 @@ namespace Orchard.Users
             services.TryAddScoped<SignInManager<IUser>>();
 
             services.TryAddScoped<IUserStore<IUser>, UserStore>();
-            
-            services.Configure<IdentityOptions>(options =>
-            {
-                options.Cookies.ApplicationCookie.CookieName = "orchauth_" + _tenantName;
-                options.Cookies.ApplicationCookie.CookiePath = _tenantPrefix;
-                options.Cookies.ApplicationCookie.LoginPath = "/" + LoginPath;
-                options.Cookies.ApplicationCookie.AccessDeniedPath = "/" + LoginPath;
-                // Using a different DataProtectionProvider per tenant ensures cookie isolation between tenants
-                options.Cookies.ApplicationCookie.DataProtectionProvider = _dataProtectionProvider;
-                options.Cookies.ExternalCookie.DataProtectionProvider = _dataProtectionProvider;
-                options.Cookies.TwoFactorRememberMeCookie.DataProtectionProvider = _dataProtectionProvider;
-                options.Cookies.TwoFactorUserIdCookie.DataProtectionProvider = _dataProtectionProvider;
-            });
 
+            services.ConfigureApplicationCookie(o =>
+            {
+                o.Cookie.Name = "orchauth_" + _tenantName;
+                o.Cookie.Path = new PathString(_tenantPrefix);
+                o.LoginPath = new PathString("/" + LoginPath);
+                o.AccessDeniedPath = new PathString("/" + LoginPath);
+                // Using a different DataProtectionProvider per tenant ensures cookie isolation between tenants
+                o.DataProtectionProvider = _dataProtectionProvider;
+            })
+            .ConfigureExternalCookie(o =>
+            {
+                o.DataProtectionProvider = _dataProtectionProvider;
+            })
+            .Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorRememberMeScheme, o =>
+            {
+                o.DataProtectionProvider = _dataProtectionProvider;
+            })
+            .Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorUserIdScheme, o =>
+            {
+                o.DataProtectionProvider = _dataProtectionProvider;
+            });
 
             services.AddScoped<IIndexProvider, UserIndexProvider>();
             services.AddScoped<IIndexProvider, UserByRoleNameIndexProvider>();
@@ -107,7 +142,6 @@ namespace Orchard.Users
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-
         }
     }
 }

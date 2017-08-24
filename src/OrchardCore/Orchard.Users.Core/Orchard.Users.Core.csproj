@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Orchard.Users</RootNamespace>
   </PropertyGroup>
 
@@ -11,10 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="1.1.0" />
-    <PackageReference Include="YesSql.Core" Version="2.0.0-beta-1048" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="YesSql.Core" Version="2.0.0-beta-1063" />
   </ItemGroup>
 
 </Project>

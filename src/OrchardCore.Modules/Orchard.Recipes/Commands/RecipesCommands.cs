@@ -1,30 +1,33 @@
-﻿using Microsoft.Extensions.Localization;
-using Orchard.Environment.Commands;
-using Orchard.Recipes.Services;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using Orchard.Environment.Commands;
+using Orchard.Recipes.Services;
 
 namespace Orchard.Recipes.Commands
 {
     public class RecipesCommands : DefaultCommandHandler
     {
-        private readonly IRecipeHarvester _recipeHarvester;
+        private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
 
         public RecipesCommands(
-            IRecipeHarvester recipeHarvester,
+            IEnumerable<IRecipeHarvester> recipeHarvesters,
             IStringLocalizer<RecipesCommands> localizer) : base(localizer)
         {
-            _recipeHarvester = recipeHarvester;
+            _recipeHarvesters = recipeHarvesters;
         }
 
-        [CommandHelp("recipes harvest <extensionId>", "\tDisplays a list of available recipes for a specific extension.")]
+        [CommandHelp("recipes harvest", "\tDisplays a list of available recipes.")]
         [CommandName("recipes harvest")]
-        public async Task Harvest(string extensionId)
+        public async Task Harvest()
         {
-            var recipes = await _recipeHarvester.HarvestRecipesAsync(extensionId);
+            var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
+            var recipes = recipeCollections.SelectMany(x => x).ToArray();
+
             if (!recipes.Any())
             {
-                await Context.Output.WriteLineAsync(T[$"No recipes found for extension '{extensionId}'."]);
+                await Context.Output.WriteLineAsync(T["No recipes found."]);
                 return;
             }
 

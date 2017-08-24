@@ -1,4 +1,10 @@
-﻿@*
+@model MenuPartEditViewModel
+@inject IContentManager ContentManager
+@inject Orchard.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject Orchard.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
+@inject Orchard.ContentManagement.MetaData.IContentDefinitionManager ContentDefinitionManager
+
+@*
     This template is used to render the editor for a Menu content item.
     It render the hierarchy of the menu items.
     The shape is created from MenuPartDisplayDriver
@@ -6,12 +12,6 @@
 
 <script asp-src="/Orchard.Menu/Scripts/menu.js" at="Foot" depends-on="admin"></script>
 <style asp-src="/Orchard.Menu/Styles/menu.min.css" debug-src="/Orchard.Menu/Styles/menu.css"></style>
-
-@model MenuPartEditViewModel
-@inject IContentManager ContentManager
-@inject Orchard.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
-@inject Orchard.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
-@inject Orchard.ContentManagement.MetaData.IContentDefinitionManager ContentDefinitionManager
 
 @using Orchard.ContentManagement.Metadata.Settings;
 

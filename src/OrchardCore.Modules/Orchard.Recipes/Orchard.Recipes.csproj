@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="YesSql.Abstractions" Version="2.0.0-beta-1048" />
+    <PackageReference Include="YesSql.Abstractions" Version="2.0.0-beta-1063" />
   </ItemGroup>
 
 </Project>

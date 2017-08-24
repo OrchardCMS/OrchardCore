@@ -1,7 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
+
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>Orchard.Tests</AssemblyName>
     <PackageId>Orchard.Tests</PackageId>
@@ -29,12 +31,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.1" />
-    <PackageReference Include="xunit" Version="2.3.0-beta2-build3683" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0-beta2-build1317" />
-    <PackageReference Include="xunit.analyzers" Version="0.3.0" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.0-beta2-build3683" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitRunnerVisualStudioVersion)" />
+    <PackageReference Include="xunit.analyzers" Version="$(XunitAnalyzers)" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
   </ItemGroup>
 
   <ItemGroup>

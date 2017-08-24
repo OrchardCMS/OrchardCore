@@ -12,7 +12,7 @@ namespace Orchard.ResourceManagement.TagHelpers
         public string Rel { get; set; }
 
         [HtmlAttributeName(SrcAttributeName)]
-        public string Href { get; set; }
+        public string Src { get; set; }
 
         public string Title { get; set; }
 
@@ -31,9 +31,9 @@ namespace Orchard.ResourceManagement.TagHelpers
         {
             var linkEntry = new LinkEntry();
 
-            if (!string.IsNullOrEmpty(Href))
+            if (!string.IsNullOrEmpty(Src))
             {
-                linkEntry.Href = Href;
+                linkEntry.Href = Src;
             }
 
             if (!string.IsNullOrEmpty(Rel))

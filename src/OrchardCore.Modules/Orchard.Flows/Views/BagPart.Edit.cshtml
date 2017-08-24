@@ -58,21 +58,27 @@
     </div>
 
 
+    @* Rendered only once in case multiple BagPart (or FlowPart) are on the page *@
     @if (Context.Items["BagPart.Edit"] == null)
     {
         Context.Items["BagPart.Edit"] = new object();
         <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "Orchard.Flows" })" />
 
-        @foreach (var type in Model.ContainedContentTypeDefinitions)
+        <script asp-src="/Orchard.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
+        <style asp-src="/Orchard.Flows/Styles/flows.edit.css"></style>
+    }
+
+    @* Rendered only once per type to initialize the scripts its editor will need *@
+    @foreach (var type in Model.ContainedContentTypeDefinitions)
+    {
+        @if (Context.Items["BagPart.Edit:" + type.Name] == null)
         {
+            Context.Items["BagPart.Edit:" + type.Name] = new object();
+
             // Render a mock widget so that its resources are included in the page
             var contentItem = ContentManager.New(type.Name);
             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, "", Guid.NewGuid().ToString("n")));
         }
-
-
-        <script asp-src="/Orchard.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
-        <style asp-src="/Orchard.Flows/Styles/flows.edit.css"></style>
     }
 
     <script at="Foot">
