@@ -4,6 +4,8 @@ namespace Orchard.Templates.Models
 {
     public class TemplatesDocument
     {
+        public int Id { get; set; } // An identifier so that updates don't create new documents
+
         public Dictionary<string, Template> Templates { get; } = new Dictionary<string, Template>();
     }
 
