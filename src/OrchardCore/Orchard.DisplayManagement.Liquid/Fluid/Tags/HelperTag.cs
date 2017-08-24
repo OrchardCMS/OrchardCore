@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -9,17 +9,15 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Razor;
-using Microsoft.AspNetCore.Razor.Compilation.TagHelpers;
-using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
+using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Fluid.Ast;
 using Orchard.DisplayManagement.Fluid.Filters;
-using Orchard.Mvc;
+using Orchard.DisplayManagement.Liquid;
 
 namespace Orchard.DisplayManagement.Fluid.Tags
 {
@@ -41,10 +39,11 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
     public class HelperStatement : TagStatement
     {
-        private static ConcurrentDictionary<string, TagHelperDescriptor> _descriptors = new ConcurrentDictionary<string, TagHelperDescriptor>();
-
         private readonly ArgumentsExpression _arguments;
         private readonly string _helper;
+        private TagHelperDescriptor _descriptor;
+        private static ConcurrentDictionary<Type, Func<RazorPage, ITagHelper>> _tagHelperActivators = new ConcurrentDictionary<Type, Func<RazorPage, ITagHelper>>();
+        private static ConcurrentDictionary<string, Action<ITagHelper, FluidValue>> _tagHelperSetters = new ConcurrentDictionary<string, Action<ITagHelper, FluidValue>>();
 
         public HelperStatement(ArgumentsExpression arguments, string helper = null, IList<Statement> statements = null) : base(statements)
         {
@@ -54,10 +53,12 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("Services", out var services))
+            if (!context.AmbientValues.TryGetValue("Services", out var servicesValue))
             {
                 throw new ArgumentException("Services missing while invoking 'helper'");
             }
+
+            var services = servicesValue as IServiceProvider;
 
             if (!context.AmbientValues.TryGetValue("ViewContext", out var viewContext))
             {
@@ -74,42 +75,67 @@ namespace Orchard.DisplayManagement.Fluid.Tags
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
             var helper = _helper ?? arguments.At(0).ToStringValue();
-            var descriptor = _descriptors.FirstOrDefault(kv => kv.Key.StartsWith(helper)).Value;
+            var tagHelperSharedState = services.GetRequiredService<TagHelperSharedState>();
 
-            if (descriptor == null)
+            if (tagHelperSharedState.TagHelperDescriptors == null)
             {
-                var types = ((IServiceProvider)services).GetRequiredService<ApplicationPartManager>()
-                   .ApplicationParts.Where(part => part is TagHelperApplicationPart)
-                   .SelectMany(part => ((TagHelperApplicationPart)part).Types);
-
-                foreach (var type in types)
+                lock (tagHelperSharedState)
                 {
-                    if (type.CustomAttributes.Count() > 0)
+                    if (tagHelperSharedState.TagHelperDescriptors == null)
                     {
-                        var attribute = type.CustomAttributes.First();
-                        if (attribute.ConstructorArguments.Count > 0)
-                        {
-                            var argument = attribute.ConstructorArguments.First();
-                            if (argument.ArgumentType == typeof(string))
-                            {
-                                Register((IServiceProvider)services, (string)argument.Value, type.Assembly.GetName().Name);
-                            }
-                        }
+                        var razorEngine = services.GetRequiredService<RazorEngine>();
+                        var tagHelperFeature = razorEngine.Features.OfType<ITagHelperFeature>().FirstOrDefault();
+
+                        tagHelperSharedState.TagHelperDescriptors = tagHelperFeature.GetDescriptors().ToList();
                     }
-                }
-
-                descriptor = _descriptors.FirstOrDefault(kv => kv.Key.StartsWith(helper)).Value;
-
-                if (descriptor == null)
-                {
-                    return Completion.Normal;
                 }
             }
 
-            var tagHelperType = Type.GetType(descriptor.TypeName + ", " + descriptor.AssemblyName);
+            if (_descriptor == null)
+            {
+                lock (this)
+                {
+                    var descriptors = tagHelperSharedState.TagHelperDescriptors
+                        .Where(x => x.TagMatchingRules.OfType<TagMatchingRuleDescriptor>().Any(y =>
+                            ((y.TagName == "*") || y.TagName == helper) && y.Attributes.All(r => arguments.Names.Any(a =>
+                            {
+                                if (String.Equals(a, r.Name, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    return true;
+                                }
 
-            var tagHelper = typeof(RazorPage).GetMethod("CreateTagHelper")
-                .MakeGenericMethod(tagHelperType).Invoke(razorPage, null) as ITagHelper;
+                                if (r.Name.StartsWith("asp-") && String.Equals(a, r.Name.Substring(4).Replace("-", "_"), StringComparison.OrdinalIgnoreCase))
+                                {
+                                    return true;
+                                }
+
+                                if (r.Name.Contains("-") && String.Equals(a, r.Name.Replace("-", "_"), StringComparison.OrdinalIgnoreCase))
+                                {
+                                    return true;
+                                }
+
+                                return false;
+                            }
+                        ))));
+
+                    _descriptor = descriptors.FirstOrDefault();
+
+                    if (_descriptor == null)
+                    {
+                        return Completion.Normal;
+                    }
+                }
+            }
+            
+            var tagHelperType = Type.GetType(_descriptor.Name + ", " + _descriptor.AssemblyName);
+
+            var _tagHelperActivator = _tagHelperActivators.GetOrAdd(tagHelperType, key =>
+            {
+                var methodInfo = typeof(RazorPage).GetMethod("CreateTagHelper").MakeGenericMethod(key);
+                return Delegate.CreateDelegate(typeof(Func<RazorPage, ITagHelper>), methodInfo) as Func<RazorPage, ITagHelper>;
+            });
+
+            var tagHelper = _tagHelperActivator(razorPage);
 
             var attributes = new TagHelperAttributeList();
 
@@ -119,33 +145,56 @@ namespace Orchard.DisplayManagement.Fluid.Tags
                 var attributeName = name.Replace("_", "-");
                 var found = false;
 
-                foreach (var attribute in descriptor.Attributes)
+                foreach (var attribute in _descriptor.BoundAttributes)
                 {
-                    if (propertyName == attribute.PropertyName)
+                    if (propertyName == attribute.GetPropertyName())
                     {
                         found = true;
-                        var property = tagHelperType.GetProperty(attribute.PropertyName);
 
-                        if (attribute.IsEnum)
+                        var setter = _tagHelperSetters.GetOrAdd(attribute.DisplayName, key =>
                         {
-                            var value = Enum.Parse(property.PropertyType, arguments[name].ToStringValue());
-                            property.SetValue(tagHelper, value, null);
-                        }
-                        else if (attribute.IsStringProperty)
-                        {
-                            property.SetValue(tagHelper, arguments[name].ToStringValue(), null);
-                        }
-                        else if (property.PropertyType == typeof(Boolean))
-                        {
-                            var value = Convert.ToBoolean(arguments[name].ToStringValue());
-                            property.SetValue(tagHelper, value, null);
-                        }
+                            var propertyInfo = tagHelperType.GetProperty(propertyName);
+                            var propertySetter = propertyInfo.GetSetMethod();
+                            var invokeType = typeof(Action<,>).MakeGenericType(tagHelperType, propertyInfo.PropertyType);
+                            var d = Delegate.CreateDelegate(invokeType, propertySetter);
+                            Action<ITagHelper, FluidValue> result = (th, obj) =>
+                            {
 
-                        // Todo: implement attribute.IsIndexer
+                                object converted = null;
 
-                        else
+                                if (attribute.IsEnum)
+                                {
+                                    converted = Enum.Parse(propertyInfo.PropertyType, obj.ToStringValue());
+                                }
+                                else if (attribute.IsStringProperty)
+                                {
+                                    converted = obj.ToStringValue();
+                                }
+                                else if (propertyInfo.PropertyType == typeof(Boolean))
+                                {
+                                    converted = Convert.ToBoolean(obj.ToStringValue());
+                                }
+                                else
+                                {
+                                    converted = obj.ToObjectValue();
+                                }
+
+                                var args = new[] { th, converted };
+                                d.DynamicInvoke(args);
+                            };
+
+                            return result;
+
+                            // TODO: implement attribute.IsIndexer
+                        });
+
+                        try
                         {
-                            property.SetValue(tagHelper, arguments[name].ToObjectValue(), null);
+                            setter(tagHelper, arguments[name]);
+                        }
+                        catch (ArgumentException e)
+                        {
+                            throw new ArgumentException("Incorrect value type assigned to a tag.", name, e);
                         }
 
                         break;
@@ -185,33 +234,6 @@ namespace Orchard.DisplayManagement.Fluid.Tags
             tagHelperOutput.WriteTo(writer, HtmlEncoder.Default);
 
             return Completion.Normal;
-        }
-
-        internal static void Register(IServiceProvider services, string name, string assembly)
-        {
-            if (_descriptors.ContainsKey(name + assembly) || _descriptors.ContainsKey("*" + assembly))
-            {
-                return;
-            }
-
-            var resolver = services.GetRequiredService<ITagHelperTypeResolver>();
-            var types = resolver.Resolve(assembly, SourceLocation.Zero, new ErrorSink()).ToList();
-
-            foreach (var type in types)
-            {
-                var descriptors = services.GetRequiredService<ITagHelperDescriptorFactory>().CreateDescriptors(
-                    assembly, type, new ErrorSink()).GroupBy(d => d.TagName).Select(g => g.First());
-
-                if (name != "*")
-                {
-                    descriptors = descriptors.Where(d => d.TagName == name);
-                }
-
-                foreach (var descriptor in descriptors)
-                {
-                    _descriptors[descriptor.TagName + assembly] = descriptor;
-                }
-            }
         }
     }
 }

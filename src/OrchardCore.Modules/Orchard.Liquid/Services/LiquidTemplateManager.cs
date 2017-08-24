@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -35,7 +35,7 @@ namespace Orchard.Liquid.Services
 
             var errors = Enumerable.Empty<string>();
 
-            var result = _memoryCache.GetOrCreate<FluidTemplate>(source, (ICacheEntry e) =>
+            var result = _memoryCache.GetOrCreate<FluidViewTemplate>(source, (ICacheEntry e) =>
             {
                 if (FluidViewTemplate.TryParse(source, out var parsed, out errors))
                 {

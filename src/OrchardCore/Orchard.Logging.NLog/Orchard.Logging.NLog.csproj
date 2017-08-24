@@ -6,6 +6,9 @@
 
   <ItemGroup>
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.4.1" />
+
+    <!-- Used to fix conflicting referenced versions -->
+    <PackageReference Include="System.Security.AccessControl" Version="4.4.0" />
   </ItemGroup>
 
   <ItemGroup>
