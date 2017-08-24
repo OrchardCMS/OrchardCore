@@ -95,18 +95,23 @@ namespace Orchard.DisplayManagement.Fluid.Tags
             {
                 lock (this)
                 {
-                    var names = arguments.Names.Select(n => n.Replace("_", "-"));
-
                     var descriptors = tagHelperSharedState.TagHelperDescriptors
                         .Where(d => d.TagMatchingRules.OfType<TagMatchingRuleDescriptor>().Any(r =>
-                            ((r.TagName == "*") || r.TagName == helper) && r.Attributes.All(a => names.Any(n =>
+                            ((r.TagName == "*") || r.TagName == helper) && r.Attributes.All(a => arguments.Names.Any(n =>
                             {
                                 if (String.Equals(n, a.Name, StringComparison.OrdinalIgnoreCase))
                                 {
                                     return true;
                                 }
 
-                                if (String.Equals("asp-" + n, a.Name, StringComparison.OrdinalIgnoreCase))
+                                n = n.Replace("_", "-");
+
+                                if (a.Name.StartsWith("asp-") && String.Equals(n, a.Name.Substring(4), StringComparison.OrdinalIgnoreCase))
+                                {
+                                    return true;
+                                }
+
+                                if (String.Equals(n, a.Name, StringComparison.OrdinalIgnoreCase))
                                 {
                                     return true;
                                 }
