@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -50,7 +50,7 @@ namespace Orchard.DisplayManagement.Fluid
                 if (!Path.GetFileName(path).StartsWith("_"))
                 {
                     var viewPath = Path.ChangeExtension(path, RazorViewEngine.ViewExtension);
-                    feature.Views[viewPath] = typeof(FluidPage);
+                    feature.ViewDescriptors.Add( new CompiledViewDescriptor { RelativePath = viewPath, ViewAttribute = new RazorViewAttribute(path, typeof(FluidPage)) });
                 }
             }
         }

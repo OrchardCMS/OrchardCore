@@ -253,7 +253,7 @@ namespace Orchard.Media.Controllers
                 folder = mediaFile.Folder,
                 url = mediaFile.AbsolutePath,
                 mediaPath = mediaFile.Path,
-                mime = MimeMapping.MimeTypes.GetMimeMapping(mediaFile.Path)
+                mime = MimeMapping.MimeUtility.GetMimeMapping(mediaFile.Path)
             };
         }
     }

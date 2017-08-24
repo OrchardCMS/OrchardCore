@@ -10,7 +10,7 @@ namespace Orchard.Queries.Sql
             var lineComment = new CommentTerminal("line_comment", "--", "\n", "\r\n");
             NonGrammarTerminals.Add(comment);
             NonGrammarTerminals.Add(lineComment);
-            var number = new NumberLiteral("number");
+            var number = new InvariantNumberLiteral("number");
             var string_literal = new StringLiteral("string", "'", StringOptions.AllowsDoubledQuote);
             var Id_simple = TerminalFactory.CreateSqlExtIdentifier(this, "id_simple"); //covers normal identifiers (abc) and quoted id's ([abc d], "abc d")
             var comma = ToTerm(",");
