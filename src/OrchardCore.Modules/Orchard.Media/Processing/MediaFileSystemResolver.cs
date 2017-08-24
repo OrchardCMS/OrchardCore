@@ -44,7 +44,7 @@ namespace Orchard.Media.Processing
         /// <inheritdoc/>
         public Task<bool> IsValidRequestAsync(HttpContext context, ILogger logger)
         {
-            return Task.FromResult(GetExtension(this.options.Configuration, context.Request.GetDisplayUrl()) != null);
+            return Task.FromResult(FormatHelpers.GetExtension(this.options.Configuration, context.Request.GetDisplayUrl()) != null);
         }
 
         /// <inheritdoc/>
@@ -70,28 +70,6 @@ namespace Orchard.Media.Processing
             }
 
             return buffer;
-        }
-
-        public static string GetExtension(Configuration configuration, string uri)
-        {
-            string extension = null;
-            int index = 0;
-            foreach (IImageFormat format in configuration.ImageFormats)
-            {
-                foreach (string ext in format.SupportedExtensions)
-                {
-                    int i = uri.LastIndexOf(ext, StringComparison.OrdinalIgnoreCase);
-                    if (i <= index)
-                    {
-                        continue;
-                    }
-
-                    index = i;
-                    extension = ext;
-                }
-            }
-
-            return extension;
         }
     }
 }
