@@ -2,27 +2,36 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Orchard.StorageProviders.FileSystem
 {
     public class FileSystemStore : IFileStore
     {
-        private readonly string _localPathPrefix;
+        private readonly string _localPath;
+        private readonly string _requestUrlPrefix;
+        private readonly string _pathPrefix;
         private readonly string _publicPathPrefix;
 
-        public string LocalBasePath => _localPathPrefix;
-
-        public FileSystemStore(string localPathPrefix, string publicPathPrefix)
+        public FileSystemStore(string localPath, string requestUrlPrefix, string pathPrefix)
         {
-            _localPathPrefix = localPathPrefix;
-            _publicPathPrefix = publicPathPrefix;
+            _localPath = localPath;
+            _requestUrlPrefix = String.IsNullOrWhiteSpace(requestUrlPrefix) ? "" : "/" + NormalizePath(requestUrlPrefix);
+            _pathPrefix = pathPrefix;
+            _publicPathPrefix = Combine(_requestUrlPrefix, _pathPrefix);
         }
 
         public string Combine(params string[] paths)
         {
-            return String.Join("/", paths.Select(NormalizePath));
+            var combined = String.Join("/", paths.Select(x => NormalizePath(x).Trim('/')));
+
+            // Preserve the initial '/' if it's present
+            if (paths.Length > 0 && paths[0].StartsWith("/"))
+            {
+                combined = "/" + combined;
+            }
+
+            return combined;
         }
 
         private string NormalizePath(string path)
@@ -79,7 +88,7 @@ namespace Orchard.StorageProviders.FileSystem
                 .Select(f =>
                 {
                     var fileInfo = new DirectoryInfo(f);
-                    var fileSubPath = f.Substring(_localPathPrefix.Length);
+                    var fileSubPath = f.Substring(_localPath.Length);
                     return new FileSystemFile(fileSubPath, _publicPathPrefix, fileInfo);
                 }).ToArray()
             );
@@ -90,7 +99,7 @@ namespace Orchard.StorageProviders.FileSystem
                 .Select(f =>
                 {
                     var fileInfo = new FileInfo(f);
-                    var fileSubPath = f.Substring(_localPathPrefix.Length);
+                    var fileSubPath = f.Substring(_localPath.Length);
                     return new FileSystemFile(fileSubPath, _publicPathPrefix, fileInfo);
                 }).ToArray()
             );
@@ -130,7 +139,8 @@ namespace Orchard.StorageProviders.FileSystem
         {
             try
             {
-                Directory.CreateDirectory(GetPhysicalPath(subpath));
+                // Use CreateSubdirectory to ensure the directory doesn't go over its boundaries
+                new DirectoryInfo(_localPath).CreateSubdirectory(subpath);
                 return Task.FromResult(true);
             }
             catch
@@ -141,12 +151,12 @@ namespace Orchard.StorageProviders.FileSystem
 
         public Task<IFile> MapFileAsync(string absoluteUrl)
         {
-            if (!absoluteUrl.StartsWith(_publicPathPrefix, StringComparison.OrdinalIgnoreCase))
+            if (!absoluteUrl.StartsWith(_pathPrefix, StringComparison.OrdinalIgnoreCase))
             {
                 return Task.FromResult(default(IFile));
             }
 
-            return GetFileAsync(absoluteUrl.Substring(_publicPathPrefix.Length));
+            return GetFileAsync(absoluteUrl.Substring(_pathPrefix.Length));
         }
 
         public Task<bool> TryMoveFileAsync(string oldPath, string newPath)
@@ -175,19 +185,29 @@ namespace Orchard.StorageProviders.FileSystem
             }
         }
 
-        public async Task<bool> TrySaveStreamAsync(string subpath, Stream inputStream)
+        public async Task<bool> TrySaveStreamAsync(string filename, Stream inputStream)
         {
             try
             {
-                var subfolder = Path.GetDirectoryName(subpath);
-                var mediaFolder = await GetFolderAsync(subfolder);
+                var path = Path.GetDirectoryName(filename);
+                var mediaFolder = await GetFolderAsync(path);
 
                 if (mediaFolder == null)
                 {
-                    await TryCreateFolderAsync(subfolder);
+                    await TryCreateFolderAsync(path);
                 }
 
-                using (var outputStream = File.Create(GetPhysicalPath(subpath)))
+                var fileInfo = new FileInfo(GetPhysicalPath(filename));
+
+                // Ensure the file will be in the targetted folder
+                var directoryInfo = fileInfo.Directory;
+                var rootDirectory = new DirectoryInfo(_localPath);
+                if (!directoryInfo.FullName.StartsWith(rootDirectory.FullName))
+                {
+                    throw new ArgumentException("Attemp to create a file outside of the Media folder: " + filename);
+                }
+
+                using (var outputStream = fileInfo.Create())
                 {
                     await inputStream.CopyToAsync(outputStream);
                 }
@@ -202,8 +222,10 @@ namespace Orchard.StorageProviders.FileSystem
         
         private string GetPhysicalPath(string subpath)
         {
-            string physicalPath = string.IsNullOrEmpty(subpath) ? _localPathPrefix : _localPathPrefix + subpath;
-            return ValidatePath(_localPathPrefix, physicalPath);
+            subpath = "/" + NormalizePath(subpath);
+
+            string physicalPath = string.IsNullOrEmpty(subpath) ? _localPath : _localPath + subpath;
+            return ValidatePath(_localPath, physicalPath);
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Fluid;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using Orchard.DisplayManagement.Fluid;
 
 namespace Orchard.Liquid.Services
 {
@@ -36,7 +37,7 @@ namespace Orchard.Liquid.Services
 
             var result = _memoryCache.GetOrCreate<FluidTemplate>(source, (ICacheEntry e) =>
             {
-                if (FluidTemplate.TryParse(source, out var parsed, out errors))
+                if (FluidViewTemplate.TryParse(source, out var parsed, out errors))
                 {
                     // Define a default sliding expiration to prevent the 
                     // cache from being filled and still apply some micro-caching
@@ -52,7 +53,7 @@ namespace Orchard.Liquid.Services
 
             if (result == null)
             {
-                FluidTemplate.TryParse(String.Join(System.Environment.NewLine, errors), out result, out errors);
+                FluidViewTemplate.TryParse(String.Join(System.Environment.NewLine, errors), out result, out errors);
             }
 
             foreach (var registration in _liquidOptions.FilterRegistrations)

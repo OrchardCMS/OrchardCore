@@ -12,6 +12,7 @@
     <ProjectReference Include="..\..\OrchardCore\Orchard.Data\Orchard.Data.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Cache\Orchard.Environment.Cache.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.DisplayManagement.Liquid\Orchard.DisplayManagement.Liquid.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.BackgroundTasks\Orchard.BackgroundTasks.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Extensions\Orchard.Environment.Extensions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.ResourceManagement\Orchard.ResourceManagement.csproj" />

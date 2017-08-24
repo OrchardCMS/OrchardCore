@@ -35,6 +35,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.ContentPreview\Orchard.ContentPreview.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Contents\Orchard.Contents.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.ContentTypes\Orchard.ContentTypes.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.CustomSettings\Orchard.CustomSettings.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Demo\Orchard.Demo.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Deployment\Orchard.Deployment.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Deployment.Remote\Orchard.Deployment.Remote.csproj" PrivateAssets="none" />
@@ -70,6 +71,7 @@
     <ProjectReference Include="..\..\OrchardCore.Themes\SafeMode\SafeMode.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheAdmin\TheAdmin.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheBlogTheme\TheBlogTheme.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Themes\TheAgencyTheme\TheAgencyTheme.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheTheme\TheTheme.csproj" PrivateAssets="none" />
   </ItemGroup>
 

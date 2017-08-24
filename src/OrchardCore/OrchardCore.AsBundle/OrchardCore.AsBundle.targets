@@ -67,6 +67,26 @@
       Encoding="utf-8"
       ContinueOnError="true" />
 
+    <ItemGroup>
+      <ModuleProjectFluidFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.liquid">
+        <ProjectName>%(Filename)</ProjectName>
+      </ModuleProjectFluidFiles>
+      <ModuleProjectFluidFilesMapping
+        Include="%(ModuleProjectFluidFiles.FullPath)|\Packages\%(ModuleProjectFluidFiles.ProjectName)\%(RecursiveDir)%(Filename)%(Extension)">
+      </ModuleProjectFluidFilesMapping>
+    </ItemGroup>
+
+    <Message Text="Generating module project fluid files mapping file"
+      Condition="'@(ModuleProjectFluidFilesMapping)' != ''" Importance="high" />
+
+    <WriteLinesToFile
+      File="obj\ModuleProjectFluidFiles.map"
+      Lines="@(ModuleProjectFluidFilesMapping)"
+      Condition="'@(ModuleProjectFluidFilesMapping)' != ''"
+      Overwrite="true"
+      Encoding="utf-8"
+      ContinueOnError="true" />
+
     <CreateItem Include="@(Content)" Condition="'%(Extension)'=='.cshtml'">
       <Output TaskParameter="Include" ItemName="MvcContentRazorFiles"/>
     </CreateItem>

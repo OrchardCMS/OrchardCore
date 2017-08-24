@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
@@ -21,7 +21,7 @@ namespace Orchard.DisplayManagement.Razor
         {
             if (_displayHelper == null)
             {
-                IDisplayHelperFactory _factory = ViewContext.HttpContext.RequestServices.GetService<IDisplayHelperFactory>();
+                IDisplayHelperFactory _factory = Context.RequestServices.GetService<IDisplayHelperFactory>();
                 _displayHelper = _factory.CreateHelper(ViewContext);
             }
         }
@@ -30,7 +30,7 @@ namespace Orchard.DisplayManagement.Razor
         {
             if (_shapeFactory == null)
             {
-                _shapeFactory = ViewContext.HttpContext.RequestServices.GetService<IShapeFactory>();
+                _shapeFactory = Context.RequestServices.GetService<IShapeFactory>();
             }
         }
 
@@ -82,7 +82,7 @@ namespace Orchard.DisplayManagement.Razor
             {
                 if (_themeLayout == null)
                 {
-                    var layoutAccessor = ViewContext.HttpContext.RequestServices.GetService<ILayoutAccessor>();
+                    var layoutAccessor = Context.RequestServices.GetService<ILayoutAccessor>();
 
                     if (layoutAccessor == null)
                     {
@@ -108,7 +108,7 @@ namespace Orchard.DisplayManagement.Razor
             {
                 if (_pageTitleBuilder == null)
                 {
-                    _pageTitleBuilder = ViewContext.HttpContext.RequestServices.GetRequiredService<IPageTitleBuilder>();
+                    _pageTitleBuilder = Context.RequestServices.GetRequiredService<IPageTitleBuilder>();
                 }
 
                 return _pageTitleBuilder;
@@ -126,7 +126,7 @@ namespace Orchard.DisplayManagement.Razor
             {
                 if (_t == null)
                 {
-                    _t = ViewContext.HttpContext.RequestServices.GetRequiredService<IViewLocalizer>();
+                    _t = Context.RequestServices.GetRequiredService<IViewLocalizer>();
                     ((IViewContextAware)_t).Contextualize(this.ViewContext);
                 }
 
@@ -148,21 +148,22 @@ namespace Orchard.DisplayManagement.Razor
         }
 
         /// <summary>
-        /// Adds some segments to the title and returns all segments.
+        /// Adds a segment to the title and returns all segments.
         /// </summary>
-        /// <param name="segments">The segments to add to the title.</param>
-        /// <param name="position">Optional. The position of the segments in the title.</param>
+        /// <param name="segment">The segment to add to the title.</param>
+        /// <param name="position">Optional. The position of the segment in the title.</param>
+        /// <param name="separator">The html string that should separate all segments.</param>
         /// <returns>And <see cref="IHtmlContent"/> instance representing the full title.</returns>
-        public IHtmlContent RenderTitleSegments(IEnumerable<IHtmlContent> segments, string position = "0", IHtmlContent separator = null)
+        public IHtmlContent RenderTitleSegments(string segment, string position = "0", IHtmlContent separator = null)
         {
-            Title.AddSegments(segments, position);
+            Title.AddSegment(new HtmlString(HtmlEncoder.Encode(segment)), position);
             return Title.GenerateTitle(separator);
         }
-
+        
         /// <summary>
         /// Renders the content zone of the layout.
         /// </summary>
-        protected IHtmlContent RenderLayoutBody()
+        public IHtmlContent RenderLayoutBody()
         {
             var result = base.RenderBody();
             return result;
@@ -173,17 +174,17 @@ namespace Orchard.DisplayManagement.Razor
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <returns>A new <see cref="TagBuilder"/>.</returns>
-        protected TagBuilder Tag(dynamic shape)
+        public TagBuilder Tag(dynamic shape)
         {
             return Shape.GetTagBuilder(shape);
         }
 
-        protected TagBuilder Tag(dynamic shape, string tag)
+        public TagBuilder Tag(dynamic shape, string tag)
         {
             return Shape.GetTagBuilder(shape, tag);
         }
 
-        protected Task<IHtmlContent> RenderBodyAsync()
+        public Task<IHtmlContent> RenderBodyAsync()
         {
             return DisplayAsync(ThemeLayout.Content);
         }

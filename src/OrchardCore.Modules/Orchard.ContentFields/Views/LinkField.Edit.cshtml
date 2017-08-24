@@ -1,4 +1,4 @@
-﻿@model Orchard.ContentFields.ViewModels.EditLinkFieldViewModel
+@model Orchard.ContentFields.ViewModels.EditLinkFieldViewModel
 @using Orchard.ContentManagement.Metadata.Models
 @using Orchard.ContentFields.Settings;
 @{
@@ -18,7 +18,7 @@
         {
             <label asp-for="Url" @if (settings.Required) { <text> class="required" </text>  }>@T["Url"]</label>
         }
-        <input asp-for="Url" type="url" class="form-control content-preview-text" placeholder="@settings.UrlPlaceholder" required="@isRequired" />
+        <input asp-for="Url" class="form-control content-preview-text" placeholder="@settings.UrlPlaceholder" required="@isRequired" />
         @if (!string.IsNullOrWhiteSpace(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>

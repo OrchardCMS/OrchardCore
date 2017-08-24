@@ -1,6 +1,8 @@
-@using Fluid;
+﻿@using Fluid;
+@using Orchard.Liquid;
+@using Orchard.Mvc.Utilities;
 @model Orchard.Markdown.ViewModels.MarkdownPartViewModel
-@inject Orchard.Liquid.ILiquidTemplateManager TemplateManager
+@inject ILiquidTemplateManager TemplateManager
 
 @{
     string markdown = Model.Markdown;
@@ -9,8 +11,8 @@
     var templateContext = new TemplateContext();
     templateContext.SetValue("ContentItem", Model.MarkdownPart.ContentItem);
 
-    var rendered = await TemplateManager.RenderAsync(html, templateContext);
+    var rendered = (await TemplateManager.RenderAsync(html, templateContext)).RemoveTags(true);
 }
 
 
-@markdown.Substring(0, Math.Min(rendered.Length, 200))
+@rendered.Substring(0, Math.Min(rendered.Length, 200))

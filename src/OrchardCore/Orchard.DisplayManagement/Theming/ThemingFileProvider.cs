@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
+using Orchard.DisplayManagement.FileProviders;
 
 namespace Orchard.DisplayManagement.Theming
 {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using Orchard.ContentManagement;
@@ -29,7 +29,7 @@ namespace Orchard.Media
             if (!String.IsNullOrEmpty(contentType))
             {
                 var contentDefinition = _contentDefinitionManager.GetTypeDefinition(contentType);
-                if (contentDefinition == null || contentDefinition.Parts.All(x => x.PartDefinition.Name != typeof(ImagePart).Name))
+                if (contentDefinition == null || contentDefinition.Parts.All(x => x.PartDefinition.Name != typeof(ImageMediaPart).Name))
                 {
                     return null;
                 }
@@ -61,7 +61,7 @@ namespace Orchard.Media
 
             var media = _contentManager.New(contentType);
             
-            media.Alter<ImagePart>(imagePart =>
+            media.Alter<ImageMediaPart>(imagePart =>
             {
                 imagePart.Length = length;
                 imagePart.MimeType = mimeType;

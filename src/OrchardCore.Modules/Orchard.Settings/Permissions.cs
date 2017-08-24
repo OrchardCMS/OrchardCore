@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Orchard.Security.Permissions;
 
 namespace Orchard.Settings
@@ -6,6 +6,9 @@ namespace Orchard.Settings
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageSettings = new Permission("ManageSettings", "Manage settings");
+
+        // This permission is not exposed, it's just used for the APIs to generate/check custom ones
+        public static readonly Permission ManageGroupSettings = new Permission("ManageResourceSettings", "Manage settings", new[] { ManageSettings });
 
         public IEnumerable<Permission> GetPermissions()
         {

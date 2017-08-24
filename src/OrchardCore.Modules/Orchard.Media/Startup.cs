@@ -23,8 +23,10 @@ using Orchard.Media.Fields;
 using Orchard.Media.Filters;
 using Orchard.Media.Models;
 using Orchard.Media.Processing;
+using Orchard.Media.Recipes;
 using Orchard.Media.Services;
 using Orchard.Media.Settings;
+using Orchard.Recipes;
 using Orchard.StorageProviders.FileSystem;
 
 namespace Orchard.Media
@@ -42,13 +44,12 @@ namespace Orchard.Media
                 var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
 
                 string mediaPath = GetMediaPath(env, shellOptions.Value, shellSettings);
-                var requestMediaPath = (string.IsNullOrEmpty(shellSettings.RequestUrlPrefix) ? "" : "/" + shellSettings.RequestUrlPrefix) + "/media";
-                return new MediaFileStore(new FileSystemStore(mediaPath, requestMediaPath));
+                return new MediaFileStore(new FileSystemStore(mediaPath, shellSettings.RequestUrlPrefix, "/media"));
             });
 
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddSingleton<ContentPart, ImagePart>();
+            services.AddSingleton<ContentPart, ImageMediaPart>();
             services.AddMedia();
 
             services.AddLiquidFilter<MediaUrlFilter>("media_url");
@@ -124,6 +125,8 @@ namespace Orchard.Media
             services.AddSingleton<ContentField, MediaField>();
             services.AddScoped<IContentFieldDisplayDriver, MediaFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
+
+            services.AddRecipeExecutionStep<MediaStep>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
