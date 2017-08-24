@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -39,10 +38,11 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
     public class HelperStatement : TagStatement
     {
+        private const string AspPrefix = "asp-";
         private static ConcurrentDictionary<Type, Func<RazorPage, ITagHelper>> _tagHelperActivators = new ConcurrentDictionary<Type, Func<RazorPage, ITagHelper>>();
         private static ConcurrentDictionary<string, Action<ITagHelper, FluidValue>> _tagHelperSetters = new ConcurrentDictionary<string, Action<ITagHelper, FluidValue>>();
-        private TagHelperDescriptor _descriptor;
 
+        private TagHelperDescriptor _descriptor;
         private readonly ArgumentsExpression _arguments;
         private readonly string _helper;
 
@@ -96,22 +96,23 @@ namespace Orchard.DisplayManagement.Fluid.Tags
                 lock (this)
                 {
                     var descriptors = tagHelperSharedState.TagHelperDescriptors
-                        .Where(d => d.TagMatchingRules.OfType<TagMatchingRuleDescriptor>().Any(r =>
-                            ((r.TagName == "*") || r.TagName == helper) && r.Attributes.All(a => arguments.Names.Any(n =>
+                        .Where(d => d.TagMatchingRules.Any(rule => ((rule.TagName == "*") ||
+                            rule.TagName == helper) && rule.Attributes.All(attr => arguments.Names.Any(name =>
                             {
-                                if (String.Equals(n, a.Name, StringComparison.OrdinalIgnoreCase))
+                                if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
                                 {
                                     return true;
                                 }
 
-                                n = n.Replace("_", "-");
+                                name = name.Replace("_", "-");
 
-                                if (a.Name.StartsWith("asp-") && String.Equals(n, a.Name.Substring(4), StringComparison.OrdinalIgnoreCase))
+                                if (attr.Name.StartsWith(AspPrefix) && String.Equals(name,
+                                    attr.Name.Substring(AspPrefix.Length), StringComparison.OrdinalIgnoreCase))
                                 {
                                     return true;
                                 }
 
-                                if (String.Equals(n, a.Name, StringComparison.OrdinalIgnoreCase))
+                                if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
                                 {
                                     return true;
                                 }
@@ -137,15 +138,13 @@ namespace Orchard.DisplayManagement.Fluid.Tags
             });
 
             var tagHelper = _tagHelperActivator(razorPage);
-
             var attributes = new TagHelperAttributeList();
 
             foreach (var name in arguments.Names)
             {
                 var propertyName = FluidViewFilters.LowerKebabToPascalCase(name);
-                var attributeName = name.Replace("_", "-");
-                var found = false;
 
+                var found = false;
                 foreach (var attribute in _descriptor.BoundAttributes)
                 {
                     if (propertyName == attribute.GetPropertyName())
@@ -176,7 +175,6 @@ namespace Orchard.DisplayManagement.Fluid.Tags
                                 {
                                     value = Convert.ToBoolean(v.ToStringValue());
                                 }
-                                // Todo: implement attribute.IsIndexer
                                 else
                                 {
                                     value = v.ToObjectValue();
@@ -203,7 +201,7 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
                 if (!found)
                 {
-                    attributes.Add(new TagHelperAttribute(attributeName, arguments[name].ToObjectValue()));
+                    attributes.Add(new TagHelperAttribute(name.Replace("_", "-"), arguments[name].ToObjectValue()));
                 }
             }
 
