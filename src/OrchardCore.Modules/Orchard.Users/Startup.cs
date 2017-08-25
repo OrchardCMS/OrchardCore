@@ -15,7 +15,6 @@ using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
 using Orchard.Security;
 using Orchard.Security.Permissions;
-using Orchard.Security.Services;
 using Orchard.Users.Commands;
 using Orchard.Users.Indexes;
 using Orchard.Users.Services;
@@ -54,8 +53,8 @@ namespace Orchard.Users
         {
             services.AddSecurity();
 
-            /// Adds the default token providers used to generate tokens for reset passwords, change email
-            /// and change telephone number operations, and for two factor authentication token generation.
+            // Adds the default token providers used to generate tokens for reset passwords, change email
+            // and change telephone number operations, and for two factor authentication token generation.
             new IdentityBuilder(typeof(IUser), typeof(IRole), services).AddDefaultTokenProviders();
 
             // 'IAuthenticationSchemeProvider' is already registered at the host level.
@@ -139,6 +138,7 @@ namespace Orchard.Users
             services.AddScoped<SetupEventHandler>();
             services.AddScoped<ISetupEventHandler>(sp => sp.GetRequiredService<SetupEventHandler>());
             services.AddScoped<ICommandHandler, UserCommands>();
+            services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();

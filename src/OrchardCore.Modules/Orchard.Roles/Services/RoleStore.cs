@@ -5,7 +5,10 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Orchard.Environment.Cache;
 using Orchard.Roles.Models;
 using Orchard.Security;
@@ -21,13 +24,22 @@ namespace Orchard.Roles.Services
         private readonly ISession _session;
         private readonly ISignal _signal;
         private readonly IMemoryCache _memoryCache;
+        private readonly IServiceProvider _serviceProvider;
 
-        public RoleStore(ISession session, IMemoryCache memoryCache, ISignal signal)
+        public RoleStore(ISession session,
+            IMemoryCache memoryCache,
+            ISignal signal,
+            IServiceProvider serviceProvider,
+            ILogger<RoleStore> logger)
         {
             _memoryCache = memoryCache;
             _signal = signal;
             _session = session;
+            _serviceProvider = serviceProvider;
+            Logger = logger;
         }
+
+        public ILogger Logger { get; }
 
         public void Dispose()
         {
@@ -92,6 +104,9 @@ namespace Orchard.Roles.Services
             {
                 return IdentityResult.Failed(new IdentityError { Description = "Can't delete system roles." });
             }
+
+            var roleRemovedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleRemovedEventHandler>>();
+            await roleRemovedEventHandlers.InvokeAsync(x => x.RoleRemovedAsync(orchardRole.RoleName), Logger);
 
             var roles = await GetRolesAsync();
             roles.Roles.Remove(orchardRole);
