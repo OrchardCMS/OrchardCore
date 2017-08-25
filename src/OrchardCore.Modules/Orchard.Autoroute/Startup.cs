@@ -36,7 +36,7 @@ namespace Orchard.Autoroute
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, AutoroutePartIndexHandler>();
 
-            services.AddScoped<IIndexProvider, AutoroutePartIndexProvider>();
+            services.AddSingleton<IIndexProvider, AutoroutePartIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();

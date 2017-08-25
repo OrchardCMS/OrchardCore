@@ -19,6 +19,8 @@ namespace Orchard.Mvc
     public class SharedViewCompilerProvider : IViewCompilerProvider
     {
         private static IList<CompiledViewDescriptor> _viewDescriptors;
+        private static object _initializeLock = new object();
+        private static bool _initialized;
 
         private readonly ApplicationPartManager _applicationPartManager;
         private readonly IRazorViewEngineFileProviderAccessor _fileProviderAccessor;
@@ -27,11 +29,8 @@ namespace Orchard.Mvc
         private readonly RazorTemplateEngine _razorTemplateEngine;
         private readonly CSharpCompiler _csharpCompiler;
         private readonly RazorViewEngineOptions _viewEngineOptions;
-        private readonly Func<IList<CompiledViewDescriptor>> _createViewDescriptors;
         private readonly ILogger<RazorViewCompiler> _logger;
 
-        private object _initializeLock = new object();
-        private bool _initialized;
 
         public SharedViewCompilerProvider(
             ApplicationPartManager applicationPartManager,
@@ -50,7 +49,6 @@ namespace Orchard.Mvc
             _razorTemplateEngine = razorTemplateEngine;
             _csharpCompiler = csharpCompiler;
             _viewEngineOptions = viewEngineOptionsAccessor.Value;
-            _createViewDescriptors = CreateViewDescriptors;
             _logger = loggerFactory.CreateLogger<RazorViewCompiler>();
         }
 
@@ -71,7 +69,7 @@ namespace Orchard.Mvc
                 ref _viewDescriptors,
                 ref _initialized,
                 ref _initializeLock,
-                _createViewDescriptors);
+                CreateViewDescriptors);
 
             return new RazorViewCompiler(
                 _fileProviderAccessor.FileProvider,
@@ -84,31 +82,26 @@ namespace Orchard.Mvc
 
         private IList<CompiledViewDescriptor> CreateViewDescriptors()
         {
-            if (_viewDescriptors == null)
-            {
-                var feature = new ViewsFeature();
+            var feature = new ViewsFeature();
 
-                var featureProviders = _applicationPartManager.FeatureProviders
-                    .OfType<IApplicationFeatureProvider<ViewsFeature>>()
-                    .ToList();
+            var featureProviders = _applicationPartManager.FeatureProviders
+                .OfType<IApplicationFeatureProvider<ViewsFeature>>()
+                .ToList();
 
-                featureProviders.AddRange(_viewsFeatureProviders);
+            featureProviders.AddRange(_viewsFeatureProviders);
 
-                var assemblyParts =
-                    new AssemblyPart[]
-                    {
-                        new AssemblyPart(Assembly.Load(new AssemblyName(_hostingEnvironment.ApplicationName)))
-                    };
-
-                foreach (var provider in featureProviders)
+            var assemblyParts =
+                new AssemblyPart[]
                 {
-                    provider.PopulateFeature(assemblyParts, feature);
-                }
+                    new AssemblyPart(Assembly.Load(new AssemblyName(_hostingEnvironment.ApplicationName)))
+                };
 
-                _viewDescriptors = feature.ViewDescriptors;
+            foreach (var provider in featureProviders)
+            {
+                provider.PopulateFeature(assemblyParts, feature);
             }
 
-            return _viewDescriptors;
+            return feature.ViewDescriptors;
         }
     }
 }

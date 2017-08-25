@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -75,7 +75,7 @@ namespace Orchard.Environment.Shell.Builders
             // Make shell settings available to the modules
             moduleServiceCollection.AddSingleton(settings);
 
-            var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider();
+            var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider(true);
 
             // Index all service descriptors by their feature id
             var featureAwareServiceCollection = new FeatureAwareServiceCollection(tenantServiceCollection);
@@ -124,7 +124,7 @@ namespace Orchard.Environment.Shell.Builders
                 }
             }
 
-            var shellServiceProvider = tenantServiceCollection.BuildServiceProvider();
+            var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
 
             using (var scope = shellServiceProvider.CreateScope())
             {
