@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -39,11 +38,13 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
     public class HelperStatement : TagStatement
     {
-        private readonly ArgumentsExpression _arguments;
-        private readonly string _helper;
-        private TagHelperDescriptor _descriptor;
+        private const string AspPrefix = "asp-";
         private static ConcurrentDictionary<Type, Func<RazorPage, ITagHelper>> _tagHelperActivators = new ConcurrentDictionary<Type, Func<RazorPage, ITagHelper>>();
         private static ConcurrentDictionary<string, Action<ITagHelper, FluidValue>> _tagHelperSetters = new ConcurrentDictionary<string, Action<ITagHelper, FluidValue>>();
+
+        private TagHelperDescriptor _descriptor;
+        private readonly ArgumentsExpression _arguments;
+        private readonly string _helper;
 
         public HelperStatement(ArgumentsExpression arguments, string helper = null, IList<Statement> statements = null) : base(statements)
         {
@@ -85,7 +86,6 @@ namespace Orchard.DisplayManagement.Fluid.Tags
                     {
                         var razorEngine = services.GetRequiredService<RazorEngine>();
                         var tagHelperFeature = razorEngine.Features.OfType<ITagHelperFeature>().FirstOrDefault();
-
                         tagHelperSharedState.TagHelperDescriptors = tagHelperFeature.GetDescriptors().ToList();
                     }
                 }
@@ -96,27 +96,29 @@ namespace Orchard.DisplayManagement.Fluid.Tags
                 lock (this)
                 {
                     var descriptors = tagHelperSharedState.TagHelperDescriptors
-                        .Where(x => x.TagMatchingRules.OfType<TagMatchingRuleDescriptor>().Any(y =>
-                            ((y.TagName == "*") || y.TagName == helper) && y.Attributes.All(r => arguments.Names.Any(a =>
+                        .Where(d => d.TagMatchingRules.Any(rule => ((rule.TagName == "*") ||
+                            rule.TagName == helper) && rule.Attributes.All(attr => arguments.Names.Any(name =>
                             {
-                                if (String.Equals(a, r.Name, StringComparison.OrdinalIgnoreCase))
+                                if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
                                 {
                                     return true;
                                 }
 
-                                if (r.Name.StartsWith("asp-") && String.Equals(a, r.Name.Substring(4).Replace("-", "_"), StringComparison.OrdinalIgnoreCase))
+                                name = name.Replace("_", "-");
+
+                                if (attr.Name.StartsWith(AspPrefix) && String.Equals(name,
+                                    attr.Name.Substring(AspPrefix.Length), StringComparison.OrdinalIgnoreCase))
                                 {
                                     return true;
                                 }
 
-                                if (r.Name.Contains("-") && String.Equals(a, r.Name.Replace("-", "_"), StringComparison.OrdinalIgnoreCase))
+                                if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
                                 {
                                     return true;
                                 }
 
                                 return false;
-                            }
-                        ))));
+                            }))));
 
                     _descriptor = descriptors.FirstOrDefault();
 
@@ -136,15 +138,13 @@ namespace Orchard.DisplayManagement.Fluid.Tags
             });
 
             var tagHelper = _tagHelperActivator(razorPage);
-
             var attributes = new TagHelperAttributeList();
 
             foreach (var name in arguments.Names)
             {
                 var propertyName = FluidViewFilters.LowerKebabToPascalCase(name);
-                var attributeName = name.Replace("_", "-");
-                var found = false;
 
+                var found = false;
                 foreach (var attribute in _descriptor.BoundAttributes)
                 {
                     if (propertyName == attribute.GetPropertyName())
@@ -155,37 +155,35 @@ namespace Orchard.DisplayManagement.Fluid.Tags
                         {
                             var propertyInfo = tagHelperType.GetProperty(propertyName);
                             var propertySetter = propertyInfo.GetSetMethod();
-                            var invokeType = typeof(Action<,>).MakeGenericType(tagHelperType, propertyInfo.PropertyType);
-                            var d = Delegate.CreateDelegate(invokeType, propertySetter);
-                            Action<ITagHelper, FluidValue> result = (th, obj) =>
-                            {
 
-                                object converted = null;
+                            var invokeType = typeof(Action<,>).MakeGenericType(tagHelperType, propertyInfo.PropertyType);
+                            var setterDelegate = Delegate.CreateDelegate(invokeType, propertySetter);
+
+                            Action<ITagHelper, FluidValue> result = (h, v) =>
+                            {
+                                object value = null;
 
                                 if (attribute.IsEnum)
                                 {
-                                    converted = Enum.Parse(propertyInfo.PropertyType, obj.ToStringValue());
+                                    value = Enum.Parse(propertyInfo.PropertyType, v.ToStringValue());
                                 }
                                 else if (attribute.IsStringProperty)
                                 {
-                                    converted = obj.ToStringValue();
+                                    value = v.ToStringValue();
                                 }
                                 else if (propertyInfo.PropertyType == typeof(Boolean))
                                 {
-                                    converted = Convert.ToBoolean(obj.ToStringValue());
+                                    value = Convert.ToBoolean(v.ToStringValue());
                                 }
                                 else
                                 {
-                                    converted = obj.ToObjectValue();
+                                    value = v.ToObjectValue();
                                 }
 
-                                var args = new[] { th, converted };
-                                d.DynamicInvoke(args);
+                                setterDelegate.DynamicInvoke(new[] { h, value });
                             };
 
                             return result;
-
-                            // TODO: implement attribute.IsIndexer
                         });
 
                         try
@@ -203,7 +201,7 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
                 if (!found)
                 {
-                    attributes.Add(new TagHelperAttribute(attributeName, arguments[name].ToObjectValue()));
+                    attributes.Add(new TagHelperAttribute(name.Replace("_", "-"), arguments[name].ToObjectValue()));
                 }
             }
 
