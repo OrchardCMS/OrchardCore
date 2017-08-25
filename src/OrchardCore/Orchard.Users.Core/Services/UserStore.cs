@@ -313,9 +313,9 @@ namespace Orchard.Users.Services
             {
                 throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
             }
-
+            
             ((User)user).RoleNames.Add(roleName);
-            _session.Save(roleName);
+            _session.Save(user);
         }
 
         public async Task RemoveFromRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
@@ -334,7 +334,7 @@ namespace Orchard.Users.Services
             }
 
             ((User)user).RoleNames.Remove(roleName);
-            _session.Save(roleName);
+            _session.Save(user);
         }
 
         public Task<IList<string>> GetRolesAsync(IUser user, CancellationToken cancellationToken)
