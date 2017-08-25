@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
@@ -48,7 +48,7 @@ namespace Orchard.Contents
             services.AddScoped<IContentAliasProvider, ContentItemIdAliasProvider>();
             services.AddScoped<IContentItemIndexHandler, ContentItemIndexCoordinator>();
 
-            services.AddScoped<IGlobalMethodProvider, IdGeneratorMethod>();
+            services.AddSingleton<IGlobalMethodProvider, IdGeneratorMethod>();
             services.AddScoped<IDataMigration, Migrations>();
 
             // Common Part

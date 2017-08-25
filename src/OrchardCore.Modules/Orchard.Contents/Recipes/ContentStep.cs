@@ -34,8 +34,7 @@ namespace Orchard.Contents.Recipes
             foreach(JObject token in model.Data)
             {
                 var contentItem = token.ToObject<ContentItem>();
-
-
+                
                 var existing = await _contentManager.GetVersionAsync(contentItem.ContentItemVersionId);
                 if (existing == null)
                 {
