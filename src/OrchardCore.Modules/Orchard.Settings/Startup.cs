@@ -26,7 +26,7 @@ namespace Orchard.Settings
             services.AddScoped<IPermissionProvider, Permissions>();
 
             services.AddRecipeExecutionStep<SettingsStep>();
-            services.AddScoped<ISiteService, SiteService>();
+            services.AddSingleton<ISiteService, SiteService>();
 
             // Site Settings editor
             services.AddScoped<IDisplayManager<ISite>, DisplayManager<ISite>>();
