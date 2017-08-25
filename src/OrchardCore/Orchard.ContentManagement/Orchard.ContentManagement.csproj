@@ -17,7 +17,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.DataAnnotations" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="YesSql.Abstractions" Version="2.0.0-beta-1063" />
   </ItemGroup>
 
 </Project>
