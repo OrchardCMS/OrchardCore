@@ -46,6 +46,8 @@ namespace Orchard.Mvc
             builder.AddViews();
             builder.AddViewLocalization();
 
+            builder.AddRazorPages(o => o.RootDirectory = "/Packages");
+
             AddModularFrameworkParts(applicationServices, builder.PartManager);
 
             builder.AddModularRazorViewEngine(applicationServices);

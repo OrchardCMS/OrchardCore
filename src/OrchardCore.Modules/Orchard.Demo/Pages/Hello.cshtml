@@ -1,0 +1,13 @@
+@page
+@using Microsoft.AspNetCore.Mvc.RazorPages
+
+@functions
+{
+    public IActionResult OnGet()
+    {
+        Layout = "_Layout";
+        return View();
+    }
+}
+
+This is a RazorPage coming from Orchard.Demo! It's @DateTime.Now on the server

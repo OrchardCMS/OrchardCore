@@ -11,7 +11,7 @@ using Orchard.DisplayManagement.Title;
 
 namespace Orchard.DisplayManagement.Razor
 {
-    public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>
+    public abstract class Page : Microsoft.AspNetCore.Mvc.RazorPages.Page
     {
         private dynamic _displayHelper;
         private IShapeFactory _shapeFactory;
@@ -20,7 +20,7 @@ namespace Orchard.DisplayManagement.Razor
         {
             if (_displayHelper == null)
             {
-                IDisplayHelperFactory _factory = Context.RequestServices.GetService<IDisplayHelperFactory>();
+                IDisplayHelperFactory _factory = HttpContext.RequestServices.GetService<IDisplayHelperFactory>();
                 _displayHelper = _factory.CreateHelper(ViewContext);
             }
         }
@@ -29,7 +29,7 @@ namespace Orchard.DisplayManagement.Razor
         {
             if (_shapeFactory == null)
             {
-                _shapeFactory = Context.RequestServices.GetService<IShapeFactory>();
+                _shapeFactory = HttpContext.RequestServices.GetService<IShapeFactory>();
             }
         }
 
@@ -81,7 +81,7 @@ namespace Orchard.DisplayManagement.Razor
             {
                 if (_themeLayout == null)
                 {
-                    var layoutAccessor = Context.RequestServices.GetService<ILayoutAccessor>();
+                    var layoutAccessor = HttpContext.RequestServices.GetService<ILayoutAccessor>();
 
                     if (layoutAccessor == null)
                     {
@@ -107,7 +107,7 @@ namespace Orchard.DisplayManagement.Razor
             {
                 if (_pageTitleBuilder == null)
                 {
-                    _pageTitleBuilder = Context.RequestServices.GetRequiredService<IPageTitleBuilder>();
+                    _pageTitleBuilder = HttpContext.RequestServices.GetRequiredService<IPageTitleBuilder>();
                 }
 
                 return _pageTitleBuilder;
@@ -125,7 +125,7 @@ namespace Orchard.DisplayManagement.Razor
             {
                 if (_t == null)
                 {
-                    _t = Context.RequestServices.GetRequiredService<IViewLocalizer>();
+                    _t = HttpContext.RequestServices.GetRequiredService<IViewLocalizer>();
                     ((IViewContextAware)_t).Contextualize(this.ViewContext);
                 }
 
@@ -162,11 +162,11 @@ namespace Orchard.DisplayManagement.Razor
         /// <summary>
         /// Renders the content zone of the layout.
         /// </summary>
-        public IHtmlContent RenderLayoutBody()
-        {
-            var result = base.RenderBody();
-            return result;
-        }
+        //public IHtmlContent RenderLayoutBody()
+        //{
+        //    var result = base.RenderBody();
+        //    return result;
+        //}
 
         /// <summary>
         /// Creates a <see cref="TagBuilder"/> to render a shape.
@@ -193,7 +193,7 @@ namespace Orchard.DisplayManagement.Razor
         /// </summary>
         /// <param name="name">The name of the zone to render.</param>
         /// <param name="required">Whether the zone is required or not.</param>
-        public new Task<IHtmlContent> RenderSectionAsync(string name, bool required)
+        public Task<IHtmlContent> RenderSectionAsync(string name, bool required)
         {
             if (name == null)
             {
@@ -223,10 +223,6 @@ namespace Orchard.DisplayManagement.Razor
         /// <summary>
         /// Returns the full path of the current request.
         /// </summary>
-        public string FullRequestPath => Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString;
-    }
-
-    public abstract class RazorPage : RazorPage<dynamic>
-    {
+        public string FullRequestPath => HttpContext.Request.PathBase + HttpContext.Request.Path + HttpContext.Request.QueryString;
     }
 }
