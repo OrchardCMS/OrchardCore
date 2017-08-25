@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -15,11 +14,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Fluid.Ast;
-using Orchard.DisplayManagement.Fluid.Filters;
-using Orchard.DisplayManagement.Liquid;
+using Orchard.DisplayManagement.Liquid.Ast;
+using Orchard.DisplayManagement.Liquid.Filters;
 
-namespace Orchard.DisplayManagement.Fluid.Tags
+namespace Orchard.DisplayManagement.Liquid.Tags
 {
     public class HelperTag : ArgumentsTag
     {
@@ -141,7 +139,7 @@ namespace Orchard.DisplayManagement.Fluid.Tags
 
             foreach (var name in arguments.Names)
             {
-                var propertyName = FluidViewFilters.LowerKebabToPascalCase(name);
+                var propertyName = LiquidViewFilters.LowerKebabToPascalCase(name);
                 var attributeName = name.Replace("_", "-");
                 var found = false;
 

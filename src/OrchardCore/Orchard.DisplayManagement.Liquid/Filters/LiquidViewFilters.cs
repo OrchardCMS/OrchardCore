@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Orchard.DisplayManagement.Shapes;
 
-namespace Orchard.DisplayManagement.Fluid.Filters
+namespace Orchard.DisplayManagement.Liquid.Filters
 {
-    public static class FluidViewFilters
+    public static class LiquidViewFilters
     {
-        public static FilterCollection WithFluidViewFilters(this FilterCollection filters)
+        public static FilterCollection WithLiquidViewFilters(this FilterCollection filters)
         {
             filters.AddAsyncFilter("t", Localize);
             filters.AddAsyncFilter("new_shape", NewShape);

@@ -1,10 +1,10 @@
-﻿using Fluid;
+using Fluid;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Orchard.Admin;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Fluid;
+using Orchard.DisplayManagement.Liquid;
 using Orchard.Liquid;
 using Orchard.Templates.Models;
 

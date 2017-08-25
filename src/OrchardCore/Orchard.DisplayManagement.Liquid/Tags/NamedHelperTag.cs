@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
 using Irony.Parsing;
-using Orchard.DisplayManagement.Fluid.Ast;
+using Orchard.DisplayManagement.Liquid.Ast;
 
-namespace Orchard.DisplayManagement.Fluid.Tags
+namespace Orchard.DisplayManagement.Liquid.Tags
 {
     public class NamedHelperTag : ITag
     {
