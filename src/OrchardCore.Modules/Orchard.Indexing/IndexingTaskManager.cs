@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,20 +13,20 @@ namespace Orchard.Indexing.Services
     public class IndexingTaskManager : IIndexingTaskManager, IDisposable
     {
         private readonly IClock _clock;
-        private readonly IStore _store;
+        private readonly ISession _session;
         private readonly string _tablePrefix;
         private readonly List<IndexingTask> _tasksQueue = new List<IndexingTask>();
 
         public IndexingTaskManager(
-            IStore store,
+            ISession session,
             IClock clock,
             ILogger<IndexingTaskManager> logger)
         {
-            _store = store;
+            _session = session;
             _clock = clock;
             Logger = logger;
 
-            _tablePrefix = store.Configuration.TablePrefix;
+            _tablePrefix = session.Store.Configuration.TablePrefix;
         }
 
         public ILogger Logger { get; set; }
@@ -79,10 +79,8 @@ namespace Orchard.Indexing.Services
                 return;
             }
 
-            var connection = _store.Configuration.ConnectionFactory.CreateConnection();
-            connection.Open();
-            var transaction = connection.BeginTransaction(_store.Configuration.IsolationLevel);
-            var dialect = SqlDialectFactory.For(connection);
+            var transaction = _session.Demand();
+            var dialect = SqlDialectFactory.For(transaction.Connection);
 
             try
             {
@@ -108,21 +106,16 @@ namespace Orchard.Indexing.Services
                 var table = $"{_tablePrefix}{nameof(IndexingTask)}";
 
                 var deleteCmd = $"delete from {dialect.QuoteForTableName(table)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
-                await connection.ExecuteAsync(deleteCmd, new { Ids = ids }, transaction);
+                await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = ids }, transaction);
 
                 var insertCmd = $"insert into {dialect.QuoteForTableName(table)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
-                await connection.ExecuteAsync(insertCmd, _tasksQueue, transaction);
+                await transaction.Connection.ExecuteAsync(insertCmd, _tasksQueue, transaction);
             }
             catch(Exception e)
             {
+                _session.Cancel();
                 Logger.LogError("An error occured while updating indexing tasks", e);
                 throw;
-            }
-            finally
-            {
-                transaction.Commit();
-                transaction.Dispose();
-                connection.Close();
             }
 
             _tasksQueue.Clear();
@@ -132,13 +125,11 @@ namespace Orchard.Indexing.Services
         {
             await FlushAsync();
 
-            var connection = _store.Configuration.ConnectionFactory.CreateConnection();
-            connection.Open();
-            var transaction = connection.BeginTransaction(_store.Configuration.IsolationLevel);
+            var transaction = _session.Demand();
 
             try
             {
-                var dialect = SqlDialectFactory.For(connection);
+                var dialect = SqlDialectFactory.For(transaction.Connection);
                 var sqlBuilder = dialect.CreateBuilder(_tablePrefix);
 
                 sqlBuilder.Select();
@@ -147,19 +138,14 @@ namespace Orchard.Indexing.Services
                 sqlBuilder.Take(count);
                 sqlBuilder.WhereAlso($"{dialect.QuoteForColumnName("Id")} > @Id");
 
-                return await connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(dialect), new { Id = afterTaskId }, transaction);
+                return await transaction.Connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(dialect), new { Id = afterTaskId }, transaction);
             }
             catch (Exception e)
             {
+                _session.Cancel();
+
                 Logger.LogError("An error occured while reading indexing tasks: " + e.Message);
                 throw;
-            }
-            finally
-            {
-                transaction.Commit();
-                transaction.Dispose();
-
-                connection.Dispose();
             }
         }
     }

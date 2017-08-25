@@ -87,7 +87,9 @@ namespace Orchard.Data
                     return null;
                 }
 
-                return store.CreateSession();
+                var session = store.CreateSession();
+
+                return session;
             });
 
             return services;
