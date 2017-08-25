@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
@@ -18,7 +19,7 @@ namespace Orchard.Environment.Navigation
         private readonly ILogger _logger;
         protected readonly ShellSettings _shellSettings;
         private readonly IUrlHelperFactory _urlHelperFactory;
-        //private readonly IAuthorizationService _authorizationService;
+        private readonly IAuthorizationService _authorizationService;
 
         private IUrlHelper _urlHelper;
 
@@ -26,15 +27,15 @@ namespace Orchard.Environment.Navigation
             IEnumerable<INavigationProvider> navigationProviders,
             ILogger<NavigationManager> logger,
             ShellSettings shellSettings,
-            IUrlHelperFactory urlHelperFactory
-            //IAuthorizationService authorizationService ,
+            IUrlHelperFactory urlHelperFactory,
+            IAuthorizationService authorizationService
             )
         {
             _navigationProviders = navigationProviders;
             _logger = logger;
             _shellSettings = shellSettings;
             _urlHelperFactory = urlHelperFactory;
-            //_authorizationService = authorizationService;
+            _authorizationService = authorizationService;
         }
 
         public IEnumerable<MenuItem> BuildMenu(string name, ActionContext actionContext)
@@ -61,7 +62,7 @@ namespace Orchard.Environment.Navigation
             Merge(menuItems);
 
             // Remove unauthorized menu items
-            menuItems = Reduce(menuItems, null);
+            menuItems = Reduce(menuItems, actionContext.HttpContext.User);
 
             // Compute Url and RouteValues properties to Href
             menuItems = ComputeHref(menuItems, actionContext);
@@ -219,14 +220,13 @@ namespace Orchard.Environment.Navigation
                 }
                 else
                 {
-                    //var policy = new AuthorizationPolicyBuilder()
-                    //    .RequireClaim(Permission.ClaimType, item.Permissions.Select(x => x.Name))
-                    //    .Build();
-
-                    //if(_authorizationService.AuthorizeAsync(user, item.PersmissionContext, policy).Result)
-                    //{
-                        filtered.Add(item);
-                    //}
+                    foreach (var permission in item.Permissions)
+                    {
+                        if (_authorizationService.AuthorizeAsync(user, permission, item.Resource).Result)
+                        {
+                            filtered.Add(item);
+                        }
+                    }
                 }
 
                 // Process child items

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
@@ -8,6 +8,7 @@ using Orchard.BackgroundTasks;
 using Orchard.Data;
 using Orchard.DeferredTasks;
 using Orchard.DisplayManagement;
+using Orchard.DisplayManagement.Liquid;
 using Orchard.DisplayManagement.TagHelpers;
 using Orchard.Environment.Cache;
 using Orchard.Environment.Extensions;
@@ -34,6 +35,7 @@ namespace Orchard.Commons
             services.AddShellDescriptorStorage();
             services.AddExtensionManager();
             services.AddTheming();
+            services.AddLiquidViews();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

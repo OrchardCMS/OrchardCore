@@ -1,4 +1,4 @@
-﻿@using Orchard.Mvc.Utilities;
+@using Orchard.Mvc.Utilities;
 @using Orchard.ContentManagement
 @inject IContentManager ContentManager
 
@@ -12,7 +12,7 @@
     var tag = Tag(Model, "article");
 }
 
-<h1>@RenderTitleSegments(Html.Raw(ContentManager.PopulateAspect<ContentItemMetadata>(contentItem).DisplayText))</h1>
+<h1>@RenderTitleSegments(ContentManager.PopulateAspect<ContentItemMetadata>(contentItem).DisplayText)</h1>
 
 <article>
     <header>

@@ -1,0 +1,23 @@
+﻿{% zone "Header" %}
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url('{{ "~/TheBlogTheme/img/post-bg.jpg" | href }}')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>{{ Model.ContentItem.Content.TitlePart.Title }}</h1>
+                        <span class="meta">
+                            {% assign format = "MMMM dd, yyyy" | t %}
+                            {% assign dateTime = "DateTime" | new_shape: utc: Model.ContentItem.CreatedUtc, format: format | shape_string %}
+                            {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+{% endzone %}
+
+{% display Model.Content.Contents_Metadata %}
+{% display Model.Content.MarkdownPart %}

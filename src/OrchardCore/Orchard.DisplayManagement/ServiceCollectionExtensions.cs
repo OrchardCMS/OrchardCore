@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Orchard.Mvc;
-using Orchard.Mvc.LocationExpander;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy;
 using Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy;
@@ -24,6 +24,7 @@ using Orchard.DisplayManagement.Title;
 using Orchard.DisplayManagement.Zones;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
+using Orchard.Mvc.LocationExpander;
 
 namespace Orchard.DisplayManagement
 {
@@ -67,6 +68,10 @@ namespace Orchard.DisplayManagement
             services.AddScoped<IShapeTableProvider, ShapeAttributeBindingStrategy>();
             services.AddScoped<IShapeTableProvider, ShapePlacementParsingStrategy>();
             services.AddScoped<IShapeTableProvider, ShapeTemplateBindingStrategy>();
+
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>, ShapeTemplateOptionsSetup>());
+            services.TryAddSingleton<IShapeTemplateFileProviderAccessor, ShapeTemplateFileProviderAccessor>();
 
             services.AddShapeAttributes<CoreShapes>();
             services.AddScoped<IShapeTableProvider, CoreShapesTableProvider>();

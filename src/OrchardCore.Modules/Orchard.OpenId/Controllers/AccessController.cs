@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -366,7 +365,8 @@ namespace Orchard.OpenId.Controllers
         private async Task<IActionResult> ExchangeAuthorizationCodeOrRefreshTokenGrantType(OpenIdConnectRequest request)
         {
             // Retrieve the claims principal stored in the authorization code/refresh token.
-            var info = await HttpContext.Authentication.GetAuthenticateInfoAsync(
+            //var info = await HttpContext.Authentication.GetAuthenticateInfoAsync(
+            var info = await HttpContext.AuthenticateAsync(
                 OpenIdConnectServerDefaults.AuthenticationScheme);
 
             // Retrieve the user profile corresponding to the authorization code/refresh token.

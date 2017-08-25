@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using Newtonsoft.Json.Linq;
+using Orchard.ContentManagement.Metadata.Builders;
 
 namespace Orchard.ContentManagement
 {
@@ -75,7 +76,7 @@ namespace Orchard.ContentManagement
             JToken result;
             if (!contentElement.Data.TryGetValue(name, out result))
             {
-                element.Data = JObject.FromObject(element);
+                element.Data = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
                 element.ContentItem = contentElement.ContentItem;
 
                 contentElement.Data[name] = element.Data;
@@ -100,7 +101,7 @@ namespace Orchard.ContentManagement
             }
             else
             {
-                contentElement.Data[name] = JObject.FromObject(element);
+                contentElement.Data[name] = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             }
 
             return contentElement;

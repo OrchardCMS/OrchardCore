@@ -1,0 +1,9 @@
+Name: Custom Settings
+AntiForgery: enabled
+Author: The Orchard Team
+Website: http://orchardproject.net
+Version: 2.0.x
+OrchardVersion: 2.0.x
+Description: The custom settings modules enables content types to become custom site settings.
+Dependencies: Orchard.Contents, Orchard.Settings
+Category: Settings

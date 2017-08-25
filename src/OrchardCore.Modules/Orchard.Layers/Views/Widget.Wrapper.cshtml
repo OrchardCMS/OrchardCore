@@ -1,4 +1,4 @@
-﻿@using Orchard.DisplayManagement
+@using Orchard.DisplayManagement
 @using Orchard.Layers.Models
 
 @{ 
@@ -6,7 +6,7 @@
     bool rendertitle = widget.Content.LayerMetadata.RenderTitle;
 }
 
-<section>
+<div class="widget-container">
     @if (rendertitle)
     {
         var widgetTitle = Factory.Create("Widget_Title", new { Widget = widget });
@@ -16,4 +16,4 @@
     }
 
     @await DisplayAsync(Model.Content)
-</section>
+</div>

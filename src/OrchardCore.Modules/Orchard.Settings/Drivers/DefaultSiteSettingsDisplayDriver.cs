@@ -13,18 +13,12 @@ namespace Orchard.Settings.Drivers
         public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
             return Task.FromResult<IDisplayResult>(
-                Combine(
                     Shape<SiteSettingsViewModel>("Settings_Edit", model =>
                     {
                         model.SiteName = site.SiteName;
                         model.TimeZone = site.TimeZone;
                         model.TimeZones = TimeZoneInfo.GetSystemTimeZones();
-                    }).Location("Content:1").OnGroup(GroupId),
-
-                    Shape("SiteSettings_SaveButton")
-                        .Location("Actions")
-                        .OnGroup(context.GroupId) // Trick to render the shape for all groups
-                )
+                    }).Location("Content:1").OnGroup(GroupId)
             );
         }
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions.Features;
 
@@ -11,10 +10,10 @@ namespace Orchard.DisplayManagement.Descriptors
 {
     public class ShapeAlterationBuilder
     {
-        IFeatureInfo _feature;
-        readonly string _shapeType;
-        readonly string _bindingName;
-        readonly IList<Action<ShapeDescriptor>> _configurations = new List<Action<ShapeDescriptor>>();
+        private IFeatureInfo _feature;
+        private readonly string _shapeType;
+        private readonly string _bindingName;
+        private readonly IList<Action<ShapeDescriptor>> _configurations = new List<Action<ShapeDescriptor>>();
 
         public ShapeAlterationBuilder(IFeatureInfo feature, string shapeType)
         {

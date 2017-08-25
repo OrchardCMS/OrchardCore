@@ -1,0 +1,7 @@
+Name: The Agency Theme
+AntiForgery: enabled
+Author: The Orchard Team
+Website: http://orchardproject.net
+Version: 2.0.0
+OrchardVersion: 2.0.0
+Description: A theme adapted for agency websites.

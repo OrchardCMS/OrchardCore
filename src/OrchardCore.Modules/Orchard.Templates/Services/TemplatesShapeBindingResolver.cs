@@ -1,9 +1,10 @@
 using Fluid;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Http;
+using Orchard.Admin;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
+using Orchard.DisplayManagement.Liquid;
 using Orchard.Liquid;
 using Orchard.Templates.Models;
 
@@ -13,23 +14,29 @@ namespace Orchard.Templates.Services
     {
         private TemplatesDocument _templatesDocument;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly PreviewTemplatesProvider _previewTemplatesProvider;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public TemplatesShapeBindingResolver(
             TemplatesManager templatesManager, 
             ILiquidTemplateManager liquidTemplateManager,
-            IUrlHelperFactory urlHelperFactory,
-            PreviewTemplatesProvider previewTemplatesProvider)
+            PreviewTemplatesProvider previewTemplatesProvider,
+            IHttpContextAccessor httpContextAccessor)
         {
             _templatesDocument = templatesManager.GetTemplatesDocumentAsync().GetAwaiter().GetResult();
             _liquidTemplateManager = liquidTemplateManager;
-            _urlHelperFactory = urlHelperFactory;
             _previewTemplatesProvider = previewTemplatesProvider;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public bool TryGetDescriptorBinding(string shapeType, out ShapeBinding shapeBinding)
         {
+            if (AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
+            {
+                shapeBinding = null;
+                return false;
+            }
+
             var localTemplates = _previewTemplatesProvider.GetTemplates();
 
             if (localTemplates != null)
@@ -64,16 +71,7 @@ namespace Orchard.Templates.Services
                 BindingAsync = async displayContext =>
                 {
                     var context = new TemplateContext();
-
-                    var actionContext = new ActionContext(displayContext.ViewContext.HttpContext, displayContext.ViewContext.RouteData, displayContext.ViewContext.ActionDescriptor);
-                    var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
-
-                    context.LocalScope.SetValue("Context", displayContext.ViewContext);
-                    context.AmbientValues.Add("UrlHelper", urlHelper);
-
-                    context.LocalScope.SetValue("Model", displayContext.Value);
-                    context.MemberAccessStrategy.Register(displayContext.Value.GetType());
-
+                    context.Contextualize(displayContext);
                     var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, context);
                     return new HtmlString(htmlContent);
                 }
