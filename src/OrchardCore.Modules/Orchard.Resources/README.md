@@ -15,9 +15,9 @@ and optionally a version. The __Orchard.Resources__ modules provides some common
 | ---- | ---- | -------- | ------------ |
 | jQuery | Script | 1.12.4 | - |
 | jQuery | Script | 2.2.4 | - |
-| jQuery | Script | 3.1.1 | - |
-| Bootstrap | Script | 3.3.7, 4.0.0 (4.0.0-alpha.5) | jQuery |
-| Bootstrap | Style | 3.3.7, 4.0.0 (4.0.0-alpha.5) | - |
+| jQuery | Script | 3.2.1 | - |
+| Bootstrap | Script | 3.3.7, 4.0.0 (4.0.0-beta) | jQuery |
+| Bootstrap | Style | 3.3.7, 4.0.0 (4.0.0-beta) | - |
 | jquery-ui | Script | 1.12.1 | jQuery |
 | font-awesome | Style | 4.7.0 | - |
 
