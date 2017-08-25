@@ -22,7 +22,7 @@ namespace Orchard.DisplayManagement.Liquid
                 LiquidShapeTemplateOptionsSetup>());
 
             services.TryAddSingleton<ILiquidViewFileProviderAccessor, LiquidViewFileProviderAccessor>();
-            services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, LiquidViewsFeatureProvider>();
+            services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, LiquidViewsFeatureProvider>();
             services.AddScoped<IRazorViewExtensionProvider, LiquidViewExtensionProvider>();
             services.AddSingleton<TagHelperSharedState>();
             return services;
