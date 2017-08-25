@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,9 +49,9 @@ namespace Orchard.Environment.Shell.Builders
                             }
                         }
 
-                        // Ideally the service should be resolved when first requested, but ASp.NET DI will call Dispose()
+                        // Ideally the service should be resolved when first requested, but ASP.NET DI will call Dispose()
                         // and this would fail reusability of the instance across tenants' containers.
-                        //clonedCollection.AddSingleton(service.ServiceType, sp => serviceProvider.GetService(service.ServiceType));
+                        // clonedCollection.AddSingleton(service.ServiceType, sp => serviceProvider.GetService(service.ServiceType));
                     }
                 }
                 else

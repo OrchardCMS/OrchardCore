@@ -130,8 +130,8 @@ namespace Orchard.Users
                 o.DataProtectionProvider = _dataProtectionProvider;
             });
 
-            services.AddScoped<IIndexProvider, UserIndexProvider>();
-            services.AddScoped<IIndexProvider, UserByRoleNameIndexProvider>();
+            services.AddSingleton<IIndexProvider, UserIndexProvider>();
+            services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();

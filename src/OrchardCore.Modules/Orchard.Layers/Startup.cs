@@ -39,7 +39,7 @@ namespace Orchard.Layers
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<ILayerService, LayerService>();
             services.AddScoped<IContentHandler, LayerMetadataHandler>();
-            services.AddScoped<IIndexProvider, LayerMetadataIndexProvider>();
+            services.AddSingleton<IIndexProvider, LayerMetadataIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddRecipeExecutionStep<LayerStep>();

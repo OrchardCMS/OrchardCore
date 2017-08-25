@@ -39,7 +39,7 @@ namespace Orchard.Deployment
             services.AddScoped<IDisplayDriver<DeploymentStep>, ContentTypeDeploymentStepDriver>();
             services.AddScoped<IDisplayDriver<DeploymentStep>, CustomFileDeploymentStepDriver>();
 
-            services.AddTransient<IIndexProvider, DeploymentPlanIndexProvider>();
+            services.AddSingleton<IIndexProvider, DeploymentPlanIndexProvider>();
             services.AddTransient<IDataMigration, Migrations>();
         }
 

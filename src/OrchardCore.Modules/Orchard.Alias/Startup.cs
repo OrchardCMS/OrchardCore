@@ -21,7 +21,7 @@ namespace Orchard.Alias
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IIndexProvider, AliasPartIndexProvider>();
+            services.AddSingleton<IIndexProvider, AliasPartIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentAliasProvider, AliasPartContentAliasProvider>();
 

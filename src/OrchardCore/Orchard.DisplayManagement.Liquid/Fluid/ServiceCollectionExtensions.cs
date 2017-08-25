@@ -23,7 +23,7 @@ namespace Orchard.DisplayManagement.Fluid
                 FluidShapeTemplateOptionsSetup>());
 
             services.TryAddSingleton<IFluidViewFileProviderAccessor, FluidViewFileProviderAccessor>();
-            services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, FluidViewsFeatureProvider>();
+            services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, FluidViewsFeatureProvider>();
             services.AddScoped<IRazorViewExtensionProvider, FluidViewExtensionProvider>();
             services.AddSingleton<TagHelperSharedState>();
             return services;

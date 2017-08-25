@@ -25,7 +25,7 @@ namespace Orchard.Lists
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IIndexProvider, ContainedPartIndexProvider>();
+            services.AddSingleton<IIndexProvider, ContainedPartIndexProvider>();
             services.AddScoped<IContentDisplayDriver, ContainedPartDisplayDriver>();
             services.AddTransient<IContentAdminFilter, ListPartContentAdminFilter>();
 
