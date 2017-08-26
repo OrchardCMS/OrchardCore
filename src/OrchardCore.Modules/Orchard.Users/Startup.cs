@@ -96,7 +96,7 @@ namespace Orchard.Users
             services.TryAddScoped<IUserValidator<IUser>, UserValidator<IUser>>();
             services.TryAddScoped<IPasswordValidator<IUser>, PasswordValidator<IUser>>();
             services.TryAddScoped<IPasswordHasher<IUser>, PasswordHasher<IUser>>();
-            services.TryAddScoped<ILookupNormalizer, UpperInvariantLookupNormalizer>();
+            services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
 
             // No interface for the error describer so we can add errors without rev'ing the interface
             services.TryAddScoped<IdentityErrorDescriber>();
