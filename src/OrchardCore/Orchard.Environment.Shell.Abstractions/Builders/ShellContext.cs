@@ -1,8 +1,9 @@
 using System;
-using Orchard.Environment.Shell.Builders.Models;
-using Orchard.Environment.Shell;
-using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Orchard.Environment.Shell;
+using Orchard.Environment.Shell.Builders.Models;
 
 namespace Orchard.Hosting.ShellBuilders
 {
@@ -40,7 +41,7 @@ namespace Orchard.Hosting.ShellBuilders
                 throw new InvalidOperationException("Can't use CreateServiceScope on a released context");
             }
 
-            return ServiceProvider.CreateScope();
+            return new ServiceScopeWrapper(ServiceProvider.CreateScope());
         }
 
         /// <summary>
@@ -114,6 +115,30 @@ namespace Orchard.Hosting.ShellBuilders
         ~ShellContext()
         {
             Dispose(false);
+        }
+
+        internal class ServiceScopeWrapper : IServiceScope
+        {
+            private readonly IServiceScope _serviceScope;
+            private readonly IHttpContextAccessor _httpContextAccessor;
+            private readonly IServiceProvider _existingServices;
+
+            public ServiceScopeWrapper(IServiceScope serviceScope)
+            {
+                _serviceScope = serviceScope;
+                ServiceProvider = serviceScope.ServiceProvider;
+                _httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                _existingServices = _httpContextAccessor.HttpContext.RequestServices;
+                _httpContextAccessor.HttpContext.RequestServices = ServiceProvider;
+            }
+
+            public IServiceProvider ServiceProvider { get; }
+
+            public void Dispose()
+            {
+                _httpContextAccessor.HttpContext.RequestServices = _existingServices;
+                _serviceScope.Dispose();
+            }
         }
     }
 }

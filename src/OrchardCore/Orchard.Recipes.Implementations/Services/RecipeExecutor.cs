@@ -152,9 +152,9 @@ namespace Orchard.Recipes.Services
             var shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
             using (var scope = shellContext.CreateServiceScope())
             {
-                var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                var existingServices = httpContextAccessor.HttpContext.RequestServices;
-                httpContextAccessor.HttpContext.RequestServices = scope.ServiceProvider;
+                //var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                //var existingServices = httpContextAccessor.HttpContext.RequestServices;
+                //httpContextAccessor.HttpContext.RequestServices = scope.ServiceProvider;
 
                 if (!shellContext.IsActivated)
                 {
@@ -200,7 +200,7 @@ namespace Orchard.Recipes.Services
                     }
                 }
 
-                httpContextAccessor.HttpContext.RequestServices = existingServices;
+                //httpContextAccessor.HttpContext.RequestServices = existingServices;
             }
 
             // The recipe execution might have invalidated the shell by enabling new features,

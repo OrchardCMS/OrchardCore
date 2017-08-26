@@ -174,9 +174,9 @@ namespace Orchard.Setup.Services
                 // services from the request.
                 using (var scope = shellContext.CreateServiceScope())
                 {
-                    var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                    var existingServices = _httpContextAccessor.HttpContext.RequestServices;
-                    httpContextAccessor.HttpContext.RequestServices = scope.ServiceProvider;
+                    //var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                    //var existingServices = _httpContextAccessor.HttpContext.RequestServices;
+                    //httpContextAccessor.HttpContext.RequestServices = scope.ServiceProvider;
 
                     var recipeExecutor = scope.ServiceProvider.GetService<IRecipeExecutor>();
 
@@ -196,7 +196,7 @@ namespace Orchard.Setup.Services
                     });
                     //});
 
-                    httpContextAccessor.HttpContext.RequestServices = existingServices;
+                    //httpContextAccessor.HttpContext.RequestServices = existingServices;
                 }
             }
 
@@ -205,9 +205,9 @@ namespace Orchard.Setup.Services
             {
                 using (var scope = shellContext.CreateServiceScope())
                 {
-                    var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                    var existingServices = _httpContextAccessor.HttpContext.RequestServices;
-                    httpContextAccessor.HttpContext.RequestServices = scope.ServiceProvider;
+                    //var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                    //var existingServices = httpContextAccessor.HttpContext.RequestServices;
+                    //httpContextAccessor.HttpContext.RequestServices = scope.ServiceProvider;
 
                     var hasErrors = false;
 
@@ -242,7 +242,7 @@ namespace Orchard.Setup.Services
                         await deferredTaskEngine.ExecuteTasksAsync(taskContext);
                     }
 
-                    httpContextAccessor.HttpContext.RequestServices = existingServices;
+                    //httpContextAccessor.HttpContext.RequestServices = existingServices;
                 }
             }
 
