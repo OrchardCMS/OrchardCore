@@ -1,18 +1,4 @@
-﻿@using Fluid;
-@using Orchard.Liquid;
 @using Orchard.Mvc.Utilities;
 @model Orchard.Markdown.ViewModels.MarkdownPartViewModel
-@inject ILiquidTemplateManager TemplateManager
 
-@{
-    string markdown = Model.Markdown;
-    var html = Markdig.Markdown.ToHtml(markdown ?? "");
-
-    var templateContext = new TemplateContext();
-    templateContext.SetValue("ContentItem", Model.MarkdownPart.ContentItem);
-
-    var rendered = (await TemplateManager.RenderAsync(html, templateContext)).RemoveTags(true);
-}
-
-
-@rendered.Substring(0, Math.Min(rendered.Length, 200))
+@Html.Raw(Model.Html.RemoveTags(true).Substring(0, 200))
