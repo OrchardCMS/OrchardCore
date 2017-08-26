@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.Extensions.FileProviders;
 
-namespace Orchard.DisplayManagement.Fluid
+namespace Orchard.DisplayManagement.Liquid
 {
     /// <summary>
-    /// Provides programmatic configuration for the <see cref="FluidViewTemplate"/>.
+    /// Provides programmatic configuration for the <see cref="LiquidViewTemplate"/>.
     /// </summary>
-    public class FluidViewOptions
+    public class LiquidViewOptions
     {
         /// <summary>
-        /// Gets the sequence of <see cref="IFileProvider" /> instances used by <see cref="FluidViewTemplate"/> to
-        /// locate Fluid files.
+        /// Gets the sequence of <see cref="IFileProvider" /> instances used by <see cref="LiquidViewTemplate"/> to
+        /// locate Liquid files.
         /// </summary>
         /// <remarks>
         /// At startup, this is initialized to include an instance of <see cref="PhysicalFileProvider"/> that is

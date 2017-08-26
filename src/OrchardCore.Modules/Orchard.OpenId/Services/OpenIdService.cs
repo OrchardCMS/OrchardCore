@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using Orchard.Entities;
@@ -15,18 +17,20 @@ namespace Orchard.OpenId.Services
 {
     public class OpenIdService : IOpenIdService
     {
-        private readonly ISiteService _siteService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IStringLocalizer<OpenIdService> T;
 
-        public OpenIdService(ISiteService siteService, IStringLocalizer<OpenIdService> stringLocalizer)
+        public OpenIdService(IHttpContextAccessor httpContextAccessor, IStringLocalizer<OpenIdService> stringLocalizer)
         {
-            _siteService = siteService;
+            _httpContextAccessor = httpContextAccessor;
             T = stringLocalizer;
         }
 
         public async Task<OpenIdSettings> GetOpenIdSettingsAsync()
         {
-            var settings = await _siteService.GetSiteSettingsAsync();
+            var services = _httpContextAccessor.HttpContext.RequestServices;
+            var siteService = services.GetRequiredService<ISiteService>();
+            var settings = await siteService.GetSiteSettingsAsync();
 
             var result = settings.As<OpenIdSettings>();
             if (result == null)
@@ -39,9 +43,11 @@ namespace Orchard.OpenId.Services
 
         public async Task UpdateOpenIdSettingsAsync(OpenIdSettings openIdSettings)
         {
-            var settings = await _siteService.GetSiteSettingsAsync();
+            var services = _httpContextAccessor.HttpContext.RequestServices;
+            var siteService = services.GetRequiredService<ISiteService>();
+            var settings = await siteService.GetSiteSettingsAsync();
             settings.Properties[nameof(OpenIdSettings)] = JObject.FromObject(openIdSettings);
-            await _siteService.UpdateSiteSettingsAsync(settings);
+            await siteService.UpdateSiteSettingsAsync(settings);
         }
 
         public bool IsValidOpenIdSettings(OpenIdSettings settings, ModelStateDictionary modelState)
