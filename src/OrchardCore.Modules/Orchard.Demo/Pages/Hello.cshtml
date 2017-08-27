@@ -1,13 +1,36 @@
 @page
+@model DemoModel
 @using Microsoft.AspNetCore.Mvc.RazorPages
 
 @functions
 {
-    public IActionResult OnGet()
+    public class DemoModel : PageModel
     {
-        Layout = "_Layout";
-        return View();
+        public string Message { get; private set; } = "Data coming from the model: ";
+
+        public void OnGet()
+        {
+            Message += $" It's  { DateTime.Now } on the server";
+        }
     }
 }
 
-This is a RazorPage coming from Orchard.Demo! It's @DateTime.Now on the server
+<zone name="Header">
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url('@Href("~/Orchard.Demo/img/about-bg.jpg")')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>@T["This is a RazorPage coming from"] Orchard.Demo!</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+</zone>
+
+<p>
+    @Model.Message
+</p>

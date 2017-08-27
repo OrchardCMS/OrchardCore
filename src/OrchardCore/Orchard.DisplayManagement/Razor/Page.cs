@@ -158,15 +158,6 @@ namespace Orchard.DisplayManagement.Razor
             Title.AddSegment(new HtmlString(HtmlEncoder.Encode(segment)), position);
             return Title.GenerateTitle(separator);
         }
-        
-        /// <summary>
-        /// Renders the content zone of the layout.
-        /// </summary>
-        //public IHtmlContent RenderLayoutBody()
-        //{
-        //    var result = base.RenderBody();
-        //    return result;
-        //}
 
         /// <summary>
         /// Creates a <see cref="TagBuilder"/> to render a shape.

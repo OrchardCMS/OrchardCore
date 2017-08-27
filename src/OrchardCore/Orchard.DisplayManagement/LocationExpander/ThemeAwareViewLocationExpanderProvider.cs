@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Orchard.Mvc.LocationExpander;
@@ -70,7 +70,7 @@ namespace Orchard.DisplayManagement.LocationExpander
                     var themeViewsPath = Path.Combine(
                         Path.DirectorySeparatorChar + theme.Extension.SubPath,
                         "Views",
-                        context.AreaName != theme.Id ? context.AreaName : string.Empty);
+                        context.AreaName != null && context.AreaName != theme.Id ? context.AreaName : string.Empty);
 
                     result.Add(Path.Combine(themeViewsPath, "{1}", "{0}.cshtml"));
                     result.Add(Path.Combine(themeViewsPath, "Shared", "{0}.cshtml"));
