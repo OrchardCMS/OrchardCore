@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Accessors;
@@ -14,25 +13,25 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
-using Orchard.DisplayManagement.Fluid.Filters;
-using Orchard.DisplayManagement.Fluid.Internal;
-using Orchard.DisplayManagement.Fluid.Tags;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Layout;
+using Orchard.DisplayManagement.Liquid.Filters;
+using Orchard.DisplayManagement.Liquid.Internal;
+using Orchard.DisplayManagement.Liquid.Tags;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.DisplayManagement.Zones;
 using Orchard.Liquid;
 using Orchard.Settings;
 
-namespace Orchard.DisplayManagement.Fluid
+namespace Orchard.DisplayManagement.Liquid
 {
-    public class FluidViewTemplate : BaseFluidTemplate<FluidViewTemplate>
+    public class LiquidViewTemplate : BaseFluidTemplate<LiquidViewTemplate>
     {
         public static readonly string ViewsFolder = "Views";
         public static readonly string ViewExtension = ".liquid";
         public static readonly MemoryCache Cache = new MemoryCache(new MemoryCacheOptions());
 
-        static FluidViewTemplate()
+        static LiquidViewTemplate()
         {
             FluidValue.TypeMappings.Add(typeof(Shape), o => new ObjectValue(o));
             FluidValue.TypeMappings.Add(typeof(ZoneHolding), o => new ObjectValue(o));
@@ -60,14 +59,14 @@ namespace Orchard.DisplayManagement.Fluid
             NamedHelperTag.RegisterDefaultArgument("shape", "type");
             NamedHelperBlock.RegisterDefaultArgument("zone", "name");
 
-            TemplateContext.GlobalFilters.WithFluidViewFilters();
+            TemplateContext.GlobalFilters.WithLiquidViewFilters();
         }
 
         internal static async Task RenderAsync(RazorPage<dynamic> page)
         {
             var services = page.Context.RequestServices;
             var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
-            var fileProviderAccessor = services.GetRequiredService<IFluidViewFileProviderAccessor>();
+            var fileProviderAccessor = services.GetRequiredService<ILiquidViewFileProviderAccessor>();
             var template = Parse(path, fileProviderAccessor.FileProvider, Cache);
 
             var context = new TemplateContext();

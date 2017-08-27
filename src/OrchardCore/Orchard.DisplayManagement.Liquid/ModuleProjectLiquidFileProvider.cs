@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,21 +6,21 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
 
-namespace Orchard.DisplayManagement.Fluid
+namespace Orchard.DisplayManagement.Liquid
 {
     /// <summary>
     /// This custom <see cref="IFileProvider"/> implementation provides the file contents
-    /// of Module Project Fluid files while in a development environment.
+    /// of Module Project Liquid files while in a development environment.
     /// </summary>
-    public class ModuleProjectFluidFileProvider : IFileProvider
+    public class ModuleProjectLiquidFileProvider : IFileProvider
     {
         private const string MappingFileFolder = "obj";
-        private const string MappingFileName = "ModuleProjectFluidFiles.map";
+        private const string MappingFileName = "ModuleProjectLiquidFiles.map";
 
         private static Dictionary<string, string> _paths;
         private static object _synLock = new object();
 
-        public ModuleProjectFluidFileProvider(string rootPath)
+        public ModuleProjectLiquidFileProvider(string rootPath)
         {
             if (_paths != null)
             {

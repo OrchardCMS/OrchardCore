@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Orchard.Environment.Shell;
 using System.Collections.Generic;
 using Xunit;
@@ -15,18 +15,16 @@ namespace Orchard.Tests.Shell
 {
     public class ShellContainerFactoryTests
     {
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
-
         private readonly IShellContainerFactory _shellContainerFactory;
+        private readonly IServiceProvider _applicationServiceProvider;
 
         public ShellContainerFactoryTests()
         {
             var applicationServices = new ServiceCollection();
-            _typeFeatureProvider = new TypeFeatureProvider();
-            applicationServices.AddScoped(x => _typeFeatureProvider);
+            applicationServices.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 
             _shellContainerFactory = new ShellContainerFactory(
-                new ServiceCollection().BuildServiceProvider(),
+                _applicationServiceProvider = applicationServices.BuildServiceProvider(),
                 new StubLoggerFactory(),
                 new NullLogger<ShellContainerFactory>(),
                 applicationServices
@@ -40,10 +38,11 @@ namespace Orchard.Tests.Shell
 
             var expectedFeatureInfo = AddStartup(shellBlueprint, typeof(RegisterServiceStartup));
 
-            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint);
+            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
+            var typeFeatureProvider = _applicationServiceProvider.GetService<ITypeFeatureProvider>();
 
             Assert.IsType<TestService>(container.GetRequiredService(typeof(ITestService)));
-            Assert.Same(expectedFeatureInfo, _typeFeatureProvider.GetFeatureForDependency(typeof(TestService)));
+            Assert.Same(expectedFeatureInfo, typeFeatureProvider.GetFeatureForDependency(typeof(TestService)));
         }
 
         [Fact]
@@ -54,11 +53,12 @@ namespace Orchard.Tests.Shell
             var expectedFeatureInfo = AddStartup(shellBlueprint, typeof(ReplaceServiceStartup));
             AddStartup(shellBlueprint, typeof(RegisterServiceStartup));
 
-            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint);
+            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
+            var typeFeatureProvider = _applicationServiceProvider.GetService<ITypeFeatureProvider>();
 
             // Check that the default service has been replaced with the custom service and that the feature info is correct.
             Assert.IsType<CustomTestService>(container.GetRequiredService(typeof(ITestService)));
-            Assert.Same(expectedFeatureInfo, _typeFeatureProvider.GetFeatureForDependency(typeof(CustomTestService)));
+            Assert.Same(expectedFeatureInfo, typeFeatureProvider.GetFeatureForDependency(typeof(CustomTestService)));
         }
 
         private ShellBlueprint CreateBlueprint()

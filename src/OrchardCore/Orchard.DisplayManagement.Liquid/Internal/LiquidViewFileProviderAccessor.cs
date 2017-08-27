@@ -1,18 +1,18 @@
-﻿using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 
-namespace Orchard.DisplayManagement.Fluid.Internal
+namespace Orchard.DisplayManagement.Liquid.Internal
 {
     /// <summary>
-    /// Default implementation of <see cref="IFluidViewFileProviderAccessor"/>.
+    /// Default implementation of <see cref="ILiquidViewFileProviderAccessor"/>.
     /// </summary>
-    public class FluidViewFileProviderAccessor : IFluidViewFileProviderAccessor
+    public class LiquidViewFileProviderAccessor : ILiquidViewFileProviderAccessor
     {
         /// <summary>
-        /// Initializes a new instance of <see cref="FluidViewFileProviderAccessor"/>.
+        /// Initializes a new instance of <see cref="LiquidViewFileProviderAccessor"/>.
         /// </summary>
-        /// <param name="optionsAccessor">Accessor to <see cref="FluidViewOptions"/>.</param>
-        public FluidViewFileProviderAccessor(IOptions<FluidViewOptions> optionsAccessor)
+        /// <param name="optionsAccessor">Accessor to <see cref="LiquidViewOptions"/>.</param>
+        public LiquidViewFileProviderAccessor(IOptions<LiquidViewOptions> optionsAccessor)
         {
             var fileProviders = optionsAccessor.Value.FileProviders;
 
@@ -31,7 +31,7 @@ namespace Orchard.DisplayManagement.Fluid.Internal
         }
 
         /// <summary>
-        /// Gets the <see cref="IFileProvider"/> used to look up Fluid files.
+        /// Gets the <see cref="IFileProvider"/> used to look up Liquid files.
         /// </summary>
         public IFileProvider FileProvider { get; }
     }

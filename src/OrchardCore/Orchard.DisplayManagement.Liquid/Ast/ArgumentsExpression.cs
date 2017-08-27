@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
 
-namespace Orchard.DisplayManagement.Fluid.Ast
+namespace Orchard.DisplayManagement.Liquid.Ast
 {
     public class ArgumentsExpression : Expression
     {

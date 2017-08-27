@@ -1,4 +1,6 @@
 @model Orchard.ContentFields.ViewModels.DisplayNumericFieldViewModel
+@using Orchard.Mvc.Utilities
+
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.PartDefinition.Name).HtmlClassify();
 }
