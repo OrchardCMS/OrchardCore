@@ -45,8 +45,6 @@ namespace Microsoft.AspNetCore.Modules
 
                 try
                 {
-                    httpContext.RequestServices = scope.ServiceProvider;
-
                     if (!shellContext.IsActivated)
                     {
                         lock (shellContext)

@@ -43,9 +43,6 @@ namespace Orchard.DeferredTasks
                     if (!shellContext.Released)
                     {
                         var scope = shellContext.CreateServiceScope();
-
-                        httpContext.RequestServices = scope.ServiceProvider;
-
                         var context = new DeferredTaskContext(scope.ServiceProvider);
                         await deferredTaskEngine.ExecuteTasksAsync(context);
 

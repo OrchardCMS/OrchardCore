@@ -14,11 +14,9 @@ using Newtonsoft.Json.Linq;
 using Orchard.DeferredTasks;
 using Orchard.Environment.Shell;
 using Orchard.Events;
-using Orchard.Hosting;
 using Orchard.Recipes.Events;
 using Orchard.Recipes.Models;
 using Orchard.Scripting;
-using Microsoft.AspNetCore.Http;
 
 namespace Orchard.Recipes.Services
 {
@@ -152,10 +150,6 @@ namespace Orchard.Recipes.Services
             var shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
             using (var scope = shellContext.CreateServiceScope())
             {
-                //var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                //var existingServices = httpContextAccessor.HttpContext.RequestServices;
-                //httpContextAccessor.HttpContext.RequestServices = scope.ServiceProvider;
-
                 if (!shellContext.IsActivated)
                 {
                     var tenantEvents = scope.ServiceProvider
@@ -199,8 +193,6 @@ namespace Orchard.Recipes.Services
                         Logger.LogInformation("Finished executing recipe step '{0}'.", recipeStep.Name);
                     }
                 }
-
-                //httpContextAccessor.HttpContext.RequestServices = existingServices;
             }
 
             // The recipe execution might have invalidated the shell by enabling new features,

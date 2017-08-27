@@ -174,10 +174,6 @@ namespace Orchard.Setup.Services
                 // services from the request.
                 using (var scope = shellContext.CreateServiceScope())
                 {
-                    //var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                    //var existingServices = _httpContextAccessor.HttpContext.RequestServices;
-                    //httpContextAccessor.HttpContext.RequestServices = scope.ServiceProvider;
-
                     var recipeExecutor = scope.ServiceProvider.GetService<IRecipeExecutor>();
 
                     // Right now we run the recipe in the same thread, later use polling from the setup screen
@@ -195,8 +191,6 @@ namespace Orchard.Setup.Services
                         DatabaseTablePrefix = context.DatabaseTablePrefix
                     });
                     //});
-
-                    //httpContextAccessor.HttpContext.RequestServices = existingServices;
                 }
             }
 
@@ -205,10 +199,6 @@ namespace Orchard.Setup.Services
             {
                 using (var scope = shellContext.CreateServiceScope())
                 {
-                    //var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                    //var existingServices = httpContextAccessor.HttpContext.RequestServices;
-                    //httpContextAccessor.HttpContext.RequestServices = scope.ServiceProvider;
-
                     var hasErrors = false;
 
                     Action<string, string> reportError = (key, message) => {
@@ -241,8 +231,6 @@ namespace Orchard.Setup.Services
                         var taskContext = new DeferredTaskContext(scope.ServiceProvider);
                         await deferredTaskEngine.ExecuteTasksAsync(taskContext);
                     }
-
-                    //httpContextAccessor.HttpContext.RequestServices = existingServices;
                 }
             }
 
