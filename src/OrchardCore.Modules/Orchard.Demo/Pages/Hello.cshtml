@@ -8,9 +8,10 @@
     {
         public string Message { get; private set; } = "Data coming from the model: ";
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
             Message += $" It's  { DateTime.Now } on the server";
+            return Page();
         }
     }
 }

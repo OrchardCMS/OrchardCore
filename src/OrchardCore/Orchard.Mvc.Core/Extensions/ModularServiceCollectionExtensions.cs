@@ -4,6 +4,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
@@ -47,6 +48,11 @@ namespace Orchard.Mvc
             builder.AddViewLocalization();
 
             builder.AddRazorPages(o => o.RootDirectory = "/Packages");
+
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(ModularRazorPageFilter));
+            });
 
             AddModularFrameworkParts(applicationServices, builder.PartManager);
 

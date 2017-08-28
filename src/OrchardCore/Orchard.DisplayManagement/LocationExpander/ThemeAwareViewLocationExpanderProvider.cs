@@ -43,6 +43,11 @@ namespace Orchard.DisplayManagement.LocationExpander
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
+            if (context.AreaName == null)
+            {
+                return Enumerable.Empty<string>();
+            }
+
             var themeManager = context
                 .ActionContext
                 .HttpContext
@@ -70,7 +75,7 @@ namespace Orchard.DisplayManagement.LocationExpander
                     var themeViewsPath = Path.Combine(
                         Path.DirectorySeparatorChar + theme.Extension.SubPath,
                         "Views",
-                        context.AreaName != null && context.AreaName != theme.Id ? context.AreaName : string.Empty);
+                        context.AreaName != theme.Id ? context.AreaName : string.Empty);
 
                     result.Add(Path.Combine(themeViewsPath, "{1}", "{0}.cshtml"));
                     result.Add(Path.Combine(themeViewsPath, "Shared", "{0}.cshtml"));

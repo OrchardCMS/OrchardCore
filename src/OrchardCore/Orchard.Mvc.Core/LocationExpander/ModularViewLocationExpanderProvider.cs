@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +25,11 @@ namespace Orchard.Mvc.LocationExpander
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
+            if (context.AreaName == null)
+            {
+                return viewLocations;
+            }
+
             // Get Extension, and then add in the relevant views.
             var extension = _extensionManager.GetExtension(context.AreaName);
 
