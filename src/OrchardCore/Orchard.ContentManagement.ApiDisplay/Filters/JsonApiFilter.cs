@@ -1,14 +1,17 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using JsonApiSerializer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
-using Orchard.ContentManagement.Api;
 using Orchard.Environment.Shell;
 
 namespace Orchard.JsonApi.Filters
 {
-    public class JsonApiFilter : IActionFilter, IResultFilter
+    public class JsonApiFilter : IAsyncActionFilter
     {
         private readonly ShellSettings _shellSettings;
         private readonly IApiContentManager _contentManager;
@@ -27,50 +30,81 @@ namespace Orchard.JsonApi.Filters
             _tenantPath = "/" + _shellSettings.RequestUrlPrefix;
         }
 
-        public void OnActionExecuting(ActionExecutingContext filterContext)
+        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-        }
+            var isJsonApiRequest = context.HttpContext.Request.ContentType == ContentType;
 
-        public void OnActionExecuted(ActionExecutedContext filterContext)
-        {
-            var httpContext = filterContext.HttpContext;
+            var actionExecutedContext = await next();
 
-            if (httpContext.Request.ContentType != ContentType)
+            if (!isJsonApiRequest)
             {
                 return;
             }
 
-            var result = (filterContext.Result as ObjectResult);
+            var result = actionExecutedContext.Result as ObjectResult;
 
             if (result == null)
             {
                 return;
             }
 
+
+            var urlHelper = actionExecutedContext
+                .HttpContext
+                .RequestServices
+                .GetRequiredService<IUrlHelperFactory>()
+                .GetUrlHelper(actionExecutedContext);
+
+            actionExecutedContext.HttpContext.Response.ContentType = ContentType;
+
             var contentItem = result.Value as ContentItem;
 
-            if (contentItem == null)
+            if (contentItem != null)
             {
+                await BuildSingularContentItem(actionExecutedContext, contentItem);
                 return;
             }
 
-            httpContext.Response.ContentType = ContentType;
+            var contentItems = result.Value as IEnumerable<ContentItem>;
 
-            var item = _contentManager
-                .BuildAsync(contentItem, new UrlHelper(filterContext), null)
-                .GetAwaiter()
-                .GetResult();
-
-            filterContext.Result = new JsonResult(item, new JsonApiSerializerSettings());
+            if (contentItems != null)
+            {
+                await BuildMultipleContentItems(actionExecutedContext, contentItems);
+                return;
+            }
         }
 
-        public void OnResultExecuting(ResultExecutingContext filterContext)
+        private async Task BuildSingularContentItem(ActionExecutedContext actionExecutedContext, ContentItem contentItem)
         {
+            var urlHelper = actionExecutedContext
+                .HttpContext
+                .RequestServices
+                .GetRequiredService<IUrlHelperFactory>()
+                .GetUrlHelper(actionExecutedContext);
+
+            var item = await _contentManager
+                .BuildAsync(contentItem, urlHelper, null);
+
+            actionExecutedContext.Result = new JsonResult(item, new JsonApiSerializerSettings());
         }
 
-        public void OnResultExecuted(ResultExecutedContext filterContext)
+        private Task BuildMultipleContentItems(ActionExecutedContext actionExecutedContext, IEnumerable<ContentItem> contentItems)
         {
-            
+            var urlHelper = actionExecutedContext
+    .HttpContext
+    .RequestServices
+    .GetRequiredService<IUrlHelperFactory>()
+    .GetUrlHelper(actionExecutedContext);
+
+            var items = contentItems.Select(contentItem => _contentManager
+                .BuildAsync(contentItem, urlHelper, null).Result)
+                .ToArray();
+
+            actionExecutedContext.Result = new JsonResult(items, new JsonApiSerializerSettings());
+
+            return Task.CompletedTask;
         }
     }
 }
+
+

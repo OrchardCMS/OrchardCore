@@ -5,19 +5,31 @@ using JsonApiSerializer.JsonApi;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Orchard.ContentManagement;
 
-namespace Orchard.ContentManagement.Api
+namespace Orchard.JsonApi
 {
     public class ApiItem
     {
         private readonly IUrlHelper _urlHelper;
 
+        public ApiItem()
+        { }
+
         public ApiItem(
             ContentItem contentItem,
-            IUrlHelper urlHelper)
-            //IUrlHelper urlHelper,
-            //List<ContentPart> contentParts)
+            IUrlHelper urlHelper = null) : base()
         {
+            if (string.IsNullOrWhiteSpace(contentItem.ContentItemId))
+            {
+                throw new ArgumentNullException(nameof(contentItem.ContentItemId));
+            }
+
+            if (string.IsNullOrWhiteSpace(contentItem.ContentType))
+            {
+                throw new ArgumentNullException(nameof(contentItem.ContentType));
+            }
+
             _urlHelper = urlHelper;
 
             Type = contentItem.ContentType;
@@ -32,77 +44,89 @@ namespace Orchard.ContentManagement.Api
             Owner = contentItem.Owner;
             Author = contentItem.Author;
 
-            Links.Add("self", new Link { Href = urlHelper.RouteUrl("Api_Self_Route", Id) });
-
-            Links.Add("allversions", new Link
+            if (urlHelper != null)
             {
-                Href = _urlHelper.RouteUrl("Api_Self_Route_Version", new
+                Links = new Links
                 {
-                    contentItemId = Id,
-                    versionOptions = "IsAllVersions"
-                })
-            });
+                    { "self", new Link { Href = urlHelper.RouteUrl("Api_ContentType_Id_Route", new { contentType = Type, contentItemId = Id }) } }
+                };
+            }
         }
-
-        /// <summary>
-        /// The content type of the content item.
-        /// </summary>
-        public string Type { get; set; }
 
         /// <summary>
         /// The logical identifier of the content item across versions.
         /// </summary>
+        [DataMember(Order = 1)]
         public string Id { get; set; }
+
+        /// <summary>
+        /// The content type of the content item.
+        /// </summary>
+        [DataMember(Order = 2)]
+        public string Type { get; set; }
 
         /// <summary>
         /// The logical identifier of the versioned content item.
         /// </summary>
+        [DataMember(Order = 3)]
         public string VersionId { get; set; }
 
         /// <summary>
         /// The number of the version.
         /// </summary>
+        [DataMember(Order = 4)]
         public int Number { get; set; }
 
         /// <summary>
         /// Whether the version is published or not.
         /// </summary>
+        [DataMember(Order = 5)]
         public bool Published { get; set; }
 
         /// <summary>
         /// Whether the version is the latest version of the content item.
         /// </summary>
+        [DataMember(Order = 6)]
         public bool Latest { get; set; }
 
         /// <summary>
         /// When the content item version has been updated.
         /// </summary>
+        [DataMember(Order = 7)]
         public DateTime? ModifiedUtc { get; set; }
 
         /// <summary>
         /// When the content item has been published.
         /// </summary>
+        [DataMember(Order = 8)]
         public DateTime? PublishedUtc { get; set; }
 
         /// <summary>
         /// When the content item has been created or first published.
         /// </summary>
+        [DataMember(Order = 9)]
         public DateTime? CreatedUtc { get; set; }
 
         /// <summary>
         /// The name of the user who first created this content item version
         /// and owns content rigths.
         /// </summary>
+        [DataMember(Order = 10)]
         public string Owner { get; set; }
 
         /// <summary>
         /// The name of the user who last modified this content item version.
         /// </summary>
+        [DataMember(Order = 11)]
         public string Author { get; set; }
 
-        public Links Links { get; internal set; } = new Links();
+        public Dictionary<string, JToken> ContentParts { get; set; }
 
-        public Meta Meta { get; internal set; } = new Meta();
+        public Links Links { get; }
+
+        //public Meta Meta { get; internal set; } = new Meta();
+        
+        public Relationship<List<ApiRelationshipItem>> ContentItems { get; set; }
 
         public void AddPart(ContentPart contentPart)
         {
@@ -110,31 +134,87 @@ namespace Orchard.ContentManagement.Api
 
             if (token.HasValues)
             {
-                Meta.Add(contentPart.GetType().Name, token);
+                if (ContentParts == null)
+                {
+                    ContentParts = new Dictionary<string, JToken>();
+                }
+
+                ContentParts.Add(contentPart.GetType().Name, token);
             }
         }
 
-        public void AddLatest(ContentItem contentItem)
+        public void AddRelationship(ApiRelationshipItem relationship)
         {
-            Links.Add("latest", new Link
+            if (ContentItems == null)
             {
-                Href = _urlHelper.RouteUrl("Api_Self_Route_Version", new {
-                    contentItemId = Id,
-                    versionOptions = "IsLatest"
-                })
-            });
+                ContentItems = new Relationship<List<ApiRelationshipItem>>();
+                ContentItems.Data = new List<ApiRelationshipItem>();
+            }
+
+            ContentItems.Data.Add(relationship);
+
+            ContentItems.Links = relationship.Links;
         }
 
-        public void AddPublished(ContentItem contentItem)
+        //public void AddLatest(ContentItem contentItem)
+        //{
+        //    Links.Add("latest", new Link
+        //    {
+        //        Href = _urlHelper.RouteUrl("Api_Self_Route_Version", new {
+        //            contentItemId = Id,
+        //            versionOptions = "IsLatest"
+        //        })
+        //    });
+        //}
+
+        //public void AddPublished(ContentItem contentItem)
+        //{
+        //    Links.Add("published", new Link
+        //    {
+        //        Href = _urlHelper.RouteUrl("Api_Self_Route_Version", new
+        //        {
+        //            contentItemId = Id,
+        //            versionOptions = "IsPublished"
+        //        })
+        //    });
+        //}
+    }
+
+    public class ApiRelationshipItem {
+        public ApiRelationshipItem(
+            ContentItem parentContentItem,
+            ContentItem contentItem,
+            IUrlHelper urlHelper = null)
         {
-            Links.Add("published", new Link
+            Type = contentItem.ContentType;
+            Id = contentItem.ContentItemId;
+
+            if (urlHelper != null)
             {
-                Href = _urlHelper.RouteUrl("Api_Self_Route_Version", new
+                Links = new Links
                 {
-                    contentItemId = Id,
-                    versionOptions = "IsPublished"
-                })
-            });
+                    { "self", new Link {
+                        Href = urlHelper.RouteUrl("Api_Content_By_Relationship_Route", new {
+                            contentType = parentContentItem.ContentType,
+                            contentItemId = parentContentItem.ContentItemId,
+                            nestedContentType = Type
+                        })
+                    } }
+                };
+            }
         }
+
+        /// <summary>
+        /// The logical identifier of the content item across versions.
+        /// </summary>
+        public string Id { get; set; }
+
+        /// <summary>
+        /// The content type of the content item.
+        /// </summary>
+        public string Type { get; set; }
+
+        [JsonIgnore]
+        public Links Links { get; }
     }
 }

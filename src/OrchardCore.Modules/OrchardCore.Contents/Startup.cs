@@ -5,7 +5,6 @@ using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
-using Orchard.ContentManagement.Api;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -23,6 +22,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
+using OrchardCore.JsonApi;
 using OrchardCore.Lists.Settings;
 using OrchardCore.Mvc;
 using OrchardCore.Recipes;
@@ -119,17 +119,24 @@ namespace OrchardCore.Contents
             );
 
             routes.MapAreaRoute(
-                name: "Api_Self_Route",
+                name: "Api_ContentType_Route",
                 areaName: "OrchardCore.Contents",
-                template: "Api/ContentItems/{contentItemId}",
-                defaults: new { controller = "Api", action = "Get" }
+                template: "api/{contentType}",
+                defaults: new { controller = "Api", action = "GetByContentType" }
             );
 
             routes.MapAreaRoute(
-                name: "Api_Self_Route_Version",
+                name: "Api_ContentType_Id_Route",
                 areaName: "OrchardCore.Contents",
-                template: "Api/ContentItems/{contentItemId}/{versionOptions}",
-                defaults: new { controller = "Api", action = "GetByVersion" }
+                template: "api/{contentType}/{contentItemId}",
+                defaults: new { controller = "Api", action = "GetByContentTypeAndId" }
+            );
+
+            routes.MapAreaRoute(
+                name: "Api_Content_By_Relationship_Route",
+                areaName: "OrchardCore.Contents",
+                template: "api/{contentType}/{contentItemId}/relationships/{nestedContentType}",
+                defaults: new { controller = "Api", action = "GetByContentByRelationship" }
             );
         }
     }

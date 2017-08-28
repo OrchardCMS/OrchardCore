@@ -1,18 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement.Api.ContentDisplay;
+using Orchard.ContentManagement;
 using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement.ModelBinding;
+using Orchard.JsonApi.ContentDisplay;
 
-namespace Orchard.ContentManagement.Api
+namespace Orchard.JsonApi
 {
     public class ApiContentManager : IApiContentManager
     {
@@ -58,30 +56,31 @@ namespace Orchard.ContentManagement.Api
 
             var context = new BuildApiDisplayContext(
                apiItem,
+               urlHelper,
                updater
             );
 
-            if (!apiItem.Latest)
-            {
-                var draft = await _contentManager.GetAsync(contentItem.ContentItemId, VersionOptions.Draft);
+            //if (!apiItem.Latest)
+            //{
+            //    var draft = await _contentManager.GetAsync(contentItem.ContentItemId, VersionOptions.Draft);
 
-                apiItem.AddLatest(draft);
-            }
-            else
-            {
-                apiItem.AddLatest(contentItem);
-            }
+            //    apiItem.AddLatest(draft);
+            //}
+            //else
+            //{
+            //    apiItem.AddLatest(contentItem);
+            //}
 
-            if (!apiItem.Published)
-            {
-                var published = await _contentManager.GetAsync(contentItem.ContentItemId, VersionOptions.Published);
+            //if (!apiItem.Published)
+            //{
+            //    var published = await _contentManager.GetAsync(contentItem.ContentItemId, VersionOptions.Published);
 
-                apiItem.AddPublished(published);
-            }
-            else
-            {
-                apiItem.AddPublished(contentItem);
-            }
+            //    apiItem.AddPublished(published);
+            //}
+            //else
+            //{
+            //    apiItem.AddPublished(contentItem);
+            //}
 
             foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
             {
