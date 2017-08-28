@@ -47,7 +47,7 @@ namespace Orchard.OpenId
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<IDisplayDriver<ISite>, OpenIdSiteSettingsDisplayDriver>();
-            services.AddSingleton<IOpenIdService, OpenIdService>();
+            services.AddScoped<IOpenIdService, OpenIdService>();
             services.AddRecipeExecutionStep<OpenIdSettingsStep>();
             services.AddRecipeExecutionStep<OpenIdApplicationStep>();
 

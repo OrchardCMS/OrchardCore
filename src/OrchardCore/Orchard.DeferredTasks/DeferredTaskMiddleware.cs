@@ -42,12 +42,11 @@ namespace Orchard.DeferredTasks
 
                     if (!shellContext.Released)
                     {
-                        var scope = shellContext.CreateServiceScope();
-                        var context = new DeferredTaskContext(scope.ServiceProvider);
-                        await deferredTaskEngine.ExecuteTasksAsync(context);
-
-                        // We don't dispose the newly created request services scope as it will
-                        // be done by ModularTenantContainerMiddleware
+                        using (var scope = shellContext.EnterServiceScope())
+                        {
+                            var context = new DeferredTaskContext(scope.ServiceProvider);
+                            await deferredTaskEngine.ExecuteTasksAsync(context);
+                        }
                     }
                 }
             }

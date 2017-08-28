@@ -27,18 +27,22 @@ namespace Orchard.Hosting.ShellBuilders
         public bool IsActivated { get; set; }
 
         /// <summary>
-        /// Creates a standalone service scope that can be used to resolve local services.
+        /// Creates a standalone service scope that can be used to resolve local services and
+        /// replaces <see cref="HttpContext.RequestServices"/> with it.
         /// </summary>
-        public IServiceScope CreateServiceScope()
+        /// <remarks>
+        /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
+        /// </remarks>
+        public IServiceScope EnterServiceScope()
         {
             if (_disposed)
             {
-                throw new InvalidOperationException("Can't use CreateServiceScope on a disposed context");
+                throw new InvalidOperationException("Can't use EnterServiceScope on a disposed context");
             }
 
             if (_released)
             {
-                throw new InvalidOperationException("Can't use CreateServiceScope on a released context");
+                throw new InvalidOperationException("Can't use EnterServiceScope on a released context");
             }
 
             return new ServiceScopeWrapper(ServiceProvider.CreateScope());
@@ -120,23 +124,24 @@ namespace Orchard.Hosting.ShellBuilders
         internal class ServiceScopeWrapper : IServiceScope
         {
             private readonly IServiceScope _serviceScope;
-            private readonly IHttpContextAccessor _httpContextAccessor;
             private readonly IServiceProvider _existingServices;
+            private readonly HttpContext _httpContext;
 
             public ServiceScopeWrapper(IServiceScope serviceScope)
             {
-                _serviceScope = serviceScope;
                 ServiceProvider = serviceScope.ServiceProvider;
-                _httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                _existingServices = _httpContextAccessor.HttpContext.RequestServices;
-                _httpContextAccessor.HttpContext.RequestServices = ServiceProvider;
+
+                _serviceScope = serviceScope;
+                _httpContext = ServiceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                _existingServices = _httpContext.RequestServices;
+                _httpContext.RequestServices = ServiceProvider;
             }
 
             public IServiceProvider ServiceProvider { get; }
 
             public void Dispose()
             {
-                _httpContextAccessor.HttpContext.RequestServices = _existingServices;
+                _httpContext.RequestServices = _existingServices;
                 _serviceScope.Dispose();
             }
         }
