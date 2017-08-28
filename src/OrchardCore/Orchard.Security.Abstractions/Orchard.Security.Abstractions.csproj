@@ -9,8 +9,4 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Orchard.Events\Orchard.Events.csproj" />
-  </ItemGroup>
-
 </Project>
