@@ -38,7 +38,7 @@ namespace Orchard.Users.Commands
                     Email,
                     (Roles ?? "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToArray(),
                     Password,
-                    (key, message) => Context.Output.WriteLine(message));
+                    (key, message) => Context.Output.WriteLine(message)).GetAwaiter().GetResult();
             if (user != null)
             {
                 Context.Output.WriteLine(T["User created successfully"]);
