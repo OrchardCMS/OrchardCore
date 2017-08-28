@@ -174,11 +174,6 @@ namespace Orchard.DisplayManagement.Razor
             return Shape.GetTagBuilder(shape, tag);
         }
 
-        public Task<IHtmlContent> RenderBodyAsync()
-        {
-            return DisplayAsync(ThemeLayout.Content);
-        }
-
         /// <summary>
         /// Renders a zone from the layout.
         /// </summary>
