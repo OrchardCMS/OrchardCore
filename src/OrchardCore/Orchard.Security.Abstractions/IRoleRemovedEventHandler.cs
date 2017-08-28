@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
-using Orchard.Events;
 
 namespace Orchard.Security
 {
-    public interface IRoleRemovedEventHandler : IEventHandler
+    public interface IRoleRemovedEventHandler
     {
         Task RoleRemovedAsync(string roleName);
     }
