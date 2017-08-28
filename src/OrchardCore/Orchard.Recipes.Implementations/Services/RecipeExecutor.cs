@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.ExceptionServices;
@@ -14,7 +14,6 @@ using Newtonsoft.Json.Linq;
 using Orchard.DeferredTasks;
 using Orchard.Environment.Shell;
 using Orchard.Events;
-using Orchard.Hosting;
 using Orchard.Recipes.Events;
 using Orchard.Recipes.Models;
 using Orchard.Scripting;
@@ -149,7 +148,7 @@ namespace Orchard.Recipes.Services
         private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
         {
             var shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
-            using (var scope = shellContext.CreateServiceScope())
+            using (var scope = shellContext.EnterServiceScope())
             {
                 if (!shellContext.IsActivated)
                 {
@@ -199,7 +198,7 @@ namespace Orchard.Recipes.Services
             // The recipe execution might have invalidated the shell by enabling new features,
             // so the deferred tasks need to run on an updated shell context if necessary.
             shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
-            using (var scope = shellContext.CreateServiceScope())
+            using (var scope = shellContext.EnterServiceScope())
             {
                 var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
 
