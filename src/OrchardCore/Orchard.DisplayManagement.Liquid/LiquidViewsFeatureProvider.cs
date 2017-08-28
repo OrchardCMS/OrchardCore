@@ -6,18 +6,18 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.FileProviders;
-using Orchard.DisplayManagement.Fluid.Internal;
+using Orchard.DisplayManagement.Liquid.Internal;
 using Orchard.Environment.Extensions;
 
-namespace Orchard.DisplayManagement.Fluid
+namespace Orchard.DisplayManagement.Liquid
 {
-    public class FluidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
+    public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {
         private static List<string> _sharedPaths;
         private static object _synLock = new object();
 
-        public FluidViewsFeatureProvider(
-            IFluidViewFileProviderAccessor fileProviderAccessor,
+        public LiquidViewsFeatureProvider(
+            ILiquidViewFileProviderAccessor fileProviderAccessor,
             IOptions<ExtensionExpanderOptions> expanderOptionsAccessor)
         {
             if (_sharedPaths != null)
@@ -34,8 +34,8 @@ namespace Orchard.DisplayManagement.Fluid
                     foreach (var option in expanderOptionsAccessor.Value.Options)
                     {
                         var filePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
-                            option.SearchPath, new[] { FluidViewTemplate.ViewExtension },
-                            FluidViewTemplate.ViewsFolder);
+                            option.SearchPath, new[] { LiquidViewTemplate.ViewExtension },
+                            LiquidViewTemplate.ViewsFolder);
 
                         _sharedPaths.AddRange(filePaths.Select(p => '/' + p));
                     }
@@ -50,7 +50,7 @@ namespace Orchard.DisplayManagement.Fluid
                 if (!Path.GetFileName(path).StartsWith("_"))
                 {
                     var viewPath = Path.ChangeExtension(path, RazorViewEngine.ViewExtension);
-                    feature.ViewDescriptors.Add( new CompiledViewDescriptor { RelativePath = viewPath, ViewAttribute = new RazorViewAttribute(path, typeof(FluidPage)) });
+                    feature.ViewDescriptors.Add( new CompiledViewDescriptor { RelativePath = viewPath, ViewAttribute = new RazorViewAttribute(path, typeof(LiquidPage)) });
                 }
             }
         }

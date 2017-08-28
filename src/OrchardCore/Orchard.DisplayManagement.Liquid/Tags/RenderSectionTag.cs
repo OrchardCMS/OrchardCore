@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -6,9 +6,9 @@ using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
 using Microsoft.AspNetCore.Html;
-using Orchard.DisplayManagement.Fluid.Ast;
+using Orchard.DisplayManagement.Liquid.Ast;
 
-namespace Orchard.DisplayManagement.Fluid.Tags
+namespace Orchard.DisplayManagement.Liquid.Tags
 {
     public class RenderSectionTag : ArgumentsTag
     {
