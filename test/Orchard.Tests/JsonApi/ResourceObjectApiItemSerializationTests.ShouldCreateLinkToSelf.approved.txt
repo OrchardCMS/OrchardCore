@@ -1,0 +1,14 @@
+{
+  "data": {
+    "id": "ABC",
+    "type": "article",
+    "links": {
+      "self": "http:\\fu.com\\ABC"
+    },
+    "attributes": {
+      "number": 0,
+      "published": false,
+      "latest": false
+    }
+  }
+}

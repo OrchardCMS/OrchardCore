@@ -1,0 +1,17 @@
+{
+  "data": {
+    "id": "ABC",
+    "type": "article",
+    "attributes": {
+      "versionId": "ABCV1",
+      "number": 2,
+      "published": true,
+      "latest": true,
+      "modifiedUtc": "9999-12-31T23:59:59.9999999",
+      "publishedUtc": "0001-01-01T00:00:00",
+      "createdUtc": "9999-12-31T23:59:59.9999999",
+      "owner": "NickM",
+      "author": "Nick"
+    }
+  }
+}
