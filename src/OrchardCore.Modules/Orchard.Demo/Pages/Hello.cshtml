@@ -4,13 +4,13 @@
 
 @functions
 {
+    //[Route("custom")]
     public class DemoModel : PageModel
     {
-        public string Message { get; private set; } = "Data coming from the model: ";
+        public string Message { get; private set; } = "Date on the server: ";
 
         public IActionResult OnGet()
         {
-            Message += $" It's  { DateTime.Now } on the server";
             return Page();
         }
     }
@@ -33,5 +33,5 @@
 </zone>
 
 <p>
-    @Model.Message
+    @Model.Message @await DisplayAsync(New.DateTime(Utc: null, Format: T["MMMM dd, yyyy"].Value))
 </p>

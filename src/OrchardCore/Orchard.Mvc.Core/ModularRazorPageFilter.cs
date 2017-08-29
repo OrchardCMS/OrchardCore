@@ -1,26 +1,24 @@
 using System;
 using System.Linq;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Shell.Builders.Models;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Mvc
 {
     public class ModularRazorPageFilter : IPageFilter
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
 
-        public ModularRazorPageFilter(IHttpContextAccessor httpContextAccessor)
+        public ModularRazorPageFilter(IShellFeaturesManager shellFeaturesManager)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _shellFeaturesManager = shellFeaturesManager;
         }
 
         public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
         {
-            var shellBluePrint = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ShellBlueprint>();
-            var moduleIds = shellBluePrint.Dependencies.Values.Select(f => f.FeatureInfo.Extension.Id).Distinct();
+            var moduleIds = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
+                .Select(f => f.Extension.Id).Distinct();
 
             var moduleId = context.ActionDescriptor.ViewEnginePath.Split(new[] { '/' },
                 StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
