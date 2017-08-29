@@ -17,6 +17,8 @@ $(function() {
       if (firstName.indexOf(' ') >= 0) {
         firstName = name.split(' ').slice(0, -1).join(' ');
       }
+      $this = $("#sendMessageButton");
+      $this.prop("disabled", true); // Disable submit button until AJAX call is complete to prevent duplicate messages
       $.ajax({
         url: "././mail/contact_me.php",
         type: "POST",
@@ -49,6 +51,11 @@ $(function() {
           //clear all fields
           $('#contactForm').trigger("reset");
         },
+        complete: function() {
+          setTimeout(function() {
+            $this.prop("disabled", false); // Re-enable submit button when AJAX call is complete
+          }, 1000);
+        }
       });
     },
     filter: function() {
