@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -47,25 +47,6 @@ namespace OrchardCore.Lists.Services
                     query.With<ContainedPartIndex>(x => x.ListContentItemId == viewModel.ListContentItemId);
                 }
             }
-        }
-    }
-
-    public class ListPartContentApiFilter : IContentApiFilter
-    {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-
-        public ListPartContentApiFilter(IContentDefinitionManager contentDefinitionManager)
-        {
-            _contentDefinitionManager = contentDefinitionManager;
-        }
-
-        public Task FilterAsync(IQuery<ContentItem> query, string parentContentItemId)
-        {
-            if (parentContentItemId != null)
-            {
-                query.With<ContainedPartIndex>(x => x.ListContentItemId == parentContentItemId);
-            }
-            return Task.CompletedTask;
         }
     }
 
