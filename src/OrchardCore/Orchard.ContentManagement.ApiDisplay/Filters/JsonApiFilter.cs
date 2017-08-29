@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JsonApiSerializer;
@@ -48,61 +48,51 @@ namespace Orchard.JsonApi.Filters
                 return;
             }
 
-
-            var urlHelper = actionExecutedContext
-                .HttpContext
-                .RequestServices
-                .GetRequiredService<IUrlHelperFactory>()
-                .GetUrlHelper(actionExecutedContext);
-
             actionExecutedContext.HttpContext.Response.ContentType = ContentType;
 
-            var contentItem = result.Value as ContentItem;
-
-            if (contentItem != null)
-            {
-                await BuildSingularContentItem(actionExecutedContext, contentItem);
-                return;
-            }
-
-            var contentItems = result.Value as IEnumerable<ContentItem>;
+            var contentItems = GetContentItemsFromAction(result.Value);
 
             if (contentItems != null)
             {
-                await BuildMultipleContentItems(actionExecutedContext, contentItems);
-                return;
+                var urlHelper = actionExecutedContext
+                    .HttpContext
+                    .RequestServices
+                    .GetRequiredService<IUrlHelperFactory>()
+                    .GetUrlHelper(actionExecutedContext);
+
+                actionExecutedContext.Result = await BuildContentItems(urlHelper, contentItems);
             }
         }
 
-        private async Task BuildSingularContentItem(ActionExecutedContext actionExecutedContext, ContentItem contentItem)
+        private ContentItem[] GetContentItemsFromAction(object actionValue)
         {
-            var urlHelper = actionExecutedContext
-                .HttpContext
-                .RequestServices
-                .GetRequiredService<IUrlHelperFactory>()
-                .GetUrlHelper(actionExecutedContext);
+            var contentItem = actionValue as ContentItem;
 
-            var item = await _contentManager
-                .BuildAsync(contentItem, urlHelper, null);
+            if (contentItem != null)
+            {
+                return new[] { contentItem };
+            }
 
-            actionExecutedContext.Result = new JsonResult(item, new JsonApiSerializerSettings());
+            var contentItems = actionValue as IEnumerable<ContentItem>;
+
+            if (contentItem != null)
+            {
+                return contentItems.ToArray();
+            }
+
+            return null;
         }
 
-        private Task BuildMultipleContentItems(ActionExecutedContext actionExecutedContext, IEnumerable<ContentItem> contentItems)
+        private async Task<JsonResult> BuildContentItems(IUrlHelper urlHelper, ContentItem[] contentItems)
         {
-            var urlHelper = actionExecutedContext
-    .HttpContext
-    .RequestServices
-    .GetRequiredService<IUrlHelperFactory>()
-    .GetUrlHelper(actionExecutedContext);
+            var items = new List<ApiItem>();
 
-            var items = contentItems.Select(contentItem => _contentManager
-                .BuildAsync(contentItem, urlHelper, null).Result)
-                .ToArray();
+            foreach (var contentItem in contentItems)
+            {
+                items.Add(await _contentManager.BuildAsync(contentItem, urlHelper, null));
+            }
 
-            actionExecutedContext.Result = new JsonResult(items, new JsonApiSerializerSettings());
-
-            return Task.CompletedTask;
+            return new JsonResult(items, new JsonApiSerializerSettings());
         }
     }
 }
