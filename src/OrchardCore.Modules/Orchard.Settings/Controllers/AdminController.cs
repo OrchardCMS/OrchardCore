@@ -73,8 +73,7 @@ namespace Orchard.Settings.Controllers
 
             if (ModelState.IsValid)
             {
-                var siteSettings = await _siteService.GetSiteSettingsAsync();
-                await _siteService.UpdateSiteSettingsAsync(siteSettings);
+                await _siteService.UpdateSiteSettingsAsync(site);
 
                 _notifier.Success(H["Site settings updated successfully."]);
 

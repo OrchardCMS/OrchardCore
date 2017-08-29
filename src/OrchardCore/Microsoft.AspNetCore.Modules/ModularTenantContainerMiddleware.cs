@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,47 +40,42 @@ namespace Microsoft.AspNetCore.Modules
                 var shellContext = _orchardHost.GetOrCreateShellContext(shellSetting);
 
                 var existingRequestServices = httpContext.RequestServices;
-                var scope = shellContext.CreateServiceScope();
-
                 try
                 {
-                    httpContext.RequestServices = scope.ServiceProvider;
-
-                    if (!shellContext.IsActivated)
+                    using (var scope = shellContext.EnterServiceScope())
                     {
-                        lock (shellContext)
+                        if (!shellContext.IsActivated)
                         {
-                            // The tenant gets activated here
-                            if (!shellContext.IsActivated)
+                            lock (shellContext)
                             {
-                                var tenantEvents = scope.ServiceProvider
-                                    .GetServices<IModularTenantEvents>();
-
-                                foreach (var tenantEvent in tenantEvents)
+                                // The tenant gets activated here
+                                if (!shellContext.IsActivated)
                                 {
-                                    tenantEvent.ActivatingAsync().Wait();
-                                }
+                                    var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
 
-                                httpContext.Items["BuildPipeline"] = true;
-                                shellContext.IsActivated = true;
+                                    foreach (var tenantEvent in tenantEvents)
+                                    {
+                                        tenantEvent.ActivatingAsync().Wait();
+                                    }
 
-                                foreach (var tenantEvent in tenantEvents)
-                                {
-                                    tenantEvent.ActivatedAsync().Wait();
+                                    httpContext.Items["BuildPipeline"] = true;
+                                    shellContext.IsActivated = true;
+
+                                    foreach (var tenantEvent in tenantEvents)
+                                    {
+                                        tenantEvent.ActivatedAsync().Wait();
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    shellContext.RequestStarted();
-                    await _next.Invoke(httpContext);
+                        shellContext.RequestStarted();
+                        await _next.Invoke(httpContext);
+                    }
                 }
                 finally
                 {
-                    // We dispose httpContext.RequestServices and not a local reference in case another middleware changed it 
-                    (httpContext.RequestServices as IDisposable)?.Dispose();
                     shellContext.RequestEnded();
-                    httpContext.RequestServices = existingRequestServices;
                 }
             }
         }

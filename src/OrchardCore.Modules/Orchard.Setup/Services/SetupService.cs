@@ -129,7 +129,7 @@ namespace Orchard.Setup.Services
 
             using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
-                using (var scope = shellContext.CreateServiceScope())
+                using (var scope = shellContext.EnterServiceScope())
                 {
                     var store = scope.ServiceProvider.GetRequiredService<IStore>();
 
@@ -172,7 +172,7 @@ namespace Orchard.Setup.Services
 
                 // Create a new scope for the recipe thread to prevent race issues with other scoped
                 // services from the request.
-                using (var scope = shellContext.CreateServiceScope())
+                using (var scope = shellContext.EnterServiceScope())
                 {
                     var recipeExecutor = scope.ServiceProvider.GetService<IRecipeExecutor>();
 
@@ -189,16 +189,15 @@ namespace Orchard.Setup.Services
                         DatabaseProvider = context.DatabaseProvider,
                         DatabaseConnectionString = context.DatabaseConnectionString,
                         DatabaseTablePrefix = context.DatabaseTablePrefix
-                    }); 
+                    });
                     //});
-
                 }
             }
 
             // Reloading the shell context as the recipe  has probably updated its features
             using (var shellContext = await _orchardHost.CreateShellContextAsync(shellSettings))
             {
-                using (var scope = shellContext.CreateServiceScope())
+                using (var scope = shellContext.EnterServiceScope())
                 {
                     var hasErrors = false;
 

@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Orchard.Environment.Cache;
 using YesSql;
@@ -13,18 +15,17 @@ namespace Orchard.Settings.Services
     public class SiteService : ISiteService
     {
         private readonly IMemoryCache _memoryCache;
-        private readonly ISession _session;
         private readonly ISignal _signal;
-
+        private readonly IServiceProvider _serviceProvider;
         private const string SiteCacheKey = "SiteService";
         
         public SiteService(
             ISignal signal,
-            ISession session,
+            IServiceProvider serviceProvider,
             IMemoryCache memoryCache)
         {
             _signal = signal;
-            _session = session;
+            _serviceProvider = serviceProvider;
             _memoryCache = memoryCache;
         }
 
@@ -38,7 +39,9 @@ namespace Orchard.Settings.Services
 
             if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
             {
-                site = await _session.Query<SiteSettings>().FirstOrDefaultAsync();
+                var session = GetSession();
+
+                site = await session.Query<SiteSettings>().FirstOrDefaultAsync();
 
                 if (site == null)
                 {
@@ -56,7 +59,7 @@ namespace Orchard.Settings.Services
                                 MaxPagedCount = 0
                             };
 
-                            _session.Save(site);
+                            session.Save(site);
                             _memoryCache.Set(SiteCacheKey, site);
                             _signal.SignalToken(SiteCacheKey);
                         }
@@ -75,7 +78,9 @@ namespace Orchard.Settings.Services
         /// <inheritdoc/>
         public async Task UpdateSiteSettingsAsync(ISite site)
         {
-            var existing = await _session.Query<SiteSettings>().FirstOrDefaultAsync();
+            var session = GetSession();
+
+            var existing = await session.Query<SiteSettings>().FirstOrDefaultAsync();
             
             existing.BaseUrl = site.BaseUrl;
             existing.Calendar = site.Calendar;
@@ -92,12 +97,18 @@ namespace Orchard.Settings.Services
             existing.TimeZone = site.TimeZone;
             existing.UseCdn = site.UseCdn;
 
-            _session.Save(existing);
+            session.Save(existing);
 
             _memoryCache.Set(SiteCacheKey, site);
             _signal.SignalToken(SiteCacheKey);
 
             return;
+        }
+
+        private YesSql.ISession GetSession()
+        {
+            var httpContextAccessor = _serviceProvider.GetService<IHttpContextAccessor>();
+            return httpContextAccessor.HttpContext.RequestServices.GetService<YesSql.ISession>();
         }
     }
 }
