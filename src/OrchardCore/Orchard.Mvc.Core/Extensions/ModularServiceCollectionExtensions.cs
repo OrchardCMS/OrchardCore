@@ -47,12 +47,14 @@ namespace Orchard.Mvc
             builder.AddViews();
             builder.AddViewLocalization();
 
-            builder.AddRazorPages(o => o.RootDirectory = "/Packages");
-
-            services.Configure<MvcOptions>((options) =>
+            builder.AddRazorPages(options =>
             {
-                options.Filters.Add(typeof(ModularRazorPageFilter));
+                options.RootDirectory = "/Packages";
+                options.Conventions.Add(new ModularPageRouteModelConvention());
             });
+
+            services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<IPageApplicationModelProvider, ModularPageApplicationModelProvider>());
 
             AddModularFrameworkParts(applicationServices, builder.PartManager);
 
