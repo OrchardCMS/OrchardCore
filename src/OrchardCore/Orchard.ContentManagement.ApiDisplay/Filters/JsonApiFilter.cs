@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JsonApiSerializer;
@@ -76,6 +76,13 @@ namespace Orchard.JsonApi.Filters
             var contentItems = actionValue as IEnumerable<ContentItem>;
 
             if (contentItem != null)
+            {
+                return contentItems.ToArray();
+            }
+
+            contentItems = actionValue as ContentItem[];
+
+            if (contentItems != null)
             {
                 return contentItems.ToArray();
             }
