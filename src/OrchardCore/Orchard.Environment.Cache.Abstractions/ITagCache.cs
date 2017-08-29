@@ -1,4 +1,3 @@
-﻿using Orchard.Events;
 using System.Collections.Generic;
 
 namespace Orchard.Environment.Cache
@@ -10,7 +9,7 @@ namespace Orchard.Environment.Cache
         void RemoveTag(string tag);
     }
 
-    public interface ITagRemovedEventHandler : IEventHandler
+    public interface ITagRemovedEventHandler
     {
         void TagRemoved(string tag, IEnumerable<string> keys);
     }

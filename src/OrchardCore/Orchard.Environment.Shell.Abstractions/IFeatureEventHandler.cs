@@ -1,9 +1,7 @@
-﻿using Orchard.Environment.Extensions.Features;
-using Orchard.Events;
-
+using Orchard.Environment.Extensions.Features;
 namespace Orchard.Environment.Shell
 {
-    public interface IFeatureEventHandler : IEventHandler
+    public interface IFeatureEventHandler
     {
         void Installing(IFeatureInfo feature);
         void Installed(IFeatureInfo feature);

@@ -12,6 +12,7 @@
     <ProjectReference Include="..\..\OrchardCore\Orchard.Data\Orchard.Data.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Recipes.Abstractions\Orchard.Recipes.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Setup.Abstractions\Orchard.Setup.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

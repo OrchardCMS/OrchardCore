@@ -11,8 +11,10 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.AsModule\OrchardCore.AsModule.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
-    <ProjectReference Include="..\Orchard.Navigation\Orchard.Navigation.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Recipes.Abstractions\Orchard.Recipes.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Setup.Abstractions\Orchard.Setup.Abstractions.csproj" />
+
   </ItemGroup>
 
   <ItemGroup>

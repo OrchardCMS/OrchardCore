@@ -1,8 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 
 namespace Orchard.Environment.Cache
 {
@@ -11,9 +13,13 @@ namespace Orchard.Environment.Cache
         private const string CacheKey = nameof(DefaultTagCache);
 
         private readonly ConcurrentDictionary<string, HashSet<string>> _dictionary;
-        private readonly ITagRemovedEventHandler _tagRemovedEventHandler;
+        private readonly IEnumerable<ITagRemovedEventHandler> _tagRemovedEventHandlers;
+        private readonly ILogger<DefaultTagCache> _logger;
 
-        public DefaultTagCache(ITagRemovedEventHandler tagRemovedEventHandler, IMemoryCache memoryCache)
+        public DefaultTagCache(
+            IEnumerable<ITagRemovedEventHandler> tagRemovedEventHandlers, 
+            IMemoryCache memoryCache,
+            ILogger<DefaultTagCache> logger)
         {
             // We use the memory cache as the state holder and keep this class transient as it has
             // dependencies on non-singletons
@@ -23,8 +29,9 @@ namespace Orchard.Environment.Cache
                 _dictionary = new ConcurrentDictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
                 memoryCache.Set(CacheKey, _dictionary);
             }
-            
-            _tagRemovedEventHandler = tagRemovedEventHandler;
+
+            _tagRemovedEventHandlers = tagRemovedEventHandlers;
+            _logger = logger;
         }
 
         public void Tag(string key, params string[] tags)
@@ -60,7 +67,7 @@ namespace Orchard.Environment.Cache
 
             if (_dictionary.TryRemove(tag, out set))
             {
-                _tagRemovedEventHandler.TagRemoved(tag, set);
+                _tagRemovedEventHandlers.Invoke(x => x.TagRemoved(tag, set), _logger);
             }
         }
     }
