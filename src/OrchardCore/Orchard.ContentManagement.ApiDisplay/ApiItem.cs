@@ -48,7 +48,7 @@ namespace Orchard.JsonApi
             {
                 Links = new Links
                 {
-                    { "self", new Link { Href = urlHelper.RouteUrl("Api_ContentType_Id_Route", new { contentType = Type, contentItemId = Id }) } }
+                    { "self", new Link { Href = urlHelper.RouteUrl("Api.GetContents.ByTypeAndId", new { area = "Orchard.Contents", contentType = Type, contentItemId = Id }) } }
                 };
             }
         }
@@ -194,7 +194,8 @@ namespace Orchard.JsonApi
                 Links = new Links
                 {
                     { "self", new Link {
-                        Href = urlHelper.RouteUrl("Api_Content_By_Relationship_Route", new {
+                        Href = urlHelper.RouteUrl("Api.GetContents.ByRelationship", new {
+                            area = "Orchard.Contents",
                             contentType = parentContentItem.ContentType,
                             contentItemId = parentContentItem.ContentItemId,
                             nestedContentType = Type
@@ -207,11 +208,13 @@ namespace Orchard.JsonApi
         /// <summary>
         /// The logical identifier of the content item across versions.
         /// </summary>
+        [DataMember(Order = 1)]
         public string Id { get; set; }
 
         /// <summary>
         /// The content type of the content item.
         /// </summary>
+        [DataMember(Order = 2)]
         public string Type { get; set; }
 
         [JsonIgnore]

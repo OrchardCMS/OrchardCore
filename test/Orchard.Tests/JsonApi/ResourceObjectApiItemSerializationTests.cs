@@ -102,7 +102,7 @@ namespace Orchard.Tests.JsonApi
             var contentItemId = "ABC";
 
             var expectedUrl = "http:\\fu.com\\" + contentItemId;
-            var urlHelper = GetMockUrlHelper("Api_Self_Route", expectedUrl);
+            var urlHelper = GetMockUrlHelper("Api.GetContents.ByType", expectedUrl);
 
             var item = new ApiItem(
                 new ContentItem
