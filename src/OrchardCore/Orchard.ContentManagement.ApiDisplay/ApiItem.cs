@@ -125,7 +125,7 @@ namespace Orchard.JsonApi
         public Links Links { get; }
 
         //public Meta Meta { get; internal set; } = new Meta();
-        
+
         public Relationship<List<ApiRelationshipItem>> ContentItems { get; set; }
 
         public void AddPart(ContentPart contentPart)
@@ -154,6 +154,11 @@ namespace Orchard.JsonApi
             ContentItems.Data.Add(relationship);
 
             ContentItems.Links = relationship.Links;
+
+            if (relationship.Meta.Count > 0)
+            {
+                ContentItems.Meta = relationship.Meta;
+            }
         }
 
         //public void AddLatest(ContentItem contentItem)
@@ -203,6 +208,8 @@ namespace Orchard.JsonApi
                     } }
                 };
             }
+
+            Meta = new Meta();
         }
 
         /// <summary>
@@ -219,5 +226,8 @@ namespace Orchard.JsonApi
 
         [JsonIgnore]
         public Links Links { get; }
+        
+        [JsonIgnore]
+        public Meta Meta { get; }
     }
 }
