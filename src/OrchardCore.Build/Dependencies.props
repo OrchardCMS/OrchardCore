@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <AspNetCoreVersion>2.0.0-*</AspNetCoreVersion>
+    <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
     <RuntimeFrameworkVersion Condition="'$(TargetFramework)'=='netcoreapp2.0'">2.0.0</RuntimeFrameworkVersion>
     <TestSdkVersion>15.3.0</TestSdkVersion>
     <XunitAnalyzers>0.3.0</XunitAnalyzers>
