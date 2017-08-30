@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -13,9 +14,9 @@ using Orchard.Environment.Shell.Builders;
 using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Environment.Shell.Models;
-using Orchard.Events;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
+using Orchard.Setup.Events;
 using YesSql;
 
 namespace Orchard.Setup.Services
@@ -129,7 +130,7 @@ namespace Orchard.Setup.Services
 
             using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
-                using (var scope = shellContext.CreateServiceScope())
+                using (var scope = shellContext.EnterServiceScope())
                 {
                     var store = scope.ServiceProvider.GetRequiredService<IStore>();
 
@@ -172,7 +173,7 @@ namespace Orchard.Setup.Services
 
                 // Create a new scope for the recipe thread to prevent race issues with other scoped
                 // services from the request.
-                using (var scope = shellContext.CreateServiceScope())
+                using (var scope = shellContext.EnterServiceScope())
                 {
                     var recipeExecutor = scope.ServiceProvider.GetService<IRecipeExecutor>();
 
@@ -189,16 +190,15 @@ namespace Orchard.Setup.Services
                         DatabaseProvider = context.DatabaseProvider,
                         DatabaseConnectionString = context.DatabaseConnectionString,
                         DatabaseTablePrefix = context.DatabaseTablePrefix
-                    }); 
+                    });
                     //});
-
                 }
             }
 
             // Reloading the shell context as the recipe  has probably updated its features
             using (var shellContext = await _orchardHost.CreateShellContextAsync(shellSettings))
             {
-                using (var scope = shellContext.CreateServiceScope())
+                using (var scope = shellContext.EnterServiceScope())
                 {
                     var hasErrors = false;
 
@@ -208,8 +208,10 @@ namespace Orchard.Setup.Services
                     };
 
                     // Invoke modules to react to the setup event
-                    var eventBus = scope.ServiceProvider.GetService<IEventBus>();
-                    await eventBus.NotifyAsync<ISetupEventHandler>(x => x.Setup(
+                    var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
+
+                    await setupEventHandlers.InvokeAsync(x => x.Setup(
                         context.SiteName,
                         context.AdminUsername,
                         context.AdminEmail,
@@ -218,7 +220,7 @@ namespace Orchard.Setup.Services
                         context.DatabaseConnectionString,
                         context.DatabaseTablePrefix,
                         reportError
-                    ));
+                    ), logger);
 
                     if (hasErrors)
                     {

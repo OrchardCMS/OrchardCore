@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DynamicCache.Services;
@@ -13,6 +13,7 @@ namespace Orchard.DynamicCache
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            // Register the type as it implements multiple interfaces
             services.AddScoped<DynamicCacheShapeDisplayEvents>();
             services.AddScoped<IShapeDisplayEvents>(sp => sp.GetRequiredService<DynamicCacheShapeDisplayEvents>());
             services.AddScoped<ITagRemovedEventHandler>(sp => sp.GetRequiredService<DynamicCacheShapeDisplayEvents>());

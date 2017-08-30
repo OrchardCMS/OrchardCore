@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Hosting.ShellBuilders;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -37,7 +38,7 @@ namespace Orchard.Environment.Shell.Builders
             var describedContext = await CreateDescribedContextAsync(settings, MinimumShellDescriptor());
 
             ShellDescriptor currentDescriptor;
-            using (var scope = describedContext.CreateServiceScope())
+            using (var scope = describedContext.EnterServiceScope())
             {
                 var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
                 currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();

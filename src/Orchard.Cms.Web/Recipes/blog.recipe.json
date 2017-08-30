@@ -33,7 +33,6 @@
         "Orchard.Resources",
         "Orchard.Roles",
         "Orchard.Settings",
-        "Orchard.Tenants",
         "Orchard.Themes",
         "Orchard.Users",
 
@@ -45,6 +44,7 @@
         "Orchard.ContentPreview",
         "Orchard.Contents",
         "Orchard.ContentTypes",
+        "Orchard.CustomSettings",
         "Orchard.Deployment",
         "Orchard.Deployment.Remote",
         "Orchard.Feeds",
@@ -59,6 +59,7 @@
         "Orchard.Menu",
         "Orchard.Queries",
         "Orchard.Title",
+        "Orchard.Templates",
         "Orchard.Widgets",
 
         // Themes

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -153,7 +153,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                             hit.shapeContext.harvestShapeInfo.RelativePath, shapeDescriptor => displayContext =>
                             {
                                 var viewEngine = displayContext.ServiceProvider
-                                    .GetRequiredService<IEnumerable<IShapeTemplateViewEngine>>()
+                                    .GetServices<IShapeTemplateViewEngine>()
                                     .FirstOrDefault(e => e.GetType() == viewEngineType);
 
                                 return viewEngine.RenderAsync(hit.shapeContext.harvestShapeInfo.RelativePath, displayContext);

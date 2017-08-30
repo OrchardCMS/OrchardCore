@@ -13,6 +13,7 @@
     <ProjectReference Include="..\..\OrchardCore\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Commands\Orchard.Environment.Commands.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Setup.Abstractions\Orchard.Setup.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
