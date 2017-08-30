@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Events;
+using Orchard.Setup.Events;
 
 namespace Orchard.Settings.Services
 {
-    public interface ISetupEventHandler : IEventHandler
-    {
-        Task Setup(string siteName, string userName);
-    }
-
     /// <summary>
     /// During setup, registers the Super User.
     /// </summary>
@@ -22,7 +17,16 @@ namespace Orchard.Settings.Services
             _setupService = setupService;
         }
 
-        public async Task Setup(string siteName, string userName)
+        public async Task Setup(
+            string siteName,
+            string userName,
+            string email,
+            string password,
+            string dbProvider,
+            string dbConnectionString,
+            string dbTablePrefix,
+            Action<string, string> reportError
+            )
         {
             // Updating site settings
             var siteSettings = await _setupService.GetSiteSettingsAsync();

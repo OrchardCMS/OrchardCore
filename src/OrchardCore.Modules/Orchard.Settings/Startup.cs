@@ -8,6 +8,7 @@ using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
 using Orchard.Recipes;
 using Orchard.Security.Permissions;
+using Orchard.Setup.Events;
 using Orchard.Settings.Drivers;
 using Orchard.Settings.Recipes;
 using Orchard.Settings.Services;
@@ -21,8 +22,7 @@ namespace Orchard.Settings
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<SetupEventHandler>();
-            services.AddScoped<ISetupEventHandler>(sp => sp.GetRequiredService<SetupEventHandler>());
+            services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
             services.AddRecipeExecutionStep<SettingsStep>();

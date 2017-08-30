@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -13,9 +14,9 @@ using Orchard.Environment.Shell.Builders;
 using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Environment.Shell.Models;
-using Orchard.Events;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
+using Orchard.Setup.Events;
 using YesSql;
 
 namespace Orchard.Setup.Services
@@ -207,8 +208,10 @@ namespace Orchard.Setup.Services
                     };
 
                     // Invoke modules to react to the setup event
-                    var eventBus = scope.ServiceProvider.GetService<IEventBus>();
-                    await eventBus.NotifyAsync<ISetupEventHandler>(x => x.Setup(
+                    var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
+
+                    await setupEventHandlers.InvokeAsync(x => x.Setup(
                         context.SiteName,
                         context.AdminUsername,
                         context.AdminEmail,
@@ -217,7 +220,7 @@ namespace Orchard.Setup.Services
                         context.DatabaseConnectionString,
                         context.DatabaseTablePrefix,
                         reportError
-                    ));
+                    ), logger);
 
                     if (hasErrors)
                     {

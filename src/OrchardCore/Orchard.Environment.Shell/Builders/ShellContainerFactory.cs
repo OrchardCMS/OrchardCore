@@ -1,15 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.Builders.Models;
-using Orchard.Events;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -36,8 +32,7 @@ namespace Orchard.Environment.Shell.Builders
         {
             services.TryAddScoped<IShellStateUpdater, ShellStateUpdater>();
             services.TryAddScoped<IShellStateManager, NullShellStateManager>();
-            services.AddScoped<ShellStateCoordinator>();
-            services.AddScoped<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ShellStateCoordinator>());
+            services.AddScoped<IShellDescriptorManagerEventHandler, ShellStateCoordinator>();
         }
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
@@ -49,12 +44,7 @@ namespace Orchard.Environment.Shell.Builders
             tenantServiceCollection.AddSingleton(blueprint);
 
             AddCoreServices(tenantServiceCollection);
-
-            // Configure event handlers, they are not part of the blueprint, so they have
-            // to be added manually. Or need to create a module for this.
-            tenantServiceCollection.AddScoped<IEventBus, DefaultOrchardEventBus>();
-            tenantServiceCollection.AddSingleton<IEventBusState, EventBusState>();
-
+            
             // Execute IStartup registrations
 
             // TODO: Use StartupLoader in RTM and then don't need to register the classes anymore then
@@ -99,58 +89,8 @@ namespace Orchard.Environment.Shell.Builders
 
             // add already instanciated services like DefaultOrchardHost
             var applicationServiceDescriptors = _applicationServices.Where(x => x.Lifetime == ServiceLifetime.Singleton);
-
-            // Register event handlers on the event bus
-            var eventHandlers = tenantServiceCollection
-                .Union(applicationServiceDescriptors)
-                .Select(x => x.ImplementationType)
-                .Distinct()
-                .Where(t => t != null && typeof(IEventHandler).IsAssignableFrom(t) && t.GetTypeInfo().IsClass)
-                .ToArray();
-
-            foreach (var handlerClass in eventHandlers)
-            {
-                // Register dynamic proxies to intercept direct calls if an IEventHandler is resolved, dispatching the call to
-                // the event bus.
-
-                foreach (var i in handlerClass.GetInterfaces().Where(t => t != typeof(IEventHandler) && typeof(IEventHandler).IsAssignableFrom(t)))
-                {
-                    tenantServiceCollection.AddScoped(i, serviceProvider =>
-                    {
-                        var proxy = DefaultOrchardEventBus.CreateProxy(i);
-                        proxy.EventBus = serviceProvider.GetService<IEventBus>();
-                        return proxy;
-                    });
-                }
-            }
-
+            
             var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
-
-            using (var scope = shellServiceProvider.CreateScope())
-            {
-                var eventBusState = scope.ServiceProvider.GetService<IEventBusState>();
-
-                // Register any IEventHandler method in the event bus
-                foreach (var handlerClass in eventHandlers)
-                {
-                    foreach (var handlerInterface in handlerClass.GetInterfaces().Where(x => typeof(IEventHandler).IsAssignableFrom(x) && typeof(IEventHandler) != x))
-                    {
-                        foreach (var interfaceMethod in handlerInterface.GetMethods())
-                        {
-                            if (_logger.IsEnabled(LogLevel.Debug))
-                            {
-                                _logger.LogDebug($"{handlerClass.Name}/{handlerInterface.Name}.{interfaceMethod.Name}");
-                            }
-
-                            //var classMethod = handlerClass.GetMethods().Where(x => x.Name == interfaceMethod.Name && x.GetParameters().Length == interfaceMethod.GetParameters().Length).FirstOrDefault();
-                            Func<IServiceProvider, IDictionary<string, object>, Task> d = (sp, parameters) => DefaultOrchardEventBus.Invoke(sp, parameters, interfaceMethod, handlerClass);
-                            var messageName = $"{handlerInterface.Name}.{interfaceMethod.Name}";
-                            var className = handlerClass.FullName;
-                            eventBusState.Add(messageName, d);
-                        }
-                    }
-                }
-            }
 
             // Register all DIed types in ITypeFeatureProvider
             var typeFeatureProvider = shellServiceProvider.GetRequiredService<ITypeFeatureProvider>();

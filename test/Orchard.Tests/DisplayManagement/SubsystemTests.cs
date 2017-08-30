@@ -1,4 +1,4 @@
-﻿//using Microsoft.AspNetCore.Html;
+//using Microsoft.AspNetCore.Html;
 //using Microsoft.AspNetCore.Http;
 //using Microsoft.AspNetCore.Mvc.Rendering;
 //using Microsoft.Extensions.Caching.Memory;
@@ -12,7 +12,6 @@
 //using Orchard.DisplayManagement.Theming;
 //using Orchard.Environment.Extensions;
 //using Orchard.Environment.Extensions.Features;
-//using Orchard.Events;
 //using Orchard.Tests.Stubs;
 //using System;
 //using System.Collections.Generic;
@@ -27,23 +26,6 @@
 //    public class SubsystemTests
 //    {
 //        IServiceProvider _serviceProvider;
-
-//        public class StubEventBus : IEventBus
-//        {
-//            public Task NotifyAsync(string message, IDictionary<string, object> arguments)
-//            {
-//                return null;
-//            }
-
-//            public Task NotifyAsync<TEventHandler>(Expression<Func<TEventHandler, Task>> eventNotifier) where TEventHandler : IEventHandler
-//            {
-//                return null;
-//            }
-
-//            public void Subscribe(string message, Func<IServiceProvider, IDictionary<string, object>, Task> action)
-//            {
-//            }
-//        }
 
 //        public SubsystemTests()
 //        {
@@ -69,7 +51,6 @@
 //            serviceCollection.AddScoped<IHtmlDisplay, DefaultIHtmlDisplay>();
 //            serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
 //            serviceCollection.AddScoped<IDisplayHelperFactory, DisplayHelperFactory>();
-//            serviceCollection.AddScoped<IEventBus, StubEventBus>();
 //            serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
 
 //            serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();

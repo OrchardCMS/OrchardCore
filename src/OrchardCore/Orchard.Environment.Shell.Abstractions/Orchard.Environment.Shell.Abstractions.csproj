@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Orchard.Environment.Extensions.Abstractions\Orchard.Environment.Extensions.Abstractions.csproj" />
-    <ProjectReference Include="..\Orchard.Events\Orchard.Events.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +10,6 @@ using Orchard.Demo.Models;
 using Orchard.Demo.Services;
 using Orchard.DisplayManagement;
 using Orchard.Environment.Cache;
-using Orchard.Events;
 using YesSql;
 
 namespace Orchard.Demo.Controllers
@@ -19,7 +18,6 @@ namespace Orchard.Demo.Controllers
     {
         private readonly ITestDependency _testDependency;
         private readonly IContentManager _contentManager;
-        private readonly IEventBus _eventBus;
         private readonly ISession _session;
         private readonly ILogger _logger;
         private readonly ITagCache _tagCache;
@@ -29,7 +27,6 @@ namespace Orchard.Demo.Controllers
         public HomeController(
             ITestDependency testDependency,
             IContentManager contentManager,
-            IEventBus eventBus,
             IShapeFactory shapeFactory,
             ISession session,
             ILogger<HomeController> logger,
@@ -41,7 +38,6 @@ namespace Orchard.Demo.Controllers
             _session = session;
             _testDependency = testDependency;
             _contentManager = contentManager;
-            _eventBus = eventBus;
             Shape = shapeFactory;
             _logger = logger;
             _tagCache = tagCache;
