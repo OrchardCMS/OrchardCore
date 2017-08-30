@@ -18,6 +18,7 @@ namespace Orchard.Mvc
         private const string MappingFileName = "ModuleProjectRazorFiles.map";
 
         private const string PageFolder = "/Pages";
+        private const string PageSegment = PageFolder + "/";
         private const string PageSearchPattern = PageFolder + "/**/*.cshtml";
 
         private static Dictionary<string, string> _paths;
@@ -53,9 +54,9 @@ namespace Orchard.Mvc
 
                 var roots = new HashSet<string>();
                 
-                foreach (var path in _paths.Values.Where(p => p.IndexOf(PageFolder + "/") != -1))
+                foreach (var path in _paths.Values.Where(p => p.IndexOf(PageSegment) != -1))
                 {
-                    roots.Add(path.Substring(0, path.IndexOf(PageFolder + "/")));
+                    roots.Add(path.Substring(0, path.IndexOf(PageSegment)));
                 }
 
                 if (roots.Count > 0)

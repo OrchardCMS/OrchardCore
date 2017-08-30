@@ -9,7 +9,7 @@ using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.DisplayManagement.Title;
 
-namespace Orchard.DisplayManagement.Razor
+namespace Orchard.DisplayManagement.RazorPages
 {
     public abstract class Page : Microsoft.AspNetCore.Mvc.RazorPages.Page
     {
