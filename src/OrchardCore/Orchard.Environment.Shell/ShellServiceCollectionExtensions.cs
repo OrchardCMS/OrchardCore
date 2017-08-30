@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orchard.Environment.Shell.Builders;
 
@@ -8,9 +8,11 @@ namespace Orchard.Environment.Shell
     {
         public static IServiceCollection AddHostingShellServices(this IServiceCollection services)
         {
+            // Register the type as it's implementing two interfaces which can be resolved independently
             services.AddSingleton<ShellHost>();
             services.AddSingleton<IShellHost>(sp => sp.GetRequiredService<ShellHost>());
             services.AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ShellHost>());
+
             {
                 // Use a single default site by default, i.e. if AddMultiTenancy hasn't been called before
                 services.TryAddSingleton<IShellSettingsManager, SingleShellSettingsManager>();

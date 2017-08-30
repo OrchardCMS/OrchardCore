@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Orchard.Events;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -15,11 +14,6 @@ namespace Orchard.DisplayManagement.Descriptors
 
     public interface IShapeTableHarvester : IShapeTableProvider
     {
-    }
-
-    public interface IShapeTableEventHandler : IEventHandler
-    {
-        void ShapeTableCreated(ShapeTable shapeTable);
     }
 
     /// <summary>

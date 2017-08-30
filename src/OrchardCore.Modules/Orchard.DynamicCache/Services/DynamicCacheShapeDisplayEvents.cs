@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Cache;
 
@@ -23,15 +24,15 @@ namespace Orchard.DynamicCache.Services
         private readonly HashSet<CacheContext> _cached = new HashSet<CacheContext>();
         private readonly Dictionary<string, string> _cache = new Dictionary<string, string>();
         private readonly IDynamicCache _dynamicCache;
-        private readonly ITagCache _tagCache;
+        private readonly IServiceProvider _serviceProvider;
 
         public DynamicCacheShapeDisplayEvents(
             IDynamicCache dynamicCache,
-            ITagCache tagCache,
+            IServiceProvider serviceProvider,
             ICacheContextManager cacheContextManager)
         {
             _dynamicCache = dynamicCache;
-            _tagCache = tagCache;
+            _serviceProvider = serviceProvider;
             _cacheContextManager = cacheContextManager;
         }
 
@@ -116,10 +117,12 @@ namespace Orchard.DynamicCache.Services
                     }
 
                     _dynamicCache.SetAsync(cacheKey, bytes, options).Wait();
-                    _tagCache.Tag(cacheKey, cacheContext.Tags.ToArray());
+
+                    // Lazy load to prevent cyclic dependency
+                    var tagCache = _serviceProvider.GetRequiredService<ITagCache>();
+                    tagCache.Tag(cacheKey, cacheContext.Tags.ToArray());
                 }
             }
-
         }
 
         private string GetCacheKey(string cacheId, IEnumerable<CacheContextEntry> cacheEntries)
@@ -147,7 +150,7 @@ namespace Orchard.DynamicCache.Services
             var result = new StringBuilder(content.Length);
 
             int lastIndex = 0, startIndex = 0, start = 0, end = 0;
-            bool processed = false;
+            var processed = false;
             while ((lastIndex = content.IndexOf("[[cache ", lastIndex)) > 0)
             {
                 result.Append(content.Substring(end, lastIndex - end));

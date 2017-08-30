@@ -16,6 +16,7 @@ using Orchard.Environment.Shell;
 using Orchard.Security;
 using Orchard.Security.Permissions;
 using Orchard.Security.Services;
+using Orchard.Setup.Events;
 using Orchard.Users.Commands;
 using Orchard.Users.Indexes;
 using Orchard.Users.Models;
@@ -136,8 +137,7 @@ namespace Orchard.Users
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IMembershipService, MembershipService>();
-            services.AddScoped<SetupEventHandler>();
-            services.AddScoped<ISetupEventHandler>(sp => sp.GetRequiredService<SetupEventHandler>());
+            services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<ICommandHandler, UserCommands>();
 
             services.AddScoped<IPermissionProvider, Permissions>();

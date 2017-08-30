@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Orchard.Events;
 
-namespace Orchard.Setup.Services
+namespace Orchard.Setup.Events
 {
     /// <summary>
     /// Called when a tenant is set up.
     /// </summary>
-    public interface ISetupEventHandler : IEventHandler
+    public interface ISetupEventHandler
     {
         Task Setup(
             string siteName,

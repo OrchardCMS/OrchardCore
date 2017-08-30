@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +11,6 @@ using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Extensions;
-using Orchard.Events;
 using Orchard.Tests.Stubs;
 using Xunit;
 
@@ -22,23 +20,6 @@ namespace Orchard.Tests.DisplayManagement
     {
         TestShapeTable _defaultShapeTable;
         IServiceProvider _serviceProvider;
-
-        public class StubEventBus : IEventBus
-        {
-            public Task NotifyAsync(string message, IDictionary<string, object> arguments)
-            {
-                return null;
-            }
-
-            public Task NotifyAsync<TEventHandler>(Expression<Func<TEventHandler, Task>> eventNotifier) where TEventHandler : IEventHandler
-            {
-                return Task.CompletedTask;
-            }
-
-            public void Subscribe(string message, Func<IServiceProvider, IDictionary<string, object>, Task> action)
-            {
-            }
-        }
 
         public DefaultDisplayManagerTests()
         {
@@ -56,7 +37,6 @@ namespace Orchard.Tests.DisplayManagement
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
             serviceCollection.AddScoped<IShapeDisplayEvents, TestDisplayEvents>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
-            serviceCollection.AddScoped<IEventBus, StubEventBus>();
             serviceCollection.AddScoped<IStringLocalizer<DefaultHtmlDisplay>, NullStringLocalizer<DefaultHtmlDisplay>>();
             serviceCollection.AddLogging();
 
