@@ -18,9 +18,9 @@ namespace Orchard.Mvc
                 .Select(f => f.Extension.Id).Distinct();
 
             var moduleId = context.ActionDescriptor.ViewEnginePath.Split(new[] { '/' },
-                StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+                StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? String.Empty;
 
-            if (moduleId == null || !moduleIds.Contains(moduleId))
+            if (!moduleIds.Contains(moduleId))
             {
                 context.Result = new NotFoundResult();
             }

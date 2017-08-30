@@ -4,9 +4,9 @@ using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
@@ -39,7 +39,6 @@ namespace Orchard.Mvc
             {
                 // Do we need this?
                 options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAuthorizationFilter));
-
                 options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
             });
 
@@ -55,6 +54,9 @@ namespace Orchard.Mvc
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IPageApplicationModelProvider, ModularPageApplicationModelProvider>());
+
+            services.Replace(
+                ServiceDescriptor.Singleton<IActionDescriptorChangeProvider, ModularPageActionDescriptorChangeProvider>());
 
             AddModularFrameworkParts(applicationServices, builder.PartManager);
 

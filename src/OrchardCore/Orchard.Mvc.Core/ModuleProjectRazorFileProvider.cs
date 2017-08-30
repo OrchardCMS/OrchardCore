@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,7 +17,11 @@ namespace Orchard.Mvc
         private const string MappingFileFolder = "obj";
         private const string MappingFileName = "ModuleProjectRazorFiles.map";
 
+        private const string PageFolderPattern = "/Pages/";
+        private const string PageSearchPattern = "/Pages/**/*.cshtml";
+
         private static Dictionary<string, string> _paths;
+        private static CompositeFileProvider _pagesFileProvider;
         private static object _synLock = new object();
 
         public ModuleProjectRazorFileProvider(string rootPath)
@@ -37,7 +41,7 @@ namespace Orchard.Mvc
                     {
                         var paths = File.ReadAllLines(path)
                             .Select(x => x.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
-                            .Where(x => x.Length == 2).ToDictionary(x => x[1].Replace('\\', '/'), x => x[0]);
+                            .Where(x => x.Length == 2).ToDictionary(x => x[1].Replace('\\', '/'), x => x[0].Replace('\\', '/'));
 
                         _paths = new Dictionary<string, string>(paths);
                     }
@@ -45,6 +49,18 @@ namespace Orchard.Mvc
                     {
                         _paths = new Dictionary<string, string>();
                     }
+                }
+
+                var roots = new HashSet<string>();
+                
+                foreach (var path in _paths.Values.Where(p => p.IndexOf(PageFolderPattern) != -1))
+                {
+                    roots.Add(path.Substring(0, path.IndexOf(PageFolderPattern)));
+                }
+
+                if (roots.Count > 0)
+                {
+                    _pagesFileProvider = new CompositeFileProvider(roots.Select(r => new PhysicalFileProvider(r)));
                 }
             }
         }
@@ -69,6 +85,11 @@ namespace Orchard.Mvc
             if (filter != null && _paths.ContainsKey(filter))
             {
                 return new PollingFileChangeToken(new FileInfo(_paths[filter]));
+            }
+
+            if (filter != null && _pagesFileProvider != null && filter.IndexOf(PageSearchPattern) != -1)
+            {
+                return _pagesFileProvider.Watch(PageSearchPattern);
             }
 
             return null;
