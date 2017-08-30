@@ -15,11 +15,9 @@ using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
 using Orchard.Security;
 using Orchard.Security.Permissions;
-using Orchard.Security.Services;
 using Orchard.Setup.Events;
 using Orchard.Users.Commands;
 using Orchard.Users.Indexes;
-using Orchard.Users.Models;
 using Orchard.Users.Services;
 using YesSql.Indexes;
 
@@ -56,9 +54,9 @@ namespace Orchard.Users
         {
             services.AddSecurity();
 
-            /// Adds the default token providers used to generate tokens for reset passwords, change email
-            /// and change telephone number operations, and for two factor authentication token generation.
-            new IdentityBuilder(typeof(User), typeof(Role), services).AddDefaultTokenProviders();
+            // Adds the default token providers used to generate tokens for reset passwords, change email
+            // and change telephone number operations, and for two factor authentication token generation.
+            new IdentityBuilder(typeof(IUser), typeof(IRole), services).AddDefaultTokenProviders();
 
             // 'IAuthenticationSchemeProvider' is already registered at the host level.
             // We need to register it again so it is taken into account at the tenant level.
@@ -96,19 +94,19 @@ namespace Orchard.Users
             });
 
             // Identity services
-            services.TryAddScoped<IUserValidator<User>, UserValidator<User>>();
-            services.TryAddScoped<IPasswordValidator<User>, PasswordValidator<User>>();
-            services.TryAddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-            services.TryAddScoped<ILookupNormalizer, UpperInvariantLookupNormalizer>();
+            services.TryAddScoped<IUserValidator<IUser>, UserValidator<IUser>>();
+            services.TryAddScoped<IPasswordValidator<IUser>, PasswordValidator<IUser>>();
+            services.TryAddScoped<IPasswordHasher<IUser>, PasswordHasher<IUser>>();
+            services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
 
             // No interface for the error describer so we can add errors without rev'ing the interface
             services.TryAddScoped<IdentityErrorDescriber>();
-            services.TryAddScoped<ISecurityStampValidator, SecurityStampValidator<User>>();
-            services.TryAddScoped<IUserClaimsPrincipalFactory<User>, UserClaimsPrincipalFactory<User, Role>>();
-            services.TryAddScoped<UserManager<User>>();
-            services.TryAddScoped<SignInManager<User>>();
+            services.TryAddScoped<ISecurityStampValidator, SecurityStampValidator<IUser>>();
+            services.TryAddScoped<IUserClaimsPrincipalFactory<IUser>, UserClaimsPrincipalFactory<IUser, IRole>>();
+            services.TryAddScoped<UserManager<IUser>>();
+            services.TryAddScoped<SignInManager<IUser>>();
 
-            services.TryAddScoped<IUserStore<User>, UserStore>();
+            services.TryAddScoped<IUserStore<IUser>, UserStore>();
 
             services.ConfigureApplicationCookie(o =>
             {
@@ -133,12 +131,14 @@ namespace Orchard.Users
             });
 
             services.AddSingleton<IIndexProvider, UserIndexProvider>();
+            services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<ICommandHandler, UserCommands>();
+            services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();

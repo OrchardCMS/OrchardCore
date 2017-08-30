@@ -19,6 +19,7 @@ using Orchard.OpenId.Models;
 using Orchard.OpenId.Recipes;
 using Orchard.OpenId.Services;
 using Orchard.Recipes;
+using Orchard.Security;
 using Orchard.Security.Permissions;
 using Orchard.Settings;
 using YesSql.Indexes;
@@ -43,6 +44,7 @@ namespace Orchard.OpenId
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddSingleton<IIndexProvider, OpenIdApplicationIndexProvider>();
+            services.AddSingleton<IIndexProvider, OpenIdApplicationByRoleNameIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdTokenIndexProvider>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
@@ -55,6 +57,8 @@ namespace Orchard.OpenId
             services.AddScoped<OpenIdTokenIndexProvider>();
 
             services.AddScoped<OpenIdApplicationStore>();
+
+            services.AddScoped<IRoleRemovedEventHandler, OpenIdApplicationRoleRemovedEventHandler>();
 
             // Note: only the core OpenIddict services (e.g managers and custom stores) are registered here.
             // The OpenIddict/JWT/validation handlers are lazily registered as active authentication handlers

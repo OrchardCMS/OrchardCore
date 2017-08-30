@@ -15,11 +15,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OpenIddict.Core;
+using Orchard.Mvc.ActionConstraints;
 using Orchard.OpenId.Models;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.ViewModels;
 using Orchard.Security;
-using Orchard.Users.Models;
+using Orchard.Users;
 
 namespace Orchard.OpenId.Controllers
 {
@@ -28,10 +29,10 @@ namespace Orchard.OpenId.Controllers
     {
         private readonly OpenIddictApplicationManager<OpenIdApplication> _applicationManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
-        private readonly SignInManager<User> _signInManager;
+        private readonly SignInManager<IUser> _signInManager;
         private readonly IOpenIdService _openIdService;
-        private readonly RoleManager<Role> _roleManager;
-        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IRole> _roleManager;
+        private readonly UserManager<IUser> _userManager;
         private readonly IStringLocalizer<AccessController> T;
 
         public AccessController(
@@ -39,9 +40,9 @@ namespace Orchard.OpenId.Controllers
             IOptions<IdentityOptions> identityOptions,
             IStringLocalizer<AccessController> localizer,
             IOpenIdService openIdService,
-            RoleManager<Role> roleManager,
-            SignInManager<User> signInManager,
-            UserManager<User> userManager)
+            RoleManager<IRole> roleManager,
+            SignInManager<IUser> signInManager,
+            UserManager<IUser> userManager)
         {
             T = localizer;
             _applicationManager = applicationManager;
@@ -420,7 +421,7 @@ namespace Orchard.OpenId.Controllers
         }
 
         private async Task<AuthenticationTicket> CreateTicketAsync(
-            OpenIdConnectRequest request, User user,
+            OpenIdConnectRequest request, IUser user,
             AuthenticationProperties properties = null)
         {
             // Create a new ClaimsPrincipal containing the claims that

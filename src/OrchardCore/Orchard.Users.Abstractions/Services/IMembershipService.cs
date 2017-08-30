@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Orchard.Security.Services
+namespace Orchard.Users.Services
 {
     public interface IMembershipService
     {

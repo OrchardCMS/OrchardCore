@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Orchard.Users.Models;
 using Orchard.Users.Services;
 using Orchard.Users.ViewModels;
 
@@ -14,14 +13,14 @@ namespace Orchard.Users.Controllers
     public class AccountController : Controller
     {
         private readonly IUserService _userService;
-        private readonly SignInManager<User> _signInManager;
-        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<IUser> _signInManager;
+        private readonly UserManager<IUser> _userManager;
         private readonly ILogger _logger;
 
         public AccountController(
             IUserService userService,
-            SignInManager<User> signInManager,
-            UserManager<User> userManager,
+            SignInManager<IUser> signInManager,
+            UserManager<IUser> userManager,
             ILogger<AccountController> logger)
         {
             _signInManager = signInManager;
@@ -93,8 +92,9 @@ namespace Orchard.Users.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = model.UserName, Email = model.Email };
-                if (await _userService.CreateUserAsync(user, model.Password, (key, message) => ModelState.AddModelError(key, message)))
+                var user = await _userService.CreateUserAsync(model.UserName, model.Email, new string[0], model.Password, (key, message) => ModelState.AddModelError(key, message));
+
+                if (user != null)
                 {
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                     // Send an email with this link

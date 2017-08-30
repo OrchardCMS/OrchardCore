@@ -5,7 +5,11 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Orchard.Environment.Cache;
 using Orchard.Roles.Models;
 using Orchard.Security;
@@ -14,20 +18,33 @@ using YesSql;
 
 namespace Orchard.Roles.Services
 {
-    public class RoleStore : IRoleClaimStore<Role>, IRoleProvider
+    public class RoleStore : IRoleClaimStore<IRole>, IRoleProvider
     {
         private const string Key = "RolesManager.Roles";
 
         private readonly ISession _session;
         private readonly ISignal _signal;
         private readonly IMemoryCache _memoryCache;
+        private readonly IServiceProvider _serviceProvider;
 
-        public RoleStore(ISession session, IMemoryCache memoryCache, ISignal signal)
+        public RoleStore(ISession session,
+            IMemoryCache memoryCache,
+            ISignal signal,
+            IStringLocalizer<RoleStore> stringLocalizer,
+            IServiceProvider serviceProvider,
+            ILogger<RoleStore> logger)
         {
             _memoryCache = memoryCache;
             _signal = signal;
+            T = stringLocalizer;
             _session = session;
+            _serviceProvider = serviceProvider;
+            Logger = logger;
         }
+
+        public ILogger Logger { get; }
+
+        public IStringLocalizer<RoleStore> T;
 
         public void Dispose()
         {
@@ -64,8 +81,8 @@ namespace Orchard.Roles.Services
             return roles.Roles.Select(x => x.RoleName).OrderBy(x => x).ToList();
         }
 
-        #region IRoleStore<Role>
-        public async Task<IdentityResult> CreateAsync(Role role, CancellationToken cancellationToken)
+        #region IRoleStore<IRole>
+        public async Task<IdentityResult> CreateAsync(IRole role, CancellationToken cancellationToken)
         {
             if (role == null)
             {
@@ -73,57 +90,61 @@ namespace Orchard.Roles.Services
             }
 
             var roles = await GetRolesAsync();
-            roles.Roles.Add(role);
+            roles.Roles.Add((Role)role);
             UpdateRoles(roles);
 
             return IdentityResult.Success;
         }
 
-        public async Task<IdentityResult> DeleteAsync(Role role, CancellationToken cancellationToken)
+        public async Task<IdentityResult> DeleteAsync(IRole role, CancellationToken cancellationToken)
         {
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
             }
+            var orchardRole = (Role)role;
 
-            if (String.Equals(role.NormalizedRoleName, "ANONYMOUS") ||
-                String.Equals(role.NormalizedRoleName, "AUTHENTICATED"))
+            if (String.Equals(orchardRole.NormalizedRoleName, "ANONYMOUS") ||
+                String.Equals(orchardRole.NormalizedRoleName, "AUTHENTICATED"))
             {
-                return IdentityResult.Failed(new IdentityError { Description = "Can't delete system roles." });
+                return IdentityResult.Failed(new IdentityError { Description = T["Can't delete system roles."] });
             }
 
+            var roleRemovedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleRemovedEventHandler>>();
+            await roleRemovedEventHandlers.InvokeAsync(x => x.RoleRemovedAsync(orchardRole.RoleName), Logger);
+
             var roles = await GetRolesAsync();
-            roles.Roles.Remove(role);
+            roles.Roles.Remove(orchardRole);
             UpdateRoles(roles);
 
             return IdentityResult.Success;
         }
 
-        public async Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
+        public async Task<IRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
             var roles = await GetRolesAsync();
             var role = roles.Roles.FirstOrDefault(x => x.RoleName == roleId);
             return role;
         }
 
-        public async Task<Role> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
+        public async Task<IRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             var roles = await GetRolesAsync();
             var role = roles.Roles.FirstOrDefault(x => x.NormalizedRoleName == normalizedRoleName);
             return role;
         }
 
-        public Task<string> GetNormalizedRoleNameAsync(Role role, CancellationToken cancellationToken)
+        public Task<string> GetNormalizedRoleNameAsync(IRole role, CancellationToken cancellationToken)
         {
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
             }
 
-            return Task.FromResult(role.NormalizedRoleName);
+            return Task.FromResult(((Role)role).NormalizedRoleName);
         }
 
-        public Task<string> GetRoleIdAsync(Role role, CancellationToken cancellationToken)
+        public Task<string> GetRoleIdAsync(IRole role, CancellationToken cancellationToken)
         {
             if (role == null)
             {
@@ -133,7 +154,7 @@ namespace Orchard.Roles.Services
             return Task.FromResult(role.RoleName.ToUpperInvariant());
         }
 
-        public Task<string> GetRoleNameAsync(Role role, CancellationToken cancellationToken)
+        public Task<string> GetRoleNameAsync(IRole role, CancellationToken cancellationToken)
         {
             if (role == null)
             {
@@ -143,31 +164,31 @@ namespace Orchard.Roles.Services
             return Task.FromResult(role.RoleName);
         }
 
-        public Task SetNormalizedRoleNameAsync(Role role, string normalizedName, CancellationToken cancellationToken)
+        public Task SetNormalizedRoleNameAsync(IRole role, string normalizedName, CancellationToken cancellationToken)
         {
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
             }
 
-            role.NormalizedRoleName = normalizedName;
+            ((Role)role).NormalizedRoleName = normalizedName;
 
             return Task.CompletedTask;
         }
 
-        public Task SetRoleNameAsync(Role role, string roleName, CancellationToken cancellationToken)
+        public Task SetRoleNameAsync(IRole role, string roleName, CancellationToken cancellationToken)
         {
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
             }
 
-            role.RoleName = roleName;
+            ((Role)role).RoleName = roleName;
 
             return Task.CompletedTask;
         }
 
-        public async Task<IdentityResult> UpdateAsync(Role role, CancellationToken cancellationToken)
+        public async Task<IdentityResult> UpdateAsync(IRole role, CancellationToken cancellationToken)
         {
             if (role == null)
             {
@@ -177,7 +198,7 @@ namespace Orchard.Roles.Services
             var roles = await GetRolesAsync();
             var existingRole = roles.Roles.FirstOrDefault(x => x.RoleName == role.RoleName);
             roles.Roles.Remove(existingRole);
-            roles.Roles.Add(role);
+            roles.Roles.Add((Role)role);
 
             UpdateRoles(roles);
 
@@ -186,8 +207,8 @@ namespace Orchard.Roles.Services
 
         #endregion
 
-        #region IRoleClaimStore<Role>
-        public Task AddClaimAsync(Role role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        #region IRoleClaimStore<IRole>
+        public Task AddClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (role == null)
             {
@@ -199,22 +220,22 @@ namespace Orchard.Roles.Services
                 throw new ArgumentNullException(nameof(claim));
             }
 
-            role.RoleClaims.Add(new RoleClaim { ClaimType = claim.Type, ClaimValue = claim.Value } );
+            ((Role)role).RoleClaims.Add(new RoleClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
 
             return Task.CompletedTask;
         }
 
-        public Task<IList<Claim>> GetClaimsAsync(Role role, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IList<Claim>> GetClaimsAsync(IRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
             }
 
-            return Task.FromResult<IList<Claim>>(role.RoleClaims.Select(x => x.ToClaim()).ToList());
+            return Task.FromResult<IList<Claim>>(((Role)role).RoleClaims.Select(x => x.ToClaim()).ToList());
         }
 
-        public Task RemoveClaimAsync(Role role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public Task RemoveClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (role == null)
             {
@@ -226,7 +247,7 @@ namespace Orchard.Roles.Services
                 throw new ArgumentNullException(nameof(claim));
             }
 
-            role.RoleClaims.RemoveAll(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
+            ((Role)role).RoleClaims.RemoveAll(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
 
             return Task.CompletedTask;
         }

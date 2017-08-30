@@ -23,7 +23,7 @@ using Orchard.Lists.Models;
 using Orchard.Media;
 using Orchard.MetaWeblog;
 using Orchard.Security.Permissions;
-using Orchard.Security.Services;
+using Orchard.Users.Services;
 using YesSql;
 
 namespace Orchard.Lists.RemotePublishing

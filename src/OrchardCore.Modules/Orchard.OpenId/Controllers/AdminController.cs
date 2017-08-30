@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +18,7 @@ using Orchard.OpenId.Services;
 using Orchard.OpenId.ViewModels;
 using Orchard.Security.Services;
 using Orchard.Settings;
-using Orchard.Users.Models;
+using Orchard.Users;
 
 namespace Orchard.OpenId.Controllers
 {
@@ -34,8 +34,8 @@ namespace Orchard.OpenId.Controllers
         private readonly OpenIdApplicationStore _applicationStore;
         private readonly INotifier _notifier;
         private readonly IOpenIdService _openIdService;
-        private readonly IEnumerable<IPasswordValidator<User>> _passwordValidators;
-        private readonly UserManager<User> _userManager;
+        private readonly IEnumerable<IPasswordValidator<IUser>> _passwordValidators;
+        private readonly UserManager<IUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
 
         public AdminController(
@@ -46,8 +46,8 @@ namespace Orchard.OpenId.Controllers
             IRoleProvider roleProvider,
             OpenIddictApplicationManager<OpenIdApplication> applicationManager,
             OpenIdApplicationStore applicationStore,
-            IEnumerable<IPasswordValidator<User>> passwordValidators,
-            UserManager<User> userManager,
+            IEnumerable<IPasswordValidator<IUser>> passwordValidators,
+            UserManager<IUser> userManager,
             IOptions<IdentityOptions> identityOptions,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier,
@@ -321,7 +321,7 @@ namespace Orchard.OpenId.Controllers
             }
             return LocalRedirect(returnUrl);
         }
-        private async Task<bool> ValidateClientSecretAsync(User user, string password, Action<string, string> reportError)
+        private async Task<bool> ValidateClientSecretAsync(IUser user, string password, Action<string, string> reportError)
         {
             if (string.IsNullOrEmpty(password))
             {

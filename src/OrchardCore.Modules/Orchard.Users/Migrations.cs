@@ -1,4 +1,4 @@
-﻿using Orchard.Data.Migration;
+using Orchard.Data.Migration;
 using Orchard.Users.Indexes;
 
 namespace Orchard.Users
@@ -10,6 +10,11 @@ namespace Orchard.Users
             SchemaBuilder.CreateMapIndexTable(nameof(UserIndex), table => table
                 .Column<string>("NormalizedUserName")
                 .Column<string>("NormalizedEmail")
+            );
+
+            SchemaBuilder.CreateReduceIndexTable(nameof(UserByRoleNameIndex), table => table
+                .Column<string>("RoleName")
+                .Column<int>("Count")
             );
 
             return 1;

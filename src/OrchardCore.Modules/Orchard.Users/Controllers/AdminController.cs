@@ -16,22 +16,22 @@ using Orchard.Security.Services;
 using Orchard.Settings;
 using Orchard.Users.Indexes;
 using Orchard.Users.Models;
+using Orchard.Users.Services;
 using Orchard.Users.ViewModels;
 using YesSql;
-using Orchard.Users.Services;
 
 namespace Orchard.Users.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<IUser> _userManager;
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringLocalizer T;
         private readonly IHtmlLocalizer TH;
         private readonly ISiteService _siteService;
         private readonly dynamic New;
-        private readonly RoleManager<Role> _roleManager;
+        private readonly RoleManager<IRole> _roleManager;
         private readonly IRoleProvider _roleProvider;
         private readonly INotifier _notifier;
         private readonly IUserService _userService;
@@ -39,8 +39,8 @@ namespace Orchard.Users.Controllers
         public AdminController(
             IAuthorizationService authorizationService,
             ISession session,
-            UserManager<User> userManager,
-            RoleManager<Role> roleManager,
+            UserManager<IUser> userManager,
+            RoleManager<IRole> roleManager,
             IRoleProvider roleProvider,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
@@ -166,9 +166,10 @@ namespace Orchard.Users.Controllers
 
             if (ModelState.IsValid)
             {
-                var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
-                var user = new User { UserName = model.UserName, Email = model.Email, RoleNames = roleNames };
-                if (await _userService.CreateUserAsync(user, model.Password, (key, message) => ModelState.AddModelError(key, message)))
+                var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
+                var user = await _userService.CreateUserAsync(model.UserName, model.Email, roleNames, model.Password, (key, message) => ModelState.AddModelError(key, message));
+
+                if (user != null)
                 {
                     _notifier.Success(TH["User created successfully"]);
                     return RedirectToAction(nameof(Index));
@@ -196,13 +197,14 @@ namespace Orchard.Users.Controllers
             }
 
             var roleNames = await GetRoleNamesAsync();
-            var roles = roleNames.Select(x => new RoleViewModel { Role = x, IsSelected = currentUser.RoleNames.Contains(x, StringComparer.OrdinalIgnoreCase) }).ToArray();
+            var userRoleNames = await _userManager.GetRolesAsync(currentUser);
+            var roles = roleNames.Select(x => new RoleViewModel { Role = x, IsSelected = userRoleNames.Contains(x, StringComparer.OrdinalIgnoreCase) }).ToArray();
 
             var model = new EditUserViewModel
             {
-                Id = currentUser.Id,
-                Email = currentUser.Email,
-                UserName = currentUser.UserName,
+                Id = id,
+                Email = await _userManager.GetEmailAsync(currentUser),
+                UserName = await _userManager.GetUserNameAsync(currentUser),
                 Roles = roles
             };
 
@@ -229,26 +231,58 @@ namespace Orchard.Users.Controllers
             if (ModelState.IsValid)
             {
                 var userWithSameName = await _userManager.FindByNameAsync(model.UserName);
-                if (userWithSameName != null && userWithSameName.Id != currentUser.Id)
+                if (userWithSameName != null)
                 {
-                    ModelState.AddModelError(string.Empty, T["The user name is already used."]);
+                    var userWithSameNameId = await _userManager.GetUserIdAsync(userWithSameName);
+                    if (userWithSameNameId != model.Id)
+                    {
+                        ModelState.AddModelError(string.Empty, T["The user name is already used."]);
+                    }
                 }
 
                 var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
-                if (userWithSameEmail != null && userWithSameEmail.Id != currentUser.Id)
+                if (userWithSameEmail != null)
                 {
-                    ModelState.AddModelError(string.Empty, T["The email is already used."]);
+                    var userWithSameEmailId = await _userManager.GetUserIdAsync(userWithSameEmail);
+                    if (userWithSameEmailId != model.Id)
+                    {
+                        ModelState.AddModelError(string.Empty, T["The email is already used."]);
+                    }
                 }
             }
 
             if (ModelState.IsValid)
             {
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
-                currentUser.RoleNames = roleNames;
-                currentUser.UserName = model.UserName;
-                currentUser.Email = model.Email;
+                await _userManager.SetUserNameAsync(currentUser, model.UserName);
+                await _userManager.SetEmailAsync(currentUser, model.Email);
+
+                // Remove roles in two steps to prevent an iteration on a modified collection
+                var rolesToRemove = new List<string>();
+                foreach (var role in await _userManager.GetRolesAsync(currentUser))
+                {
+                    if (!roleNames.Contains(role))
+                    {
+                        rolesToRemove.Add(role);
+                    }
+                }
+
+                foreach(var role in rolesToRemove)
+                {
+                    await _userManager.RemoveFromRoleAsync(currentUser, role);
+                }
+
+                // Add new roles
+                foreach (var role in roleNames)
+                {
+                    if (!await _userManager.IsInRoleAsync(currentUser, role))
+                    {
+                        await _userManager.AddToRoleAsync(currentUser, role);
+                    }
+                }
 
                 var result = await _userManager.UpdateAsync(currentUser);
+
                 if (result.Succeeded)
                 {
                     _notifier.Success(TH["User updated successfully"]);
@@ -259,7 +293,7 @@ namespace Orchard.Users.Controllers
 
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, T[error.Description]);
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 

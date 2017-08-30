@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Orchard.Users</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orchard.Security.Abstractions\Orchard.Security.Abstractions.csproj" />
+    <ProjectReference Include="..\Orchard.Users.Abstractions\Orchard.Users.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="YesSql.Core" Version="$(YesSqlVersion)" />
+  </ItemGroup>
+
+</Project>
