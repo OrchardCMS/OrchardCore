@@ -89,7 +89,7 @@ namespace Orchard.Lucene
                     foreach (var task in batch)
                     {
                         var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
-                        var indexHandlers = scope.ServiceProvider.GetRequiredService<IEnumerable<IContentItemIndexHandler>>();
+                        var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
 
                         foreach (var index in allIndices)
                         {

@@ -208,7 +208,7 @@ namespace Orchard.Setup.Services
                     };
 
                     // Invoke modules to react to the setup event
-                    var setupEventHandlers = scope.ServiceProvider.GetRequiredService<IEnumerable<ISetupEventHandler>>();
+                    var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
                     var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
 
                     await setupEventHandlers.InvokeAsync(x => x.Setup(

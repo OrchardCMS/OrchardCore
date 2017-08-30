@@ -167,7 +167,7 @@ namespace Orchard.Recipes.Services
                     }
                 }
 
-                var recipeStepHandlers = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeStepHandler>>();
+                var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
                 var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
                 scriptingManager.GlobalMethodProviders.Add(_environmentMethodProvider);
 
