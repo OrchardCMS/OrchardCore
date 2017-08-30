@@ -259,7 +259,7 @@ namespace Orchard.Users.Controllers
 
                 // Remove roles in two steps to prevent an iteration on a modified collection
                 var rolesToRemove = new List<string>();
-                foreach (var role in currentUser.RoleNames)
+                foreach (var role in await _userManager.GetRolesAsync(currentUser))
                 {
                     if (!roleNames.Contains(role))
                     {

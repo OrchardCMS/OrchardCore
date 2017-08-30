@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Orchard.Users
 {
     /// <summary>
@@ -8,6 +6,5 @@ namespace Orchard.Users
     public interface IUser
     {
         string UserName { get; }
-        IList<string> RoleNames { get; }
     }
 }
