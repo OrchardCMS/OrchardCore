@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JsonApiSerializer;
+using JsonApiSerializer.JsonApi;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -50,44 +51,47 @@ namespace Orchard.JsonApi.Filters
 
             actionExecutedContext.HttpContext.Response.ContentType = ContentType;
 
-            var contentItems = GetContentItemsFromAction(result.Value);
+            var urlHelper = actionExecutedContext
+                .HttpContext
+                .RequestServices
+                .GetRequiredService<IUrlHelperFactory>()
+                .GetUrlHelper(actionExecutedContext);
 
-            if (contentItems != null)
-            {
-                var urlHelper = actionExecutedContext
-                    .HttpContext
-                    .RequestServices
-                    .GetRequiredService<IUrlHelperFactory>()
-                    .GetUrlHelper(actionExecutedContext);
-
-                actionExecutedContext.Result = await BuildContentItems(urlHelper, contentItems);
-            }
+            actionExecutedContext.Result = await Build(urlHelper, result.Value);
         }
 
-        private ContentItem[] GetContentItemsFromAction(object actionValue)
+        private Task<JsonResult> Build(IUrlHelper urlHelper, object actionValue)
         {
             var contentItem = actionValue as ContentItem;
 
             if (contentItem != null)
             {
-                return new[] { contentItem };
+                return BuildContentItem(urlHelper, contentItem);
             }
 
             var contentItems = actionValue as IEnumerable<ContentItem>;
 
             if (contentItem != null)
             {
-                return contentItems.ToArray();
+                return BuildContentItems(urlHelper, contentItems.ToArray());
             }
 
             contentItems = actionValue as ContentItem[];
 
             if (contentItems != null)
             {
-                return contentItems.ToArray();
+                return BuildContentItems(urlHelper, contentItems.ToArray());
             }
 
             return null;
+        }
+
+        private async Task<JsonResult> BuildContentItem(IUrlHelper urlHelper, ContentItem contentItem)
+        {
+            DocumentRoot<ApiItem> document = new DocumentRoot<ApiItem>();
+            document.Data = await _contentManager.BuildAsync(contentItem, urlHelper, null);
+
+            return new JsonResult(document, new JsonApiSerializerSettings());
         }
 
         private async Task<JsonResult> BuildContentItems(IUrlHelper urlHelper, ContentItem[] contentItems)
@@ -99,9 +103,10 @@ namespace Orchard.JsonApi.Filters
                 items.Add(await _contentManager.BuildAsync(contentItem, urlHelper, null));
             }
 
-            return new JsonResult(items, new JsonApiSerializerSettings());
+            var document = new DocumentRoot<List<ApiItem>>();
+            document.Data = items;
+
+            return new JsonResult(document, new JsonApiSerializerSettings());
         }
     }
 }
-
-

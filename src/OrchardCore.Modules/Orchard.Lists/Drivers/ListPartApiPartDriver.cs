@@ -1,4 +1,6 @@
+using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Orchard.ContentManagement;
 using Orchard.JsonApi;
 using Orchard.JsonApi.ContentDisplay;
@@ -26,10 +28,16 @@ namespace Orchard.Lists.Drivers
 
             var containedItems = await query.ListAsync();
 
+            var counter = containedItems.Count();
+
             foreach (var contentItem in containedItems)
             {
+                var relationship = new ApiRelationshipItem(part.ContentItem, contentItem, context.UrlHelper);
+
+                relationship.Meta.Add("count", JsonConvert.SerializeObject(counter));
+
                 context.Item.AddRelationship(
-                    new ApiRelationshipItem(part.ContentItem, contentItem, context.UrlHelper)
+                    relationship
                 );
             }
         }
