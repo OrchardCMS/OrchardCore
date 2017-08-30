@@ -1,7 +1,7 @@
-﻿namespace Orchard.Security
+namespace Orchard.Security
 {
     public interface IRole
     {
-        string RoleName { get; set; }
+        string RoleName { get; }
     }
 }

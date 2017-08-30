@@ -15,7 +15,6 @@ using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
 using Orchard.Security;
 using Orchard.Security.Permissions;
-using Orchard.Security.Services;
 using Orchard.Setup.Events;
 using Orchard.Users.Commands;
 using Orchard.Users.Indexes;

@@ -1,9 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
-using Orchard.Users.Models;
 using Orchard.Setup.Events;
 
 namespace Orchard.Users.Services
@@ -31,7 +27,7 @@ namespace Orchard.Users.Services
             Action<string, string> reportError
             )
         {
-            return _userService.CreateUserAsync(userName, email, new string [] { "Administrator" }, password, reportError);
+            return _userService.CreateUserAsync(userName, email, new string[] { "Administrator" }, password, reportError);
         }
     }
 }

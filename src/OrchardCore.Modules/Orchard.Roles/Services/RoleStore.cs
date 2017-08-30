@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Cache;
 using Orchard.Roles.Models;
@@ -29,17 +30,21 @@ namespace Orchard.Roles.Services
         public RoleStore(ISession session,
             IMemoryCache memoryCache,
             ISignal signal,
+            IStringLocalizer<RoleStore> stringLocalizer,
             IServiceProvider serviceProvider,
             ILogger<RoleStore> logger)
         {
             _memoryCache = memoryCache;
             _signal = signal;
+            T = stringLocalizer;
             _session = session;
             _serviceProvider = serviceProvider;
             Logger = logger;
         }
 
         public ILogger Logger { get; }
+
+        public IStringLocalizer<RoleStore> T;
 
         public void Dispose()
         {
@@ -102,7 +107,7 @@ namespace Orchard.Roles.Services
             if (String.Equals(orchardRole.NormalizedRoleName, "ANONYMOUS") ||
                 String.Equals(orchardRole.NormalizedRoleName, "AUTHENTICATED"))
             {
-                return IdentityResult.Failed(new IdentityError { Description = "Can't delete system roles." });
+                return IdentityResult.Failed(new IdentityError { Description = T["Can't delete system roles."] });
             }
 
             var roleRemovedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleRemovedEventHandler>>();
@@ -178,7 +183,7 @@ namespace Orchard.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
-            role.RoleName = roleName;
+            ((Role)role).RoleName = roleName;
 
             return Task.CompletedTask;
         }

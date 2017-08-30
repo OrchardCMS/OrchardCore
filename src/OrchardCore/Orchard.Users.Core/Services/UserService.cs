@@ -1,17 +1,15 @@
-using Microsoft.AspNetCore.Builder;
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Orchard.Users.Models;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Security.Claims;
-using Orchard.Security;
 
 namespace Orchard.Users.Services
 {
-    public class UserService: IUserService
+    public class UserService : IUserService
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
@@ -25,18 +23,20 @@ namespace Orchard.Users.Services
 
         public async Task<IUser> CreateUserAsync(string userName, string email, string[] roleNames, string password, Action<string, string> reportError)
         {
-            bool result = true;
+            var result = true;
 
             if (string.IsNullOrWhiteSpace(userName))
             {
                 reportError("UserName", T["A user name is required."]);
                 result = false;
             }
+
             if (string.IsNullOrWhiteSpace(password))
             {
                 reportError("Password", T["A password is required."]);
                 result = false;
             }
+
             if (string.IsNullOrWhiteSpace(email))
             {
                 reportError("Email", T["An email is required."]);
@@ -62,7 +62,7 @@ namespace Orchard.Users.Services
             };
 
             var identityResult = await _userManager.CreateAsync(user, password);
-                        
+
             if (!identityResult.Succeeded)
             {
                 ProcessValidationErrors(identityResult.Errors, user, reportError);
@@ -76,7 +76,7 @@ namespace Orchard.Users.Services
         {
             var identityResult = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
 
-            if(!identityResult.Succeeded)
+            if (!identityResult.Succeeded)
             {
                 ProcessValidationErrors(identityResult.Errors, (User)user, reportError);
             }
@@ -86,7 +86,7 @@ namespace Orchard.Users.Services
 
         public Task<IUser> GetAuthenticatedUserAsync(ClaimsPrincipal principal)
         {
-            if(principal == null)
+            if (principal == null)
             {
                 return Task.FromResult<IUser>(null);
             }

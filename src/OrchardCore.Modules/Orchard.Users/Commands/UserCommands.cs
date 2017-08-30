@@ -9,7 +9,7 @@ namespace Orchard.Users.Commands
     public class UserCommands : DefaultCommandHandler
     {
         private readonly IUserService _userService;
-        
+
         public UserCommands(IUserService userService,
                             IStringLocalizer<UserCommands> localizer) : base(localizer)
         {
@@ -39,6 +39,7 @@ namespace Orchard.Users.Commands
                     (Roles ?? "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToArray(),
                     Password,
                     (key, message) => Context.Output.WriteLine(message)).GetAwaiter().GetResult();
+
             if (user != null)
             {
                 Context.Output.WriteLine(T["User created successfully"]);

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Orchard.Security;
 
 namespace Orchard.Users.Models
 {
@@ -13,7 +12,7 @@ namespace Orchard.Users.Models
         public string PasswordHash { get; set; }
         public string SecurityStamp { get; set; }
         public bool EmailConfirmed { get; set; }
-        public List<string> RoleNames { get; set; } = new List<string>();
+        public IList<string> RoleNames { get; set; } = new List<string>();
 
         public override string ToString()
         {

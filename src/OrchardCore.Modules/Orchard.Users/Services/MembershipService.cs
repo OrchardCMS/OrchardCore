@@ -1,8 +1,6 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Orchard.Security;
-using Orchard.Security.Services;
 using Orchard.Users.Models;
 
 namespace Orchard.Users.Services

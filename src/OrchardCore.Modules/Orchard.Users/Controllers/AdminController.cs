@@ -16,9 +16,9 @@ using Orchard.Security.Services;
 using Orchard.Settings;
 using Orchard.Users.Indexes;
 using Orchard.Users.Models;
+using Orchard.Users.Services;
 using Orchard.Users.ViewModels;
 using YesSql;
-using Orchard.Users.Services;
 
 namespace Orchard.Users.Controllers
 {
@@ -256,12 +256,33 @@ namespace Orchard.Users.Controllers
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
                 await _userManager.SetUserNameAsync(currentUser, model.UserName);
                 await _userManager.SetEmailAsync(currentUser, model.Email);
+
+                // Remove roles in two steps to prevent an iteration on a modified collection
+                var rolesToRemove = new List<string>();
+                foreach (var role in currentUser.RoleNames)
+                {
+                    if (!roleNames.Contains(role))
+                    {
+                        rolesToRemove.Add(role);
+                    }
+                }
+
+                foreach(var role in rolesToRemove)
+                {
+                    await _userManager.RemoveFromRoleAsync(currentUser, role);
+                }
+
+                // Add new roles
                 foreach (var role in roleNames)
                 {
-                    await _userManager.AddToRoleAsync(currentUser, role);
+                    if (!await _userManager.IsInRoleAsync(currentUser, role))
+                    {
+                        await _userManager.AddToRoleAsync(currentUser, role);
+                    }
                 }
 
                 var result = await _userManager.UpdateAsync(currentUser);
+
                 if (result.Succeeded)
                 {
                     _notifier.Success(TH["User updated successfully"]);
@@ -272,7 +293,7 @@ namespace Orchard.Users.Controllers
 
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, T[error.Description]);
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 
