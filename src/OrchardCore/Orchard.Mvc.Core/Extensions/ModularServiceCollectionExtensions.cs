@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orchard.Mvc.LocationExpander;
 using Orchard.Mvc.ModelBinding;
+using Orchard.Mvc.RazorPages;
 
 namespace Orchard.Mvc
 {
@@ -46,21 +47,10 @@ namespace Orchard.Mvc
             builder.AddViews();
             builder.AddViewLocalization();
 
-            builder.AddRazorPages(options =>
-            {
-                options.RootDirectory = "/Packages";
-                options.Conventions.Add(new ModularPageRouteModelConvention());
-            });
-
-            services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IPageApplicationModelProvider, ModularPageApplicationModelProvider>());
-
-            services.Replace(
-                ServiceDescriptor.Singleton<IActionDescriptorChangeProvider, ModularPageActionDescriptorChangeProvider>());
-
             AddModularFrameworkParts(applicationServices, builder.PartManager);
 
             builder.AddModularRazorViewEngine(applicationServices);
+            builder.AddModularRazorPages();
 
             // Use a custom IViewCompilerProvider so that all tenants reuse the same ICompilerCache instance
             builder.Services.Replace(new ServiceDescriptor(typeof(IViewCompilerProvider), typeof(SharedViewCompilerProvider), ServiceLifetime.Singleton));

@@ -17,8 +17,8 @@ namespace Orchard.Mvc
         private const string MappingFileFolder = "obj";
         private const string MappingFileName = "ModuleProjectRazorFiles.map";
 
-        private const string PageFolderPattern = "/Pages/";
-        private const string PageSearchPattern = "/Pages/**/*.cshtml";
+        private const string PageFolder = "/Pages";
+        private const string PageSearchPattern = PageFolder + "/**/*.cshtml";
 
         private static Dictionary<string, string> _paths;
         private static CompositeFileProvider _pagesFileProvider;
@@ -53,9 +53,9 @@ namespace Orchard.Mvc
 
                 var roots = new HashSet<string>();
                 
-                foreach (var path in _paths.Values.Where(p => p.IndexOf(PageFolderPattern) != -1))
+                foreach (var path in _paths.Values.Where(p => p.IndexOf(PageFolder + "/") != -1))
                 {
-                    roots.Add(path.Substring(0, path.IndexOf(PageFolderPattern)));
+                    roots.Add(path.Substring(0, path.IndexOf(PageFolder + "/")));
                 }
 
                 if (roots.Count > 0)

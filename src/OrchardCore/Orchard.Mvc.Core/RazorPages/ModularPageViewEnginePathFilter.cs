@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Shell;
 
-namespace Orchard.Mvc
+namespace Orchard.Mvc.RazorPages
 {
     public class ModularPageViewEnginePathFilter : IAsyncPageFilter
     {
