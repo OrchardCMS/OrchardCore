@@ -20,14 +20,14 @@ namespace Orchard.ContentManagement.Display
         private readonly IEnumerable<IContentFieldDisplayDriver> _fieldDisplayDrivers;
         private readonly IEnumerable<IContentPartDisplayDriver> _partDisplayDrivers;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IContentPartFactory _contentPartFactory;
+        private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
 
         public ContentItemDisplayCoordinator(
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<IContentDisplayDriver> displayDrivers,
             IEnumerable<IContentFieldDisplayDriver> fieldDisplayDrivers,
             IEnumerable<IContentPartDisplayDriver> partDisplayDrivers,
-            IContentPartFactory contentPartFactory,
+            ITypeActivatorFactory<ContentPart> contentPartFactory,
             ILogger<ContentItemDisplayCoordinator> logger)
         {
             _contentPartFactory = contentPartFactory;
@@ -69,14 +69,14 @@ namespace Orchard.ContentManagement.Display
             {
                 var partName = contentTypePartDefinition.Name;
                 var partTypeName = contentTypePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partTypeName) ?? typeof(ContentPart);
-                var part = contentItem.Get(partType, partName) as ContentPart;
+                var partActivator = _contentPartFactory.GetTypeActivator(partTypeName);
+                var part = contentItem.Get(partActivator.Type, partName) as ContentPart;
 
-                foreach (var displayDriver in _partDisplayDrivers)
+                if (part != null)
                 {
-                    try
+                    foreach (var displayDriver in _partDisplayDrivers)
                     {
-                        if (part != null)
+                        try
                         {
                             var result = await displayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
                             if (result != null)
@@ -84,10 +84,10 @@ namespace Orchard.ContentManagement.Display
                                 result.Apply(context);
                             }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                        catch (Exception ex)
+                        {
+                            InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                        }
                     }
                 }
 
@@ -140,10 +140,8 @@ namespace Orchard.ContentManagement.Display
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
-                ContentPart part;
-
-                part = _contentPartFactory.CreateContentPart(typePartDefinition.Name) ?? new ContentPart();
-                part = (ContentPart)contentItem.Get(part.GetType(), typePartDefinition.Name) ?? part;
+                var activator = _contentPartFactory.GetTypeActivator(typePartDefinition.Name);
+                var part = (ContentPart)contentItem.Get(activator.Type, typePartDefinition.Name) ?? activator.CreateInstance();
                 part.ContentItem = contentItem;
 
                 // Create a custom shape to render all the part shapes into it
@@ -214,10 +212,8 @@ namespace Orchard.ContentManagement.Display
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
-                ContentPart part;
-
-                part = _contentPartFactory.CreateContentPart(typePartDefinition.Name) ?? new ContentPart();
-                part = (ContentPart)contentItem.Get(part.GetType(), typePartDefinition.Name) ?? part;
+                var activator = _contentPartFactory.GetTypeActivator(typePartDefinition.Name);
+                var part = (ContentPart)contentItem.Get(activator.Type, typePartDefinition.Name) ?? activator.CreateInstance();
                 part.ContentItem = contentItem;
 
                 // Create a custom shape to render all the part shapes into it

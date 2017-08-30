@@ -1,4 +1,14 @@
-@model Orchard.ContentFields.Settings.BooleanFieldSettings
+﻿@model Orchard.ContentFields.Settings.BooleanFieldSettings
+
+
+@inject Orchard.DisplayManagement.Theming.IThemeManager ThemeManager
+@inject Orchard.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
+
+@{
+    var theme = await ThemeManager.GetThemeAsync();
+    var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
+    var editorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith("BooleanField_Option__", StringComparison.OrdinalIgnoreCase));
+}
 
 <fieldset class="form-group">
     <div class="row col-md">
@@ -7,6 +17,20 @@
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
 </fieldset>
+
+<div class="row">
+    <fieldset class="form-group col-sm-6">
+        <label asp-for="Editor">@T["What type of editor should be used?"]</label>
+        <select asp-for="Editor" class="form-control">
+            @foreach (var editorShape in editorShapes)
+            {
+                dynamic shape = Factory.Create(editorShape);
+                shape.Editor = Model.Editor;
+                @await DisplayAsync(shape)
+            }
+        </select>
+    </fieldset>
+</div>
 
 <fieldset class="form-group">
     <div class="row col-sm">

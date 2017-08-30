@@ -38,7 +38,7 @@ namespace Orchard.Cms.Web
 
             app.UseStaticFiles();
             loggerFactory.AddConsole(Configuration);
-            app.AddNLogWeb(loggerFactory);
+            app.UseNLogWeb(loggerFactory);
 
             if (env.IsDevelopment())
             {

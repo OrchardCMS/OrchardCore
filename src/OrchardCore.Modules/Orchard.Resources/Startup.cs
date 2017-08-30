@@ -17,7 +17,6 @@ namespace Orchard.Resources
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            serviceProvider.AddTagHelpers("Orchard.ResourceManagement");
         }
     }
 }
