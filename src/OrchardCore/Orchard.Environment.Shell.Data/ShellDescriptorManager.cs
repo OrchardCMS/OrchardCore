@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.Events;
 using YesSql;
 
 namespace Orchard.Environment.Shell.Data.Descriptors
@@ -16,19 +16,19 @@ namespace Orchard.Environment.Shell.Data.Descriptors
     public class ShellDescriptorManager : IShellDescriptorManager
     {
         private readonly ShellSettings _shellSettings;
-        private readonly IEventBus _eventBus;
+        private readonly IEnumerable<IShellDescriptorManagerEventHandler> _shellDescriptorManagerEventHandlers;
         private readonly ISession _session;
         private readonly ILogger _logger;
         private ShellDescriptor _shellDescriptor;
 
         public ShellDescriptorManager(
             ShellSettings shellSettings,
-            IEventBus eventBus,
+            IEnumerable<IShellDescriptorManagerEventHandler> shellDescriptorManagerEventHandlers,
             ISession session,
             ILogger<ShellDescriptorManager> logger)
         {
             _shellSettings = shellSettings;
-            _eventBus = eventBus;
+            _shellDescriptorManagerEventHandlers = shellDescriptorManagerEventHandlers;
             _session = session;
             _logger = logger;
         }
@@ -80,7 +80,7 @@ namespace Orchard.Environment.Shell.Data.Descriptors
             // Update cached reference
             _shellDescriptor = shellDescriptorRecord;
 
-            await _eventBus.NotifyAsync<IShellDescriptorManagerEventHandler>(e => e.Changed(shellDescriptorRecord, _shellSettings.Name));
+            await _shellDescriptorManagerEventHandlers.InvokeAsync(e => e.Changed(shellDescriptorRecord, _shellSettings.Name), _logger);
         }
     }
 }

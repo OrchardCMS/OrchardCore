@@ -14,12 +14,12 @@ namespace Orchard.Roles.Services
 {
     public class RoleUpdater : IFeatureEventHandler
     {
-        private readonly RoleManager<Role> _roleManager;
+        private readonly RoleManager<IRole> _roleManager;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         public RoleUpdater(
-            RoleManager<Role> roleManager,
+            RoleManager<IRole> roleManager,
             IEnumerable<IPermissionProvider> permissionProviders,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<RoleUpdater> logger)
@@ -106,7 +106,7 @@ namespace Orchard.Roles.Services
 
                     // and merge the stereotypical permissions into that role
                     var stereotypePermissionNames = (stereotype.Permissions ?? Enumerable.Empty<Permission>()).Select(x => x.Name);
-                    var currentPermissionNames = role.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue);
+                    var currentPermissionNames = ((Role)role).RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue);
 
                     var distinctPermissionNames = currentPermissionNames
                         .Union(stereotypePermissionNames)

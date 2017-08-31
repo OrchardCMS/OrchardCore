@@ -1,10 +1,13 @@
-﻿@model Orchard.ContentFields.ViewModels.DisplayLinkFieldViewModel
-@using Orchard.ContentManagement.Metadata.Models
+@model Orchard.ContentFields.ViewModels.DisplayLinkFieldViewModel
 @using Orchard.ContentFields.Settings;
+@using Orchard.Mvc.Utilities
+
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.PartDefinition.Name).HtmlClassify();
+}
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<LinkFieldSettings>();
-    string name = Model.PartFieldDefinition.DisplayName();
     string text = Model.Field.Text;
     switch (settings.LinkTextMode)
     {
@@ -29,7 +32,6 @@
             break;
     }
 }
-<div>
-    @Model.PartFieldDefinition.DisplayName():
+<div class="field field-type-htmlfield field-name-@name">
     <a href="@Model.Field.Url">@text</a>
 </div>

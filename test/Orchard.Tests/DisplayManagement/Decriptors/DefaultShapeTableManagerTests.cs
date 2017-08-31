@@ -14,7 +14,6 @@ using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell;
-using Orchard.Events;
 using Xunit;
 
 namespace Orchard.Tests.DisplayManagement.Decriptors
@@ -22,23 +21,6 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
     public class DefaultShapeTableManagerTests : IDisposable
     {
         IServiceProvider _serviceProvider;
-
-        public class StubEventBus : IEventBus
-        {
-            public Task NotifyAsync(string message, IDictionary<string, object> arguments)
-            {
-                return null;
-            }
-
-            public Task NotifyAsync<TEventHandler>(Expression<Func<TEventHandler, Task>> eventNotifier) where TEventHandler : IEventHandler
-            {
-                return null;
-            }
-
-            public void Subscribe(string message, Func<IServiceProvider, IDictionary<string, object>, Task> action)
-            {
-            }
-        }
 
         private class TestFeatureInfo : IFeatureInfo
         {
@@ -158,7 +140,6 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             serviceCollection.AddMemoryCache();
             serviceCollection.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
-            serviceCollection.AddScoped<IEventBus, StubEventBus>();
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 
             var testFeatureExtensionInfo = new TestModuleExtensionInfo("Testing");

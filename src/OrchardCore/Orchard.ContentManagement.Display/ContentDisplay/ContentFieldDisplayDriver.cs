@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Orchard.ContentManagement.Display.Models;
 using Orchard.ContentManagement.Metadata.Models;
@@ -83,11 +83,8 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
                 return null;
             }
 
-            if (context.Updater.ModelState.IsValid)
-            {
-                contentPart.Apply(partFieldDefinition.Name, field);
-            }
-
+            contentPart.Apply(partFieldDefinition.Name, field);
+            
             return result;
         }
 

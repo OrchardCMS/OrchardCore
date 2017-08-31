@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orchard.ContentManagement.Cache;
 using Orchard.ContentManagement.Drivers.Coordinators;
@@ -19,7 +19,7 @@ namespace Orchard.ContentManagement
             services.TryAddScoped<IContentDefinitionManager, ContentDefinitionManager>();
             services.TryAddScoped<IContentManager, DefaultContentManager>();
             services.TryAddScoped<IContentManagerSession, DefaultContentManagerSession>();
-            services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
+            services.AddSingleton<IIndexProvider, ContentItemIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentHandler, UpdateContentsHandler>();
             services.AddScoped<IContentHandler, ContentPartHandlerCoordinator>();

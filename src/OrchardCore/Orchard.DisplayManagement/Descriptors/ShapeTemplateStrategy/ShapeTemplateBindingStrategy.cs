@@ -1,15 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.FileSystemGlobbing;
-using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Orchard.DisplayManagement.FileProviders;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
@@ -18,9 +16,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     public class ShapeTemplateBindingStrategy : IShapeTableHarvester
     {
+        private readonly string _shellName;
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IShapeTemplateFileProviderAccessor _fileProviderAccessor;
         private readonly ILogger _logger;
         private readonly IShellFeaturesManager _shellFeaturesManager;
 
@@ -28,17 +27,19 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             new Dictionary<string, IShapeTemplateViewEngine>(StringComparer.OrdinalIgnoreCase);
 
         public ShapeTemplateBindingStrategy(
+            ShellSettings shellSettings,
             IEnumerable<IShapeTemplateHarvester> harvesters,
             IShellFeaturesManager shellFeaturesManager,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IOptions<MvcViewOptions> options,
-            IHostingEnvironment hostingEnvironment,
+            IShapeTemplateFileProviderAccessor fileProviderAccessor,
             ILogger<DefaultShapeTableManager> logger)
         {
+            _shellName = shellSettings.Name;
             _harvesters = harvesters;
             _shellFeaturesManager = shellFeaturesManager;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
-            _hostingEnvironment = hostingEnvironment;
+            _fileProviderAccessor = fileProviderAccessor;
             _logger = logger;
         }
 
@@ -66,8 +67,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
             var activeExtensions = Once(enabledFeatures);
 
-            var matcher = new Matcher();
-
             if (!_viewEnginesByExtension.Any())
             {
                 foreach (var viewEngine in _shapeTemplateViewEngines)
@@ -82,11 +81,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 }
             }
 
-            foreach (var extension in _viewEnginesByExtension.Keys)
-            {
-                matcher.AddInclude("*" + extension);
-            }
-
             var hits = activeExtensions.Select(extensionDescriptor =>
             {
                 if (_logger.IsEnabled(LogLevel.Information))
@@ -96,46 +90,26 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
                 {
-                    var subPathFileInfo = _hostingEnvironment
-                        .GetExtensionFileInfo(extensionDescriptor, subPath);
+                    var filePaths = _fileProviderAccessor.FileProvider.GetViewFilePaths(Path.Combine(
+                        extensionDescriptor.SubPath, subPath), _viewEnginesByExtension.Keys.ToArray(),
+                        inViewsFolder: true, inDepth: false).ToArray();
 
-                    var directoryInfo = new DirectoryInfo(subPathFileInfo.PhysicalPath);
-
-                    var relativePath = Path.Combine(extensionDescriptor.SubPath, subPath);
-
-                    if (!directoryInfo.Exists)
-                    {
-                        return new
-                        {
-                            harvesterInfo.harvester,
-                            subPath,
-                            relativePath,
-                            files = new IFileInfo[0]
-                        };
-                    }
-
-                    var matches = matcher
-                        .Execute(new DirectoryInfoWrapper(directoryInfo))
-                        .Files;
-
-                    var files = matches
-                        .Select(match => _hostingEnvironment
-                            .GetExtensionFileInfo(extensionDescriptor, Path.Combine(subPath, match.Path))).ToArray();
-
-                    return new { harvesterInfo.harvester, subPath, relativePath, files };
-                })).ToList();
+                    return new { harvesterInfo.harvester, subPath, filePaths };
+                }))
+                .ToList();
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
                     _logger.LogInformation("Done discovering candidate views filenames");
                 }
+
                 var fileContexts = pathContexts.SelectMany(pathContext => _shapeTemplateViewEngines.SelectMany(ve =>
                 {
-                    return pathContext.files.Select(
-                        file => new
+                    return pathContext.filePaths.Select(
+                        filePath => new
                         {
-                            fileName = Path.GetFileNameWithoutExtension(file.Name),
-                            relativePath = Path.Combine(pathContext.relativePath, file.Name),
+                            fileName = Path.GetFileNameWithoutExtension(filePath),
+                            relativePath = filePath,
                             pathContext
                         });
                 }));
@@ -171,13 +145,19 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                             feature.Id);
                     }
 
-                    var viewEngine = _viewEnginesByExtension[iter.shapeContext.harvestShapeInfo.Extension];
+                    var viewEngineType = _viewEnginesByExtension[iter.shapeContext.harvestShapeInfo.Extension].GetType();
 
                     builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
                         .From(feature)
                         .BoundAs(
                             hit.shapeContext.harvestShapeInfo.RelativePath, shapeDescriptor => displayContext =>
-                                viewEngine.RenderAsync(hit.shapeContext.harvestShapeInfo.RelativePath, displayContext));
+                            {
+                                var viewEngine = displayContext.ServiceProvider
+                                    .GetServices<IShapeTemplateViewEngine>()
+                                    .FirstOrDefault(e => e.GetType() == viewEngineType);
+
+                                return viewEngine.RenderAsync(hit.shapeContext.harvestShapeInfo.RelativePath, displayContext);
+                            });
                 }
             }
 

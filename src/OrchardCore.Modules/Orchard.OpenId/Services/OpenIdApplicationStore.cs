@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenIddict.Core;
@@ -10,7 +11,7 @@ using YesSql;
 
 namespace Orchard.OpenId.Services
 {
-    public class OpenIdApplicationStore : IOpenIddictApplicationStore<OpenIdApplication>
+    public class OpenIdApplicationStore : IOpenIddictApplicationStore<OpenIdApplication>, IOpenIdApplicationRoleStore<OpenIdApplication>
     {
         private readonly ISession _session;
 
@@ -18,7 +19,19 @@ namespace Orchard.OpenId.Services
         {
             _session = session;
         }
-        
+
+
+        public Task<IEnumerable<OpenIdApplication>> GetAppsAsync(int skip, int pageSize)
+        {
+            return _session.Query<OpenIdApplication, OpenIdApplicationIndex>().Skip(skip).Take(pageSize).ListAsync();
+        }
+
+        public Task<int> GetCount()
+        {
+            return _session.Query<OpenIdApplication, OpenIdApplicationIndex>().CountAsync();
+        }
+
+        #region IOpenIddictApplicationStore<OpenIdApplication>
         public async Task<OpenIdApplication> CreateAsync(OpenIdApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
@@ -155,8 +168,8 @@ namespace Orchard.OpenId.Services
             {
                 throw new ArgumentNullException(nameof(type));
             }
-            
-            application.Type = (ClientType) Enum.Parse(typeof(ClientType), type, true);
+
+            application.Type = (ClientType)Enum.Parse(typeof(ClientType), type, true);
 
             return Task.CompletedTask;
         }
@@ -186,15 +199,65 @@ namespace Orchard.OpenId.Services
 
             return _session.CommitAsync();
         }
+        #endregion
 
-        public Task<IEnumerable<OpenIdApplication>> GetAppsAsync(int skip, int pageSize)
+        #region IOpenIdApplicationRoleStore<OpenIdApplication>
+        public Task AddToRoleAsync(OpenIdApplication application, string roleName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return _session.Query<OpenIdApplication, OpenIdApplicationIndex>().Skip(skip).Take(pageSize).ListAsync();
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            application.RoleNames.Add(roleName);
+            _session.Save(application);
+
+            return Task.CompletedTask;
         }
 
-        public Task<int> GetCount()
+        public Task RemoveFromRoleAsync(OpenIdApplication application, string roleName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return _session.Query<OpenIdApplication, OpenIdApplicationIndex>().CountAsync();
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            application.RoleNames.Remove(roleName);
+            _session.Save(application);
+
+            return Task.CompletedTask;
         }
+
+        public Task<IList<string>> GetRolesAsync(OpenIdApplication application, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            return Task.FromResult<IList<string>>(application.RoleNames);
+        }
+
+        public Task<bool> IsInRoleAsync(OpenIdApplication application, string roleName, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            return Task.FromResult(application.RoleNames.Contains(roleName, StringComparer.OrdinalIgnoreCase));
+        }
+
+        public async Task<IList<OpenIdApplication>> GetAppsInRoleAsync(string roleName, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrWhiteSpace(roleName))
+            {
+                throw new ArgumentNullException(nameof(roleName));
+            }
+
+            var apps = await _session.Query<OpenIdApplication, OpenIdApplicationByRoleNameIndex>(x => x.RoleName == roleName).ListAsync();
+            return apps == null ? new List<OpenIdApplication>() : apps.ToList();
+        }
+        #endregion
     }
 }

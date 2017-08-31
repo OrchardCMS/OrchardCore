@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.ExceptionServices;
@@ -13,8 +13,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Orchard.DeferredTasks;
 using Orchard.Environment.Shell;
-using Orchard.Events;
-using Orchard.Hosting;
 using Orchard.Recipes.Events;
 using Orchard.Recipes.Models;
 using Orchard.Scripting;
@@ -23,18 +21,18 @@ namespace Orchard.Recipes.Services
 {
     public class RecipeExecutor : IRecipeExecutor
     {
-        private readonly IEventBus _eventBus;
         private readonly RecipeHarvestingOptions _recipeOptions;
         private readonly IApplicationLifetime _applicationLifetime;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _orchardHost;
+        private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
         private readonly IRecipeStore _recipeStore;
 
         private VariablesMethodProvider _variablesMethodProvider;
         private ParametersMethodProvider _environmentMethodProvider;
 
         public RecipeExecutor(
-            IEventBus eventBus,
+            IEnumerable<IRecipeEventHandler> recipeEventHandlers,
             IRecipeStore recipeStore,
             IOptions<RecipeHarvestingOptions> recipeOptions,
             IApplicationLifetime applicationLifetime,
@@ -46,7 +44,7 @@ namespace Orchard.Recipes.Services
             _orchardHost = orchardHost;
             _shellSettings = shellSettings;
             _applicationLifetime = applicationLifetime;
-            _eventBus = eventBus;
+            _recipeEventHandlers = recipeEventHandlers;
             _recipeStore = recipeStore;
             _recipeOptions = recipeOptions.Value;
             Logger = logger;
@@ -58,7 +56,7 @@ namespace Orchard.Recipes.Services
 
         public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment)
         {
-            await _eventBus.NotifyAsync<IRecipeEventHandler>(x => x.RecipeExecutingAsync(executionId, recipeDescriptor));
+            await _recipeEventHandlers.InvokeAsync(x => x.RecipeExecutingAsync(executionId, recipeDescriptor), Logger);
 
             try
             {
@@ -134,13 +132,13 @@ namespace Orchard.Recipes.Services
                     }
                 }
 
-                await _eventBus.NotifyAsync<IRecipeEventHandler>(x => x.RecipeExecutedAsync(executionId, recipeDescriptor));
+                await _recipeEventHandlers.InvokeAsync(x => x.RecipeExecutedAsync(executionId, recipeDescriptor), Logger);
 
                 return executionId;
             }
             catch (Exception)
             {
-                await _eventBus.NotifyAsync<IRecipeEventHandler>(x => x.ExecutionFailedAsync(executionId, recipeDescriptor));
+                await _recipeEventHandlers.InvokeAsync(x => x.ExecutionFailedAsync(executionId, recipeDescriptor), Logger);
 
                 throw;
             }
@@ -149,7 +147,7 @@ namespace Orchard.Recipes.Services
         private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
         {
             var shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
-            using (var scope = shellContext.CreateServiceScope())
+            using (var scope = shellContext.EnterServiceScope())
             {
                 if (!shellContext.IsActivated)
                 {
@@ -169,7 +167,7 @@ namespace Orchard.Recipes.Services
                     }
                 }
 
-                var recipeStepHandlers = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeStepHandler>>();
+                var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
                 var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
                 scriptingManager.GlobalMethodProviders.Add(_environmentMethodProvider);
 
@@ -183,11 +181,11 @@ namespace Orchard.Recipes.Services
                         Logger.LogInformation("Executing recipe step '{0}'.", recipeStep.Name);
                     }
 
-                    await _eventBus.NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutingAsync(recipeStep));
+                    await _recipeEventHandlers.InvokeAsync(e => e.RecipeStepExecutingAsync(recipeStep), Logger);
 
                     await recipeStepHandler.ExecuteAsync(recipeStep);
 
-                    await _eventBus.NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutedAsync(recipeStep));
+                    await _recipeEventHandlers.InvokeAsync(e => e.RecipeStepExecutedAsync(recipeStep), Logger);
 
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
@@ -199,7 +197,7 @@ namespace Orchard.Recipes.Services
             // The recipe execution might have invalidated the shell by enabling new features,
             // so the deferred tasks need to run on an updated shell context if necessary.
             shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
-            using (var scope = shellContext.CreateServiceScope())
+            using (var scope = shellContext.EnterServiceScope())
             {
                 var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
 

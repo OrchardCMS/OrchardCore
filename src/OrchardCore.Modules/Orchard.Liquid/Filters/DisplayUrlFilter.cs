@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -27,9 +27,7 @@ namespace Orchard.Liquid.Filters
 
             var contentItemMetadata = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem);
 
-            object urlHelper;
-
-            if (!ctx.AmbientValues.TryGetValue("UrlHelper", out urlHelper))
+            if (!ctx.AmbientValues.TryGetValue("UrlHelper", out var urlHelper))
             {
                 throw new ArgumentException("UrlHelper missing while invoking 'display_url'");
             }

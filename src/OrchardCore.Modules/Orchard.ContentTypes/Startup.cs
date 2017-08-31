@@ -1,11 +1,14 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.ContentTypes.Deployment;
 using Orchard.ContentTypes.Editors;
 using Orchard.ContentTypes.RecipeSteps;
 using Orchard.ContentTypes.Services;
+using Orchard.Deployment;
+using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
 using Orchard.Recipes;
 using Orchard.Security.Permissions;
@@ -31,6 +34,11 @@ namespace Orchard.ContentTypes
             // TODO: Put in its own feature to be able to execute this recipe without having to enable
             // Content Types management UI
             services.AddRecipeExecutionStep<ContentDefinitionStep>();
+
+            // Deployment step
+            services.AddTransient<IDeploymentSource, ContentDefinitionDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDefinitionDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDefinitionDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

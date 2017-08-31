@@ -30,7 +30,7 @@ namespace Orchard.Lucene.Handlers
 
             var buildIndexContext = new BuildIndexContext(new DocumentIndex(context.ContentItem.ContentItemId), context.ContentItem, context.ContentItem.ContentType);
             // Lazy resolution to prevent cyclic dependency 
-            var contentItemIndexHandlers = _serviceProvider.GetRequiredService<IEnumerable<IContentItemIndexHandler>>();
+            var contentItemIndexHandlers = _serviceProvider.GetServices<IContentItemIndexHandler>();
             contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger).GetAwaiter().GetResult();
 
             foreach (var index in _luceneIndexManager.List())

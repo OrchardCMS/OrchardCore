@@ -17,6 +17,7 @@ namespace Orchard.DisplayManagement.Descriptors
 
         public string ShapeType { get; private set; }
         public IFeatureInfo Feature { get; private set; }
+
         public void Alter(ShapeDescriptor descriptor)
         {
             foreach (var configuration in _configurations)

@@ -76,7 +76,7 @@ namespace Orchard.Lucene
             do
             {
                 // Create a scope for the content manager
-                using (var scope = shellContext.CreateServiceScope())
+                using (var scope = shellContext.EnterServiceScope())
                 {
                     // Load the next batch of tasks
                     batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
@@ -89,7 +89,7 @@ namespace Orchard.Lucene
                     foreach (var task in batch)
                     {
                         var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
-                        var indexHandlers = scope.ServiceProvider.GetRequiredService<IEnumerable<IContentItemIndexHandler>>();
+                        var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
 
                         foreach (var index in allIndices)
                         {

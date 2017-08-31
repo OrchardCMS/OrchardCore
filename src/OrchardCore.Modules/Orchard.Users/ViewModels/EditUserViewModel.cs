@@ -1,10 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Orchard.Users.ViewModels
 {
     public class EditUserViewModel
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [Required]
         public string UserName { get; set; }

@@ -1,14 +1,12 @@
-﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.DeferredTasks;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell.State;
-using Orchard.Events;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Manifests;
-using System.Threading.Tasks;
-using Orchard.Environment.Extensions.Utility;
+using Orchard.Environment.Shell.State;
 
 namespace Orchard.Environment.Shell
 {
@@ -22,14 +20,14 @@ namespace Orchard.Environment.Shell
         private readonly ShellSettings _settings;
         private readonly IShellStateManager _stateManager;
         private readonly IExtensionManager _extensionManager;
-        private readonly IEventBus _eventBus;
+        private readonly IEnumerable<IFeatureEventHandler> _featureEventHandlers;
         private readonly IDeferredTaskEngine _deferredTaskEngine;
 
         public ShellStateUpdater(
             ShellSettings settings,
             IShellStateManager stateManager,
             IExtensionManager extensionManager,
-            IEventBus eventBus,
+            IEnumerable<IFeatureEventHandler> featureEventHandlers,
             IDeferredTaskEngine deferredTaskEngine,
             ILogger<ShellStateCoordinator> logger)
         {
@@ -37,7 +35,7 @@ namespace Orchard.Environment.Shell
             _settings = settings;
             _stateManager = stateManager;
             _extensionManager = extensionManager;
-            _eventBus = eventBus;
+            _featureEventHandlers = featureEventHandlers;
             Logger = logger;
         }
 
@@ -92,9 +90,9 @@ namespace Orchard.Environment.Shell
                     Logger.LogInformation("Disabling feature '{0}'", entry.Feature.FeatureInfo.Id);
                 }
 
-                _eventBus.Notify<IFeatureEventHandler>(x => x.Disabling(entry.Feature.FeatureInfo));
+                _featureEventHandlers.Invoke(x => x.Disabling(entry.Feature.FeatureInfo), Logger);
                 await _stateManager.UpdateEnabledStateAsync(entry.FeatureState, ShellFeatureState.State.Down);
-                _eventBus.Notify<IFeatureEventHandler>(x => x.Disabled(entry.Feature.FeatureInfo));
+                _featureEventHandlers.Invoke(x => x.Disabled(entry.Feature.FeatureInfo), Logger);
             }
 
             // lower installed states in reverse order
@@ -105,9 +103,9 @@ namespace Orchard.Environment.Shell
                     Logger.LogInformation("Uninstalling feature '{0}'", entry.Feature.FeatureInfo.Id);
                 }
 
-                _eventBus.Notify<IFeatureEventHandler>(x => x.Uninstalling(entry.Feature.FeatureInfo));
+                _featureEventHandlers.Invoke(x => x.Uninstalling(entry.Feature.FeatureInfo), Logger);
                 await _stateManager.UpdateInstalledStateAsync(entry.FeatureState, ShellFeatureState.State.Down);
-                _eventBus.Notify<IFeatureEventHandler>(x => x.Uninstalled(entry.Feature.FeatureInfo));
+                _featureEventHandlers.Invoke(x => x.Uninstalled(entry.Feature.FeatureInfo), Logger);
             }
 
             // raise install and enabled states in order
@@ -120,9 +118,9 @@ namespace Orchard.Environment.Shell
                         Logger.LogInformation("Installing feature '{0}'", entry.Feature.FeatureInfo.Id);
                     }
 
-                    _eventBus.Notify<IFeatureEventHandler>(x => x.Installing(entry.Feature.FeatureInfo));
+                    _featureEventHandlers.Invoke(x => x.Installing(entry.Feature.FeatureInfo), Logger);
                     await _stateManager.UpdateInstalledStateAsync(entry.FeatureState, ShellFeatureState.State.Up);
-                    _eventBus.Notify<IFeatureEventHandler>(x => x.Installed(entry.Feature.FeatureInfo));
+                    _featureEventHandlers.Invoke(x => x.Installed(entry.Feature.FeatureInfo), Logger);
                 }
                 if (entry.FeatureState.EnableState == ShellFeatureState.State.Rising)
                 {
@@ -131,9 +129,9 @@ namespace Orchard.Environment.Shell
                         Logger.LogInformation("Enabling feature '{0}'", entry.Feature.FeatureInfo.Id);
                     }
 
-                    _eventBus.Notify<IFeatureEventHandler>(x => x.Enabling(entry.Feature.FeatureInfo));
+                    _featureEventHandlers.Invoke(x => x.Enabling(entry.Feature.FeatureInfo), Logger);
                     await _stateManager.UpdateEnabledStateAsync(entry.FeatureState, ShellFeatureState.State.Up);
-                    _eventBus.Notify<IFeatureEventHandler>(x => x.Enabled(entry.Feature.FeatureInfo));
+                    _featureEventHandlers.Invoke(x => x.Enabled(entry.Feature.FeatureInfo), Logger);
                 }
             }
         }

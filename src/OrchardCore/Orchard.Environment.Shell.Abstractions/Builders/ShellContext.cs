@@ -1,8 +1,9 @@
 using System;
-using Orchard.Environment.Shell.Builders.Models;
-using Orchard.Environment.Shell;
-using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Orchard.Environment.Shell;
+using Orchard.Environment.Shell.Builders.Models;
 
 namespace Orchard.Hosting.ShellBuilders
 {
@@ -26,21 +27,25 @@ namespace Orchard.Hosting.ShellBuilders
         public bool IsActivated { get; set; }
 
         /// <summary>
-        /// Creates a standalone service scope that can be used to resolve local services.
+        /// Creates a standalone service scope that can be used to resolve local services and
+        /// replaces <see cref="HttpContext.RequestServices"/> with it.
         /// </summary>
-        public IServiceScope CreateServiceScope()
+        /// <remarks>
+        /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
+        /// </remarks>
+        public IServiceScope EnterServiceScope()
         {
             if (_disposed)
             {
-                throw new InvalidOperationException("Can't use CreateServiceScope on a disposed context");
+                throw new InvalidOperationException("Can't use EnterServiceScope on a disposed context");
             }
 
             if (_released)
             {
-                throw new InvalidOperationException("Can't use CreateServiceScope on a released context");
+                throw new InvalidOperationException("Can't use EnterServiceScope on a released context");
             }
 
-            return ServiceProvider.CreateScope();
+            return new ServiceScopeWrapper(ServiceProvider.CreateScope());
         }
 
         /// <summary>
@@ -114,6 +119,31 @@ namespace Orchard.Hosting.ShellBuilders
         ~ShellContext()
         {
             Dispose(false);
+        }
+
+        internal class ServiceScopeWrapper : IServiceScope
+        {
+            private readonly IServiceScope _serviceScope;
+            private readonly IServiceProvider _existingServices;
+            private readonly HttpContext _httpContext;
+
+            public ServiceScopeWrapper(IServiceScope serviceScope)
+            {
+                ServiceProvider = serviceScope.ServiceProvider;
+
+                _serviceScope = serviceScope;
+                _httpContext = ServiceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                _existingServices = _httpContext.RequestServices;
+                _httpContext.RequestServices = ServiceProvider;
+            }
+
+            public IServiceProvider ServiceProvider { get; }
+
+            public void Dispose()
+            {
+                _httpContext.RequestServices = _existingServices;
+                _serviceScope.Dispose();
+            }
         }
     }
 }

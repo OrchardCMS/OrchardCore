@@ -1,4 +1,4 @@
-using Fluid;
+﻿using Fluid;
 using Microsoft.AspNetCore.Html;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
@@ -22,8 +22,8 @@ namespace Orchard.Liquid.Handlers
             {
                 if (FluidTemplate.TryParse(part.Liquid, out var template, out var errors))
                 {
-                    var html = template.RenderAsync().GetAwaiter().GetResult();
-                    bodyAspect.Body = new HtmlString(html);
+                    //var html = template.RenderAsync().GetAwaiter().GetResult();
+                    //bodyAspect.Body = new HtmlString(html);
                 }
                 else
                 {

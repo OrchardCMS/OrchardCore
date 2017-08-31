@@ -1,44 +1,33 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
-using Orchard.Events;
-using Orchard.Users.Models;
+using Orchard.Setup.Events;
 
 namespace Orchard.Users.Services
 {
-    public interface ISetupEventHandler : IEventHandler
-    {
-        Task Setup(string userName, string email, string password, Action<string, string> reportError);
-    }
-
     /// <summary>
     /// During setup, creates the admin user account.
     /// </summary>
     public class SetupEventHandler : ISetupEventHandler
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IUserService _userService;
 
-        public SetupEventHandler(IServiceProvider serviceProvider)
+        public SetupEventHandler(IUserService userService)
         {
-            _serviceProvider = serviceProvider;
+            _userService = userService;
         }
 
-        public Task Setup(string userName, string email, string password, Action<string, string> reportError)
+        public Task Setup(
+            string siteName,
+            string userName,
+            string email,
+            string password,
+            string dbProvider,
+            string dbConnectionString,
+            string dbTablePrefix,
+            Action<string, string> reportError
+            )
         {
-            var userService = _serviceProvider.GetRequiredService<IUserService>();
-
-            var superUser = new User
-            {
-                UserName = userName,
-                Email = email,
-                RoleNames = { "Administrator" }
-            };
-
-            return userService.CreateUserAsync(superUser,password,reportError);
+            return _userService.CreateUserAsync(userName, email, new string[] { "Administrator" }, password, reportError);
         }
     }
 }

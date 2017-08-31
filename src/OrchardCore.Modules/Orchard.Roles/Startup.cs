@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -21,14 +21,13 @@ namespace Orchard.Roles
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.TryAddScoped<RoleManager<Role>>();
-            services.TryAddScoped<IRoleStore<Role>, RoleStore>();
+            services.TryAddScoped<RoleManager<IRole>>();
+            services.TryAddScoped<IRoleStore<IRole>, RoleStore>();
             services.TryAddScoped<IRoleProvider, RoleStore>();
-            services.TryAddScoped<IRoleClaimStore<Role>, RoleStore>();
+            services.TryAddScoped<IRoleClaimStore<IRole>, RoleStore>();
             services.AddRecipeExecutionStep<RolesStep>();
 
-            services.AddScoped<RoleUpdater>();
-            services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
+            services.AddScoped<IFeatureEventHandler, RoleUpdater>();
             services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();

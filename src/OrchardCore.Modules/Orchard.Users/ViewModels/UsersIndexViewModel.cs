@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using Orchard.Security;
 using Orchard.Users.Models;
 
 namespace Orchard.Users.ViewModels
@@ -12,7 +13,7 @@ namespace Orchard.Users.ViewModels
 
     public class UserEntry
     {
-        public User User { get; set; }
+        public IUser User { get; set; }
         public bool IsChecked { get; set; }
     }
 

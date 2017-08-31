@@ -1,4 +1,4 @@
-﻿using Orchard.Data.Migration;
+using Orchard.Data.Migration;
 using Orchard.OpenId.Indexes;
 
 namespace Orchard.OpenId
@@ -10,6 +10,11 @@ namespace Orchard.OpenId
             SchemaBuilder.CreateMapIndexTable(nameof(OpenIdApplicationIndex), table => table
                 .Column<string>(nameof(OpenIdApplicationIndex.ClientId))
                 .Column<string>(nameof(OpenIdApplicationIndex.LogoutRedirectUri))
+            );
+
+            SchemaBuilder.CreateReduceIndexTable(nameof(OpenIdApplicationByRoleNameIndex), table => table
+                .Column<string>(nameof(OpenIdApplicationByRoleNameIndex.RoleName))
+                .Column<int>(nameof(OpenIdApplicationByRoleNameIndex.Count))
             );
 
             SchemaBuilder.CreateMapIndexTable(nameof(OpenIdTokenIndex), table => table

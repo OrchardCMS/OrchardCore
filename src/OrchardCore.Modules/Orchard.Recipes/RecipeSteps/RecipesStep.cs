@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,14 +12,14 @@ namespace Orchard.Recipes.RecipeSteps
     /// </summary>
     public class RecipesStep : IRecipeStepHandler
     {
-        private readonly IRecipeHarvester _recipeHarvester;
+        private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly IRecipeExecutor _recipeManager;
 
         public RecipesStep(
-            IRecipeHarvester recipeHarvester,
+            IEnumerable<IRecipeHarvester> recipeHarvesters,
             IRecipeExecutor recipeManager)
         {
-            _recipeHarvester = recipeHarvester;
+            _recipeHarvesters = recipeHarvesters;
             _recipeManager = recipeManager;
         }
 
@@ -47,7 +47,8 @@ namespace Orchard.Recipes.RecipeSteps
                 
                 if (!recipesDictionary.TryGetValue(recipe.ExecutionId, out recipes))
                 {
-                    recipes = (await _recipeHarvester.HarvestRecipesAsync(recipe.ExecutionId)).ToDictionary(x => x.Name);
+                    var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
+                    recipes = recipeCollections.SelectMany(x => x).ToDictionary(x => x.Name);
                     recipesDictionary[recipe.ExecutionId] = recipes;
                 }
 

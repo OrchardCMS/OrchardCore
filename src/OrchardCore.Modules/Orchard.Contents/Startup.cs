@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
@@ -14,6 +15,7 @@ using Orchard.Contents.Indexing;
 using Orchard.Contents.Models;
 using Orchard.Contents.Recipes;
 using Orchard.Contents.Services;
+using Orchard.Contents.TagHelpers;
 using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
 using Orchard.DisplayManagement.Descriptors;
@@ -21,6 +23,7 @@ using Orchard.Environment.Navigation;
 using Orchard.Feeds;
 using Orchard.Indexing;
 using Orchard.Lists.Settings;
+using Orchard.Mvc;
 using Orchard.Recipes;
 using Orchard.Scripting;
 using Orchard.Security.Permissions;
@@ -45,7 +48,7 @@ namespace Orchard.Contents
             services.AddScoped<IContentAliasProvider, ContentItemIdAliasProvider>();
             services.AddScoped<IContentItemIndexHandler, ContentItemIndexCoordinator>();
 
-            services.AddScoped<IGlobalMethodProvider, IdGeneratorMethod>();
+            services.AddSingleton<IGlobalMethodProvider, IdGeneratorMethod>();
             services.AddScoped<IDataMigration, Migrations>();
 
             // Common Part
@@ -61,6 +64,8 @@ namespace Orchard.Contents
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            serviceProvider.AddTagHelpers(typeof(ContentLinkTagHelper).GetTypeInfo().Assembly);
+
             routes.MapAreaRoute(
                 name: "DisplayContentItem",
                 areaName: "Orchard.Contents",

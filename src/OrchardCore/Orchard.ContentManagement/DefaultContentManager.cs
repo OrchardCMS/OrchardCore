@@ -179,8 +179,14 @@ namespace Orchard.ContentManagement
 
         public async Task<ContentItem> GetVersionAsync(string contentItemVersionId)
         {
-            var contentItem = await _session.Query<ContentItem, ContentItemIndex>(x => 
-                    x.ContentItemVersionId == contentItemVersionId).FirstOrDefaultAsync();
+            var contentItem = await _session
+                .Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId == contentItemVersionId)
+                .FirstOrDefaultAsync();
+
+            if (contentItem == null)
+            {
+                return null;
+            }
 
             if (!_contentManagerSession.RecallVersionId(contentItem.Id, out contentItem))
             {

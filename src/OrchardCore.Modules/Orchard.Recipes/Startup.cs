@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Data.Migration;
 using Orchard.Recipes.Models;
@@ -19,7 +19,7 @@ namespace Orchard.Recipes
 
             services.AddScoped<IRecipeStore, RecipeStore>();
 
-            services.AddScoped<IIndexProvider, RecipeResultIndexProvider>();
+            services.AddSingleton<IIndexProvider, RecipeResultIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddRecipeExecutionStep<CommandStep>();

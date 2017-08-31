@@ -1,22 +1,2 @@
-@using Orchard.Liquid;
-@using Fluid;
 @model Orchard.Liquid.ViewModels.LiquidPartViewModel
-@inject ILiquidTemplateManager TemplateManager;
-@{
-    string liquid = Model.Liquid;
-
-    var model = new
-    {
-        ContentItem = Model.LiquidPart.ContentItem,
-        Context = Context
-    };
-
-    var context = new TemplateContext();
-    context.AmbientValues.Add("UrlHelper", Url);
-    context.LocalScope.SetValue("ContentItem", Model.LiquidPart.ContentItem);
-    context.LocalScope.SetValue("Context", Context);
-
-    context.MemberAccessStrategy.Register(model.GetType());
-
-    await TemplateManager.RenderAsync(liquid, Output, HtmlEncoder, context);
-}
+@Html.Raw(Model.Html)

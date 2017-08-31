@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Orchard.StorageProviders;
-using ISession = YesSql.ISession;
 
 namespace Orchard.Media.Controllers
 {
@@ -76,10 +74,15 @@ namespace Orchard.Media.Controllers
 
             if (string.IsNullOrEmpty(path))
             {
-                return StatusCode(404);
+                return NotFound();
             }
 
             var f = await _mediaFileStore.GetFileAsync(path);
+
+            if (f == null)
+            {
+                return NotFound();
+            }
 
             return Json(CreateFileResult(f));
         }
@@ -250,7 +253,7 @@ namespace Orchard.Media.Controllers
                 folder = mediaFile.Folder,
                 url = mediaFile.AbsolutePath,
                 mediaPath = mediaFile.Path,
-                mime = MimeMapping.MimeTypes.GetMimeMapping(mediaFile.Path)
+                mime = MimeMapping.MimeUtility.GetMimeMapping(mediaFile.Path)
             };
         }
     }
