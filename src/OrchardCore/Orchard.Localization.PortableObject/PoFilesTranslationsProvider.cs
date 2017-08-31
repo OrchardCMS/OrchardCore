@@ -1,14 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Localization;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell;
-using Orchard.Localization.Abstractions;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
+using Orchard.Localization.Abstractions;
 
 namespace Orchard.Localization.PortableObject
 {

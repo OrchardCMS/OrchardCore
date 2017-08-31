@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System;
 
 namespace Orchard.Localization.Abstractions
 {
@@ -17,17 +15,17 @@ namespace Orchard.Localization.Abstractions
 
         public static string GetKey(string messageId, string context)
         {
-            if(string.IsNullOrEmpty(messageId))
+            if (string.IsNullOrEmpty(messageId))
             {
                 throw new ArgumentException("MessageId can't be empty.", nameof(messageId));
             }
 
-            if(string.IsNullOrEmpty(context))
+            if (string.IsNullOrEmpty(context))
             {
                 return messageId;
             }
 
-            return context.ToLowerInvariant()+ "|" + messageId;
+            return context.ToLowerInvariant() + "|" + messageId;
         }
     }
 }

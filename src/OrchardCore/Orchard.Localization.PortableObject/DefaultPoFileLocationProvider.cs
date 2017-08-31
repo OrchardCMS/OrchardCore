@@ -1,7 +1,5 @@
-﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -47,7 +45,7 @@ namespace Orchard.Localization.PortableObject
             // Then load global .po file for the applications
             yield return Path.Combine(_root, _rootContainer, _resourcesContainer, cultureName, "orchard.po");
 
-            // Finnaly load tenant-specific .po file
+            // Finally load tenant-specific .po file
             yield return Path.Combine(_root, _rootContainer, _shellContainer, _shellName, _resourcesContainer, cultureName, "orchard.po");
         }
     }

@@ -1,8 +1,6 @@
-﻿using Orchard.Localization.Abstractions;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
+using Orchard.Localization.Abstractions;
 
 namespace Orchard.Localization.Core
 {
@@ -54,7 +52,7 @@ namespace Orchard.Localization.Core
         bool IPluralRuleProvider.TryGetRule(CultureInfo culture, out PluralizationRuleDelegate rule)
         {
             rule = null;
-            
+
             if (Rules.TryGetValue(culture.Name, out rule))
             {
                 return true;

@@ -1,8 +1,4 @@
-﻿using Orchard.Localization;
 using Orchard.Localization.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Orchard.Tests.Localization
@@ -49,7 +45,7 @@ namespace Orchard.Tests.Localization
         public void IntexerThrowsPluralFormNotFoundExceptionIfSpecifiedPluralFormDoesntExist()
         {
             var dictionary = new CultureDictionary("cs", _csPluralRule);
-            var record = new CultureDictionaryRecord("ball", null, new[] { "míč", "míče"});
+            var record = new CultureDictionaryRecord("ball", null, new[] { "míč", "míče" });
             dictionary.MergeTranslations(new[] { record });
 
             Assert.Throws<PluralFormNotFoundException>(() => dictionary["ball", 5]);

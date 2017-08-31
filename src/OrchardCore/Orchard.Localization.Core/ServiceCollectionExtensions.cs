@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Orchard.Localization.Abstractions;
@@ -18,10 +16,10 @@ namespace Orchard.Localization.Core
         public static IServiceCollection AddOrchardLocalization(this IServiceCollection services, Action<LocalizationOptions> setupAction)
         {
             services.AddSingleton<IPluralRuleProvider, DefaultPluralRuleProvider>();
-            services.AddScoped<ITranslationProvider, PoFilesTranslationsProvider>();
-            services.AddScoped<ILocalizationFileLocationProvider, DefaultPoFileLocationProvider>();
-            services.AddScoped<ILocalizationManager, LocalizationManager>();
-            services.AddScoped<IStringLocalizerFactory, PortableObjectStringLocalizerFactory>();
+            services.AddSingleton<ITranslationProvider, PoFilesTranslationsProvider>();
+            services.AddSingleton<ILocalizationFileLocationProvider, DefaultPoFileLocationProvider>();
+            services.AddSingleton<ILocalizationManager, LocalizationManager>();
+            services.AddSingleton<IStringLocalizerFactory, PortableObjectStringLocalizerFactory>();
 
             services.Configure(setupAction);
 

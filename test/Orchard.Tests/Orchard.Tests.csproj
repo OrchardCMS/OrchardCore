@@ -44,7 +44,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OrchardCore.Modules\Orchard.Tokens.Content\Orchard.Tokens.Content.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore.Modules\Orchard.Liquid\Orchard.Liquid.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore.Modules\Orchard.Queries\Orchard.Queries.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.ContentManagement\Orchard.ContentManagement.csproj" />
@@ -64,7 +63,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Moq" Version="4.7.8" />
+    <PackageReference Include="Moq" Version="4.7.99" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitRunnerVisualStudioVersion)" />
     <PackageReference Include="xunit.analyzers" Version="$(XunitAnalyzers)" />

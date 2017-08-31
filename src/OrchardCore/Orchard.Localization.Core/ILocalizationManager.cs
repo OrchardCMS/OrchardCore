@@ -1,5 +1,5 @@
-﻿using Orchard.Localization.Abstractions;
 using System.Globalization;
+using Orchard.Localization.Abstractions;
 
 namespace Orchard.Localization.Core
 {

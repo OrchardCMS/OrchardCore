@@ -1,11 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
 using Microsoft.Extensions.Caching.Memory;
 using Orchard.Localization.Abstractions;
-using System.Globalization;
-using System.Threading;
-using System.Linq;
 
 namespace Orchard.Localization.Core
 {
@@ -34,7 +33,7 @@ namespace Orchard.Localization.Core
             {
                 PluralizationRuleDelegate rule = DefaultPluralRule;
 
-                foreach(var provider in _pluralRuleProviders)
+                foreach (var provider in _pluralRuleProviders)
                 {
                     if (provider.TryGetRule(culture, out rule))
                     {

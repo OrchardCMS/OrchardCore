@@ -1,14 +1,9 @@
-﻿using Orchard.Localization;
-using Orchard.Localization.Abstractions;
-using Orchard.Localization.Core;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using Xunit;
-using Orchard.Localization.PortableObject;
 using System.Reflection;
+using Orchard.Localization.Abstractions;
+using Orchard.Localization.PortableObject;
+using Xunit;
 
 namespace Orchard.Tests.Localization
 {

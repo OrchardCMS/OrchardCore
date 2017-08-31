@@ -1,12 +1,10 @@
-﻿using Moq;
-using Orchard.Localization.Abstractions;
-using Orchard.Localization.Core;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
-using Xunit;
 using Microsoft.Extensions.Logging;
+using Moq;
+using Orchard.Localization.Abstractions;
+using Orchard.Localization.Core;
+using Xunit;
 
 namespace Orchard.Tests.Localization
 {
