@@ -24,4 +24,13 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Pages\PageViews\Header.cshtml">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
+    <None Update="Pages\PageViews\_ViewImports.cshtml">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Orchard.Mvc.LocationExpander;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Extensions;
+using Orchard.Mvc.LocationExpander;
 
 namespace Orchard.DisplayManagement.LocationExpander
 {
@@ -43,11 +44,6 @@ namespace Orchard.DisplayManagement.LocationExpander
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            if (context.AreaName == null)
-            {
-                return Enumerable.Empty<string>();
-            }
-
             var themeManager = context
                 .ActionContext
                 .HttpContext
@@ -60,7 +56,7 @@ namespace Orchard.DisplayManagement.LocationExpander
 
                 if (currentTheme == null)
                 {
-                    return Enumerable.Empty<string>();
+                    return viewLocations;
                 }
 
                 var currentThemeAndBaseThemesOrdered = _extensionManager
@@ -70,21 +66,44 @@ namespace Orchard.DisplayManagement.LocationExpander
 
                 var result = new List<string>();
 
-                foreach (var theme in currentThemeAndBaseThemesOrdered)
+                if (context.ActionContext.ActionDescriptor is PageActionDescriptor)
                 {
-                    var themeViewsPath = Path.Combine(
-                        Path.DirectorySeparatorChar + theme.Extension.SubPath,
-                        "Views",
-                        context.AreaName != theme.Id ? context.AreaName : string.Empty);
+                    var pageViewLocations = PageViewLocations().ToList();
+                    pageViewLocations.AddRange(viewLocations);
+                    return pageViewLocations;
 
-                    result.Add(Path.Combine(themeViewsPath, "{1}", "{0}.cshtml"));
-                    result.Add(Path.Combine(themeViewsPath, "Shared", "{0}.cshtml"));
+                    IEnumerable<string> PageViewLocations()
+                    {
+                        foreach (var theme in currentThemeAndBaseThemesOrdered)
+                        {
+                            foreach (var location in viewLocations)
+                            {
+                                if (location.Contains("/{1}/"))
+                                {
+                                    var test = location.Substring(0, location.IndexOf("/{1}/"));
+                                    var themeViewsPath = "/" + theme.Extension.SubPath;
+                                    var test1 = location.Replace(test, themeViewsPath + "/PageViews");
+                                    yield return location.Replace(test, themeViewsPath + "/PageViews");
+                                }
+                            }
+                        }
+                    }
                 }
 
+                foreach (var theme in currentThemeAndBaseThemesOrdered)
+                {
+                    var themeViewsPath = Path.Combine("/" + theme.Extension.SubPath, "Views",
+                        context.AreaName != theme.Id ? context.AreaName : string.Empty);
+
+                    result.Add(themeViewsPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
+                    result.Add(themeViewsPath + "/Shared/{0}" +RazorViewEngine.ViewExtension);
+                }
+
+                result.AddRange(viewLocations);
                 return result;
             }
 
-            return Enumerable.Empty<string>();
+            return viewLocations;
         }
     }
 }

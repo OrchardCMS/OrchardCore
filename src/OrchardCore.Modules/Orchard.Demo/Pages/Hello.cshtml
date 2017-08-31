@@ -6,31 +6,23 @@
 {
     public class DemoModel : PageModel
     {
-        public string Message { get; private set; } = "Date on the server: ";
+        public string Title { get; set; }
+        public string Message { get; private set; }
 
-        public IActionResult OnGet()
+        public void OnGet()
         {
-            return Page();
+            Title = "This is a RazorPage coming from Orchard.Demo!";
+            Message = "Date on the server: ";
         }
     }
 }
 
-<zone name="Header">
-    <!-- Page Header -->
-    <!-- Set your background image for this header on the line below. -->
-    <header class="intro-header" style="background-image: url('@Href("~/Orchard.Demo/img/about-bg.jpg")')">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                    <div class="post-heading">
-                        <h1>@T["This is a RazorPage coming from"] Orchard.Demo!</h1>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-</zone>
+@Html.Partial("Header", Model)
 
 <p>
-    @Model.Message @await DisplayAsync(New.DateTime(Utc: null, Format: T["MMMM dd, yyyy"].Value))
+    @T[Model.Message] @await DisplayAsync(New.DateTime(Utc: null, Format: T["MMMM dd, yyyy"].Value))
+</p>
+
+<p>
+    Hello from @ViewContext.RouteData.Values["page"]
 </p>
