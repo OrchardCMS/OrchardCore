@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -52,7 +52,7 @@ namespace Orchard.Data.Migration
         {
             if (_dataMigrationRecord == null)
             {
-                _dataMigrationRecord = await _session.QueryAsync<DataMigrationRecord>().FirstOrDefault();
+                _dataMigrationRecord = await _session.Query<DataMigrationRecord>().FirstOrDefaultAsync();
 
                 if (_dataMigrationRecord == null)
                 {
@@ -72,8 +72,10 @@ namespace Orchard.Data.Migration
             var outOfDateMigrations = _dataMigrations.Where(dataMigration =>
             {
                 Records.DataMigration record;
-                if (currentVersions.TryGetValue(dataMigration.GetType().FullName, out record))
+                if (currentVersions.TryGetValue(dataMigration.GetType().FullName, out record) && record.Version.HasValue)
+                {
                     return CreateUpgradeLookupTable(dataMigration).ContainsKey(record.Version.Value);
+                }
 
                 return (GetCreateMethod(dataMigration) != null);
             });

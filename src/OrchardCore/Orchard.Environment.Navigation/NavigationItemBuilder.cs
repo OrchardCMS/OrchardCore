@@ -99,10 +99,10 @@ namespace Orchard.Environment.Navigation
             return this;
         }
 
-        public new IEnumerable<MenuItem> Build()
+        public override List<MenuItem> Build()
         {
             _item.Items = base.Build();
-            return new[] { _item };
+            return new List<MenuItem> { _item };
         }
 
         public NavigationItemBuilder Action(RouteValueDictionary values)

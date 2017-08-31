@@ -1,5 +1,5 @@
 /**
- * Trumbowyg v2.4.0 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.6.0 - A lightweight WYSIWYG editor
  * Trumbowyg core file
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -70,7 +70,9 @@ jQuery.trumbowyg = {
     plugins: {},
 
     // SVG Path globally
-    svgPath: null
+    svgPath: null,
+
+    hideButtonTexts: null
 };
 
 
@@ -159,6 +161,8 @@ jQuery.trumbowyg = {
             t.lang = $.trumbowyg.langs.en;
         }
 
+        t.hideButtonTexts = $.trumbowyg.hideButtonTexts != null ? $.trumbowyg.hideButtonTexts : options.hideButtonTexts;
+
         // SVG path
         var svgPathOption = $.trumbowyg.svgPath != null ? $.trumbowyg.svgPath : options.svgPath;
         t.hasSvg = svgPathOption !== false;
@@ -190,6 +194,7 @@ jQuery.trumbowyg = {
                 type: 'GET',
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 dataType: 'xml',
+                crossDomain : true,
                 url: svgPathOption,
                 data: null,
                 beforeSend: null,
@@ -448,6 +453,9 @@ jQuery.trumbowyg = {
         // Admit multiple paste handlers
         t.pasteHandlers = [].concat(t.o.pasteHandlers);
 
+        // Check if browser is IE
+        t.isIE = (navigator.userAgent.indexOf('MSIE') !== -1 || navigator.appVersion.indexOf('Trident/') !== -1);
+
         t.init();
     };
 
@@ -461,9 +469,9 @@ jQuery.trumbowyg = {
             try {
                 // Disable image resize, try-catch for old IE
                 t.doc.execCommand('enableObjectResizing', false, false);
+                t.doc.execCommand('defaultParagraphSeparator', false, 'p');
             } catch (e) {
             }
-            t.doc.execCommand('defaultParagraphSeparator', false, 'p');
 
             t.buildEditor();
             t.buildBtnPane();
@@ -554,34 +562,46 @@ jQuery.trumbowyg = {
 
             var ctrl = false,
                 composition = false,
-                debounceButtonPaneStatus;
+                debounceButtonPaneStatus,
+                updateEventName = t.isIE ? 'keyup' : 'input';
 
             t.$ed
                 .on('dblclick', 'img', t.o.imgDblClickHandler)
                 .on('keydown', function (e) {
-                    composition = (e.which === 229);
-
                     if (e.ctrlKey) {
                         ctrl = true;
-                        var k = t.keys[String.fromCharCode(e.which).toUpperCase()];
+                        var key = t.keys[String.fromCharCode(e.which).toUpperCase()];
 
                         try {
-                            t.execCmd(k.fn, k.param);
+                            t.execCmd(key.fn, key.param);
                             return false;
                         } catch (c) {
                         }
                     }
                 })
-                .on('keyup input', function (e) {
-                    if (e.which >= 37 && e.which <= 40) {
+                .on('compositionstart compositionupdate', function () {
+                    composition = true;
+                })
+                .on(updateEventName + ' compositionend', function (e) {
+                  if (e.type === 'compositionend') {
+                        composition = false;
+                    } else if(composition) {
                         return;
                     }
 
-                    if (e.ctrlKey && (e.which === 89 || e.which === 90)) {
+                    var keyCode = e.which;
+
+                    if (keyCode >= 37 && keyCode <= 40) {
+                        return;
+                    }
+
+                    if (e.ctrlKey && (keyCode === 89 || keyCode === 90)) {
                         t.$c.trigger('tbwchange');
-                    } else if (!ctrl && e.which !== 17 && !composition) {
-                        t.semanticCode(false, e.which === 13);
+                    } else if (!ctrl && keyCode !== 17) {
+                        t.semanticCode(false, keyCode === 13);
                         t.$c.trigger('tbwchange');
+                    } else if (typeof e.which === 'undefined') {
+                        t.semanticCode(false, false, true);
                     }
 
                     setTimeout(function () {
@@ -638,7 +658,7 @@ jQuery.trumbowyg = {
                     }, 0);
                 });
             t.$ta.on('keyup paste', function () {
-                t.$c.trigger('tbwchange');
+              t.$c.trigger('tbwchange');
             });
 
             t.$box.on('keydown', function (e) {
@@ -707,7 +727,9 @@ jQuery.trumbowyg = {
                 $btn = $('<button/>', {
                     type: 'button',
                     class: prefix + btnName + '-button ' + (btn.class || '') + (!hasIcon ? ' ' + prefix + 'textual-button' : ''),
-                    html: t.hasSvg && hasIcon ? '<svg><use xlink:href="' + t.svgPath + '#' + prefix + (btn.ico || btnName).replace(/([A-Z]+)/g, '-$1').toLowerCase() + '"/></svg>' : (btn.text || btn.title || t.lang[btnName] || btnName),
+                    html: t.hasSvg && hasIcon ?
+                      '<svg><use xlink:href="' + t.svgPath + '#' + prefix + (btn.ico || btnName).replace(/([A-Z]+)/g, '-$1').toLowerCase() + '"/></svg>' :
+                      t.hideButtonTexts ? '' : (btn.text || btn.title || t.lang[btnName] || btnName),
                     title: (btn.title || btn.text || textDef) + ((btn.key) ? ' (Ctrl + ' + btn.key + ')' : ''),
                     tabindex: -1,
                     mousedown: function () {
@@ -973,10 +995,12 @@ jQuery.trumbowyg = {
 
                 $(window).trigger('scroll');
 
-                $('body', d).on('mousedown.'+t.eventNamespace, function () {
-                    $('.' + prefix + 'dropdown', d).hide();
-                    $('.' + prefix + 'active', d).removeClass(prefix + 'active');
-                    $('body', d).off('mousedown.'+t.eventNamespace);
+                $('body', d).on('mousedown.'+t.eventNamespace, function (e) {
+                    if (!$dropdown.is(e.target)) {
+                        $('.' + prefix + 'dropdown', d).hide();
+                        $('.' + prefix + 'active', d).removeClass(prefix + 'active');
+                        $('body', d).off('mousedown.'+t.eventNamespace);
+                    }
                 });
             }
         },
@@ -1001,7 +1025,11 @@ jQuery.trumbowyg = {
             if (!force && t.$ed.is(':visible')) {
                 t.syncTextarea();
             } else {
-                t.$ed.html(t.$ta.val());
+                // wrap the content in a div it's easier to get the innerhtml
+                var html = '<div>' + t.$ta.val() + '</div>';
+                //scrub the html before loading into the doc
+                html = $(t.o.tagsToRemove.join(','), html).remove().end().html();
+                t.$ed.html(html);
             }
 
             if (t.o.autogrow) {
@@ -1016,12 +1044,11 @@ jQuery.trumbowyg = {
         // Analyse and update to semantic code
         // @param force : force to sync code from textarea
         // @param full  : wrap text nodes in <p>
-        semanticCode: function (force, full) {
+        // @param keepRange  : leave selection range as it is
+        semanticCode: function (force, full, keepRange) {
             var t = this;
             t.saveRange();
             t.syncCode(force);
-
-            $(t.o.tagsToRemove.join(','), t.$ed).remove();
 
             if (t.o.semantic) {
                 t.semanticTag('b', 'strong');
@@ -1065,7 +1092,9 @@ jQuery.trumbowyg = {
                     t.$ed.find('p:empty').remove();
                 }
 
-                t.restoreRange();
+                if (!keepRange) {
+                    t.restoreRange();
+                }
 
                 t.syncTextarea();
             }
@@ -1104,6 +1133,7 @@ jQuery.trumbowyg = {
                 target = $a.attr('target');
                 var range = t.doc.createRange();
                 range.selectNode(node);
+                documentSelection.removeAllRanges();
                 documentSelection.addRange(range);
             }
 
@@ -1153,6 +1183,7 @@ jQuery.trumbowyg = {
                 if (node && node.nodeName === 'A') {
                     var range = t.doc.createRange();
                     range.selectNode(node);
+                    documentSelection.removeAllRanges();
                     documentSelection.addRange(range);
                 }
             }
@@ -1216,7 +1247,7 @@ jQuery.trumbowyg = {
                 } catch (e2) {
                     if (cmd === 'insertHorizontalRule') {
                         param = undefined;
-                    } else if (cmd === 'formatBlock' && (navigator.userAgent.indexOf('MSIE') !== -1 || navigator.appVersion.indexOf('Trident/') !== -1)) {
+                    } else if (cmd === 'formatBlock' && t.isIE) {
                         param = '<' + param + '>';
                     }
 
@@ -1527,7 +1558,7 @@ jQuery.trumbowyg = {
         },
         getTagsRecursive: function (element, tags) {
             var t = this;
-            tags = tags || [];
+            tags = tags || (element && element.tagName ? [element.tagName] : []);
 
             if (element && element.parentNode) {
                 element = element.parentNode;

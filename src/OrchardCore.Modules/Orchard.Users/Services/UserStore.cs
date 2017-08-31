@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -74,7 +74,7 @@ namespace Orchard.Users.Services
 
         public Task<User> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return _session.QueryAsync<User, UserIndex>(u => u.NormalizedUserName == normalizedUserName).FirstOrDefault();
+            return _session.Query<User, UserIndex>(u => u.NormalizedUserName == normalizedUserName).FirstOrDefaultAsync();
         }
 
         public Task<string> GetNormalizedUserNameAsync(User user, CancellationToken cancellationToken = default(CancellationToken))
@@ -258,7 +258,7 @@ namespace Orchard.Users.Services
 
         public Task<User> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
         {
-            return _session.QueryAsync<User, UserIndex>(u => u.NormalizedEmail == normalizedEmail).FirstOrDefault();
+            return _session.Query<User, UserIndex>(u => u.NormalizedEmail == normalizedEmail).FirstOrDefaultAsync();
         }
 
         public Task<string> GetNormalizedEmailAsync(User user, CancellationToken cancellationToken)

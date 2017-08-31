@@ -1,15 +1,3 @@
-﻿@model Orchard.Markdown.ViewModels.MarkdownPartViewModel
-@inject Orchard.Tokens.Services.ITokenizer Tokenizer
+@model Orchard.Markdown.ViewModels.MarkdownPartViewModel
 
-@{ 
-    string markdown = Model.Markdown;
-    var html = Markdig.Markdown.ToHtml(markdown);
-
-    if (Model.TypePartSettings.RenderTokens)
-    {
-        var context = Tokenizer.CreateViewModel().Content(Model.MarkdownPart.ContentItem);
-        html = Tokenizer.Tokenize(html, context);
-    }
-}
-
-@Html.Raw(html)
+@Html.Raw(Model.Html)

@@ -1,4 +1,38 @@
-﻿# Markdown (Orchard.Markdown)
+# Markdown (Orchard.Markdown)
+
+## Theming
+
+These shapes are available for theming
+
+### MarkdownPart
+
+This shape is rendered when a `MarkdownPart` is attached to a content item.
+The shape based class is of `MarkdownPartViewModel`.
+
+The following properties are available on the `MarkdownPartViewModel` class.
+
+| Property | Type | Description |
+| --------- | ---- |------------ |
+| `Markdown` | `string` | The Markdown value once all tokens have been processed |
+| `ContentItem` | `ContentItem` | The content item of the part |
+| `Html` | `string` | The HTML content resulting from the Mardkown source |
+| `MarkdownPart` | `MarkdownPart` | The `MarkdownPart` instance|
+| `TypePartSettings` | `MarkdownPartSettings` | The settings of the part |
+
+### MarkdownField
+
+This shape is rendered when a `MarkdownField` is attached to a content part.
+The shape based class is of `MarkdownFieldViewModel`.
+
+The following properties are available on the `MarkdownFieldViewModel` class.
+
+| Property | Type | Description |
+| --------- | ---- |------------ |
+| `Markdown` | `string` | The Markdown value once all tokens have been processed |
+| `Html` | `string` | The HTML content resulting from the Mardkown source |
+| `Field` | `MarkdownField` | The `MarkdownField` instance|
+| `Part` | `ContentPart` | The part this field attached to |
+| `PartFieldDefinition` | `ContentPartFieldDefinition` | The part field definition |
 
 ## Editors
 

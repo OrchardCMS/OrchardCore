@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Orchard.Admin;
-using Orchard.Deployment.Editors;
 using Orchard.Deployment.ViewModels;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.ModelBinding;
@@ -21,16 +20,16 @@ namespace Orchard.Deployment.Controllers
     public class StepController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IDeploymentStepDisplayManager _displayManager;
-        private readonly IEnumerable<IDeploymentStepDisplayDriver> _drivers;
+        private readonly IDisplayManager<DeploymentStep> _displayManager;
+        private readonly IEnumerable<IDeploymentStepFactory> _factories;
         private readonly ISession _session;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
 
         public StepController(
             IAuthorizationService authorizationService,
-            IDeploymentStepDisplayManager displayManager,
-            IEnumerable<IDeploymentStepDisplayDriver> drivers,
+            IDisplayManager<DeploymentStep> displayManager,
+            IEnumerable<IDeploymentStepFactory> factories,
             ISession session,
             ISiteService siteService,
             IShapeFactory shapeFactory,
@@ -39,7 +38,7 @@ namespace Orchard.Deployment.Controllers
             INotifier notifier)
         {
             _displayManager = displayManager;
-            _drivers = drivers;
+            _factories = factories;
             _authorizationService = authorizationService;
             _session = session;
             _siteService = siteService;
@@ -67,7 +66,7 @@ namespace Orchard.Deployment.Controllers
                 return NotFound();
             }
 
-            var step = _drivers.FirstOrDefault(x => x.Type.Name == type)?.Create();
+            var step = _factories.FirstOrDefault(x => x.Name == type)?.Create();
 
             if (step == null)
             {
@@ -82,8 +81,10 @@ namespace Orchard.Deployment.Controllers
                 DeploymentStep = step,
                 DeploymentStepId = step.Id,
                 DeploymentStepType = type,
-                Editor = await _displayManager.BuildStepEditorAsync(step, this)
+                Editor = await _displayManager.BuildEditorAsync(step, this)
             };
+
+            model.Editor.DeploymentStep = step;
 
             return View(model);
         }
@@ -103,14 +104,15 @@ namespace Orchard.Deployment.Controllers
                 return NotFound();
             }
 
-            var step = _drivers.FirstOrDefault(x => x.Type.Name == model.DeploymentStepType)?.Create();
+            var step = _factories.FirstOrDefault(x => x.Name == model.DeploymentStepType)?.Create();
 
             if (step == null)
             {
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdatStepEditorAsync(step, this);
+            var editor = await _displayManager.UpdateEditorAsync(step, this);
+            editor.DeploymentStep = step;
 
             if (ModelState.IsValid)
             {
@@ -155,10 +157,12 @@ namespace Orchard.Deployment.Controllers
                 DeploymentStep = step,
                 DeploymentStepId = step.Id,
                 DeploymentStepType = step.GetType().Name,
-                Editor = await _displayManager.BuildStepEditorAsync(step, this)
+                Editor = await _displayManager.BuildEditorAsync(step, this)
             };
 
-            return View(model);
+            model.Editor.DeploymentStep = step;
+
+           return View(model);
         }
 
         [HttpPost]
@@ -183,7 +187,7 @@ namespace Orchard.Deployment.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdatStepEditorAsync(step, this);
+            var editor = await _displayManager.UpdateEditorAsync(step, this);
 
             if (ModelState.IsValid)
             {
@@ -193,6 +197,7 @@ namespace Orchard.Deployment.Controllers
                 return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
             }
 
+            _notifier.Error(H["The deployment plan step has validation errors"]);
             model.Editor = editor;
 
             // If we got this far, something failed, redisplay form

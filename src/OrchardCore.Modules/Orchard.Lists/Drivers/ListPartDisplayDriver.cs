@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -110,13 +110,13 @@ namespace Orchard.Lists.Drivers
             if (pager.Before != null)
             {
                 var beforeValue = new DateTime(long.Parse(pager.Before));
-                var query = _session.QueryAsync<ContentItem>()
+                var query = _session.Query<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
                     .With<ContentItemIndex>(CreateContentIndexFilter(beforeValue, null, published))
                     .OrderBy(x => x.CreatedUtc)
                     .Take(pager.PageSize + 1);
 
-                var containedItems = await query.List();
+                var containedItems = await query.ListAsync();
 
                 if (containedItems.Count() == 0)
                 {
@@ -140,13 +140,13 @@ namespace Orchard.Lists.Drivers
             else if (pager.After != null)
             {
                 var afterValue = new DateTime(long.Parse(pager.After));
-                var query = _session.QueryAsync<ContentItem>()
+                var query = _session.Query<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
                     .With<ContentItemIndex>(CreateContentIndexFilter(null, afterValue, published))
                     .OrderByDescending(x => x.CreatedUtc)
                     .Take(pager.PageSize + 1);
 
-                var containedItems = await query.List();
+                var containedItems = await query.ListAsync();
 
                 if (containedItems.Count() == 0)
                 {
@@ -167,13 +167,13 @@ namespace Orchard.Lists.Drivers
             }
             else
             {
-                var query = _session.QueryAsync<ContentItem>()
+                var query = _session.Query<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
                     .With<ContentItemIndex>(CreateContentIndexFilter(null, null, published))
                     .OrderByDescending(x => x.CreatedUtc)
                     .Take(pager.PageSize + 1);
 
-                var containedItems = await query.List();
+                var containedItems = await query.ListAsync();
 
                 if (containedItems.Count() == 0)
                 {

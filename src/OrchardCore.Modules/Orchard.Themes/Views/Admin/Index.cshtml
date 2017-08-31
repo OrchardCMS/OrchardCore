@@ -1,23 +1,69 @@
-﻿@model Orchard.Themes.Models.SelectThemesViewModel
-
+@model Orchard.Themes.Models.SelectThemesViewModel
+<style asp-src="/Orchard.Themes/Styles/themes.admin.css"></style>
 <div class="alert alert-warning">
-    <h4>Changing default themes</h4>
-    <p>This page lets you change the site's themes. Try <code>SafeMode</code> and <code>TheTheme</code> for the front-end or <code>TheAdmin</code> for the admin</p>
+    <h4>@T["Changing default themes"]</h4>
+    <p>@T["This page lets you change the site's themes. Try <code>The Default Theme</code> and <code>The Blog Theme</code> for the front-end or <code>The Admin Theme</code> for the admin."]</p>
 </div>
 
-<form asp-action="Index" method="post">
-
-    <fieldset class="form-group">
-        <label asp-for="SiteThemeName">Site theme name</label>
-        <input asp-for="SiteThemeName" class="form-control"/>
-        <span class="hint">The name of the theme for the front-end.</span>
-    </fieldset>
-
-    <fieldset class="form-group">
-        <label asp-for="AdminThemeName">Admin theme name</label>
-        <input asp-for="AdminThemeName" class="form-control"/>
-        <span class="hint">The name of the theme for the admin.</span>
-    </fieldset>
-
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+@if (!Model.Themes.Any())
+{
+    <p>@T["There are no themes installed."]</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var themeEntry in Model.Themes)
+        {
+            <div class="col-sm-12 col-md-6 col-lg-4">
+                <div class="card theme-card">
+                    <h4 class="card-title">@themeEntry.Name</h4>
+                    <div class="card-theme-thumbnail" style="background-image:url('@Url.Content($"~/{themeEntry.Extension.Id}/Theme.png")');"></div>
+                    <div class="card-block">
+                        <p>@themeEntry.Extension.Manifest.Description</p>
+                        @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Author))
+                        {
+                            <small>@T["By: {0}", themeEntry.Extension.Manifest.Author]</small><br />
+                        }
+                        @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Website))
+                        {
+                            <small><a href="@themeEntry.Extension.Manifest.Website" target="_blank">@themeEntry.Extension.Manifest.Website</a></small><br />
+                        }
+                        <small>@T["Version: {0}", themeEntry.Extension.Manifest.Version]</small>
+                    </div>
+                    <div class="card-footer text-muted text-xs-right">
+                        @if (!themeEntry.IsCurrent)
+                        {
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <form asp-route-action="SetCurrentTheme" asp-route-id="@themeEntry.Extension.Id" method="post">
+                                        <button type="submit" class="btn btn-sm btn-primary">@T["Make Default"]</button>
+                                    </form>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="pull-right">
+                                        @if (themeEntry.Enabled)
+                                        {
+                                            <form asp-route-action="Disable" asp-route-id="@themeEntry.Extension.Id" method="post">
+                                                <button type="submit" class="btn btn-sm btn-default">@T["Disable"]</button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-route-action="Enable" asp-route-id="@themeEntry.Extension.Id" method="post">
+                                                <button type="submit" class="btn btn-sm btn-default">@T["Enable"]</button>
+                                            </form>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            @T["This is the default {0} theme", themeEntry.IsAdmin ? "Admin" : "Site"]
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

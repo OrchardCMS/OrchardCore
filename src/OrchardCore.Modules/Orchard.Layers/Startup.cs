@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +8,7 @@ using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Data.Migration;
+using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
 using Orchard.Layers.Drivers;
 using Orchard.Layers.Handlers;
@@ -18,7 +19,7 @@ using Orchard.Layers.Services;
 using Orchard.Recipes;
 using Orchard.Scripting;
 using Orchard.Security.Permissions;
-using Orchard.Settings.Services;
+using Orchard.Settings;
 using YesSql.Indexes;
 
 namespace Orchard.Layers
@@ -32,7 +33,7 @@ namespace Orchard.Layers
                 options.Filters.Add(typeof(LayerFilter));
             });
 
-            services.AddScoped<ISiteSettingsDisplayDriver, LayerSiteSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<ISite>, LayerSiteSettingsDisplayDriver>();
             services.AddSingleton<ContentPart, LayerMetadata>();
             services.AddScoped<IContentDisplayDriver, LayerMetadataWelder>();
             services.AddScoped<INavigationProvider, AdminMenu>();

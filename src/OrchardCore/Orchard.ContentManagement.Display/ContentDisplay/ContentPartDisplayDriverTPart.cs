@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Orchard.ContentManagement.Display.Models;
 using Orchard.ContentManagement.Metadata.Models;
@@ -61,7 +61,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
 
             var result = UpdateAsync(part, context.Updater, updateEditorContext);
 
-            part.ContentItem.Apply(part);
+            part.ContentItem.Apply(typePartDefinition.Name, part);
             
             return result;
         }

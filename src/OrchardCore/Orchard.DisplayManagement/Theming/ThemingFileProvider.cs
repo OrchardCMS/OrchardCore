@@ -22,7 +22,7 @@ namespace Orchard.DisplayManagement.Theming
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (subpath == "/Views/_ViewImports.cshtml")
+            if (subpath == "/_ViewImports.cshtml")
             {
                 return _viewImportsFileInfo;
             }

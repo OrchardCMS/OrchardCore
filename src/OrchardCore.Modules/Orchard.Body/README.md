@@ -1,5 +1,23 @@
 # Body (Orchard.Body)
 
+## Theming
+
+These shapes are available for theming
+
+### BodyPart
+
+This shape is rendered when a `BodyPart` is attached to a content item.
+The shape based class is of `BodyPartViewModel`.
+
+The following properties are available on the `BodyPartViewModel` class.
+
+| Property | Type | Description |
+| --------- | ---- |------------ |
+| `Body` | `string` | The HTML content once all tokens have been processed |
+| `ContentItem` | `ContentItem` | The content item of the part |
+| `BodyPart` | `BodyPart` | The `BodyPart` instance|
+| `TypePartSettings` | `BodyPartSettings` | The settings of the part |
+
 ## Editors
 
 The __Body Part__ editor can be different for each content type. In the __Body Part__ settings of a 
@@ -55,6 +73,23 @@ Sample content:
 You can override the HTML editor for the `Default` editor by creating a shape file named 
 `Body.Editor.cshtml`. The Wysiwyg editor is defined by using the file named 
 `Body-Wysiwyg.Editor.cshtml`.
+
+## Theming
+
+The following shapes are rendered when the **BodyPart** is attached to a content type
+
+| Name | Display Type | Default Location | Model Type |
+| ------| ------------ |----------------- | ---------- |
+| `BodyPart` | `Detail` | `Content:5` | `BodyPartViewModel` |
+| `BodyPart_Summary` | `Summary` | `Content:10` | `BodyPartViewModel` |
+
+### BodyPartViewModel
+
+The following properties are available on `BodyPartViewModel`
+
+| Name | Type | Description |
+| -----| ---- |------------ |
+| `Body` | `string` | The HTML content in the body. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `BodyPart` shape instead |
 
 ## CREDITS
 

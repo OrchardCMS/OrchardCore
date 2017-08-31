@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace Orchard.DisplayManagement.TagHelpers
@@ -51,8 +52,8 @@ namespace Orchard.DisplayManagement.TagHelpers
 
             if (For != null)
             {
-
-                if (ViewContext.ModelState[For.Name]?.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
+                var fullName = NameAndIdProvider.GetFullHtmlFieldName(ViewContext, For.Name);
+                if(ViewContext.ViewData.ModelState.TryGetValue(fullName, out var entry) && entry.Errors.Count > 0)
                 {
                     TagHelperAttribute classAttribute;
 

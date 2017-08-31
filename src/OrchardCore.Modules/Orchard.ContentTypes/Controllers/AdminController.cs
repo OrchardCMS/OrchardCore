@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -225,19 +225,13 @@ namespace Orchard.ContentTypes.Controllers
             if (typeViewModel == null)
                 return NotFound();
 
-            var typePartNames = new HashSet<string>(
-                typeViewModel.TypeDefinition.Parts
-                    .Where(cpd => !cpd.Settings.ToObject<ContentPartSettings>().Reusable)
-                    .Select(p => p.PartDefinition.Name)
-                );
+            var typePartNames = new HashSet<string>(typeViewModel.TypeDefinition.Parts.Select(p => p.PartDefinition.Name));
 
             var viewModel = new AddPartsViewModel
             {
                 Type = typeViewModel,
                 PartSelections = _contentDefinitionService.GetParts(metadataPartsOnly: false)
-                    .Where(cpd => !typePartNames.Contains(cpd.Name) &&
-                        cpd.Settings.ToObject<ContentPartSettings>().Attachable &&
-                        !cpd.Settings.ToObject<ContentPartSettings>().Reusable)
+                    .Where(cpd => !typePartNames.Contains(cpd.Name) && cpd.Settings.ToObject<ContentPartSettings>().Attachable)
                     .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
                     .ToList()
             };
@@ -371,8 +365,11 @@ namespace Orchard.ContentTypes.Controllers
 
         #region Parts
 
-        public ActionResult ListParts()
+        public async Task<ActionResult> ListParts()
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContentTypes))
+                return Unauthorized();
+
             return View(new ListContentPartsViewModel
             {
                 // only user-defined parts (not code as they are not configurable)

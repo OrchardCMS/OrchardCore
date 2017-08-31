@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Modules;
@@ -127,8 +127,8 @@ namespace Orchard.ContentTypes.Services
             if (deleteContent)
             {
                 var contentItems = _session
-                    .QueryAsync<ContentItem, ContentItemIndex>(x => x.ContentType == name)
-                    .List().Result;
+                    .Query<ContentItem, ContentItemIndex>(x => x.ContentType == name)
+                    .ListAsync().GetAwaiter().GetResult();
 
                 foreach (var contentItem in contentItems)
                 {
@@ -230,6 +230,13 @@ namespace Orchard.ContentTypes.Services
         public void RemovePart(string name)
         {
             var partDefinition = _contentDefinitionManager.GetPartDefinition(name);
+
+            if (partDefinition == null)
+            {
+                // Couldn't find this named part, ignore it
+                return;
+            }
+
             var fieldDefinitions = partDefinition.Fields.ToArray();
             foreach (var fieldDefinition in fieldDefinitions)
             {

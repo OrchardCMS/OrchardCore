@@ -1,8 +1,8 @@
-﻿Name: Safe Mode
+Name: Safe Mode Theme
 AntiForgery: enabled
 Author: The Orchard Team
 Website: http://orchardproject.net
-Version: 2.0.x
-OrchardVersion: 2.0.x
-Description: Test
-FeatureDescription: Test
+Version: 2.0.0
+OrchardVersion: 2.0.0
+Description: A fail-safe theme when no other themes are available.
+Tags: hidden

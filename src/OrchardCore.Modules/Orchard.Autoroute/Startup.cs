@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
@@ -19,7 +19,6 @@ using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
 using Orchard.Indexing;
 using Orchard.Security.Permissions;
-using Orchard.Tokens;
 using YesSql.Indexes;
 using YesSql;
 
@@ -42,15 +41,13 @@ namespace Orchard.Autoroute
 
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
             services.AddScoped<IContentAliasProvider, AutorouteAliasProvider>();
-
-            services.AddNullTokenizer();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var entries = serviceProvider.GetRequiredService<IAutorouteEntries>();
             var session = serviceProvider.GetRequiredService<ISession>();
-            var autoroutes = session.QueryIndexAsync<AutoroutePartIndex>().Where(o => o.Published).List().GetAwaiter().GetResult();
+            var autoroutes = session.QueryIndex<AutoroutePartIndex>(o => o.Published).ListAsync().GetAwaiter().GetResult();
 
             entries.AddEntries(autoroutes.Select(x => new AutorouteEntry { ContentItemId = x.ContentItemId, Path = x.Path }));
 

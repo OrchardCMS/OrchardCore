@@ -1,9 +1,0 @@
-﻿<div id="contentPreviewContainer">
-    <nav id="contentPreviewNavigation" class="navbar navbar-light bg-faded">
-        <button type="button" class="btn btn-secondary btn-sm" onclick="$(document).trigger('contentpreview:toggle')">@T["Close"]</button>
-        <button type="button" class="btn btn-primary btn-sm" onclick="$(document).trigger('contentpreview:render')">@T["Refresh"]</button>
-        @* We check the opposite state as the event is triggered before the value is changed *@
-        <button type="button" class="btn btn-info btn-sm" onclick="$(document).trigger('contentpreview:auto', $(this).attr('aria-pressed') === 'false')" data-toggle="button" aria-pressed="false" autocomplete="off">@T["Auto refresh"]</button>
-    </nav>
-    <div id="contentPreviewContent"></div>
-</div>

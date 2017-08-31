@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using YesSql.Indexes;
 
 namespace Orchard.ContentManagement.Records
@@ -7,6 +7,7 @@ namespace Orchard.ContentManagement.Records
     {
         public int DocumentId { get; set; }
         public string ContentItemId { get; set; }
+        public string ContentItemVersionId { get; set; }
         public int Number { get; set; }
         public bool Published { get; set; }
         public bool Latest { get; set; }
@@ -30,6 +31,7 @@ namespace Orchard.ContentManagement.Records
                     Published = contentItem.Published,
                     ContentType = contentItem.ContentType,
                     ContentItemId = contentItem.ContentItemId,
+                    ContentItemVersionId = contentItem.ContentItemVersionId,
                     ModifiedUtc = contentItem.ModifiedUtc,
                     PublishedUtc = contentItem.PublishedUtc,
                     CreatedUtc = contentItem.CreatedUtc,

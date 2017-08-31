@@ -1,0 +1,83 @@
+@model Orchard.Media.ViewModels.EditMediaFieldViewModel
+@using Orchard.Media.Settings;
+@using Orchard.ContentManagement.Metadata.Models
+
+<script asp-src="/Orchard.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, sortable, vuedraggable"></script>
+<style asp-src="/Orchard.Media/Styles/media.min.css" debug-src="/Orchard.Media/Styles/media.css"></style>
+<script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
+<script asp-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.min.js" debug-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.js" asp-name="sortable" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<MediaFieldSettings>();
+    var modalMediaId = "Modal" + Html.IdFor(m => m);
+}
+
+<script at="Foot">
+    initializeMediaApplication(false, '@Url.Action("MediaApplication", "Admin", new { area = "Orchard.Media" })');
+    initializeMediaFieldEditor(
+        document.getElementById('@Html.IdFor(m => m)'),
+        document.getElementById('@Html.IdFor(m => m)-ModalBody'),
+        '@Url.Action("GetMediaItem", "Admin", new { area = "Orchard.Media" })',
+        @(settings.Multiple ? "true" : "false"));
+</script>
+
+<div class="mediafield-editor" id="@Html.IdFor(m => m)" data-for="@Html.IdFor(m => m.Paths)">
+    <div class="media-field">
+        <fieldset class="form-group">
+            <label asp-for="Paths">@Model.PartFieldDefinition.DisplayName()</label>
+            @if (!string.IsNullOrWhiteSpace(settings.Hint))
+            {
+                <span class="hint">@settings.Hint</span>
+            }
+
+            <input asp-for="Paths" type="hidden" class="paths" :value="paths" data-init="@Model.Paths" />
+
+            <nav class="media-field-toolbar">
+                <div class="btn-group">
+                    <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus text-muted"></i></a>
+                    <a v-show="canRemoveMedia" href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm"><i class="fa fa-trash text-muted"></i></a>
+                </div>
+                <code class="pull-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ fileSize }}}} KB)"]</code>
+            </nav>
+
+        </fieldset>
+        <fieldset class="form-group">
+            <div class="media-container-main" v-cloak>
+                <draggable :list="mediaItems" element="ol" class="row media-container-main-list">
+                    <li v-for="media in mediaItems"
+                        :key="media.name"
+                        class="media-container-main-list-item"
+                        v-on:click="selectMedia(media)">
+                        <div class="media-container-main-item" v-bind:class="{selected: selectedMedia == media}">
+                            <img v-if="media.mime.startsWith('image')" v-bind:src="media.url + '?width=240&height=240'" v-bind:data-mime="media.mime" />
+                            <i v-else class="fa fa-file-o" v-bind:data-mime="media.mime"></i>
+                            <div class="media-container-main-item-title">
+                                <span class="media-filename">{{ media.name }}</span>
+                            </div>
+                        </div>
+                    </li>
+                </draggable>
+            </div>
+        </fieldset>
+    </div>
+</div>
+
+<div class="modal" id="@Html.IdFor(m => m)-ModalBody">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@T["Select Media"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary mediaFieldSelectButton">@T["OK"]</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>

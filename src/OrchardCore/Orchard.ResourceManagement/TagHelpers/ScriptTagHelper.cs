@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -57,7 +57,9 @@ namespace Orchard.ResourceManagement.TagHelpers
                 else
                 {
                     // Anonymous declaration with dependencies, then display
-                    var name = Guid.NewGuid().ToString();
+
+                    // Using the source as the name to prevent duplicate references to the same file
+                    var name = Src.ToLowerInvariant();
 
                     var definition = _resourceManager.InlineManifest.DefineScript(name);
                     definition.SetUrl(Src, DebugSrc);
@@ -203,7 +205,7 @@ namespace Orchard.ResourceManagement.TagHelpers
             {
                 // Custom script content
 
-                var childContent = output.GetChildContentAsync().Result;
+                var childContent = output.GetChildContentAsync().GetAwaiter().GetResult();
 
                 var builder = new TagBuilder("script");
                 builder.InnerHtml.AppendHtml(childContent);

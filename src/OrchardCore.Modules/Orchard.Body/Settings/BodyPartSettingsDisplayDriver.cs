@@ -21,7 +21,6 @@ namespace Orchard.Body.Settings
             {
                 var settings = contentTypePartDefinition.GetSettings<BodyPartSettings>();
 
-                model.RenderTokens = settings.RenderTokens;
                 model.Editor = settings.Editor;
                 model.BodyPartSettings = settings;
 
@@ -38,9 +37,9 @@ namespace Orchard.Body.Settings
 
             var model = new BodyPartSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.RenderTokens, m => m.Editor))
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Editor))
             {
-                context.Builder.WithSettings(new BodyPartSettings { RenderTokens = model.RenderTokens, Editor = model.Editor });
+                context.Builder.WithSettings(new BodyPartSettings { Editor = model.Editor });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

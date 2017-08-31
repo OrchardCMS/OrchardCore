@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +10,7 @@ using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
+using Orchard.Entities;
 using Orchard.Environment.Cache;
 using Orchard.Layers.Handlers;
 using Orchard.Layers.Models;
@@ -20,7 +21,7 @@ using YesSql;
 
 namespace Orchard.Layers.Controllers
 {
-	public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller, IUpdateModel
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -71,7 +72,9 @@ namespace Orchard.Layers.Controllers
 
 			var model = new LayersIndexViewModel { Layers = layers.Layers };
 
-            model.Zones = (await _siteService.GetSiteSettingsAsync()).As<LayerSettings>()?.Zones ?? Array.Empty<string>();
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+
+            model.Zones = siteSettings.As<LayerSettings>()?.Zones ?? Array.Empty<string>();
 
             model.Widgets = new Dictionary<string, List<dynamic>>();
 

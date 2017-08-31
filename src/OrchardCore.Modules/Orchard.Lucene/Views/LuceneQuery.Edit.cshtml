@@ -1,0 +1,34 @@
+@model LuceneQueryViewModel
+
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/codemirror.js" depends-on="admin" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/javascript/javascript.js" at="Foot"></script>
+
+<fieldset class="form-group">
+    <label asp-for="Index">@T["Index"]</label>
+    <select asp-for="Index" class="form-control">
+        @foreach(var index in Model.Indices)
+        {
+            <option value="@index">@index</option>
+        }
+    </select>
+    <span class="hint">@T["The lucene index to search on"]</span>
+</fieldset>
+
+<fieldset class="form-check">
+    <label class="form-check-label">
+        <input asp-for="ReturnContentItems" type="checkbox" class="form-check-input" checked="@Model.ReturnContentItems" /> @T["Return Content Items"]
+        <span class="hint">@T["Check to return the corresponding content items."]</span>
+    </label>
+</fieldset>
+
+<fieldset class="form-group">
+    <label asp-for="Query">@T["Query"]</label>
+    <textarea asp-for="Query" rows="12" class="form-control"></textarea>
+    <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
+</fieldset>
+
+<script at="Foot">
+$(function() {
+    var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
+});
+</script>

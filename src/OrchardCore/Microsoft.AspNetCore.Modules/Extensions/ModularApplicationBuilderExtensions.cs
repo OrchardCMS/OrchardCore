@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -41,18 +42,33 @@ namespace Microsoft.AspNetCore.Builder
             modularApp.Configure(app =>
             {
                 var extensionManager = app.ApplicationServices.GetRequiredService<IExtensionManager>();
+                var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
 
                 // TODO: configure the location and parameters (max-age) per module.
                 var availableExtensions = extensionManager.GetExtensions();
                 foreach (var extension in availableExtensions)
                 {
                     var contentPath = Path.Combine(extension.ExtensionFileInfo.PhysicalPath, "Content");
+                    var contentSubPath = Path.Combine(extension.SubPath, "Content");
+
                     if (Directory.Exists(contentPath))
                     {
+                        IFileProvider fileProvider;
+                        if (env.IsDevelopment())
+                        {
+                            fileProvider = new CompositeFileProvider(
+                                new ModuleProjectContentFileProvider(env.ContentRootPath, contentSubPath),
+                                new PhysicalFileProvider(contentPath));
+                        }
+                        else
+                        {
+                            fileProvider = new PhysicalFileProvider(contentPath);
+                        }
+
                         app.UseStaticFiles(new StaticFileOptions
                         {
                             RequestPath = "/" + extension.Id,
-                            FileProvider = new PhysicalFileProvider(contentPath)
+                            FileProvider = fileProvider
                         });
                     }
                 }

@@ -1,0 +1,7 @@
+@model Orchard.Flows.ViewModels.BagPartSettingsViewModel
+
+<fieldset class="form-group">
+    <label asp-for="ContainedContentTypes">@T["Contained Content Types"]</label>
+    <span class="hint">@T["The content types that this bag can contain, e.g. Slide for a Slide Show."]</span>
+    @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes) })
+</fieldset>

@@ -38,8 +38,8 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/Orchard2/wiki/Ro
 ### Visual Studio 2017
 
 - Download Visual Studio 2017 (any edition) from https://www.visualstudio.com/downloads/
-- Open `Orchard.sln`
-- Ensure `OrchardCore.Cms` is the startup project and run it
+- Open `Orchard.sln` and wait for Visual Studio to restore all Nuget packages
+- Ensure `Orchard.Cms.Web` is the startup project and run it
 
 ### Contributing
 

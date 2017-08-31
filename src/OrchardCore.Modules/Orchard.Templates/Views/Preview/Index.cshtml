@@ -1,0 +1,83 @@
+@{
+    Layout = null;
+    Title.AddSegment(T["Template Preview"]);
+}
+
+<script asp-name="jquery" at="Foot"></script>
+<script asp-src="/Orchard.Templates/js.cookie.js" depends-on="jquery" at="Foot"></script>
+
+<iframe id="iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;">
+    Your browser doesn't support iframes
+</iframe>
+
+<resources type="Footer" />
+
+<div id="renderPreviewUrl" style="display:none" data-value="@Url.Content("~/")"></div>
+
+<script type="text/javascript">
+    var renderPreviewUrl = $(document.getElementById('renderPreviewUrl')).data('value');
+
+    $(function() {
+        $(window).on('storage', function (ev) {
+            if (ev.key != "orchard.templates") return;
+
+            renderPreview(ev.originalEvent.newValue)
+        });
+        
+        // notify the editor to render the preview
+        localStorage.setItem('orchard.templates:ready', '');
+        localStorage.removeItem('orchard.templates:ready');        
+        renderPreview(localStorage.getItem('orchard.templates'));
+    });
+
+    var iframe = document.getElementById('iframe');
+
+    iframe.onload = function () {
+        renderPreviewUrl = this.contentWindow.location;
+        $(iframe.contentWindow).scrollTop(scrollTop);
+    }
+
+    var scrollTop;
+    var rendering;
+
+    function renderPreview(value) {
+
+        renderRequested = true;
+
+        // Squashes all event calls into one
+        if (rendering) {
+            return;
+        }
+
+        // Pump renderPreview calls
+        while (renderRequested) {
+            renderRequested = false;
+            rendering = true;
+            try {
+                var formData = value;
+                if (!formData) return;
+
+                var encoded = window.btoa(formData);
+
+                var chunks = Math.floor(encoded.length / 1364) + 1;
+                Cookies.set("orchard:templates:count", chunks);
+
+                for (i = 0; i < chunks; i++) {
+                    var chunk = encoded.slice(i * 1364, (i + 1) * 1364);
+                    Cookies.set("orchard:templates:" + i, null, { path: "/" });
+                    Cookies.set("orchard:templates:" + i, chunk, { path: "/" });
+                }
+
+                scrollTop = $(iframe.contentWindow).scrollTop();
+                iframe.contentWindow.location = renderPreviewUrl;
+            }
+            catch (e) {
+                console.error('Error while previewing: ' + e);
+            }
+            finally {
+                rendering = false;
+            }
+        }
+    }
+
+</script>

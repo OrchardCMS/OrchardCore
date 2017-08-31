@@ -17,7 +17,7 @@ namespace Orchard.ContentFields.Fields
     {
         private readonly CultureInfo _cultureInfo;
 
-        public NumericFieldDisplayDriver(IStringLocalizer<LinkFieldDisplayDriver> localizer)
+        public NumericFieldDisplayDriver(IStringLocalizer<NumericFieldDisplayDriver> localizer)
         {
             T = localizer;
 

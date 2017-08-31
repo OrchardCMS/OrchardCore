@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Linq;
+using Fluid;
 using Orchard.Autoroute.Model;
 using Orchard.Autoroute.Models;
 using Orchard.Autoroute.Services;
@@ -8,16 +9,16 @@ using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
 using Orchard.Environment.Cache;
+using Orchard.Liquid;
 using Orchard.Settings;
-using Orchard.Tokens.Services;
 using YesSql;
 
 namespace Orchard.Autoroute.Handlers
 {
     public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
     {
-        private readonly ITokenizer _tokenizer;
         private readonly IAutorouteEntries _entries;
+        private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
         private readonly ITagCache _tagCache;
@@ -25,15 +26,15 @@ namespace Orchard.Autoroute.Handlers
 
         public AutoroutePartHandler(
             IAutorouteEntries entries,
-            ITokenizer tokenizer,
+            ILiquidTemplateManager liquidTemplateManager,
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
             ITagCache tagCache,
             YesSql.ISession session)
         {
-            _tokenizer = tokenizer;
             _contentDefinitionManager = contentDefinitionManager;
             _entries = entries;
+            _liquidTemplateManager = liquidTemplateManager;
             _siteService = siteService;
             _tagCache = tagCache;
             _session = session;
@@ -99,11 +100,11 @@ namespace Orchard.Autoroute.Handlers
 
             if (!String.IsNullOrEmpty(pattern))
             {
-                var ctx = _tokenizer
-                    .CreateViewModel()
-                    .Content(part.ContentItem);
+                var templateContext = new TemplateContext();
+                templateContext.SetValue("ContentItem", part.ContentItem);
 
-                part.Path = _tokenizer.Tokenize(pattern, ctx);
+                part.Path = _liquidTemplateManager.RenderAsync(pattern, templateContext).GetAwaiter().GetResult();
+
                 if (!IsPathUnique(part.Path, part))
                 {
                     part.Path = GenerateUniquePath(part.Path, part);
@@ -154,7 +155,7 @@ namespace Orchard.Autoroute.Handlers
 
         private bool IsPathUnique(string path, AutoroutePart context)
         {
-            return _session.QueryIndexAsync<AutoroutePartIndex>(o => o.ContentItemId != context.ContentItem.ContentItemId && o.Path == path).Count().GetAwaiter().GetResult() == 0;
+            return _session.QueryIndex<AutoroutePartIndex>(o => o.ContentItemId != context.ContentItem.ContentItemId && o.Path == path).CountAsync().GetAwaiter().GetResult() == 0;
         }
     }
 }

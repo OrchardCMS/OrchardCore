@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "Blog",
   "displayName": "Blog",
   "description": "Provides a functional Blog with CMS features.",
@@ -53,11 +53,12 @@
         "Orchard.Layers",
         "Orchard.Lucene",
         "Orchard.Lists",
+        "Orchard.Liquid",
         "Orchard.Markdown",
+        "Orchard.Media",
         "Orchard.Menu",
+        "Orchard.Queries",
         "Orchard.Title",
-        "Orchard.Tokens",
-        "Orchard.Tokens.Content",
         "Orchard.Widgets",
 
         // Themes
@@ -87,8 +88,8 @@
       "name": "ContentDefinition",
       "ContentTypes": [
         {
-          "Name": "Page",
-          "DisplayName": "Page",
+          "Name": "Article",
+          "DisplayName": "Article",
           "Hidden": false,
           "Settings": {
             "Creatable": "True",
@@ -99,8 +100,8 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "Page",
-              "Name": "Page",
+              "PartName": "Article",
+              "Name": "Article",
               "Settings": {
                 "Position": "2"
               }
@@ -117,9 +118,9 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Pattern": "{{slug}}",
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
                 "AllowCustomPath": "True",
-                "ShowHomepageOption": "False",
+                "ShowHomepageOption": "True",
                 "Position": "1"
               }
             },
@@ -136,8 +137,68 @@
                   "Template": null
                 },
                 "BodyPartSettings": {
-                  "RenderTokens": false,
                   "Editor": "Wysiwyg"
+                },
+                "Position": "3"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "LiquidPage",
+          "DisplayName": "Liquid Page",
+          "Hidden": false,
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Listable": "True",
+            "Securable": "False",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "LiquidPage",
+              "Name": "LiquidPage",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
+                "ShowHomepageOption": "True",
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "LiquidPart",
+              "Name": "LiquidPart",
+              "Settings": {
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
                 },
                 "Position": "3"
               }
@@ -183,8 +244,8 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Pattern": "{{#container}}{{slug}}/{{/container}}{{slug}}",
-                "AllowCustomPath": "False",
+                "Pattern": "{{ ContentItem | container | display_text | slugify }}/{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
                 "ShowHomepageOption": "False"
               }
             },
@@ -202,7 +263,6 @@
                   "Template": null
                 },
                 "MarkdownPartSettings": {
-                  "RenderTokens": false,
                   "Editor": "Wysiwyg"
                 }
               }
@@ -248,8 +308,8 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Pattern": "{{slug}}",
-                "AllowCustomPath": "False",
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
                 "ShowHomepageOption": "True"
               }
             },
@@ -292,7 +352,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
-            "Listable": "True",
+            "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
           },
@@ -319,7 +379,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
-            "Listable": "True",
+            "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
           },
@@ -334,12 +394,12 @@
           ]
         },
         {
-          "Name": "Image",
+          "Name": "ImageWidget",
           "DisplayName": "Image",
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
-            "Listable": "True",
+            "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
           },
@@ -354,12 +414,59 @@
           ]
         },
         {
+          "Name": "LiquidWidget",
+          "DisplayName": "Liquid",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "True",
+            "Listable": "True",
+            "Securable": "True",
+            "Stereotype": "Widget"
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "LiquidPart",
+              "Name": "LiquidPart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Image",
+          "DisplayName": "Image",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "False",
+            "Listable": "False",
+            "Securable": "False",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Image",
+              "Name": "Image",
+              "Settings": {
+                "Position": "0"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
           "Name": "Paragraph",
           "DisplayName": "Paragraph",
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
-            "Listable": "True",
+            "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
           },
@@ -379,7 +486,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
-            "Listable": "True",
+            "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
           },
@@ -394,8 +501,8 @@
           ]
         },
         {
-          "Name": "FlowPage",
-          "DisplayName": "Flow Page",
+          "Name": "Page",
+          "DisplayName": "Page",
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
@@ -405,8 +512,8 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "FlowPage",
-              "Name": "FlowPage",
+              "PartName": "Page",
+              "Name": "Page",
               "Settings": {
                 "Position": "3"
               }
@@ -424,9 +531,9 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Pattern": "{{slug}}",
-                "AllowCustomPath": "False",
-                "ShowHomepageOption": "False"
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
+                "ShowHomepageOption": "True"
               }
             },
             {
@@ -449,80 +556,11 @@
       "ContentParts": [
         {
           "Name": "BlogPost",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "TextField",
-              "Name": "Subtitle",
-              "Settings": {
-                "DisplayName": "Subtitle",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
-                },
-                "Hint": null,
-                "Position": "0"
-              }
-            },
-            {
-              "FieldName": "TextField",
-              "Name": "HeaderImageUrl",
-              "Settings": {
-                "DisplayName": "Header Image Url",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
-                },
-                "Hint": "A url of the image to display in the header of the post. "
-              }
-            }
-          ]
+          "Settings": {}
         },
         {
-          "Name": "Page",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "TextField",
-              "Name": "Subtitle",
-              "Settings": {
-                "DisplayName": "Subtitle",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
-                },
-                "Hint": null
-              }
-            },
-            {
-              "FieldName": "TextField",
-              "Name": "HeaderImageUrl",
-              "Settings": {
-                "DisplayName": "Header Image Url",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
-                },
-                "Hint": "A url to the image to display in the header of the page."
-              }
-            }
-          ]
+          "Name": "Article",
+          "Settings": {}
         },
         {
           "Name": "Blockquote",
@@ -549,11 +587,13 @@
         },
         {
           "Name": "Image",
-          "Settings": {},
+          "Settings": {
+            "Attachable": true
+          },
           "ContentPartFieldDefinitionRecords": [
             {
-              "FieldName": "TextField",
-              "Name": "Image",
+              "FieldName": "MediaField",
+              "Name": "Media",
               "Settings": {
                 "DisplayName": "Image",
                 "ContentIndexSettings": {
@@ -565,7 +605,9 @@
                 },
                 "Hint": null,
                 "Editor": null,
-                "Position": "0"
+                "Position": "0",
+                "Multiple": false,
+                "Required":  true
               }
             },
             {
@@ -581,7 +623,7 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Hint": null,
+                "Hint": "A description of the image used as title or alternate text",
                 "Editor": null,
                 "Position": "1"
               }
@@ -635,6 +677,11 @@
           ]
         }
       ]
+    },
+    {
+      // Create the indices before the content items so they are indexed automatically.
+      "name": "lucene-index",
+      "Indices": [ "Search" ]
     },
     {
       "name": "content",
@@ -696,14 +743,6 @@
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
           "Author": "[js: parameters('AdminUsername')]",
-          "BlogPost": {
-            "Subtitle": {
-              "Text": "Problems look mighty small from 150 miles up"
-            },
-            "HeaderImageUrl": {
-              "Text": "https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/post-bg.jpg"
-            }
-          },
           "TitlePart": {
             "Title": "Man must explore, and this is exploration at its greatest"
           },
@@ -720,19 +759,11 @@
         },
         {
           "ContentItemId": "[js: uuid()]",
-          "ContentType": "Page",
+          "ContentType": "Article",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
           "Author": "[js: parameters('AdminUsername')]",
-          "Page": {
-            "Subtitle": {
-              "Text": "This is what I do"
-            },
-            "HeaderImageUrl": {
-              "Text": "https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/about-bg.jpg"
-            }
-          },
           "AutoroutePart": {
             "Path": "about",
             "SetHomepage": false
@@ -778,6 +809,18 @@
           "Name": "Homepage",
           "Rule": "isHomepage()",
           "Description": "The widgets in this layer are only displayed o the homepage."
+        }
+      ]
+    },
+    {
+      "name": "queries",
+      "Queries": [
+        {
+          "Source": "Lucene",
+          "Name": "RecentBlogPosts",
+          "Index": "Search",
+          "Template": "[js:base64('ew0KICAicXVlcnkiOiB7DQogICAgInRlcm0iIDogeyAiQ29udGVudC5Db250ZW50SXRlbS5Db250ZW50VHlwZSIgOiAiQmxvZ1Bvc3QiIH0gDQogIH0sDQogICJzb3J0IjogeyAiQ29udGVudC5Db250ZW50SXRlbS5DcmVhdGVkVXRjIjogeyAib3JkZXIiOiAiZGVzYyIgfSB9LA0KICAic2l6ZSI6IDMNCn0=')]",
+          "ReturnContentItems": true
         }
       ]
     }

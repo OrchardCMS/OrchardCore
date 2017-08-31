@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Orchard.Data.Migration;
 
 namespace Orchard.Indexing

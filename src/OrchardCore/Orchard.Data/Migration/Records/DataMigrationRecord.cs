@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace Orchard.Data.Migration.Records
 {
@@ -8,7 +8,7 @@ namespace Orchard.Data.Migration.Records
         {
             DataMigrations = new List<DataMigration>();
         }
-
+        public int Id { get; set; }
         public List<DataMigration> DataMigrations { get; set; }
     }
 

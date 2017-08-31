@@ -1,0 +1,17 @@
+@using Orchard.ContentManagement
+@using Orchard.DisplayManagement
+@using Orchard.Flows.Models
+@using Orchard.Flows.ViewModels
+@using Orchard.Mvc.Utilities
+
+@model BagPartViewModel
+@inject Orchard.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+<section class="flow">
+    @foreach (var item in Model.BagPart.ContentItems)
+    {
+        var itemContent = await ContentItemDisplayManager.BuildDisplayAsync(item, Model.BuildPartDisplayContext.Updater, "Summary", Model.BuildPartDisplayContext.GroupId);
+
+        @await DisplayAsync(itemContent)
+    }
+</section>

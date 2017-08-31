@@ -7,10 +7,10 @@
   <!-- Add the OrchardCore.AsModule.props file in the package -->
   <ItemGroup>
     <None Include="OrchardCore.AsModule.props" Pack="true">
-      <PackagePath>build\netstandard1.6\OrchardCore.AsModule.props</PackagePath>
+      <PackagePath>build\$(TargetFramework)\OrchardCore.AsModule.props</PackagePath>
     </None>
     <None Include="Package.Build.props" Pack="true">
-      <PackagePath>build\netstandard1.6\Package.Build.props</PackagePath>
+      <PackagePath>build\$(TargetFramework)\Package.Build.props</PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>
