@@ -10,7 +10,7 @@ env:
 os:
   - linux
   - osx
-osx_image: xcode8.3
+osx_image: xcode8.2
 script:
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
