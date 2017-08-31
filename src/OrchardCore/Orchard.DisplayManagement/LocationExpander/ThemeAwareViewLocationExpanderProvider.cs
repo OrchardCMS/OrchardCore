@@ -12,7 +12,11 @@ namespace Orchard.DisplayManagement.LocationExpander
 {
     public class ThemeAwareViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
+        private static readonly string PageSubPath = "/{1}/{0}" + RazorViewEngine.ViewExtension;
+        private const string PageViewsFolder = "/PageViews";
+
         private readonly IExtensionManager _extensionManager;
+
         public ThemeAwareViewLocationExpanderProvider(IExtensionManager extensionManager)
         {
             _extensionManager = extensionManager;
@@ -52,15 +56,15 @@ namespace Orchard.DisplayManagement.LocationExpander
 
             if (themeManager != null)
             {
-                var currentTheme = themeManager.GetThemeAsync().GetAwaiter().GetResult();
+                var currentThemeId = context.Values["Theme"];
 
-                if (currentTheme == null)
+                if (currentThemeId == null)
                 {
                     return viewLocations;
                 }
 
                 var currentThemeAndBaseThemesOrdered = _extensionManager
-                    .GetFeatures(new[] { currentTheme.Id })
+                    .GetFeatures(new[] { currentThemeId })
                     .Where(x => x.Extension.Manifest.IsTheme())
                     .Reverse();
 
@@ -76,14 +80,14 @@ namespace Orchard.DisplayManagement.LocationExpander
                     {
                         foreach (var theme in currentThemeAndBaseThemesOrdered)
                         {
+                            var themeViewsPath = "/" + theme.Extension.SubPath.Replace('\\', '/').Trim('/');
+
                             foreach (var location in viewLocations)
                             {
-                                if (location.Contains("/{1}/"))
+                                if (location.Contains(PageSubPath))
                                 {
-                                    var test = location.Substring(0, location.IndexOf("/{1}/"));
-                                    var themeViewsPath = "/" + theme.Extension.SubPath;
-                                    var test1 = location.Replace(test, themeViewsPath + "/PageViews");
-                                    yield return location.Replace(test, themeViewsPath + "/PageViews");
+                                    yield return location.Replace(location.Substring(0,
+                                        location.IndexOf("/{1}/")), themeViewsPath + PageViewsFolder);
                                 }
                             }
                         }
@@ -92,8 +96,8 @@ namespace Orchard.DisplayManagement.LocationExpander
 
                 foreach (var theme in currentThemeAndBaseThemesOrdered)
                 {
-                    var themeViewsPath = Path.Combine("/" + theme.Extension.SubPath, "Views",
-                        context.AreaName != theme.Id ? context.AreaName : string.Empty);
+                    var themeViewsPath = '/' + theme.Extension.SubPath.Replace('\\', '/').Trim('/')
+                        + "/Views" + context.AreaName != theme.Id ? '/' + context.AreaName : string.Empty;
 
                     result.Add(themeViewsPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
                     result.Add(themeViewsPath + "/Shared/{0}" +RazorViewEngine.ViewExtension);

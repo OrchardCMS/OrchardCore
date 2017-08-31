@@ -18,13 +18,4 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="PagesViews\Orchard.Demo\Pages\Header.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-    <None Update="PagesViews\_ViewImports.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-  </ItemGroup>
-
 </Project>

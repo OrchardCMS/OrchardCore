@@ -1,7 +1,6 @@
-using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Orchard.Environment.Extensions;
@@ -10,7 +9,11 @@ namespace Orchard.Mvc.LocationExpander
 {
     public class ModularViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
+        private static readonly string PageSubPath = "/{1}/{0}" + RazorViewEngine.ViewExtension;
+        private static readonly string PageViewsSubPath = "/{1}/PageViews/{0}" + RazorViewEngine.ViewExtension;
+
         private readonly IExtensionManager _extensionManager;
+
         public ModularViewLocationExpanderProvider(IExtensionManager extensionManager)
         {
             _extensionManager = extensionManager;
@@ -37,9 +40,9 @@ namespace Orchard.Mvc.LocationExpander
                 {
                     foreach (var location in viewLocations)
                     {
-                        if (location.Contains("/{1}/"))
+                        if (location.Contains(PageSubPath))
                         {
-                            yield return location.Replace("/{1}/", "/{1}/PageViews/");
+                            yield return location.Replace(PageSubPath, PageViewsSubPath);
                         }
                     }
                 }
@@ -55,7 +58,7 @@ namespace Orchard.Mvc.LocationExpander
 
             var result = new List<string>();
 
-            var extensionViewsPath = Path.Combine("/" + extension.SubPath, "Views");
+            var extensionViewsPath = '/' + extension.SubPath.Replace('\\', '/').Trim('/') + "/Views";
             result.Add(extensionViewsPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
             result.Add(extensionViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
 
