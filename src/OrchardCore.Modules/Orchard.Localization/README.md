@@ -74,3 +74,27 @@ msgid "Hello"
 msgstr "Bonjour"
 ```
 
+## Pluralization
+
+This module also provides support for pluralization.
+It is necessary to reference the `Orchard.Localization.Abstractions` package in order to be able to use it.
+
+### Sample PO file
+
+```
+msgctxt "TheAdmin.Views.Layout"
+msgid "1 book"
+msgid_plural "{0} books"
+msgstr[0] "[1 livre]"
+msgstr[1] "[{0} livres]"
+```
+
+### Usage
+
+- Import the `using Microsoft.Extensions.Localization` namespace.
+- Inject an instance of `IStringLocalizer` or `IViewLocalizer` (represented as the `T` variable in the following example).
+
+
+```
+T.Plural(count, "1 book", "{0} books")
+```
