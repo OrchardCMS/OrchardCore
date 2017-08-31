@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -9,9 +8,6 @@ namespace Orchard.Mvc.LocationExpander
 {
     public class ModularViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        private static readonly string PageSubPath = "/{1}/{0}" + RazorViewEngine.ViewExtension;
-        private static readonly string PageViewsSubPath = "/{1}/PageViews/{0}" + RazorViewEngine.ViewExtension;
-
         private readonly IExtensionManager _extensionManager;
 
         public ModularViewLocationExpanderProvider(IExtensionManager extensionManager)
@@ -40,9 +36,9 @@ namespace Orchard.Mvc.LocationExpander
                 {
                     foreach (var location in viewLocations)
                     {
-                        if (location.Contains(PageSubPath))
+                        if (location.EndsWith("/{1}/{0}" + RazorViewEngine.ViewExtension))
                         {
-                            yield return location.Replace(PageSubPath, PageViewsSubPath);
+                            yield return location.Replace("/{1}/{0}", "/{1}/PageViews/{0}");
                         }
                     }
                 }

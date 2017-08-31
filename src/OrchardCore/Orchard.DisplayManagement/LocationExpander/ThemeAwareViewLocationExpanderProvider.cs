@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,9 +11,6 @@ namespace Orchard.DisplayManagement.LocationExpander
 {
     public class ThemeAwareViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        private static readonly string PageSubPath = "/{1}/{0}" + RazorViewEngine.ViewExtension;
-        private const string PageViewsFolder = "/PageViews";
-
         private readonly IExtensionManager _extensionManager;
 
         public ThemeAwareViewLocationExpanderProvider(IExtensionManager extensionManager)
@@ -68,31 +64,31 @@ namespace Orchard.DisplayManagement.LocationExpander
                     .Where(x => x.Extension.Manifest.IsTheme())
                     .Reverse();
 
-                var result = new List<string>();
-
                 if (context.ActionContext.ActionDescriptor is PageActionDescriptor)
                 {
-                    var pageViewLocations = PageViewLocations().ToList();
-                    pageViewLocations.AddRange(viewLocations);
-                    return pageViewLocations;
+                    if (context.PageName != null)
+                    {
+                        var pageViewLocations = PageViewLocations().ToList();
+                        pageViewLocations.AddRange(viewLocations);
+                        return pageViewLocations;
+                    }
+
+                    return viewLocations;
 
                     IEnumerable<string> PageViewLocations()
                     {
                         foreach (var theme in currentThemeAndBaseThemesOrdered)
                         {
-                            var themeViewsPath = "/" + theme.Extension.SubPath.Replace('\\', '/').Trim('/');
-
-                            foreach (var location in viewLocations)
+                            if (!context.PageName.StartsWith('/' + theme.Id + '/'))
                             {
-                                if (location.Contains(PageSubPath))
-                                {
-                                    yield return location.Replace(location.Substring(0,
-                                        location.IndexOf("/{1}/")), themeViewsPath + PageViewsFolder);
-                                }
+                                yield return "/" + theme.Extension.SubPath.Replace('\\', '/').Trim('/')
+                                    + "/PageViews/{1}/{0}" + RazorViewEngine.ViewExtension;
                             }
                         }
                     }
                 }
+
+                var result = new List<string>();
 
                 foreach (var theme in currentThemeAndBaseThemesOrdered)
                 {
