@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Orchard.Localization.Abstractions
+namespace Orchard.Localization
 {
     public delegate int PluralizationRuleDelegate(int count);
 

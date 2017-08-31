@@ -1,8 +1,7 @@
 using System.Globalization;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
-using Orchard.Localization.Abstractions;
-using Orchard.Localization.Core;
+using Orchard.Localization;
 using Xunit;
 
 namespace Orchard.Tests.Localization

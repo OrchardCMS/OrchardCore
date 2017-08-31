@@ -4,9 +4,8 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Orchard.Localization.Abstractions;
 
-namespace Orchard.Localization.Core
+namespace Orchard.Localization
 {
     public class PortableObjectStringLocalizer : IStringLocalizer
     {

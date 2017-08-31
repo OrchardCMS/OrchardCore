@@ -1,5 +1,4 @@
 using System.IO;
-using Orchard.Localization.Abstractions;
 
 namespace Orchard.Localization.PortableObject
 {

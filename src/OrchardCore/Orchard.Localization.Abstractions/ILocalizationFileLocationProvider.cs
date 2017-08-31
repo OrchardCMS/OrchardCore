@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Orchard.Localization.Abstractions
+namespace Orchard.Localization
 {
     public interface ILocalizationFileLocationProvider
     {

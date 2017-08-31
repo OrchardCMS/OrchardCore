@@ -1,10 +1,9 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Orchard.Localization.Abstractions;
 using Orchard.Localization.PortableObject;
 
-namespace Orchard.Localization.Core
+namespace Orchard.Localization
 {
     public static class ServiceCollectionExtensions
     {
@@ -17,7 +16,7 @@ namespace Orchard.Localization.Core
         {
             services.AddSingleton<IPluralRuleProvider, DefaultPluralRuleProvider>();
             services.AddSingleton<ITranslationProvider, PoFilesTranslationsProvider>();
-            services.AddSingleton<ILocalizationFileLocationProvider, DefaultPoFileLocationProvider>();
+            services.AddSingleton<ILocalizationFileLocationProvider, ContentRootPoFileLocationProvider>();
             services.AddSingleton<ILocalizationManager, LocalizationManager>();
             services.AddSingleton<IStringLocalizerFactory, PortableObjectStringLocalizerFactory>();
 

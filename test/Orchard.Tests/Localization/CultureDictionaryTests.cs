@@ -1,4 +1,4 @@
-using Orchard.Localization.Abstractions;
+using Orchard.Localization;
 using Xunit;
 
 namespace Orchard.Tests.Localization

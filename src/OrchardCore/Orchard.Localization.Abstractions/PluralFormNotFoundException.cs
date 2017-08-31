@@ -1,6 +1,6 @@
 using System;
 
-namespace Orchard.Localization.Abstractions
+namespace Orchard.Localization
 {
     public class PluralFormNotFoundException : Exception
     {

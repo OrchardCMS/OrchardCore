@@ -4,9 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using Microsoft.Extensions.Caching.Memory;
-using Orchard.Localization.Abstractions;
 
-namespace Orchard.Localization.Core
+namespace Orchard.Localization
 {
     public class LocalizationManager : ILocalizationManager
     {

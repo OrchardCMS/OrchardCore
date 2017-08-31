@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Localization.Core;
 
 namespace Orchard.Localization
 {
@@ -25,6 +24,7 @@ namespace Orchard.Localization
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddOrchardLocalization(options => options.ResourcesPath = "Localization");
+            // services.AddSingleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>();
         }
     }
 }

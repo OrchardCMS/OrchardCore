@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
-using Orchard.Localization.Abstractions;
 
-namespace Orchard.Localization.Core
+namespace Orchard.Localization
 {
     /// <summary>
     /// This class provides the pluralization rules based on the Unicode Common Locale Data Repository.

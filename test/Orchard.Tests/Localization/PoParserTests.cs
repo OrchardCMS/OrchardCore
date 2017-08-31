@@ -1,7 +1,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Orchard.Localization.Abstractions;
+using Orchard.Localization;
 using Orchard.Localization.PortableObject;
 using Xunit;
 

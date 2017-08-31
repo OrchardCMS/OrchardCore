@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.Localization;
 
-namespace Orchard.Localization.Abstractions
+namespace Orchard.Localization
 {
     public static class StringLocalizerExtensions
     {
