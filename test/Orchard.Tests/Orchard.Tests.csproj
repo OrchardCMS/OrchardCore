@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -33,9 +31,8 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitRunnerVisualStudioVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.analyzers" Version="$(XunitAnalyzers)" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
 
     <!-- Forces this version to fix Travis build -->
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.4.0" />

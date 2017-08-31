@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Orchard.Queries.Sql;
 using Xunit;
 using YesSql;
@@ -144,7 +144,7 @@ namespace Orchard.Tests.Orchard.Queries
             var result = SqlParser.TryParse("SEL a", _defaultDialect, _defaultTablePrefix, out var rawQuery, out var rawParameters, out var messages);
 
             Assert.False(result);
-            Assert.Equal(1, messages.Count());
+            Assert.Single(messages);
             Assert.Contains("at line:0, col:0", messages.First());
         }
 

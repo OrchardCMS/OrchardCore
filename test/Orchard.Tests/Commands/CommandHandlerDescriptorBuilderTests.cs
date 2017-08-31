@@ -1,4 +1,4 @@
-﻿using Orchard.Environment.Commands;
+using Orchard.Environment.Commands;
 using System.Linq;
 using Xunit;
 using System.Reflection;
@@ -56,7 +56,7 @@ namespace Orchard.Tests.Commands
             var builder = new CommandHandlerDescriptorBuilder();
             var descriptor = builder.Build(typeof(PublicMethodsOnly));
             Assert.NotNull(descriptor);
-            Assert.Equal(1, descriptor.Commands.Count());
+            Assert.Single(descriptor.Commands);
             Assert.NotNull(descriptor.Commands.SingleOrDefault(d => d.Names.Contains("Method")));
         }
 

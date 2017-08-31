@@ -1,0 +1,10 @@
+<Project>
+  <Import Project="..\src\OrchardCore.Build\Dependencies.props" />
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <WarningsNotAsErrors>xUnit1026:$(WarningsNotAsErrors)</WarningsNotAsErrors>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)OrchardCoreTests.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+</Project>
