@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-namespace Orchard.Localization
+namespace Orchard.Localization.PortableObject
 {
     public class PortableObjectStringLocalizer : IStringLocalizer
     {
@@ -53,19 +53,32 @@ namespace Orchard.Localization
                     throw new ArgumentNullException(nameof(name));
                 }
 
-                var defaultPluralForms = new[] { name };
-                int? count = null;
-
-                if (arguments.Length >= 2 && arguments[arguments.Length - 2] is int argumentCount && arguments[arguments.Length - 1] is string[] pluralForms)
+                // Check if a plural form is called, which is when the only argument is of type PluralizationArgument
+                if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
                 {
-                    count = argumentCount;
-                    defaultPluralForms = pluralForms;
-                    Array.Resize(ref arguments, arguments.Length - 2); // remove plural related data from arguments
-                }
+                    var translation = GetTranslation(name, Context, pluralArgument.Count);
+                    object[] argumentsWithCount;
 
-                var translation = GetTranslation(name, Context, count);
-                var formatted = string.Format(translation ?? GetTranslation(defaultPluralForms, count), arguments);
-                return new LocalizedString(name, formatted, translation == null);
+                    if (pluralArgument.Arguments.Length > 0)
+                    {
+                        argumentsWithCount = new object[pluralArgument.Arguments.Length + 1];
+                        argumentsWithCount[0] = pluralArgument.Count;
+                        Array.Copy(pluralArgument.Arguments, 0, argumentsWithCount, 1, pluralArgument.Arguments.Length);
+                    }
+                    else
+                    {
+                        argumentsWithCount = new object[] { pluralArgument.Count };
+                    }
+
+                    var formatted = string.Format(translation ?? GetTranslation(pluralArgument.Forms, pluralArgument.Count), argumentsWithCount);
+                    return new LocalizedString(name, formatted, translation == null);
+                }
+                else
+                {
+                    var translation = this[name];
+                    var formatted = string.Format(translation, arguments);
+                    return new LocalizedString(name, formatted, translation.ResourceNotFound);
+                }
             }
         }
 

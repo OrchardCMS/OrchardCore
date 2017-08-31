@@ -3,7 +3,7 @@ using System.Globalization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-namespace Orchard.Localization
+namespace Orchard.Localization.PortableObject
 {
     public class PortableObjectStringLocalizerFactory : IStringLocalizerFactory
     {

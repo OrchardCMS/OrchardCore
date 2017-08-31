@@ -28,7 +28,7 @@ namespace Orchard.Localization
 
         public CultureDictionary GetDictionary(CultureInfo culture)
         {
-            var cachedDictionary = _cache.GetOrCreate(GetCacheKey(culture.Name), k => new Lazy<CultureDictionary>(() =>
+            var cachedDictionary = _cache.GetOrCreate(CacheKeyPrefix + culture.Name, k => new Lazy<CultureDictionary>(() =>
             {
                 PluralizationRuleDelegate rule = DefaultPluralRule;
 
@@ -47,11 +47,6 @@ namespace Orchard.Localization
             }, LazyThreadSafetyMode.ExecutionAndPublication));
 
             return cachedDictionary.Value;
-        }
-
-        private string GetCacheKey(string cultureName)
-        {
-            return CacheKeyPrefix + cultureName;
         }
     }
 }

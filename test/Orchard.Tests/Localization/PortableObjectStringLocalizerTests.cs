@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Globalization;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Orchard.Localization;
+using Orchard.Localization.PortableObject;
 using Xunit;
 
 namespace Orchard.Tests.Localization

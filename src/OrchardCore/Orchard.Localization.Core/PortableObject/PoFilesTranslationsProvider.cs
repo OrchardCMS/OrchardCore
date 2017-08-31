@@ -7,8 +7,7 @@ namespace Orchard.Localization.PortableObject
         private readonly ILocalizationFileLocationProvider _poFilesLocationProvider;
         private readonly PoParser _parser;
 
-        public PoFilesTranslationsProvider(
-            ILocalizationFileLocationProvider poFileLocationProvider)
+        public PoFilesTranslationsProvider(ILocalizationFileLocationProvider poFileLocationProvider)
         {
             _poFilesLocationProvider = poFileLocationProvider;
             _parser = new PoParser();

@@ -23,8 +23,10 @@ namespace Orchard.Localization
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddOrchardLocalization(options => options.ResourcesPath = "Localization");
-            // services.AddSingleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>();
+            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
+
+            // OVerride the default localization file locations with Orchard specific ones
+            services.AddSingleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>();
         }
     }
 }

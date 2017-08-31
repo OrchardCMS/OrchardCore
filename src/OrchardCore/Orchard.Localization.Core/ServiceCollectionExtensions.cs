@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Orchard.Localization.PortableObject;
@@ -8,11 +9,9 @@ namespace Orchard.Localization
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds tenant level services.
+        /// Registers the services to enable localization using Portable Object files
         /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddOrchardLocalization(this IServiceCollection services, Action<LocalizationOptions> setupAction)
+        public static IServiceCollection AddPortableObjectLocalization(this IServiceCollection services, Action<LocalizationOptions> cfg)
         {
             services.AddSingleton<IPluralRuleProvider, DefaultPluralRuleProvider>();
             services.AddSingleton<ITranslationProvider, PoFilesTranslationsProvider>();
@@ -20,7 +19,9 @@ namespace Orchard.Localization
             services.AddSingleton<ILocalizationManager, LocalizationManager>();
             services.AddSingleton<IStringLocalizerFactory, PortableObjectStringLocalizerFactory>();
 
-            services.Configure(setupAction);
+            services.AddSingleton<IHtmlLocalizerFactory, PortableObjectHtmlLocalizerFactory>();
+
+            services.Configure(cfg);
 
             return services;
         }
