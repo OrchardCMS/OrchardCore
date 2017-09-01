@@ -9,6 +9,7 @@ using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
 using Fluid.Values;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.Language;
@@ -38,7 +39,7 @@ namespace Orchard.DisplayManagement.Liquid.Tags
     public class HelperStatement : TagStatement
     {
         private const string AspPrefix = "asp-";
-        private static ConcurrentDictionary<Type, Func<RazorPage, ITagHelper>> _tagHelperActivators = new ConcurrentDictionary<Type, Func<RazorPage, ITagHelper>>();
+        private static ConcurrentDictionary<Type, Func<ITagHelperFactory, ViewContext, ITagHelper>> _tagHelperActivators = new ConcurrentDictionary<Type, Func<ITagHelperFactory, ViewContext, ITagHelper>>();
         private static ConcurrentDictionary<string, Action<ITagHelper, FluidValue>> _tagHelperSetters = new ConcurrentDictionary<string, Action<ITagHelper, FluidValue>>();
 
         private TagHelperDescriptor _descriptor;
@@ -63,13 +64,6 @@ namespace Orchard.DisplayManagement.Liquid.Tags
             if (!context.AmbientValues.TryGetValue("ViewContext", out var viewContext))
             {
                 throw new ArgumentException("ViewContext missing while invoking 'helper'");
-            }
-
-            var razorPage = (((ViewContext)viewContext).View as RazorView)?.RazorPage as RazorPage;
-
-            if (razorPage == null)
-            {
-                return Completion.Normal;
             }
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
@@ -132,11 +126,15 @@ namespace Orchard.DisplayManagement.Liquid.Tags
 
             var _tagHelperActivator = _tagHelperActivators.GetOrAdd(tagHelperType, key =>
             {
-                var methodInfo = typeof(RazorPage).GetMethod("CreateTagHelper").MakeGenericMethod(key);
-                return Delegate.CreateDelegate(typeof(Func<RazorPage, ITagHelper>), methodInfo) as Func<RazorPage, ITagHelper>;
+                var genericFactory = typeof(ReusableTagHelperFactory<>).MakeGenericType(key);
+                var factoryMethod = genericFactory.GetMethod("CreateTagHelper");
+
+                return Delegate.CreateDelegate(typeof(Func<ITagHelperFactory, ViewContext, ITagHelper>), factoryMethod) as Func<ITagHelperFactory, ViewContext, ITagHelper>;
             });
 
-            var tagHelper = _tagHelperActivator(razorPage);
+            var tagHelperFactory = services.GetRequiredService<ITagHelperFactory>();
+            var tagHelper = _tagHelperActivator(tagHelperFactory, (ViewContext)viewContext);
+            
             var attributes = new TagHelperAttributeList();
 
             foreach (var name in arguments.Names)
@@ -231,6 +229,14 @@ namespace Orchard.DisplayManagement.Liquid.Tags
             tagHelperOutput.WriteTo(writer, HtmlEncoder.Default);
 
             return Completion.Normal;
+        }
+
+        private class ReusableTagHelperFactory<T> where T : ITagHelper
+        {
+            public static ITagHelper CreateTagHelper(ITagHelperFactory tagHelperFactory, ViewContext viewContext)
+            {
+                return tagHelperFactory.CreateTagHelper<T>(viewContext);
+            }
         }
     }
 }
