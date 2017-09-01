@@ -26,7 +26,7 @@ namespace Orchard.Mvc.LocationExpander
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            if (context.ActionContext.ActionDescriptor is PageActionDescriptor)
+            if (context.ActionContext.ActionDescriptor is PageActionDescriptor page)
             {
                 var pageViewLocations = PageViewLocations().ToList();
                 pageViewLocations.AddRange(viewLocations);
@@ -34,13 +34,8 @@ namespace Orchard.Mvc.LocationExpander
 
                 IEnumerable<string> PageViewLocations()
                 {
-                    foreach (var location in viewLocations)
-                    {
-                        if (location.EndsWith("/{1}/{0}" + RazorViewEngine.ViewExtension))
-                        {
-                            yield return location.Replace("/{1}/{0}", "/{1}/Views/PageViews/{0}");
-                        }
-                    }
+                    yield return page.RelativePath.Substring(0, page.RelativePath.IndexOf("/Pages/"))
+                        + "/Views/PageViews/{0}" + RazorViewEngine.ViewExtension;
                 }
             }
 

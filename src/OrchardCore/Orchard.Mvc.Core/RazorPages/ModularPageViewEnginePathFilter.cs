@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -17,8 +16,8 @@ namespace Orchard.Mvc.RazorPages
             var moduleIds = (await shellFeaturesManager.GetEnabledFeaturesAsync())
                 .Select(f => f.Extension.Id).Distinct();
 
-            var moduleId = context.ActionDescriptor.ViewEnginePath.Split(new[] { '/' },
-                StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? String.Empty;
+            var moduleId = context.ActionDescriptor.ViewEnginePath.Substring(1,
+                context.ActionDescriptor.ViewEnginePath.IndexOf("/Pages/") - 1);
 
             if (!moduleIds.Contains(moduleId))
             {

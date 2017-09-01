@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.FileProviders;
@@ -9,10 +10,6 @@ namespace Orchard.Mvc.RazorPages
 {
     public class ModularPageActionDescriptorChangeProvider : IActionDescriptorChangeProvider
     {
-        private const string PageFolder = "/Pages";
-        private const string PageSearchPattern = PageFolder + "/**/*.cshtml";
-        private const string ModularPageSearchPattern = "/**" + PageSearchPattern;
-
         private readonly IFileProvider _fileProvider;
         private readonly string _searchPattern;
 
@@ -21,7 +18,8 @@ namespace Orchard.Mvc.RazorPages
             IOptions<RazorPagesOptions> razorPagesOptions)
         {
             _fileProvider = fileProviderAccessor.FileProvider;
-            _searchPattern = razorPagesOptions.Value.RootDirectory.TrimEnd('/') + ModularPageSearchPattern;
+            _searchPattern = razorPagesOptions.Value.RootDirectory.TrimEnd('/')
+                + "/**/Pages/**/*" + RazorViewEngine.ViewExtension;
         }
 
         public IChangeToken GetChangeToken()

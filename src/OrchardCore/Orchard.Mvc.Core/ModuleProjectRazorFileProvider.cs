@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
@@ -16,10 +17,6 @@ namespace Orchard.Mvc
     {
         private const string MappingFileFolder = "obj";
         private const string MappingFileName = "ModuleProjectRazorFiles.map";
-
-        private const string PageFolder = "/Pages";
-        private const string PageSegment = PageFolder + "/";
-        private const string PageSearchPattern = PageFolder + "/**/*.cshtml";
 
         private static Dictionary<string, string> _paths;
         private static CompositeFileProvider _pagesFileProvider;
@@ -54,9 +51,9 @@ namespace Orchard.Mvc
 
                 var roots = new HashSet<string>();
                 
-                foreach (var path in _paths.Values.Where(p => p.IndexOf(PageSegment) != -1))
+                foreach (var path in _paths.Values.Where(p => p.IndexOf("/Pages/") != -1))
                 {
-                    roots.Add(path.Substring(0, path.IndexOf(PageSegment)));
+                    roots.Add(path.Substring(0, path.IndexOf("/Pages/")));
                 }
 
                 if (roots.Count > 0)
@@ -88,9 +85,10 @@ namespace Orchard.Mvc
                 return new PollingFileChangeToken(new FileInfo(_paths[filter]));
             }
 
-            if (filter != null && _pagesFileProvider != null && filter.IndexOf(PageSearchPattern) != -1)
+            if (filter != null && _pagesFileProvider != null &&
+                filter.IndexOf("/Pages/**/*" + RazorViewEngine.ViewExtension) != -1)
             {
-                return _pagesFileProvider.Watch(PageSearchPattern);
+                return _pagesFileProvider.Watch("/Pages/**/*" + RazorViewEngine.ViewExtension);
             }
 
             return null;
