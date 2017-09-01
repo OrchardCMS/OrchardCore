@@ -16,6 +16,34 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Localization\PoFiles\EntryWithComments.po" />
+    <None Remove="Localization\PoFiles\EntryWithContext.po" />
+    <None Remove="Localization\PoFiles\EntryWithEscapedCharacters.po" />
+    <None Remove="Localization\PoFiles\EntryWithMultilineText.po" />
+    <None Remove="Localization\PoFiles\EntryWithoutTranslation.po" />
+    <None Remove="Localization\PoFiles\EntryWithPlural.po" />
+    <None Remove="Localization\PoFiles\EntryWithQuotes.po" />
+    <None Remove="Localization\PoFiles\EntryWithUnclosedQuote.po" />
+    <None Remove="Localization\PoFiles\MultipleEntries.po" />
+    <None Remove="Localization\PoFiles\PoeditHeader.po" />
+    <None Remove="Localization\PoFiles\SimpleEntry.po" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithComments.po" />
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithContext.po" />
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithEscapedCharacters.po" />
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithMultilineText.po" />
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithoutTranslation.po" />
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithPlural.po" />
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithQuotes.po" />
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithUnclosedQuote.po" />
+    <EmbeddedResource Include="Localization\PoFiles\MultipleEntries.po" />
+    <EmbeddedResource Include="Localization\PoFiles\PoeditHeader.po" />
+    <EmbeddedResource Include="Localization\PoFiles\SimpleEntry.po" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore.Modules\Orchard.Liquid\Orchard.Liquid.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore.Modules\Orchard.Queries\Orchard.Queries.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.ContentManagement\Orchard.ContentManagement.csproj" />
@@ -25,6 +53,8 @@
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Environment.Extensions.Abstractions\Orchard.Environment.Extensions.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Environment.Shell\Orchard.Environment.Shell.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Hosting.Console\Orchard.Hosting.Console.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\Orchard.Localization.Abstractions\Orchard.Localization.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\Orchard.Localization.Core\Orchard.Localization.Core.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Parser.Yaml\Orchard.Parser.Yaml.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Recipes.Implementations\Orchard.Recipes.Implementations.csproj" />
   </ItemGroup>
@@ -32,6 +62,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Moq" Version="4.7.99" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitRunnerVisualStudioVersion)" />
     <PackageReference Include="xunit.analyzers" Version="$(XunitAnalyzers)" />
