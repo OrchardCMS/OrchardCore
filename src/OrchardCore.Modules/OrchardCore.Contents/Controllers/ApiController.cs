@@ -10,6 +10,8 @@ using OrchardCore.Contents;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Navigation;
+using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.Content.Controllers
@@ -17,6 +19,7 @@ namespace OrchardCore.Content.Controllers
     public class ApiController : Controller, IUpdateModel
     {
         private readonly IContentManager _contentManager;
+        private readonly ISiteService _siteService;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
@@ -24,14 +27,16 @@ namespace OrchardCore.Content.Controllers
 
         public ApiController(
             IContentManager contentManager,
+            ISiteService siteService,
             IAuthorizationService authorizationService,
             ISession session,
             ITypeActivatorFactory<ContentPart> contentPartFactory,
             IEnumerable<IContentApiFilter> contentAdminFilters,
             ILogger<ApiController> logger)
         {
-            _authorizationService = authorizationService;
             _contentManager = contentManager;
+            _siteService = siteService;
+            _authorizationService = authorizationService;
             _session = session;
             _contentPartFactory = contentPartFactory;
             _contentAdminFilters = contentAdminFilters;
@@ -41,10 +46,10 @@ namespace OrchardCore.Content.Controllers
 
         public ILogger Logger { get; set; }
 
-        public async Task<IActionResult> GetByContentType(string contentType, ContentsStatus contentsStatus = ContentsStatus.Published)
+        public async Task<IActionResult> GetByContentType(string contentType, PagerParameters pagerParameters, ContentsStatus contentsStatus = ContentsStatus.Published)
         {
-            //var siteSettings = await _siteService.GetSiteSettingsAsync();
-            //Pager pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            Pager pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             var query = _session
                 .Query<ContentItem, ContentItemIndex>(cix => cix.ContentType == contentType);
@@ -65,7 +70,14 @@ namespace OrchardCore.Content.Controllers
                     break;
             }
 
-            var contentItems = await query.ListAsync();
+            var maxPagedCount = siteSettings.MaxPagedCount;
+            if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
+                pager.PageSize = maxPagedCount;
+
+            //var pagerShape = New.Pager(pager).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync());
+            var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
+
+            var contentItems = pageOfContentItems;
 
             if (contentItems == null)
             {
@@ -94,7 +106,7 @@ namespace OrchardCore.Content.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, Orchard.Contents.Permissions.ViewContent, contentItem))
             {
                 return Unauthorized();
             }
@@ -102,7 +114,7 @@ namespace OrchardCore.Content.Controllers
             return new ObjectResult(contentItem);
         }
 
-        public async Task<IActionResult> GetByContentByRelationship(string contentType, string contentItemId, string nestedContentType, ContentsStatus contentsStatus = ContentsStatus.Published)
+        public async Task<IActionResult> GetByContentByRelationship(string contentType, string contentItemId, string nestedContentType, PagerParameters pagerParameters, ContentsStatus contentsStatus = ContentsStatus.Published)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId);
 
@@ -116,10 +128,13 @@ namespace OrchardCore.Content.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, Orchard.Contents.Permissions.ViewContent, contentItem))
             {
                 return Unauthorized();
             }
+
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            Pager pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             var query = _session
                 .Query<ContentItem, ContentItemIndex>(cix => cix.ContentType == nestedContentType);
@@ -142,7 +157,14 @@ namespace OrchardCore.Content.Controllers
 
             await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, contentItemId), Logger);
 
-            var contentItems = await query.ListAsync();
+
+            var maxPagedCount = siteSettings.MaxPagedCount;
+            if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
+                pager.PageSize = maxPagedCount;
+
+            var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
+
+            var contentItems = pageOfContentItems;
 
             return new ObjectResult(contentItems);
         }
