@@ -5,8 +5,8 @@
     <RuntimeFrameworkVersion Condition="'$(TargetFramework)'=='netcoreapp2.0'">2.0.0</RuntimeFrameworkVersion>
     <InternalAspNetCoreSdkVersion>2.0.1-rtm-15400</InternalAspNetCoreSdkVersion>
     <TestSdkVersion>15.3.0</TestSdkVersion>
-    <XunitAnalyzers>0.6.1</XunitAnalyzers>
-    <XunitVersion>2.3.0-beta4-build3742</XunitVersion>
+    <XunitAnalyzers>0.7.0</XunitAnalyzers>
+    <XunitVersion>2.3.0-beta5-build3769</XunitVersion>
     <YesSqlVersion>2.0.0-beta-1065</YesSqlVersion>
     <YesSqlProvidersVersion>1.0.0-beta-1070</YesSqlProvidersVersion>
   </PropertyGroup>
