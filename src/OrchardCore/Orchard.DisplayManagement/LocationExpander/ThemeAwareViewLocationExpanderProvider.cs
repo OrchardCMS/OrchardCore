@@ -81,8 +81,11 @@ namespace Orchard.DisplayManagement.LocationExpander
                         {
                             if (!context.PageName.StartsWith('/' + theme.Id + '/'))
                             {
-                                yield return "/" + theme.Extension.SubPath.Replace('\\', '/').Trim('/')
-                                    + "/PageViews/{1}/{0}" + RazorViewEngine.ViewExtension;
+                                var themeViewsPath = "/" + theme.Extension.SubPath.Replace('\\', '/').Trim('/');
+                                var moduleId = context.PageName.Substring(1, context.PageName.IndexOf("/Pages/"));
+
+                                yield return themeViewsPath + "/Views/" + moduleId +
+                                    "/PageViews/{0}" + RazorViewEngine.ViewExtension;
                             }
                         }
                     }
@@ -92,11 +95,14 @@ namespace Orchard.DisplayManagement.LocationExpander
 
                 foreach (var theme in currentThemeAndBaseThemesOrdered)
                 {
-                    var themeViewsPath = '/' + theme.Extension.SubPath.Replace('\\', '/').Trim('/')
-                        + "/Views" + context.AreaName != theme.Id ? '/' + context.AreaName : string.Empty;
+                    if (context.AreaName != theme.Id)
+                    {
+                        var themeViewsPath = '/' + theme.Extension.SubPath.Replace('\\', '/').Trim('/') +
+                            "/Views/" + context.AreaName;
 
-                    result.Add(themeViewsPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
-                    result.Add(themeViewsPath + "/Shared/{0}" +RazorViewEngine.ViewExtension);
+                        result.Add(themeViewsPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
+                        result.Add(themeViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
+                    }
                 }
 
                 result.AddRange(viewLocations);

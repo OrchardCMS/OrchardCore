@@ -17,7 +17,7 @@
     }
 }
 
-@Html.Partial("Header", Model)
+@await Html.PartialAsync("Header", Model)
 
 <p>
     @T[Model.Message] @await DisplayAsync(New.DateTime(Utc: null, Format: T["MMMM dd, yyyy"].Value))

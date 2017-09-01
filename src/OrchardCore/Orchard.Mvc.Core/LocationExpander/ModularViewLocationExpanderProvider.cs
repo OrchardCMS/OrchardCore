@@ -38,7 +38,7 @@ namespace Orchard.Mvc.LocationExpander
                     {
                         if (location.EndsWith("/{1}/{0}" + RazorViewEngine.ViewExtension))
                         {
-                            yield return location.Replace("/{1}/{0}", "/{1}/PageViews/{0}");
+                            yield return location.Replace("/{1}/{0}", "/{1}/Views/PageViews/{0}");
                         }
                     }
                 }
