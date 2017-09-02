@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
@@ -13,10 +13,10 @@ namespace Orchard.Logging
     {
         public static IApplicationBuilder UseNLogWeb(this IApplicationBuilder app, ILoggerFactory loggerFactory, IHostingEnvironment env)
         {
-            env.ConfigureNLog($"{env.ContentRootPath}{Path.DirectorySeparatorChar}NLog.config");
             LayoutRenderer.Register<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName);
             loggerFactory.AddNLog();
             app.AddNLogWeb();
+            env.ConfigureNLog($"{env.ContentRootPath}{Path.DirectorySeparatorChar}NLog.config");
             LogManager.Configuration.Variables["configDir"] = env.ContentRootPath;
 
             return app;

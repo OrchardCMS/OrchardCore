@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
@@ -40,7 +40,7 @@ namespace Orchard.Environment.Shell
         public async Task<IEnumerable<IFeatureInfo>> EnableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features, bool force)
         {
             var featuresToEnable = features
-                .SelectMany(feature => GetFeaturesToEnable(feature, false))
+                .SelectMany(feature => GetFeaturesToEnable(feature, force))
                 .Distinct()
                 .ToList();
 
