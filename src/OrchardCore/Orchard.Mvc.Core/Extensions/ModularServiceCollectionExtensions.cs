@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orchard.Mvc.LocationExpander;
 using Orchard.Mvc.ModelBinding;
+using Orchard.Mvc.RazorPages;
 
 namespace Orchard.Mvc
 {
@@ -38,7 +39,6 @@ namespace Orchard.Mvc
             {
                 // Do we need this?
                 options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAuthorizationFilter));
-
                 options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
             });
 
@@ -49,6 +49,7 @@ namespace Orchard.Mvc
             AddModularFrameworkParts(applicationServices, builder.PartManager);
 
             builder.AddModularRazorViewEngine(applicationServices);
+            builder.AddModularRazorPages();
 
             // Use a custom IViewCompilerProvider so that all tenants reuse the same ICompilerCache instance
             builder.Services.Replace(new ServiceDescriptor(typeof(IViewCompilerProvider), typeof(SharedViewCompilerProvider), ServiceLifetime.Singleton));

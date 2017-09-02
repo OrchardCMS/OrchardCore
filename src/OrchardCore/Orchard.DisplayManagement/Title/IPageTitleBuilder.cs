@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 
 namespace Orchard.DisplayManagement.Title

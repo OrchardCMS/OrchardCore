@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.Mvc.LocationExpander
 {
@@ -17,25 +17,19 @@ namespace Orchard.Mvc.LocationExpander
         {
             var expanderProviders = DiscoverProviders(context);
 
-            var locations = new List<string>();
-
-            foreach (var provider in expanderProviders.OrderByDescending(x => x.Priority))
+            foreach (var provider in expanderProviders.OrderBy(x => x.Priority))
             {
-                var entry = provider.ExpandViewLocations(context, viewLocations);
-                if (entry != null)
-                {
-                    locations.AddRange(entry);
-                }
+                viewLocations = provider.ExpandViewLocations(context, viewLocations);
             }
 
-            return locations.Distinct();
+            return viewLocations;
         }
 
         public void PopulateValues(ViewLocationExpanderContext context)
         {
             var expanderProviders = DiscoverProviders(context);
 
-            foreach (var provider in expanderProviders.OrderByDescending(x => x.Priority))
+            foreach (var provider in expanderProviders.OrderBy(x => x.Priority))
             {
                 provider.PopulateValues(context);
             }

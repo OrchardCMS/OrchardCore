@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.BackgroundTasks;
@@ -57,6 +58,11 @@ namespace Orchard.Demo
             services.AddScoped<IContentDisplayDriver, TestContentElementDisplay>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
+
+            services.Configure<RazorPagesOptions>(options =>
+            {
+                options.Conventions.AddPageRoute("/Orchard.Demo/Pages/Hello", "Hello");
+            });
         }
     }
 }
