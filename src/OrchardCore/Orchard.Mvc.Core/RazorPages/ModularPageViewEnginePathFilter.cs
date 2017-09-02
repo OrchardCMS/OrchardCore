@@ -16,8 +16,10 @@ namespace Orchard.Mvc.RazorPages
             var moduleIds = (await shellFeaturesManager.GetEnabledFeaturesAsync())
                 .Select(f => f.Extension.Id).Distinct();
 
-            var moduleId = context.ActionDescriptor.ViewEnginePath.Substring(1,
-                context.ActionDescriptor.ViewEnginePath.IndexOf("/Pages/") - 1);
+            var moduleFolder = context.ActionDescriptor.ViewEnginePath.Substring(0,
+                context.ActionDescriptor.ViewEnginePath.LastIndexOf("/Pages/"));
+
+            var moduleId = moduleFolder.Substring(moduleFolder.LastIndexOf("/") + 1);
 
             if (!moduleIds.Contains(moduleId))
             {
