@@ -52,12 +52,12 @@ namespace Orchard.DisplayManagement.LocationExpander
 
             if (themeManager != null)
             {
-                var currentThemeId = context.Values["Theme"];
-
-                if (currentThemeId == null)
+                if (!context.Values.ContainsKey("Theme"))
                 {
                     return viewLocations;
                 }
+
+                var currentThemeId = context.Values["Theme"];
 
                 var currentThemeAndBaseThemesOrdered = _extensionManager
                     .GetFeatures(new[] { currentThemeId })
