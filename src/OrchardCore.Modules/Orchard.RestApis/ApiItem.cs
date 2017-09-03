@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement;
 
-namespace Orchard.JsonApi
+namespace Orchard.RestApis
 {
     public class ApiItem
     {
@@ -226,7 +226,7 @@ namespace Orchard.JsonApi
 
         [JsonIgnore]
         public Links Links { get; }
-        
+
         [JsonIgnore]
         public Meta Meta { get; }
     }

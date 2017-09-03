@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Routing;
 using Moq;
 using Newtonsoft.Json;
 using Orchard.ContentManagement;
-using Orchard.JsonApi;
+using Orchard.RestApis;
 using Xunit;
 
 namespace Orchard.Tests.JsonApi
@@ -48,7 +48,7 @@ namespace Orchard.Tests.JsonApi
                 Settings);
 
             var itemSerialized2 = JsonConvert.SerializeObject(JsonConvert.DeserializeObject<ApiItem>(
-                itemSerialized, 
+                itemSerialized,
                 Settings),
                 Settings);
 

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Orchard.DisplayManagement.ModelBinding;
 
-namespace Orchard.JsonApi.ContentDisplay
+namespace Orchard.RestApis.ContentDisplay
 {
     public class BuildApiDisplayContext
     {

@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Orchard.JsonApi.Filters;
+using Orchard.RestApis.Filters;
 
-namespace Orchard.JsonApi
+namespace Orchard.RestApis
 {
     public static class ServiceCollectionExtensions
     {
