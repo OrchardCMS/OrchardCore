@@ -34,8 +34,11 @@ namespace Orchard.Mvc.LocationExpander
 
                 IEnumerable<string> PageViewLocations()
                 {
-                    yield return page.RelativePath.Substring(0, page.RelativePath.IndexOf("/Pages/"))
-                        + "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
+                    if (page.RelativePath.Contains("/Pages/") && !page.RelativePath.StartsWith("/Pages/"))
+                    {
+                        yield return page.RelativePath.Substring(0, page.RelativePath.IndexOf("/Pages/"))
+                            + "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
+                    }
                 }
             }
 

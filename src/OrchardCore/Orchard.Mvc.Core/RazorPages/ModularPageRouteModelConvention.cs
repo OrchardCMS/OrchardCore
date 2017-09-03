@@ -8,7 +8,12 @@ namespace Orchard.Mvc.RazorPages
         {
             foreach (var selector in model.Selectors)
             {
-                selector.AttributeRouteModel.Template = selector.AttributeRouteModel.Template.Replace("/Pages/", "/");
+                if (selector.AttributeRouteModel.Template.Contains("/Pages/") &&
+                    !selector.AttributeRouteModel.Template.StartsWith("/Pages/"))
+                {
+                    selector.AttributeRouteModel.Template = selector.AttributeRouteModel.
+                        Template.Replace("/Pages/", "/");
+                }
             }
         }
     }

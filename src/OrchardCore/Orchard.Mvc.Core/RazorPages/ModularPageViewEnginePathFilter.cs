@@ -11,6 +11,13 @@ namespace Orchard.Mvc.RazorPages
     {
         public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         {
+            if (!context.ActionDescriptor.ViewEnginePath.Contains("/Pages/") ||
+                context.ActionDescriptor.ViewEnginePath.StartsWith("/Pages/"))
+            {
+                context.Result = new NotFoundResult();
+                return;
+            }
+
             var shellFeaturesManager = context.HttpContext.RequestServices.GetRequiredService<IShellFeaturesManager>();
 
             var moduleIds = (await shellFeaturesManager.GetEnabledFeaturesAsync())
