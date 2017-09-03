@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <None Include="Recipes\blog.recipe.json" />
-    <None Include="Recipes\cms.recipe.json" />
     <None Include="Recipes\saas.recipe.json" />
   </ItemGroup>
 
