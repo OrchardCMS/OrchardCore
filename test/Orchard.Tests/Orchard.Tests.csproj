@@ -64,6 +64,9 @@
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVersion)" Condition="!$([MSBuild]::IsOSPlatform('OSX'))" />
     <PackageReference Include="xunit.runner.console" Version="$(XunitVersion)" Condition="$([MSBuild]::IsOSPlatform('OSX'))" />
+    <PackageReference Include="xunit.runner.msbuild" Version="$(XunitVersion)" Condition="$([MSBuild]::IsOSPlatform('OSX'))" />
+    <PackageReference Include="xunit.runner.tdnet" Version="$(XunitVersion)" Condition="$([MSBuild]::IsOSPlatform('OSX'))" />
+    <PackageReference Include="xunit.runner.utility" Version="$(XunitVersion)" Condition="$([MSBuild]::IsOSPlatform('OSX'))" />
     <PackageReference Include="xunit.analyzers" Version="$(XunitAnalyzers)" />
 
     <!-- Forces this version to fix Travis build -->
