@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Orchard.ContentManagement;
 using Orchard.DisplayManagement.ModelBinding;
 
-namespace Orchard.JsonApi
+namespace Orchard.RestApis
 {
     /// <summary>
     /// Describe services responsible for displaying a api item.

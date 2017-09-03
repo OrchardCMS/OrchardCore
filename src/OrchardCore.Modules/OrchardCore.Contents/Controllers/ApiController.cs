@@ -48,6 +48,11 @@ namespace OrchardCore.Content.Controllers
 
         public async Task<IActionResult> GetByContentType(string contentType, PagerParameters pagerParameters, ContentsStatus contentsStatus = ContentsStatus.Published)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Orchard.Contents.Permissions.ViewContent))
+            {
+                return Unauthorized();
+            }
+
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             Pager pager = new Pager(pagerParameters, siteSettings.PageSize);
 
@@ -156,7 +161,6 @@ namespace OrchardCore.Content.Controllers
             }
 
             await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, contentItemId), Logger);
-
 
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)

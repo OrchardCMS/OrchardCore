@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
 using Orchard.Environment.Shell;
 
-namespace Orchard.JsonApi.Filters
+namespace Orchard.RestApis.Filters
 {
     public class JsonApiFilter : IAsyncActionFilter
     {

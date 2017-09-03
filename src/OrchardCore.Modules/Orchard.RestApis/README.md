@@ -1,4 +1,4 @@
-# Json Apis (Orchard.JsonApi)
+# Json Apis (Orchard.RestApis)
 
 The JsonApi implrements the jsonapi.org specification.
 

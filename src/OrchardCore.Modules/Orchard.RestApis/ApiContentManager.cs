@@ -8,9 +8,9 @@ using Orchard.ContentManagement;
 using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement.ModelBinding;
-using Orchard.JsonApi.ContentDisplay;
+using Orchard.RestApis.ContentDisplay;
 
-namespace Orchard.JsonApi
+namespace Orchard.RestApis
 {
     public class ApiContentManager : IApiContentManager
     {
