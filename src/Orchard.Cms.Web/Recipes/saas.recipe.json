@@ -20,6 +20,7 @@
         "Orchard.Diagnostics",
         "Orchard.DynamicCache",
         "Orchard.HomeRoute",
+        "Orchard.Localization",
         "Orchard.Modules",
         "Orchard.Navigation",
         "Orchard.OpenId",

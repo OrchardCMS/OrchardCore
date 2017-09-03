@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 using Orchard.DisplayManagement.FileProviders;
 
@@ -14,7 +15,7 @@ namespace Orchard.DisplayManagement.Theming
 
         public ThemingFileProvider()
         {
-            _viewImportsFileInfo = new ContentFileInfo("_ViewImports.cshtml", "@inherits Orchard.DisplayManagement.Razor.RazorPage<TModel>");
+            _viewImportsFileInfo = new ContentFileInfo("_ViewImports" + RazorViewEngine.ViewExtension, "@inherits Orchard.DisplayManagement.Razor.RazorPage<TModel>");
         }
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
@@ -23,7 +24,7 @@ namespace Orchard.DisplayManagement.Theming
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (subpath == "/_ViewImports.cshtml")
+            if (subpath == "/_ViewImports" + RazorViewEngine.ViewExtension)
             {
                 return _viewImportsFileInfo;
             }

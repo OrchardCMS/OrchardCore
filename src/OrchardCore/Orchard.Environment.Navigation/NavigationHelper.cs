@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -43,6 +43,7 @@ namespace Orchard.Environment.Navigation
             var menuItemShape = shapeFactory.NavigationItem()
                 .Text(menuItem.Text)
                 .Href(menuItem.Href)
+                .Url(menuItem.Url)
                 .LinkToFirstChild(menuItem.LinkToFirstChild)
                 .RouteValues(menuItem.RouteValues)
                 .Item(menuItem)

@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Orchard.Mvc.Utilities;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using Orchard.Admin;
 using Orchard.ContentManagement.Display;
@@ -12,6 +12,7 @@ using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.Environment.Cache;
+using Orchard.Mvc.Utilities;
 using Orchard.Scripting;
 
 namespace Orchard.Layers.Services
@@ -51,7 +52,8 @@ namespace Orchard.Layers.Services
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
 			// Should only run on the front-end for a full view
-			if (context.Result is ViewResult && !AdminAttribute.IsApplied(context.HttpContext))
+			if ((context.Result is ViewResult || context.Result is PageResult) &&
+                !AdminAttribute.IsApplied(context.HttpContext))
 			{
 				var widgets = await _layerService.GetLayerWidgetsAsync(x => x.Published);
 				var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);

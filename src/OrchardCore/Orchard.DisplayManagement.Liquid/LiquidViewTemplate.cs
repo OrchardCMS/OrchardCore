@@ -171,9 +171,7 @@ namespace Orchard.DisplayManagement.Liquid
             context.AmbientValues.Add("ShapeFactory", shapeFactory);
 
             var localizer = services.GetRequiredService<IViewLocalizer>();
-            var contextable = localizer as IViewContextAware;
-
-            if (contextable != null)
+            if (localizer is IViewContextAware contextable)
             {
                 contextable.Contextualize(displayContext.ViewContext);
             }
@@ -190,6 +188,7 @@ namespace Orchard.DisplayManagement.Liquid
             context.MemberAccessStrategy.Register(site.GetType());
             context.LocalScope.SetValue("Site", site);
 
+            // TODO: Extract the request culture instead of the default site's one
             if (site.Culture != null)
             {
                 context.CultureInfo = new CultureInfo(site.Culture);
@@ -198,24 +197,6 @@ namespace Orchard.DisplayManagement.Liquid
             var model = displayContext.Value;
             context.MemberAccessStrategy.Register(model.GetType());
             context.LocalScope.SetValue("Model", model);
-
-            if (model is Shape shape)
-            {
-                if (shape.Properties.Count > 0)
-                {
-                    foreach (var prop in shape.Properties)
-                    {
-                        context.MemberAccessStrategy.Register(prop.Value.GetType());
-                    }
-                }
-            }
-
-            var field = model.GetType().GetProperty("Field");
-
-            if (field != null)
-            {
-                context.MemberAccessStrategy.Register(field.PropertyType);
-            }
         }
     }
 }

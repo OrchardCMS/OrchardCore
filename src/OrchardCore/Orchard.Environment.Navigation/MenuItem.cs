@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Orchard.Security.Permissions;
 using System.Collections.Generic;
@@ -36,7 +36,7 @@ namespace Orchard.Environment.Navigation
         public string Href { get; set; }
 
         /// <summary>
-        /// The optional url the menu item should ling to.
+        /// The optional url the menu item should link to.
         /// </summary>
         public string Url { get; set; }
 

@@ -1,4 +1,4 @@
-﻿using Fluid;
+using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +7,7 @@ using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Data.Migration;
+using Orchard.DisplayManagement.Descriptors;
 using Orchard.Indexing;
 using Orchard.Liquid.Drivers;
 using Orchard.Liquid.Filters;
@@ -36,6 +37,7 @@ namespace Orchard.Liquid
         {
             // Liquid Part
             services.AddScoped<IContentPartDisplayDriver, LiquidPartDisplay>();
+            services.AddScoped<IShapeTableProvider, LiquidShapes>();
             services.AddSingleton<ContentPart, LiquidPart>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();

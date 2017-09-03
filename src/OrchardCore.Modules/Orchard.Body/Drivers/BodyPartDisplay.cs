@@ -61,10 +61,11 @@ namespace Orchard.Body.Drivers
             using (var writer = new StringWriter())
             {
                 await _liquidTemplatemanager.RenderAsync(bodyPart.Body, writer, NullEncoder.Default, templateContext);
-                model.Body = writer.ToString();
+                model.Html = writer.ToString();
             }
 
             model.ContentItem = bodyPart.ContentItem;
+            model.Body = bodyPart.Body;
             model.BodyPart = bodyPart;
             model.TypePartSettings = settings;
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.Extensions.Primitives;
@@ -14,16 +15,16 @@ namespace Orchard.DisplayManagement.Theming
             feature.ViewDescriptors.Add(new CompiledViewDescriptor()
             {
                 ExpirationTokens = Array.Empty<IChangeToken>(),
-                RelativePath = ViewPath.NormalizePath("/_ViewStart.cshtml"),
-                ViewAttribute = new RazorViewAttribute("/_ViewStart.cshtml", typeof(ThemeViewStart)),
+                RelativePath = ViewPath.NormalizePath("/_ViewStart" + RazorViewEngine.ViewExtension),
+                ViewAttribute = new RazorViewAttribute("/_ViewStart" + RazorViewEngine.ViewExtension, typeof(ThemeViewStart)),
                 IsPrecompiled = true,
             });
 
             feature.ViewDescriptors.Add(new CompiledViewDescriptor()
             {
                 ExpirationTokens = Array.Empty<IChangeToken>(),
-                RelativePath = ViewPath.NormalizePath("/Views/Shared/_Layout.cshtml"),
-                ViewAttribute = new RazorViewAttribute("/Views/Shared/_Layout.cshtml", typeof(ThemeLayout)),
+                RelativePath = ViewPath.NormalizePath("/Views/Shared/_Layout" + RazorViewEngine.ViewExtension),
+                ViewAttribute = new RazorViewAttribute("/Views/Shared/_Layout" + RazorViewEngine.ViewExtension, typeof(ThemeLayout)),
                 IsPrecompiled = true,
             });
         }

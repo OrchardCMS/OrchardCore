@@ -1,12 +1,13 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Razor;
 
 namespace Orchard.DisplayManagement.Theming
 {
-    public class ThemeViewStart : Microsoft.AspNetCore.Mvc.Razor.RazorPage<dynamic>
+    public class ThemeViewStart : RazorPage<dynamic>
     {
         public override Task ExecuteAsync()
         {
-            Layout = "~/Views/Shared/_Layout.cshtml";
+            Layout = "~/Views/Shared/_Layout" + RazorViewEngine.ViewExtension;
             return Task.CompletedTask;
         }
     }
