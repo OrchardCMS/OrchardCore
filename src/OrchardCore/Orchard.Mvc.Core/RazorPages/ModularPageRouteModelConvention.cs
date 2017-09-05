@@ -1,20 +1,48 @@
+using System;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace Orchard.Mvc.RazorPages
 {
     public class ModularPageRouteModelConvention : IPageRouteModelConvention
     {
+        private readonly string _pageName;
+        private readonly string _route;
+
+        public ModularPageRouteModelConvention(string pageName, string route)
+        {
+            _pageName = pageName;
+            _route = route;
+        }
+
         public void Apply(PageRouteModel model)
         {
-            foreach (var selector in model.Selectors)
+            if (!String.IsNullOrEmpty(_pageName) && model.ViewEnginePath.EndsWith(_pageName))
             {
-                if (selector.AttributeRouteModel.Template.Contains("/Pages/") &&
-                    !selector.AttributeRouteModel.Template.StartsWith("/Pages/"))
+                if (_pageName[0] == '/' && _pageName.Contains("/Pages/") && !_pageName.StartsWith("/Pages/"))
                 {
-                    selector.AttributeRouteModel.Template = selector.AttributeRouteModel.
-                        Template.Replace("/Pages/", "/");
+                    foreach (var selector in model.Selectors)
+                    {
+                        selector.AttributeRouteModel.SuppressLinkGeneration = true;
+                    }
+
+                    model.Selectors.Add(new SelectorModel
+                    {
+                        AttributeRouteModel = new AttributeRouteModel
+                        {
+                            Template = _route
+                        }
+                    });
                 }
             }
+        }
+    }
+
+    public static class PageConventionCollectionExtensions
+    {
+        public static PageConventionCollection AddModularPageRoute(this PageConventionCollection conventions, string pageName, string route)
+        {
+            conventions.Add(new ModularPageRouteModelConvention(pageName, route));
+            return conventions;
         }
     }
 }

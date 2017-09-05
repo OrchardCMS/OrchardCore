@@ -49,7 +49,7 @@ namespace Orchard.Mvc
             AddModularFrameworkParts(applicationServices, builder.PartManager);
 
             builder.AddModularRazorViewEngine(applicationServices);
-            builder.AddModularRazorPages();
+            builder.AddModularRazorPages(applicationServices);
 
             // Use a custom IViewCompilerProvider so that all tenants reuse the same ICompilerCache instance
             builder.Services.Replace(new ServiceDescriptor(typeof(IViewCompilerProvider), typeof(SharedViewCompilerProvider), ServiceLifetime.Singleton));
