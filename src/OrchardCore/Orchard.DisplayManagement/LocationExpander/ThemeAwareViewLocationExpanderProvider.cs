@@ -44,70 +44,58 @@ namespace Orchard.DisplayManagement.LocationExpander
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            var themeManager = context
-                .ActionContext
-                .HttpContext
-                .RequestServices
-                .GetService<IThemeManager>();
-
-            if (themeManager != null)
+            if (!context.Values.ContainsKey("Theme"))
             {
-                var currentThemeId = context.Values["Theme"];
+                return viewLocations;
+            }
 
-                if (currentThemeId == null)
+            var currentThemeId = context.Values["Theme"];
+
+            var currentThemeAndBaseThemesOrdered = _extensionManager
+                .GetFeatures(new[] { currentThemeId })
+                .Where(x => x.Extension.Manifest.IsTheme())
+                .Reverse();
+
+            if (context.ActionContext.ActionDescriptor is PageActionDescriptor)
+            {
+                if (context.PageName != null)
                 {
-                    return viewLocations;
+                    var pageViewLocations = PageViewLocations().ToList();
+                    pageViewLocations.AddRange(viewLocations);
+                    return pageViewLocations;
                 }
 
-                var currentThemeAndBaseThemesOrdered = _extensionManager
-                    .GetFeatures(new[] { currentThemeId })
-                    .Where(x => x.Extension.Manifest.IsTheme())
-                    .Reverse();
+                return viewLocations;
 
-                if (context.ActionContext.ActionDescriptor is PageActionDescriptor)
+                IEnumerable<string> PageViewLocations()
                 {
-                    if (context.PageName != null)
+                    foreach (var theme in currentThemeAndBaseThemesOrdered)
                     {
-                        var pageViewLocations = PageViewLocations().ToList();
-                        pageViewLocations.AddRange(viewLocations);
-                        return pageViewLocations;
-                    }
-
-                    return viewLocations;
-
-                    IEnumerable<string> PageViewLocations()
-                    {
-                        foreach (var theme in currentThemeAndBaseThemesOrdered)
+                        if (!context.PageName.StartsWith('/' + theme.Id + '/'))
                         {
                             var themeViewsPath = "/" + theme.Extension.SubPath.Replace('\\', '/').Trim('/');
-
-                            if (!context.PageName.StartsWith(themeViewsPath + '/'))
-                            {
-                                yield return themeViewsPath + "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
-                            }
+                            yield return themeViewsPath + "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
                         }
                     }
                 }
-
-                var result = new List<string>();
-
-                foreach (var theme in currentThemeAndBaseThemesOrdered)
-                {
-                    if (context.AreaName != theme.Id)
-                    {
-                        var themeViewsPath = '/' + theme.Extension.SubPath.Replace('\\', '/').Trim('/') +
-                            "/Views/" + context.AreaName;
-
-                        result.Add(themeViewsPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
-                        result.Add(themeViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
-                    }
-                }
-
-                result.AddRange(viewLocations);
-                return result;
             }
 
-            return viewLocations;
+            var result = new List<string>();
+
+            foreach (var theme in currentThemeAndBaseThemesOrdered)
+            {
+                if (context.AreaName != theme.Id)
+                {
+                    var themeViewsPath = '/' + theme.Extension.SubPath.Replace('\\', '/').Trim('/') +
+                        "/Views/" + context.AreaName;
+
+                    result.Add(themeViewsPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
+                    result.Add(themeViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
+                }
+            }
+
+            result.AddRange(viewLocations);
+            return result;
         }
     }
 }
