@@ -79,9 +79,10 @@ namespace Orchard.DisplayManagement.LocationExpander
                     {
                         foreach (var theme in currentThemeAndBaseThemesOrdered)
                         {
-                            if (!context.PageName.StartsWith('/' + theme.Id + '/'))
+                            var themeViewsPath = "/" + theme.Extension.SubPath.Replace('\\', '/').Trim('/');
+
+                            if (!context.PageName.StartsWith(themeViewsPath + '/'))
                             {
-                                var themeViewsPath = "/" + theme.Extension.SubPath.Replace('\\', '/').Trim('/');
                                 yield return themeViewsPath + "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
                             }
                         }
