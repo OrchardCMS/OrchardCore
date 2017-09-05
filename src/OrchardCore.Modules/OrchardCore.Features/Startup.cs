@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Navigation;
-using Orchard.Modules.Recipes.Executors;
-using Orchard.Modules.Services;
+using OrchardCore.Features.Recipes.Executors;
+using OrchardCore.Features.Services;
 using Orchard.Recipes;
 using Orchard.Security.Permissions;
 
-namespace Orchard.Modules
+namespace OrchardCore.Features
 {
     /// <summary>
     /// These services are registered on the tenant service collection

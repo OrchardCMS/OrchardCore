@@ -2,7 +2,7 @@
 using Orchard.Environment.Navigation;
 using System;
 
-namespace Orchard.Modules
+namespace OrchardCore.Features
 {
     public class AdminMenu : INavigationProvider
     {
@@ -24,7 +24,7 @@ namespace Orchard.Modules
                 .Add(T["Design"], "10", design => design
                     .AddClass("menu-design").Id("design")
                     .Add(T["Modules"], "6", deployment => deployment
-                        .Action("Features", "Admin", new { area = "Orchard.Modules" })
+                        .Action("Features", "Admin", new { area = "OrchardCore.Features" })
                         .Permission(Permissions.ManageFeatures)
                         .LocalNav()
                     )

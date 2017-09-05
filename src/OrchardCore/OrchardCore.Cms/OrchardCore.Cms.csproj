@@ -51,7 +51,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Lucene\Orchard.Lucene.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Markdown\Orchard.Markdown.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Menu\Orchard.Menu.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Modules\Orchard.Modules.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Features\OrchardCore.Features.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Mvc\Orchard.Mvc.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Navigation\Orchard.Navigation.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.OpenId\Orchard.OpenId.csproj" PrivateAssets="none" />

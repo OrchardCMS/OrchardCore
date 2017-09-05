@@ -4,12 +4,12 @@ using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Descriptor;
-using Orchard.Modules.Models;
+using OrchardCore.Features.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Orchard.Modules.Services
+namespace OrchardCore.Features.Services
 {
     public class ModuleService : IModuleService
     {

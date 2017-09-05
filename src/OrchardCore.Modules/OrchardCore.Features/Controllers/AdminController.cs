@@ -6,16 +6,16 @@ using Orchard.DisplayManagement.Notify;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Descriptor;
-using Orchard.Modules.Models;
-using Orchard.Modules.Services;
-using Orchard.Modules.ViewModels;
+using OrchardCore.Features.Models;
+using OrchardCore.Features.Services;
+using OrchardCore.Features.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Orchard.Mvc.ActionConstraints;
 
-namespace Orchard.Modules.Controllers
+namespace OrchardCore.Features.Controllers
 {
     [Admin]
     public class AdminController : Controller

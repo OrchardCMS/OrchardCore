@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using Orchard.Environment.Extensions.Features;
 
-namespace Orchard.Modules.Models {
+namespace OrchardCore.Features.Models 
+{
     /// <summary>
     /// Represents a module's feature.
     /// </summary>
-    public class ModuleFeature {
+    public class ModuleFeature 
+    {
         /// <summary>
         /// The feature descriptor.
         /// </summary>

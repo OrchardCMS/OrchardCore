@@ -1,7 +1,7 @@
 ﻿using Orchard.Environment.Extensions;
 using System;
 
-namespace Orchard.Modules
+namespace OrchardCore.Features
 {
     public static class ManifestExtensions
     {

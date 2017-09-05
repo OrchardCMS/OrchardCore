@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
-using Orchard.Modules.Models;
+using OrchardCore.Features.Models;
 
-namespace Orchard.Modules.ViewModels {
-    public class ModulesIndexViewModel {
+namespace OrchardCore.Features.ViewModels 
+{
+    public class ModulesIndexViewModel 
+    {
         public bool InstallModules { get; set; }
         public IEnumerable<ModuleEntry> Modules { get; set; }
 
@@ -10,7 +12,8 @@ namespace Orchard.Modules.ViewModels {
         public dynamic Pager { get; set; }
     }
 
-    public class ModulesIndexOptions {
+    public class ModulesIndexOptions 
+    {
         public string SearchText { get; set; }
     }
 }

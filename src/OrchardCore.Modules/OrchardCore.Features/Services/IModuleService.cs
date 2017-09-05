@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Orchard.Modules.Models;
+using OrchardCore.Features.Models;
 
-namespace Orchard.Modules.Services {
-    public interface IModuleService {
+namespace OrchardCore.Features.Services 
+{
+    public interface IModuleService 
+    {
         /// <summary>
         /// Retrieves an enumeration of the available features together with its state (enabled / disabled).
         /// </summary>

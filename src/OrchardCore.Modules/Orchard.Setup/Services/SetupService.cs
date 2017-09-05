@@ -99,7 +99,7 @@ namespace Orchard.Setup.Services
             string[] hardcoded =
             {
                 "Orchard.Commons",
-                "Orchard.Modules",
+                "OrchardCore.Features",
                 "Orchard.Recipes",
                 "Orchard.Scripting"
             };

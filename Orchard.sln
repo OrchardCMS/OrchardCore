@@ -135,7 +135,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Diagnostics", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.DynamicCache", "src\OrchardCore.Modules\Orchard.DynamicCache\Orchard.DynamicCache.csproj", "{B2857A9B-4405-402A-91C3-CFB63BEE5A70}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Modules", "src\OrchardCore.Modules\Orchard.Modules\Orchard.Modules.csproj", "{C585E8D0-E63E-4A4F-B2C6-014EC6954C22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Features", "src\OrchardCore.Modules\OrchardCore.Features\OrchardCore.Features.csproj", "{C585E8D0-E63E-4A4F-B2C6-014EC6954C22}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Mvc", "src\OrchardCore.Modules\Orchard.Mvc\Orchard.Mvc.csproj", "{3C4ED6B7-8CB9-4BFD-87E2-B2E789511CB9}"
 EndProject

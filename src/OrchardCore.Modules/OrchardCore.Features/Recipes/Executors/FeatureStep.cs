@@ -6,7 +6,7 @@ using Orchard.Environment.Shell;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
 
-namespace Orchard.Modules.Recipes.Executors
+namespace OrchardCore.Features.Recipes.Executors
 {
     /// <summary>
     /// This recipe step enables or disables a set of features.
