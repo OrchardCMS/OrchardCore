@@ -44,6 +44,12 @@ namespace Orchard.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, NumericFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, NumericFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, NumericFieldIndexHandler>();
+
+            // Enumeration Field
+            services.AddSingleton<ContentField, EnumerationField>();
+            services.AddScoped<IContentFieldDisplayDriver, EnumerationFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, EnumerationFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, EnumerationFieldIndexHandler>();
         }
     }
 }

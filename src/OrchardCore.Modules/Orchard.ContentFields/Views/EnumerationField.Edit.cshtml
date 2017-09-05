@@ -1,0 +1,21 @@
+﻿@model Orchard.ContentFields.ViewModels.EditEnumerationFieldViewModel
+@using Orchard.ContentFields.Settings;
+@using Orchard.ContentManagement.Metadata.Models
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<EnumerationFieldSettings>();
+}
+
+@{
+    // Morph the current shape to the correct editor shape based on its Editor property
+    var shape = Model as Orchard.DisplayManagement.IShape;
+    shape.Metadata.Alternates.Clear();
+    shape.Metadata.Type = "EnumerationField_Editor";
+
+    if (!String.IsNullOrEmpty(settings.Editor))
+    {
+        shape.Metadata.Alternates.Add($"EnumerationField_Editor__{settings.Editor}");
+    }
+}
+
+@await DisplayAsync(Model)
