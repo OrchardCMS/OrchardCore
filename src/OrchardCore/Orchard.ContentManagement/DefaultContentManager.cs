@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -131,10 +131,7 @@ namespace Orchard.ContentManagement
 
             if (contentItem == null)
             {
-                if (!options.IsDraftRequired)
-                {
-                    return null;
-                }
+                return null;
             }
 
             // Return item if obtained earlier in session
@@ -164,9 +161,6 @@ namespace Orchard.ContentManagement
                 // When draft is required and latest is published a new version is added
                 if (contentItem.Published)
                 {
-                    // Save the previous version
-                    _session.Save(contentItem);
-
                     contentItem = await BuildNewVersionAsync(contentItem);
                 }
 
@@ -309,13 +303,19 @@ namespace Orchard.ContentManagement
             if (latestVersion != null)
             {
                 latestVersion.Latest = false;
-                buildingContentItem.Number = latestVersion.Number + 1;
             }
-            else
-            {
-                buildingContentItem.Number = 1;
-            }
+ 
+            var number = Math.Max(latestVersion?.Number ?? 0, existingContentItem.Number);
 
+            // Another version might be higher
+            var highestVersion = await _session
+                .Query<ContentItem, ContentItemIndex>(x =>
+                    x.ContentItemId == existingContentItem.ContentItemId &&
+                    x.Number > number)
+                .OrderByDescending(x => x.Number)
+                .FirstOrDefaultAsync();
+
+            buildingContentItem.Number = (highestVersion?.Number ?? number) + 1;
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
             buildingContentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem);
             buildingContentItem.Latest = true;
@@ -325,6 +325,11 @@ namespace Orchard.ContentManagement
 
             Handlers.Invoke(handler => handler.Versioning(context), _logger);
             Handlers.Reverse().Invoke(handler => handler.Versioned(context), _logger);
+
+            if (latestVersion != null)
+            {
+                _session.Save(latestVersion);
+            }
 
             return context.BuildingContentItem;
         }
