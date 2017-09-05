@@ -1,8 +1,8 @@
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.ContentTypes.Editors
+namespace OrchardCore.ContentTypes.Editors
 {
     public class ContentTypePartSettingsDisplayDriver : ContentTypePartDisplayDriver
     {

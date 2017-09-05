@@ -13,17 +13,17 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.DisplayManagement.Layout;
-using Orchard.DisplayManagement.Liquid.Filters;
-using Orchard.DisplayManagement.Liquid.Internal;
-using Orchard.DisplayManagement.Liquid.Tags;
-using Orchard.DisplayManagement.Shapes;
-using Orchard.DisplayManagement.Zones;
-using Orchard.Liquid;
-using Orchard.Settings;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Liquid.Filters;
+using OrchardCore.DisplayManagement.Liquid.Internal;
+using OrchardCore.DisplayManagement.Liquid.Tags;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.Liquid;
+using OrchardCore.Settings;
 
-namespace Orchard.DisplayManagement.Liquid
+namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidViewTemplate : BaseFluidTemplate<LiquidViewTemplate>
     {

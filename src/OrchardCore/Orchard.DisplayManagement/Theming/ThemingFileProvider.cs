@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
-using Orchard.DisplayManagement.FileProviders;
+using OrchardCore.DisplayManagement.FileProviders;
 
-namespace Orchard.DisplayManagement.Theming
+namespace OrchardCore.DisplayManagement.Theming
 {
     /// <summary>
     /// This custom <see cref="IFileProvider"/> implementation provides the file contents
@@ -15,7 +15,7 @@ namespace Orchard.DisplayManagement.Theming
 
         public ThemingFileProvider()
         {
-            _viewImportsFileInfo = new ContentFileInfo("_ViewImports" + RazorViewEngine.ViewExtension, "@inherits Orchard.DisplayManagement.Razor.RazorPage<TModel>");
+            _viewImportsFileInfo = new ContentFileInfo("_ViewImports" + RazorViewEngine.ViewExtension, "@inherits OrchardCore.DisplayManagement.Razor.RazorPage<TModel>");
         }
         public IDirectoryContents GetDirectoryContents(string subpath)
         {

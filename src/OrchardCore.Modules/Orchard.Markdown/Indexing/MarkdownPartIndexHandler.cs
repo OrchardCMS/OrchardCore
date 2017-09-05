@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Orchard.Markdown.Model;
-using Orchard.Indexing;
+using OrchardCore.Markdown.Model;
+using OrchardCore.Indexing;
 
-namespace Orchard.Markdown.Indexing
+namespace OrchardCore.Markdown.Indexing
 {
     public class MarkdownPartIndexHandler : ContentPartIndexHandler<MarkdownPart>
     {

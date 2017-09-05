@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
+namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     /// <summary>
     /// This service determines which paths to examine, and provides

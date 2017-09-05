@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.Body.Model;
-using Orchard.Body.Settings;
-using Orchard.ContentManagement;
+using OrchardCore.Body.Model;
+using OrchardCore.Body.Settings;
+using OrchardCore.ContentManagement;
 
-namespace Orchard.Body.ViewModels
+namespace OrchardCore.Body.ViewModels
 {
     public class BodyPartViewModel
     {

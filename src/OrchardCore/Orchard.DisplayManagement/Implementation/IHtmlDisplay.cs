@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Html;
 using System.Threading.Tasks;
 
-namespace Orchard.DisplayManagement.Implementation
+namespace OrchardCore.DisplayManagement.Implementation
 {
     /// <summary>
     /// Coordinates the rendering of shapes.

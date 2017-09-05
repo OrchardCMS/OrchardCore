@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ResourceManagement;
+using OrchardCore.ResourceManagement;
 
-namespace Orchard.Resources
+namespace OrchardCore.Resources
 {
     public class Startup : StartupBase
     {

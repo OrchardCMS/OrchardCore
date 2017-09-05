@@ -12,24 +12,24 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentTypes.Editors;
-using Orchard.Environment.Navigation;
-using Orchard.Environment.Shell;
-using Orchard.Liquid;
-using Orchard.Media.Drivers;
-using Orchard.Media.Fields;
-using Orchard.Media.Filters;
-using Orchard.Media.Models;
-using Orchard.Media.Processing;
-using Orchard.Media.Recipes;
-using Orchard.Media.Services;
-using Orchard.Media.Settings;
-using Orchard.Recipes;
-using Orchard.StorageProviders.FileSystem;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Liquid;
+using OrchardCore.Media.Drivers;
+using OrchardCore.Media.Fields;
+using OrchardCore.Media.Filters;
+using OrchardCore.Media.Models;
+using OrchardCore.Media.Processing;
+using OrchardCore.Media.Recipes;
+using OrchardCore.Media.Services;
+using OrchardCore.Media.Settings;
+using OrchardCore.Recipes;
+using OrchardCore.StorageProviders.FileSystem;
 
-namespace Orchard.Media
+namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {

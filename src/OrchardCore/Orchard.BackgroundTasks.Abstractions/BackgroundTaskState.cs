@@ -1,4 +1,4 @@
-﻿namespace Orchard.BackgroundTasks
+﻿namespace OrchardCore.BackgroundTasks
 {
     public enum BackgroundTaskState
     {

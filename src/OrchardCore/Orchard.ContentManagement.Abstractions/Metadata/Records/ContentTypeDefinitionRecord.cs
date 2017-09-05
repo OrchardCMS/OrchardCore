@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
-namespace Orchard.ContentManagement.Metadata.Records
+namespace OrchardCore.ContentManagement.Metadata.Records
 {
     public class ContentTypeDefinitionRecord
     {

@@ -1,4 +1,4 @@
-﻿namespace Orchard.Environment.Extensions.Loaders
+﻿namespace OrchardCore.Environment.Extensions.Loaders
 {
     public interface IExtensionLoader
     {

@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement;
+﻿using OrchardCore.ContentManagement;
 
-namespace Orchard.Widgets.Models
+namespace OrchardCore.Widgets.Models
 {
     public class WidgetMetadata : ContentPart
     {

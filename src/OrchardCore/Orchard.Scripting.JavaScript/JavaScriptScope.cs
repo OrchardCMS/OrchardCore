@@ -1,7 +1,7 @@
 ﻿using System;
 using Jint;
 
-namespace Orchard.Scripting.JavaScript
+namespace OrchardCore.Scripting.JavaScript
 {
     public class JavaScriptScope : IScriptingScope
     {

@@ -15,14 +15,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OpenIddict.Core;
-using Orchard.Mvc.ActionConstraints;
-using Orchard.OpenId.Models;
-using Orchard.OpenId.Services;
-using Orchard.OpenId.ViewModels;
-using Orchard.Security;
-using Orchard.Users;
+using OrchardCore.Mvc.ActionConstraints;
+using OrchardCore.OpenId.Models;
+using OrchardCore.OpenId.Services;
+using OrchardCore.OpenId.ViewModels;
+using OrchardCore.Security;
+using OrchardCore.Users;
 
-namespace Orchard.OpenId.Controllers
+namespace OrchardCore.OpenId.Controllers
 {
     [Authorize]
     public class AccessController : Controller

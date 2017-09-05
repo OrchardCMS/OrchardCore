@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Orchard.StorageProviders
+namespace OrchardCore.StorageProviders
 {
     public interface IFile
     {

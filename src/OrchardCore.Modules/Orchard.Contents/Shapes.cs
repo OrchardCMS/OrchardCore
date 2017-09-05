@@ -1,12 +1,12 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.ModelBinding;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.ModelBinding;
 
-namespace Orchard.Contents
+namespace OrchardCore.Contents
 {
     public class Shapes : IShapeTableProvider
     {

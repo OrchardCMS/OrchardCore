@@ -1,4 +1,4 @@
-﻿namespace Orchard.Settings.ViewModels
+﻿namespace OrchardCore.Settings.ViewModels
 {
     public class AdminIndexViewModel
     {

@@ -1,7 +1,7 @@
-﻿using Orchard.Recipes.Models;
+﻿using OrchardCore.Recipes.Models;
 using System.Collections.Generic;
 
-namespace Orchard.Setup.Services
+namespace OrchardCore.Setup.Services
 {
     public class SetupContext
     {

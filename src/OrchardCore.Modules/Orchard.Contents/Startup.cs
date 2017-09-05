@@ -4,31 +4,31 @@ using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Handlers;
-using Orchard.Contents.Drivers;
-using Orchard.Contents.Feeds.Builders;
-using Orchard.Contents.Handlers;
-using Orchard.Contents.Indexing;
-using Orchard.Contents.Models;
-using Orchard.Contents.Recipes;
-using Orchard.Contents.Services;
-using Orchard.Contents.TagHelpers;
-using Orchard.ContentTypes.Editors;
-using Orchard.Data.Migration;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.Environment.Navigation;
-using Orchard.Feeds;
-using Orchard.Indexing;
-using Orchard.Lists.Settings;
-using Orchard.Mvc;
-using Orchard.Recipes;
-using Orchard.Scripting;
-using Orchard.Security.Permissions;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Contents.Drivers;
+using OrchardCore.Contents.Feeds.Builders;
+using OrchardCore.Contents.Handlers;
+using OrchardCore.Contents.Indexing;
+using OrchardCore.Contents.Models;
+using OrchardCore.Contents.Recipes;
+using OrchardCore.Contents.Services;
+using OrchardCore.Contents.TagHelpers;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Feeds;
+using OrchardCore.Indexing;
+using OrchardCore.Lists.Settings;
+using OrchardCore.Mvc;
+using OrchardCore.Recipes;
+using OrchardCore.Scripting;
+using OrchardCore.Security.Permissions;
 
-namespace Orchard.Contents
+namespace OrchardCore.Contents
 {
     public class Startup : StartupBase
     {

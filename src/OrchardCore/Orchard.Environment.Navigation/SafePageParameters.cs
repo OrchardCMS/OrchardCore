@@ -1,4 +1,4 @@
-﻿namespace Orchard.Navigation
+﻿namespace OrchardCore.Navigation
 {
     /// <summary>
     /// Represents the paging parameters of a safe navigation that doesn't

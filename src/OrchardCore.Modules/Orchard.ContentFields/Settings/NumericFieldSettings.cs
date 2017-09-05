@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement.Metadata.Builders;
+﻿using OrchardCore.ContentManagement.Metadata.Builders;
 
-namespace Orchard.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings
 {
     public class NumericFieldSettings
     {

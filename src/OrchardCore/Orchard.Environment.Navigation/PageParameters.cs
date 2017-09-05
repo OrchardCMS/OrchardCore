@@ -1,4 +1,4 @@
-﻿namespace Orchard.Navigation
+﻿namespace OrchardCore.Navigation
 {
     public class PagerParameters
     {

@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using OpenIddict.Core;
 
-namespace Orchard.OpenId.Services
+namespace OrchardCore.OpenId.Services
 {
     /// <summary>
     /// Provides an abstraction for a store with maps apps to roles.

@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Orchard.DisplayManagement.ModelBinding
+namespace OrchardCore.DisplayManagement.ModelBinding
 {
     public interface IUpdateModel
     {

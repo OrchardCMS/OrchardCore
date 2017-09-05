@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Orchard.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Implementation;
 
-namespace Orchard.DisplayManagement.TagHelpers
+namespace OrchardCore.DisplayManagement.TagHelpers
 {
     public abstract class BaseShapeTagHelper : TagHelper
     {

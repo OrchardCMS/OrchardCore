@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Orchard.DeferredTasks
+namespace OrchardCore.DeferredTasks
 {
     public static class ServiceCollectionExtensions
     {

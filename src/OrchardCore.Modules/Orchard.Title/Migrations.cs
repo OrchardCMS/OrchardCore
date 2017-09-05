@@ -1,8 +1,8 @@
-﻿using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.ContentManagement.MetaData;
-using Orchard.Data.Migration;
+﻿using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.Data.Migration;
 
-namespace Orchard.Title
+namespace OrchardCore.Title
 {
     public class Migrations : DataMigration
     {

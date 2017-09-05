@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     internal class GenericTypeActivator<T, TInstance> : ITypeActivator<TInstance> where T : TInstance, new()
     {

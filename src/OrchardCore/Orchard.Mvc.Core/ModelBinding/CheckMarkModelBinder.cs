@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Orchard.Mvc.ModelBinding
+namespace OrchardCore.Mvc.ModelBinding
 {
     public class CheckMarkModelBinder : IModelBinder
     {

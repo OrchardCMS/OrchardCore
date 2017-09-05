@@ -4,19 +4,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Handlers;
-using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.ContentManagement.MetaData;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.Layout;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Shapes;
-using Orchard.DisplayManagement.Theming;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Theming;
 
-namespace Orchard.ContentManagement.Display
+namespace OrchardCore.ContentManagement.Display
 {
     /// <summary>
     /// The default implementation of <see cref="IContentItemDisplayManager"/>. It is used to render

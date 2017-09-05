@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using Orchard.ContentFields.Fields;
-using Orchard.ContentFields.Settings;
-using Orchard.Indexing;
+using OrchardCore.ContentFields.Fields;
+using OrchardCore.ContentFields.Settings;
+using OrchardCore.Indexing;
 
-namespace Orchard.ContentFields.Indexing
+namespace OrchardCore.ContentFields.Indexing
 {
     public class NumericFieldIndexHandler : ContentFieldIndexHandler<NumericField>
     {

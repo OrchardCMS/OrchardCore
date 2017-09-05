@@ -1,4 +1,4 @@
-﻿namespace Orchard.Deployment
+﻿namespace OrchardCore.Deployment
 {
     public abstract class DeploymentStep
     {

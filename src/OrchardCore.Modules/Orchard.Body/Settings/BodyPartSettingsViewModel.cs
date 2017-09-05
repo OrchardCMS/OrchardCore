@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Orchard.Body.Settings
+namespace OrchardCore.Body.Settings
 {
     public class BodyPartSettingsViewModel
     {

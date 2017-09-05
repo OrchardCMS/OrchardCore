@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement.Handlers;
-using Orchard.ContentManagement.Metadata.Builders;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Records;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Metadata.Builders;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Records;
 using YesSql;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     public class DefaultContentManager : IContentManager
     {

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Orchard.Core.XmlRpc.Models;
-using Orchard.Core.XmlRpc.Services;
-using Orchard.XmlRpc;
+using OrchardCore.XmlRpc.Models;
+using OrchardCore.XmlRpc.Services;
+using OrchardCore.XmlRpc;
 
-namespace Orchard.Core.XmlRpc.Controllers
+namespace OrchardCore.XmlRpc.Controllers
 {
     public class HomeController : Controller
     {

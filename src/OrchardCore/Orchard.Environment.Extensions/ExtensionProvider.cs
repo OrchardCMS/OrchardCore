@@ -2,9 +2,9 @@
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Features;
 
-namespace Orchard.Environment.Extensions
+namespace OrchardCore.Environment.Extensions
 {
     public class ExtensionProvider : IExtensionProvider
     {

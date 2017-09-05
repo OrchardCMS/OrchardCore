@@ -7,16 +7,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Loaders;
-using Orchard.Environment.Extensions.Manifests;
-using Orchard.Environment.Shell;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Loaders;
+using OrchardCore.Environment.Extensions.Manifests;
+using OrchardCore.Environment.Shell;
 using Xunit;
 
-namespace Orchard.Tests.DisplayManagement.Decriptors
+namespace OrchardCore.Tests.DisplayManagement.Decriptors
 {
     public class DefaultShapeTableManagerTests : IDisposable
     {

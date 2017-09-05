@@ -1,11 +1,11 @@
 using System;
 using System.IO;
 using System.Linq;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.MetaData;
-using Orchard.Media.Models;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.Media.Models;
 
-namespace Orchard.Media
+namespace OrchardCore.Media
 {
 
     public class ImageFactorySelector : IMediaFactorySelector

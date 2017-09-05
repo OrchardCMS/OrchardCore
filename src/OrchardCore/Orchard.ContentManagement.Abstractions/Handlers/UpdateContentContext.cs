@@ -1,6 +1,6 @@
-using Orchard.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.ModelBinding;
 
-namespace Orchard.ContentManagement.Handlers
+namespace OrchardCore.ContentManagement.Handlers
 {
     public class UpdateContentContext : ContentContextBase
     {

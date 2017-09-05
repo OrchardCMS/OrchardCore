@@ -1,13 +1,13 @@
 using System;
 using System.Threading.Tasks;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Entities.DisplayManagement;
-using Orchard.Lucene.ViewModels;
-using Orchard.Settings;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Entities.DisplayManagement;
+using OrchardCore.Lucene.ViewModels;
+using OrchardCore.Settings;
 
-namespace Orchard.Lucene.Drivers
+namespace OrchardCore.Lucene.Drivers
 {
     public class LuceneSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, LuceneSettings>
     {

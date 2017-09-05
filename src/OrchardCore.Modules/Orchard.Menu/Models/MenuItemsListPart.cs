@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace Orchard.Menu.Models
+namespace OrchardCore.Menu.Models
 {
     // A content item with this part can have menu items.
     // This part is automatically added to all menus.

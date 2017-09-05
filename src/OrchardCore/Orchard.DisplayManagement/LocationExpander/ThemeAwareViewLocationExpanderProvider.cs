@@ -3,11 +3,11 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Theming;
-using Orchard.Environment.Extensions;
-using Orchard.Mvc.LocationExpander;
+using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Mvc.LocationExpander;
 
-namespace Orchard.DisplayManagement.LocationExpander
+namespace OrchardCore.DisplayManagement.LocationExpander
 {
     public class ThemeAwareViewLocationExpanderProvider : IViewLocationExpanderProvider
     {

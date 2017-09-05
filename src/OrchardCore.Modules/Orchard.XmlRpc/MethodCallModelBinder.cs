@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Core.XmlRpc.Models;
-using Orchard.Core.XmlRpc.Services;
+using OrchardCore.XmlRpc.Models;
+using OrchardCore.XmlRpc.Services;
 
-namespace Orchard.XmlRpc
+namespace OrchardCore.XmlRpc
 {
     public class MethodCallModelBinder : IModelBinder
     {

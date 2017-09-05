@@ -1,9 +1,9 @@
 ﻿using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.Environment.Navigation;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Environment.Navigation;
 
-namespace Orchard.Navigation
+namespace OrchardCore.Navigation
 {
     public class Startup : StartupBase
     {

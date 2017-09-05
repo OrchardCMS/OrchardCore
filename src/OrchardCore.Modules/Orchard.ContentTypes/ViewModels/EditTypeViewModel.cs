@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace Orchard.ContentTypes.ViewModels
+namespace OrchardCore.ContentTypes.ViewModels
 {
     public class EditTypeViewModel
     {

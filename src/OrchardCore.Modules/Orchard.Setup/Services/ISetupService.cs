@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Orchard.Recipes.Models;
+using OrchardCore.Recipes.Models;
 
-namespace Orchard.Setup.Services
+namespace OrchardCore.Setup.Services
 {
     public interface ISetupService
     {

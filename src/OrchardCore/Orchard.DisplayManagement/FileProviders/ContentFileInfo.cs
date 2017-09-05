@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.FileProviders;
 
-namespace Orchard.DisplayManagement.FileProviders
+namespace OrchardCore.DisplayManagement.FileProviders
 {
     public class ContentFileInfo : IFileInfo
     {

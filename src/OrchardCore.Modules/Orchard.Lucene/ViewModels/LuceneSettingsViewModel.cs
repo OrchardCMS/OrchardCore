@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.Lucene.ViewModels
+namespace OrchardCore.Lucene.ViewModels
 {
     public class LuceneSettingsViewModel
     {

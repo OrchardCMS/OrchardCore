@@ -1,9 +1,9 @@
-﻿using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Shell.Descriptor.Models;
+﻿using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     public delegate void FeatureDependencyNotificationHandler(string messageFormat, IFeatureInfo feature, IEnumerable<IFeatureInfo> features);
 

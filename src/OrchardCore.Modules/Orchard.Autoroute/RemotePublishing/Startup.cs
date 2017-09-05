@@ -1,8 +1,8 @@
 ﻿using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.MetaWeblog;
+using OrchardCore.MetaWeblog;
 
-namespace Orchard.Autoroute.RemotePublishing
+namespace OrchardCore.Autoroute.RemotePublishing
 {
 
     [RequireFeatures("Orchard.RemotePublishing")]

@@ -1,15 +1,15 @@
 using System.IO;
 using System.Threading.Tasks;
 using Fluid;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Display.Models;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Liquid;
-using Orchard.Markdown.Fields;
-using Orchard.Markdown.ViewModels;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Liquid;
+using OrchardCore.Markdown.Fields;
+using OrchardCore.Markdown.ViewModels;
 
-namespace Orchard.Markdown.Drivers
+namespace OrchardCore.Markdown.Drivers
 {
     public class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<MarkdownField>
     {

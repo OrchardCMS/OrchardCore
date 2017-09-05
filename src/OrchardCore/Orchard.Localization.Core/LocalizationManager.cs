@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Orchard.Localization
+namespace OrchardCore.Localization
 {
     public class LocalizationManager : ILocalizationManager
     {

@@ -1,4 +1,4 @@
-﻿namespace Orchard.Environment.Extensions
+﻿namespace OrchardCore.Environment.Extensions
 {
     public class ManifestOption
     {

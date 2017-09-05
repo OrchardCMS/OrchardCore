@@ -1,11 +1,11 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Orchard.Localization;
-using Orchard.Localization.PortableObject;
+using OrchardCore.Localization;
+using OrchardCore.Localization.PortableObject;
 using Xunit;
 
-namespace Orchard.Tests.Localization
+namespace OrchardCore.Tests.Localization
 {
     public class PoParserTests
     {

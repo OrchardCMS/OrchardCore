@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement;
-using Orchard.Entities;
-using Orchard.Environment.Shell;
-using Orchard.Indexing;
-using Orchard.Settings;
+using OrchardCore.ContentManagement;
+using OrchardCore.Entities;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Indexing;
+using OrchardCore.Settings;
 
-namespace Orchard.Lucene
+namespace OrchardCore.Lucene
 {
     /// <summary>
     /// This class provides services to update all the Lucene indices. It is non-rentrant so that calls 

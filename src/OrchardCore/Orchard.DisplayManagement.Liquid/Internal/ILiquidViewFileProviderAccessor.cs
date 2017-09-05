@@ -1,6 +1,6 @@
 using Microsoft.Extensions.FileProviders;
 
-namespace Orchard.DisplayManagement.Liquid.Internal
+namespace OrchardCore.DisplayManagement.Liquid.Internal
 {
     /// <summary>
     /// Accessor to the <see cref="IFileProvider"/> used by <see cref="LiquidViewTemplate"/>.

@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.Routing;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.MetaData;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.MetaData;
 
-namespace Orchard.Contents.TagHelpers
+namespace OrchardCore.Contents.TagHelpers
 {
     [HtmlTargetElement("a", Attributes = ContentLinkAdmin)]
     [HtmlTargetElement("a", Attributes = ContentLinkDisplay)]

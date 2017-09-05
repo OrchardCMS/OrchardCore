@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Orchard.Queries.Services
+namespace OrchardCore.Queries.Services
 {
     public class QueriesDocument
     {

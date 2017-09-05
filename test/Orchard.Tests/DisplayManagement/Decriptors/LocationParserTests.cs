@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using Orchard.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Descriptors;
 using Xunit;
 
-namespace Orchard.Tests.DisplayManagement.Decriptors
+namespace OrchardCore.Tests.DisplayManagement.Decriptors
 {
     public class LocationParserTests
     {

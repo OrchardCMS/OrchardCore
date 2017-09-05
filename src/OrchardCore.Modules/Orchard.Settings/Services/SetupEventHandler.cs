@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Setup.Events;
+using OrchardCore.Setup.Events;
 
-namespace Orchard.Settings.Services
+namespace OrchardCore.Settings.Services
 {
     /// <summary>
     /// During setup, registers the Super User.

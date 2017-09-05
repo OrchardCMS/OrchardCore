@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Features;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Orchard.Environment.Cache.CacheContextProviders
+namespace OrchardCore.Environment.Cache.CacheContextProviders
 {
     public class FeaturesCacheContextProvider : ICacheContextProvider
     {

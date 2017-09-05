@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace Orchard.Indexing
+namespace OrchardCore.Indexing
 {
     /// <summary>
     /// Provides services to create and retrieve <see cref="IndexingTask"/> instances.

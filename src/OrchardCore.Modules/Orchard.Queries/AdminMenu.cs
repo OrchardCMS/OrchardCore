@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Localization;
-using Orchard.Environment.Navigation;
+using OrchardCore.Environment.Navigation;
 using System;
 
-namespace Orchard.Queries
+namespace OrchardCore.Queries
 {
     public class AdminMenu : INavigationProvider
     {

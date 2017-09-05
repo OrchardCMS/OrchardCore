@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Orchard.Core.XmlRpc.Models;
+using OrchardCore.XmlRpc.Models;
 
-namespace Orchard.Core.XmlRpc.Services
+namespace OrchardCore.XmlRpc.Services
 {
     /// <summary>
     /// Abstraction to write XML based on rpc entities.

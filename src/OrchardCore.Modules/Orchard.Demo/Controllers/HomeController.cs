@@ -3,16 +3,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display;
-using Orchard.DeferredTasks;
-using Orchard.Demo.Models;
-using Orchard.Demo.Services;
-using Orchard.DisplayManagement;
-using Orchard.Environment.Cache;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.DeferredTasks;
+using OrchardCore.Demo.Models;
+using OrchardCore.Demo.Services;
+using OrchardCore.DisplayManagement;
+using OrchardCore.Environment.Cache;
 using YesSql;
 
-namespace Orchard.Demo.Controllers
+namespace OrchardCore.Demo.Controllers
 {
     public class HomeController : Controller
     {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Lucene.Net.Util;
 
-namespace Orchard.Lucene
+namespace OrchardCore.Lucene
 {
     public class LuceneSettings
     {

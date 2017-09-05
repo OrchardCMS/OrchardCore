@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Primitives;
 
-namespace Orchard.Environment.Cache
+namespace OrchardCore.Environment.Cache
 {
     public interface ISignal
     {

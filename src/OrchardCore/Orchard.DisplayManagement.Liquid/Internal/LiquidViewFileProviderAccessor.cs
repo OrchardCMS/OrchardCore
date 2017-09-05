@@ -1,7 +1,7 @@
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 
-namespace Orchard.DisplayManagement.Liquid.Internal
+namespace OrchardCore.DisplayManagement.Liquid.Internal
 {
     /// <summary>
     /// Default implementation of <see cref="ILiquidViewFileProviderAccessor"/>.

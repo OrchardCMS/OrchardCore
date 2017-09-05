@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Orchard.Data.Migration
+namespace OrchardCore.Data.Migration
 {
     public interface IDataMigrationManager
     {

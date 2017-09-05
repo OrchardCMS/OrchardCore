@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Fluid;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using Orchard.DisplayManagement.Liquid;
+using OrchardCore.DisplayManagement.Liquid;
 
-namespace Orchard.Liquid.Services
+namespace OrchardCore.Liquid.Services
 {
     public class LiquidTemplateManager : ILiquidTemplateManager
     {

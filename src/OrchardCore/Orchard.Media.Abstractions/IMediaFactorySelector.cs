@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Orchard.Media
+namespace OrchardCore.Media
 {
     public interface IMediaFactorySelector
     {

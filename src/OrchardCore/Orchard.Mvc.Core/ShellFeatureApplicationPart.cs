@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
-using Orchard.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell.Builders.Models;
 
-namespace Orchard.Mvc
+namespace OrchardCore.Mvc
 {
     /// <summary>
     /// An <see cref="ApplicationPart"/> backed by an <see cref="Assembly"/>.

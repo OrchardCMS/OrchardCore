@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
-using Orchard.Core.XmlRpc.Models;
+using OrchardCore.XmlRpc.Models;
 
-namespace Orchard.Core.XmlRpc.Services
+namespace OrchardCore.XmlRpc.Services
 {
     /// <summary>
     /// Abstraction to read XML and convert it to rpc entities.

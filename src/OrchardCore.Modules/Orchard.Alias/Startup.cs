@@ -1,21 +1,21 @@
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Handlers;
-using Orchard.ContentTypes.Editors;
-using Orchard.Data.Migration;
-using Orchard.Alias.Drivers;
-using Orchard.Alias.Handlers;
-using Orchard.Alias.Indexes;
-using Orchard.Alias.Indexing;
-using Orchard.Alias.Models;
-using Orchard.Alias.Services;
-using Orchard.Alias.Settings;
-using Orchard.Indexing;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data.Migration;
+using OrchardCore.Alias.Drivers;
+using OrchardCore.Alias.Handlers;
+using OrchardCore.Alias.Indexes;
+using OrchardCore.Alias.Indexing;
+using OrchardCore.Alias.Models;
+using OrchardCore.Alias.Services;
+using OrchardCore.Alias.Settings;
+using OrchardCore.Indexing;
 using YesSql.Indexes;
 
-namespace Orchard.Alias
+namespace OrchardCore.Alias
 {
     public class Startup : StartupBase
     {

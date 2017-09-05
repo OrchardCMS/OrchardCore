@@ -1,6 +1,6 @@
-﻿using Orchard.StorageProviders;
+﻿using OrchardCore.StorageProviders;
 
-namespace Orchard.Media
+namespace OrchardCore.Media
 {
     public interface IMediaFileStore : IFileStore
     {

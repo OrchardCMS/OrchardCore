@@ -1,4 +1,4 @@
-﻿namespace Orchard.Environment.Cache
+﻿namespace OrchardCore.Environment.Cache
 {
     public struct CacheContextEntry
     {

@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.MetaData;
 
-namespace Orchard.ContentTypes.ViewModels
+namespace OrchardCore.ContentTypes.ViewModels
 {
     public class SelectContentTypesViewModel
     {

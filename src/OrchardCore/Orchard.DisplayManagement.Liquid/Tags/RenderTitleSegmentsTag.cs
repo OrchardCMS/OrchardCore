@@ -7,10 +7,10 @@ using Fluid.Ast;
 using Fluid.Tags;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Liquid.Ast;
-using Orchard.DisplayManagement.Title;
+using OrchardCore.DisplayManagement.Liquid.Ast;
+using OrchardCore.DisplayManagement.Title;
 
-namespace Orchard.DisplayManagement.Liquid.Tags
+namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class RenderTitleSegmentsTag : ArgumentsTag
     {

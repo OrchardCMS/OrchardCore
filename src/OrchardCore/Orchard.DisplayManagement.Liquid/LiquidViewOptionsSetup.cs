@@ -2,7 +2,7 @@ using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace Orchard.DisplayManagement.Liquid
+namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidViewOptionsSetup : IConfigureOptions<LiquidViewOptions>
     {

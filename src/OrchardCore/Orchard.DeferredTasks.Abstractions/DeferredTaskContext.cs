@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orchard.DeferredTasks
+namespace OrchardCore.DeferredTasks
 {
     public class DeferredTaskContext
     {

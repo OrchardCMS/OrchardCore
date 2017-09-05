@@ -2,10 +2,10 @@ using System;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders.Models;
 
-namespace Orchard.Hosting.ShellBuilders
+namespace OrchardCore.Hosting.ShellBuilders
 {
     /// <summary>
     /// The shell context represents the shell's state that is kept alive

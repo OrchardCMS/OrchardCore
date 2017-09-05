@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.FileProviders;
 
-namespace Orchard.DisplayManagement.Liquid
+namespace OrchardCore.DisplayManagement.Liquid
 {
     /// <summary>
     /// Provides programmatic configuration for the <see cref="LiquidViewTemplate"/>.

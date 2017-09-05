@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Cache;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.Environment.Cache;
 
-namespace Orchard.DisplayManagement.Shapes
+namespace OrchardCore.DisplayManagement.Shapes
 {
     public class ShapeMetadata
     {

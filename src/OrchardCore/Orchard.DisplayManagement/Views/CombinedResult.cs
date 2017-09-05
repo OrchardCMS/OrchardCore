@@ -1,7 +1,7 @@
-﻿using Orchard.DisplayManagement.Handlers;
+﻿using OrchardCore.DisplayManagement.Handlers;
 using System.Collections.Generic;
 
-namespace Orchard.DisplayManagement.Views
+namespace OrchardCore.DisplayManagement.Views
 {
     public class CombinedResult : IDisplayResult
     {

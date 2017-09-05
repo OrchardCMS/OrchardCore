@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Orchard.Environment.Extensions.Features
+namespace OrchardCore.Environment.Extensions.Features
 {
     /// <summary>
     /// An implementation of this interface provide efficient access to the state

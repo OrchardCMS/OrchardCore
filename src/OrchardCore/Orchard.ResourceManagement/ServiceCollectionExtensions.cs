@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Orchard.ResourceManagement
+namespace OrchardCore.ResourceManagement
 {
     public static class ServiceCollectionExtensions
     {

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Orchard.Admin;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
-using Orchard.Themes.Services;
+using OrchardCore.Admin;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
+using OrchardCore.Themes.Services;
 
-namespace Orchard.Themes.Recipes
+namespace OrchardCore.Themes.Recipes
 {
     /// <summary>
     /// This recipe step defines the site and admin default themes.

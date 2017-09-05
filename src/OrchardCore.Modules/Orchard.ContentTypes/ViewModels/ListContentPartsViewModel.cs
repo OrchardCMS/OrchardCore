@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Orchard.ContentTypes.ViewModels
+namespace OrchardCore.ContentTypes.ViewModels
 {
     public class ListContentPartsViewModel
     {

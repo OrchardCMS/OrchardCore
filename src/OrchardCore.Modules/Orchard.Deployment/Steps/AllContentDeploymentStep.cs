@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Orchard.Deployment.Steps
+namespace OrchardCore.Deployment.Steps
 {
     /// <summary>
     /// Adds all content items to a <see cref="DeploymentPlanResult"/>. 

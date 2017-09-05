@@ -1,6 +1,6 @@
 using Irony.Parsing;
 
-namespace Orchard.Queries.Sql
+namespace OrchardCore.Queries.Sql
 {
     public class SqlGrammar : Grammar
     {

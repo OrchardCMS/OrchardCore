@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
-using Orchard.UI;
+using OrchardCore.UI;
 
-namespace Orchard.DisplayManagement.Shapes
+namespace OrchardCore.DisplayManagement.Shapes
 {
     public class BaseShape : IShape, IPositioned, IEnumerable<object>
     {

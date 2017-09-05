@@ -1,10 +1,10 @@
-﻿using Orchard.Environment.Commands;
-using Orchard.Environment.Commands.Parameters;
+﻿using OrchardCore.Environment.Commands;
+using OrchardCore.Environment.Commands.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Security;
 
-namespace Orchard.Hosting
+namespace OrchardCore.Hosting
 {
     public class OrchardParametersParser : IOrchardParametersParser
     {

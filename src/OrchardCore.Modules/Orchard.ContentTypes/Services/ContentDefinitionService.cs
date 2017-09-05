@@ -4,17 +4,17 @@ using System.Linq;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Records;
-using Orchard.ContentTypes.Events;
-using Orchard.ContentTypes.ViewModels;
-using Orchard.Mvc.Utilities;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentTypes.Events;
+using OrchardCore.ContentTypes.ViewModels;
+using OrchardCore.Mvc.Utilities;
 using YesSql;
 
-namespace Orchard.ContentTypes.Services
+namespace OrchardCore.ContentTypes.Services
 {
     public class ContentDefinitionService : IContentDefinitionService
     {

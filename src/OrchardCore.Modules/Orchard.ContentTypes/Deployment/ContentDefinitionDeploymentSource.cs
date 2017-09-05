@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement.Metadata.Records;
-using Orchard.Deployment;
+using OrchardCore.ContentManagement.Metadata.Records;
+using OrchardCore.Deployment;
 using YesSql;
 
-namespace Orchard.ContentTypes.Deployment
+namespace OrchardCore.ContentTypes.Deployment
 {
     public class ContentDefinitionDeploymentSource : IDeploymentSource
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orchard.Environment.Extensions.Features
+namespace OrchardCore.Environment.Extensions.Features
 {
     public class InternalFeatureInfo : IFeatureInfo
     {

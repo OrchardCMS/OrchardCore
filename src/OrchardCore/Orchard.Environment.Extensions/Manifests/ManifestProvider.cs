@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
-using Orchard.Parser;
+using OrchardCore.Parser;
 using System;
 using System.IO;
 
-namespace Orchard.Environment.Extensions.Manifests
+namespace OrchardCore.Environment.Extensions.Manifests
 {
     public class ManifestProvider : IManifestProvider
     {

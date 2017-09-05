@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Localization;
 
-namespace Orchard.DisplayManagement.Notify
+namespace OrchardCore.DisplayManagement.Notify
 {
     public static class NotifierExtensions
     {

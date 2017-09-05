@@ -1,10 +1,10 @@
-﻿using Orchard.Autoroute.Drivers;
-using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Records;
-using Orchard.Data.Migration;
+﻿using OrchardCore.Autoroute.Drivers;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.Data.Migration;
 
-namespace Orchard.Autoroute
+namespace OrchardCore.Autoroute
 {
     public class Migrations : DataMigration
     {

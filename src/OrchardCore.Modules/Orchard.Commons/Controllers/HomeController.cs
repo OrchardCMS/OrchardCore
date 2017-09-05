@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Orchard.Commons.Controllers
+namespace OrchardCore.Commons.Controllers
 {
     public class HomeController : Controller
     {

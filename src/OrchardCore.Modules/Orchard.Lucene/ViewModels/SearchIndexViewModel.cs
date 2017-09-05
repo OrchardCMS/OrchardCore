@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Orchard.ContentManagement;
-using Orchard.Navigation;
+using OrchardCore.ContentManagement;
+using OrchardCore.Navigation;
 
-namespace Orchard.Lucene.ViewModels
+namespace OrchardCore.Lucene.ViewModels
 {
     public class SearchIndexViewModel
     {

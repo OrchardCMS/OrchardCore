@@ -1,4 +1,4 @@
-namespace Orchard.Queries.ViewModels
+namespace OrchardCore.Queries.ViewModels
 {
     public class QueriesCreateViewModel
     {

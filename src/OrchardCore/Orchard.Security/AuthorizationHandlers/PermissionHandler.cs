@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Orchard.Security.Permissions;
+using OrchardCore.Security.Permissions;
 
-namespace Orchard.Security.AuthorizationHandlers
+namespace OrchardCore.Security.AuthorizationHandlers
 {
     /// <summary>
     /// This authorization handler ensures that the user has the required permission.

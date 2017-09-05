@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Modules;
 
-namespace Orchard.ContentManagement.Handlers
+namespace OrchardCore.ContentManagement.Handlers
 {
     public class UpdateContentsHandler : ContentHandlerBase
     {

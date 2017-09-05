@@ -1,7 +1,7 @@
-﻿using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
+﻿using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
 
-namespace Orchard.DisplayManagement.Extensions
+namespace OrchardCore.DisplayManagement.Extensions
 {
     public class ThemeExtensionDependencyStrategy : IExtensionDependencyStrategy
     {

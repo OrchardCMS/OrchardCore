@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.Deployment.Remote.Models;
+using OrchardCore.Deployment.Remote.Models;
 using YesSql;
 
-namespace Orchard.Deployment.Remote.Services
+namespace OrchardCore.Deployment.Remote.Services
 {
     public class RemoteInstanceService
     {

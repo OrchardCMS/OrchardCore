@@ -7,7 +7,7 @@ using Fluid.Ast;
 using Fluid.Tags;
 using Microsoft.AspNetCore.Html;
 
-namespace Orchard.DisplayManagement.Liquid.Tags
+namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class RenderBodyTag : SimpleTag
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Environment.Commands
+namespace OrchardCore.Environment.Commands
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class OrchardSwitchesAttribute : Attribute

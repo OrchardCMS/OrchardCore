@@ -1,4 +1,4 @@
-namespace Orchard.Queries.Sql
+namespace OrchardCore.Queries.Sql
 {
     public class SqlQuery : Query
     {

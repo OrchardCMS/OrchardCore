@@ -4,16 +4,16 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
-using Orchard.DisplayManagement.Events;
-using Orchard.DisplayManagement.Extensions;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Loaders;
-using Orchard.Environment.Extensions.Manifests;
-using Orchard.Tests.Stubs;
+using OrchardCore.DisplayManagement.Events;
+using OrchardCore.DisplayManagement.Extensions;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Loaders;
+using OrchardCore.Environment.Extensions.Manifests;
+using OrchardCore.Tests.Stubs;
 using Xunit;
 
-namespace Orchard.Tests.Extensions
+namespace OrchardCore.Tests.Extensions
 {
     public class ExtensionManagerTests
     {

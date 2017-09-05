@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 
-namespace Orchard.Environment.Commands.Builtin
+namespace OrchardCore.Environment.Commands.Builtin
 {
     public class HelpCommand : DefaultCommandHandler
     {

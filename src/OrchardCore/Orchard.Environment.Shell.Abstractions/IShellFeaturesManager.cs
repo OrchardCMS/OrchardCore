@@ -1,8 +1,8 @@
-﻿using Orchard.Environment.Extensions.Features;
+﻿using OrchardCore.Environment.Extensions.Features;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     public interface IShellFeaturesManager
     {

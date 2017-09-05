@@ -10,21 +10,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OpenIddict;
-using Orchard.Data.Migration;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.Environment.Navigation;
-using Orchard.OpenId.Drivers;
-using Orchard.OpenId.Indexes;
-using Orchard.OpenId.Models;
-using Orchard.OpenId.Recipes;
-using Orchard.OpenId.Services;
-using Orchard.Recipes;
-using Orchard.Security;
-using Orchard.Security.Permissions;
-using Orchard.Settings;
+using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.OpenId.Drivers;
+using OrchardCore.OpenId.Indexes;
+using OrchardCore.OpenId.Models;
+using OrchardCore.OpenId.Recipes;
+using OrchardCore.OpenId.Services;
+using OrchardCore.Recipes;
+using OrchardCore.Security;
+using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using YesSql.Indexes;
 
-namespace Orchard.OpenId
+namespace OrchardCore.OpenId
 {
     public class Startup : StartupBase
     {

@@ -1,8 +1,8 @@
 ﻿//using Microsoft.Extensions.DependencyInjection;
 //using Microsoft.Extensions.Logging;
-//using Orchard.ContentManagement.Metadata;
-//using Orchard.ContentManagement.MetaData;
-//using Orchard.ContentManagement.Metadata.Builders;
+//using OrchardCore.ContentManagement.Metadata;
+//using OrchardCore.ContentManagement.MetaData;
+//using OrchardCore.ContentManagement.Metadata.Builders;
 //using System;
 //using System.Collections.Generic;
 //using System.Linq;
@@ -10,7 +10,7 @@
 //using Xunit;
 //using YesSql;
 
-//namespace Orchard.Tests.ContentDefinition
+//namespace OrchardCore.Tests.ContentDefinition
 //{
 //    public class ContentDefinitionManagerTests
 //    {

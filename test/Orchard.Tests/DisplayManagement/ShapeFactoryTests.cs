@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.DisplayManagement.Shapes;
-using Orchard.DisplayManagement.Theming;
-using Orchard.Environment.Extensions;
-using Orchard.Tests.Stubs;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Tests.Stubs;
 using Xunit;
 
-namespace Orchard.Tests.DisplayManagement
+namespace OrchardCore.Tests.DisplayManagement
 {
     public class ShapeFactoryTests
     {

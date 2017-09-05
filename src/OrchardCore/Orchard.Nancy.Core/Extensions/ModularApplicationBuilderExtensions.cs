@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Modules;
-using Orchard.Nancy.AssemblyCatalogs;
+using OrchardCore.Nancy.AssemblyCatalogs;
 using Microsoft.Extensions.DependencyInjection;
 using Nancy;
 using Nancy.Owin;
 
-namespace Orchard.Nancy
+namespace OrchardCore.Nancy
 {
     public static class ModularApplicationBuilderExtensions
     {

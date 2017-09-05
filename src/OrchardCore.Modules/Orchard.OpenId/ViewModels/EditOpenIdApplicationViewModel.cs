@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Orchard.OpenId.Models;
+using OrchardCore.OpenId.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Orchard.OpenId.ViewModels
+namespace OrchardCore.OpenId.ViewModels
 {
     public class EditOpenIdApplicationViewModel
     {

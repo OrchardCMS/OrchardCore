@@ -1,4 +1,4 @@
-namespace Orchard.Localization
+namespace OrchardCore.Localization
 {
     public interface ITranslationProvider
     {

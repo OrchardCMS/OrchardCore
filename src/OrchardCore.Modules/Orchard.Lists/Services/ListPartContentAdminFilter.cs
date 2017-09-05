@@ -1,18 +1,18 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Records;
-using Orchard.Contents.Services;
-using Orchard.Contents.ViewModels;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.Lists.Indexes;
-using Orchard.Lists.Models;
-using Orchard.Navigation;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.Contents.Services;
+using OrchardCore.Contents.ViewModels;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Lists.Indexes;
+using OrchardCore.Lists.Models;
+using OrchardCore.Navigation;
 using YesSql;
 using YesSql.Services;
 
-namespace Orchard.Lists.Services
+namespace OrchardCore.Lists.Services
 {
     public class ListPartContentAdminFilter : IContentAdminFilter
     {

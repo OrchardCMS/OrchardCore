@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentTypes.ViewModels;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentTypes.ViewModels;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.ContentTypes.Editors
+namespace OrchardCore.ContentTypes.Editors
 {
     public class DefaultContentTypeDisplayDriver : ContentTypeDisplayDriver
     {

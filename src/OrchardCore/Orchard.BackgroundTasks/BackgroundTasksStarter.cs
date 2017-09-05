@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using OrchardCore.Modules;
 
-namespace Orchard.BackgroundTasks
+namespace OrchardCore.BackgroundTasks
 {
     public class BackgroundTasksStarter : IModularTenantEvents
     {

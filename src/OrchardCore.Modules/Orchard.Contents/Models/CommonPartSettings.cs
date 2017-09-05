@@ -1,4 +1,4 @@
-namespace Orchard.Contents.Models
+namespace OrchardCore.Contents.Models
 {
     public class CommonPartSettings
     {

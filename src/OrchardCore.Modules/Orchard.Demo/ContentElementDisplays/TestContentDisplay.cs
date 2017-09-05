@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.Demo.Models;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.Demo.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.Demo.ContentElementDisplays
+namespace OrchardCore.Demo.ContentElementDisplays
 {
     public class TestContentElementDisplay : ContentDisplayDriver
     {

@@ -5,7 +5,7 @@ using Jint.Parser;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 
-namespace Orchard.Scripting.JavaScript
+namespace OrchardCore.Scripting.JavaScript
 {
     public class JavaScriptEngine : IScriptingEngine
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Orchard.Feeds.Models
+namespace OrchardCore.Feeds.Models
 {
     public class ContextualizeContext
     {

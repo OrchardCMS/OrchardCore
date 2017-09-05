@@ -1,6 +1,6 @@
-﻿using Orchard.DisplayManagement.ModelBinding;
+﻿using OrchardCore.DisplayManagement.ModelBinding;
 
-namespace Orchard.DisplayManagement.Handlers
+namespace OrchardCore.DisplayManagement.Handlers
 {
     public class BuildEditorContext : BuildShapeContext
     {

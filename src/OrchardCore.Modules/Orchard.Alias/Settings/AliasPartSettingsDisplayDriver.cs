@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentTypes.Editors;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Alias.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Alias.Models;
 
-namespace Orchard.Alias.Settings
+namespace OrchardCore.Alias.Settings
 {
     public class AliasPartSettingsDisplayDriver : ContentTypePartDisplayDriver
     {

@@ -1,10 +1,10 @@
-﻿using Orchard.ContentManagement;
-using Orchard.Core.XmlRpc;
-using Orchard.Core.XmlRpc.Models;
-using Orchard.MetaWeblog;
-using Orchard.Body.Model;
+﻿using OrchardCore.ContentManagement;
+using OrchardCore.XmlRpc;
+using OrchardCore.XmlRpc.Models;
+using OrchardCore.MetaWeblog;
+using OrchardCore.Body.Model;
 
-namespace Orchard.Body.RemotePublishing
+namespace OrchardCore.Body.RemotePublishing
 {
     public class BodyMetaWeblogDriver : MetaWeblogDriver
     {

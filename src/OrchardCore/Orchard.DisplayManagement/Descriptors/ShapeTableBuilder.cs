@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Features;
 
-namespace Orchard.DisplayManagement.Descriptors
+namespace OrchardCore.DisplayManagement.Descriptors
 {
     public class ShapeTableBuilder
     {

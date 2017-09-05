@@ -5,7 +5,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace Orchard.Mvc
+namespace OrchardCore.Mvc
 {
     public class TagHelperApplicationPart : ApplicationPart, IApplicationPartTypeProvider
     {

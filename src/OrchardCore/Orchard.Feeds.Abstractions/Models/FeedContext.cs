@@ -1,6 +1,6 @@
-﻿using Orchard.DisplayManagement.ModelBinding;
+﻿using OrchardCore.DisplayManagement.ModelBinding;
 
-namespace Orchard.Feeds.Models
+namespace OrchardCore.Feeds.Models
 {
     public class FeedContext
     {

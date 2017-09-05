@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Newtonsoft.Json;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Settings.ViewModels;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Settings.ViewModels;
 
-namespace Orchard.Settings.Controllers
+namespace OrchardCore.Settings.Controllers
 {
     public class AdminController : Controller, IUpdateModel
     {

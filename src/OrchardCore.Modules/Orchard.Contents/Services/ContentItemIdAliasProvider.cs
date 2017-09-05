@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace Orchard.Contents.Services
+namespace OrchardCore.Contents.Services
 {
     public class ContentItemIdAliasProvider : IContentAliasProvider
     {

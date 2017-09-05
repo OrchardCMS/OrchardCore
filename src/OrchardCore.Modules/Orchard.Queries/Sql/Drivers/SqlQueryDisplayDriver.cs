@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Queries.Sql.ViewModels;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Queries.Sql.ViewModels;
 
-namespace Orchard.Queries.Sql.Drivers
+namespace OrchardCore.Queries.Sql.Drivers
 {
     public class SqlQueryDisplayDriver : DisplayDriver<Query, SqlQuery>
     {

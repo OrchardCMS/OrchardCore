@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.CustomSettings.Services;
-using Orchard.CustomSettings.ViewModels;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.Views;
-using Orchard.Settings;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.CustomSettings.Services;
+using OrchardCore.CustomSettings.ViewModels;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Settings;
 
-namespace Orchard.Layers.Drivers
+namespace OrchardCore.Layers.Drivers
 {
     /// <summary>
     /// This driver generates an editor for site settings. The GroupId represents the type of 

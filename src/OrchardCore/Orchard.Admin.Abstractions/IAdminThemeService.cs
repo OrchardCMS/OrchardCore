@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Orchard.Environment.Extensions;
+using OrchardCore.Environment.Extensions;
 
-namespace Orchard.Admin
+namespace OrchardCore.Admin
 {
     public interface IAdminThemeService
     {

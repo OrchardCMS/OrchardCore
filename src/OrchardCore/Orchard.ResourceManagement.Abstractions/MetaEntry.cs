@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Orchard.ResourceManagement
+namespace OrchardCore.ResourceManagement
 {
     public class MetaEntry
     {

@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Lists.Models;
-using Orchard.Lists.ViewModels;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Lists.Models;
+using OrchardCore.Lists.ViewModels;
 using YesSql;
 
-namespace Orchard.Lists.Drivers
+namespace OrchardCore.Lists.Drivers
 {
     public class ContainedPartDisplayDriver : ContentDisplayDriver
     {

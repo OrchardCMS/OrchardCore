@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.Feeds.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Feeds.Models;
 
-namespace Orchard.Feeds.Controllers
+namespace OrchardCore.Feeds.Controllers
 {
     public class FeedController : Controller, IUpdateModel
     {

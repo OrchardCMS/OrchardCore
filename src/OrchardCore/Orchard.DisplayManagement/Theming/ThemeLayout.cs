@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Orchard.DisplayManagement.Theming
+namespace OrchardCore.DisplayManagement.Theming
 {
     public class ThemeLayout : Razor.RazorPage<dynamic>
     {

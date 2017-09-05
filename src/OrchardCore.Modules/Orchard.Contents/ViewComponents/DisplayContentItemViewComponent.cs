@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display;
-using Orchard.DisplayManagement.ModelBinding;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement.ModelBinding;
 
-namespace Orchard.Contents.ViewComponents
+namespace OrchardCore.Contents.ViewComponents
 {
     public class DisplayContentItemViewComponent : ViewComponent
     {

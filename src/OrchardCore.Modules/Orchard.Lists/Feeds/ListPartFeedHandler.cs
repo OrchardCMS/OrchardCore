@@ -1,8 +1,8 @@
-﻿using Orchard.ContentManagement.Handlers;
-using Orchard.Feeds.Models;
-using Orchard.Lists.Models;
+﻿using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Feeds.Models;
+using OrchardCore.Lists.Models;
 
-namespace Orchard.Lists.Drivers
+namespace OrchardCore.Lists.Drivers
 {
     public class ListPartFeedHandler : ContentPartHandler<ListPart>
     {

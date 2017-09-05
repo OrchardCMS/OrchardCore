@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
-using Orchard.Lucene.ViewModels;
+using OrchardCore.Lucene.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement;
-using Orchard.Navigation;
-using Orchard.Settings;
+using OrchardCore.ContentManagement;
+using OrchardCore.Navigation;
+using OrchardCore.Settings;
 
-namespace Orchard.Lucene.Controllers
+namespace OrchardCore.Lucene.Controllers
 {
     public class SearchController : Controller
     {

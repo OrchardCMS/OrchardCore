@@ -1,4 +1,4 @@
-﻿namespace Orchard.Environment.Shell
+﻿namespace OrchardCore.Environment.Shell
 {
     public class ShellOptions
     {

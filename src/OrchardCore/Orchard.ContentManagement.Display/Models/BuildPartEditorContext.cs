@@ -1,7 +1,7 @@
-﻿using Orchard.ContentManagement.Metadata.Models;
-using Orchard.DisplayManagement.Handlers;
+﻿using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement.Handlers;
 
-namespace Orchard.ContentManagement.Display.Models
+namespace OrchardCore.ContentManagement.Display.Models
 {
     public class BuildPartEditorContext : BuildEditorContext
     {

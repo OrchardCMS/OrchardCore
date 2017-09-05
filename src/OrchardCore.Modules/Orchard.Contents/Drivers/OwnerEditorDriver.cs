@@ -3,16 +3,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Display.Models;
-using Orchard.ContentManagement.MetaData;
-using Orchard.Contents.Models;
-using Orchard.Contents.ViewModels;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Security;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.Contents.Models;
+using OrchardCore.Contents.ViewModels;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Security;
 
-namespace Orchard.Contents.Drivers
+namespace OrchardCore.Contents.Drivers
 {
     public class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
     {

@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using Orchard.Recipes.Models;
+using OrchardCore.Recipes.Models;
 
-namespace Orchard.Recipes.Events
+namespace OrchardCore.Recipes.Events
 {
     public interface IRecipeEventHandler
     {

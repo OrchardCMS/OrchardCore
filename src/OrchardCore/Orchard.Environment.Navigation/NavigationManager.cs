@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell;
+using OrchardCore.Environment.Shell;
 
-namespace Orchard.Environment.Navigation
+namespace OrchardCore.Environment.Navigation
 {
     public class NavigationManager : INavigationManager
     {

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.ContentManagement.MetaData;
-using Orchard.Environment.Cache;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.Environment.Cache;
 
-namespace Orchard.ContentManagement.Cache
+namespace OrchardCore.ContentManagement.Cache
 {
     public class ContentDefinitionCacheContextProvider : ICacheContextProvider
     {

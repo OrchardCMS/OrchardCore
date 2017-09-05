@@ -1,7 +1,7 @@
 ﻿using System.Collections.Specialized;
-using Orchard.Lists.Models;
+using OrchardCore.Lists.Models;
 
-namespace Orchard.Lists.ViewModels
+namespace OrchardCore.Lists.ViewModels
 {
     public class ListPartSettingsViewModel
     {

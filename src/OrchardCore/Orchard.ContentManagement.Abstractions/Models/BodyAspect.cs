@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Html;
 
-namespace Orchard.ContentManagement.Models
+namespace OrchardCore.ContentManagement.Models
 {
     public class BodyAspect
     {

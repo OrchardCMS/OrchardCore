@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Orchard.Feeds.Models
+namespace OrchardCore.Feeds.Models
 {
     public class FeedResponse
     {

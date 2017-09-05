@@ -1,6 +1,6 @@
-﻿using Orchard.Feeds.Models;
+﻿using OrchardCore.Feeds.Models;
 
-namespace Orchard.Feeds
+namespace OrchardCore.Feeds
 {
     public interface IFeedBuilderProvider
     {

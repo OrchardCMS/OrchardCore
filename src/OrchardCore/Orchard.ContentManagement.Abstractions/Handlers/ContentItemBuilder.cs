@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement.Metadata.Models;
+﻿using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace Orchard.ContentManagement.Handlers
+namespace OrchardCore.ContentManagement.Handlers
 {
     /// <summary>
     /// Builds a contentitem based on its the type definition (<seealso cref="ContentTypeDefinition"/>).

@@ -3,15 +3,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Models;
-using Orchard.ContentManagement.Records;
-using Orchard.Feeds;
-using Orchard.Feeds.Models;
-using Orchard.Lists.Indexes;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Models;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.Feeds;
+using OrchardCore.Feeds.Models;
+using OrchardCore.Lists.Indexes;
 using YesSql;
 
-namespace Orchard.Lists.Feeds
+namespace OrchardCore.Lists.Feeds
 {
     public class ListFeedQuery : IFeedQueryProvider, IFeedQuery
     {

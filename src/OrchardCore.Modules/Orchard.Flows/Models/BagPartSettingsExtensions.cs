@@ -1,6 +1,6 @@
-using Orchard.ContentManagement.Metadata.Builders;
+using OrchardCore.ContentManagement.Metadata.Builders;
 
-namespace Orchard.Flows.Models
+namespace OrchardCore.Flows.Models
 {
     public static class BagPartSettingsExtensions
     {

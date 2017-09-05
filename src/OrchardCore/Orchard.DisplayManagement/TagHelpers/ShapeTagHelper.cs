@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace Orchard.DisplayManagement.TagHelpers
+namespace OrchardCore.DisplayManagement.TagHelpers
 {
     [HtmlTargetElement("shape", Attributes = nameof(Type))]
     public class ShapeTagHelper : BaseShapeTagHelper

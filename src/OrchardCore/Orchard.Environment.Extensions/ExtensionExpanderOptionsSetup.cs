@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 
-namespace Orchard.Environment.Extensions
+namespace OrchardCore.Environment.Extensions
 {
     /// <summary>
     /// Sets up default options for <see cref="ExtensionExpanderOptions"/>.

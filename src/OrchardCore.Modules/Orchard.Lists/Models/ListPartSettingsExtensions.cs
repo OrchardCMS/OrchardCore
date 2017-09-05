@@ -1,6 +1,6 @@
-using Orchard.ContentManagement.Metadata.Builders;
+using OrchardCore.ContentManagement.Metadata.Builders;
 
-namespace Orchard.Lists.Models
+namespace OrchardCore.Lists.Models
 {
     public static class ListPartSettingsExtensions
     {

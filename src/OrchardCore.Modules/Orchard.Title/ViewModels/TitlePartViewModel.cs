@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.Title.Model;
+using OrchardCore.Title.Model;
 
-namespace Orchard.Title.ViewModels
+namespace OrchardCore.Title.ViewModels
 {
     public class TitlePartViewModel
     {

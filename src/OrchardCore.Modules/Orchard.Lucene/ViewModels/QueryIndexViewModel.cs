@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Lucene.ViewModels
+namespace OrchardCore.Lucene.ViewModels
 {
     public class QueryIndexViewModel
     {

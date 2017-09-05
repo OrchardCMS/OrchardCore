@@ -1,4 +1,4 @@
-namespace Orchard.Lucene.Indexing
+namespace OrchardCore.Lucene.Indexing
 {
     public enum Types
     {

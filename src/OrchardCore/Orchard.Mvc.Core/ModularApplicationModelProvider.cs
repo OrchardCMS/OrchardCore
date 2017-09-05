@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Orchard.Environment.Extensions;
+using OrchardCore.Environment.Extensions;
 
-namespace Orchard.Mvc
+namespace OrchardCore.Mvc
 {
     /// <summary>
     /// Adds an area route constraint using the name of the module.

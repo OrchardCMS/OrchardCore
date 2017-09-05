@@ -3,20 +3,20 @@ using Fluid.Values;
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Handlers;
-using Orchard.Data.Migration;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.Indexing;
-using Orchard.Liquid.Drivers;
-using Orchard.Liquid.Filters;
-using Orchard.Liquid.Handlers;
-using Orchard.Liquid.Indexing;
-using Orchard.Liquid.Model;
-using Orchard.Liquid.Services;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Indexing;
+using OrchardCore.Liquid.Drivers;
+using OrchardCore.Liquid.Filters;
+using OrchardCore.Liquid.Handlers;
+using OrchardCore.Liquid.Indexing;
+using OrchardCore.Liquid.Model;
+using OrchardCore.Liquid.Services;
 
-namespace Orchard.Liquid
+namespace OrchardCore.Liquid
 {
     public class Startup : StartupBase
     {

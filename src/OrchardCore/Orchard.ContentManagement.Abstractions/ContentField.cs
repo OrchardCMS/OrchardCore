@@ -1,4 +1,4 @@
-﻿namespace Orchard.ContentManagement
+﻿namespace OrchardCore.ContentManagement
 {
     public class ContentField : ContentElement
     {

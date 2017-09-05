@@ -1,8 +1,8 @@
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.DisplayManagement.Handlers;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement.Handlers;
 
-namespace Orchard.ContentTypes.Editors
+namespace OrchardCore.ContentTypes.Editors
 {
     /// <summary>
     /// A concrete implementation of <see cref="ContentPartFieldDisplayDriver"/> provides a driver for all field definitions.

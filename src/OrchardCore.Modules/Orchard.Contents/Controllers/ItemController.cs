@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display;
-using Orchard.DisplayManagement.ModelBinding;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement.ModelBinding;
 using System.Threading.Tasks;
 
-namespace Orchard.Contents.Controllers
+namespace OrchardCore.Contents.Controllers
 {
     public class ItemController : Controller, IUpdateModel
     {

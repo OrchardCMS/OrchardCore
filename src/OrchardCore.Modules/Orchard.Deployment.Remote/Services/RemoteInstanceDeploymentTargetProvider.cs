@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using Orchard.Deployment.Remote.Services;
+using OrchardCore.Deployment.Remote.Services;
 
-namespace Orchard.Deployment
+namespace OrchardCore.Deployment
 {
     public class RemoteInstanceDeploymentTargetProvider : IDeploymentTargetProvider
     {

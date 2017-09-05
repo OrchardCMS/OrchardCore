@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Lucene.QueryProviders;
+using OrchardCore.Lucene.QueryProviders;
 
-namespace Orchard.Lucene
+namespace OrchardCore.Lucene
 {
     public static class ServiceCollectionExtensions
     {

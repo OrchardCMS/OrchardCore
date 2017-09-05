@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.Flows.Models;
-using Orchard.Flows.ViewModels;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Flows.Models;
+using OrchardCore.Flows.ViewModels;
 
-namespace Orchard.Flows.Controllers
+namespace OrchardCore.Flows.Controllers
 {
     public class AdminController : Controller, IUpdateModel
     {

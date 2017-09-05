@@ -1,4 +1,4 @@
-﻿namespace Orchard.Settings
+﻿namespace OrchardCore.Settings
 {
     public enum ResourceDebugMode
     {

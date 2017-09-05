@@ -1,9 +1,9 @@
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.ContentPreview.Drivers
+namespace OrchardCore.ContentPreview.Drivers
 {
     public class ContentPreviewDriver : ContentDisplayDriver
     {

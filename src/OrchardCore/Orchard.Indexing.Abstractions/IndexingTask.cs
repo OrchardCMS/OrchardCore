@@ -1,6 +1,6 @@
 using System;
 
-namespace Orchard.Indexing
+namespace OrchardCore.Indexing
 {
     public enum IndexingTaskTypes
     {

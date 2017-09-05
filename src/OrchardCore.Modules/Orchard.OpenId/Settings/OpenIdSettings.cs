@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Orchard.OpenId.Settings
+namespace OrchardCore.OpenId.Settings
 {
     public class OpenIdSettings
     {

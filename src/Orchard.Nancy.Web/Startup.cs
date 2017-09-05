@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Orchard.Nancy.Web
+namespace OrchardCore.Nancy.Web
 {
     public class Startup
     {

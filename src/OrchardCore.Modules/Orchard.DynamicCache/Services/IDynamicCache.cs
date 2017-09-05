@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using System.Threading.Tasks;
 
-namespace Orchard.DynamicCache.Services
+namespace OrchardCore.DynamicCache.Services
 {
     public interface IDynamicCache
     {

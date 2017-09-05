@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Routing;
-using Orchard.Entities;
+using OrchardCore.Entities;
 
-namespace Orchard.Settings
+namespace OrchardCore.Settings
 {
     public class SiteSettings : Entity, ISite
     {

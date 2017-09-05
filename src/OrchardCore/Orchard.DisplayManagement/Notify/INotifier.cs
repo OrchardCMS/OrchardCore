@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Localization;
 
-namespace Orchard.DisplayManagement.Notify
+namespace OrchardCore.DisplayManagement.Notify
 {
     /// <summary>
     /// Notification manager for UI notifications

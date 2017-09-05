@@ -1,9 +1,9 @@
-﻿using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Loaders;
+﻿using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Loaders;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Orchard.Environment.Extensions
+namespace OrchardCore.Environment.Extensions
 {
     public interface IExtensionManager
     {

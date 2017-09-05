@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
-using Orchard.Environment.Extensions;
+using OrchardCore.Environment.Extensions;
 
-namespace Orchard.Tests.Stubs
+namespace OrchardCore.Tests.Stubs
 {
     public class StubManifestOptions : IOptions<ManifestOptions>
     {

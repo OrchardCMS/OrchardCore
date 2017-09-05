@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Orchard.Core.XmlRpc
+namespace OrchardCore.XmlRpc
 {
     public interface IXmlRpcHandler
     {

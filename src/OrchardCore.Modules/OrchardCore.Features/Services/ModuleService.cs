@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc.Localization;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Descriptor;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Features.Models;
 using System.Collections.Generic;
 using System.Linq;

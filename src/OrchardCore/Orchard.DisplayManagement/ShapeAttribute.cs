@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orchard.DisplayManagement
+namespace OrchardCore.DisplayManagement
 {
     public class ShapeAttribute : Attribute
     {

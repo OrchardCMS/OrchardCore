@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace Orchard.Media
+namespace OrchardCore.Media
 {
     public interface IMediaFactory
     {

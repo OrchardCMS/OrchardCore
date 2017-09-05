@@ -58,7 +58,7 @@ To define what HTML to render when the editor is selected from the settings, a s
 Sample content:
 
 ```csharp
-@using Orchard.Body.ViewModels;
+@using OrchardCore.Body.ViewModels;
 @model BodyPartViewModel
 
 <fieldset class="form-group">

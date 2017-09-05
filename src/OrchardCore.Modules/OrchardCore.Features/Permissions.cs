@@ -1,4 +1,4 @@
-﻿using Orchard.Security.Permissions;
+﻿using OrchardCore.Security.Permissions;
 using System.Collections.Generic;
 
 namespace OrchardCore.Features

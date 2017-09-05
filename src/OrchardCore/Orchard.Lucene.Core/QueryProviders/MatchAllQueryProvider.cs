@@ -1,7 +1,7 @@
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 
-namespace Orchard.Lucene.QueryProviders
+namespace OrchardCore.Lucene.QueryProviders
 {
     public class MatchAllQueryProvider : ILuceneQueryProvider
     {

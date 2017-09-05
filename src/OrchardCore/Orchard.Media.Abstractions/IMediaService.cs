@@ -1,8 +1,8 @@
 using System.IO;
 using System.Threading.Tasks;
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace Orchard.Media
+namespace OrchardCore.Media
 {
     public interface IMediaService
     {

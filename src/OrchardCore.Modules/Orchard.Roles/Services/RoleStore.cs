@@ -10,13 +10,13 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Cache;
-using Orchard.Roles.Models;
-using Orchard.Security;
-using Orchard.Security.Services;
+using OrchardCore.Environment.Cache;
+using OrchardCore.Roles.Models;
+using OrchardCore.Security;
+using OrchardCore.Security.Services;
 using YesSql;
 
-namespace Orchard.Roles.Services
+namespace OrchardCore.Roles.Services
 {
     public class RoleStore : IRoleClaimStore<IRole>, IRoleProvider
     {

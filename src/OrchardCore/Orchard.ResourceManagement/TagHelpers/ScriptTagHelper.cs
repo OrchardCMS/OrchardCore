@@ -2,7 +2,7 @@ using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace Orchard.ResourceManagement.TagHelpers
+namespace OrchardCore.ResourceManagement.TagHelpers
 {
 
     [HtmlTargetElement("script", Attributes = NameAttributeName)]

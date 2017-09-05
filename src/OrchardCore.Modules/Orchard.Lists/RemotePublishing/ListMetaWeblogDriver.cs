@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
 using OrchardCore.Modules;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Display.Models;
-using Orchard.DisplayManagement.Views;
-using Orchard.Lists.Models;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Lists.Models;
 
-namespace Orchard.Lists.RemotePublishing
+namespace OrchardCore.Lists.RemotePublishing
 {
     [RequireFeatures("Orchard.RemotePublishing")]
     public class ListMetaWeblogDriver : ContentPartDisplayDriver<ListPart>

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.DisplayManagement.Shapes;
-using Orchard.Environment.Cache;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.Environment.Cache;
 
-namespace Orchard.DisplayManagement.Views
+namespace OrchardCore.DisplayManagement.Views
 {
     public class ShapeResult : IDisplayResult
     {

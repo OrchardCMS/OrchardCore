@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Orchard.Feeds.Models;
+using OrchardCore.Feeds.Models;
 
-namespace Orchard.Feeds.Rss
+namespace OrchardCore.Feeds.Rss
 {
     public class RssFeedBuilder : IFeedBuilder
     {

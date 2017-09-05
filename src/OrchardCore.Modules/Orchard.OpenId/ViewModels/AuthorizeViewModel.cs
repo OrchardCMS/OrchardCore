@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Orchard.OpenId.ViewModels
+namespace OrchardCore.OpenId.ViewModels
 {
     public class AuthorizeViewModel
     {

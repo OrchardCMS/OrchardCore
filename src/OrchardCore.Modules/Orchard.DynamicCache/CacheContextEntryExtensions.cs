@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Orchard.Environment.Cache;
+using OrchardCore.Environment.Cache;
 
-namespace Orchard.DynamicCache
+namespace OrchardCore.DynamicCache
 {
     public static class CacheContextManagerExtensions
     {

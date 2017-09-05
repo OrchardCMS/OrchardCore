@@ -6,7 +6,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
 
-namespace Orchard.DisplayManagement.Liquid
+namespace OrchardCore.DisplayManagement.Liquid
 {
     /// <summary>
     /// This custom <see cref="IFileProvider"/> implementation provides the file contents

@@ -1,6 +1,6 @@
-﻿using Orchard.ResourceManagement;
+﻿using OrchardCore.ResourceManagement;
 
-namespace Orchard.Resources
+namespace OrchardCore.Resources
 {
     public class ResourceManifest : IResourceManifestProvider
     {

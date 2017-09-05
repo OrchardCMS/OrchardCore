@@ -1,11 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Loaders;
-using Orchard.Environment.Extensions.Manifests;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Loaders;
+using OrchardCore.Environment.Extensions.Manifests;
 
-namespace Orchard.Environment.Extensions
+namespace OrchardCore.Environment.Extensions
 {
     public static class ServiceCollectionExtensions
     {

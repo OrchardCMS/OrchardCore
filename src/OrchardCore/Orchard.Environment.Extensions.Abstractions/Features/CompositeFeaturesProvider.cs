@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Environment.Extensions.Features
+namespace OrchardCore.Environment.Extensions.Features
 {
     public class CompositeFeaturesProvider : IFeaturesProvider
     {

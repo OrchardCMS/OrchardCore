@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using YesSql.Indexes;
 
-namespace Orchard.Recipes.Models
+namespace OrchardCore.Recipes.Models
 {
     public class RecipeResultIndex : MapIndex
     {

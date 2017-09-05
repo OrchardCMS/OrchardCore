@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement;
+﻿using OrchardCore.ContentManagement;
 
-namespace Orchard.Flows.Models
+namespace OrchardCore.Flows.Models
 {
     public enum FlowAlignment
     {

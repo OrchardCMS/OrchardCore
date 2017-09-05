@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.CustomSettings.Services;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.Environment.Navigation;
-using Orchard.Layers.Drivers;
-using Orchard.Security.Permissions;
-using Orchard.Settings;
+using OrchardCore.CustomSettings.Services;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Layers.Drivers;
+using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 
-namespace Orchard.CustomSettings
+namespace OrchardCore.CustomSettings
 {
     public class Startup : StartupBase
     {

@@ -1,10 +1,10 @@
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.DynamicCache.Services;
-using Orchard.Environment.Cache;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DynamicCache.Services;
+using OrchardCore.Environment.Cache;
 
-namespace Orchard.DynamicCache
+namespace OrchardCore.DynamicCache
 {
     /// <summary>
     /// These services are registered on the tenant service collection

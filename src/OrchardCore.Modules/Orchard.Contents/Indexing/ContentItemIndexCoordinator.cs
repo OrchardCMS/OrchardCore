@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.MetaData;
-using Orchard.Indexing;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.Indexing;
 
-namespace Orchard.Contents.Indexing
+namespace OrchardCore.Contents.Indexing
 {
     /// <summary>
     /// Enumerates all parts and fields of content item to extract indexed properties.

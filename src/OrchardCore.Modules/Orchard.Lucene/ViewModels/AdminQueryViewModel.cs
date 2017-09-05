@@ -4,7 +4,7 @@ using System.Linq;
 using Lucene.Net.Documents;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Orchard.Lucene.ViewModels
+namespace OrchardCore.Lucene.ViewModels
 {
     public class AdminQueryViewModel
     {

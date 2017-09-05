@@ -4,9 +4,9 @@ using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Nancy;
-using Orchard.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell.Builders.Models;
 
-namespace Orchard.Nancy.AssemblyCatalogs
+namespace OrchardCore.Nancy.AssemblyCatalogs
 {
     public class AmbientAssemblyCatalog : IAssemblyCatalog
     {

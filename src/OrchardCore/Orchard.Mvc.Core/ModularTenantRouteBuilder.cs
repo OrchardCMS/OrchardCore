@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.Mvc
+namespace OrchardCore.Mvc
 {
     public class ModularTenantRouteBuilder : IModularTenantRouteBuilder
     {

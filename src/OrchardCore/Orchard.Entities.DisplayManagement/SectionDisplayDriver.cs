@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.Entities.DisplayManagement
+namespace OrchardCore.Entities.DisplayManagement
 {
     /// <summary>
     /// A concrete implementation of this class will be able to take part in the rendering of an <see cref="IEntity"/>

@@ -11,22 +11,22 @@ using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Records;
-using Orchard.Contents;
-using Orchard.Core.XmlRpc;
-using Orchard.Core.XmlRpc.Models;
-using Orchard.Lists.Indexes;
-using Orchard.Lists.Models;
-using Orchard.Media;
-using Orchard.MetaWeblog;
-using Orchard.Security.Permissions;
-using Orchard.Users.Services;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.Contents;
+using OrchardCore.XmlRpc;
+using OrchardCore.XmlRpc.Models;
+using OrchardCore.Lists.Indexes;
+using OrchardCore.Lists.Models;
+using OrchardCore.Media;
+using OrchardCore.MetaWeblog;
+using OrchardCore.Security.Permissions;
+using OrchardCore.Users.Services;
 using YesSql;
 
-namespace Orchard.Lists.RemotePublishing
+namespace OrchardCore.Lists.RemotePublishing
 {
     [RequireFeatures("Orchard.RemotePublishing")]
     public class MetaWeblogHandler : IXmlRpcHandler

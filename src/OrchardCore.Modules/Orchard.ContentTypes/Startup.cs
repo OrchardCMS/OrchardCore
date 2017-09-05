@@ -3,17 +3,17 @@ using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentTypes.Deployment;
-using Orchard.ContentTypes.Editors;
-using Orchard.ContentTypes.RecipeSteps;
-using Orchard.ContentTypes.Services;
-using Orchard.Deployment;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.Environment.Navigation;
-using Orchard.Recipes;
-using Orchard.Security.Permissions;
+using OrchardCore.ContentTypes.Deployment;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.ContentTypes.RecipeSteps;
+using OrchardCore.ContentTypes.Services;
+using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Recipes;
+using OrchardCore.Security.Permissions;
 
-namespace Orchard.ContentTypes
+namespace OrchardCore.ContentTypes
 {
     public class Startup : StartupBase
     {

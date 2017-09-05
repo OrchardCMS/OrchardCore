@@ -1,4 +1,4 @@
-﻿namespace Orchard.Layers.Models
+﻿namespace OrchardCore.Layers.Models
 {
     public class Layer
     {

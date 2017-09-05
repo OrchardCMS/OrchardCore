@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Orchard.Users.Models;
+using OrchardCore.Users.Models;
 
-namespace Orchard.Users.Services
+namespace OrchardCore.Users.Services
 {
     public class UserService : IUserService
     {

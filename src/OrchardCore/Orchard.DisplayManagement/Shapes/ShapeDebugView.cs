@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Orchard.DisplayManagement.Shapes
+namespace OrchardCore.DisplayManagement.Shapes
 {
     public class ShapeDebugView
     {

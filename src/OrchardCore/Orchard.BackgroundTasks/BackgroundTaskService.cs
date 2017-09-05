@@ -5,11 +5,11 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Models;
-using Orchard.Hosting.ShellBuilders;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Hosting.ShellBuilders;
 
-namespace Orchard.BackgroundTasks
+namespace OrchardCore.BackgroundTasks
 {
     public class BackgroundTaskService : IBackgroundTaskService, IDisposable
     {

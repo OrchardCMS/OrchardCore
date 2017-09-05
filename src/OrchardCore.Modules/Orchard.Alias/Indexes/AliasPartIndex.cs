@@ -1,8 +1,8 @@
-﻿using Orchard.ContentManagement;
-using Orchard.Alias.Models;
+﻿using OrchardCore.ContentManagement;
+using OrchardCore.Alias.Models;
 using YesSql.Indexes;
 
-namespace Orchard.Alias.Indexes
+namespace OrchardCore.Alias.Indexes
 {
     public class AliasPartIndex : MapIndex
     {

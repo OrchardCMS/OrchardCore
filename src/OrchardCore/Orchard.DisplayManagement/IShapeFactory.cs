@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Castle.DynamicProxy;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Shapes;
 
-namespace Orchard.DisplayManagement
+namespace OrchardCore.DisplayManagement
 {
     /// <summary>
     /// Service that creates new instances of dynamic shape objects

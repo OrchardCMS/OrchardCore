@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Orchard.Deployment;
+using OrchardCore.Deployment;
 
-namespace Orchard.Deployment.ViewModels
+namespace OrchardCore.Deployment.ViewModels
 {
     public class DeploymentPlanIndexViewModel
     {

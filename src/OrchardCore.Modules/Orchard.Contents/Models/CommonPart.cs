@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement;
+﻿using OrchardCore.ContentManagement;
 
-namespace Orchard.Contents.Models
+namespace OrchardCore.Contents.Models
 {
     /// <summary>
     /// When attached to a content type, provides a way to edit the common

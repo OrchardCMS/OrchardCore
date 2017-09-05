@@ -1,8 +1,8 @@
-﻿using Orchard.ContentManagement;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Shapes;
+﻿using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
 
-namespace Orchard.Demo.Models
+namespace OrchardCore.Demo.Models
 {
     public class TestContentPartAShape : Shape
     {

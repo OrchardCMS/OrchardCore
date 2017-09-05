@@ -1,15 +1,15 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Orchard.ContentManagement.Cache;
-using Orchard.ContentManagement.Drivers.Coordinators;
-using Orchard.ContentManagement.Handlers;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Records;
-using Orchard.Data.Migration;
-using Orchard.Environment.Cache;
+using OrchardCore.ContentManagement.Cache;
+using OrchardCore.ContentManagement.Drivers.Coordinators;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Cache;
 using YesSql.Indexes;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     public static class ServiceCollectionExtensions
     {

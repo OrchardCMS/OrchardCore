@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 
-namespace Orchard.Deployment.Steps
+namespace OrchardCore.Deployment.Steps
 {
     public class CustomFileDeploymentSource : IDeploymentSource
     {

@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace Orchard.ContentManagement.Metadata.Builders
+namespace OrchardCore.ContentManagement.Metadata.Builders
 {
     public class ContentTypeDefinitionBuilder
     {

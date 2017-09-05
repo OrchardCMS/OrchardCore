@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenIddict;
-using Orchard.Environment.Shell;
-using Orchard.OpenId.Models;
-using Orchard.OpenId.Services;
-using Orchard.OpenId.Settings;
+using OrchardCore.Environment.Shell;
+using OrchardCore.OpenId.Models;
+using OrchardCore.OpenId.Services;
+using OrchardCore.OpenId.Settings;
 
-namespace Orchard.OpenId
+namespace OrchardCore.OpenId
 {
     public class OpenIdConfiguration : IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<OpenIddictOptions>,

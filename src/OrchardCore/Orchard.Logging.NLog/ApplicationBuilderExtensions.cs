@@ -7,7 +7,7 @@ using NLog.Extensions.Logging;
 using NLog.LayoutRenderers;
 using NLog.Web;
 
-namespace Orchard.Logging
+namespace OrchardCore.Logging
 {
     public static class ApplicationBuilderExtensions
     {

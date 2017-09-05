@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     public class IdGenerator : IIdGenerator
     {

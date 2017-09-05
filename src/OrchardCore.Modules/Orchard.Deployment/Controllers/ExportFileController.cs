@@ -3,13 +3,13 @@ using System.IO.Compression;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Orchard.Deployment.Core.Mvc;
-using Orchard.Deployment.Core.Services;
-using Orchard.Deployment.Services;
-using Orchard.Mvc.Utilities;
+using OrchardCore.Deployment.Core.Mvc;
+using OrchardCore.Deployment.Core.Services;
+using OrchardCore.Deployment.Services;
+using OrchardCore.Mvc.Utilities;
 using YesSql;
 
-namespace Orchard.Deployment.Controllers
+namespace OrchardCore.Deployment.Controllers
 {
     public class ExportFileController : Controller
     {

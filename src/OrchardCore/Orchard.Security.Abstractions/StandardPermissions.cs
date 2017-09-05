@@ -1,6 +1,6 @@
-﻿using Orchard.Security.Permissions;
+﻿using OrchardCore.Security.Permissions;
 
-namespace Orchard.Security
+namespace OrchardCore.Security
 {
     public class StandardPermissions
     {

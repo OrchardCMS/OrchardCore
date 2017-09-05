@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     public interface IContent
     {

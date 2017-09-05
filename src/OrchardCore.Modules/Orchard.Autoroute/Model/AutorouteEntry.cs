@@ -1,4 +1,4 @@
-﻿namespace Orchard.Autoroute.Model
+﻿namespace OrchardCore.Autoroute.Model
 {
     public struct AutorouteEntry
     {

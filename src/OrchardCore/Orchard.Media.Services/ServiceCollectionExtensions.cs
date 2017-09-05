@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.Media
+namespace OrchardCore.Media
 {
     public static class ServiceCollectionExtensions
     {

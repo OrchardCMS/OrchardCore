@@ -1,14 +1,14 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentTypes.Editors;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Indexing;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Indexing;
 
-namespace Orchard.Lucene.Settings
+namespace OrchardCore.Lucene.Settings
 {
     public class ContentPartFieldIndexSettingsDisplayDriver : ContentPartFieldDisplayDriver
     {

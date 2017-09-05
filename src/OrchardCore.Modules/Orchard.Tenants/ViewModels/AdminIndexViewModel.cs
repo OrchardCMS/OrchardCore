@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.Environment.Shell;
+using OrchardCore.Environment.Shell;
 
-namespace Orchard.Tenants.ViewModels
+namespace OrchardCore.Tenants.ViewModels
 {
     public class AdminIndexViewModel
     {

@@ -1,4 +1,4 @@
-namespace Orchard.Lists.ViewModels
+namespace OrchardCore.Lists.ViewModels
 {
     public class EditContainedPartViewModel
     {

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentTypes.ViewModels;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentTypes.ViewModels;
 
-namespace Orchard.ContentTypes.ViewComponents
+namespace OrchardCore.ContentTypes.ViewComponents
 {
     public class SelectContentTypesViewComponent : ViewComponent
     {

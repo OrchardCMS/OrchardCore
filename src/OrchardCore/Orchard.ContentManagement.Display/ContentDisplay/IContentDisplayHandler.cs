@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Orchard.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Handlers;
 
-namespace Orchard.ContentManagement.Display.ContentDisplay
+namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     /// <summary>
     /// An implementation of <see cref="IContentDisplayHandler"/> is able to take part in the rendering of

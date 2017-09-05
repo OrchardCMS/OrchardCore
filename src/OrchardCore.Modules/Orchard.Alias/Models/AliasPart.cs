@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement;
+﻿using OrchardCore.ContentManagement;
 
-namespace Orchard.Alias.Models
+namespace OrchardCore.Alias.Models
 {
     public class AliasPart : ContentPart
     {

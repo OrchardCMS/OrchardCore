@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Shell.Descriptor;
-using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.Environment.Shell.Descriptor.Settings;
+using OrchardCore.Environment.Shell.Descriptor;
+using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Descriptor.Settings;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     public static class ServiceCollectionExtensions
     {

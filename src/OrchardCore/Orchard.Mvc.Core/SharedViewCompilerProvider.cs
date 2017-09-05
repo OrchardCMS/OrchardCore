@@ -14,7 +14,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Orchard.Mvc
+namespace OrchardCore.Mvc
 {
     public class SharedViewCompilerProvider : IViewCompilerProvider
     {

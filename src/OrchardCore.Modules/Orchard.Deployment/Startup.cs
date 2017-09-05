@@ -3,17 +3,17 @@ using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Data.Migration;
-using Orchard.Deployment.Core;
-using Orchard.Deployment.Indexes;
-using Orchard.Deployment.Steps;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.Environment.Navigation;
-using Orchard.Security.Permissions;
+using OrchardCore.Data.Migration;
+using OrchardCore.Deployment.Core;
+using OrchardCore.Deployment.Indexes;
+using OrchardCore.Deployment.Steps;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Security.Permissions;
 using YesSql.Indexes;
 
-namespace Orchard.Deployment
+namespace OrchardCore.Deployment
 {
     public class Startup : StartupBase
     {

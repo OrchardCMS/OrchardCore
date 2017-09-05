@@ -15,7 +15,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Orchard.Media.Processing
+namespace OrchardCore.Media.Processing
 {
     /// <summary>
     /// Returns images stored in the local physical file system.

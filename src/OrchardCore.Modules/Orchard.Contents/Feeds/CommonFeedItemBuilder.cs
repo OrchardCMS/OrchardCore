@@ -4,12 +4,12 @@ using System.Xml.Linq;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Models;
-using Orchard.Feeds;
-using Orchard.Feeds.Models;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Models;
+using OrchardCore.Feeds;
+using OrchardCore.Feeds.Models;
 
-namespace Orchard.Contents.Feeds.Builders
+namespace OrchardCore.Contents.Feeds.Builders
 {
     public class CommonFeedItemBuilder : IFeedItemBuilder
     {

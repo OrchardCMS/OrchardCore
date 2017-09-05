@@ -1,6 +1,6 @@
-using Orchard.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Descriptors;
 
-namespace Orchard.DisplayManagement
+namespace OrchardCore.DisplayManagement
 {
     /// <summary>
     /// An implementation of this interface is called whenever a shape template

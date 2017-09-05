@@ -5,7 +5,7 @@ using System.IO.Compression;
 using System.Net;
 using System.Text;
 
-namespace Orchard.Scripting
+namespace OrchardCore.Scripting
 {
     public class CommonGeneratorMethods : IGlobalMethodProvider
     {

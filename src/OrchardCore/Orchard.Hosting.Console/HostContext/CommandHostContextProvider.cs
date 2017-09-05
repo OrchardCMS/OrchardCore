@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Orchard.Environment.Commands;
-using Orchard.Environment.Commands.Parameters;
-using Orchard.Environment.Shell;
+using OrchardCore.Environment.Commands;
+using OrchardCore.Environment.Commands.Parameters;
+using OrchardCore.Environment.Shell;
 
-namespace Orchard.Hosting.HostContext
+namespace OrchardCore.Hosting.HostContext
 {
     public class CommandHostContextProvider : ICommandHostContextProvider
     {

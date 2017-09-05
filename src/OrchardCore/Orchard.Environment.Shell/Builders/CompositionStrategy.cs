@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Shell.Builders.Models;
-using Orchard.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 
-namespace Orchard.Environment.Shell.Builders
+namespace OrchardCore.Environment.Shell.Builders
 {
     public class CompositionStrategy : ICompositionStrategy
     {

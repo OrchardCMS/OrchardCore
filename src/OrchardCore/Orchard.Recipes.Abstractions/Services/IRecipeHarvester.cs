@@ -1,10 +1,10 @@
-using Orchard.Recipes.Models;
+using OrchardCore.Recipes.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Orchard.Recipes.Services
+namespace OrchardCore.Recipes.Services
 {
     public interface IRecipeHarvester
     {

@@ -1,10 +1,10 @@
-//using Orchard.ContentManagement;
-//using Orchard.ContentManagement.Aspects;
-//using Orchard.Contents.Settings;
-//using Orchard.Security;
-//using Orchard.Security.Permissions;
+//using OrchardCore.ContentManagement;
+//using OrchardCore.ContentManagement.Aspects;
+//using OrchardCore.Contents.Settings;
+//using OrchardCore.Security;
+//using OrchardCore.Security.Permissions;
 
-//namespace Orchard.Contents.Security {
+//namespace OrchardCore.Contents.Security {
 //    public class AuthorizationEventHandler : IAuthorizationServiceEventHandler {
 //        public void Checking(CheckAccessContext context) { }
 //        public void Complete(CheckAccessContext context) { }

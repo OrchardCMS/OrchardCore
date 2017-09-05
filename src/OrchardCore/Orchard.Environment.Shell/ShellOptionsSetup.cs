@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     /// <summary>
     /// Sets up default options for <see cref="ShellOptions"/>.

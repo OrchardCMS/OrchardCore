@@ -2,15 +2,15 @@ using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentTypes.Editors;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Lists.Models;
-using Orchard.Lists.ViewModels;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Lists.Models;
+using OrchardCore.Lists.ViewModels;
 
-namespace Orchard.Lists.Settings
+namespace OrchardCore.Lists.Settings
 {
     public class ListPartSettingsDisplayDriver : ContentTypePartDisplayDriver
     {

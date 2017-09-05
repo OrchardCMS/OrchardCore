@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Razor;
 
-namespace Orchard.DisplayManagement.Theming
+namespace OrchardCore.DisplayManagement.Theming
 {
     public class ThemeViewStart : RazorPage<dynamic>
     {

@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Orchard.Environment.Extensions;
+using OrchardCore.Environment.Extensions;
 
-namespace Orchard.Mvc.LocationExpander
+namespace OrchardCore.Mvc.LocationExpander
 {
     public class ModularViewLocationExpanderProvider : IViewLocationExpanderProvider
     {

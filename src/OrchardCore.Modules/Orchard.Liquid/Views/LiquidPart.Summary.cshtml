@@ -1,5 +1,5 @@
-@using Orchard.Mvc.Utilities;
-@model Orchard.Liquid.ViewModels.LiquidPartViewModel
+@using OrchardCore.Mvc.Utilities;
+@model OrchardCore.Liquid.ViewModels.LiquidPartViewModel
 
 @Html.Raw(Model.Html.RemoveTags(true).Substring(0, 200))
 

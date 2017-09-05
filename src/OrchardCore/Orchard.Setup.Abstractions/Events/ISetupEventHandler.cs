@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Orchard.Setup.Events
+namespace OrchardCore.Setup.Events
 {
     /// <summary>
     /// Called when a tenant is set up.

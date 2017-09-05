@@ -3,12 +3,12 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.DisplayManagement.Liquid;
-using Orchard.Liquid.ViewModels;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Liquid;
+using OrchardCore.Liquid.ViewModels;
 
-namespace Orchard.Liquid.Services
+namespace OrchardCore.Liquid.Services
 {
     public class LiquidShapes : IShapeTableProvider
     {

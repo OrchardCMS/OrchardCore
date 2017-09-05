@@ -14,11 +14,11 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
 
-namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
+namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
     public class ShapeAttributeBindingStrategy : IShapeTableHarvester
     {

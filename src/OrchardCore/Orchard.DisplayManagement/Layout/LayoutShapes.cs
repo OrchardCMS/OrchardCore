@@ -1,6 +1,6 @@
-﻿using Orchard.DisplayManagement.Descriptors;
+﻿using OrchardCore.DisplayManagement.Descriptors;
 
-namespace Orchard.DisplayManagement.Zones
+namespace OrchardCore.DisplayManagement.Zones
 {
     public class LayoutShapes : IShapeTableProvider
     {

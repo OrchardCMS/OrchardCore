@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using YamlDotNet.RepresentationModel;
 
-namespace Orchard.Parser.Yaml
+namespace OrchardCore.Yaml.Parser
 {
     internal class YamlConfigurationFileParser
     {

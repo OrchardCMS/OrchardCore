@@ -1,8 +1,8 @@
 using System;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.DisplayManagement.Handlers;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement.Handlers;
 
-namespace Orchard.ContentTypes.Editors
+namespace OrchardCore.ContentTypes.Editors
 {
     public abstract class ContentTypeDisplayDriver : DisplayDriver<ContentTypeDefinition, BuildDisplayContext, BuildEditorContext, UpdateTypeEditorContext>, IContentTypeDefinitionDisplayDriver
     {

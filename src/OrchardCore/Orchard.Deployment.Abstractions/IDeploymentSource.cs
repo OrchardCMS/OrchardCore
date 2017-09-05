@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Orchard.Deployment
+namespace OrchardCore.Deployment
 {
     /// <summary>
     /// Interprets steps from a deployment plan to build the result package.

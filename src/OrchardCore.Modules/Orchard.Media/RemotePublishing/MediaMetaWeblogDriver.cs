@@ -1,10 +1,10 @@
-using Orchard.ContentManagement;
-using Orchard.Core.XmlRpc;
-using Orchard.Core.XmlRpc.Models;
-using Orchard.MetaWeblog;
+using OrchardCore.ContentManagement;
+using OrchardCore.XmlRpc;
+using OrchardCore.XmlRpc.Models;
+using OrchardCore.MetaWeblog;
 using System;
 
-namespace Orchard.Media.RemotePublishing
+namespace OrchardCore.Media.RemotePublishing
 {
     public class MediaMetaWeblogDriver : MetaWeblogDriver
     {

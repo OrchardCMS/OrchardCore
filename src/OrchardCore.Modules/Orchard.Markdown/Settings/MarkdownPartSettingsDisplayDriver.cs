@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using Orchard.Markdown.Model;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentTypes.Editors;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.Markdown.Model;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.Markdown.Settings
+namespace OrchardCore.Markdown.Settings
 {
     public class MarkdownPartSettingsDisplayDriver : ContentTypePartDisplayDriver
     {

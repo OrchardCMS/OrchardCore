@@ -1,6 +1,6 @@
-﻿//using Orchard.ContentManagement;
+﻿//using OrchardCore.ContentManagement;
 
-//namespace Orchard.Contents.ViewModels
+//namespace OrchardCore.Contents.ViewModels
 //{
 //    public class PublishContentViewModel
 //    {

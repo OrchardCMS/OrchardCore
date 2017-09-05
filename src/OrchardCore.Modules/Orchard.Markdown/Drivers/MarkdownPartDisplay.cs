@@ -2,16 +2,16 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.MetaData;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Liquid;
-using Orchard.Markdown.Model;
-using Orchard.Markdown.Settings;
-using Orchard.Markdown.ViewModels;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Liquid;
+using OrchardCore.Markdown.Model;
+using OrchardCore.Markdown.Settings;
+using OrchardCore.Markdown.ViewModels;
 
-namespace Orchard.Markdown.Drivers
+namespace OrchardCore.Markdown.Drivers
 {
     public class MarkdownPartDisplay : ContentPartDisplayDriver<MarkdownPart>
     {

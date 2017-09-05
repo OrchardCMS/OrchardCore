@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Orchard.Mvc.ModelBinding
+namespace OrchardCore.Mvc.ModelBinding
 {
     public static class ModelStateDictionaryExtensions
     {

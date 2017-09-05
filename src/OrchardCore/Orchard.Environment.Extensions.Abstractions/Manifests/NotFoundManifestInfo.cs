@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 
-namespace Orchard.Environment.Extensions.Manifests
+namespace OrchardCore.Environment.Extensions.Manifests
 {
     public class NotFoundManifestInfo : IManifestInfo
     {

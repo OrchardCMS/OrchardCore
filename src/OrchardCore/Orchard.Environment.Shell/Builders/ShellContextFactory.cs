@@ -1,13 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell.Descriptor;
-using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.Hosting.ShellBuilders;
+using OrchardCore.Environment.Shell.Descriptor;
+using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Hosting.ShellBuilders;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Orchard.Environment.Shell.Builders
+namespace OrchardCore.Environment.Shell.Builders
 {
     public class ShellContextFactory : IShellContextFactory
     {

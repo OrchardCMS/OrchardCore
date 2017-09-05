@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Orchard.Security;
-using Orchard.Users.Models;
+using OrchardCore.Security;
+using OrchardCore.Users.Models;
 
-namespace Orchard.Users.ViewModels
+namespace OrchardCore.Users.ViewModels
 {
     public class UsersIndexViewModel
     {

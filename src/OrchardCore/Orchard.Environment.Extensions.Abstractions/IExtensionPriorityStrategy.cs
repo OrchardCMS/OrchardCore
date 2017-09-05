@@ -1,6 +1,6 @@
-﻿using Orchard.Environment.Extensions.Features;
+﻿using OrchardCore.Environment.Extensions.Features;
 
-namespace Orchard.Environment.Extensions
+namespace OrchardCore.Environment.Extensions
 {
     public interface IExtensionPriorityStrategy
     {

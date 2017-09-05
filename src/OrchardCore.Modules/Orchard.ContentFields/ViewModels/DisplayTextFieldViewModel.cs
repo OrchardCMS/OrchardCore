@@ -1,8 +1,8 @@
-﻿using Orchard.ContentFields.Fields;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Metadata.Models;
+﻿using OrchardCore.ContentFields.Fields;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace Orchard.ContentFields.ViewModels
+namespace OrchardCore.ContentFields.ViewModels
 {
     public class DisplayTextFieldViewModel
     {

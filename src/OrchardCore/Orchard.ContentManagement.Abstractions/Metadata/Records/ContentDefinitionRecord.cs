@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Orchard.ContentManagement.Metadata.Records
+namespace OrchardCore.ContentManagement.Metadata.Records
 {
     public class ContentDefinitionRecord
     {

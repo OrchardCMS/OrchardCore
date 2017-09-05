@@ -1,8 +1,8 @@
 using System.Linq;
-using Orchard.OpenId.Models;
+using OrchardCore.OpenId.Models;
 using YesSql.Indexes;
 
-namespace Orchard.OpenId.Indexes
+namespace OrchardCore.OpenId.Indexes
 {
     public class OpenIdApplicationByRoleNameIndex : ReduceIndex
     {

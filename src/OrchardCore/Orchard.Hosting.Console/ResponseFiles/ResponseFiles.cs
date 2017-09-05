@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.Hosting.ResponseFiles
+namespace OrchardCore.Hosting.ResponseFiles
 {
     public class ResponseFiles
     {

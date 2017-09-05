@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     public interface IContentAliasProvider
     {

@@ -3,7 +3,7 @@ using System.IO;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 
-namespace Orchard.Tests.Parser
+namespace OrchardCore.Tests.Parser
 {
     public static class TestStreamHelpers
     {

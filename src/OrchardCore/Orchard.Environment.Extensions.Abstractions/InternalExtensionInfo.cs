@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.FileProviders;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Manifests;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Manifests;
 
-namespace Orchard.Environment.Extensions
+namespace OrchardCore.Environment.Extensions
 {
     public class InternalExtensionInfo : IExtensionInfo
     {

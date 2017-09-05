@@ -12,10 +12,10 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
-using Orchard.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
+using OrchardCore.DisplayManagement.Implementation;
 
-namespace Orchard.DisplayManagement.Razor
+namespace OrchardCore.DisplayManagement.Razor
 {
     public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
     {

@@ -1,7 +1,7 @@
-using Orchard.Localization;
+using OrchardCore.Localization;
 using Xunit;
 
-namespace Orchard.Tests.Localization
+namespace OrchardCore.Tests.Localization
 {
     public class CultureDictionaryTests
     {

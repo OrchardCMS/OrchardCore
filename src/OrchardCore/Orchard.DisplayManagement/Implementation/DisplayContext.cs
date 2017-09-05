@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Orchard.DisplayManagement.Implementation
+namespace OrchardCore.DisplayManagement.Implementation
 {
     public class DisplayContext
     {

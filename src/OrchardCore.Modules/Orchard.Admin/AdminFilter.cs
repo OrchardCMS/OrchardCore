@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Orchard.Admin
+namespace OrchardCore.Admin
 {
     /// <summary>
     /// Intercepts any request to check whether it applies to the admin site.

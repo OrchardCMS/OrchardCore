@@ -1,10 +1,10 @@
-﻿using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.ContentManagement.MetaData;
-using Orchard.Data.Migration;
-using Orchard.Alias.Indexes;
-using Orchard.Alias.Models;
+﻿using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.Data.Migration;
+using OrchardCore.Alias.Indexes;
+using OrchardCore.Alias.Models;
 
-namespace Orchard.Alias
+namespace OrchardCore.Alias
 {
     public class Migrations : DataMigration
     {

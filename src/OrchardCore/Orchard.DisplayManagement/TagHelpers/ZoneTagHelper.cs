@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Orchard.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Layout;
 
-namespace Orchard.DisplayManagement.TagHelpers
+namespace OrchardCore.DisplayManagement.TagHelpers
 {
     [HtmlTargetElement("zone", Attributes = NameAttribute)]
     public class ZoneTagHelper : TagHelper

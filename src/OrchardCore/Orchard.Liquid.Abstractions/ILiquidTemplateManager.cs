@@ -3,7 +3,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 
-namespace Orchard.Liquid
+namespace OrchardCore.Liquid
 {
     public interface ILiquidTemplateManager
     {

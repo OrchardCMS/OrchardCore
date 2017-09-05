@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.Views;
-using Orchard.Layers.Models;
-using Orchard.Layers.Services;
-using Orchard.Layers.ViewModels;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Layers.Models;
+using OrchardCore.Layers.Services;
+using OrchardCore.Layers.ViewModels;
 
-namespace Orchard.Layers.Drivers
+namespace OrchardCore.Layers.Drivers
 {
 	public class LayerMetadataWelder : ContentDisplayDriver
     {

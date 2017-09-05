@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Orchard.DisplayManagement.Theming;
+using OrchardCore.DisplayManagement.Theming;
 using System;
 using System.Threading.Tasks;
 
-namespace Orchard.Admin
+namespace OrchardCore.Admin
 {
     /// <summary>
     /// Provides the theme defined in the site configuration for the current scope (request).

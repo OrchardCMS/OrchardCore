@@ -1,7 +1,7 @@
-﻿using Orchard.ContentManagement.Handlers;
-using Orchard.Menu.Models;
+﻿using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Menu.Models;
 
-namespace Orchard.Menu.Handlers
+namespace OrchardCore.Menu.Handlers
 {
     public class MenuContentHandler : ContentHandlerBase
     {

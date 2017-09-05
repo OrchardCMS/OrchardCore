@@ -1,8 +1,8 @@
-﻿using Orchard.OpenId.Models;
+﻿using OrchardCore.OpenId.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Orchard.OpenId.ViewModels
+namespace OrchardCore.OpenId.ViewModels
 {
     public class CreateOpenIdApplicationViewModel
     {

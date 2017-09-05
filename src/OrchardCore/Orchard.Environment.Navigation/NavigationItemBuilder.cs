@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using Orchard.Security.Permissions;
+using OrchardCore.Security.Permissions;
 
-namespace Orchard.Environment.Navigation
+namespace OrchardCore.Environment.Navigation
 {
     public class NavigationItemBuilder : NavigationBuilder
     {

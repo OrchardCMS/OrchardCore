@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using Orchard.Security.Permissions;
+using OrchardCore.Security.Permissions;
 using System.Collections.Generic;
 
-namespace Orchard.Environment.Navigation
+namespace OrchardCore.Environment.Navigation
 {
     /// <summary>
     /// Represents a menu item descrbibed by an <see cref="INavigationProvider"/> implementation.

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Orchard.DisplayManagement.Handlers
+namespace OrchardCore.DisplayManagement.Handlers
 {
     public interface IDisplayHandler<TModel>
     {

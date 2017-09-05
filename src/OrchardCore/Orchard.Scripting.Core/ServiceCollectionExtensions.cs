@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.Scripting
+namespace OrchardCore.Scripting
 {
     public static class ServiceCollectionExtensions
     {

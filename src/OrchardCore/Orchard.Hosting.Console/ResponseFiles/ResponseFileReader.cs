@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Orchard.Environment.Commands.Parameters;
+using OrchardCore.Environment.Commands.Parameters;
 
-namespace Orchard.Hosting.ResponseFiles
+namespace OrchardCore.Hosting.ResponseFiles
 {
     public class ResponseLine
     {

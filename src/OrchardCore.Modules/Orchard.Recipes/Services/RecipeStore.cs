@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using Orchard.Recipes.Models;
+using OrchardCore.Recipes.Models;
 using YesSql;
 
-namespace Orchard.Recipes.Services
+namespace OrchardCore.Recipes.Services
 {
     /// <summary>
     /// And implementation of <see cref="IRecipeStore"/> that stores the recipe<see cref="RecipeResult"/>

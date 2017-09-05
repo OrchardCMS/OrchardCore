@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orchard.Scripting
+namespace OrchardCore.Scripting
 {
     public class GlobalMethod
     {

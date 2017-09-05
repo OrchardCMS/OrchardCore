@@ -2,9 +2,9 @@ using System;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using Orchard.Templates.Models;
+using OrchardCore.Templates.Models;
 
-namespace Orchard.Templates.Services
+namespace OrchardCore.Templates.Services
 {
     /// <summary>
     /// And instance of this class provides custom templates to use while previewing a page.

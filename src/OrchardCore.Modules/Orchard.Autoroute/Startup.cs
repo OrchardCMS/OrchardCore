@@ -4,25 +4,25 @@ using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Autoroute.Drivers;
-using Orchard.Autoroute.Handlers;
-using Orchard.Autoroute.Indexing;
-using Orchard.Autoroute.Model;
-using Orchard.Autoroute.Routing;
-using Orchard.Autoroute.Services;
-using Orchard.Autoroute.Settings;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Handlers;
-using Orchard.ContentManagement.Records;
-using Orchard.ContentTypes.Editors;
-using Orchard.Data.Migration;
-using Orchard.Indexing;
-using Orchard.Security.Permissions;
+using OrchardCore.Autoroute.Drivers;
+using OrchardCore.Autoroute.Handlers;
+using OrchardCore.Autoroute.Indexing;
+using OrchardCore.Autoroute.Model;
+using OrchardCore.Autoroute.Routing;
+using OrchardCore.Autoroute.Services;
+using OrchardCore.Autoroute.Settings;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data.Migration;
+using OrchardCore.Indexing;
+using OrchardCore.Security.Permissions;
 using YesSql.Indexes;
 using YesSql;
 
-namespace Orchard.Autoroute
+namespace OrchardCore.Autoroute
 {
     public class Startup : StartupBase
     {

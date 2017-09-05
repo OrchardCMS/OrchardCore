@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Orchard.Liquid
+namespace OrchardCore.Liquid
 {
     public class LiquidOptions
     {

@@ -3,15 +3,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.MetaData;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Menu.Models;
-using Orchard.Menu.ViewModels;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Menu.Models;
+using OrchardCore.Menu.ViewModels;
 
-namespace Orchard.Lists.Drivers
+namespace OrchardCore.Lists.Drivers
 {
     public class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
     {

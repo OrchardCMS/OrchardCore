@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Orchard.Markdown.Settings
+namespace OrchardCore.Markdown.Settings
 {
     public class MarkdownPartSettingsViewModel
     {

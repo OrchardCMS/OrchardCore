@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 
-namespace Orchard.Environment.Shell.Descriptor.Settings
+namespace OrchardCore.Environment.Shell.Descriptor.Settings
 {
     /// <summary>
     /// Implements <see cref="IShellDescriptorManager"/> by returning the features from a configuration file.

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.Alias.Models;
-using Orchard.Alias.Settings;
+using OrchardCore.Alias.Models;
+using OrchardCore.Alias.Settings;
 
-namespace Orchard.Alias.ViewModels
+namespace OrchardCore.Alias.ViewModels
 {
     public class AliasPartViewModel
     {

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Orchard.Environment.Cache
+namespace OrchardCore.Environment.Cache
 {
     public class CacheContextManager : ICacheContextManager
     {

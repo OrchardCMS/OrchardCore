@@ -1,7 +1,7 @@
-using Orchard.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using System.Threading.Tasks;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     /// <summary>
     /// Represent and event handler for shell descriptor.

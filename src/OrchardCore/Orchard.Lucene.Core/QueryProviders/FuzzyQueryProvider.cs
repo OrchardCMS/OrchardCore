@@ -5,7 +5,7 @@ using Lucene.Net.Search;
 using Lucene.Net.Util.Automaton;
 using Newtonsoft.Json.Linq;
 
-namespace Orchard.Lucene.QueryProviders
+namespace OrchardCore.Lucene.QueryProviders
 {
     public class FuzzyQueryProvider : ILuceneQueryProvider
     {

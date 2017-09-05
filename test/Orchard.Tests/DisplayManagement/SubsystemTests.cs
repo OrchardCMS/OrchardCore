@@ -4,15 +4,15 @@
 //using Microsoft.Extensions.Caching.Memory;
 //using Microsoft.Extensions.DependencyInjection;
 //using Microsoft.Extensions.Logging;
-//using Orchard.DisplayManagement;
-//using Orchard.DisplayManagement.Descriptors;
-//using Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy;
-//using Orchard.DisplayManagement.Implementation;
-//using Orchard.DisplayManagement.Shapes;
-//using Orchard.DisplayManagement.Theming;
-//using Orchard.Environment.Extensions;
-//using Orchard.Environment.Extensions.Features;
-//using Orchard.Tests.Stubs;
+//using OrchardCore.DisplayManagement;
+//using OrchardCore.DisplayManagement.Descriptors;
+//using OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy;
+//using OrchardCore.DisplayManagement.Implementation;
+//using OrchardCore.DisplayManagement.Shapes;
+//using OrchardCore.DisplayManagement.Theming;
+//using OrchardCore.Environment.Extensions;
+//using OrchardCore.Environment.Extensions.Features;
+//using OrchardCore.Tests.Stubs;
 //using System;
 //using System.Collections.Generic;
 //using System.IO;
@@ -21,7 +21,7 @@
 //using System.Threading.Tasks;
 //using Xunit;
 
-//namespace Orchard.Tests.DisplayManagement
+//namespace OrchardCore.Tests.DisplayManagement
 //{
 //    public class SubsystemTests
 //    {

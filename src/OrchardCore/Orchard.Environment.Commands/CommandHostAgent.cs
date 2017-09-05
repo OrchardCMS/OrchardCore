@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Models;
-using Orchard.Hosting.ShellBuilders;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Hosting.ShellBuilders;
 
-namespace Orchard.Environment.Commands
+namespace OrchardCore.Environment.Commands
 {
     public class CommandHostAgent
     {

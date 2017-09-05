@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Hosting;
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Orchard.Data.Migration;
-using Orchard.Environment.Shell;
+using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell;
 using YesSql;
 using YesSql.Indexes;
 using YesSql.Provider.MySql;
@@ -15,7 +15,7 @@ using YesSql.Provider.PostgreSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Provider.SqlServer;
 
-namespace Orchard.Data
+namespace OrchardCore.Data
 {
     public static class ServiceCollectionExtensions
     {

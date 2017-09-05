@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Orchard.Environment.Extensions;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
-using Orchard.Security;
-using Orchard.Security.Permissions;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
+using OrchardCore.Security;
+using OrchardCore.Security.Permissions;
 
-namespace Orchard.Roles.Recipes
+namespace OrchardCore.Roles.Recipes
 {
     /// <summary>
     /// This recipe step creates a set of roles.

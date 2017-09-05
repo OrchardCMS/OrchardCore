@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Orchard.StorageProviders;
+using OrchardCore.StorageProviders;
 
-namespace Orchard.Media.Services
+namespace OrchardCore.Media.Services
 {
     public class MediaFileStore : IMediaFileStore
     {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Orchard.Roles.ViewModels
+namespace OrchardCore.Roles.ViewModels
 {
     public class CreateRoleViewModel
     {

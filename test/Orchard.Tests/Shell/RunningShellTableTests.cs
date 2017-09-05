@@ -1,8 +1,8 @@
-﻿using Orchard.Environment.Shell;
+﻿using OrchardCore.Environment.Shell;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Orchard.Tests.Shell
+namespace OrchardCore.Tests.Shell
 {
     public class RunningShellTableTests
     {

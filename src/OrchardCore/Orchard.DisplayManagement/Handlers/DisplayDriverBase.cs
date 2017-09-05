@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.DisplayManagement.Handlers
+namespace OrchardCore.DisplayManagement.Handlers
 {
     public class DisplayDriverBase
     {

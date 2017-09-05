@@ -6,16 +6,16 @@ using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Orchard.Environment.Navigation;
-using Orchard.Environment.Shell;
-using Orchard.Recipes;
-using Orchard.Roles.Recipes;
-using Orchard.Roles.Services;
-using Orchard.Security;
-using Orchard.Security.Permissions;
-using Orchard.Security.Services;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Recipes;
+using OrchardCore.Roles.Recipes;
+using OrchardCore.Roles.Services;
+using OrchardCore.Security;
+using OrchardCore.Security.Permissions;
+using OrchardCore.Security.Services;
 
-namespace Orchard.Roles
+namespace OrchardCore.Roles
 {
     public class Startup : StartupBase
     {

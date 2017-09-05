@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.Theming;
-using Orchard.DisplayManagement.Zones;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.DisplayManagement.Zones;
 
-namespace Orchard.DisplayManagement
+namespace OrchardCore.DisplayManagement
 {
     public abstract class BaseDisplayManager
     {

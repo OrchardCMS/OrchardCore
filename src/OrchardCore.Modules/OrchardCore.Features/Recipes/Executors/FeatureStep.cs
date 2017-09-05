@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Features.Recipes.Executors
 {

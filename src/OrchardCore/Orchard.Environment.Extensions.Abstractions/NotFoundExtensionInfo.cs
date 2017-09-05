@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.FileProviders;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Manifests;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Manifests;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Environment.Extensions
+namespace OrchardCore.Environment.Extensions
 {
     public class NotFoundExtensionInfo : IExtensionInfo
     {

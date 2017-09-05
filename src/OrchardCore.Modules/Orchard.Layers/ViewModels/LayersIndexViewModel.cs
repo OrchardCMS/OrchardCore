@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.Layers.Models;
+using OrchardCore.Layers.Models;
 
-namespace Orchard.Layers.ViewModels
+namespace OrchardCore.Layers.ViewModels
 {
     public class LayersIndexViewModel
     {

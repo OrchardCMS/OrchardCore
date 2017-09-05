@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Orchard.Mvc.Web
+namespace OrchardCore.Mvc.Web
 {
     public class Startup
     {

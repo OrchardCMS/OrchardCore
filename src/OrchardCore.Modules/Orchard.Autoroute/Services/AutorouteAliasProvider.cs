@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace Orchard.Autoroute.Services
+namespace OrchardCore.Autoroute.Services
 {
     public class AutorouteAliasProvider : IContentAliasProvider
     {

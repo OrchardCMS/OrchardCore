@@ -4,20 +4,20 @@ using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.BackgroundTasks;
-using Orchard.Data;
-using Orchard.DeferredTasks;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Liquid;
-using Orchard.DisplayManagement.TagHelpers;
-using Orchard.Environment.Cache;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell.Data;
-using Orchard.Mvc;
-using Orchard.ResourceManagement;
-using Orchard.ResourceManagement.TagHelpers;
+using OrchardCore.BackgroundTasks;
+using OrchardCore.Data;
+using OrchardCore.DeferredTasks;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Liquid;
+using OrchardCore.DisplayManagement.TagHelpers;
+using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell.Data;
+using OrchardCore.Mvc;
+using OrchardCore.ResourceManagement;
+using OrchardCore.ResourceManagement.TagHelpers;
 
-namespace Orchard.Commons
+namespace OrchardCore.Commons
 {
     /// <summary>
     /// These services are registered on the tenant service collection

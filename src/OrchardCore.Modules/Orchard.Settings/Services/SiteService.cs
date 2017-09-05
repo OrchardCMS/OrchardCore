@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
-using Orchard.Environment.Cache;
+using OrchardCore.Environment.Cache;
 using YesSql;
 
-namespace Orchard.Settings.Services
+namespace OrchardCore.Settings.Services
 {
     /// <summary>
     /// Implements <see cref="ISiteService"/> by storing the site as a Content Item.

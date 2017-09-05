@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
-using Orchard.DisplayManagement.Liquid.Internal;
-using Orchard.DisplayManagement.Razor;
+using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
+using OrchardCore.DisplayManagement.Liquid.Internal;
+using OrchardCore.DisplayManagement.Razor;
 
-namespace Orchard.DisplayManagement.Liquid
+namespace OrchardCore.DisplayManagement.Liquid
 {
     public static class ServiceCollectionExtensions
     {

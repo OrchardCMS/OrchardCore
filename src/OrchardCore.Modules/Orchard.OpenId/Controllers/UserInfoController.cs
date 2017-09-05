@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OpenIddict.Core;
-using Orchard.Users;
+using OrchardCore.Users;
 
-namespace Orchard.OpenId.Controllers
+namespace OrchardCore.OpenId.Controllers
 {
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     public class UserInfoController : Controller

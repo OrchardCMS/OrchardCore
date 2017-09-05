@@ -1,11 +1,11 @@
-﻿using Orchard.ContentManagement;
-using Orchard.Core.XmlRpc;
-using Orchard.Core.XmlRpc.Models;
-using Orchard.MetaWeblog;
-using Orchard.Autoroute.Model;
+﻿using OrchardCore.ContentManagement;
+using OrchardCore.XmlRpc;
+using OrchardCore.XmlRpc.Models;
+using OrchardCore.MetaWeblog;
+using OrchardCore.Autoroute.Model;
 using System;
 
-namespace Orchard.Autoroute.RemotePublishing
+namespace OrchardCore.Autoroute.RemotePublishing
 {
     public class AutorouteMetaWeblogDriver : MetaWeblogDriver
     {

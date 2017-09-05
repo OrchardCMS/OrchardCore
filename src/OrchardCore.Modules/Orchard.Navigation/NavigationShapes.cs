@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.Environment.Navigation;
-using Orchard.Mvc.Utilities;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Mvc.Utilities;
 
-namespace Orchard.Navigation
+namespace OrchardCore.Navigation
 {
     public class NavigationShapes : IShapeTableProvider
     {

@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Text;
 
-namespace Orchard.Liquid.Services
+namespace OrchardCore.Liquid.Services
 {
     public class SlugService : ISlugService
     {

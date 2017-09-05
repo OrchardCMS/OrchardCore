@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.ResourceManagement
+namespace OrchardCore.ResourceManagement
 {
     public interface IResourceManifestState
     {

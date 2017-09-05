@@ -1,7 +1,7 @@
-﻿using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.ModelBinding;
+﻿using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.ModelBinding;
 
-namespace Orchard.DisplayManagement.Handlers
+namespace OrchardCore.DisplayManagement.Handlers
 {
     public abstract class BuildShapeContext : IBuildShapeContext
     {

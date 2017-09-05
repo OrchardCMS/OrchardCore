@@ -1,4 +1,4 @@
-﻿namespace Orchard.ContentTypes.Events
+﻿namespace OrchardCore.ContentTypes.Events
 {
     public class ContentTypeImportedContext : ContentTypeContext { }
 }

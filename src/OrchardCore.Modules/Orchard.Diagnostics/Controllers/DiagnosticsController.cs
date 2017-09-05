@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Orchard.Diagnostics.Controllers
+namespace OrchardCore.Diagnostics.Controllers
 {
     public class DiagnosticsController : Controller
     {

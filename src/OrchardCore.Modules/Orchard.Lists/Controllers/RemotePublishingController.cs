@@ -3,10 +3,10 @@ using System.Xml.Linq;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement;
-using Orchard.Lists.Models;
+using OrchardCore.ContentManagement;
+using OrchardCore.Lists.Models;
 
-namespace Orchard.Lists.Controllers
+namespace OrchardCore.Lists.Controllers
 {
     [RequireFeatures("Orchard.RemotePublishing")]
     public class RemotePublishingController : Controller

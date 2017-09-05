@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orchard.Widgets.Settings
+namespace OrchardCore.Widgets.Settings
 {
     public class WidgetsListPartSettings
     {

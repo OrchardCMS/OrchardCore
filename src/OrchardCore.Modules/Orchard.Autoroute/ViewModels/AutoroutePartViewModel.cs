@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.Autoroute.Model;
-using Orchard.Autoroute.Models;
+using OrchardCore.Autoroute.Model;
+using OrchardCore.Autoroute.Models;
 
-namespace Orchard.Autoroute.ViewModels
+namespace OrchardCore.Autoroute.ViewModels
 {
     public class AutoroutePartViewModel
     {

@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
-using Orchard.Templates.Models;
-using Orchard.Templates.Services;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
+using OrchardCore.Templates.Models;
+using OrchardCore.Templates.Services;
 
-namespace Orchard.Templates.Recipes
+namespace OrchardCore.Templates.Recipes
 {
     /// <summary>
     /// This recipe step creates a set of templates.

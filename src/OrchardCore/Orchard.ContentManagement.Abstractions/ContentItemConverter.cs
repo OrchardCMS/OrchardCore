@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     public class ContentItemConverter : JsonConverter
     {

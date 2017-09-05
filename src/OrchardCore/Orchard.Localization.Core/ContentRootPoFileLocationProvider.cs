@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
-namespace Orchard.Localization.PortableObject
+namespace OrchardCore.Localization.PortableObject
 {
     public class ContentRootPoFileLocationProvider : ILocalizationFileLocationProvider
     {

@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement;
+﻿using OrchardCore.ContentManagement;
 
-namespace Orchard.Markdown.Model
+namespace OrchardCore.Markdown.Model
 {
     public class MarkdownPart : ContentPart
     {

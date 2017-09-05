@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
-using Orchard.DisplayManagement.Extensions;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell;
+using OrchardCore.DisplayManagement.Extensions;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell;
 
-namespace Orchard.Themes.Services
+namespace OrchardCore.Themes.Services
 {
     public class ThemeService : IThemeService
     {

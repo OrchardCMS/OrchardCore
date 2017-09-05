@@ -1,6 +1,6 @@
-﻿using Orchard.DisplayManagement.Handlers;
+﻿using OrchardCore.DisplayManagement.Handlers;
 
-namespace Orchard.ContentManagement.Display.ContentDisplay
+namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public abstract class ContentDisplayDriver : DisplayDriver<ContentItem, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>, IContentDisplayDriver
     {

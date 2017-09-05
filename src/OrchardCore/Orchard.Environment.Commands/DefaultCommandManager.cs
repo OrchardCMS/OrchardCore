@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 
-namespace Orchard.Environment.Commands
+namespace OrchardCore.Environment.Commands
 {
     public class DefaultCommandManager : ICommandManager
     {

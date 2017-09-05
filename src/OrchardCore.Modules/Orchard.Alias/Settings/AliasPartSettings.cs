@@ -1,4 +1,4 @@
-﻿namespace Orchard.Alias.Settings
+﻿namespace OrchardCore.Alias.Settings
 {
     public class AliasPartSettings
     {

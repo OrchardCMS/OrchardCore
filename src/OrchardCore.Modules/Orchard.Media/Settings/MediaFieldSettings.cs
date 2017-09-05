@@ -1,4 +1,4 @@
-namespace Orchard.Media.Settings
+namespace OrchardCore.Media.Settings
 {
     public class MediaFieldSettings
     {

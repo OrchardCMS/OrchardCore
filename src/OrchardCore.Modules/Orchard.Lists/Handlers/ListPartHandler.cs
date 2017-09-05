@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Routing;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Handlers;
-using Orchard.Lists.Models;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Lists.Models;
 
-namespace Orchard.Lists.Drivers
+namespace OrchardCore.Lists.Drivers
 {
     public class ListPartHandler : ContentPartHandler<ListPart>
     {

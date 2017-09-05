@@ -6,7 +6,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
-namespace Orchard.Mvc.RazorPages
+namespace OrchardCore.Mvc.RazorPages
 {
     public class ModularPageActionDescriptorChangeProvider : IActionDescriptorChangeProvider
     {

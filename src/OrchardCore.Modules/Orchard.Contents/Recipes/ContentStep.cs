@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
+using OrchardCore.ContentManagement;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 using YesSql;
 
-namespace Orchard.Contents.Recipes
+namespace OrchardCore.Contents.Recipes
 {
     /// <summary>
     /// This recipe step creates a set of content items.

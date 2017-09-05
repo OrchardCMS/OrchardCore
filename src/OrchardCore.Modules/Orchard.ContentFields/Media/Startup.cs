@@ -1,8 +1,8 @@
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Descriptors;
 
-namespace Orchard.ContentFields.Media
+namespace OrchardCore.ContentFields.Media
 {
     [RequireFeatures("Orchard.Media")]
     public class Startup : StartupBase

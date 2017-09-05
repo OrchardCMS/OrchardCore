@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Orchard.Demo
+namespace OrchardCore.Demo
 {
     public class NonBlockingMiddleware
     {

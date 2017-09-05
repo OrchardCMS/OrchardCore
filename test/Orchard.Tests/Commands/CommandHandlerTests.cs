@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Localization;
-using Orchard.Environment.Commands;
+using OrchardCore.Environment.Commands;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Orchard.Tests.Commands
+namespace OrchardCore.Tests.Commands
 {
     public class CommandsTests
     {

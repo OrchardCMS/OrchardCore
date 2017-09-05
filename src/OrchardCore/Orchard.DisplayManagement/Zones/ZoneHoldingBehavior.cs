@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Orchard.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Shapes;
 
-namespace Orchard.DisplayManagement.Zones
+namespace OrchardCore.DisplayManagement.Zones
 {
     /// <summary>
     /// Provides the behavior of shapes that have a Zones property.

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Orchard.Lucene.Indexing
+namespace OrchardCore.Lucene.Indexing
 {
     /// <summary>
     /// Reprensents the information of a content type in a Lucene index.

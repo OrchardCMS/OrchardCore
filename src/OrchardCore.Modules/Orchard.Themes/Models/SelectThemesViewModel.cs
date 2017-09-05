@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.Themes.Models
+namespace OrchardCore.Themes.Models
 {
     public class SelectThemesViewModel
     {

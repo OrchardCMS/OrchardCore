@@ -1,8 +1,8 @@
 ﻿using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Feeds;
+using OrchardCore.Feeds;
 
-namespace Orchard.Scripting
+namespace OrchardCore.Scripting
 {
     public class Startup : StartupBase
     {

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Html;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Orchard.DisplayManagement.Notify
+namespace OrchardCore.DisplayManagement.Notify
 {
     public class NotifyEntryConverter : JsonConverter
     {

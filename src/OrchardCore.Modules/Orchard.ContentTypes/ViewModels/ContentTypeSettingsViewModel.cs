@@ -1,4 +1,4 @@
-﻿namespace Orchard.ContentTypes.ViewModels
+﻿namespace OrchardCore.ContentTypes.ViewModels
 {
     public class ContentTypeSettingsViewModel
     {

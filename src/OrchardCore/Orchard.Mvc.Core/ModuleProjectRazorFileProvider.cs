@@ -7,7 +7,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
 
-namespace Orchard.Mvc
+namespace OrchardCore.Mvc
 {
     /// <summary>
     /// This custom <see cref="IFileProvider"/> implementation provides the file contents

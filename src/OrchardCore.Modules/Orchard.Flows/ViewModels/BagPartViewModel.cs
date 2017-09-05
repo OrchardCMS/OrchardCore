@@ -1,7 +1,7 @@
-using Orchard.ContentManagement.Display.Models;
-using Orchard.Flows.Models;
+using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.Flows.Models;
 
-namespace Orchard.Flows.ViewModels
+namespace OrchardCore.Flows.ViewModels
 {
     public class BagPartViewModel
     {

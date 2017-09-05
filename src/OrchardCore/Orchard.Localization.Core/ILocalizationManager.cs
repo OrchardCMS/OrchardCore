@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Orchard.Localization
+namespace OrchardCore.Localization
 {
     public interface ILocalizationManager
     {

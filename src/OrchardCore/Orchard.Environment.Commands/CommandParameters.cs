@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace Orchard.Environment.Commands
+namespace OrchardCore.Environment.Commands
 {
     public class CommandParameters
     {

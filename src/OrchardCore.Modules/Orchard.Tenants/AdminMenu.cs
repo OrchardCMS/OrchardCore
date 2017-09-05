@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Localization;
-using Orchard.Environment.Navigation;
+using OrchardCore.Environment.Navigation;
 using System;
-using Orchard.Environment.Shell;
+using OrchardCore.Environment.Shell;
 
-namespace Orchard.Tenants
+namespace OrchardCore.Tenants
 {
     public class AdminMenu : INavigationProvider
     {

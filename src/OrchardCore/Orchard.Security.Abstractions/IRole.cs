@@ -1,4 +1,4 @@
-namespace Orchard.Security
+namespace OrchardCore.Security
 {
     public interface IRole
     {

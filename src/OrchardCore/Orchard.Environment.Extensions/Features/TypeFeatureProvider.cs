@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Features;
 
-namespace Orchard.Environment.Extensions
+namespace OrchardCore.Environment.Extensions
 {
     public class TypeFeatureProvider : ITypeFeatureProvider
     {

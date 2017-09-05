@@ -1,9 +1,9 @@
-﻿using Orchard.DisplayManagement.Theming;
-using Orchard.Environment.Cache;
+﻿using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Environment.Cache;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Orchard.Environment.Cache.CacheContextProviders
+namespace OrchardCore.Environment.Cache.CacheContextProviders
 {
     public class ThemeCacheContextProvider : ICacheContextProvider
     {

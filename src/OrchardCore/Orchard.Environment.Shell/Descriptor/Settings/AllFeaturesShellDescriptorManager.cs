@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 
-namespace Orchard.Environment.Shell.Descriptor.Settings
+namespace OrchardCore.Environment.Shell.Descriptor.Settings
 {
     /// <summary>
     /// Implements <see cref="IShellDescriptorManager"/> by returning a single tenant with all the available 

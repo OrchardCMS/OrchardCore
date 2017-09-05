@@ -2,7 +2,7 @@ using Lucene.Net.Analysis;
 using Lucene.Net.Search;
 using Lucene.Net.Util;
 
-namespace Orchard.Lucene
+namespace OrchardCore.Lucene
 {
     public class LuceneQueryContext
     {

@@ -3,17 +3,17 @@ using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.Environment.Navigation;
-using Orchard.Recipes;
-using Orchard.Security.Permissions;
-using Orchard.Setup.Events;
-using Orchard.Settings.Drivers;
-using Orchard.Settings.Recipes;
-using Orchard.Settings.Services;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Recipes;
+using OrchardCore.Security.Permissions;
+using OrchardCore.Setup.Events;
+using OrchardCore.Settings.Drivers;
+using OrchardCore.Settings.Recipes;
+using OrchardCore.Settings.Services;
 
-namespace Orchard.Settings
+namespace OrchardCore.Settings
 {
     /// <summary>
     /// These services are registered on the tenant service collection

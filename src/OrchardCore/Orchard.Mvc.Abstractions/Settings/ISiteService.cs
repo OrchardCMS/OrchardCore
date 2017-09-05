@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 
-namespace Orchard.Settings
+namespace OrchardCore.Settings
 {
     /// <summary>
     /// Provides services to manage the sites settings.

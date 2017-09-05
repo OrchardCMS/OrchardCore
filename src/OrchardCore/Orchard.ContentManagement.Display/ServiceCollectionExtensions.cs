@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Orchard.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
 
-namespace Orchard.ContentManagement.Display
+namespace OrchardCore.ContentManagement.Display
 {
     public static class ServiceCollectionExtensions
     {

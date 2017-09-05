@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Orchard.ResourceManagement;
+using OrchardCore.ResourceManagement;
 
-namespace Orchard.Commons.Filters
+namespace OrchardCore.Commons.Filters
 {
     public class MetaGeneratorFilter : IResultFilter
     {

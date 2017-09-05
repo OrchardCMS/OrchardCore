@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Recipes.Services;
+using OrchardCore.Recipes.Services;
 
-namespace Orchard.Recipes
+namespace OrchardCore.Recipes
 {
     public static class ServiceCollectionExtensions
     {

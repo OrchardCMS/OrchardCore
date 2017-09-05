@@ -4,7 +4,7 @@ using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.Localization
+namespace OrchardCore.Localization
 {
     /// <summary>
     /// These services are registered on the tenant service collection

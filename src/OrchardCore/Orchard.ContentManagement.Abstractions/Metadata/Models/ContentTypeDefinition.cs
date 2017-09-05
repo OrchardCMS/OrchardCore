@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace Orchard.ContentManagement.Metadata.Models
+namespace OrchardCore.ContentManagement.Metadata.Models
 {
     public class ContentTypeDefinition : ContentDefinition
     {

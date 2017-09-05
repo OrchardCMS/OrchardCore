@@ -7,7 +7,7 @@ using Lucene.Net.Analysis.TokenAttributes;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 
-namespace Orchard.Lucene
+namespace OrchardCore.Lucene
 {
     public class LuceneQueryService : ILuceneQueryService
     {

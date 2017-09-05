@@ -2,12 +2,12 @@
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Commands;
-using Orchard.Environment.Commands.Parameters;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
+using OrchardCore.Environment.Commands;
+using OrchardCore.Environment.Commands.Parameters;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 
-namespace Orchard.Recipes.RecipeSteps
+namespace OrchardCore.Recipes.RecipeSteps
 {
     /// <summary>
     /// This recipe step executes a set of commands.

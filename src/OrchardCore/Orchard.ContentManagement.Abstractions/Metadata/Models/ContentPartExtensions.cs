@@ -1,8 +1,8 @@
 ﻿using System;
-using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.Mvc.Utilities;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Mvc.Utilities;
 
-namespace Orchard.ContentManagement.Metadata.Models
+namespace OrchardCore.ContentManagement.Metadata.Models
 {
     public static class ContentPartExtensions
     {

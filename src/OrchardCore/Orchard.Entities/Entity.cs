@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
 
-namespace Orchard.Entities
+namespace OrchardCore.Entities
 {
     public class Entity : IEntity
     {

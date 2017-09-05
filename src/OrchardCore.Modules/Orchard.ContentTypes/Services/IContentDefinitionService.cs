@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentTypes.ViewModels;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentTypes.ViewModels;
 
-namespace Orchard.ContentTypes.Services
+namespace OrchardCore.ContentTypes.Services
 {
     public interface IContentDefinitionService
     {

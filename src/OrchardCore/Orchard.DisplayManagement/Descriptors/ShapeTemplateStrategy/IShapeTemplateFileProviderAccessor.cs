@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.FileProviders;
 
-namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
+namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     /// <summary>
     /// Accessor to the <see cref="IFileProvider"/> used by <see cref="ShapeTemplateBindingStrategy"/>.

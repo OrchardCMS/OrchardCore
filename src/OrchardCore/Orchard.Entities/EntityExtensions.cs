@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json.Linq;
 
-namespace Orchard.Entities
+namespace OrchardCore.Entities
 {
     public static class EntityExtensions
     {

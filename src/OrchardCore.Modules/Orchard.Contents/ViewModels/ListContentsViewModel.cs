@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace Orchard.Contents.ViewModels
+namespace OrchardCore.Contents.ViewModels
 {
     public class ListContentsViewModel
     {

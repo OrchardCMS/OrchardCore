@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using Orchard.Environment.Cache;
-using Orchard.Environment.Shell;
+using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Orchard.Environment.Extensions.Features
+namespace OrchardCore.Environment.Extensions.Features
 {
     public class FeatureHash : IFeatureHash
     {

@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.Settings.Drivers
+namespace OrchardCore.Settings.Drivers
 {
     public class ButtonsSettingsDisplayDriver : DisplayDriver<ISite>
     {

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.Flows.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Flows.Models;
 
-namespace Orchard.Flows.ViewModels
+namespace OrchardCore.Flows.ViewModels
 {
     public class BagPartEditViewModel
     {

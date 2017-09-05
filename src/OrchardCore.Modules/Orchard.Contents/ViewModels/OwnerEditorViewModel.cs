@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orchard.Contents.ViewModels
+namespace OrchardCore.Contents.ViewModels
 {
     public class OwnerEditorViewModel
     {

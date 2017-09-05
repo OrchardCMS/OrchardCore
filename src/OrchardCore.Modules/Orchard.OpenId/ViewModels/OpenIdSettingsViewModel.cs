@@ -1,9 +1,9 @@
-﻿using Orchard.OpenId.Models;
+﻿using OrchardCore.OpenId.Models;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
-using static Orchard.OpenId.Settings.OpenIdSettings;
+using static OrchardCore.OpenId.Settings.OpenIdSettings;
 
-namespace Orchard.OpenId.ViewModels
+namespace OrchardCore.OpenId.ViewModels
 {
     public class OpenIdSettingsViewModel
     {

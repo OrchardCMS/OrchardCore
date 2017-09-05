@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 
-namespace Orchard.Liquid
+namespace OrchardCore.Liquid
 {
     public interface ILiquidFilter
     {

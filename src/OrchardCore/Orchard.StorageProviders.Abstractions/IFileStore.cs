@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Orchard.StorageProviders
+namespace OrchardCore.StorageProviders
 {
     public interface IFileStore
     {

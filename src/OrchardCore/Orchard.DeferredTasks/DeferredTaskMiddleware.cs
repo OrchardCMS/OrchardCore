@@ -2,9 +2,9 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Shell;
+using OrchardCore.Environment.Shell;
 
-namespace Orchard.DeferredTasks
+namespace OrchardCore.DeferredTasks
 {
     /// <summary>
     /// Executes any deferred tasks when the request is terminated.

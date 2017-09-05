@@ -3,7 +3,7 @@ using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
 
-namespace Orchard.DisplayManagement.Liquid.Ast
+namespace OrchardCore.DisplayManagement.Liquid.Ast
 {
     public class ArgumentsExpression : Expression
     {

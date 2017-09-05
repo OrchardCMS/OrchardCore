@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Orchard.Deployment.Steps
+namespace OrchardCore.Deployment.Steps
 {
     /// <summary>
     /// Adds a custom file to a <see cref="DeploymentPlanResult"/>. 

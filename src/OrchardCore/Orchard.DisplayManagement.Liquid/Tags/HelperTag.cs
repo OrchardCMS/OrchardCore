@@ -15,10 +15,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Liquid.Ast;
-using Orchard.DisplayManagement.Liquid.Filters;
+using OrchardCore.DisplayManagement.Liquid.Ast;
+using OrchardCore.DisplayManagement.Liquid.Filters;
 
-namespace Orchard.DisplayManagement.Liquid.Tags
+namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class HelperTag : ArgumentsTag
     {

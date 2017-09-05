@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Security;
 
-namespace Orchard.Environment.Commands.Parameters
+namespace OrchardCore.Environment.Commands.Parameters
 {
     public class CommandParametersParser : ICommandParametersParser
     {

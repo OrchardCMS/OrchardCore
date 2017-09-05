@@ -1,11 +1,11 @@
-﻿using Orchard.Environment.Commands.Parameters;
+﻿using OrchardCore.Environment.Commands.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Orchard.Tests.Hosting.Console
+namespace OrchardCore.Tests.Hosting.Console
 {
     public class CommandParserTests
     {

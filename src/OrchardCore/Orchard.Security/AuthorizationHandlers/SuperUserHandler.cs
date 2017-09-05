@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Orchard.Settings;
+using OrchardCore.Settings;
 
-namespace Orchard.Security.AuthorizationHandlers
+namespace OrchardCore.Security.AuthorizationHandlers
 {
     /// <summary>
     /// This authorization handler validates any permission when the user is the site owner.

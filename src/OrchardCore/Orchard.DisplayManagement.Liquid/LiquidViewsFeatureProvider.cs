@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.Options;
-using Orchard.DisplayManagement.FileProviders;
-using Orchard.DisplayManagement.Liquid.Internal;
-using Orchard.Environment.Extensions;
+using OrchardCore.DisplayManagement.FileProviders;
+using OrchardCore.DisplayManagement.Liquid.Internal;
+using OrchardCore.Environment.Extensions;
 
-namespace Orchard.DisplayManagement.Liquid
+namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {

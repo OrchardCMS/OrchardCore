@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json.Linq;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 
-namespace Orchard.Settings.Recipes
+namespace OrchardCore.Settings.Recipes
 {
     /// <summary>
     /// This recipe step updates the site settings.

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Orchard.Hosting
+namespace OrchardCore.Hosting
 {
     public class OrchardConsoleLogger
     {

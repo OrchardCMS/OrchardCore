@@ -1,6 +1,6 @@
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace Orchard.Media.Models
+namespace OrchardCore.Media.Models
 {
     public class ImageMediaPart : ContentPart
     {

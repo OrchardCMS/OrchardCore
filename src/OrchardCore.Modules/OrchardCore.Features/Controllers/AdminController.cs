@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Orchard.Admin;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Descriptor;
+using OrchardCore.Admin;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Features.Models;
 using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
@@ -13,7 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.Mvc.ActionConstraints;
+using OrchardCore.Mvc.ActionConstraints;
 
 namespace OrchardCore.Features.Controllers
 {

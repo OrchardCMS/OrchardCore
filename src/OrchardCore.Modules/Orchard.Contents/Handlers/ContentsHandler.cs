@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Routing;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Handlers;
-using Orchard.Environment.Cache;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Environment.Cache;
 
-namespace Orchard.Contents.Handlers
+namespace OrchardCore.Contents.Handlers
 {
     public class ContentsHandler : ContentHandlerBase
     {

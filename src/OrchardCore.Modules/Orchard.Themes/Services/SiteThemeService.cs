@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using Orchard.Environment.Extensions;
-using Orchard.Settings;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Settings;
 using System;
 using System.Threading.Tasks;
 
-namespace Orchard.Themes.Services
+namespace OrchardCore.Themes.Services
 {
     public class SiteThemeService : ISiteThemeService
     {

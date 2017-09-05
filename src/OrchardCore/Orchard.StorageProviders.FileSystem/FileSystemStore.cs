@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Orchard.StorageProviders.FileSystem
+namespace OrchardCore.StorageProviders.FileSystem
 {
     public class FileSystemStore : IFileStore
     {

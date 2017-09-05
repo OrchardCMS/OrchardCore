@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Orchard.Deployment.Core.Mvc
+namespace OrchardCore.Deployment.Core.Mvc
 {
     public class DeleteFileResultFilter : ResultFilterAttribute
     {

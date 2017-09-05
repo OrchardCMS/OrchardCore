@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     public class FileShellSettingsConfigurationProvider : IShellSettingsConfigurationProvider
     {

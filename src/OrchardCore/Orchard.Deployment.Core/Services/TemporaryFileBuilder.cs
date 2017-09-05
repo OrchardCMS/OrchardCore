@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Orchard.Deployment.Core.Services
+namespace OrchardCore.Deployment.Core.Services
 {
     public class TemporaryFileBuilder : IFileBuilder, IDisposable
     {

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 
-namespace Orchard.Recipes.RecipeSteps
+namespace OrchardCore.Recipes.RecipeSteps
 {
     /// <summary>
     /// This recipe step executes a set of external recipes.

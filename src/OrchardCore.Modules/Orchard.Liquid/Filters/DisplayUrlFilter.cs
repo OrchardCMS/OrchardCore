@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc;
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace Orchard.Liquid.Filters
+namespace OrchardCore.Liquid.Filters
 {
     public class DisplayUrlFilter : ILiquidFilter
     {

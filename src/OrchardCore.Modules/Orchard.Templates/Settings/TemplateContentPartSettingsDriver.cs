@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentTypes.Editors;
-using Orchard.DisplayManagement.Views;
-using Orchard.Templates.ViewModels;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Templates.ViewModels;
 
-namespace Orchard.Templates.Settings
+namespace OrchardCore.Templates.Settings
 {
     public class TemplateContentPartSettingsDriver : ContentPartDisplayDriver
     {

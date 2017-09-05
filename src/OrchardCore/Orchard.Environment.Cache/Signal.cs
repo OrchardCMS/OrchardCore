@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 
-namespace Orchard.Environment.Cache
+namespace OrchardCore.Environment.Cache
 {
     /// <summary>
     /// This component is a singleton and holds all the existing signal token for a tenant.

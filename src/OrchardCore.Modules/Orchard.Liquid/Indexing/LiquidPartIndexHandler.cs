@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Orchard.Indexing;
-using Orchard.Liquid.Model;
+using OrchardCore.Indexing;
+using OrchardCore.Liquid.Model;
 
-namespace Orchard.Liquid.Indexing
+namespace OrchardCore.Liquid.Indexing
 {
     public class LiquidPartIndexHandler : ContentPartIndexHandler<LiquidPart>
     {

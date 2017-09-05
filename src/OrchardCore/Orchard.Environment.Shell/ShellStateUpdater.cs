@@ -3,12 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
-using Orchard.DeferredTasks;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Shell.State;
+using OrchardCore.DeferredTasks;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Shell.State;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     public interface IShellStateUpdater
     {

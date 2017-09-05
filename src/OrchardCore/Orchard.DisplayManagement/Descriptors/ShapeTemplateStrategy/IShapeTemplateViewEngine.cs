@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Orchard.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Implementation;
 
-namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
+namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     public interface IShapeTemplateViewEngine
     {

@@ -1,6 +1,6 @@
-﻿using Orchard.Autoroute.Models;
+﻿using OrchardCore.Autoroute.Models;
 
-namespace Orchard.Autoroute.ViewModels
+namespace OrchardCore.Autoroute.ViewModels
 {
     public class AutoroutePartSettingsViewModel
     {

@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Orchard.Environment.Extensions;
-using Orchard.Recipes.Models;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Recipes.Models;
 
-namespace Orchard.Recipes.Services
+namespace OrchardCore.Recipes.Services
 {
     /// <summary>
     /// Finds recipes in the application content folder.

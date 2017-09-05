@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.WebUtilities;
-using Orchard.Autoroute.Services;
+using OrchardCore.Autoroute.Services;
 
-namespace Orchard.Autoroute.Routing
+namespace OrchardCore.Autoroute.Routing
 {
     public class AutorouteRoute : IRouter
     {

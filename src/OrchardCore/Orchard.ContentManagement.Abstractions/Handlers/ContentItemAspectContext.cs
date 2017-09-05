@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orchard.ContentManagement.Handlers
+namespace OrchardCore.ContentManagement.Handlers
 {
     public class ContentItemAspectContext
     {

@@ -11,13 +11,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Orchard.DeferredTasks;
-using Orchard.Environment.Shell;
-using Orchard.Recipes.Events;
-using Orchard.Recipes.Models;
-using Orchard.Scripting;
+using OrchardCore.DeferredTasks;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Recipes.Events;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Scripting;
 
-namespace Orchard.Recipes.Services
+namespace OrchardCore.Recipes.Services
 {
     public class RecipeExecutor : IRecipeExecutor
     {

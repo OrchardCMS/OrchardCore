@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Shell;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Modules
 {

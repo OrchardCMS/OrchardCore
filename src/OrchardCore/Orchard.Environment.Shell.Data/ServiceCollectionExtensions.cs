@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Shell.Data.Descriptors;
-using Orchard.Environment.Shell.Descriptor;
+using OrchardCore.Environment.Shell.Data.Descriptors;
+using OrchardCore.Environment.Shell.Descriptor;
 
-namespace Orchard.Environment.Shell.Data
+namespace OrchardCore.Environment.Shell.Data
 {
     public static class ServiceCollectionExtensions
     {

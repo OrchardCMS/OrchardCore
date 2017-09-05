@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Html;
 
-namespace Orchard.DisplayManagement.Title
+namespace OrchardCore.DisplayManagement.Title
 {
     public interface IPageTitleBuilder
     {

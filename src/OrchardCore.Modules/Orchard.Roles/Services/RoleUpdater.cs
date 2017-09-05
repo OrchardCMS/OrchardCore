@@ -4,13 +4,13 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell;
-using Orchard.Security;
-using Orchard.Security.Permissions;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Security;
+using OrchardCore.Security.Permissions;
+using OrchardCore.Environment.Extensions.Features;
 
-namespace Orchard.Roles.Services
+namespace OrchardCore.Roles.Services
 {
     public class RoleUpdater : IFeatureEventHandler
     {

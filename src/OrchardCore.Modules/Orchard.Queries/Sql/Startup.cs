@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.Environment.Navigation;
-using Orchard.Queries.Sql.Drivers;
-using Orchard.Security.Permissions;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Queries.Sql.Drivers;
+using OrchardCore.Security.Permissions;
 
-namespace Orchard.Queries.Sql
+namespace OrchardCore.Queries.Sql
 {
     /// <summary>
     /// These services are registered on the tenant service collection

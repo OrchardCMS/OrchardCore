@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Orchard.Users.Models
+namespace OrchardCore.Users.Models
 {
     public class User : IUser
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 
-namespace Orchard.Scripting
+namespace OrchardCore.Scripting
 {
     public interface IScriptingEngine
     {

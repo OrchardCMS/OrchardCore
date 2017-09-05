@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using Orchard.Environment.Shell;
+using OrchardCore.Environment.Shell;
 
-namespace Orchard.Lucene
+namespace OrchardCore.Lucene
 {
     /// <summary>
     /// This class persists the indexing state, a cursor, on the filesystem alongside the index itself.

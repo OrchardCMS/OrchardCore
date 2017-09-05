@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Orchard.Liquid
+namespace OrchardCore.Liquid
 {
     public interface ISlugService
     {

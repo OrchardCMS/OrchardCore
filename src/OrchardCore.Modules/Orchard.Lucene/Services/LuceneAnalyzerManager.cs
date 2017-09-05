@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Lucene.Net.Analysis;
 
-namespace Orchard.Lucene.Services
+namespace OrchardCore.Lucene.Services
 {
     /// <summary>
     /// Coordinates <see cref="ILuceneAnalyzerProvider"/> implementations

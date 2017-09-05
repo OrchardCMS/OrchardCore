@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Orchard.Environment.Shell.State
+namespace OrchardCore.Environment.Shell.State
 {
     /// <summary>
     /// Holds some state for the current HttpContext or thread

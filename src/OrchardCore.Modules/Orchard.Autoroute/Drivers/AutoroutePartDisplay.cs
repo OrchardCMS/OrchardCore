@@ -4,19 +4,19 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
-using Orchard.Autoroute.Model;
-using Orchard.Autoroute.Models;
-using Orchard.Autoroute.ViewModels;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Records;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Mvc.ModelBinding;
-using Orchard.Settings;
+using OrchardCore.Autoroute.Model;
+using OrchardCore.Autoroute.Models;
+using OrchardCore.Autoroute.ViewModels;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Settings;
 using YesSql;
 
-namespace Orchard.Autoroute.Drivers
+namespace OrchardCore.Autoroute.Drivers
 {
     public class AutoroutePartDisplay : ContentPartDisplayDriver<AutoroutePart>
     {

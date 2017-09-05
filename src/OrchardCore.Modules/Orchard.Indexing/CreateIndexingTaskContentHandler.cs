@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement.Handlers;
+﻿using OrchardCore.ContentManagement.Handlers;
 
-namespace Orchard.Indexing
+namespace OrchardCore.Indexing
 {
     public class CreateIndexingTaskContentHandler : ContentHandlerBase
     {

@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement.Handlers;
-using Orchard.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.MetaData;
 
-namespace Orchard.ContentManagement.Drivers.Coordinators
+namespace OrchardCore.ContentManagement.Drivers.Coordinators
 {
     /// <summary>
     /// This component coordinates how parts are affecting content items.

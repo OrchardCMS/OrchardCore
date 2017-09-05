@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.DisplayManagement
+namespace OrchardCore.DisplayManagement
 {
     public interface INamedEnumerable<T> : IEnumerable<T>
     {

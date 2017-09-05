@@ -13,11 +13,11 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Orchard.Mvc.LocationExpander;
-using Orchard.Mvc.ModelBinding;
-using Orchard.Mvc.RazorPages;
+using OrchardCore.Mvc.LocationExpander;
+using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Mvc.RazorPages;
 
-namespace Orchard.Mvc
+namespace OrchardCore.Mvc
 {
     public static class ModularServiceCollectionExtensions
     {

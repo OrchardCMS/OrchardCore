@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.OpenId.Settings;
-using Orchard.OpenId.Models;
+using OrchardCore.OpenId.Settings;
+using OrchardCore.OpenId.Models;
 
-namespace Orchard.OpenId.Services
+namespace OrchardCore.OpenId.Services
 {
     public interface IOpenIdService
     {

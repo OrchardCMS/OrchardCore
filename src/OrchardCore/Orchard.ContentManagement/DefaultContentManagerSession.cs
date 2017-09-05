@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     public class DefaultContentManagerSession : IContentManagerSession
     {

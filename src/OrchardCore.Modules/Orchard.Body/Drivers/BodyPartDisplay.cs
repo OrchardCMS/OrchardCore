@@ -2,16 +2,16 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
-using Orchard.Body.Model;
-using Orchard.Body.Settings;
-using Orchard.Body.ViewModels;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.MetaData;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Liquid;
+using OrchardCore.Body.Model;
+using OrchardCore.Body.Settings;
+using OrchardCore.Body.ViewModels;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Liquid;
 
-namespace Orchard.Body.Drivers
+namespace OrchardCore.Body.Drivers
 {
     public class BodyPartDisplay : ContentPartDisplayDriver<BodyPart>
     {

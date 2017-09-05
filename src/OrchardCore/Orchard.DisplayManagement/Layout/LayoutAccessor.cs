@@ -1,5 +1,5 @@
 ﻿
-namespace Orchard.DisplayManagement.Layout
+namespace OrchardCore.DisplayManagement.Layout
 {
     public class LayoutAccessor : ILayoutAccessor
     {

@@ -1,4 +1,4 @@
-﻿namespace Orchard.Environment.Commands
+﻿namespace OrchardCore.Environment.Commands
 {
     /// <summary>
     /// Different return codes for a command execution.

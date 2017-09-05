@@ -6,9 +6,9 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Orchard.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Shapes;
 
-namespace Orchard.DisplayManagement.Liquid.Filters
+namespace OrchardCore.DisplayManagement.Liquid.Filters
 {
     public static class LiquidViewFilters
     {

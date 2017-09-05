@@ -1,4 +1,4 @@
-namespace Orchard.Users
+namespace OrchardCore.Users
 {
     /// <summary>
     /// Marker interface for ASP.NET Core Identity services.

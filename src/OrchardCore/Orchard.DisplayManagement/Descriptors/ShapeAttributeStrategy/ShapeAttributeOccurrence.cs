@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
+namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
     public class ShapeAttributeOccurrence
     {

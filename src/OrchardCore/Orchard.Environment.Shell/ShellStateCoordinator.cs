@@ -2,11 +2,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.DeferredTasks;
-using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.Environment.Shell.State;
+using OrchardCore.DeferredTasks;
+using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.State;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     // This class is registered automatically as transient as it is an event handler
     public class ShellStateCoordinator : IShellDescriptorManagerEventHandler

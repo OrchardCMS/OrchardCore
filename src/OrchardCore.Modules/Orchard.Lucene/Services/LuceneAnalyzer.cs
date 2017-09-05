@@ -1,7 +1,7 @@
 using System;
 using Lucene.Net.Analysis;
 
-namespace Orchard.Lucene.Services
+namespace OrchardCore.Lucene.Services
 {
     public class LuceneAnalyzer : ILuceneAnalyzer
     {

@@ -4,7 +4,7 @@ using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 
-namespace Orchard.Mvc.HelloWorld
+namespace OrchardCore.Mvc.HelloWorld
 {
     public class Startup : StartupBase
     {

@@ -4,15 +4,15 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Records;
-using Orchard.Environment.Cache;
-using Orchard.Layers.Handlers;
-using Orchard.Layers.Indexes;
-using Orchard.Layers.Models;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.Environment.Cache;
+using OrchardCore.Layers.Handlers;
+using OrchardCore.Layers.Indexes;
+using OrchardCore.Layers.Models;
 using YesSql;
 
-namespace Orchard.Layers.Services
+namespace OrchardCore.Layers.Services
 {
 	public class LayerService : ILayerService
 	{

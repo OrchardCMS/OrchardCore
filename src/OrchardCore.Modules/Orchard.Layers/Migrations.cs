@@ -1,7 +1,7 @@
-﻿using Orchard.Data.Migration;
-using Orchard.Layers.Indexes;
+﻿using OrchardCore.Data.Migration;
+using OrchardCore.Layers.Indexes;
 
-namespace Orchard.Layers
+namespace OrchardCore.Layers
 {
     public class Migrations : DataMigration
     {

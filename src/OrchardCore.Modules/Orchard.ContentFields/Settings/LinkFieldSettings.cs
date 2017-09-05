@@ -1,4 +1,4 @@
-namespace Orchard.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings
 {
     public class LinkFieldSettings
     {

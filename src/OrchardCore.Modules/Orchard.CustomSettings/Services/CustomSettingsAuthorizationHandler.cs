@@ -2,10 +2,10 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Security;
-using Orchard.Security.Permissions;
+using OrchardCore.Security;
+using OrchardCore.Security.Permissions;
 
-namespace Orchard.CustomSettings.Services
+namespace OrchardCore.CustomSettings.Services
 {
     public class CustomSettingsAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {

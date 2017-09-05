@@ -3,11 +3,11 @@ using System.Globalization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Orchard.Localization;
-using Orchard.Localization.PortableObject;
+using OrchardCore.Localization;
+using OrchardCore.Localization.PortableObject;
 using Xunit;
 
-namespace Orchard.Tests.Localization
+namespace OrchardCore.Tests.Localization
 {
     public class PortableObjectStringLocalizerTests
     {

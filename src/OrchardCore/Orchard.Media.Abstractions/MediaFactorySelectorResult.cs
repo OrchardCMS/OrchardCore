@@ -1,4 +1,4 @@
-﻿namespace Orchard.Media
+﻿namespace OrchardCore.Media
 {
     public class MediaFactorySelectorResult
     {

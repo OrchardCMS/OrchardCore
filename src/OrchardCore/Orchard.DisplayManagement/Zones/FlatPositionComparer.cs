@@ -1,8 +1,8 @@
-﻿using Orchard.DisplayManagement;
+﻿using OrchardCore.DisplayManagement;
 using System;
 using System.Collections.Generic;
 
-namespace Orchard.UI
+namespace OrchardCore.UI
 {
     public class FlatPositionComparer : IComparer<IPositioned>, IComparer<string>
     {

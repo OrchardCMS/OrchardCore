@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using System;
 
-namespace Orchard.Recipes.Models
+namespace OrchardCore.Recipes.Models
 {
     public class RecipeDescriptor
     {

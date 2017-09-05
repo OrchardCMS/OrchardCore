@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.ContentManagement;
-using Orchard.Markdown.Model;
-using Orchard.Markdown.Settings;
+using OrchardCore.ContentManagement;
+using OrchardCore.Markdown.Model;
+using OrchardCore.Markdown.Settings;
 
-namespace Orchard.Markdown.ViewModels
+namespace OrchardCore.Markdown.ViewModels
 {
     public class MarkdownPartViewModel
     {

@@ -1,4 +1,4 @@
-﻿namespace Orchard.Lucene.ViewModels
+﻿namespace OrchardCore.Lucene.ViewModels
 {
     public class AdminEditViewModel
     {

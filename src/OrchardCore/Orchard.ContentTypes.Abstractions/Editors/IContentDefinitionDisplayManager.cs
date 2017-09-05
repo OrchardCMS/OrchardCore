@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.DisplayManagement.ModelBinding;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
 
-namespace Orchard.ContentTypes.Editors
+namespace OrchardCore.ContentTypes.Editors
 {
     public interface IContentDefinitionDisplayManager
     {

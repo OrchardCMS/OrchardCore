@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Orchard.Environment.Commands;
-using Orchard.Recipes.Services;
+using OrchardCore.Environment.Commands;
+using OrchardCore.Recipes.Services;
 
-namespace Orchard.Recipes.Commands
+namespace OrchardCore.Recipes.Commands
 {
     public class RecipesCommands : DefaultCommandHandler
     {

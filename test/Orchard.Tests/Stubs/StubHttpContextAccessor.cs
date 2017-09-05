@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
 
-namespace Orchard.Tests.Stubs
+namespace OrchardCore.Tests.Stubs
 {
     public class StubHttpContextAccessor : IHttpContextAccessor
     {

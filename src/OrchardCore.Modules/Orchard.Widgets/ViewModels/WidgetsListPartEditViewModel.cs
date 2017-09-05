@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.Widgets.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Widgets.Models;
 
-namespace Orchard.Widgets.ViewModels
+namespace OrchardCore.Widgets.ViewModels
 {
     public class WidgetsListPartEditViewModel
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Orchard.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Shapes;
 
-namespace Orchard.DisplayManagement
+namespace OrchardCore.DisplayManagement
 {
 	/// <summary>
 	/// Interface present on dynamic shapes.

@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Orchard.DisplayManagement;
-using Orchard.Environment.Commands;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Manifests;
-using Orchard.Environment.Shell.Data;
+using OrchardCore.DisplayManagement;
+using OrchardCore.Environment.Commands;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Manifests;
+using OrchardCore.Environment.Shell.Data;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

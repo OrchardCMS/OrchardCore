@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Orchard.Environment.Commands
+namespace OrchardCore.Environment.Commands
 {
     public class CommandHandlerDescriptorBuilder
     {

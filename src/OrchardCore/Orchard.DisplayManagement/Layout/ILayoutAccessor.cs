@@ -1,4 +1,4 @@
-﻿namespace Orchard.DisplayManagement.Layout
+﻿namespace OrchardCore.DisplayManagement.Layout
 {
     public interface ILayoutAccessor
     {

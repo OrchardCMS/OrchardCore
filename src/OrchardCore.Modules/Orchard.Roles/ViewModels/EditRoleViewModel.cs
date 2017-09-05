@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.Security;
-using Orchard.Security.Permissions;
+using OrchardCore.Security;
+using OrchardCore.Security.Permissions;
 
-namespace Orchard.Roles.ViewModels
+namespace OrchardCore.Roles.ViewModels
 {
     public class EditRoleViewModel
     {

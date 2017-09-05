@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Orchard.DeferredTasks
+namespace OrchardCore.DeferredTasks
 {
     /// <summary>
     /// An implementation of this interface provides a way to enlist custom actions that

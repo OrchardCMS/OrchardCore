@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Authorization;
-using Orchard.Security.Permissions;
+using OrchardCore.Security.Permissions;
 
-namespace Orchard.Security
+namespace OrchardCore.Security
 {
     public class PermissionRequirement : IAuthorizationRequirement
     {

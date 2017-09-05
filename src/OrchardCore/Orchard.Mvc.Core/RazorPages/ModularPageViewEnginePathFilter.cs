@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Shell;
+using OrchardCore.Environment.Shell;
 
-namespace Orchard.Mvc.RazorPages
+namespace OrchardCore.Mvc.RazorPages
 {
     public class ModularPageViewEnginePathFilter : IAsyncPageFilter
     {

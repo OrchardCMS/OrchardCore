@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Theming;
-using Orchard.Environment.Extensions;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Environment.Extensions;
 
-namespace Orchard.Tests.Stubs
+namespace OrchardCore.Tests.Stubs
 {
     public class TestShapeTable : ShapeTable
     {

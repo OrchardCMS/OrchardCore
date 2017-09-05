@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
+namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     /// <summary>
     /// Sets up default options for <see cref="ShapeTemplateViewOptions"/>.

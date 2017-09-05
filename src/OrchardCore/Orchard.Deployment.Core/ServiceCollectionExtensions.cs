@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Orchard.Deployment.Core.Services;
-using Orchard.Deployment.Services;
+using OrchardCore.Deployment.Core.Services;
+using OrchardCore.Deployment.Services;
 
-namespace Orchard.Deployment.Core
+namespace OrchardCore.Deployment.Core
 {
     public static class ServiceCollectionExtensions
     {

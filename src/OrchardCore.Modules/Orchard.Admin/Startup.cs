@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Theming;
-using Orchard.Environment.Navigation;
-using Orchard.Security.Permissions;
+using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Security.Permissions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Orchard.Admin
+namespace OrchardCore.Admin
 {
     public class Startup : StartupBase
     {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace Orchard.Flows.Models
+namespace OrchardCore.Flows.Models
 {
     public class FlowPart : ContentPart
     {

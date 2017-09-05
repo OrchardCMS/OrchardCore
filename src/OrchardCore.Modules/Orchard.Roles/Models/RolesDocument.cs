@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Orchard.Security;
+using OrchardCore.Security;
 
-namespace Orchard.Roles.Models
+namespace OrchardCore.Roles.Models
 {
     public class RolesDocument
     {

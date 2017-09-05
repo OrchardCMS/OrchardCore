@@ -1,11 +1,11 @@
-﻿using Orchard.ContentManagement;
-using Orchard.Contents.ViewModels;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.Navigation;
+﻿using OrchardCore.ContentManagement;
+using OrchardCore.Contents.ViewModels;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Navigation;
 using System.Threading.Tasks;
 using YesSql;
 
-namespace Orchard.Contents.Services
+namespace OrchardCore.Contents.Services
 {
     public interface IContentAdminFilter
     {

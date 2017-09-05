@@ -7,19 +7,19 @@ using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Orchard.DeferredTasks;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Builders;
-using Orchard.Environment.Shell.Descriptor;
-using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.Environment.Shell.Models;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
-using Orchard.Setup.Events;
+using OrchardCore.DeferredTasks;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Descriptor;
+using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
+using OrchardCore.Setup.Events;
 using YesSql;
 
-namespace Orchard.Setup.Services
+namespace OrchardCore.Setup.Services
 {
     public class SetupService : ISetupService
     {

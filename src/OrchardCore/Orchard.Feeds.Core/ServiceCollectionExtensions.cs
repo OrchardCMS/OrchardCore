@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Feeds.Rss;
+using OrchardCore.Feeds.Rss;
 
-namespace Orchard.Feeds
+namespace OrchardCore.Feeds
 {
     public static class ServiceCollectionExtensions
     {

@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Orchard.Admin;
-using Orchard.Deployment.Remote.Services;
-using Orchard.Deployment.Remote.ViewModels;
-using Orchard.DisplayManagement.Notify;
+using OrchardCore.Admin;
+using OrchardCore.Deployment.Remote.Services;
+using OrchardCore.Deployment.Remote.ViewModels;
+using OrchardCore.DisplayManagement.Notify;
 using YesSql;
 
-namespace Orchard.Deployment.Remote.Controllers
+namespace OrchardCore.Deployment.Remote.Controllers
 {
 
     [Admin]

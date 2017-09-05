@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.ContentTypes.ViewModels
+namespace OrchardCore.ContentTypes.ViewModels
 {
     public class AddPartsViewModel
     {

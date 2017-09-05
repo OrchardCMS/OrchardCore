@@ -1,4 +1,4 @@
-namespace Orchard.Templates.ViewModels
+namespace OrchardCore.Templates.ViewModels
 {
     public class TemplateViewModel
     {

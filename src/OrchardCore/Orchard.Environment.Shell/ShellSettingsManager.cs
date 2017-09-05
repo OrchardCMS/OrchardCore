@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     public class ShellSettingsManager : IShellSettingsManager
     {

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Orchard.Localization.PortableObject
+namespace OrchardCore.Localization.PortableObject
 {
     public class PoParser
     {

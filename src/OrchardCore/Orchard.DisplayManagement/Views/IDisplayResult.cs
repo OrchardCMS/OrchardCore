@@ -1,6 +1,6 @@
-﻿using Orchard.DisplayManagement.Handlers;
+﻿using OrchardCore.DisplayManagement.Handlers;
 
-namespace Orchard.DisplayManagement.Views
+namespace OrchardCore.DisplayManagement.Views
 {
     public interface IDisplayResult
     {

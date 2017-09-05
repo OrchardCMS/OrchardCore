@@ -1,12 +1,12 @@
 using System.Linq;
 using Microsoft.AspNetCore.Html;
-using Orchard.Body.Model;
-using Orchard.Body.Settings;
-using Orchard.ContentManagement.Handlers;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Models;
+using OrchardCore.Body.Model;
+using OrchardCore.Body.Settings;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Models;
 
-namespace Orchard.Body.Handlers
+namespace OrchardCore.Body.Handlers
 {
     public class BodyPartHandler : ContentPartHandler<BodyPart>
     {

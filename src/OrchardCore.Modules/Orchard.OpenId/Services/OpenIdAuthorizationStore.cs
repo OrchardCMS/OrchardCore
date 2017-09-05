@@ -2,9 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenIddict.Core;
-using Orchard.OpenId.Models;
+using OrchardCore.OpenId.Models;
 
-namespace Orchard.OpenId.Services
+namespace OrchardCore.OpenId.Services
 {
     public class OpenIdAuthorizationStore : IOpenIddictAuthorizationStore<OpenIdAuthorization>
     {

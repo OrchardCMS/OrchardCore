@@ -1,4 +1,4 @@
-namespace Orchard.Autoroute.Models
+namespace OrchardCore.Autoroute.Models
 {
     public class AutoroutePartSettings
     {

@@ -1,4 +1,4 @@
-namespace Orchard.Deployment.ViewModels
+namespace OrchardCore.Deployment.ViewModels
 {
     public class ContentTypeDeploymentStepViewModel
     {

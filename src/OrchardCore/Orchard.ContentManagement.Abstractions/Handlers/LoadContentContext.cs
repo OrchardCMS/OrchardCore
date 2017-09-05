@@ -1,4 +1,4 @@
-namespace Orchard.ContentManagement.Handlers
+namespace OrchardCore.ContentManagement.Handlers
 {
     public class LoadContentContext : ContentContextBase
     {

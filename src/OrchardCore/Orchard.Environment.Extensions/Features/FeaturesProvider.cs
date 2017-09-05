@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
-namespace Orchard.Environment.Extensions.Features
+namespace OrchardCore.Environment.Extensions.Features
 {
     public class FeaturesProvider : IFeaturesProvider
     {

@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
-using Orchard.Settings;
+using OrchardCore.Settings;
 
-namespace Orchard.HomeRoute
+namespace OrchardCore.HomeRoute
 {
     public class HomePageRoute : Route
     {

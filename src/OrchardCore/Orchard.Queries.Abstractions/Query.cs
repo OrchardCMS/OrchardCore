@@ -1,5 +1,5 @@
 
-namespace Orchard.Queries
+namespace OrchardCore.Queries
 {
     public class Query
     {

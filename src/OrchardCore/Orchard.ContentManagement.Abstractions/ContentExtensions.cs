@@ -1,8 +1,8 @@
 using System;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement.Metadata.Builders;
+using OrchardCore.ContentManagement.Metadata.Builders;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     public static class ContentExtensions
     {

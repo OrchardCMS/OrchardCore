@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     /// <summary>
     /// Describes a group and its position relative to other groups.

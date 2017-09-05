@@ -1,15 +1,15 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentManagement.MetaData;
-using Orchard.Contents.Models;
-using Orchard.Contents.ViewModels;
-using Orchard.ContentTypes.Editors;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.Contents.Models;
+using OrchardCore.Contents.ViewModels;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.Lists.Settings
+namespace OrchardCore.Lists.Settings
 {
     public class CommonPartSettingsDisplayDriver : ContentTypePartDisplayDriver
     {

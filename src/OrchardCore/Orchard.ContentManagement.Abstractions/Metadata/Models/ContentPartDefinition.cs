@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.ContentManagement.Metadata.Models
+namespace OrchardCore.ContentManagement.Metadata.Models
 {
     public class ContentPartDefinition : ContentDefinition
     {

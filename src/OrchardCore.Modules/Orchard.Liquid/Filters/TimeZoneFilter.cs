@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.Modules;
-using Orchard.Settings;
+using OrchardCore.Settings;
 
-namespace Orchard.Liquid.Filters
+namespace OrchardCore.Liquid.Filters
 {
     public class TimeZoneFilter : ILiquidFilter
     {

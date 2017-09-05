@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Orchard.BackgroundTasks;
+using OrchardCore.BackgroundTasks;
 
-namespace Orchard.Demo.Services
+namespace OrchardCore.Demo.Services
 {
     public class TestBackgroundTask : IBackgroundTask
     {

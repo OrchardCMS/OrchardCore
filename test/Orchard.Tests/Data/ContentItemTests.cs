@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 using Xunit;
 
-namespace Orchard.Tests.Data
+namespace OrchardCore.Tests.Data
 {
     public class ContentItemTests
     {

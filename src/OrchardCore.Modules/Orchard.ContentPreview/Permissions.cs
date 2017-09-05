@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Orchard.Security.Permissions;
+using OrchardCore.Security.Permissions;
 
-namespace Orchard.ContentPreview
+namespace OrchardCore.ContentPreview
 {
     public class Permissions : IPermissionProvider
     {

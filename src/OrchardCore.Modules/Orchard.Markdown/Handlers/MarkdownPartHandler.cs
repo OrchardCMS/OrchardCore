@@ -1,12 +1,12 @@
 using System.Linq;
 using Microsoft.AspNetCore.Html;
-using Orchard.ContentManagement.Handlers;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Models;
-using Orchard.Markdown.Model;
-using Orchard.Markdown.Settings;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Models;
+using OrchardCore.Markdown.Model;
+using OrchardCore.Markdown.Settings;
 
-namespace Orchard.Markdown.Handlers
+namespace OrchardCore.Markdown.Handlers
 {
     public class MarkdownPartHandler : ContentPartHandler<MarkdownPart>
     {

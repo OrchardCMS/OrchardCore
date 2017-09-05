@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Models;
-using Orchard.Hosting.ShellBuilders;
-using Orchard.Tenants.ViewModels;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Tenants.ViewModels;
 
-namespace Orchard.Tenants.Controllers
+namespace OrchardCore.Tenants.Controllers
 {
     public class AdminController : Controller
     {

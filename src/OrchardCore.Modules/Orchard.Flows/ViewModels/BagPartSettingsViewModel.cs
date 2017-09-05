@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Specialized;
-using Orchard.Flows.Models;
+using OrchardCore.Flows.Models;
 
-namespace Orchard.Flows.ViewModels
+namespace OrchardCore.Flows.ViewModels
 {
     public class BagPartSettingsViewModel
     {

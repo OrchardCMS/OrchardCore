@@ -5,10 +5,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Orchard.Security;
-using Orchard.Security.Permissions;
+using OrchardCore.Security;
+using OrchardCore.Security.Permissions;
 
-namespace Orchard.Roles
+namespace OrchardCore.Roles
 {
     /// <summary>
     /// This authorization handler ensures that implied permissions are checked.

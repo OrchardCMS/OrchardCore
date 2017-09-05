@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace Orchard.DisplayManagement.ModelBinding
+namespace OrchardCore.DisplayManagement.ModelBinding
 {
     public class LocalModelBinderAccessor : IUpdateModelAccessor
     {

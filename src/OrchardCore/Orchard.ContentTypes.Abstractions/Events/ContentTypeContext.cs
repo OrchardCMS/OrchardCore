@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement.Metadata.Models;
+﻿using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace Orchard.ContentTypes.Events
+namespace OrchardCore.ContentTypes.Events
 {
     public class ContentTypeContext
     {

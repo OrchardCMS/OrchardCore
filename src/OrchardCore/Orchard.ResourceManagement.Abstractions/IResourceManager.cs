@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 
-namespace Orchard.ResourceManagement
+namespace OrchardCore.ResourceManagement
 {
     public interface IResourceManager
     {

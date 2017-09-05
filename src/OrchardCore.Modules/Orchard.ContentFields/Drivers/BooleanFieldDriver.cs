@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Orchard.ContentFields.ViewModels;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Display.Models;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.ContentFields.ViewModels;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.ContentFields.Fields
+namespace OrchardCore.ContentFields.Fields
 {
     public class BooleanFieldDisplayDriver : ContentFieldDisplayDriver<BooleanField>
     {

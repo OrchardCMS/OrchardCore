@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Orchard.ContentManagement.Metadata.Models
+namespace OrchardCore.ContentManagement.Metadata.Models
 {
     public static class MetaDataExtensions
     {

@@ -1,13 +1,13 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Lucene.ViewModels;
-using Orchard.Queries;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Lucene.ViewModels;
+using OrchardCore.Queries;
 
-namespace Orchard.Lucene.Drivers
+namespace OrchardCore.Lucene.Drivers
 {
     public class LuceneQueryDisplayDriver : DisplayDriver<Query, LuceneQuery>
     {

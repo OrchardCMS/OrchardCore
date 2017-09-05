@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Orchard.Users.Services;
-using Orchard.Users.ViewModels;
+using OrchardCore.Users.Services;
+using OrchardCore.Users.ViewModels;
 
-namespace Orchard.Users.Controllers
+namespace OrchardCore.Users.Controllers
 {
     [Authorize]
     public class AccountController : Controller

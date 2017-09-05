@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Orchard.Liquid;
+using OrchardCore.Liquid;
 
-namespace Orchard.Media.Filters
+namespace OrchardCore.Media.Filters
 {
     public class MediaUrlFilter : ILiquidFilter
     {

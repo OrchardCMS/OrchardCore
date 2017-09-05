@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Orchard.Environment.Shell.State
+namespace OrchardCore.Environment.Shell.State
 {
     /// <summary>
     /// Reprensents the state if a feature in a tenant.

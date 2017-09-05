@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace Orchard.Queries
+namespace OrchardCore.Queries
 {
     public interface IQuerySource
     {

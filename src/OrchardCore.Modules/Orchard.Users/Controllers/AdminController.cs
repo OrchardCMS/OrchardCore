@@ -8,19 +8,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Navigation;
-using Orchard.Security;
-using Orchard.Security.Services;
-using Orchard.Settings;
-using Orchard.Users.Indexes;
-using Orchard.Users.Models;
-using Orchard.Users.Services;
-using Orchard.Users.ViewModels;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Navigation;
+using OrchardCore.Security;
+using OrchardCore.Security.Services;
+using OrchardCore.Settings;
+using OrchardCore.Users.Indexes;
+using OrchardCore.Users.Models;
+using OrchardCore.Users.Services;
+using OrchardCore.Users.ViewModels;
 using YesSql;
 
-namespace Orchard.Users.Controllers
+namespace OrchardCore.Users.Controllers
 {
     public class AdminController : Controller
     {

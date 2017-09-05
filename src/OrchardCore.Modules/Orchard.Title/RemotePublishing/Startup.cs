@@ -1,8 +1,8 @@
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.MetaWeblog;
+using OrchardCore.MetaWeblog;
 
-namespace Orchard.Title.RemotePublishing
+namespace OrchardCore.Title.RemotePublishing
 {
 
     [RequireFeatures("Orchard.RemotePublishing")]

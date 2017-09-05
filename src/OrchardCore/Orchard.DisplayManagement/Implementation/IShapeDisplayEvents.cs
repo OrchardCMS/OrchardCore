@@ -1,4 +1,4 @@
-﻿namespace Orchard.DisplayManagement.Implementation
+﻿namespace OrchardCore.DisplayManagement.Implementation
 {
     public interface IShapeDisplayEvents
     {

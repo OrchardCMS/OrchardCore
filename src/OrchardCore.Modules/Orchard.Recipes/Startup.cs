@@ -1,12 +1,12 @@
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Data.Migration;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.RecipeSteps;
-using Orchard.Recipes.Services;
+using OrchardCore.Data.Migration;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.RecipeSteps;
+using OrchardCore.Recipes.Services;
 using YesSql.Indexes;
 
-namespace Orchard.Recipes
+namespace OrchardCore.Recipes
 {
     /// <summary>
     /// These services are registered on the tenant service collection

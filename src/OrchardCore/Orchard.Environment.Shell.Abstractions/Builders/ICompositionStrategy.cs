@@ -1,8 +1,8 @@
-﻿using Orchard.Environment.Shell.Builders.Models;
-using Orchard.Environment.Shell.Descriptor.Models;
+﻿using OrchardCore.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using System.Threading.Tasks;
 
-namespace Orchard.Environment.Shell.Builders
+namespace OrchardCore.Environment.Shell.Builders
 {
     /// <summary>
     /// Service at the host level to transform the cachable descriptor into the loadable blueprint.

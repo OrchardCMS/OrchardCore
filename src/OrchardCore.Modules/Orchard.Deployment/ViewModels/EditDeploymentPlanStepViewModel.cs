@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Orchard.Deployment.ViewModels
+namespace OrchardCore.Deployment.ViewModels
 {
     public class EditDeploymentPlanStepViewModel
     {

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace Orchard.Indexing
+namespace OrchardCore.Indexing
 {
     /// <summary>
     /// An implementation of <see cref="ContentFieldIndexHandler&lt;TField&gt;"/> is able to take part in the rendering of

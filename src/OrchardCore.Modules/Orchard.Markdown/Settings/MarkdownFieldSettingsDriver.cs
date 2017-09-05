@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Orchard.Markdown.Fields;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentTypes.Editors;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.Markdown.Fields;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.Markdown.Settings
+namespace OrchardCore.Markdown.Settings
 {
 
     public class MarkdownFieldSettingsDriver : ContentPartFieldDisplayDriver<MarkdownField>

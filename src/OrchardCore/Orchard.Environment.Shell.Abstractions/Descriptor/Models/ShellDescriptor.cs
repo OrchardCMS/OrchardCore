@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Orchard.Environment.Shell.Descriptor.Models
+namespace OrchardCore.Environment.Shell.Descriptor.Models
 {
     /// <summary>
     /// Contains a snapshot of a tenant's enabled features.

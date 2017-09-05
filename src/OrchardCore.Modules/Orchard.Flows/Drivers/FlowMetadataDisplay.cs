@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Flows.Models;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Flows.Models;
 
-namespace Orchard.Flows.Drivers
+namespace OrchardCore.Flows.Drivers
 {
     public class FlowMetadataDisplay : ContentDisplayDriver
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Orchard.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Models;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     /// <summary>
     /// Represents the minimalistic set of fields stored for each tenant. This

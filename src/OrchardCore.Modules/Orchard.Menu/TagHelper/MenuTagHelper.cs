@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.TagHelpers;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.TagHelpers;
 
-namespace Orchard.Menu.TagHelpers
+namespace OrchardCore.Menu.TagHelpers
 {
 	[HtmlTargetElement("menu")]
 	public class MenuTagHelper : BaseShapeTagHelper

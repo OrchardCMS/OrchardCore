@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 
-namespace Orchard.Environment.Navigation
+namespace OrchardCore.Environment.Navigation
 {
     public class NavigationHelper
     {

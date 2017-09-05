@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using OrchardCore.Features.Models;
-using Orchard.Environment.Extensions;
+using OrchardCore.Environment.Extensions;
 
 namespace OrchardCore.Features.ViewModels 
 {

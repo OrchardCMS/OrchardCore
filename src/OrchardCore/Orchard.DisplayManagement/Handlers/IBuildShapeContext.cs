@@ -1,4 +1,4 @@
-﻿namespace Orchard.DisplayManagement.Handlers
+﻿namespace OrchardCore.DisplayManagement.Handlers
 {
     /// <summary>
     /// Represents a context object that is used to build and place a list of shape representing

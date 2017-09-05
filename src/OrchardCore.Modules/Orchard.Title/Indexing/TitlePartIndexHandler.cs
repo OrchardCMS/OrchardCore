@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Orchard.Indexing;
-using Orchard.Title.Model;
+using OrchardCore.Indexing;
+using OrchardCore.Title.Model;
 
-namespace Orchard.Title.Indexing
+namespace OrchardCore.Title.Indexing
 {
     public class TitlePartIndexHandler : ContentPartIndexHandler<TitlePart>
     {

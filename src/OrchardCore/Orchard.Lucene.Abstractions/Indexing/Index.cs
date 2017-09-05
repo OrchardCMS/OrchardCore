@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Orchard.Lucene.Indexing
+namespace OrchardCore.Lucene.Indexing
 {
     /// <summary>
     /// Represents the settings of a Lucene index.

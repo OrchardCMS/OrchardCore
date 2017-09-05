@@ -1,4 +1,4 @@
-﻿namespace Orchard.DisplayManagement.Razor
+﻿namespace OrchardCore.DisplayManagement.Razor
 {
     public interface IRazorViewExtensionProvider
     {

@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Orchard.BackgroundTasks
+namespace OrchardCore.BackgroundTasks
 {
     /// <summary>
     /// An implementation is instanciated once per host, and reused. <see cref="DoWorkAsync(IServiceProvider, CancellationToken)"/>

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using YesSql;
 
-namespace Orchard.Lucene.Controllers
+namespace OrchardCore.Lucene.Controllers
 {
     public class ApiController : Controller
     {

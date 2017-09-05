@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orchard.ContentManagement.Handlers
+namespace OrchardCore.ContentManagement.Handlers
 {
     public abstract class ContentPartHandler<TPart> : IContentPartHandler where TPart : ContentPart, new()
     {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Orchard.ContentTypes.Services
+namespace OrchardCore.ContentTypes.Services
 {
     public interface IStereotypesProvider
     {

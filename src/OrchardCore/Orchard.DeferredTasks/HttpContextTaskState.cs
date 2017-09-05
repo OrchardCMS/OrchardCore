@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Orchard.DeferredTasks
+namespace OrchardCore.DeferredTasks
 {
     /// <summary>
     /// Maintains a list of tasks by using the active <see cref="HttpContext.Items"/> property

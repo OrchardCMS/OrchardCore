@@ -1,7 +1,7 @@
 using System;
-using Orchard.Data.Migration;
+using OrchardCore.Data.Migration;
 
-namespace Orchard.Indexing
+namespace OrchardCore.Indexing
 {
     public class Migrations : DataMigration
     {

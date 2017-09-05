@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.Indexing.Settings
+namespace OrchardCore.Indexing.Settings
 {
     /// <summary>
     /// Represents the indexing settings for a content type.

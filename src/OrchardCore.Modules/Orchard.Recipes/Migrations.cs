@@ -1,7 +1,7 @@
-﻿using Orchard.Data.Migration;
-using Orchard.Recipes.Models;
+﻿using OrchardCore.Data.Migration;
+using OrchardCore.Recipes.Models;
 
-namespace Orchard.Recipes
+namespace OrchardCore.Recipes
 {
     public class Migrations : DataMigration
     {

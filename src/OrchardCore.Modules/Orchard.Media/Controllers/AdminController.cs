@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Orchard.StorageProviders;
+using OrchardCore.StorageProviders;
 
-namespace Orchard.Media.Controllers
+namespace OrchardCore.Media.Controllers
 {
     public class AdminController : Controller
     {

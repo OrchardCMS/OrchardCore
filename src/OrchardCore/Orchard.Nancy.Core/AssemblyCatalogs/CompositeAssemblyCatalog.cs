@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Nancy;
 
-namespace Orchard.Nancy.AssemblyCatalogs
+namespace OrchardCore.Nancy.AssemblyCatalogs
 {
     public class CompositeAssemblyCatalog : IAssemblyCatalog
     {

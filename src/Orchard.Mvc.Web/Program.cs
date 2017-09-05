@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Orchard.Mvc.Web
+namespace OrchardCore.Mvc.Web
 {
     public class Program
     {

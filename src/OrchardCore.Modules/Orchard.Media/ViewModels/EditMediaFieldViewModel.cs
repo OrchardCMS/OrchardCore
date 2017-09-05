@@ -1,8 +1,8 @@
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.Media.Fields;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Media.Fields;
 
-namespace Orchard.Media.ViewModels
+namespace OrchardCore.Media.ViewModels
 {
     public class EditMediaFieldViewModel
     {

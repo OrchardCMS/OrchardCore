@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Orchard.Themes.Services
+namespace OrchardCore.Themes.Services
 {
     public interface IThemeService
     {

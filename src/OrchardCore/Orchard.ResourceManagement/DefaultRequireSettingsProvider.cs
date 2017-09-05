@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 
-namespace Orchard.ResourceManagement
+namespace OrchardCore.ResourceManagement
 {
     public class DefaultRequireSettingsProvider : IRequireSettingsProvider
     {

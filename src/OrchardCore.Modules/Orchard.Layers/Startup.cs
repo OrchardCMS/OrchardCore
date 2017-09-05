@@ -4,25 +4,25 @@ using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Handlers;
-using Orchard.Data.Migration;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.Environment.Navigation;
-using Orchard.Layers.Drivers;
-using Orchard.Layers.Handlers;
-using Orchard.Layers.Indexes;
-using Orchard.Layers.Models;
-using Orchard.Layers.Recipes;
-using Orchard.Layers.Services;
-using Orchard.Recipes;
-using Orchard.Scripting;
-using Orchard.Security.Permissions;
-using Orchard.Settings;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Layers.Drivers;
+using OrchardCore.Layers.Handlers;
+using OrchardCore.Layers.Indexes;
+using OrchardCore.Layers.Models;
+using OrchardCore.Layers.Recipes;
+using OrchardCore.Layers.Services;
+using OrchardCore.Recipes;
+using OrchardCore.Scripting;
+using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using YesSql.Indexes;
 
-namespace Orchard.Layers
+namespace OrchardCore.Layers
 {
     public class Startup : StartupBase
     {

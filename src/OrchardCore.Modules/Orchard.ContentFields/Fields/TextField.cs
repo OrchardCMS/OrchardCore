@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement;
+﻿using OrchardCore.ContentManagement;
 
-namespace Orchard.ContentFields.Fields
+namespace OrchardCore.ContentFields.Fields
 {
     public class TextField : ContentField
     {

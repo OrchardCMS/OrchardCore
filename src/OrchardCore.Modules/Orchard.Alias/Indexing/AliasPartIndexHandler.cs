@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Orchard.Alias.Models;
-using Orchard.Indexing;
+using OrchardCore.Alias.Models;
+using OrchardCore.Indexing;
 
-namespace Orchard.Alias.Indexing
+namespace OrchardCore.Alias.Indexing
 {
     public class AliasPartIndexHandler : ContentPartIndexHandler<AliasPart>
     {

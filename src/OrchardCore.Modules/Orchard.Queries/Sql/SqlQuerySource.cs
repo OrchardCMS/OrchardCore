@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using Dapper;
 using Fluid;
 using Newtonsoft.Json.Linq;
-using Orchard.Liquid;
+using OrchardCore.Liquid;
 using YesSql;
 
-namespace Orchard.Queries.Sql
+namespace OrchardCore.Queries.Sql
 {
     public class SqlQuerySource : IQuerySource
     {

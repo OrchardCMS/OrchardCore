@@ -1,4 +1,4 @@
-﻿//using Orchard.Data;
+﻿//using OrchardCore.Data;
 //using System;
 //using System.Collections.Generic;
 //using System.Linq;
@@ -10,7 +10,7 @@
 //using System.Reflection;
 //#endif
 
-//namespace Orchard.Tests.Data {
+//namespace OrchardCore.Tests.Data {
 //    public class DefaultContentStorageManagerTest {
 //        protected IServiceProvider CreateContainer() {
 //            var services = new ServiceCollection();

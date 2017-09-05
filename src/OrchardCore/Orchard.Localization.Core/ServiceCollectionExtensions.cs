@@ -2,9 +2,9 @@ using System;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Orchard.Localization.PortableObject;
+using OrchardCore.Localization.PortableObject;
 
-namespace Orchard.Localization
+namespace OrchardCore.Localization
 {
     public static class ServiceCollectionExtensions
     {

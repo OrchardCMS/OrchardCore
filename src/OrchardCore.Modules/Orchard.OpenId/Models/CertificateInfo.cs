@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Orchard.OpenId.Models
+namespace OrchardCore.OpenId.Models
 {
     public class CertificateInfo
     {

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Orchard.Environment.Commands
+namespace OrchardCore.Environment.Commands
 {
     public class CommandDescriptor
     {

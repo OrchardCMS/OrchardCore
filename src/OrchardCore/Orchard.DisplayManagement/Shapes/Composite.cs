@@ -3,7 +3,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Orchard.DisplayManagement.Shapes
+namespace OrchardCore.DisplayManagement.Shapes
 {
     public class Composite : DynamicObject
     {

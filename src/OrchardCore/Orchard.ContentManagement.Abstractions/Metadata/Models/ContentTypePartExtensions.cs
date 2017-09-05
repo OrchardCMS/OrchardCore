@@ -1,7 +1,7 @@
 ﻿using System;
-using Orchard.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Settings;
 
-namespace Orchard.ContentManagement.Metadata.Models
+namespace OrchardCore.ContentManagement.Metadata.Models
 {
     public static class ContentTypePartExtensions
     {

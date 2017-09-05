@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Environment.Extensions.Loaders
+namespace OrchardCore.Environment.Extensions.Loaders
 {
     internal class CompositeExtensionLoader : IExtensionLoader
     {

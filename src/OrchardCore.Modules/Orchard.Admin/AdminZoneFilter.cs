@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Orchard.Admin
+namespace OrchardCore.Admin
 {
     public class AdminZoneFilter : IActionFilter, IFilterMetadata
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 
-namespace Orchard.Tests
+namespace OrchardCore.Tests
 {
     public class StubLoggerFactory : ILoggerFactory
     {

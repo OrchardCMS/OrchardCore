@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement;
+﻿using OrchardCore.ContentManagement;
 
-namespace Orchard.Markdown.Fields
+namespace OrchardCore.Markdown.Fields
 {
     public class MarkdownField : ContentField
     {

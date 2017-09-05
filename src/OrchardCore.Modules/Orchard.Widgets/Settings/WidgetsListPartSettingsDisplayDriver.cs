@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using Orchard.Widgets.Models;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentTypes.Editors;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.Widgets.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.Widgets.Settings
+namespace OrchardCore.Widgets.Settings
 {
     public class WidgetsListPartSettingsDisplayDriver : ContentTypePartDisplayDriver
     {

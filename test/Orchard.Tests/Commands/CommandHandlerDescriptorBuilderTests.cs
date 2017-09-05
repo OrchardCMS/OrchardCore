@@ -1,10 +1,10 @@
-﻿using Orchard.Environment.Commands;
+﻿using OrchardCore.Environment.Commands;
 using System.Linq;
 using Xunit;
 using System.Reflection;
 using Microsoft.Extensions.Localization;
 
-namespace Orchard.Tests.Commands
+namespace OrchardCore.Tests.Commands
 {
     public class CommandHandlerDescriptorBuilderTests
     {

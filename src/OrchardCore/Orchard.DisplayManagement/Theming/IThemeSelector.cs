@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Orchard.DisplayManagement.Theming
+namespace OrchardCore.DisplayManagement.Theming
 {
     /// <summary>
     /// When implemented, defines a way to provide specific themes for the current request.

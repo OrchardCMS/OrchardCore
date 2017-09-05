@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Display.Models;
-using Orchard.ContentManagement.MetaData;
-using Orchard.DisplayManagement.Views;
-using Orchard.Flows.Models;
-using Orchard.Flows.ViewModels;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Flows.Models;
+using OrchardCore.Flows.ViewModels;
 
-namespace Orchard.Flows.Drivers
+namespace OrchardCore.Flows.Drivers
 {
     public class FlowPartDisplay : ContentPartDisplayDriver<FlowPart>
     {

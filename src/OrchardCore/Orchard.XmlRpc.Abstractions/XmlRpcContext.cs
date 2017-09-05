@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Orchard.Core.XmlRpc.Models;
+using OrchardCore.XmlRpc.Models;
 
-namespace Orchard.Core.XmlRpc {
+namespace OrchardCore.XmlRpc 
+{
     public class XmlRpcContext
     {
         public ControllerContext ControllerContext { get; set; } 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Orchard.Alias.Settings
+namespace OrchardCore.Alias.Settings
 {
     public class AliasPartSettingsViewModel
     {

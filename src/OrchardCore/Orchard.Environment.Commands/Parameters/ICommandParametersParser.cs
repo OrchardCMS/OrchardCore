@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.Environment.Commands.Parameters
+namespace OrchardCore.Environment.Commands.Parameters
 {
     public interface ICommandParametersParser
     {

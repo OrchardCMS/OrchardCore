@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
+using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using Xunit;
 
-namespace Orchard.Tests.DisplayManagement.Decriptors
+namespace OrchardCore.Tests.DisplayManagement.Decriptors
 {
     public class BasicShapeTemplateHarvesterTests
     {

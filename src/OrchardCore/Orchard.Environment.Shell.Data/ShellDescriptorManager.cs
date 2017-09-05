@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell.Descriptor;
-using Orchard.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Descriptor;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using YesSql;
 
-namespace Orchard.Environment.Shell.Data.Descriptors
+namespace OrchardCore.Environment.Shell.Data.Descriptors
 {
     /// <summary>
     /// Implements <see cref="IShellDescriptorManager"/> by providing the list of features store in the database. 

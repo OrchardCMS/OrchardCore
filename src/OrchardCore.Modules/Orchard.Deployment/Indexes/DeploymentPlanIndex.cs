@@ -1,6 +1,6 @@
 ﻿using YesSql.Indexes;
 
-namespace Orchard.Deployment.Indexes
+namespace OrchardCore.Deployment.Indexes
 {
     public class DeploymentPlanIndex : MapIndex
     {

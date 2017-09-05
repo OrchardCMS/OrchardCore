@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Models;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using System.Linq;
 
 namespace OrchardCore.Modules

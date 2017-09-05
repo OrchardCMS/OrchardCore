@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Orchard.DisplayManagement.ModelBinding
+namespace OrchardCore.DisplayManagement.ModelBinding
 {
     public class ControllerModelUpdater : IUpdateModel
     {

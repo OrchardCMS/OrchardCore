@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.Diagnostics
+namespace OrchardCore.Diagnostics
 {
     public class Startup : StartupBase
     {

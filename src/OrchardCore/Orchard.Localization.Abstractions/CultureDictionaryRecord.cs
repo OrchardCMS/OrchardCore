@@ -1,6 +1,6 @@
 using System;
 
-namespace Orchard.Localization
+namespace OrchardCore.Localization
 {
     public class CultureDictionaryRecord
     {

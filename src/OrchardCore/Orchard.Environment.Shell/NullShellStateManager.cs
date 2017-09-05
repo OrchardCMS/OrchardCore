@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell.State;
+using OrchardCore.Environment.Shell.State;
 using System.Threading.Tasks;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     public class NullShellStateManager : IShellStateManager
     {

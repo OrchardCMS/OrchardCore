@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Extensions.Localization;
 
-namespace Orchard.Tests.Stubs
+namespace OrchardCore.Tests.Stubs
 {
     public class NullStringLocalizer : IStringLocalizer
     {

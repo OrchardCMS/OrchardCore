@@ -1,7 +1,7 @@
-using Orchard.Data.Migration;
+using OrchardCore.Data.Migration;
 using System;
 
-namespace Orchard.ContentManagement.Records
+namespace OrchardCore.ContentManagement.Records
 {
     public class Migrations : DataMigration
     {

@@ -1,4 +1,4 @@
-namespace Orchard.Lists.Models
+namespace OrchardCore.Lists.Models
 {
     public class ListPartSettings
     {

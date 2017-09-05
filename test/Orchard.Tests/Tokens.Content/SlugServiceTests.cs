@@ -1,7 +1,7 @@
-using Orchard.Liquid.Services;
+using OrchardCore.Liquid.Services;
 using Xunit;
 
-namespace Orchard.Tests.Tokens.Content
+namespace OrchardCore.Tests.Tokens.Content
 {
     public class SlugServiceTests
     {

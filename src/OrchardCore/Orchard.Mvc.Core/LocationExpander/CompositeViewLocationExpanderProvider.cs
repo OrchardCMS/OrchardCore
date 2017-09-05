@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.Mvc.LocationExpander
+namespace OrchardCore.Mvc.LocationExpander
 {
     internal class CompositeViewLocationExpanderProvider : IViewLocationExpanderProvider
     {

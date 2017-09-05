@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Html;
 using System.Text;
 
-namespace Orchard.DisplayManagement.Descriptors
+namespace OrchardCore.DisplayManagement.Descriptors
 {
     public class DemoShapeProvider : IShapeTableProvider, IShapeAttributeProvider
     {

@@ -1,6 +1,6 @@
-using Orchard.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace Orchard.ContentManagement.Handlers
+namespace OrchardCore.ContentManagement.Handlers
 {
     public class ActivatingContentContext
     {

@@ -7,21 +7,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentTypes.Editors;
-using Orchard.ContentTypes.Services;
-using Orchard.ContentTypes.ViewModels;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Environment.Shell;
-using Orchard.Mvc.Utilities;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.ContentTypes.Services;
+using OrchardCore.ContentTypes.ViewModels;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Mvc.Utilities;
 using YesSql;
 using System.Reflection;
-using Orchard.Mvc.ActionConstraints;
+using OrchardCore.Mvc.ActionConstraints;
 
-namespace Orchard.ContentTypes.Controllers
+namespace OrchardCore.ContentTypes.Controllers
 {
     public class AdminController : Controller, IUpdateModel
     {

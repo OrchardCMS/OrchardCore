@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using Orchard.Data;
-using Orchard.Recipes.Models;
-using Orchard.Setup.Annotations;
+using OrchardCore.Data;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Setup.Annotations;
 
-namespace Orchard.Setup.ViewModels
+namespace OrchardCore.Setup.ViewModels
 {
     public class SetupViewModel
     {

@@ -7,14 +7,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
-using Orchard.Deployment.Remote.Models;
-using Orchard.Deployment.Remote.Services;
-using Orchard.Deployment.Services;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Recipes.Services;
+using OrchardCore.Deployment.Remote.Models;
+using OrchardCore.Deployment.Remote.Services;
+using OrchardCore.Deployment.Services;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Recipes.Services;
 using YesSql;
 
-namespace Orchard.Deployment.Remote.Controllers
+namespace OrchardCore.Deployment.Remote.Controllers
 {
     public class ImportRemoteInstanceController : Controller
     {

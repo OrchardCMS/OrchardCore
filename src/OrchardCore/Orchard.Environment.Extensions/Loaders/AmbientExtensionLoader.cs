@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.Logging;
 
-namespace Orchard.Environment.Extensions.Loaders
+namespace OrchardCore.Environment.Extensions.Loaders
 {
     public class AmbientExtensionLoader : IExtensionLoader
     {

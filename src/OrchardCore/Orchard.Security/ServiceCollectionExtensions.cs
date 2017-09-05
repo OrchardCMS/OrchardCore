@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Security.AuthorizationHandlers;
+using OrchardCore.Security.AuthorizationHandlers;
 
-namespace Orchard.Security
+namespace OrchardCore.Security
 {
     public static class ServiceCollectionExtensions
     {

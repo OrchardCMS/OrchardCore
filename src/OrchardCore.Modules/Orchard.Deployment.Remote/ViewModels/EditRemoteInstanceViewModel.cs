@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Orchard.Deployment.Remote.ViewModels
+namespace OrchardCore.Deployment.Remote.ViewModels
 {
     public class EditRemoteInstanceViewModel
     {

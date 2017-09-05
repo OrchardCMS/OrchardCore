@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     /// <summary>
     /// Represents a service that can provide an <see cref="ITypeActivator{TInstance}"/> instance for a 

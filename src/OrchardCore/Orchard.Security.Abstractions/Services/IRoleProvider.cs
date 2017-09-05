@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Orchard.Security.Services
+namespace OrchardCore.Security.Services
 {
     public interface IRoleProvider
     {

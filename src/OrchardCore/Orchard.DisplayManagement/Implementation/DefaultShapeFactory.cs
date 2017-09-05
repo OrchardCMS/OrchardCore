@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Shapes;
-using Orchard.DisplayManagement.Theming;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Theming;
 
-namespace Orchard.DisplayManagement.Implementation
+namespace OrchardCore.DisplayManagement.Implementation
 {
     public class DefaultShapeFactory : DynamicObject, IShapeFactory
     {

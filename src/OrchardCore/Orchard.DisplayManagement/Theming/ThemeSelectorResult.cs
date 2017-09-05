@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Orchard.DisplayManagement.Theming
+namespace OrchardCore.DisplayManagement.Theming
 {
     public class ThemeSelectorResult
     {

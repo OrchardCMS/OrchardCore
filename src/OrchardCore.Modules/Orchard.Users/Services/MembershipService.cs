@@ -1,9 +1,9 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Orchard.Users.Models;
+using OrchardCore.Users.Models;
 
-namespace Orchard.Users.Services
+namespace OrchardCore.Users.Services
 {
     public class MembershipService : IMembershipService
     {

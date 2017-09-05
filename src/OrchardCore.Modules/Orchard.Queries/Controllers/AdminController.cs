@@ -7,15 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Navigation;
-using Orchard.Queries.ViewModels;
-using Orchard.Settings;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Navigation;
+using OrchardCore.Queries.ViewModels;
+using OrchardCore.Settings;
 using YesSql;
 
-namespace Orchard.Queries.Controllers
+namespace OrchardCore.Queries.Controllers
 {
     public class AdminController : Controller, IUpdateModel
     {

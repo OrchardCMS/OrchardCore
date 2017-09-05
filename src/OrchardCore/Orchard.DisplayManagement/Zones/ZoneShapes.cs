@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Shapes;
-using Orchard.Mvc.Utilities;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.Mvc.Utilities;
 
-namespace Orchard.DisplayManagement.Zones
+namespace OrchardCore.DisplayManagement.Zones
 {
     public class ZoneShapes : IShapeAttributeProvider
     {

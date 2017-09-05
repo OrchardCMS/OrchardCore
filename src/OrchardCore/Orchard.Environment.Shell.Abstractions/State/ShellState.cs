@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Orchard.Environment.Shell.State
+namespace OrchardCore.Environment.Shell.State
 {
     /// <summary>
     /// Represents the transitive list of features a tenant is made of at a specific moment.

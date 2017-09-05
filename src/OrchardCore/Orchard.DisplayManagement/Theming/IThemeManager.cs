@@ -1,7 +1,7 @@
-﻿using Orchard.Environment.Extensions;
+﻿using OrchardCore.Environment.Extensions;
 using System.Threading.Tasks;
 
-namespace Orchard.DisplayManagement.Theming
+namespace OrchardCore.DisplayManagement.Theming
 {
     public interface IThemeManager
     {

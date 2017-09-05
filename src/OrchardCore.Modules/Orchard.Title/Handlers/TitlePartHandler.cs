@@ -1,8 +1,8 @@
-﻿using Orchard.ContentManagement;
-using Orchard.ContentManagement.Handlers;
-using Orchard.Title.Model;
+﻿using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Title.Model;
 
-namespace Orchard.Title.Handlers
+namespace OrchardCore.Title.Handlers
 {
     public class TitlePartHandler : ContentPartHandler<TitlePart>
     {

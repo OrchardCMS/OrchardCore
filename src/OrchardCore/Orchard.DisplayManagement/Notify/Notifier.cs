@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc.Localization;
 
-namespace Orchard.DisplayManagement.Notify
+namespace OrchardCore.DisplayManagement.Notify
 {
 
     public class Notifier : INotifier

@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace Orchard.Localization.PortableObject
+namespace OrchardCore.Localization.PortableObject
 {
     public class PoFilesTranslationsProvider : ITranslationProvider
     {

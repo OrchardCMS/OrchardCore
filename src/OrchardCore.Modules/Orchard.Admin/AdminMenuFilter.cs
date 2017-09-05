@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Layout;
-using Orchard.Environment.Navigation;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.Environment.Navigation;
 
-namespace Orchard.Admin
+namespace OrchardCore.Admin
 {
     public class AdminMenuFilter : IResultFilter
     {

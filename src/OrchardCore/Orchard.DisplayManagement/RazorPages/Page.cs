@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Layout;
-using Orchard.DisplayManagement.Shapes;
-using Orchard.DisplayManagement.Title;
+using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Title;
 
-namespace Orchard.DisplayManagement.RazorPages
+namespace OrchardCore.DisplayManagement.RazorPages
 {
     public abstract class Page : Microsoft.AspNetCore.Mvc.RazorPages.Page
     {

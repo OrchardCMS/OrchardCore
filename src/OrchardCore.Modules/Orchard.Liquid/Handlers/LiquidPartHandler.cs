@@ -1,11 +1,11 @@
 ﻿using Fluid;
 using Microsoft.AspNetCore.Html;
-using Orchard.ContentManagement.Handlers;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Models;
-using Orchard.Liquid.Model;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Models;
+using OrchardCore.Liquid.Model;
 
-namespace Orchard.Liquid.Handlers
+namespace OrchardCore.Liquid.Handlers
 {
     public class LiquidPartHandler : ContentPartHandler<LiquidPart>
     {

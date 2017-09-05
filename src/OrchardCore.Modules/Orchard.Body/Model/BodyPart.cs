@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement;
+﻿using OrchardCore.ContentManagement;
 
-namespace Orchard.Body.Model
+namespace OrchardCore.Body.Model
 {
     public class BodyPart : ContentPart
     {

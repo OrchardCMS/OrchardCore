@@ -1,6 +1,6 @@
 ﻿using Nancy;
 
-namespace Orchard.Nancy.HelloWorld
+namespace OrchardCore.Nancy.HelloWorld
 {
     public class HomeModule : NancyModule
     {

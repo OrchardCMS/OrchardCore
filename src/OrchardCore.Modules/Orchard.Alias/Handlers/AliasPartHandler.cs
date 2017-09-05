@@ -1,15 +1,15 @@
 using System;
 using System.Linq;
 using Fluid;
-using Orchard.Alias.Models;
-using Orchard.Alias.Settings;
-using Orchard.ContentManagement.Handlers;
-using Orchard.ContentManagement.MetaData;
-using Orchard.Environment.Cache;
-using Orchard.Liquid;
-using Orchard.Settings;
+using OrchardCore.Alias.Models;
+using OrchardCore.Alias.Settings;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.Environment.Cache;
+using OrchardCore.Liquid;
+using OrchardCore.Settings;
 
-namespace Orchard.Alias.Handlers
+namespace OrchardCore.Alias.Handlers
 {
     public class AliasPartHandler : ContentPartHandler<AliasPart>
     {

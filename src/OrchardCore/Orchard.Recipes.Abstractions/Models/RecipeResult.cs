@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Recipes.Models
+namespace OrchardCore.Recipes.Models
 {
     public class RecipeResult
     {

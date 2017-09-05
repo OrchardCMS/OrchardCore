@@ -1,10 +1,10 @@
 ﻿using System.Linq;
-using Orchard.Queries.Sql;
+using OrchardCore.Queries.Sql;
 using Xunit;
 using YesSql;
 using YesSql.Provider.SqlServer;
 
-namespace Orchard.Tests.Orchard.Queries
+namespace OrchardCore.Tests.Orchard.Queries
 {
     public class SqlParserTests
     {

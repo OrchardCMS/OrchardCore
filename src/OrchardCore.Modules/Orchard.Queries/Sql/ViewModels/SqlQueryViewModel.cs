@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Orchard.Queries.Sql.ViewModels
+namespace OrchardCore.Queries.Sql.ViewModels
 {
     public class SqlQueryViewModel
     {

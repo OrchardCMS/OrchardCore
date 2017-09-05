@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Orchard.ContentManagement.Metadata.Builders
+namespace OrchardCore.ContentManagement.Metadata.Builders
 {
     public static class ContentBuilderSettings
     {

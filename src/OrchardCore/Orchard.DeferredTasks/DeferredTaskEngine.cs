@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace Orchard.DeferredTasks
+namespace OrchardCore.DeferredTasks
 {
     public class DeferredTaskEngine : IDeferredTaskEngine
     {

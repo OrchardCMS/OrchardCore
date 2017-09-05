@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 
-namespace Orchard.DeferredTasks
+namespace OrchardCore.DeferredTasks
 {
     public static class ApplicationBuilderExtensions
     {

@@ -1,7 +1,7 @@
-﻿using Orchard.DisplayManagement.Theming;
+﻿using OrchardCore.DisplayManagement.Theming;
 using System.Threading.Tasks;
 
-namespace Orchard.Themes.Services
+namespace OrchardCore.Themes.Services
 {
     /// <summary>
     /// Provide a fallback theme in case no theme were found or matching the current request.

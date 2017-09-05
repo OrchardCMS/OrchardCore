@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement;
+﻿using OrchardCore.ContentManagement;
 
-namespace Orchard.Menu.Models
+namespace OrchardCore.Menu.Models
 {
     //public class MenuItemPart : ContentPart
     //{

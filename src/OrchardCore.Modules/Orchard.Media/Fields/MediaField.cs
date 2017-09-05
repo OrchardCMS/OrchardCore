@@ -1,6 +1,6 @@
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace Orchard.Media.Fields
+namespace OrchardCore.Media.Fields
 {
     public class MediaField : ContentField
     {

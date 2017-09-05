@@ -1,4 +1,4 @@
-namespace Orchard.CustomSettings.ViewModels
+namespace OrchardCore.CustomSettings.ViewModels
 {
     public class CustomSettingsEditViewModel
     {

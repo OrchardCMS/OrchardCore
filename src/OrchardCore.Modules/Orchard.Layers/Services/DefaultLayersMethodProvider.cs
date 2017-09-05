@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Scripting;
+using OrchardCore.Scripting;
 
-namespace Orchard.Layers.Services
+namespace OrchardCore.Layers.Services
 {
     public class DefaultLayersMethodProvider : IGlobalMethodProvider
     {

@@ -1,12 +1,12 @@
 using System.Threading.Tasks;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.MetaData;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Liquid.Model;
-using Orchard.Liquid.ViewModels;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Liquid.Model;
+using OrchardCore.Liquid.ViewModels;
 
-namespace Orchard.Liquid.Drivers
+namespace OrchardCore.Liquid.Drivers
 {
     public class LiquidPartDisplay : ContentPartDisplayDriver<LiquidPart>
     {

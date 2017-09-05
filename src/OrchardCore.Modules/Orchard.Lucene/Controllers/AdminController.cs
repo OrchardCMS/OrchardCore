@@ -11,13 +11,13 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Liquid;
-using Orchard.Lucene.Services;
-using Orchard.Lucene.ViewModels;
-using Orchard.Mvc.Utilities;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Liquid;
+using OrchardCore.Lucene.Services;
+using OrchardCore.Lucene.ViewModels;
+using OrchardCore.Mvc.Utilities;
 
-namespace Orchard.Lucene.Controllers
+namespace OrchardCore.Lucene.Controllers
 {
     public class AdminController : Controller
     {

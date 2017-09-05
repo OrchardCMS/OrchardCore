@@ -1,4 +1,4 @@
-﻿namespace Orchard.Data
+﻿namespace OrchardCore.Data
 {
     public class DatabaseProvider
     {

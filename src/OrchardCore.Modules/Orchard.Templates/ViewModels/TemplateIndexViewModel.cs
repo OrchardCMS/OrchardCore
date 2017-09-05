@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Orchard.Templates.Models;
+using OrchardCore.Templates.Models;
 
-namespace Orchard.Templates.ViewModels
+namespace OrchardCore.Templates.ViewModels
 {
     public class TemplateIndexViewModel
     {

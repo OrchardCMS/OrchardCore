@@ -1,4 +1,4 @@
-﻿namespace Orchard.Feeds.Models
+﻿namespace OrchardCore.Feeds.Models
 {
     /// <summary>
     /// Used to gather custom Feed properties for a content item.

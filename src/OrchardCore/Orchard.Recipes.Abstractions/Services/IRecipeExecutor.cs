@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Orchard.Recipes.Models;
+using OrchardCore.Recipes.Models;
 
-namespace Orchard.Recipes.Services
+namespace OrchardCore.Recipes.Services
 {
     public interface IRecipeExecutor
     {

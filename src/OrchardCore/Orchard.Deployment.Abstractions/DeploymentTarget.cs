@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 
-namespace Orchard.Deployment
+namespace OrchardCore.Deployment
 {
     public class DeploymentTarget
     {

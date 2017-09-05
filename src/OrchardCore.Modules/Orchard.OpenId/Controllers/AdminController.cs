@@ -10,17 +10,17 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OpenIddict.Core;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Navigation;
-using Orchard.OpenId.Models;
-using Orchard.OpenId.Services;
-using Orchard.OpenId.ViewModels;
-using Orchard.Security.Services;
-using Orchard.Settings;
-using Orchard.Users;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Navigation;
+using OrchardCore.OpenId.Models;
+using OrchardCore.OpenId.Services;
+using OrchardCore.OpenId.ViewModels;
+using OrchardCore.Security.Services;
+using OrchardCore.Settings;
+using OrchardCore.Users;
 
-namespace Orchard.OpenId.Controllers
+namespace OrchardCore.OpenId.Controllers
 {
     public class AdminController : Controller
     {

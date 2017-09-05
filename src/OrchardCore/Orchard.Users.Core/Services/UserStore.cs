@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Orchard.Security.Services;
-using Orchard.Users.Indexes;
-using Orchard.Users.Models;
+using OrchardCore.Security.Services;
+using OrchardCore.Users.Indexes;
+using OrchardCore.Users.Models;
 using YesSql;
 
-namespace Orchard.Users.Services
+namespace OrchardCore.Users.Services
 {
     public class UserStore :
         IUserStore<IUser>,

@@ -1,6 +1,6 @@
-﻿using Orchard.Feeds.Models;
+﻿using OrchardCore.Feeds.Models;
 
-namespace Orchard.Feeds.Rss
+namespace OrchardCore.Feeds.Rss
 {
     public class RssFeedBuilderProvider : IFeedBuilderProvider
     {

@@ -9,11 +9,11 @@ using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
-using Orchard.Liquid;
-using Orchard.Queries.Sql.ViewModels;
+using OrchardCore.Liquid;
+using OrchardCore.Queries.Sql.ViewModels;
 using YesSql;
 
-namespace Orchard.Queries.Sql.Controllers
+namespace OrchardCore.Queries.Sql.Controllers
 {
     [Feature("Orchard.Queries.Sql")]
     public class AdminController : Controller

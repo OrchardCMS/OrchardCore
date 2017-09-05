@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
-using Orchard.Admin;
-using Orchard.ContentManagement.Display;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Layout;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.Environment.Cache;
-using Orchard.Mvc.Utilities;
-using Orchard.Scripting;
+using OrchardCore.Admin;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Environment.Cache;
+using OrchardCore.Mvc.Utilities;
+using OrchardCore.Scripting;
 
-namespace Orchard.Layers.Services
+namespace OrchardCore.Layers.Services
 {
     public class LayerFilter : IAsyncResultFilter
     {

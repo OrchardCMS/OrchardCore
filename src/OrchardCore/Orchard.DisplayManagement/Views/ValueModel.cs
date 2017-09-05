@@ -1,4 +1,4 @@
-﻿namespace Orchard.DisplayManagement.Views
+﻿namespace OrchardCore.DisplayManagement.Views
 {
     public class ValueModel<T>
     {

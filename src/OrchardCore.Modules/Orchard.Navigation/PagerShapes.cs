@@ -11,12 +11,12 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Shapes;
 
-namespace Orchard.Navigation
+namespace OrchardCore.Navigation
 {
     public class PagerShapesTableProvider : IShapeTableProvider
     {

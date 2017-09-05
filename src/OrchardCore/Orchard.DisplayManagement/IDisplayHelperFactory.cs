@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Orchard.DisplayManagement
+namespace OrchardCore.DisplayManagement
 {
     /// <summary>
     /// Used to create a dynamic, contextualized Display object to dispatch shape rendering

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Orchard.Admin;
-using Orchard.DisplayManagement.ModelBinding;
+using OrchardCore.Admin;
+using OrchardCore.DisplayManagement.ModelBinding;
 
-namespace Orchard.Templates.Controllers
+namespace OrchardCore.Templates.Controllers
 {
     [Admin]
     public class PreviewController : Controller, IUpdateModel

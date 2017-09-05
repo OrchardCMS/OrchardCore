@@ -1,7 +1,7 @@
-﻿using Orchard.OpenId.Models;
+﻿using OrchardCore.OpenId.Models;
 using YesSql.Indexes;
 
-namespace Orchard.OpenId.Indexes
+namespace OrchardCore.OpenId.Indexes
 {
     public class OpenIdApplicationIndex : MapIndex
     {

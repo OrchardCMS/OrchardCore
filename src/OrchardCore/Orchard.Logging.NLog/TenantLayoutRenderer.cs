@@ -2,9 +2,9 @@
 using NLog;
 using NLog.LayoutRenderers;
 using NLog.Web.LayoutRenderers;
-using Orchard.Environment.Shell;
+using OrchardCore.Environment.Shell;
 
-namespace Orchard.Logging
+namespace OrchardCore.Logging
 {
     /// <summary>
     /// Print the tenant name

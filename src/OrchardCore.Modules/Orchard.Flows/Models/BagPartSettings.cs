@@ -1,6 +1,6 @@
 using System;
 
-namespace Orchard.Flows.Models
+namespace OrchardCore.Flows.Models
 {
     public class BagPartSettings
     {

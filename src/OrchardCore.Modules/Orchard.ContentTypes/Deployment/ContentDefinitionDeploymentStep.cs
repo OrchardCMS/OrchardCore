@@ -1,6 +1,6 @@
-using Orchard.Deployment;
+using OrchardCore.Deployment;
 
-namespace Orchard.ContentTypes.Deployment
+namespace OrchardCore.ContentTypes.Deployment
 {
     /// <summary>
     /// Adds all content definitions to a <see cref="DeploymentPlanResult"/>. 

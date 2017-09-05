@@ -4,11 +4,11 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Shell;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Shell;
 
-namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
+namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
     /// <summary>
     /// This component discovers and announces the shape alterations implied by the contents of the Placement.info files

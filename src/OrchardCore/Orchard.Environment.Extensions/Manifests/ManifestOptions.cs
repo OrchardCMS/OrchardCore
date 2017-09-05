@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 
-namespace Orchard.Environment.Extensions
+namespace OrchardCore.Environment.Extensions
 {
     public class ManifestOptions 
     {

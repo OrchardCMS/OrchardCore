@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Localization;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.Environment.Navigation;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Environment.Navigation;
 using System;
 using System.Linq;
 
-namespace Orchard.Contents
+namespace OrchardCore.Contents
 {
     public class AdminMenu : INavigationProvider
     {

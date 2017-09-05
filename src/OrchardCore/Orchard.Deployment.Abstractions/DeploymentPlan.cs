@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.Deployment
+namespace OrchardCore.Deployment
 {
     /// <summary>
     /// The state of a deployment plan built by sources.

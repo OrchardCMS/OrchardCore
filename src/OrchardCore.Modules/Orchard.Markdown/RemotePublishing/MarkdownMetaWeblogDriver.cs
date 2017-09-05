@@ -1,10 +1,10 @@
-﻿using Orchard.ContentManagement;
-using Orchard.Core.XmlRpc;
-using Orchard.Core.XmlRpc.Models;
-using Orchard.MetaWeblog;
-using Orchard.Markdown.Model;
+﻿using OrchardCore.ContentManagement;
+using OrchardCore.XmlRpc;
+using OrchardCore.XmlRpc.Models;
+using OrchardCore.MetaWeblog;
+using OrchardCore.Markdown.Model;
 
-namespace Orchard.Markdown.RemotePublishing
+namespace OrchardCore.Markdown.RemotePublishing
 {
     public class MarkdownMetaWeblogDriver : MetaWeblogDriver
     {

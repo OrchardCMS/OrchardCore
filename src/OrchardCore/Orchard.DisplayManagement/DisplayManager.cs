@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.Layout;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Theming;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Theming;
 
-namespace Orchard.DisplayManagement
+namespace OrchardCore.DisplayManagement
 {
     public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel>
     {

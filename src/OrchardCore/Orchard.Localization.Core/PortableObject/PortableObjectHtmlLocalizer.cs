@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 
-namespace Orchard.Localization.PortableObject
+namespace OrchardCore.Localization.PortableObject
 {
     public class PortableObjectHtmlLocalizer : HtmlLocalizer
     {

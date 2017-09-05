@@ -1,14 +1,14 @@
 using System;
 using System.Threading.Tasks;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Entities.DisplayManagement;
-using Orchard.Layers.Models;
-using Orchard.Layers.ViewModels;
-using Orchard.Settings;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Entities.DisplayManagement;
+using OrchardCore.Layers.Models;
+using OrchardCore.Layers.ViewModels;
+using OrchardCore.Settings;
 
-namespace Orchard.Layers.Drivers
+namespace OrchardCore.Layers.Drivers
 {
     public class LayerSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, LayerSettings>
     {

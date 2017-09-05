@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orchard.Layers.ViewModels
+namespace OrchardCore.Layers.ViewModels
 {
     public class LayerSettingsViewModel
     {

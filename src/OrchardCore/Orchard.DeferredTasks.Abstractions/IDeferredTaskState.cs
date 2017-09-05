@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Orchard.DeferredTasks
+namespace OrchardCore.DeferredTasks
 {
     /// <summary>
     /// An implementation of this interface is responsible for storing actions that need to be executed

@@ -1,6 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Orchard.Localization;
+using OrchardCore.Localization;
 
 namespace Microsoft.Extensions.Localization
 {

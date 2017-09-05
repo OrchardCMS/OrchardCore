@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 
-namespace Orchard.ResponseCache
+namespace OrchardCore.ResponseCache
 {
     public class CustomResponseCachingPolicyProvider : ResponseCachingPolicyProvider
     {

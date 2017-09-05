@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using Orchard.ContentManagement.Metadata.Records;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.Environment.Cache;
+using OrchardCore.ContentManagement.Metadata.Records;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Environment.Cache;
 using YesSql;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     public class ContentDefinitionManager : IContentDefinitionManager
     {

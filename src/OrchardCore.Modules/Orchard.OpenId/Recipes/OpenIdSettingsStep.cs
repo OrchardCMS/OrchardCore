@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Orchard.OpenId.Services;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
-using static Orchard.OpenId.Settings.OpenIdSettings;
+using OrchardCore.OpenId.Services;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
+using static OrchardCore.OpenId.Settings.OpenIdSettings;
 
-namespace Orchard.OpenId.Recipes
+namespace OrchardCore.OpenId.Recipes
 {
     /// <summary>
     /// This recipe step sets general OpenID Connect settings.

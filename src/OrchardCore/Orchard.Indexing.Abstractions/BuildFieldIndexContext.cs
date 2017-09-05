@@ -1,7 +1,7 @@
-﻿using Orchard.ContentManagement;
-using Orchard.ContentManagement.Metadata.Models;
+﻿using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace Orchard.Indexing
+namespace OrchardCore.Indexing
 {
     public class BuildFieldIndexContext : BuildPartIndexContext
     {

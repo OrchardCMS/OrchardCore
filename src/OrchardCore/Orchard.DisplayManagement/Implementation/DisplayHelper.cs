@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Orchard.DisplayManagement.Implementation
+namespace OrchardCore.DisplayManagement.Implementation
 {
     public class DisplayHelper : DynamicObject
     {

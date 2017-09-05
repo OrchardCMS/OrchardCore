@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     public class ContentAliasManager : IContentAliasManager
     {

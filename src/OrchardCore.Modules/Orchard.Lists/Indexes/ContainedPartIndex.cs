@@ -1,8 +1,8 @@
-﻿using Orchard.ContentManagement;
-using Orchard.Lists.Models;
+﻿using OrchardCore.ContentManagement;
+using OrchardCore.Lists.Models;
 using YesSql.Indexes;
 
-namespace Orchard.Lists.Indexes
+namespace OrchardCore.Lists.Indexes
 {
     public class ContainedPartIndex : MapIndex
     {

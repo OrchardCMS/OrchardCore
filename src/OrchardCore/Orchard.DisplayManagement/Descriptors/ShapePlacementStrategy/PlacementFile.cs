@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
+namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
     public class PlacementFile : Dictionary<string, PlacementNode[]>
     {

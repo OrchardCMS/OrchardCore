@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display;
-using Orchard.ContentManagement.MetaData;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Settings;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Settings;
 using YesSql;
 
-namespace Orchard.ContentPreview.Controllers
+namespace OrchardCore.ContentPreview.Controllers
 {
     public class PreviewController : Controller, IUpdateModel
     {

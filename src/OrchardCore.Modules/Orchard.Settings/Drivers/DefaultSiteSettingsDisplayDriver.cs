@@ -1,10 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.Views;
-using Orchard.Settings.ViewModels;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Settings.ViewModels;
 
-namespace Orchard.Settings.Drivers
+namespace OrchardCore.Settings.Drivers
 {
     public class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
     {

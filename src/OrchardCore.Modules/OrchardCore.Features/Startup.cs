@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Navigation;
+using OrchardCore.Environment.Navigation;
 using OrchardCore.Features.Recipes.Executors;
 using OrchardCore.Features.Services;
-using Orchard.Recipes;
-using Orchard.Security.Permissions;
+using OrchardCore.Recipes;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Features
 {

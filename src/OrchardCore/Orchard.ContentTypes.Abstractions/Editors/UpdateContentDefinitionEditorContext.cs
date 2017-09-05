@@ -1,8 +1,8 @@
-﻿using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.ModelBinding;
+﻿using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 
-namespace Orchard.ContentTypes.Editors
+namespace OrchardCore.ContentTypes.Editors
 {
     public class UpdateContentDefinitionEditorContext<TBuilder> : UpdateEditorContext
     {

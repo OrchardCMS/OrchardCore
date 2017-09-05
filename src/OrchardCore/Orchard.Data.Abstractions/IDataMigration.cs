@@ -1,6 +1,6 @@
 ﻿using YesSql.Sql;
 
-namespace Orchard.Data.Migration
+namespace OrchardCore.Data.Migration
 {
     public interface IDataMigration
     {

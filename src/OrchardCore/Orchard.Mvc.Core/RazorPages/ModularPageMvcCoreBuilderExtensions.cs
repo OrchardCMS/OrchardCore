@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Orchard.Mvc.RazorPages
+namespace OrchardCore.Mvc.RazorPages
 {
     public static class ModularPageMvcCoreBuilderExtensions
     {

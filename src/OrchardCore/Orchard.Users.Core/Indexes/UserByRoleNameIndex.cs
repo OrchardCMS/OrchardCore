@@ -1,9 +1,9 @@
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
-using Orchard.Users.Models;
+using OrchardCore.Users.Models;
 using YesSql.Indexes;
 
-namespace Orchard.Users.Indexes
+namespace OrchardCore.Users.Indexes
 {
     public class UserByRoleNameIndex : ReduceIndex
     {

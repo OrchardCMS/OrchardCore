@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using Orchard.Setup.Events;
+using OrchardCore.Setup.Events;
 
-namespace Orchard.Users.Services
+namespace OrchardCore.Users.Services
 {
     /// <summary>
     /// During setup, creates the admin user account.

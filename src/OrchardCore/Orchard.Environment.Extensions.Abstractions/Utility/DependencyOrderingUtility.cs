@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Environment.Extensions.Utility
+namespace OrchardCore.Environment.Extensions.Utility
 {
     public static class DependencyOrdering
     {

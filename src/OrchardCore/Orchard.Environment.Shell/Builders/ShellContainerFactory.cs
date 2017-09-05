@@ -4,10 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell.Builders.Models;
 
-namespace Orchard.Environment.Shell.Builders
+namespace OrchardCore.Environment.Shell.Builders
 {
     public class ShellContainerFactory : IShellContainerFactory
     {

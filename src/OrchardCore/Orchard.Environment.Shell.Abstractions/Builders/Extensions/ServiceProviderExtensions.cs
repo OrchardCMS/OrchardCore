@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.Environment.Shell.Builders
+namespace OrchardCore.Environment.Shell.Builders
 {
     public static class ServiceProviderExtensions
     {

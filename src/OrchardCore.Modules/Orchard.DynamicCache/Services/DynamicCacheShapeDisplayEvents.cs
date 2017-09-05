@@ -7,10 +7,10 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Cache;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.Environment.Cache;
 
-namespace Orchard.DynamicCache.Services
+namespace OrchardCore.DynamicCache.Services
 {
     /// <summary>
     /// Caches shapes in the default <see cref="IDistributedCache"/> implementation.

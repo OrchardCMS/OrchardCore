@@ -2,7 +2,7 @@
 using Microsoft.Extensions.FileProviders;
 using System.IO;
 
-namespace Orchard.Environment.Extensions
+namespace OrchardCore.Environment.Extensions
 {
     public static class ExtensionsFileSystemExtensions
     {

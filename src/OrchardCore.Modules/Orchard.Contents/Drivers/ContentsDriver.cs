@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.Contents.Drivers
+namespace OrchardCore.Contents.Drivers
 {
     public class ContentsDriver : ContentDisplayDriver
     {

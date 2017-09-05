@@ -1,6 +1,6 @@
-﻿using Orchard.Environment.Shell;
+﻿using OrchardCore.Environment.Shell;
 
-namespace Orchard.Demo.Services
+namespace OrchardCore.Demo.Services
 {
     public interface ITestDependency
     {

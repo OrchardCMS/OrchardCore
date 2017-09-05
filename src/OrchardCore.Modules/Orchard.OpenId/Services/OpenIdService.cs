@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
-using Orchard.Entities;
-using Orchard.OpenId.Models;
-using Orchard.OpenId.Settings;
-using Orchard.Settings;
+using OrchardCore.Entities;
+using OrchardCore.OpenId.Models;
+using OrchardCore.OpenId.Settings;
+using OrchardCore.Settings;
 
-namespace Orchard.OpenId.Services
+namespace OrchardCore.OpenId.Services
 {
     public class OpenIdService : IOpenIdService
     {

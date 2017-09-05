@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.DisplayManagement.Handlers
+namespace OrchardCore.DisplayManagement.Handlers
 {
     public abstract class DisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext> : 
         DisplayDriverBase, 

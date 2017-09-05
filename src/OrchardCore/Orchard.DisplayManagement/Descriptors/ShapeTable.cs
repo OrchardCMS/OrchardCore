@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Orchard.DisplayManagement.Descriptors
+namespace OrchardCore.DisplayManagement.Descriptors
 {
     public class ShapeTable
     {

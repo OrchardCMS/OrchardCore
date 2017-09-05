@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.ContentManagement;
-using Orchard.Liquid.Model;
+using OrchardCore.ContentManagement;
+using OrchardCore.Liquid.Model;
 
-namespace Orchard.Liquid.ViewModels
+namespace OrchardCore.Liquid.ViewModels
 {
     public class LiquidPartViewModel
     {

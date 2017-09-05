@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Theming;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Theming;
 
-namespace Orchard.DisplayManagement.Implementation
+namespace OrchardCore.DisplayManagement.Implementation
 {
     public class DefaultHtmlDisplay : IHtmlDisplay
     {

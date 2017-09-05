@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Html;
-using Orchard.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Shapes;
 
-namespace Orchard.DisplayManagement.Implementation
+namespace OrchardCore.DisplayManagement.Implementation
 {
     public class ShapeDisplayContext
     {

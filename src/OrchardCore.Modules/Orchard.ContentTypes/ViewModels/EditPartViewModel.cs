@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.Mvc.Utilities;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Mvc.Utilities;
 
-namespace Orchard.ContentTypes.ViewModels
+namespace OrchardCore.ContentTypes.ViewModels
 {
     public class EditPartViewModel
     {

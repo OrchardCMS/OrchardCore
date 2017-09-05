@@ -1,10 +1,10 @@
 using System;
 using System.Threading;
-using Orchard.BackgroundTasks;
+using OrchardCore.BackgroundTasks;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 
-namespace Orchard.Lucene
+namespace OrchardCore.Lucene
 {
     /// <summary>
     /// This background task will index content items using.

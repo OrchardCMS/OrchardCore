@@ -4,13 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Orchard.Data;
-using Orchard.Environment.Shell;
-using Orchard.Recipes.Models;
-using Orchard.Setup.Services;
-using Orchard.Setup.ViewModels;
+using OrchardCore.Data;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Setup.Services;
+using OrchardCore.Setup.ViewModels;
 
-namespace Orchard.Setup.Controllers
+namespace OrchardCore.Setup.Controllers
 {
     public class SetupController : Controller
     {

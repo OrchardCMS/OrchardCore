@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Localization;
-using Orchard.Environment.Navigation;
+using OrchardCore.Environment.Navigation;
 using System;
 
-namespace Orchard.Deployment.Remote
+namespace OrchardCore.Deployment.Remote
 {
     public class AdminMenu : INavigationProvider
     {

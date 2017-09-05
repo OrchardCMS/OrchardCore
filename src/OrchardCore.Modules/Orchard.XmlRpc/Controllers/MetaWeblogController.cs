@@ -4,7 +4,7 @@ using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Orchard.Core.XmlRpc.Controllers
+namespace OrchardCore.XmlRpc.Controllers
 {
     [Feature("Orchard.RemotePublishing")]
     public class MetaWeblogController : Controller

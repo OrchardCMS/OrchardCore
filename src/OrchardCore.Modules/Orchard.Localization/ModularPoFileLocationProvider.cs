@@ -3,10 +3,10 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell;
 
-namespace Orchard.Localization
+namespace OrchardCore.Localization
 {
     public class ModularPoFileLocationProvider : ILocalizationFileLocationProvider
     {

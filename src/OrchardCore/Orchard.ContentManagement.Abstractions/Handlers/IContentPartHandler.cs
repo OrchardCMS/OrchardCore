@@ -1,4 +1,4 @@
-﻿namespace Orchard.ContentManagement.Handlers
+﻿namespace OrchardCore.ContentManagement.Handlers
 {
     /// <summary>
     /// An implementation of this class is called for all the parts of a content item.

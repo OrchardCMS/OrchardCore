@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading.Tasks;
-using Orchard.ContentFields.Settings;
-using Orchard.ContentFields.ViewModels;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Display.Models;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.ContentFields.Settings;
+using OrchardCore.ContentFields.ViewModels;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 using Microsoft.Extensions.Localization;
 
-namespace Orchard.ContentFields.Fields
+namespace OrchardCore.ContentFields.Fields
 {
     public class NumericFieldDisplayDriver : ContentFieldDisplayDriver<NumericField>
     {

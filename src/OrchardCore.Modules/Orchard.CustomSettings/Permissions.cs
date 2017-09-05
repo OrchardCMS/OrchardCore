@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.CustomSettings.Services;
-using Orchard.Security.Permissions;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.CustomSettings.Services;
+using OrchardCore.Security.Permissions;
 
-namespace Orchard.CustomSettings
+namespace OrchardCore.CustomSettings
 {
     public class Permissions : IPermissionProvider
     {

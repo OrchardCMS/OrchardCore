@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Orchard.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
 using Newtonsoft.Json.Linq;
 
-namespace Orchard.ContentManagement.Metadata.Builders
+namespace OrchardCore.ContentManagement.Metadata.Builders
 {
     public class ContentPartDefinitionBuilder
     {

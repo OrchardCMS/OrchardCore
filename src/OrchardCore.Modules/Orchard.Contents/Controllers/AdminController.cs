@@ -6,26 +6,26 @@ using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Orchard.Mvc.ActionConstraints;
+using OrchardCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Records;
-using Orchard.Contents.Services;
-using Orchard.Contents.ViewModels;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Navigation;
-using Orchard.Settings;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.Contents.Services;
+using OrchardCore.Contents.ViewModels;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Navigation;
+using OrchardCore.Settings;
 using YesSql;
 using YesSql.Services;
 
-namespace Orchard.Contents.Controllers
+namespace OrchardCore.Contents.Controllers
 {
     public class AdminController : Controller, IUpdateModel
     {

@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.Menu.Models;
+using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Menu.Models;
 
-namespace Orchard.Menu
+namespace OrchardCore.Menu
 {
     public class MenuShapes : IShapeTableProvider
     {

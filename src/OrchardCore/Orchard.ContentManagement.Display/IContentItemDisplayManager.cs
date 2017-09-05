@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using Orchard.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.ModelBinding;
 
-namespace Orchard.ContentManagement.Display
+namespace OrchardCore.ContentManagement.Display
 {
     /// <summary>
     /// Describe services responsible for displaying a content item. The result dynamic objects

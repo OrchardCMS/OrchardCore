@@ -1,7 +1,7 @@
-using Orchard.DisplayManagement.Views;
+using OrchardCore.DisplayManagement.Views;
 using System.Threading.Tasks;
 
-namespace Orchard.DisplayManagement.Handlers
+namespace OrchardCore.DisplayManagement.Handlers
 {
     public interface IDisplayDriver<in TModel, TDisplayContext, TEditorContext, TUpdateContext>
         where TDisplayContext : BuildDisplayContext

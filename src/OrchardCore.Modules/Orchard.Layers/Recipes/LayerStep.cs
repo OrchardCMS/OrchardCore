@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.Layers.Models;
-using Orchard.Layers.Services;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
+using OrchardCore.Layers.Models;
+using OrchardCore.Layers.Services;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 
-namespace Orchard.Layers.Recipes
+namespace OrchardCore.Layers.Recipes
 {
     /// <summary>
     /// This recipe step creates or updates a layer.

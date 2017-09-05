@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Orchard.Environment.Shell.State;
+using OrchardCore.Environment.Shell.State;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     public interface IShellStateManager
     {

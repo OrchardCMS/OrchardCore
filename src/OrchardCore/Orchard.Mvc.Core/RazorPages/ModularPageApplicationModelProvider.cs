@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
-namespace Orchard.Mvc.RazorPages
+namespace OrchardCore.Mvc.RazorPages
 {
     public class ModularPageApplicationModelProvider : IPageApplicationModelProvider
     {

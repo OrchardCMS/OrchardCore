@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Orchard.Layers.Models;
+using OrchardCore.Layers.Models;
 
-namespace Orchard.Layers.ViewModels
+namespace OrchardCore.Layers.ViewModels
 {
     public class LayerMetadataEditViewModel
     {

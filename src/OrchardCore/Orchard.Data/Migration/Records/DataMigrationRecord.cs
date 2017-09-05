@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Orchard.Data.Migration.Records
+namespace OrchardCore.Data.Migration.Records
 {
     public class DataMigrationRecord
     {

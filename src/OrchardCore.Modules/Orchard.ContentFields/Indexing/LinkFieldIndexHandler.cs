@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Orchard.ContentFields.Fields;
-using Orchard.Indexing;
+using OrchardCore.ContentFields.Fields;
+using OrchardCore.Indexing;
 
-namespace Orchard.ContentFields.Indexing
+namespace OrchardCore.ContentFields.Indexing
 {
     public class LinkFieldIndexHandler : ContentFieldIndexHandler<LinkField>
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 
-namespace Orchard.Environment.Extensions
+namespace OrchardCore.Environment.Extensions
 {
     public interface IManifestInfo
     {

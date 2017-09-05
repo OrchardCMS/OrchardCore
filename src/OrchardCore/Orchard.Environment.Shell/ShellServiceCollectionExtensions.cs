@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Orchard.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Builders;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     public static class ShellServiceCollectionExtensions
     {

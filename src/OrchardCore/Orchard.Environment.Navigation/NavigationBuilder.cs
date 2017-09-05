@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Environment.Navigation
+namespace OrchardCore.Environment.Navigation
 {
     public class NavigationBuilder
     {

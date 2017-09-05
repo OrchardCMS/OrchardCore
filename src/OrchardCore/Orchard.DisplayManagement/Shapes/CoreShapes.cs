@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Orchard.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Descriptors;
 
-namespace Orchard.DisplayManagement.Shapes
+namespace OrchardCore.DisplayManagement.Shapes
 {
 	public class CoreShapes : IShapeAttributeProvider
 	{
@@ -99,7 +99,7 @@ namespace Orchard.DisplayManagement.Shapes
 		[Shape]
 		public IHtmlContent Message(dynamic Shape)
 		{
-			TagBuilder tagBuilder = Orchard.DisplayManagement.Shapes.Shape.GetTagBuilder(Shape, "div");
+			TagBuilder tagBuilder = OrchardCore.DisplayManagement.Shapes.Shape.GetTagBuilder(Shape, "div");
 			string type = Shape.Type.ToString().ToLowerInvariant();
 			IHtmlContent message = Shape.Message;
 			tagBuilder.AddCssClass("message");

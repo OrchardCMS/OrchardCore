@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Orchard.Nancy.Web
+namespace OrchardCore.Nancy.Web
 {
     public class Program
     {

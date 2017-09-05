@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.MetaData;
 
-namespace Orchard.CustomSettings.Services
+namespace OrchardCore.CustomSettings.Services
 {
     public class CustomSettingsService
     {

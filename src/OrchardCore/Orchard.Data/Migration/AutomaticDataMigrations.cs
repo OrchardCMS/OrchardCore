@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell;
+using OrchardCore.Environment.Shell;
 
-namespace Orchard.Data.Migration
+namespace OrchardCore.Data.Migration
 {
     /// <summary>
     /// Registers to OrchardShell.Activated in order to run migrations automatically

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Orchard.DisplayManagement.Notify
+namespace OrchardCore.DisplayManagement.Notify
 {
     public enum NotifyType
     {

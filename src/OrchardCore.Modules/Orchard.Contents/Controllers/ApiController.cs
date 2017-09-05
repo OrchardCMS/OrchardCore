@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Orchard.ContentManagement;
-using Orchard.Contents;
+using OrchardCore.ContentManagement;
+using OrchardCore.Contents;
 using System.Threading.Tasks;
 
-namespace Orchard.Content.Controllers
+namespace OrchardCore.Content.Controllers
 {
     public class ApiController : Controller
     {

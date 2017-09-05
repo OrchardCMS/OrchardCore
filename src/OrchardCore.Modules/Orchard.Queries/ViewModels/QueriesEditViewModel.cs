@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Orchard.Queries.ViewModels
+namespace OrchardCore.Queries.ViewModels
 {
     public class QueriesEditViewModel : QueriesCreateViewModel
     {

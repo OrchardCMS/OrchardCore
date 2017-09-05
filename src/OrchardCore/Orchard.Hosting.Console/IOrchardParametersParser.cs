@@ -1,6 +1,6 @@
-﻿using Orchard.Environment.Commands;
+﻿using OrchardCore.Environment.Commands;
 
-namespace Orchard.Hosting
+namespace OrchardCore.Hosting
 {
     public interface IOrchardParametersParser
     {

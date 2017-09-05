@@ -2,15 +2,15 @@ using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentTypes.Editors;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Flows.Models;
-using Orchard.Flows.ViewModels;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Flows.Models;
+using OrchardCore.Flows.ViewModels;
 
-namespace Orchard.Flows.Settings
+namespace OrchardCore.Flows.Settings
 {
     public class BagPartSettingsDisplayDriver : ContentTypePartDisplayDriver
     {

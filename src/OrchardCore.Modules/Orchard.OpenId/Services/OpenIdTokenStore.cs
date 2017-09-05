@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenIddict.Core;
-using Orchard.OpenId.Indexes;
-using Orchard.OpenId.Models;
+using OrchardCore.OpenId.Indexes;
+using OrchardCore.OpenId.Models;
 using YesSql;
 
-namespace Orchard.OpenId.Services
+namespace OrchardCore.OpenId.Services
 {
     public class OpenIdTokenStore : IOpenIddictTokenStore<OpenIdToken>
     {

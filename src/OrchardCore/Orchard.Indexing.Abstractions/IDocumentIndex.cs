@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Orchard.Indexing
+namespace OrchardCore.Indexing
 {
     public class DocumentIndex
     {

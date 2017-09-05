@@ -5,7 +5,7 @@ using System.Text;
 using Irony.Parsing;
 using YesSql;
 
-namespace Orchard.Queries.Sql
+namespace OrchardCore.Queries.Sql
 {
     public class SqlParser
     {

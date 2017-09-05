@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement;
+﻿using OrchardCore.ContentManagement;
 
-namespace Orchard.Lists.Feeds
+namespace OrchardCore.Lists.Feeds
 {
     public class ListFeedEditViewModel
     {

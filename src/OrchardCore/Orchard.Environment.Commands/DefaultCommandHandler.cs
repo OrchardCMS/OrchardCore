@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Localization;
 
-namespace Orchard.Environment.Commands
+namespace OrchardCore.Environment.Commands
 {
     public abstract class DefaultCommandHandler : ICommandHandler
     {

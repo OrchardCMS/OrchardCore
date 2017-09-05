@@ -1,6 +1,6 @@
-﻿using Orchard.Deployment.Remote.Models;
+﻿using OrchardCore.Deployment.Remote.Models;
 
-namespace Orchard.Deployment.Remote.ViewModels
+namespace OrchardCore.Deployment.Remote.ViewModels
 {
     public class RemoteInstanceIndexViewModel
     {

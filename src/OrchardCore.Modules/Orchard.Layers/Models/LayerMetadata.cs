@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement;
+﻿using OrchardCore.ContentManagement;
 
-namespace Orchard.Layers.Models
+namespace OrchardCore.Layers.Models
 {
     public class LayerMetadata : ContentPart
     {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Orchard.Deployment.ViewModels
+namespace OrchardCore.Deployment.ViewModels
 {
     public class EditDeploymentPlanViewModel
     {

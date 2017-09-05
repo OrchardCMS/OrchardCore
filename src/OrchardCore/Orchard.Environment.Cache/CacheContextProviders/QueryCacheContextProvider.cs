@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Orchard.Environment.Cache;
+using OrchardCore.Environment.Cache;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Orchard.Environment.Cache.CacheContextProviders
+namespace OrchardCore.Environment.Cache.CacheContextProviders
 {
     public class QueryCacheContextProvider : ICacheContextProvider
     {

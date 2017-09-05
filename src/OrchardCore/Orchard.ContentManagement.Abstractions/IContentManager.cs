@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     /// <summary>
     /// Content management functionality to deal with Orchard content items and their parts

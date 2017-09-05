@@ -1,11 +1,11 @@
 ﻿using System.Text.Encodings.Web;
-using Orchard.ContentManagement;
-using Orchard.Core.XmlRpc;
-using Orchard.Core.XmlRpc.Models;
-using Orchard.MetaWeblog;
-using Orchard.Title.Model;
+using OrchardCore.ContentManagement;
+using OrchardCore.XmlRpc;
+using OrchardCore.XmlRpc.Models;
+using OrchardCore.MetaWeblog;
+using OrchardCore.Title.Model;
 
-namespace Orchard.Title.RemotePublishing
+namespace OrchardCore.Title.RemotePublishing
 {
     public class TitleMetaWeblogDriver : MetaWeblogDriver
     {

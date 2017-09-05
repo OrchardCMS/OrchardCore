@@ -1,7 +1,7 @@
-﻿using Orchard.Data.Migration;
-using Orchard.Deployment.Indexes;
+﻿using OrchardCore.Data.Migration;
+using OrchardCore.Deployment.Indexes;
 
-namespace Orchard.Deployment
+namespace OrchardCore.Deployment
 {
     public class Migrations : DataMigration
     {

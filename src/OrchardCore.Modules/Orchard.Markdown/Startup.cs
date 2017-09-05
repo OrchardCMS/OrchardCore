@@ -1,19 +1,19 @@
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Handlers;
-using Orchard.ContentTypes.Editors;
-using Orchard.Data.Migration;
-using Orchard.Indexing;
-using Orchard.Markdown.Drivers;
-using Orchard.Markdown.Fields;
-using Orchard.Markdown.Handlers;
-using Orchard.Markdown.Indexing;
-using Orchard.Markdown.Model;
-using Orchard.Markdown.Settings;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data.Migration;
+using OrchardCore.Indexing;
+using OrchardCore.Markdown.Drivers;
+using OrchardCore.Markdown.Fields;
+using OrchardCore.Markdown.Handlers;
+using OrchardCore.Markdown.Indexing;
+using OrchardCore.Markdown.Model;
+using OrchardCore.Markdown.Settings;
 
-namespace Orchard.Markdown
+namespace OrchardCore.Markdown
 {
     public class Startup : StartupBase
     {

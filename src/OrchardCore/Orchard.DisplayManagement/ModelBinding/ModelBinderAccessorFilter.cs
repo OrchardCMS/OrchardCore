@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.DisplayManagement.ModelBinding
+namespace OrchardCore.DisplayManagement.ModelBinding
 {
     public class ModelBinderAccessorFilter : IActionFilter
     {

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.FileProviders;
 
-namespace Orchard.DisplayManagement.FileProviders
+namespace OrchardCore.DisplayManagement.FileProviders
 {
     public static class FileProviderExtensions
     {

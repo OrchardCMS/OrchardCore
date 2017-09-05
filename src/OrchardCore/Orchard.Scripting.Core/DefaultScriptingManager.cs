@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Scripting
+namespace OrchardCore.Scripting
 {
     public class DefaultScriptingManager : IScriptingManager
     {

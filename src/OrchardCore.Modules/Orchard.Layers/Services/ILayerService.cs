@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Orchard.ContentManagement.Records;
-using Orchard.Layers.Models;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.Layers.Models;
 
-namespace Orchard.Layers.Services
+namespace OrchardCore.Layers.Services
 {
     public interface ILayerService
     {

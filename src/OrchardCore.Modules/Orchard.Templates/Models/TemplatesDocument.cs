@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Orchard.Templates.Models
+namespace OrchardCore.Templates.Models
 {
     public class TemplatesDocument
     {

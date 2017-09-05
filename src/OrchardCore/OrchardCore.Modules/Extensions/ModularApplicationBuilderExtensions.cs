@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Orchard.Environment.Extensions;
+using OrchardCore.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Builder
 {

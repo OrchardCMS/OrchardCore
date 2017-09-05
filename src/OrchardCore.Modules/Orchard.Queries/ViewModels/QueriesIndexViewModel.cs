@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Orchard.Queries.ViewModels
+namespace OrchardCore.Queries.ViewModels
 {
     public class QueriesIndexViewModel
     {

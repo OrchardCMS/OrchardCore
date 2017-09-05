@@ -5,13 +5,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell.Builders;
-using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.Environment.Shell.Models;
-using Orchard.Hosting.ShellBuilders;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Hosting.ShellBuilders;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     /// <summary>
     /// All <see cref="ShellContext"/> object are loaded when <see cref="Initialize"/> is called. They can be removed when the

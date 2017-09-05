@@ -1,8 +1,8 @@
-﻿using Orchard.ContentManagement.Metadata.Builders;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.ModelBinding;
+﻿using OrchardCore.ContentManagement.Metadata.Builders;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 
-namespace Orchard.ContentTypes.Editors
+namespace OrchardCore.ContentTypes.Editors
 {
     public class UpdatePartEditorContext : UpdateContentDefinitionEditorContext<ContentPartDefinitionBuilder>
     {

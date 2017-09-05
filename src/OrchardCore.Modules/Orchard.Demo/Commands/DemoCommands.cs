@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Commands;
+using OrchardCore.Environment.Commands;
 
-namespace Orchard.Demo.Commands
+namespace OrchardCore.Demo.Commands
 {
     public class DemoCommands : DefaultCommandHandler
     {

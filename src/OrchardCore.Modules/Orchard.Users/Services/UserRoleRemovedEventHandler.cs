@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Orchard.Security;
+using OrchardCore.Security;
 
-namespace Orchard.Users.Services
+namespace OrchardCore.Users.Services
 {
     public class UserRoleRemovedEventHandler : IRoleRemovedEventHandler
     {

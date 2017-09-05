@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using Orchard.Security;
+using OrchardCore.Security;
 
-namespace Orchard.OpenId.Services
+namespace OrchardCore.OpenId.Services
 {
     public class OpenIdApplicationRoleRemovedEventHandler : IRoleRemovedEventHandler
     {

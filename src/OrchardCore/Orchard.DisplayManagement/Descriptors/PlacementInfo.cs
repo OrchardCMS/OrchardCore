@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.DisplayManagement.Descriptors
+namespace OrchardCore.DisplayManagement.Descriptors
 {
     public class PlacementInfo
     {

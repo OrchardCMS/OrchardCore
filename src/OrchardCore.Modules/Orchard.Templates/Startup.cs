@@ -1,15 +1,15 @@
 ﻿using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentTypes.Editors;
-using Orchard.DisplayManagement;
-using Orchard.Environment.Navigation;
-using Orchard.Recipes;
-using Orchard.Security.Permissions;
-using Orchard.Templates.Recipes;
-using Orchard.Templates.Services;
-using Orchard.Templates.Settings;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Recipes;
+using OrchardCore.Security.Permissions;
+using OrchardCore.Templates.Recipes;
+using OrchardCore.Templates.Services;
+using OrchardCore.Templates.Settings;
 
-namespace Orchard.Templates
+namespace OrchardCore.Templates
 {
     public class Startup : StartupBase
     {

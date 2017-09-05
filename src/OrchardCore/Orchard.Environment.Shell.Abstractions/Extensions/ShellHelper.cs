@@ -1,6 +1,6 @@
-﻿using Orchard.Environment.Shell.Models;
+﻿using OrchardCore.Environment.Shell.Models;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     public static class ShellHelper
     {

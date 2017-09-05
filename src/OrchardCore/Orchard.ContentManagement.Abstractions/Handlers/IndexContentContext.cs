@@ -1,6 +1,6 @@
-//using Orchard.Indexing;
+//using OrchardCore.Indexing;
 
-//namespace Orchard.ContentManagement.Handlers {
+//namespace OrchardCore.ContentManagement.Handlers {
 //    public class IndexContentContext : ContentContextBase {
 //        public IDocumentIndex DocumentIndex { get; private set; }
 

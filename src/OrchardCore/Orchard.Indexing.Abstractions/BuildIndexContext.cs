@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement;
+﻿using OrchardCore.ContentManagement;
 
-namespace Orchard.Indexing
+namespace OrchardCore.Indexing
 {
     public class BuildIndexContext
     {

@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
 
-namespace Orchard.Recipes.Models
+namespace OrchardCore.Recipes.Models
 {
     public class RecipeExecutionStepConfigurationContext : ConfigurationContext
     {

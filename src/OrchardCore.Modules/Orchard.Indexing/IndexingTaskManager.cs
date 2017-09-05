@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Dapper;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 using YesSql;
 
-namespace Orchard.Indexing.Services
+namespace OrchardCore.Indexing.Services
 {
     public class IndexingTaskManager : IIndexingTaskManager, IDisposable
     {

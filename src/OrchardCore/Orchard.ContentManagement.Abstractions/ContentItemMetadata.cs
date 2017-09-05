@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using System.Collections.Generic;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     public class ContentItemMetadata
     {

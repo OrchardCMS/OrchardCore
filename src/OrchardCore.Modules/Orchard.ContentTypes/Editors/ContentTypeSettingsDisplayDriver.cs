@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
-using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentTypes.ViewModels;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.ViewModels;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.ContentTypes.Editors
+namespace OrchardCore.ContentTypes.Editors
 {
     public class ContentTypeSettingsDisplayDriver : ContentTypeDisplayDriver
     {

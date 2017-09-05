@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 
-namespace Orchard.Environment.Extensions.Manifests
+namespace OrchardCore.Environment.Extensions.Manifests
 {
     public class ManifestInfo : IManifestInfo
     {

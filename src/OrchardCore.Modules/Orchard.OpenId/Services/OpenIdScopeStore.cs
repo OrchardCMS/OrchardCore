@@ -1,7 +1,7 @@
 using OpenIddict.Core;
-using Orchard.OpenId.Models;
+using OrchardCore.OpenId.Models;
 
-namespace Orchard.OpenId.Services
+namespace OrchardCore.OpenId.Services
 {
     public class OpenIdScopeStore : IOpenIddictScopeStore<OpenIdScope> { }
 }

@@ -2,7 +2,7 @@
 using System.Security;
 using System.Text;
 
-namespace Orchard.Environment.Commands.Parameters
+namespace OrchardCore.Environment.Commands.Parameters
 {
     public interface ICommandParser
     {

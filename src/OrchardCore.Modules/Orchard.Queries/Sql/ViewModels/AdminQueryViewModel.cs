@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Orchard.Queries.Sql.ViewModels
+namespace OrchardCore.Queries.Sql.ViewModels
 {
     public class AdminQueryViewModel
     {

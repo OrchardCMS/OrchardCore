@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
-using Orchard.Mvc;
+using OrchardCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.Mvc
+namespace OrchardCore.Mvc
 {
     public class Startup : StartupBase
     {

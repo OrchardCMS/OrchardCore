@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
-using Orchard.Environment.Cache;
-using Orchard.Templates.Models;
+using OrchardCore.Environment.Cache;
+using OrchardCore.Templates.Models;
 using YesSql;
 
-namespace Orchard.Templates.Services
+namespace OrchardCore.Templates.Services
 {
     public class TemplatesManager
     {

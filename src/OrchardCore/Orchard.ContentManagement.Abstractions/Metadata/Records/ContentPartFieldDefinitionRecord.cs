@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace Orchard.ContentManagement.Metadata.Records
+namespace OrchardCore.ContentManagement.Metadata.Records
 {
     /// <summary>
     /// Represents a field and its settings in a part.

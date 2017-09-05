@@ -1,7 +1,7 @@
-using Orchard.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.ModelBinding;
 using System.Threading.Tasks;
 
-namespace Orchard.DisplayManagement
+namespace OrchardCore.DisplayManagement
 {
     public interface IDisplayManager<TModel>
     {

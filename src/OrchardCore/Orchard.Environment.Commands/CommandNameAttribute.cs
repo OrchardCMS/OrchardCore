@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Orchard.Environment.Commands
+namespace OrchardCore.Environment.Commands
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class CommandNameAttribute : Attribute

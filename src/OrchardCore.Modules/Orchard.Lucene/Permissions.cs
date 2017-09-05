@@ -1,7 +1,7 @@
-using Orchard.Security.Permissions;
+using OrchardCore.Security.Permissions;
 using System.Collections.Generic;
 
-namespace Orchard.Lucene
+namespace OrchardCore.Lucene
 {
     public class Permissions : IPermissionProvider
     {

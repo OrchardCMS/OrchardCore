@@ -1,4 +1,4 @@
-﻿namespace Orchard.Recipes.Services
+﻿namespace OrchardCore.Recipes.Services
 {
     /// <summary>
     /// Options for recipes harvesting.

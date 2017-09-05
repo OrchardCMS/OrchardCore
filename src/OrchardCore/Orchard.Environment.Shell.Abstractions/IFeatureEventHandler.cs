@@ -1,5 +1,5 @@
-using Orchard.Environment.Extensions.Features;
-namespace Orchard.Environment.Shell
+using OrchardCore.Environment.Extensions.Features;
+namespace OrchardCore.Environment.Shell
 {
     public interface IFeatureEventHandler
     {

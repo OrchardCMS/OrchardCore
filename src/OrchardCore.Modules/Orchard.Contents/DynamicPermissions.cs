@@ -1,13 +1,13 @@
 ﻿//using System;
 //using System.Linq;
 //using System.Collections.Generic;
-//using Orchard.ContentManagement.MetaData;
-//using Orchard.ContentManagement.Metadata.Models;
-//using Orchard.Contents.Settings;
-//using Orchard.Environment.Extensions.Models;
-//using Orchard.Security.Permissions;
+//using OrchardCore.ContentManagement.MetaData;
+//using OrchardCore.ContentManagement.Metadata.Models;
+//using OrchardCore.Contents.Settings;
+//using OrchardCore.Environment.Extensions.Models;
+//using OrchardCore.Security.Permissions;
 
-//namespace Orchard.Contents {
+//namespace OrchardCore.Contents {
 //    public class DynamicPermissions : IPermissionProvider {
 //        private static readonly Permission PublishContent = new Permission { Description = "Publish or unpublish {0} for others", Name = "Publish_{0}", ImpliedBy = new[] { Permissions.PublishContent } };
 //        private static readonly Permission PublishOwnContent = new Permission { Description = "Publish or unpublish {0}", Name = "PublishOwn_{0}", ImpliedBy = new[] { PublishContent, Permissions.PublishOwnContent } };

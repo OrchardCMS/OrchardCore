@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Orchard.Nancy.AssemblyCatalogs;
+using OrchardCore.Nancy.AssemblyCatalogs;
 using Nancy;
 
-namespace Orchard.Nancy
+namespace OrchardCore.Nancy
 {
     public class ModularNancyBootstrapper : DefaultNancyBootstrapper
     {

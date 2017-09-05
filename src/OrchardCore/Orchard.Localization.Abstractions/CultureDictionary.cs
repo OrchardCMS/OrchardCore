@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Orchard.Localization
+namespace OrchardCore.Localization
 {
     public class CultureDictionary
     {

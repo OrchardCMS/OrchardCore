@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 
-namespace Orchard.Lucene
+namespace OrchardCore.Lucene
 {
     public interface ILuceneQueryService
     {

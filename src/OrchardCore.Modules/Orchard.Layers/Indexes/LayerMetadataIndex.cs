@@ -1,8 +1,8 @@
-﻿using Orchard.ContentManagement;
-using Orchard.Layers.Models;
+﻿using OrchardCore.ContentManagement;
+using OrchardCore.Layers.Models;
 using YesSql.Indexes;
 
-namespace Orchard.Layers.Indexes
+namespace OrchardCore.Layers.Indexes
 {
     public class LayerMetadataIndex : MapIndex
     {

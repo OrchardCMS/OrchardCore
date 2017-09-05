@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 
-namespace Orchard.Lucene.Recipes
+namespace OrchardCore.Lucene.Recipes
 {
     /// <summary>
     /// This recipe step creates a lucene index.

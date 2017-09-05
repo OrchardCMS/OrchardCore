@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Orchard.Admin.Controllers
+namespace OrchardCore.Admin.Controllers
 {
     [Authorize]
     public class AdminController : Controller

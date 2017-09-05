@@ -1,12 +1,12 @@
-﻿using Orchard.Environment.Commands;
-using Orchard.Hosting.HostContext;
-using Orchard.Environment.Commands.Parameters;
+﻿using OrchardCore.Environment.Commands;
+using OrchardCore.Hosting.HostContext;
+using OrchardCore.Environment.Commands.Parameters;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Orchard.Hosting
+namespace OrchardCore.Hosting
 {
     public class OrchardHost
     {

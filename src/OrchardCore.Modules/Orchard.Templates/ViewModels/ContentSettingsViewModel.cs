@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 
-namespace Orchard.Templates.ViewModels
+namespace OrchardCore.Templates.ViewModels
 {
     public class ContentSettingsViewModel
     {

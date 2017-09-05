@@ -1,9 +1,9 @@
-﻿using Orchard.Parser;
-using Orchard.Parser.Yaml;
+﻿using OrchardCore.Parser;
+using OrchardCore.Yaml.Parser;
 using System;
 using Xunit;
 
-namespace Orchard.Tests.Parser.Yaml
+namespace OrchardCore.Tests.Parser.Yaml
 {
     public class YamlConfigurationFileParserTests
     {

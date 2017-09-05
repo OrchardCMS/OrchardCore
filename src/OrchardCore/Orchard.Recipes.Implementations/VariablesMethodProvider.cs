@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
-using Orchard.Scripting;
+using OrchardCore.Scripting;
 
-namespace Orchard.Recipes
+namespace OrchardCore.Recipes
 {
     public class VariablesMethodProvider : IGlobalMethodProvider
     {

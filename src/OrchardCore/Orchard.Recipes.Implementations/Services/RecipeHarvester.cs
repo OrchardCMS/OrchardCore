@@ -9,10 +9,10 @@ using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Orchard.Environment.Extensions;
-using Orchard.Recipes.Models;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Recipes.Models;
 
-namespace Orchard.Recipes.Services
+namespace OrchardCore.Recipes.Services
 {
     public class RecipeHarvester : IRecipeHarvester
     {

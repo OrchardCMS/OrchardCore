@@ -1,6 +1,6 @@
-using Orchard.Queries;
+using OrchardCore.Queries;
 
-namespace Orchard.Lucene
+namespace OrchardCore.Lucene
 {
     public class LuceneQuery : Query
     {

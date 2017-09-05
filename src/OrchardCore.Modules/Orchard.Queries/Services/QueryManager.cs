@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using Orchard.Environment.Cache;
+using OrchardCore.Environment.Cache;
 using YesSql;
 
-namespace Orchard.Queries.Services
+namespace OrchardCore.Queries.Services
 {
     public class QueryManager : IQueryManager
     {

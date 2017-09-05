@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Orchard.Hosting.ShellBuilders;
+using OrchardCore.Hosting.ShellBuilders;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     public interface IShellHost
     {

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement.Handlers;
-using Orchard.Indexing;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Indexing;
 
-namespace Orchard.Lucene.Handlers
+namespace OrchardCore.Lucene.Handlers
 {
     public class LuceneIndexingContentHandler : ContentHandlerBase
     {

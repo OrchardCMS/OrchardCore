@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace Orchard.Widgets.Models
+namespace OrchardCore.Widgets.Models
 {
     // A content item with this part can have widget instances.
     public class WidgetsListPart : ContentPart

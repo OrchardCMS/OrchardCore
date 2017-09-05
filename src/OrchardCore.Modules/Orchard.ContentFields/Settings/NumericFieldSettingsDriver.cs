@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Orchard.ContentFields.Fields;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentTypes.Editors;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.ContentFields.Fields;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings
 {
 
     public class NumericFieldSettingsDriver : ContentPartFieldDisplayDriver<NumericField>

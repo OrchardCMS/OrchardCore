@@ -2,7 +2,7 @@
 using Fluid.Values;
 using System.Threading.Tasks;
 
-namespace Orchard.Liquid.Filters
+namespace OrchardCore.Liquid.Filters
 {
     public class SlugifyFilter : ILiquidFilter
     {

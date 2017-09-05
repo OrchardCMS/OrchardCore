@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Security.Claims;
 
-namespace Orchard.Users.Services
+namespace OrchardCore.Users.Services
 {
     public interface IUserService
     {

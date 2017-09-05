@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace Orchard.ResourceManagement.TagHelpers
+namespace OrchardCore.ResourceManagement.TagHelpers
 {
     public enum ResourceType
     {

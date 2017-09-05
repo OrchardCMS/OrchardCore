@@ -2,9 +2,9 @@ using System.IO;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using OrchardCore.Modules;
-using Orchard.Hosting;
+using OrchardCore.Hosting;
 
-namespace Orchard.Cms.Web
+namespace OrchardCore.Cms.Web
 {
     public class Program
     {

@@ -1,7 +1,7 @@
-﻿using Orchard.Users.Models;
+﻿using OrchardCore.Users.Models;
 using YesSql.Indexes;
 
-namespace Orchard.Users.Indexes
+namespace OrchardCore.Users.Indexes
 {
     public class UserIndex : MapIndex
     {

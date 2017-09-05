@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentPreview.Drivers;
-using Orchard.Security.Permissions;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentPreview.Drivers;
+using OrchardCore.Security.Permissions;
 
-namespace Orchard.ContentPreview
+namespace OrchardCore.ContentPreview
 {
     public class Startup : StartupBase
     {

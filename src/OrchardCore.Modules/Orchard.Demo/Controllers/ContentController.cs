@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display;
-using Orchard.DisplayManagement.ModelBinding;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement.ModelBinding;
 using System.Threading.Tasks;
 using YesSql;
-using Orchard.Admin;
+using OrchardCore.Admin;
 
-namespace Orchard.Demo.Controllers
+namespace OrchardCore.Demo.Controllers
 {
     public class ContentController : Controller, IUpdateModel
     {

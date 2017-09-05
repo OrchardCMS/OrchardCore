@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.Flows.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Flows.Models;
 
-namespace Orchard.Flows.ViewModels
+namespace OrchardCore.Flows.ViewModels
 {
     public class FlowPartEditViewModel
     {

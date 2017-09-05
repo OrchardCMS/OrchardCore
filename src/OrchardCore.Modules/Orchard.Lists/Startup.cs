@@ -3,23 +3,23 @@ using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Handlers;
-using Orchard.Contents.Services;
-using Orchard.ContentTypes.Editors;
-using Orchard.Core.XmlRpc;
-using Orchard.Data.Migration;
-using Orchard.Feeds;
-using Orchard.Lists.Drivers;
-using Orchard.Lists.Feeds;
-using Orchard.Lists.Indexes;
-using Orchard.Lists.Models;
-using Orchard.Lists.Services;
-using Orchard.Lists.Settings;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Contents.Services;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.XmlRpc;
+using OrchardCore.Data.Migration;
+using OrchardCore.Feeds;
+using OrchardCore.Lists.Drivers;
+using OrchardCore.Lists.Feeds;
+using OrchardCore.Lists.Indexes;
+using OrchardCore.Lists.Models;
+using OrchardCore.Lists.Services;
+using OrchardCore.Lists.Settings;
 using YesSql.Indexes;
 
-namespace Orchard.Lists
+namespace OrchardCore.Lists
 {
     public class Startup : StartupBase
     {

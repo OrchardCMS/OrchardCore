@@ -1,14 +1,14 @@
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentTypes.Editors;
-using Orchard.Data.Migration;
-using Orchard.Flows.Drivers;
-using Orchard.Flows.Models;
-using Orchard.Flows.Settings;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data.Migration;
+using OrchardCore.Flows.Drivers;
+using OrchardCore.Flows.Models;
+using OrchardCore.Flows.Settings;
 
-namespace Orchard.Flows
+namespace OrchardCore.Flows
 {
     public class Startup : StartupBase
     {

@@ -5,17 +5,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Orchard.Admin;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Navigation;
-using Orchard.Settings;
-using Orchard.Templates.Models;
-using Orchard.Templates.Services;
-using Orchard.Templates.ViewModels;
+using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Navigation;
+using OrchardCore.Settings;
+using OrchardCore.Templates.Models;
+using OrchardCore.Templates.Services;
+using OrchardCore.Templates.ViewModels;
 
-namespace Orchard.Templates.Controllers
+namespace OrchardCore.Templates.Controllers
 {
     [Admin]
     public class TemplateController : Controller, IUpdateModel

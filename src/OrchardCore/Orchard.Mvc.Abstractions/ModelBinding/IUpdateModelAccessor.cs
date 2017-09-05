@@ -1,4 +1,4 @@
-﻿namespace Orchard.DisplayManagement.ModelBinding
+﻿namespace OrchardCore.DisplayManagement.ModelBinding
 {
     public interface IUpdateModelAccessor
     {

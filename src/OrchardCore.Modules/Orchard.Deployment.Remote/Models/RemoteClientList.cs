@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.Deployment.Remote.Models
+namespace OrchardCore.Deployment.Remote.Models
 {
     public class RemoteClientList
     {

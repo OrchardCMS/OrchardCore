@@ -1,11 +1,11 @@
-﻿using Orchard.Environment.Extensions;
+﻿using OrchardCore.Environment.Extensions;
 using System;
-using Orchard.Environment.Extensions.Loaders;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Loaders;
+using OrchardCore.Environment.Extensions.Features;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Orchard.Tests.Stubs
+namespace OrchardCore.Tests.Stubs
 {
     public class StubExtensionManager : IExtensionManager
     {

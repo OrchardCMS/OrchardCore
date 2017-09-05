@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Display.Models;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Lists.Models;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Lists.Models;
 
-namespace Orchard.Lists.Feeds
+namespace OrchardCore.Lists.Feeds
 {
     public class ListPartFeedDisplayDriver : ContentPartDisplayDriver<ListPart>
     {

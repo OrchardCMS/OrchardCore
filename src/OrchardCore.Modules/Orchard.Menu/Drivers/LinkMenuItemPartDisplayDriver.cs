@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Display.Models;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Menu.Models;
-using Orchard.Menu.ViewModels;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Menu.Models;
+using OrchardCore.Menu.ViewModels;
 
-namespace Orchard.Lists.Drivers
+namespace OrchardCore.Lists.Drivers
 {
     public class LinkMenuItemPartDisplayDriver : ContentPartDisplayDriver<LinkMenuItemPart>
     {

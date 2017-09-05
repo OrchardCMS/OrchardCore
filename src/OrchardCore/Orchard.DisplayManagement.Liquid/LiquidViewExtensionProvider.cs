@@ -1,6 +1,6 @@
-using Orchard.DisplayManagement.Razor;
+using OrchardCore.DisplayManagement.Razor;
 
-namespace Orchard.DisplayManagement.Liquid
+namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidViewExtensionProvider : IRazorViewExtensionProvider
     {

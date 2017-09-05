@@ -2,9 +2,9 @@
 using System.IO;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
-using Orchard.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Shapes;
 
-namespace Orchard.DisplayManagement
+namespace OrchardCore.DisplayManagement
 {
 	public class PositionWrapper : IHtmlContent, IPositioned, IShape
     {

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.DisplayManagement.Descriptors
+namespace OrchardCore.DisplayManagement.Descriptors
 {
     public interface IShapeTableManager
     {

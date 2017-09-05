@@ -1,14 +1,14 @@
 using Fluid;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
-using Orchard.Admin;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Liquid;
-using Orchard.Liquid;
-using Orchard.Templates.Models;
+using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Liquid;
+using OrchardCore.Liquid;
+using OrchardCore.Templates.Models;
 
-namespace Orchard.Templates.Services
+namespace OrchardCore.Templates.Services
 {
     public class TemplatesShapeBindingResolver : IShapeBindingResolver
     {

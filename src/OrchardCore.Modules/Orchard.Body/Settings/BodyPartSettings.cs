@@ -1,4 +1,4 @@
-namespace Orchard.Body.Settings
+namespace OrchardCore.Body.Settings
 {
     public class BodyPartSettings
     {

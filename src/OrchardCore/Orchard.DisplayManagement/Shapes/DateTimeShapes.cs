@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Html;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.Settings;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Settings;
 
-namespace Orchard.DisplayManagement.Shapes
+namespace OrchardCore.DisplayManagement.Shapes
 {
     public class DateTimeShapes : IShapeAttributeProvider
     {

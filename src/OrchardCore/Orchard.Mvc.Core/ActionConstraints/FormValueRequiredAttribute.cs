@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Routing;
 
-namespace Orchard.Mvc.ActionConstraints
+namespace OrchardCore.Mvc.ActionConstraints
 {
     public class FormValueRequiredAttribute : ActionMethodSelectorAttribute
     {

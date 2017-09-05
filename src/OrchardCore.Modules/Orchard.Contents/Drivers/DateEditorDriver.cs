@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.MetaData;
-using Orchard.Contents.Models;
-using Orchard.Contents.ViewModels;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.Contents.Models;
+using OrchardCore.Contents.ViewModels;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.Contents.Drivers
+namespace OrchardCore.Contents.Drivers
 {
     public class DateEditorDriver : ContentPartDisplayDriver<CommonPart>
     {

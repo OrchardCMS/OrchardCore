@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Orchard.Security.Permissions;
-using Orchard.Security;
+using OrchardCore.Security.Permissions;
+using OrchardCore.Security;
 
 namespace Microsoft.AspNetCore.Authorization
 {

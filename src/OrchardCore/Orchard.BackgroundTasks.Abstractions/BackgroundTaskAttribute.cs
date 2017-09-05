@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orchard.BackgroundTasks
+namespace OrchardCore.BackgroundTasks
 {
     /// <summary>
     /// When applied to a class implementing <see cref="IBackgroundTask"/>, defines the group

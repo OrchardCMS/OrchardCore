@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Orchard.Demo.Components
+namespace OrchardCore.Demo.Components
 {
     public class FakeViewComponent : ViewComponent
     {

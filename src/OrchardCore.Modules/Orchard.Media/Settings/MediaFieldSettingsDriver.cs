@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentTypes.Editors;
-using Orchard.DisplayManagement.Views;
-using Orchard.Media.Fields;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Media.Fields;
 
-namespace Orchard.Media.Settings
+namespace OrchardCore.Media.Settings
 {
     public class MediaFieldSettingsDriver : ContentPartFieldDisplayDriver<MediaField>
     {

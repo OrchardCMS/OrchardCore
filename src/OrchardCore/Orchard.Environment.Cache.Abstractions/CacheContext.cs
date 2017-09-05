@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Environment.Cache
+namespace OrchardCore.Environment.Cache
 {
     public class CacheContext
     {

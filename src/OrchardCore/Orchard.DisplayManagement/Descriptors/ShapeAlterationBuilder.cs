@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.Environment.Extensions.Features;
 
-namespace Orchard.DisplayManagement.Descriptors
+namespace OrchardCore.DisplayManagement.Descriptors
 {
     public class ShapeAlterationBuilder
     {

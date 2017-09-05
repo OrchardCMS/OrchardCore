@@ -4,17 +4,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Memory;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Notify;
-using Orchard.DisplayManagement.Views;
-using Orchard.Entities.DisplayManagement;
-using Orchard.OpenId.Services;
-using Orchard.OpenId.Settings;
-using Orchard.OpenId.ViewModels;
-using Orchard.Settings;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Entities.DisplayManagement;
+using OrchardCore.OpenId.Services;
+using OrchardCore.OpenId.Settings;
+using OrchardCore.OpenId.ViewModels;
+using OrchardCore.Settings;
 
-namespace Orchard.OpenId.Drivers
+namespace OrchardCore.OpenId.Drivers
 {
     public class OpenIdSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdSettings>
     {

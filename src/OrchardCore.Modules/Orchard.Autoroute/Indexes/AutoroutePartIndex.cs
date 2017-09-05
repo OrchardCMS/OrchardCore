@@ -1,8 +1,8 @@
 ﻿using System;
-using Orchard.Autoroute.Model;
+using OrchardCore.Autoroute.Model;
 using YesSql.Indexes;
 
-namespace Orchard.ContentManagement.Records
+namespace OrchardCore.ContentManagement.Records
 {
     public class AutoroutePartIndex : MapIndex
     {

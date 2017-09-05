@@ -1,16 +1,16 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Display.Models;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Media.Fields;
-using Orchard.Media.Settings;
-using Orchard.Media.ViewModels;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Media.Fields;
+using OrchardCore.Media.Settings;
+using OrchardCore.Media.ViewModels;
 
-namespace Orchard.Media.Drivers
+namespace OrchardCore.Media.Drivers
 {
     public class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaField>
     {

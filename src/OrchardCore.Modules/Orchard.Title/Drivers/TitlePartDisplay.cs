@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
-using Orchard.Title.Model;
-using Orchard.Title.ViewModels;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Title.Model;
+using OrchardCore.Title.ViewModels;
 
-namespace Orchard.Title.Drivers
+namespace OrchardCore.Title.Drivers
 {
     public class TitlePartDisplay : ContentPartDisplayDriver<TitlePart>
     {

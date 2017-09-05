@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.Environment.Cache
+namespace OrchardCore.Environment.Cache
 {
     public static class ServiceCollectionExtensions
     {

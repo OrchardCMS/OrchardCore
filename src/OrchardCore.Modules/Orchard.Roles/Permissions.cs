@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Orchard.Security;
-using Orchard.Security.Permissions;
+using OrchardCore.Security;
+using OrchardCore.Security.Permissions;
 
-namespace Orchard.Roles
+namespace OrchardCore.Roles
 {
     public class Permissions : IPermissionProvider
     {

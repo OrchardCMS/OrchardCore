@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     /// <summary>
     /// Represents a content item version.

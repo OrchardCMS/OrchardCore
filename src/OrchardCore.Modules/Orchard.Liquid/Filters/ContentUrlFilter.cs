@@ -4,7 +4,7 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Orchard.Liquid.Filters
+namespace OrchardCore.Liquid.Filters
 {
     public class ContentUrlFilter : ILiquidFilter
     {

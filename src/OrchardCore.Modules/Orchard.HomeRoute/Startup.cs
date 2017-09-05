@@ -5,7 +5,7 @@ using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.HomeRoute
+namespace OrchardCore.HomeRoute
 {
     public class Startup : StartupBase
     {

@@ -11,12 +11,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Loaders;
-using Orchard.Environment.Extensions.Manifests;
-using Orchard.Environment.Extensions.Utility;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Loaders;
+using OrchardCore.Environment.Extensions.Manifests;
+using OrchardCore.Environment.Extensions.Utility;
 
-namespace Orchard.Environment.Extensions
+namespace OrchardCore.Environment.Extensions
 {
     public class ExtensionManager : IExtensionManager
     {

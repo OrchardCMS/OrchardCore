@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using Orchard.Body.Model;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentTypes.Editors;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.Body.Model;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.Body.Settings
+namespace OrchardCore.Body.Settings
 {
     public class BodyPartSettingsDisplayDriver : ContentTypePartDisplayDriver
     {

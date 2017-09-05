@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.Extensions.Primitives;
 
-namespace Orchard.DisplayManagement.Theming
+namespace OrchardCore.DisplayManagement.Theming
 {
     public class ThemingViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {

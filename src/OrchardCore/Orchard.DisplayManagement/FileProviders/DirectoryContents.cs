@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Extensions.FileProviders;
 
-namespace Orchard.DisplayManagement.FileProviders
+namespace OrchardCore.DisplayManagement.FileProviders
 {
     public class DirectoryContents : IDirectoryContents
     {

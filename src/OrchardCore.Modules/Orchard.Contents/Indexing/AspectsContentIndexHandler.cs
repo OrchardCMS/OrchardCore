@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Models;
-using Orchard.Indexing;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Models;
+using OrchardCore.Indexing;
 
-namespace Orchard.Contents.Indexing
+namespace OrchardCore.Contents.Indexing
 {
     public class AspectsContentIndexHandler : IContentItemIndexHandler
     {

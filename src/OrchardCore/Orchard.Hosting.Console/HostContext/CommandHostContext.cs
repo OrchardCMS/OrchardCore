@@ -1,7 +1,7 @@
-﻿using Orchard.Environment.Commands;
+﻿using OrchardCore.Environment.Commands;
 using System.IO;
 
-namespace Orchard.Hosting.HostContext
+namespace OrchardCore.Hosting.HostContext
 {
     public class CommandHostContext
     {

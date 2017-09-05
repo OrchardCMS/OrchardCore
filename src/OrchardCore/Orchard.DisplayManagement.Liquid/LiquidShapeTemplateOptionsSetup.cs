@@ -1,9 +1,9 @@
 using System;
 using Microsoft.Extensions.Options;
-using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
-using Orchard.DisplayManagement.Liquid.Internal;
+using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
+using OrchardCore.DisplayManagement.Liquid.Internal;
 
-namespace Orchard.DisplayManagement.Liquid
+namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidShapeTemplateOptionsSetup : IConfigureOptions<ShapeTemplateOptions>
     {

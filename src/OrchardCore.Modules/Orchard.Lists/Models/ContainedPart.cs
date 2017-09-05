@@ -1,10 +1,10 @@
-﻿using Orchard.ContentManagement;
+﻿using OrchardCore.ContentManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Orchard.Lists.Models
+namespace OrchardCore.Lists.Models
 {
     /// <summary>
     /// Attached to a content item instance when it's part of a list.

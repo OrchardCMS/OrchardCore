@@ -6,7 +6,7 @@ using OrchardCore.Modules;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
-namespace Orchard.Environment.Cache
+namespace OrchardCore.Environment.Cache
 {
     public class DefaultTagCache : ITagCache
     {

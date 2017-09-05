@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Orchard.Autoroute.Model;
+using OrchardCore.Autoroute.Model;
 
-namespace Orchard.Autoroute.Services
+namespace OrchardCore.Autoroute.Services
 {
     public class AutorouteEntries : IAutorouteEntries
     {

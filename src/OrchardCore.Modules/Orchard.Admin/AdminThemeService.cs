@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using Orchard.Settings;
-using Orchard.Environment.Extensions;
+using OrchardCore.Settings;
+using OrchardCore.Environment.Extensions;
 using System;
 using System.Threading.Tasks;
 
-namespace Orchard.Admin
+namespace OrchardCore.Admin
 {
     public class AdminThemeService : IAdminThemeService
     {

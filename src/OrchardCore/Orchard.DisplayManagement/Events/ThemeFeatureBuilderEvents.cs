@@ -1,8 +1,8 @@
-﻿using Orchard.DisplayManagement.Extensions;
-using Orchard.Environment.Extensions.Features;
+﻿using OrchardCore.DisplayManagement.Extensions;
+using OrchardCore.Environment.Extensions.Features;
 using System.Linq;
 
-namespace Orchard.DisplayManagement.Events
+namespace OrchardCore.DisplayManagement.Events
 {
     public class ThemeFeatureBuilderEvents : FeatureBuilderEvents
     {

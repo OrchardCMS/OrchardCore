@@ -1,10 +1,10 @@
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement.Handlers;
-using Orchard.Data.Migration;
-using Orchard.Indexing.Services;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Data.Migration;
+using OrchardCore.Indexing.Services;
 
-namespace Orchard.Indexing
+namespace OrchardCore.Indexing
 {
     /// <summary>
     /// These services are registered on the tenant service collection

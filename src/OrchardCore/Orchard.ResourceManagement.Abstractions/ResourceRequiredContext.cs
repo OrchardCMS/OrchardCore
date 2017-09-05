@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Html;
 
-namespace Orchard.ResourceManagement
+namespace OrchardCore.ResourceManagement
 {
     public class ResourceRequiredContext
     {

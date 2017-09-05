@@ -1,9 +1,9 @@
-﻿using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.ContentManagement.MetaData;
-using Orchard.Data.Migration;
-using Orchard.Lists.Indexes;
+﻿using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.Data.Migration;
+using OrchardCore.Lists.Indexes;
 
-namespace Orchard.Lists
+namespace OrchardCore.Lists
 {
     public class Migrations : DataMigration
     {

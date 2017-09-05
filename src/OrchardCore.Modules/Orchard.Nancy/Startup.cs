@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
-using Orchard.Nancy;
+using OrchardCore.Nancy;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.Nancy
+namespace OrchardCore.Nancy
 {
     public class Startup : StartupBase
     {

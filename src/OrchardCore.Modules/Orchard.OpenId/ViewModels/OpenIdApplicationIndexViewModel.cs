@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Orchard.OpenId.Models;
+using OrchardCore.OpenId.Models;
 
-namespace Orchard.OpenId.ViewModels
+namespace OrchardCore.OpenId.ViewModels
 {
     public class OpenIdApplicationsIndexViewModel
     {

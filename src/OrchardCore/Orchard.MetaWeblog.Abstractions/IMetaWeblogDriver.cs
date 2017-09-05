@@ -1,9 +1,9 @@
 ﻿using System;
-using Orchard.ContentManagement;
-using Orchard.Core.XmlRpc;
-using Orchard.Core.XmlRpc.Models;
+using OrchardCore.ContentManagement;
+using OrchardCore.XmlRpc;
+using OrchardCore.XmlRpc.Models;
 
-namespace Orchard.MetaWeblog
+namespace OrchardCore.MetaWeblog
 {
     public interface IMetaWeblogDriver
     {

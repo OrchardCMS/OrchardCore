@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.Diagnostics.Elm
+namespace OrchardCore.Diagnostics.Elm
 {
     public class Startup : StartupBase
     {

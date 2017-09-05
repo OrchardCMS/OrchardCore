@@ -1,6 +1,6 @@
-﻿using Orchard.DisplayManagement.Descriptors;
+﻿using OrchardCore.DisplayManagement.Descriptors;
 
-namespace Orchard.DisplayManagement.Handlers
+namespace OrchardCore.DisplayManagement.Handlers
 {
     /// <summary>
     /// A function that provides a <see cref="PlacementInfo"/> instance for a shape.

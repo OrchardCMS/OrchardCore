@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace Orchard.Liquid.Filters
+namespace OrchardCore.Liquid.Filters
 {
     public class DisplayTextFilter : ILiquidFilter
     {

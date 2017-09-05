@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Orchard.Environment.Cache
+namespace OrchardCore.Environment.Cache
 {
     /// <summary>
     /// Provides the discriminator for a specific cache context by requesting all <see cref="ICacheContextProvider"/>

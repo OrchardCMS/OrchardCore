@@ -5,9 +5,9 @@ using System.Dynamic;
 using System.Linq;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Orchard.UI;
+using OrchardCore.UI;
 
-namespace Orchard.DisplayManagement.Shapes
+namespace OrchardCore.DisplayManagement.Shapes
 {
 	[DebuggerTypeProxy(typeof(ShapeDebugView))]
 	public class Shape : Composite, IShape, IPositioned, IEnumerable<object>

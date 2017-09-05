@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Orchard.StorageProviders.FileSystem
+namespace OrchardCore.StorageProviders.FileSystem
 {
     public class FileSystemFile : IFile
     {

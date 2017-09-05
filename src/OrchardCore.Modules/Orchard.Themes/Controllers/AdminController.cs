@@ -4,17 +4,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Orchard.Admin;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Descriptor;
-using Orchard.Security;
-using Orchard.Themes.Models;
-using Orchard.Themes.Services;
+using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Descriptor;
+using OrchardCore.Security;
+using OrchardCore.Themes.Models;
+using OrchardCore.Themes.Services;
 
-namespace Orchard.Themes.Controllers
+namespace OrchardCore.Themes.Controllers
 {
     [Admin]
     public class AdminController : Controller

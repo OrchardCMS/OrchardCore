@@ -1,6 +1,6 @@
 using System.Xml.Linq;
 
-namespace Orchard.Feeds.Models
+namespace OrchardCore.Feeds.Models
 {
     public class FeedItem
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.Scripting
+namespace OrchardCore.Scripting
 {
     /// <summary>
     /// An implementation of <see cref="IGlobalMethodProvider"/> provides custom methods for

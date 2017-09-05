@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Orchard.Environment.Extensions;
+using OrchardCore.Environment.Extensions;
 
-namespace Orchard.Themes.Models
+namespace OrchardCore.Themes.Models
 {
     /// <summary>
     /// Represents a theme.

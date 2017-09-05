@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 
-namespace Orchard.Environment.Extensions.Manifests
+namespace OrchardCore.Environment.Extensions.Manifests
 {
     /// <summary>
     /// Sets up default options for <see cref="ManifestOptions"/>.

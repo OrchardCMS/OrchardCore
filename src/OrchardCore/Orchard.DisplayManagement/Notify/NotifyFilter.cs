@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
-using Orchard.DisplayManagement.Layout;
-using Orchard.Environment.Shell;
+using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.Environment.Shell;
 
-namespace Orchard.DisplayManagement.Notify
+namespace OrchardCore.DisplayManagement.Notify
 {
     public class NotifyFilter : IActionFilter, IResultFilter
     {

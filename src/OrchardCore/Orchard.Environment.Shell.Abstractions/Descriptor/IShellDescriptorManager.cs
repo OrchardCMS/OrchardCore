@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Orchard.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 
-namespace Orchard.Environment.Shell.Descriptor
+namespace OrchardCore.Environment.Shell.Descriptor
 {
     /// <summary>
     /// Service resolved out of the shell container. Primarily used by host.

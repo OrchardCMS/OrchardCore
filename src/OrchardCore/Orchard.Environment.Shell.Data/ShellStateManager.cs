@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell.State;
+using OrchardCore.Environment.Shell.State;
 using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
 
-namespace Orchard.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     /// <summary>
     /// Stores <see cref="ShellState"/> in the database. 

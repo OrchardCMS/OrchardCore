@@ -1,14 +1,14 @@
 using System;
 using System.Threading.Tasks;
-using Orchard.Autoroute.Model;
-using Orchard.Autoroute.Models;
-using Orchard.Autoroute.ViewModels;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentTypes.Editors;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.Autoroute.Model;
+using OrchardCore.Autoroute.Models;
+using OrchardCore.Autoroute.ViewModels;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.Autoroute.Settings
+namespace OrchardCore.Autoroute.Settings
 {
     public class AutoroutePartSettingsDisplayDriver : ContentTypePartDisplayDriver
     {

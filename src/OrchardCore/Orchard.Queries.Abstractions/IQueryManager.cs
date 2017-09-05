@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Orchard.Queries
+namespace OrchardCore.Queries
 {
     public interface IQueryManager
     {

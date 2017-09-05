@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.Mvc.Utilities;
+using OrchardCore.Mvc.Utilities;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Display.Models;
-using Orchard.ContentManagement.MetaData;
-using Orchard.DisplayManagement.Views;
-using Orchard.Settings;
-using Orchard.Widgets.Models;
-using Orchard.Widgets.Settings;
-using Orchard.Widgets.ViewModels;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Settings;
+using OrchardCore.Widgets.Models;
+using OrchardCore.Widgets.Settings;
+using OrchardCore.Widgets.ViewModels;
 
-namespace Orchard.Widgets.Drivers
+namespace OrchardCore.Widgets.Drivers
 {
     public class WidgetsListPartDisplay : ContentPartDisplayDriver<WidgetsListPart>
     {

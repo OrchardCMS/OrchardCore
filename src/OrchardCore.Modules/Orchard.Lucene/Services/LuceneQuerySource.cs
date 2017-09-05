@@ -3,15 +3,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Records;
-using Orchard.Liquid;
-using Orchard.Lucene.Services;
-using Orchard.Queries;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.Liquid;
+using OrchardCore.Lucene.Services;
+using OrchardCore.Queries;
 using YesSql;
 using YesSql.Services;
 
-namespace Orchard.Lucene
+namespace OrchardCore.Lucene
 {
     public class LuceneQuerySource : IQuerySource
     {

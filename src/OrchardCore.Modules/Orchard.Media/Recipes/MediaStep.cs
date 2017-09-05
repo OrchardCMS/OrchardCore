@@ -3,10 +3,10 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 
-namespace Orchard.Media.Recipes
+namespace OrchardCore.Media.Recipes
 {
     /// <summary>
     /// This recipe step creates a set of queries.

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Orchard.Themes.Models;
+using OrchardCore.Themes.Models;
 
-namespace Orchard.Themes.ViewModels
+namespace OrchardCore.Themes.ViewModels
 {
     public class SelectThemesViewModel
     {

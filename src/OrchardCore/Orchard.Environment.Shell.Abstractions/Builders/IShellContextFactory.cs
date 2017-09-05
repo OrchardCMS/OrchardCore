@@ -1,8 +1,8 @@
-﻿using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.Hosting.ShellBuilders;
+﻿using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Hosting.ShellBuilders;
 using System.Threading.Tasks;
 
-namespace Orchard.Environment.Shell.Builders
+namespace OrchardCore.Environment.Shell.Builders
 {
     /// <summary>
     /// High-level coordinator that exercises other component capabilities to

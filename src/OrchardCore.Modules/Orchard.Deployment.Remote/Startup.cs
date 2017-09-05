@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Deployment.Remote;
-using Orchard.Deployment.Remote.Services;
-using Orchard.Environment.Navigation;
+using OrchardCore.Deployment.Remote;
+using OrchardCore.Deployment.Remote.Services;
+using OrchardCore.Environment.Navigation;
 
-namespace Orchard.Deployment
+namespace OrchardCore.Deployment
 {
     public class Startup : StartupBase
     {

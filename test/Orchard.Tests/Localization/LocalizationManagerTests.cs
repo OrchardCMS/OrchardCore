@@ -1,10 +1,10 @@
 using System.Globalization;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
-using Orchard.Localization;
+using OrchardCore.Localization;
 using Xunit;
 
-namespace Orchard.Tests.Localization
+namespace OrchardCore.Tests.Localization
 {
     public class LocalizationManagerTests
     {

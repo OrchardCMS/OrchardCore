@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Orchard.Indexing
+namespace OrchardCore.Indexing
 {
     /// <summary>
     /// An implementation of <see cref="IContentItemIndexHandler"/> can provide property values for an index document.

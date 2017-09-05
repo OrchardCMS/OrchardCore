@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Commands;
+using OrchardCore.Environment.Commands;
 using System.IO;
 using Xunit;
 using Microsoft.Extensions.Localization;
-using Orchard.Tests.Stubs;
+using OrchardCore.Tests.Stubs;
 
-namespace Orchard.Tests.Commands
+namespace OrchardCore.Tests.Commands
 {
     public class CommandManagerTests
     {

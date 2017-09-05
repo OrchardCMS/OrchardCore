@@ -16,12 +16,12 @@ using Microsoft.AspNetCore.Hosting;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Orchard.Environment.Shell;
-using Orchard.Indexing;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Indexing;
 using Directory = System.IO.Directory;
 using LuceneNetCodecs = Lucene.Net.Codecs;
 
-namespace Orchard.Lucene
+namespace OrchardCore.Lucene
 {
     /// <summary>
     /// Provides methods to manage physical Lucene indices.

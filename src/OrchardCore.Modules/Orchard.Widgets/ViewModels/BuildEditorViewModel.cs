@@ -1,4 +1,4 @@
-﻿namespace Orchard.Widgets.ViewModels
+﻿namespace OrchardCore.Widgets.ViewModels
 {
     public class BuildEditorViewModel
     {

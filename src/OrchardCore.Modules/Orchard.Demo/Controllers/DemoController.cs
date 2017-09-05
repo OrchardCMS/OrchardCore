@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Orchard.Demo.Controllers
+namespace OrchardCore.Demo.Controllers
 {
     public class DemoController : Controller
     {

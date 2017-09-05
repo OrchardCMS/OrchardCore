@@ -1,4 +1,4 @@
-﻿namespace Orchard.Environment.Shell.Descriptor.Models
+﻿namespace OrchardCore.Environment.Shell.Descriptor.Models
 {
     public class ShellFeature
     {

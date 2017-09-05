@@ -1,6 +1,6 @@
-﻿using Orchard.Indexing;
+﻿using OrchardCore.Indexing;
 
-namespace Orchard.Lucene.Settings
+namespace OrchardCore.Lucene.Settings
 {
     public class ContentIndexSettingsViewModel
     {

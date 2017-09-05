@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using Orchard.ContentManagement;
-using Orchard.Alias.Indexes;
+using OrchardCore.ContentManagement;
+using OrchardCore.Alias.Indexes;
 using YesSql;
 
-namespace Orchard.Alias.Services
+namespace OrchardCore.Alias.Services
 {
     public class AliasPartContentAliasProvider : IContentAliasProvider
     {

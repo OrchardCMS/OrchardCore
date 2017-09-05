@@ -1,19 +1,19 @@
 using System;
 using System.Linq;
 using Fluid;
-using Orchard.Autoroute.Model;
-using Orchard.Autoroute.Models;
-using Orchard.Autoroute.Services;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Handlers;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Records;
-using Orchard.Environment.Cache;
-using Orchard.Liquid;
-using Orchard.Settings;
+using OrchardCore.Autoroute.Model;
+using OrchardCore.Autoroute.Models;
+using OrchardCore.Autoroute.Services;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.Environment.Cache;
+using OrchardCore.Liquid;
+using OrchardCore.Settings;
 using YesSql;
 
-namespace Orchard.Autoroute.Handlers
+namespace OrchardCore.Autoroute.Handlers
 {
     public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
     {

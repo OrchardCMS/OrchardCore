@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Orchard.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     public static class ContentItemExtensions
     {

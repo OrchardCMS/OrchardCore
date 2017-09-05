@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace Orchard.Queries.Controllers
+namespace OrchardCore.Queries.Controllers
 {
     public class ApiController : Controller
     {

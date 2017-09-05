@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.ContentTypes.Services
+namespace OrchardCore.ContentTypes.Services
 {
     public class DefaultStereotypesProvider : IStereotypesProvider
     {

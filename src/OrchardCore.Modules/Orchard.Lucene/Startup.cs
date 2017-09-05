@@ -4,22 +4,22 @@ using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.BackgroundTasks;
-using Orchard.ContentManagement.Handlers;
-using Orchard.ContentTypes.Editors;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.Environment.Navigation;
-using Orchard.Lucene.Drivers;
-using Orchard.Lucene.Handlers;
-using Orchard.Lucene.Recipes;
-using Orchard.Lucene.Services;
-using Orchard.Lucene.Settings;
-using Orchard.Queries;
-using Orchard.Recipes;
-using Orchard.Security.Permissions;
-using Orchard.Settings;
+using OrchardCore.BackgroundTasks;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Lucene.Drivers;
+using OrchardCore.Lucene.Handlers;
+using OrchardCore.Lucene.Recipes;
+using OrchardCore.Lucene.Services;
+using OrchardCore.Lucene.Settings;
+using OrchardCore.Queries;
+using OrchardCore.Recipes;
+using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 
-namespace Orchard.Lucene
+namespace OrchardCore.Lucene
 {
     /// <summary>
     /// These services are registered on the tenant service collection

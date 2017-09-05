@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Orchard.Users.ViewModels
+namespace OrchardCore.Users.ViewModels
 {
     public class RoleViewModel
     {

@@ -1,4 +1,4 @@
-﻿namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
+﻿namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     public class HarvestShapeInfo
     {

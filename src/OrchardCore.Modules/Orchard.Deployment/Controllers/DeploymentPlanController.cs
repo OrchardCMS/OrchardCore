@@ -7,17 +7,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using Orchard.Admin;
-using Orchard.Deployment.Indexes;
-using Orchard.Deployment.ViewModels;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Navigation;
-using Orchard.Settings;
+using OrchardCore.Admin;
+using OrchardCore.Deployment.Indexes;
+using OrchardCore.Deployment.ViewModels;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Navigation;
+using OrchardCore.Settings;
 using YesSql;
 
-namespace Orchard.Deployment.Controllers
+namespace OrchardCore.Deployment.Controllers
 {
     [Admin]
     public class DeploymentPlanController : Controller, IUpdateModel

@@ -8,16 +8,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Newtonsoft.Json;
-using Orchard.Admin;
-using Orchard.Deployment.Core.Services;
-using Orchard.Deployment.Remote.Models;
-using Orchard.Deployment.Remote.Services;
-using Orchard.Deployment.Services;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Mvc.Utilities;
+using OrchardCore.Admin;
+using OrchardCore.Deployment.Core.Services;
+using OrchardCore.Deployment.Remote.Models;
+using OrchardCore.Deployment.Remote.Services;
+using OrchardCore.Deployment.Services;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.Utilities;
 using YesSql;
 
-namespace Orchard.Deployment.Remote.Controllers
+namespace OrchardCore.Deployment.Remote.Controllers
 {
     [Admin]
     public class ExportRemoteInstanceController : Controller

@@ -1,4 +1,4 @@
-namespace Orchard.ResourceManagement
+namespace OrchardCore.ResourceManagement
 {
     public interface IResourceManifestProvider
     {

@@ -1,4 +1,4 @@
-namespace Orchard.ContentManagement.Metadata.Records
+namespace OrchardCore.ContentManagement.Metadata.Records
 {
     /// <summary>
     /// Reprensents a field name.

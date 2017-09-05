@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Orchard.BackgroundTasks
+namespace OrchardCore.BackgroundTasks
 {
     public static class ServiceCollectionExtensions
     {

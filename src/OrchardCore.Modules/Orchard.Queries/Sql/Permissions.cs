@@ -1,7 +1,7 @@
-using Orchard.Security.Permissions;
+using OrchardCore.Security.Permissions;
 using System.Collections.Generic;
 
-namespace Orchard.Queries.Sql
+namespace OrchardCore.Queries.Sql
 {
     public class Permissions : IPermissionProvider
     {

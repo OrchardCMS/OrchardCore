@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Orchard.BackgroundTasks
+namespace OrchardCore.BackgroundTasks
 {
     /// <summary>
     /// An implementation of <see cref="IBackgroundTaskService"/> is a registered as singleton

@@ -1,10 +1,10 @@
 ﻿using System;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Handlers;
-using Orchard.Environment.Cache;
-using Orchard.Layers.Models;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Environment.Cache;
+using OrchardCore.Layers.Models;
 
-namespace Orchard.Layers.Handlers
+namespace OrchardCore.Layers.Handlers
 {
 	public class LayerMetadataHandler : ContentHandlerBase
     {

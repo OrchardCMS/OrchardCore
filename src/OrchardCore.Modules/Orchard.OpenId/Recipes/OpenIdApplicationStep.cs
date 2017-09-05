@@ -2,12 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using OpenIddict.Core;
-using Orchard.OpenId.Models;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
+using OrchardCore.OpenId.Models;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 using System.Collections.Generic;
 
-namespace Orchard.OpenId.Recipes
+namespace OrchardCore.OpenId.Recipes
 {
     public class OpenIdApplicationStep : IRecipeStepHandler
     {

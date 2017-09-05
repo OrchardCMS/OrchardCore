@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Orchard.DisplayManagement.Implementation
+namespace OrchardCore.DisplayManagement.Implementation
 {
     public interface IShapeFactoryEvents
     {

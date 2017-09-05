@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Commons.Filters;
+using OrchardCore.Commons.Filters;
 
-namespace Orchard.Commons
+namespace OrchardCore.Commons
 {
     public static class ServiceCollectionExtensions
     {

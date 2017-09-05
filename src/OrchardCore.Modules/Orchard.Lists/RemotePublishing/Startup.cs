@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.Core.XmlRpc;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.XmlRpc;
 
-namespace Orchard.Lists.RemotePublishing
+namespace OrchardCore.Lists.RemotePublishing
 {
 
     [RequireFeatures("Orchard.RemotePublishing")]

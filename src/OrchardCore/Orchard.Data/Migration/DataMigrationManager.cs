@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Orchard.Data.Migration.Records;
-using Orchard.Environment.Extensions;
+using OrchardCore.Data.Migration.Records;
+using OrchardCore.Environment.Extensions;
 using YesSql;
 using YesSql.Sql;
 
-namespace Orchard.Data.Migration
+namespace OrchardCore.Data.Migration
 {
     public class DataMigrationManager : IDataMigrationManager
     {

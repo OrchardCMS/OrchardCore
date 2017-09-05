@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Orchard.ContentManagement.Display.Models;
-using Orchard.ContentManagement.Metadata.Models;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Views;
+using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 
-namespace Orchard.ContentManagement.Display.ContentDisplay
+namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     /// <summary>
     /// Any concrete implementation of this class can provide shapes for any part of a content item.

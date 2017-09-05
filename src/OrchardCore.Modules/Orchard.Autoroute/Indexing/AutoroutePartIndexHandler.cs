@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Orchard.Autoroute.Model;
-using Orchard.Indexing;
+using OrchardCore.Autoroute.Model;
+using OrchardCore.Indexing;
 
-namespace Orchard.Autoroute.Indexing
+namespace OrchardCore.Autoroute.Indexing
 {
     public class AutoroutePartIndexHandler : ContentPartIndexHandler<AutoroutePart>
     {

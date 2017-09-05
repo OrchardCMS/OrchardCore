@@ -1,8 +1,8 @@
-﻿using Orchard.UI;
+﻿using OrchardCore.UI;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 
-namespace Orchard.DisplayManagement.Title
+namespace OrchardCore.DisplayManagement.Title
 {
     public class PageTitleBuilder : IPageTitleBuilder
     {

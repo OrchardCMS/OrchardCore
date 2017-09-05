@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Orchard.Body.Model;
-using Orchard.Indexing;
+using OrchardCore.Body.Model;
+using OrchardCore.Indexing;
 
-namespace Orchard.Body.Indexing
+namespace OrchardCore.Body.Indexing
 {
     public class BodyPartIndexHandler : ContentPartIndexHandler<BodyPart>
     {

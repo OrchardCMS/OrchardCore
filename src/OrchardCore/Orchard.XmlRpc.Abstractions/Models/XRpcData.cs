@@ -1,6 +1,6 @@
 using System;
 
-namespace Orchard.Core.XmlRpc.Models
+namespace OrchardCore.XmlRpc.Models
 {
     public class XRpcData
     {

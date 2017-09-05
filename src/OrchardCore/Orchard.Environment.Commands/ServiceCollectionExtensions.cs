@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Commands.Builtin;
-using Orchard.Environment.Commands.Parameters;
+using OrchardCore.Environment.Commands.Builtin;
+using OrchardCore.Environment.Commands.Parameters;
 
-namespace Orchard.Environment.Commands
+namespace OrchardCore.Environment.Commands
 {
     public static class ServiceCollectionExtensions
     {

@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 using Microsoft.Extensions.Localization;
-using Orchard.Environment.Commands;
-using Orchard.Users.Services;
+using OrchardCore.Environment.Commands;
+using OrchardCore.Users.Services;
 
-namespace Orchard.Users.Commands
+namespace OrchardCore.Users.Commands
 {
     public class UserCommands : DefaultCommandHandler
     {

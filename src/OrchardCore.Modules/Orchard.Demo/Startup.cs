@@ -4,18 +4,18 @@ using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.BackgroundTasks;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.Data.Migration;
-using Orchard.Demo.Commands;
-using Orchard.Demo.ContentElementDisplays;
-using Orchard.Demo.Services;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.Environment.Commands;
-using Orchard.Environment.Navigation;
-using Orchard.Security.Permissions;
+using OrchardCore.BackgroundTasks;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.Data.Migration;
+using OrchardCore.Demo.Commands;
+using OrchardCore.Demo.ContentElementDisplays;
+using OrchardCore.Demo.Services;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Environment.Commands;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Security.Permissions;
 
-namespace Orchard.Demo
+namespace OrchardCore.Demo
 {
     public class Startup : StartupBase
     {

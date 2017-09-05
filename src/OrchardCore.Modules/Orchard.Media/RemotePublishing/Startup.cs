@@ -1,8 +1,8 @@
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.MetaWeblog;
+using OrchardCore.MetaWeblog;
 
-namespace Orchard.Media.RemotePublishing
+namespace OrchardCore.Media.RemotePublishing
 {
     [RequireFeatures("Orchard.RemotePublishing")]
     public class RemotePublishingStartup : StartupBase
