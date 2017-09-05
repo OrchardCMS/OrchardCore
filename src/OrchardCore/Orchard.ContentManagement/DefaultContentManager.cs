@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -375,6 +375,16 @@ namespace Orchard.ContentManagement
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
                 Handlers.Reverse().Invoke(handler => handler.Published(publishContext), _logger);
             }
+        }
+
+        public void Update(ContentItem contentItem)
+        {
+            var context = new UpdateContentContext(contentItem);
+
+            Handlers.Invoke(handler => handler.Updating(context), _logger);
+            Handlers.Reverse().Invoke(handler => handler.Updated(context), _logger);
+
+            _session.Save(contentItem);
         }
 
         public TAspect PopulateAspect<TAspect>(IContent content, TAspect aspect)
