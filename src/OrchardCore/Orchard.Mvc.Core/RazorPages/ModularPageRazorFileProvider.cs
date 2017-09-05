@@ -15,8 +15,7 @@ namespace Orchard.Mvc.RazorPages
         public ModularPageRazorFileProvider(IFileProvider fileProvider, IOptions<ExtensionExpanderOptions> optionsAccessor)
         {
             _fileProvider = fileProvider;
-
-            _paths = optionsAccessor.Value.Options.Select(o => '/' + o.SearchPath.Replace('\\', '/').Trim('/'));
+            _paths = optionsAccessor.Value.Options.Select(o => '/' + o.SearchPath);
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)

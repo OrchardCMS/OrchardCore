@@ -52,7 +52,7 @@ namespace Orchard.Mvc.LocationExpander
 
             var result = new List<string>();
 
-            var extensionViewsPath = '/' + extension.SubPath.Replace('\\', '/').Trim('/') + "/Views";
+            var extensionViewsPath = '/' + extension.SubPath + "/Views";
             result.Add(extensionViewsPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
             result.Add(extensionViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
 

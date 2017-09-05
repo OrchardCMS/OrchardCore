@@ -389,8 +389,8 @@ namespace Orchard.Environment.Extensions
                         continue;
                     }
 
-                    var manifestsubPath = Path.Combine(searchOption.SearchPath, subDirectory.Name);
-                    var manifestFilesubPath = Path.Combine(manifestsubPath, manifestConfiguration.ManifestFileName);
+                    var manifestsubPath = searchOption.SearchPath + '/' + subDirectory.Name;
+                    var manifestFilesubPath = manifestsubPath + '/' + manifestConfiguration.ManifestFileName;
 
                     IConfigurationBuilder configurationBuilder =
                         _manifestProvider.GetManifestConfiguration(new ConfigurationBuilder(), manifestFilesubPath);
