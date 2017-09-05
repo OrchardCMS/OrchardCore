@@ -2,7 +2,7 @@ using System;
 using Orchard.Environment.Shell;
 using System.Collections.Generic;
 using Xunit;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orchard.Environment.Shell.Builders;

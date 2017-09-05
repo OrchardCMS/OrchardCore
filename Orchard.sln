@@ -101,9 +101,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Feeds.Abstractions"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Feeds.Core", "src\OrchardCore\Orchard.Feeds.Core\Orchard.Feeds.Core.csproj", "{9A7DBD64-6F4F-4685-953D-9ACD79ED34A1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Modules.Abstractions", "src\OrchardCore\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj", "{477CBA01-FB6E-498C-AD3C-EF2B16F7C006}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Modules.Abstractions", "src\OrchardCore\OrchardCore.Modules.Abstractions\OrchardCore.Modules.Abstractions.csproj", "{477CBA01-FB6E-498C-AD3C-EF2B16F7C006}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Modules", "src\OrchardCore\Microsoft.AspNetCore.Modules\Microsoft.AspNetCore.Modules.csproj", "{19617686-B3AE-4810-9C32-7FAF42F56744}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Modules", "src\OrchardCore\OrchardCore.Modules\OrchardCore.Modules.csproj", "{19617686-B3AE-4810-9C32-7FAF42F56744}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Mvc.Core", "src\OrchardCore\Orchard.Mvc.Core\Orchard.Mvc.Core.csproj", "{9E4E6CCB-7E1C-45CA-A4BB-43D8102DF086}"
 EndProject
@@ -236,8 +236,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Cms", "src\OrchardCore\OrchardCore.Cms\OrchardCore.Cms.csproj", "{2B34D23B-1D69-46FE-B695-930AA3C0956B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Media.Services", "src\OrchardCore\Orchard.Media.Services\Orchard.Media.Services.csproj", "{F01DF8DA-5AA5-420D-BEF4-4714AA1A3F59}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Modules", "src\OrchardCore\OrchardCore.Modules\OrchardCore.Modules.csproj", "{376514C6-CB04-41F4-9B6C-5335C0FFCB0E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Modules.Mvc", "src\OrchardCore\OrchardCore.Modules.Mvc\OrchardCore.Modules.Mvc.csproj", "{3A7AD5EC-D3E4-4C3F-B192-25804BB53C8E}"
 EndProject
@@ -711,10 +709,6 @@ Global
 		{F01DF8DA-5AA5-420D-BEF4-4714AA1A3F59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F01DF8DA-5AA5-420D-BEF4-4714AA1A3F59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F01DF8DA-5AA5-420D-BEF4-4714AA1A3F59}.Release|Any CPU.Build.0 = Release|Any CPU
-		{376514C6-CB04-41F4-9B6C-5335C0FFCB0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{376514C6-CB04-41F4-9B6C-5335C0FFCB0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{376514C6-CB04-41F4-9B6C-5335C0FFCB0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{376514C6-CB04-41F4-9B6C-5335C0FFCB0E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3A7AD5EC-D3E4-4C3F-B192-25804BB53C8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3A7AD5EC-D3E4-4C3F-B192-25804BB53C8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A7AD5EC-D3E4-4C3F-B192-25804BB53C8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -927,7 +921,6 @@ Global
 		{00E5C336-3CC2-421D-883C-CD3A9E74EFC0} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{2B34D23B-1D69-46FE-B695-930AA3C0956B} = {44E4D150-C374-4353-8BA7-8C575704D13E}
 		{F01DF8DA-5AA5-420D-BEF4-4714AA1A3F59} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
-		{376514C6-CB04-41F4-9B6C-5335C0FFCB0E} = {44E4D150-C374-4353-8BA7-8C575704D13E}
 		{3A7AD5EC-D3E4-4C3F-B192-25804BB53C8E} = {44E4D150-C374-4353-8BA7-8C575704D13E}
 		{633CD286-9D1C-4777-86F2-A2034F1C8C9C} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{3657478C-3BAE-4563-9C08-63A8C64A7CB6} = {44E4D150-C374-4353-8BA7-8C575704D13E}

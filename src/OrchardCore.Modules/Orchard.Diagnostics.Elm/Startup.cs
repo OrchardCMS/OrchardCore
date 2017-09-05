@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Modules;
+﻿using OrchardCore.Modules;
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;

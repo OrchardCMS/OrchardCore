@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Data.Migration;

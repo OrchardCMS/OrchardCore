@@ -1,7 +1,7 @@
 using System;
 using Lucene.Net.Analysis.Standard;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.BackgroundTasks;

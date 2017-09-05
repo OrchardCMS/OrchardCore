@@ -1,6 +1,6 @@
 using Fluid;
 using Fluid.Values;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement;

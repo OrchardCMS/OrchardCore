@@ -51,10 +51,10 @@ namespace Orchard.Environment.Shell.Builders
 
             IServiceCollection moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
-            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(Microsoft.AspNetCore.Modules.IStartup).IsAssignableFrom(t.Key)))
+            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(OrchardCore.Modules.IStartup).IsAssignableFrom(t.Key)))
             {
-                moduleServiceCollection.AddSingleton(typeof(Microsoft.AspNetCore.Modules.IStartup), dependency.Key);
-                tenantServiceCollection.AddSingleton(typeof(Microsoft.AspNetCore.Modules.IStartup), dependency.Key);
+                moduleServiceCollection.AddSingleton(typeof(OrchardCore.Modules.IStartup), dependency.Key);
+                tenantServiceCollection.AddSingleton(typeof(OrchardCore.Modules.IStartup), dependency.Key);
             }
 
             // Add a default configuration if none has been provided
@@ -70,7 +70,7 @@ namespace Orchard.Environment.Shell.Builders
             // Index all service descriptors by their feature id
             var featureAwareServiceCollection = new FeatureAwareServiceCollection(tenantServiceCollection);
 
-            var startups = moduleServiceProvider.GetServices<Microsoft.AspNetCore.Modules.IStartup>();
+            var startups = moduleServiceProvider.GetServices<OrchardCore.Modules.IStartup>();
 
             // IStartup instances are ordered by module dependency with an Order of 0 by default.
             // OrderBy performs a stable sort so order is preserved among equal Order values.

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Orchard.Nancy.AssemblyCatalogs;
 using Microsoft.Extensions.DependencyInjection;
 using Nancy;

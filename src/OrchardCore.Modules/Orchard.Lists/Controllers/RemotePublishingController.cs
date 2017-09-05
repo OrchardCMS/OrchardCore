@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;

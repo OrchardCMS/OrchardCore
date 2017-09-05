@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Modules;
+﻿using OrchardCore.Modules;
 
 namespace OrchardCore.AsModule
 {

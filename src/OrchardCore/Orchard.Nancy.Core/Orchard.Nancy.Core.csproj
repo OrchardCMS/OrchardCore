@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.AspNetCore.Modules\Microsoft.AspNetCore.Modules.csproj" />
+    <ProjectReference Include="..\OrchardCore.Modules\OrchardCore.Modules.csproj" />
   </ItemGroup>
 
   <ItemGroup>

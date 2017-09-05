@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;

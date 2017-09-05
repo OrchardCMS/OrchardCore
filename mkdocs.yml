@@ -22,7 +22,7 @@ markdown_extensions:
 # Page tree
 pages:
     - About Orchard Core: index.md
-    - ASP.NET Core Modules: OrchardCore/Microsoft.AspNetCore.Modules/README.md
+    - ASP.NET Core Modules: OrchardCore/OrchardCore.Modules/README.md
     - CMS Modules:
         - Body: OrchardCore.Modules/Orchard.Body/README.md
         - Content Fields: OrchardCore.Modules/Orchard.ContentFields/README.md

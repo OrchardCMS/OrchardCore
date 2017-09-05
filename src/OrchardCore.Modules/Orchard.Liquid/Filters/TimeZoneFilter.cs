@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Orchard.Settings;
 
 namespace Orchard.Liquid.Filters
