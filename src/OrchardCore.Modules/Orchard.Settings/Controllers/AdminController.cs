@@ -7,6 +7,8 @@ using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Settings.ViewModels;
+using Orchard.Hosting;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Settings.Controllers
 {
@@ -14,6 +16,8 @@ namespace Orchard.Settings.Controllers
     {
         private readonly IDisplayManager<ISite> _siteSettingsDisplayManager;
         private readonly ISiteService _siteService;
+        private readonly IShellHost _shellHost;
+        private readonly ShellSettings _shellSettings;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
 
@@ -21,11 +25,15 @@ namespace Orchard.Settings.Controllers
             ISiteService siteService,
             IDisplayManager<ISite> siteSettingsDisplayManager,
             IAuthorizationService authorizationService,
+            IShellHost shellHost,
+            ShellSettings shellSettings,
             INotifier notifier,
             IHtmlLocalizer<AdminController> h)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
             _siteService = siteService;
+            _shellHost = shellHost;
+            _shellSettings = shellSettings;
             _notifier = notifier;
             _authorizationService = authorizationService;
             H = h;
@@ -81,6 +89,29 @@ namespace Orchard.Settings.Controllers
             }
 
             return View(viewModel);
+        }
+
+        public async Task<IActionResult> RestartSite()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Restart))
+            {
+                return Unauthorized();
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        [ActionName(nameof(RestartSite))]
+        public async Task<IActionResult> RestartSitePost()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Restart))
+            {
+                return Unauthorized();
+            }
+            _shellHost.ReloadShellContext(_shellSettings);
+
+            return Redirect("RestartSite");
         }
     }
 }
