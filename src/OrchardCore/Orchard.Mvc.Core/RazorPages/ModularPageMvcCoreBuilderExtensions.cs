@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -10,7 +9,7 @@ namespace Orchard.Mvc.RazorPages
 {
     public static class ModularPageMvcCoreBuilderExtensions
     {
-        public static IMvcCoreBuilder AddModularRazorPages(this IMvcCoreBuilder builder, IServiceProvider services)
+        public static IMvcCoreBuilder AddModularRazorPages(this IMvcCoreBuilder builder)
         {
             builder.AddRazorPages(options =>
             {
