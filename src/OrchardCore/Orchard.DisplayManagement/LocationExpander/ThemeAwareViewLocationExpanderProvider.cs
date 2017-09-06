@@ -56,26 +56,27 @@ namespace Orchard.DisplayManagement.LocationExpander
                 .Where(x => x.Extension.Manifest.IsTheme())
                 .Reverse();
 
-            if (context.ActionContext.ActionDescriptor is PageActionDescriptor)
+            if (context.ActionContext.ActionDescriptor is PageActionDescriptor page)
             {
-                if (context.PageName != null)
-                {
-                    var pageViewLocations = PageViewLocations().ToList();
-                    pageViewLocations.AddRange(viewLocations);
-                    return pageViewLocations;
-                }
-
-                return viewLocations;
+                var pageViewLocations = PageViewLocations().ToList();
+                pageViewLocations.AddRange(viewLocations);
+                return pageViewLocations;
 
                 IEnumerable<string> PageViewLocations()
                 {
-                    foreach (var theme in currentThemeAndBaseThemesOrdered)
+                    if (page.RelativePath.Contains("/Pages/") && !page.RelativePath.StartsWith("/Pages/"))
                     {
-                        var themeViewsPath = "/" + theme.Extension.SubPath;
+                        var pageIndex = page.RelativePath.LastIndexOf("/Pages/");
+                        var moduleFolder = page.RelativePath.Substring(0, pageIndex);
+                        var moduleId = moduleFolder.Substring(moduleFolder.LastIndexOf("/") + 1);
 
-                        if (!context.PageName.StartsWith(themeViewsPath + '/'))
+                        foreach (var theme in currentThemeAndBaseThemesOrdered)
                         {
-                            yield return themeViewsPath + "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
+                            if (moduleId != theme.Id)
+                            {
+                                var themeViewsPath = "/" + theme.Extension.SubPath + "/Views/" + moduleId;
+                                yield return themeViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension;
+                            }
                         }
                     }
                 }
