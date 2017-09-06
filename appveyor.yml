@@ -26,13 +26,14 @@ init:
 build_script:
   - dotnet --version
   - dotnet restore
-  - ps: cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
   - dotnet pack -c Release
 
   - ps: |
       if ($env:APPVEYOR_REPO_BRANCH -eq "docker")
       {
+        cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
         dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
+        cd $env:APPVEYOR_BUILD_FOLDER
         docker build -t orchardcore-cms-web .
         docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
         docker push orchardcore-cms-web      
