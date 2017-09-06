@@ -1,0 +1,22 @@
+﻿@model OrchardCore.Layers.ViewModels.LayerEditViewModel
+
+<h1>@RenderTitleSegments(T["Edit Layer - {0}", Model.Name])</h1>
+
+<form asp-action="Edit" method="post">
+    <fieldset class="form-group" asp-validation-class-for="Name">
+        <label asp-for="Name">@T["Name"] <span asp-validation-for="Name"></span></label>
+        <input readonly="readonly" asp-for="Name" class="form-control" type="text" />
+    </fieldset>
+
+    <fieldset class="form-group" asp-validation-class-for="Rule">
+        <label asp-for="Rule">@T["Rule"] <span asp-validation-for="Rule"></span></label>
+        <input asp-for="Rule" class="form-control" type="text" />
+    </fieldset>
+
+    <fieldset class="form-group" asp-validation-class-for="Description">
+        <label asp-for="Description">@T["Description"] <span asp-validation-for="Description"></span></label>
+        <textarea asp-for="Description" class="form-control" rows="3" type="text"></textarea>
+    </fieldset>
+
+    <input class="button" type="submit" value="@T["Save"]" />
+</form>

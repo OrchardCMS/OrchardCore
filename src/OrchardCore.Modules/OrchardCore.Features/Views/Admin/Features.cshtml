@@ -86,7 +86,7 @@
                             var missingDependencies = feature.Descriptor.Dependencies
                                 .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d));
                             var showDisable = true; // categoryName.ToString() != "Core";
-                            var showEnable = Model.IsAllowed(feature.Descriptor.Extension) && !missingDependencies.Any() && feature.Descriptor.Id != "Orchard.Setup";
+                            var showEnable = Model.IsAllowed(feature.Descriptor.Extension) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup";
 
                             <li class="list-group-item">
                                 <div class="properties">

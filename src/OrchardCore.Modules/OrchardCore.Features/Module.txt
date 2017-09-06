@@ -10,5 +10,5 @@ Category: Infrastructure
 Features:
     OrchardCore.Features:
         Description: Standard module and feature management.
-        Dependencies: Orchard.Resources
+        Dependencies: OrchardCore.Resources
         Category: Infrastructure

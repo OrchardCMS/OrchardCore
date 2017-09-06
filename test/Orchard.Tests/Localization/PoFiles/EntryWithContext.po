@@ -1,3 +1,0 @@
-﻿msgctxt "Orchard.Localization"
-msgid "Unknown system error"
-msgstr "Error desconegut del sistema"

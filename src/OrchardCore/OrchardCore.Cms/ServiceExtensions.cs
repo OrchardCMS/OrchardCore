@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     modules.WithConfiguration(configuration);
                 }
 
-                modules.WithDefaultFeatures("Orchard.Mvc", "Orchard.Settings", "Orchard.Setup", "Orchard.Recipes", "Orchard.Commons");
+                modules.WithDefaultFeatures("OrchardCore.Mvc", "OrchardCore.Settings", "OrchardCore.Setup", "OrchardCore.Recipes", "OrchardCore.Commons");
             });
 
             return services;
