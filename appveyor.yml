@@ -34,9 +34,9 @@ build_script:
         cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
         dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
         cd $env:APPVEYOR_BUILD_FOLDER
-        docker build -t orchardcore-cms-web .
+        docker build -t orchardproject/orchardcore-cms-web:latest .
         docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
-        docker push orchardcore-cms-web      
+        docker push orchardproject/orchardcore-cms-web  
       }
 
 test_script:
