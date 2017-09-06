@@ -29,7 +29,13 @@ namespace Orchard.Mvc.RazorPages
             {
                 if (subpath.StartsWith(path))
                 {
-                    return _fileProvider.GetDirectoryContents(subpath);
+                    if (subpath.Length == path.Length || subpath.Contains("/Pages") ||
+                        subpath.Substring(path.Length + 1).IndexOf('/') == -1)
+                    {
+                        return _fileProvider.GetDirectoryContents(subpath);
+                    }
+
+                    break;
                 }
             }
 
