@@ -112,7 +112,7 @@ AppPackages/
 
 # Others
 *.Cache
-!Orchard.Environment.Cache
+!OrchardCore.Environment.Cache
 ClientBin/
 [Ss]tyle[Cc]op.*
 ~$*

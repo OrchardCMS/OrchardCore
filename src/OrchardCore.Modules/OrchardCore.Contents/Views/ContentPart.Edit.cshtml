@@ -1,0 +1,26 @@
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.ContentManagement
+
+@{
+    ContentPart contentPart = Model.ContentPart;
+    ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
+    var description = typePartDefinition.Description();
+    var namedPart = typePartDefinition.PartDefinition.IsReusable() && typePartDefinition.Name != typePartDefinition.PartDefinition.Name;
+}
+
+@if (namedPart)
+{
+    <h5>
+        @typePartDefinition.DisplayName()
+
+        @if (!String.IsNullOrEmpty(description))
+        {
+            <span class="hint">@T["— {0}", description]</span>
+        }
+    </h5>
+}
+@foreach (var shape in Model)
+{
+    @await DisplayAsync(shape)
+}

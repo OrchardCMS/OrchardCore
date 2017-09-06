@@ -1,9 +1,0 @@
-﻿Name: Remote Deployment
-AntiForgery: enabled
-Author: The Orchard Team
-Website: http://orchardproject.net
-Version: 2.0.x
-OrchardVersion: 2.0.x
-Description: Provide the ability to export and import to and from a remote server.
-Dependencies: Orchard.Deployment
-Category: Deployment

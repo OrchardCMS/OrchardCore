@@ -1,0 +1,35 @@
+﻿@using OrchardCore.ContentManagement
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+}
+
+<div class="properties">
+    @if (Model.Actions != null)
+    {
+        <div class="related float-right">
+            @await DisplayAsync(Model.Actions)
+        </div>
+    }
+
+    <input type="checkbox" value="@contentItem.Id" name="itemIds"/>
+        
+    <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath"/> 
+
+    @if (Model.Header != null)
+    {
+        <div class="header">@await DisplayAsync(Model.Header)</div>
+    }
+
+    @if (Model.Meta != null)
+    {
+        <div class="metadata">
+            @await DisplayAsync(Model.Meta)
+        </div>
+    }
+</div>
+
+@if (Model.Content != null)
+{
+    <div class="primary">@await DisplayAsync(Model.Content)</div>
+}
