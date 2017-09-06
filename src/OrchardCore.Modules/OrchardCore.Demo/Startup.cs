@@ -1,6 +1,5 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +12,8 @@ using OrchardCore.Demo.Services;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Navigation;
+using OrchardCore.Modules;
+using OrchardCore.Mvc.RazorPages;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Demo
@@ -61,7 +62,7 @@ namespace OrchardCore.Demo
 
             services.Configure<RazorPagesOptions>(options =>
             {
-                options.Conventions.AddPageRoute("/OrchardCore.Demo/Pages/Hello", "Hello");
+                options.Conventions.AddModularPageRoute("/OrchardCore.Demo/Pages/Hello", "Hello");
             });
         }
     }

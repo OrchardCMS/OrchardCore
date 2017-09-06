@@ -11,14 +11,18 @@ namespace OrchardCore.Mvc.RazorPages
     {
         public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         {
+            var viewEnginePath = context.ActionDescriptor.ViewEnginePath;
+
+            if (!viewEnginePath.Contains("/Pages/") || viewEnginePath.StartsWith("/Pages/"))
+            {
+                context.Result = new NotFoundResult();
+                return;
+            }
+
             var shellFeaturesManager = context.HttpContext.RequestServices.GetRequiredService<IShellFeaturesManager>();
+            var moduleIds = (await shellFeaturesManager.GetEnabledFeaturesAsync()).Select(f => f.Extension.Id).Distinct();
 
-            var moduleIds = (await shellFeaturesManager.GetEnabledFeaturesAsync())
-                .Select(f => f.Extension.Id).Distinct();
-
-            var moduleFolder = context.ActionDescriptor.ViewEnginePath.Substring(0,
-                context.ActionDescriptor.ViewEnginePath.LastIndexOf("/Pages/"));
-
+            var moduleFolder = viewEnginePath.Substring(0, viewEnginePath.LastIndexOf("/Pages/"));
             var moduleId = moduleFolder.Substring(moduleFolder.LastIndexOf("/") + 1);
 
             if (!moduleIds.Contains(moduleId))
