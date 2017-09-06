@@ -13,6 +13,7 @@ using Orchard.Demo.Services;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.Environment.Commands;
 using Orchard.Environment.Navigation;
+using Orchard.Mvc.RazorPages;
 using Orchard.Security.Permissions;
 
 namespace Orchard.Demo
@@ -61,7 +62,7 @@ namespace Orchard.Demo
 
             services.Configure<RazorPagesOptions>(options =>
             {
-                options.Conventions.AddPageRoute("/Orchard.Demo/Pages/Hello", "Hello");
+                options.Conventions.AddModularPageRoute("/Orchard.Demo/Pages/Hello", "Hello");
             });
         }
     }

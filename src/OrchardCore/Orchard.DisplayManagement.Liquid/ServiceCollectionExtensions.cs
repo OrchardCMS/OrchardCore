@@ -14,12 +14,10 @@ namespace Orchard.DisplayManagement.Liquid
         public static IServiceCollection AddLiquidViews(this IServiceCollection services)
         {
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<LiquidViewOptions>,
-                LiquidViewOptionsSetup>());
+                ServiceDescriptor.Transient<IConfigureOptions<LiquidViewOptions>, LiquidViewOptionsSetup>());
 
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>,
-                LiquidShapeTemplateOptionsSetup>());
+                ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>, LiquidShapeTemplateOptionsSetup>());
 
             services.TryAddSingleton<ILiquidViewFileProviderAccessor, LiquidViewFileProviderAccessor>();
             services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, LiquidViewsFeatureProvider>();

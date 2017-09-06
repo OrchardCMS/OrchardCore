@@ -51,7 +51,7 @@ namespace Orchard.Mvc
 
                 var roots = new HashSet<string>();
                 
-                foreach (var path in _paths.Values.Where(p => p.IndexOf("/Pages/") != -1))
+                foreach (var path in _paths.Values.Where(p => p.Contains("/Pages/") && !p.StartsWith("/Pages/")))
                 {
                     roots.Add(path.Substring(0, path.IndexOf("/Pages/")));
                 }
