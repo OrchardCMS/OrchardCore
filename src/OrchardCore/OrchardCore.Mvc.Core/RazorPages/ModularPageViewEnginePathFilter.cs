@@ -1,34 +1,27 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Mvc.RazorPages
 {
     public class ModularPageViewEnginePathFilter : IAsyncPageFilter
     {
+        private readonly bool _found;
+
+        public ModularPageViewEnginePathFilter(bool found)
+        {
+            _found = found;
+        }
+
         public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         {
-            var shellFeaturesManager = context.HttpContext.RequestServices.GetRequiredService<IShellFeaturesManager>();
-
-            var moduleIds = (await shellFeaturesManager.GetEnabledFeaturesAsync())
-                .Select(f => f.Extension.Id).Distinct();
-
-            var moduleFolder = context.ActionDescriptor.ViewEnginePath.Substring(0,
-                context.ActionDescriptor.ViewEnginePath.LastIndexOf("/Pages/"));
-
-            var moduleId = moduleFolder.Substring(moduleFolder.LastIndexOf("/") + 1);
-
-            if (!moduleIds.Contains(moduleId))
+            if (!_found)
             {
                 context.Result = new NotFoundResult();
+                return;
             }
-            else
-            {
-                await next();
-            }
+
+            await next();
         }
 
         public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
@@ -37,3 +30,4 @@ namespace OrchardCore.Mvc.RazorPages
         }
     }
 }
+
