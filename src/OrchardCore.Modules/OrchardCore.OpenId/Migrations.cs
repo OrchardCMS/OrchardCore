@@ -10,6 +10,7 @@ namespace OrchardCore.OpenId
             SchemaBuilder.CreateMapIndexTable(nameof(OpenIdApplicationIndex), table => table
                 .Column<string>(nameof(OpenIdApplicationIndex.ClientId))
                 .Column<string>(nameof(OpenIdApplicationIndex.LogoutRedirectUri))
+                .Column<string>(nameof(OpenIdApplicationIndex.RedirectUri))
             );
 
             SchemaBuilder.CreateReduceIndexTable(nameof(OpenIdApplicationByRoleNameIndex), table => table
