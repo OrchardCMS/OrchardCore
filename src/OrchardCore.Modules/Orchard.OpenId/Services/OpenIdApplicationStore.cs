@@ -68,6 +68,22 @@ namespace Orchard.OpenId.Services
             return _session.Query<OpenIdApplication, OpenIdApplicationIndex>(o => o.LogoutRedirectUri == url).FirstOrDefaultAsync();
         }
 
+        public async Task<OpenIdApplication[]> FindByLogoutRedirectUriAsync(string address, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var apps = await _session.Query<OpenIdApplication, OpenIdApplicationIndex>(o => o.LogoutRedirectUri == address).ListAsync();
+            return apps == null ? new OpenIdApplication[] { } : apps.ToArray();
+        }
+
+        public async Task<OpenIdApplication[]> FindByRedirectUriAsync(string address, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var apps = await _session.Query<OpenIdApplication, OpenIdApplicationIndex>(o => o.LogoutRedirectUri == address).ListAsync();
+            return apps == null ? new OpenIdApplication[] { } : apps.ToArray();
+        }
+
         public Task<string> GetClientTypeAsync(OpenIdApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
