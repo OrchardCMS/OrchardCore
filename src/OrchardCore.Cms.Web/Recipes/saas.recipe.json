@@ -23,7 +23,6 @@
         "OrchardCore.Localization",
         "OrchardCore.Features",
         "OrchardCore.Navigation",
-        "OrchardCore.OpenId",
         "OrchardCore.Recipes",
         "OrchardCore.Resources",
         "OrchardCore.Roles",
