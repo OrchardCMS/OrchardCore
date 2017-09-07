@@ -1,9 +1,0 @@
-﻿Name: Content Fields
-AntiForgery: enabled
-Author: The Orchard Team
-Website: http://orchardproject.net
-Version: 2.0.x
-OrchardVersion: 2.0.x
-Description: Content Fields module adds common content fields to be used with your custom types.
-Dependencies: Orchard.ContentTypes
-Category: Content Management

@@ -1,9 +1,0 @@
-﻿Name: Admin
-AntiForgery: enabled
-Author: The Orchard Team
-Website: http://orchardproject.net
-Version: 2.0.x
-OrchardVersion: 2.0.x
-Description: Creates an admin section for the site.
-Dependencies: Orchard.Settings
-Category: Infrastructure

@@ -1,8 +1,0 @@
-﻿@using Orchard.ContentManagement
-@inject IContentManager ContentManager
-
-@{ 
-    ContentItem contentItem = Model.ContentItem;
-    var displayText = ContentManager.PopulateAspect<ContentItemMetadata>(contentItem).DisplayText;
-    Title.AddSegment(Html.Raw(Html.Encode(displayText)));
-}

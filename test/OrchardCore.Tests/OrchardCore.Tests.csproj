@@ -1,0 +1,79 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AssemblyName>OrchardCore.Tests</AssemblyName>
+    <PackageId>OrchardCore.Tests</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Extensions\**" Exclude="**\*.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Localization\PoFiles\EntryWithComments.po" />
+    <None Remove="Localization\PoFiles\EntryWithContext.po" />
+    <None Remove="Localization\PoFiles\EntryWithEscapedCharacters.po" />
+    <None Remove="Localization\PoFiles\EntryWithMultilineText.po" />
+    <None Remove="Localization\PoFiles\EntryWithoutTranslation.po" />
+    <None Remove="Localization\PoFiles\EntryWithPlural.po" />
+    <None Remove="Localization\PoFiles\EntryWithQuotes.po" />
+    <None Remove="Localization\PoFiles\EntryWithUnclosedQuote.po" />
+    <None Remove="Localization\PoFiles\MultipleEntries.po" />
+    <None Remove="Localization\PoFiles\PoeditHeader.po" />
+    <None Remove="Localization\PoFiles\SimpleEntry.po" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithComments.po" />
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithContext.po" />
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithEscapedCharacters.po" />
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithMultilineText.po" />
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithoutTranslation.po" />
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithPlural.po" />
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithQuotes.po" />
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithUnclosedQuote.po" />
+    <EmbeddedResource Include="Localization\PoFiles\MultipleEntries.po" />
+    <EmbeddedResource Include="Localization\PoFiles\PoeditHeader.po" />
+    <EmbeddedResource Include="Localization\PoFiles\SimpleEntry.po" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Liquid\OrchardCore.Liquid.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Queries\OrchardCore.Queries.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Data\OrchardCore.Data.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Extensions\OrchardCore.Environment.Extensions.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Extensions.Abstractions\OrchardCore.Environment.Extensions.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Shell\OrchardCore.Environment.Shell.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Hosting.Console\OrchardCore.Hosting.Console.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Localization.Core\OrchardCore.Localization.Core.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Parser.Yaml\OrchardCore.Parser.Yaml.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Recipes.Implementations\OrchardCore.Recipes.Implementations.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Moq" Version="4.7.99" />
+    <PackageReference Include="xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.analyzers" Version="$(XunitAnalyzers)" />
+
+    <!-- Forces this version to fix Travis build -->
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.4.0" />
+    
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+
+</Project>
