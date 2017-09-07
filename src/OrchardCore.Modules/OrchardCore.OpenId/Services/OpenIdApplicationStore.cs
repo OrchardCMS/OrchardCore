@@ -61,11 +61,18 @@ namespace OrchardCore.OpenId.Services
             return _session.Query<OpenIdApplication, OpenIdApplicationIndex>(o => o.ClientId == identifier).FirstOrDefaultAsync();
         }
 
-        public Task<OpenIdApplication> FindByLogoutRedirectUri(string url, CancellationToken cancellationToken)
+        public async Task<OpenIdApplication[]> FindByLogoutRedirectUriAsync(string address, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<OpenIdApplication, OpenIdApplicationIndex>(o => o.LogoutRedirectUri == url).FirstOrDefaultAsync();
+            return (await _session.Query<OpenIdApplication, OpenIdApplicationIndex>(o => o.LogoutRedirectUri == address).ListAsync()).ToArray();
+        }
+
+        public async Task<OpenIdApplication[]> FindByRedirectUriAsync(string address, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return (await _session.Query<OpenIdApplication, OpenIdApplicationIndex>(o => o.RedirectUri == address).ListAsync()).ToArray();
         }
 
         public Task<string> GetClientTypeAsync(OpenIdApplication application, CancellationToken cancellationToken)
@@ -73,6 +80,16 @@ namespace OrchardCore.OpenId.Services
             if (application == null)
             {
                 throw new ArgumentNullException(nameof(application));
+            }
+
+            // Optimization: avoid double-allocating strings for well-known values.
+            switch (application.Type)
+            {
+                case ClientType.Confidential:
+                    return Task.FromResult(OpenIddictConstants.ClientTypes.Confidential);
+
+                case ClientType.Public:
+                    return Task.FromResult(OpenIddictConstants.ClientTypes.Public);
             }
 
             return Task.FromResult(application.Type.ToString().ToLowerInvariant());

@@ -1,4 +1,4 @@
-﻿using OrchardCore.OpenId.Models;
+using OrchardCore.OpenId.Models;
 using YesSql.Indexes;
 
 namespace OrchardCore.OpenId.Indexes
@@ -7,6 +7,7 @@ namespace OrchardCore.OpenId.Indexes
     {
         public string ClientId { get; set; }   
         public string LogoutRedirectUri { get; set; }
+        public string RedirectUri { get; set; }
     }
 
     public class OpenIdApplicationIndexProvider : IndexProvider<OpenIdApplication>
@@ -18,7 +19,8 @@ namespace OrchardCore.OpenId.Indexes
                 return new OpenIdApplicationIndex
                 {
                     ClientId = application.ClientId,
-                    LogoutRedirectUri = application.LogoutRedirectUri
+                    LogoutRedirectUri = application.LogoutRedirectUri,
+                    RedirectUri = application.RedirectUri
                 };
             });
         }
