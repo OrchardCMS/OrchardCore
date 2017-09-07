@@ -45,3 +45,4 @@ namespace OrchardCore.Mvc.RazorPages
         }
     }
 }
+

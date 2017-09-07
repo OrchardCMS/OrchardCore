@@ -30,3 +30,4 @@ namespace OrchardCore.Mvc.RazorPages
         }
     }
 }
+
