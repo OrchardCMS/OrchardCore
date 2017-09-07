@@ -318,7 +318,7 @@
               "PartName": "ListPart",
               "Name": "ListPart",
               "Settings": {
-                "Position": "3",
+                "Position": "4",
                 "ContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
@@ -343,7 +343,9 @@
             {
               "PartName": "BodyPart",
               "Name": "BodyPart",
-              "Settings": {}
+              "Settings": {
+                "Position": "3"
+              }
             }
           ]
         },
