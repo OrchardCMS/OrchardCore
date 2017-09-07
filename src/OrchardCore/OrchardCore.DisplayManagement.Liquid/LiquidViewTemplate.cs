@@ -188,6 +188,8 @@ namespace OrchardCore.DisplayManagement.Liquid
             context.MemberAccessStrategy.Register(site.GetType());
             context.LocalScope.SetValue("Site", site);
 
+            context.LocalScope.SetValue("User", displayContext.ViewContext.HttpContext.User);
+
             // TODO: Extract the request culture instead of the default site's one
             if (site.Culture != null)
             {

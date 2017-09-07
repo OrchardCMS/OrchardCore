@@ -82,3 +82,22 @@ Here is an example for creating a SQL query from a Queries recipe step:
     "ReturnDocuments": false
 }
 ```
+
+# Liquid templates
+
+## query
+
+The `query` filger provides a way to access named queries.
+To access a named query, use the name as the input.
+
+
+```
+{% assign recentBlogPosts = "RecentBlogPosts" | query }
+{% for item in recentBlogPosts %}
+{{ item | display_text }}
+{% endfor %}
+```
+
+The example above will iterate over all the results of the query name `RecentBlogPosts` and display the text representing
+the content item. Any available property on the results of the queries can be used. This example assumes the results
+will be content items.
