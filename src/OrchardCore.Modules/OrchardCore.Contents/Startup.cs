@@ -22,7 +22,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
-using OrchardCore.JsonApi;
+using OrchardCore.RestApis;
 using OrchardCore.Lists.Settings;
 using OrchardCore.Mvc;
 using OrchardCore.Recipes;
@@ -37,7 +37,6 @@ namespace OrchardCore.Contents
         {
             services.AddContentManagement();
             services.AddContentManagementDisplay();
-            services.AddApiContentManagementDisplay();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IShapeTableProvider, Shapes>();
             services.AddScoped<INavigationProvider, AdminMenu>();

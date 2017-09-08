@@ -126,6 +126,7 @@ namespace Orchard.RestApis
 
         //public Meta Meta { get; internal set; } = new Meta();
 
+        // TODO: https://github.com/codecutout/JsonApiSerializer/pull/23/files
         public Relationship<List<ApiRelationshipItem>> ContentItems { get; set; }
 
         public void AddPart(ContentPart contentPart)
