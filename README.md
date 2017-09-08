@@ -4,6 +4,9 @@ Orchard Core is a re-implementation of [Orchard CMS](https://github.com/OrchardC
 
 [![Join the chat at https://gitter.im/OrchardCMS/Orchard2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/Orchard2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE.txt)
+[![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://orchardcore.readthedocs.io/en/latest/)
+
+
 
 ## Build Status
 
@@ -44,3 +47,7 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/Orchard2/wiki/Ro
 ### Contributing
 
 We currently follow the these [engineering guidelines](https://github.com/OrchardCMS/Orchard2/wiki/Engineering-Guidelines).
+
+### Documentation
+
+The documentation can be access here: [https://orchardcore.readthedocs.io/en/latest/](https://orchardcore.readthedocs.io/en/latest/)
