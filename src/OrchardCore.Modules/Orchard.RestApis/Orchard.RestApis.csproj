@@ -1,16 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JsonApiSerializer" Version="0.9.16" />
+    <PackageReference Include="GraphQL" Version="0.17.2" />
+    <PackageReference Include="JsonApiSerializer" Version="0.9.18" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.0.0" />
+    <PackageReference Include="YesSql.Abstractions" Version="2.0.0-beta-1070" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
-    <ProjectReference Include="..\Orchard.ContentManagement.Display\Orchard.ContentManagement.Display.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.ContentManagement.Display\Orchard.ContentManagement.Display.csproj" />
   </ItemGroup>
 
 </Project>
