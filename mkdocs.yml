@@ -22,22 +22,26 @@ markdown_extensions:
 # Page tree
 pages:
     - About Orchard Core: index.md
-    - ASP.NET Core Modules: OrchardCore/OrchardCore.Modules/README.md
+    - Orchard Core Modules: OrchardCore/OrchardCore.Modules/README.md
     - CMS Modules:
+        - Title: OrchardCore.Modules/OrchardCore.Title/README.md
         - Body: OrchardCore.Modules/OrchardCore.Body/README.md
         - Content Fields: OrchardCore.Modules/OrchardCore.ContentFields/README.md
         - Content Preview: OrchardCore.Modules/OrchardCore.ContentPreview/README.md
         - Content Types: OrchardCore.Modules/OrchardCore.ContentTypes/README.md
         - Markdown: OrchardCore.Modules/OrchardCore.Markdown/README.md
+        - Media: OrchardCore.Modules/OrchardCore.Media/README.md
         - Menu: OrchardCore.Modules/OrchardCore.Menu/README.md
         - Navigation: OrchardCore.Modules/OrchardCore.Navigation/README.md
         - Indexing: OrchardCore.Modules/OrchardCore.Indexing/README.md
         - Lucene: OrchardCore.Modules/OrchardCore.Lucene/README.md
         - Queries: OrchardCore.Modules/OrchardCore.Queries/README.md
         - Liquid: OrchardCore.Modules/OrchardCore.Liquid/README.md
+        - Custom Settings: OrchardCore.Modules/OrchardCore.CustomSettings/README.md
     - Core Modules:
         - Placement: OrchardCore/OrchardCore.DisplayManagement/README.md
         - Dynamic Cache: OrchardCore.Modules/OrchardCore.DynamicCache/README.md
+        - Localization: OrchardCore.Modules/OrchardCore.Localization/README.md
         - OpenId: OrchardCore.Modules/OrchardCore.OpenId/README.md
         - Recipes: OrchardCore.Modules/OrchardCore.Recipes/README.md
         - Resources: OrchardCore.Modules/OrchardCore.Resources/README.md
