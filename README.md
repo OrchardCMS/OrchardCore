@@ -50,4 +50,4 @@ We currently follow the these [engineering guidelines](https://github.com/Orchar
 
 ### Documentation
 
-The documentation can be access here: [https://orchardcore.readthedocs.io/en/latest/](https://orchardcore.readthedocs.io/en/latest/)
+The documentation can be accessed here: [https://orchardcore.readthedocs.io/en/latest/](https://orchardcore.readthedocs.io/en/latest/)
