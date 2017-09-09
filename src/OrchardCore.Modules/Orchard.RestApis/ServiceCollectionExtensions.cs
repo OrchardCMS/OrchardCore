@@ -28,7 +28,7 @@ namespace Orchard.RestApis
             services.AddScoped<IDocumentExecuter, DocumentExecuter>();
             services.AddScoped<ContentItemType>();
             services.AddScoped<ContentTypeType>();
-            services.AddScoped<ContentQuery>();
+            services.AddScoped<ContentType>();
             services.AddScoped<ISchema, ContentSchema>();
 
             return services;

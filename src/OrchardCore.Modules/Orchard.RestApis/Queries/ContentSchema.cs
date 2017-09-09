@@ -9,7 +9,7 @@ namespace Orchard.RestApis.Queries
         public ContentSchema(IServiceProvider serviceProvider)
             : base((type) => (IGraphType)serviceProvider.GetService(type))
         {
-            Query = serviceProvider.GetService<ContentQuery>();
+            Query = serviceProvider.GetService<ContentType>();
         }
     }
 }
