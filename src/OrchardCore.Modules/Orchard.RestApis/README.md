@@ -20,3 +20,30 @@ To get all content of a particular Id you must know its type, so if the blog has
 A content type might implement a content part that contains nested content, to query this you do this
 
 /api/contents/blog/10/relationships/blogpost
+
+# Orchard GraphQL structure
+
+Orchard
+  ContentItems
+    ContentType
+	ContentParts
+	
+## Get Content Item By Id
+```json
+query {
+	contentitem(id: "4deh835p7emt23gpxz15wmz5x5") {
+	    id
+	    contentType
+	}
+}
+```
+
+## Get Content Items By Type
+```json
+query {
+	contentitem(contentType: "Blog") {
+	    id
+	    contentType
+	}
+}
+```
