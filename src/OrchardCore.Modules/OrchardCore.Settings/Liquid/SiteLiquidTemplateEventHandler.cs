@@ -16,7 +16,6 @@ namespace OrchardCore.Settings.Liquid
         public async Task RenderingAsync(TemplateContext context)
         {
             var site = await _siteService.GetSiteSettingsAsync();
-
             context.MemberAccessStrategy.Register(site.GetType());
             context.LocalScope.SetValue("Site", site);
         }

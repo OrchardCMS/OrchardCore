@@ -1,9 +1,8 @@
-using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Liquid;
-using System.Security.Claims;
 
 namespace OrchardCore.Users.Liquid
 {
@@ -14,13 +13,6 @@ namespace OrchardCore.Users.Liquid
         public UserLiquidTemplateEventHandler(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
-        }
-
-        public Task PopulateValuesAsync(IDictionary<string, object> values)
-        {
-            values.Add("User", _httpContextAccessor.HttpContext.User);
-            values.Add("User.Identity", _httpContextAccessor.HttpContext.User.Identity);
-            return Task.CompletedTask;
         }
 
         public Task RenderingAsync(TemplateContext context)
