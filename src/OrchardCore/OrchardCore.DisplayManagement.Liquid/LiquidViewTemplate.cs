@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -23,7 +22,6 @@ using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Liquid;
-using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
