@@ -19,7 +19,6 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Indexes;
-using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Services;
 using YesSql.Indexes;
 

@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Fluid;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.Settings.Liquid
+namespace OrchardCore.Settings.Services
 {
     public class SiteLiquidTemplateEventHandler : ILiquidTemplateEventHandler
     {

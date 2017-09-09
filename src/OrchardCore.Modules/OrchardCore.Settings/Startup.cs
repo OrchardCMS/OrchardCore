@@ -10,7 +10,6 @@ using OrchardCore.Modules;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Drivers;
-using OrchardCore.Settings.Liquid;
 using OrchardCore.Settings.Recipes;
 using OrchardCore.Settings.Services;
 using OrchardCore.Setup.Events;
