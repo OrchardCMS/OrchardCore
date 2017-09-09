@@ -15,6 +15,7 @@ using OrchardCore.Liquid.Handlers;
 using OrchardCore.Liquid.Indexing;
 using OrchardCore.Liquid.Model;
 using OrchardCore.Liquid.Services;
+using System.Security.Claims;
 
 namespace OrchardCore.Liquid
 {
@@ -23,6 +24,8 @@ namespace OrchardCore.Liquid
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentItem>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ClaimsPrincipal>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ClaimsIdentity>();
 
             // When accessing a property of a JObject instance
             TemplateContext.GlobalMemberAccessStrategy.Register<JObject>((obj, name) => obj[name]);

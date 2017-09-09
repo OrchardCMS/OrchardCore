@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -15,6 +14,7 @@ using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Loaders;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Extensions.Utility;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Extensions
 {
@@ -389,8 +389,8 @@ namespace OrchardCore.Environment.Extensions
                         continue;
                     }
 
-                    var manifestsubPath = Path.Combine(searchOption.SearchPath, subDirectory.Name);
-                    var manifestFilesubPath = Path.Combine(manifestsubPath, manifestConfiguration.ManifestFileName);
+                    var manifestsubPath = searchOption.SearchPath + '/' + subDirectory.Name;
+                    var manifestFilesubPath = manifestsubPath + '/' + manifestConfiguration.ManifestFileName;
 
                     IConfigurationBuilder configurationBuilder =
                         _manifestProvider.GetManifestConfiguration(new ConfigurationBuilder(), manifestFilesubPath);

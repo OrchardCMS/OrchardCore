@@ -8,7 +8,8 @@ repo_url: https://github.com/OrchardCMS/Orchard2
 # Options
 docs_dir: src
 extra_css: []
-extra_javascript: []
+extra_javascript:
+- docs/js/extra.js
 
 # Extensions
 markdown_extensions:

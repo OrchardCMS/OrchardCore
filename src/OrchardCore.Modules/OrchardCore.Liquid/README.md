@@ -145,19 +145,3 @@ The following properties are available on the `User` object.
 | Property | Example | Description |
 | --------- | ---- |------------ |
 | `Identity.Name` | `admin` | The name of the authenticated user |
-
-### Queries
-
-The `Queries` object provide a way to access predefined queries from the Queries module.
-
-To access a named query, use the name as a property on the `Queries` object like this:
-
-```
-{% for item in Queries.MyQuery %}
-{{ item | display_text }}
-{% endfor %}
-```
-
-The example above will iterate over all the results of the query name `MyQuery` and display the text representing
-the content item. Any available property on the results of the queries can be used. This example assumes the results
-will be content items. Refer to the Queries module documentation on how to create custom queries.

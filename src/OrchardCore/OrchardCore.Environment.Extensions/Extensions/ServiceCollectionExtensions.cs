@@ -51,7 +51,7 @@ namespace OrchardCore.Environment.Extensions
         {
             return services.Configure<ExtensionExpanderOptions>(configureOptions: options =>
             {
-                options.Options.Add(new ExtensionExpanderOption { SearchPath = subPath });
+                options.Options.Add(new ExtensionExpanderOption { SearchPath = subPath.Replace('\\', '/').Trim('/') });
             });
         }
     }
