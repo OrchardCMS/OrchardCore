@@ -1,5 +1,6 @@
-﻿[
+[
   {
+    "generateSourceMaps": false,
     "inputs": [ "Assets/Bootstrap/scss/bootstrap.scss" ],
     "output": "Content/Styles/bootstrap.css"
   },
@@ -11,8 +12,8 @@
   },
   {
     "inputs": [
-      "Assets/Bootstrap/Js/tether.js"
+      "Assets/Bootstrap/Js/popper.js"
     ],
-    "output": "Content/Scripts/tether.js"
+    "output": "Content/Scripts/popper.js"
   }
 ]
