@@ -36,7 +36,7 @@ namespace OrchardCore.Settings
             services.AddScoped<IDisplayDriver<ISite>, ButtonsSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddScoped<ILiquidValueProvider, SiteLiquidValueProvider>();
+            services.AddScoped<ILiquidTemplateEventHandler, SiteLiquidTemplateEventHandler>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

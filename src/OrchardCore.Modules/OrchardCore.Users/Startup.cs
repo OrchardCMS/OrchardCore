@@ -145,7 +145,7 @@ namespace OrchardCore.Users
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddScoped<ILiquidValueProvider, UserLiquidValueProvider>();
+            services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
         }
     }
 }

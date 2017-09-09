@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -194,27 +193,9 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             // TODO: Extract the request culture
 
-            var values = new Dictionary<string, object>();
-            var providers = services.GetServices<ILiquidValueProvider>();
-
-            foreach (var provider in providers)
+            foreach (var handler in services.GetServices<ILiquidTemplateEventHandler>())
             {
-                await provider.PopulateValuesAsync(values);
-            }
-
-            foreach (var value in values)
-            {
-                var type = value.Value.GetType();
-
-                if (Type.GetTypeCode(type) == TypeCode.Object)
-                {
-                    context.MemberAccessStrategy.Register(type);
-                }
-
-                if (!value.Key.Contains("."))
-                {
-                    context.LocalScope.SetValue(value.Key, value.Value);
-                }
+                await handler.RenderingAsync(context);
             }
 
             context.MemberAccessStrategy.Register(displayContext.Value.GetType());
