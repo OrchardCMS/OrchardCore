@@ -1,3 +1,4 @@
+using System.Linq;
 using GraphQL.Types;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.MetaData;
@@ -42,6 +43,12 @@ namespace Orchard.RestApis.Queries
                   }
 
                   var query = session.Query<ContentItem, ContentItemIndex>();
+
+                  //foreach (var argument in context.Arguments.Where(qa => qa.Value != null))
+                  //{
+                  //    query = query.WithParameter(argument.Key, argument.Value);
+                  //}
+
 
                   if (context.HasPopulatedArgument("published"))
                   {
