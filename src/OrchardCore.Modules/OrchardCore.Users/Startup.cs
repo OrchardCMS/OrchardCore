@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -13,11 +12,14 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Liquid;
+using OrchardCore.Modules;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Indexes;
+using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Services;
 using YesSql.Indexes;
 
@@ -142,6 +144,8 @@ namespace OrchardCore.Users
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+
+            services.AddScoped<ILiquidValueProvider, UserLiquidValueProvider>();
         }
     }
 }

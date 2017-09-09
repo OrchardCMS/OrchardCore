@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Accessors;
@@ -72,22 +74,11 @@ namespace OrchardCore.DisplayManagement.Liquid
             var context = new TemplateContext();
             context.Contextualize(page, (object)page.Model);
 
-            var liquidOptions = services.GetRequiredService<IOptions<LiquidOptions>>().Value;
-
-            foreach (var registration in liquidOptions.FilterRegistrations)
-            {
-                context.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
-                {
-                    var type = registration.Value;
-                    var filter = services.GetRequiredService(registration.Value) as ILiquidFilter;
-                    return filter.ProcessAsync(input, arguments, ctx);
-                });
-            }
-
-            page.WriteLiteral(await template.RenderAsync(context));
+            var options = services.GetRequiredService<IOptions<LiquidOptions>>().Value;
+            await template.RenderAsync(options, services, page.Output, HtmlEncoder.Default, context);
         }
 
-        public static IFluidTemplate Parse(string path, IFileProvider fileProvider, IMemoryCache cache)
+        public static LiquidViewTemplate Parse(string path, IFileProvider fileProvider, IMemoryCache cache)
         {
             return cache.GetOrCreate(path, entry =>
             {
@@ -134,6 +125,25 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             return null;
         };
+    }
+
+    public static class LiquidViewTemplateExtensions
+    {
+        public static async Task RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
+            IServiceProvider services, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        {
+            foreach (var registration in options.FilterRegistrations)
+            {
+                context.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
+                {
+                    var type = registration.Value;
+                    var filter = services.GetRequiredService(registration.Value) as ILiquidFilter;
+                    return filter.ProcessAsync(input, arguments, ctx);
+                });
+            }
+
+            await template.RenderAsync(writer, encoder, context);
+        }
     }
 
     public static class TemplateContextExtensions
@@ -184,21 +194,33 @@ namespace OrchardCore.DisplayManagement.Liquid
             var layout = layoutAccessor.GetLayout();
             context.AmbientValues.Add("ThemeLayout", layout);
 
-            var site = await services.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
-            context.MemberAccessStrategy.Register(site.GetType());
-            context.LocalScope.SetValue("Site", site);
+            // TODO: Extract the request culture
 
-            context.LocalScope.SetValue("User", displayContext.ViewContext.HttpContext.User);
+            var values = new Dictionary<string, object>();
+            var providers = services.GetServices<ILiquidValueProvider>();
 
-            // TODO: Extract the request culture instead of the default site's one
-            if (site.Culture != null)
+            foreach (var provider in providers)
             {
-                context.CultureInfo = new CultureInfo(site.Culture);
+                await provider.PopulateValuesAsync(values);
             }
 
-            var model = displayContext.Value;
-            context.MemberAccessStrategy.Register(model.GetType());
-            context.LocalScope.SetValue("Model", model);
+            foreach (var value in values)
+            {
+                var type = value.Value.GetType();
+
+                if (Type.GetTypeCode(type) == TypeCode.Object)
+                {
+                    context.MemberAccessStrategy.Register(type);
+                }
+
+                if (!value.Key.Contains("."))
+                {
+                    context.LocalScope.SetValue(value.Key, value.Value);
+                }
+            }
+
+            context.MemberAccessStrategy.Register(displayContext.Value.GetType());
+            context.LocalScope.SetValue("Model", displayContext.Value);
         }
     }
 }

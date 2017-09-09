@@ -1,17 +1,19 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
+using OrchardCore.Liquid;
+using OrchardCore.Modules;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Setup.Events;
 using OrchardCore.Settings.Drivers;
+using OrchardCore.Settings.Liquid;
 using OrchardCore.Settings.Recipes;
 using OrchardCore.Settings.Services;
+using OrchardCore.Setup.Events;
 
 namespace OrchardCore.Settings
 {
@@ -33,6 +35,8 @@ namespace OrchardCore.Settings
             services.AddScoped<IDisplayDriver<ISite>, DefaultSiteSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<ISite>, ButtonsSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+
+            services.AddScoped<ILiquidValueProvider, SiteLiquidValueProvider>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
