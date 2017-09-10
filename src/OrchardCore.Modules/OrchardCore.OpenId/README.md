@@ -1,4 +1,4 @@
-﻿# OrchardCore.OpenId
+# OrchardCore.OpenId
 
 OrchardCore.OpenId provides an implementation of an OpenID Connect server based on [OpenIddict](https://github.com/openiddict/openiddict-core) library. 
 It allows Orchard Core to act as identity provider to support token authentication without the need of an external identity provider.
