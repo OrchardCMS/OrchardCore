@@ -16,6 +16,8 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.MetaWeblog.Abstractions\OrchardCore.MetaWeblog.Abstractions.csproj" />
 
     <ProjectReference Include="..\OrchardCore.Contents\OrchardCore.Contents.csproj" />
+
+    <ProjectReference Include="..\OrchardCore.RestApis\OrchardCore.RestApis.csproj" />
   </ItemGroup>
 
   <ItemGroup>

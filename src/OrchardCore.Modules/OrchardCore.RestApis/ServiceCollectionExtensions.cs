@@ -3,11 +3,11 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Orchard.RestApis.Filters;
-using Orchard.RestApis.Queries;
-using Orchard.RestApis.Types;
+using OrchardCore.RestApis.Filters;
+using OrchardCore.RestApis.Queries;
+using OrchardCore.RestApis.Types;
 
-namespace Orchard.RestApis
+namespace OrchardCore.RestApis
 {
     public static class ServiceCollectionExtensions
     {
@@ -29,7 +29,12 @@ namespace Orchard.RestApis
             services.AddScoped<ContentItemType>();
             services.AddScoped<ContentTypeType>();
             services.AddScoped<ContentType>();
+
             services.AddScoped<TitlePartType>();
+            services.AddScoped<AutoRoutePartType>();
+
+            services.AddScoped<ContentPartInterface>();
+            
             services.AddScoped<ISchema, ContentSchema>();
 
             return services;

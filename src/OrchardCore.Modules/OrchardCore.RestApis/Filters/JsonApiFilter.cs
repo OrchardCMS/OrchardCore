@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement;
-using Orchard.Environment.Shell;
+using OrchardCore.ContentManagement;
+using OrchardCore.Environment.Shell;
 
-namespace Orchard.RestApis.Filters
+namespace OrchardCore.RestApis.Filters
 {
     public class JsonApiFilter : IAsyncActionFilter
     {

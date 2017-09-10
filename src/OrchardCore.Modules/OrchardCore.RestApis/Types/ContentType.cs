@@ -1,12 +1,12 @@
 using System.Linq;
 using GraphQL.Types;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Records;
-using Orchard.RestApis.Types;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.RestApis.Types;
 using YesSql;
 
-namespace Orchard.RestApis.Queries
+namespace OrchardCore.RestApis.Queries
 {
     public class ContentType : ObjectGraphType
     {

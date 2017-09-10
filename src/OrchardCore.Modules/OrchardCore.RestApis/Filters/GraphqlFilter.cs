@@ -2,11 +2,11 @@
 //using GraphQL.Types;
 //using Microsoft.AspNetCore.Mvc;
 //using Microsoft.AspNetCore.Mvc.Filters;
-//using Orchard.ContentManagement;
-//using Orchard.Environment.Shell;
+//using OrchardCore.ContentManagement;
+//using OrchardCore.Environment.Shell;
 //using YesSql;
 
-//namespace Orchard.RestApis.Filters
+//namespace OrchardCore.RestApis.Filters
 //{
 //    public class GraphqlFilter : IAsyncActionFilter
 //    {

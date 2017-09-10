@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
 using Newtonsoft.Json;
 using Orchard.ContentManagement;
-using Orchard.RestApis;
+using OrchardCore.RestApis;
 using Xunit;
 
 namespace Orchard.Tests.JsonApi

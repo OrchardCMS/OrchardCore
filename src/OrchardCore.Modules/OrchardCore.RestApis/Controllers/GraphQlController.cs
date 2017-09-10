@@ -6,10 +6,10 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Orchard.RestApis.Queries;
+using OrchardCore.RestApis.Queries;
 using YesSql;
 
-namespace Orchard.RestApis.Controllers
+namespace OrchardCore.RestApis.Controllers
 {
     [Route("graphql")]
     public class GraphQLController : Controller
@@ -19,8 +19,8 @@ namespace Orchard.RestApis.Controllers
         private readonly ILogger _logger;
 
         public GraphQLController(
-            IDocumentExecuter documentExecuter, 
-            ISchema schema, 
+            IDocumentExecuter documentExecuter,
+            ISchema schema,
             ILogger<GraphQLController> logger)
         {
             _documentExecuter = documentExecuter;

@@ -2,7 +2,7 @@
 //using System.Collections.Generic;
 //using System.Text;
 //using JsonApiSerializer.JsonApi;
-//using Orchard.RestApis;
+//using OrchardCore.RestApis;
 
 //namespace Orchard.Tests.JsonApi
 //{

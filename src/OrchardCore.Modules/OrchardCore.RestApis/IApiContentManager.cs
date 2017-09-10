@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Orchard.ContentManagement;
-using Orchard.DisplayManagement.ModelBinding;
+using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 
-namespace Orchard.RestApis
+namespace OrchardCore.RestApis
 {
     /// <summary>
     /// Describe services responsible for displaying a api item.

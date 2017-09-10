@@ -22,7 +22,6 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
-using OrchardCore.RestApis;
 using OrchardCore.Lists.Settings;
 using OrchardCore.Mvc;
 using OrchardCore.Recipes;

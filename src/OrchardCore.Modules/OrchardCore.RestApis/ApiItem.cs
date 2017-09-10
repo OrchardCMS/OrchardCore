@@ -5,9 +5,9 @@ using JsonApiSerializer.JsonApi;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace Orchard.RestApis
+namespace OrchardCore.RestApis
 {
     public class ApiItem
     {
@@ -48,7 +48,7 @@ namespace Orchard.RestApis
             {
                 Links = new Links
                 {
-                    { "self", new Link { Href = urlHelper.RouteUrl("Api.GetContents.ByTypeAndId", new { area = "Orchard.Contents", contentType = Type, contentItemId = Id }) } }
+                    { "self", new Link { Href = urlHelper.RouteUrl("Api.GetContents.ByTypeAndId", new { area = "OrchardCore.Contents", contentType = Type, contentItemId = Id }) } }
                 };
             }
         }
@@ -201,7 +201,7 @@ namespace Orchard.RestApis
                 {
                     { "self", new Link {
                         Href = urlHelper.RouteUrl("Api.GetContents.ByRelationship", new {
-                            area = "Orchard.Contents",
+                            area = "OrchardCore.Contents",
                             contentType = parentContentItem.ContentType,
                             contentItemId = parentContentItem.ContentItemId,
                             nestedContentType = Type

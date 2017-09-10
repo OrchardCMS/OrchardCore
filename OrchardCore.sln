@@ -287,7 +287,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.CustomSettings"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Setup.Abstractions", "src\OrchardCore\OrchardCore.Setup.Abstractions\OrchardCore.Setup.Abstractions.csproj", "{7625A5C3-2548-4B64-9FB1-B55866829F33}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.RestApis", "src\OrchardCore.Modules\Orchard.RestApis\Orchard.RestApis.csproj", "{21EF82F8-88C0-4139-B355-1A0616BB59B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.RestApis", "src\OrchardCore.Modules\OrchardCore.RestApis\OrchardCore.RestApis.csproj", "{21EF82F8-88C0-4139-B355-1A0616BB59B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

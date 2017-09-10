@@ -1,14 +1,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Orchard.ContentManagement;
-using Orchard.RestApis;
-using Orchard.RestApis.ContentDisplay;
-using Orchard.Lists.Indexes;
-using Orchard.Lists.Models;
+using OrchardCore.ContentManagement;
+using OrchardCore.RestApis;
+using OrchardCore.RestApis.ContentDisplay;
+using OrchardCore.Lists.Indexes;
+using OrchardCore.Lists.Models;
 using YesSql;
 
-namespace Orchard.Lists.Drivers
+namespace OrchardCore.Lists.Drivers
 {
     public class ListPartApiPartDriver : IApiPartDriver
     {
