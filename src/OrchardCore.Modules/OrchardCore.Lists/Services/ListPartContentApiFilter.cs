@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
-using Orchard.ContentManagement;
-using Orchard.Contents.Services;
-using Orchard.Lists.Indexes;
+using System.Threading.Tasks;
+using OrchardCore.ContentManagement;
+using OrchardCore.Contents.Services;
+using OrchardCore.Lists.Indexes;
 using YesSql;
 
-namespace Orchard.Lists.Services
+namespace OrchardCore.Lists.Services
 {
     public class ListPartContentApiFilter : IContentApiFilter
     {

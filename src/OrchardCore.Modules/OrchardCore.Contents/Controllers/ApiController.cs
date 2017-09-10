@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
@@ -10,6 +9,7 @@ using OrchardCore.Contents;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
 using YesSql;
@@ -48,7 +48,7 @@ namespace OrchardCore.Content.Controllers
 
         public async Task<IActionResult> GetByContentType(string contentType, PagerParameters pagerParameters, ContentsStatus contentsStatus = ContentsStatus.Published)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Orchard.Contents.Permissions.ViewContent))
+            if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.ViewContent))
             {
                 return Unauthorized();
             }
@@ -111,7 +111,7 @@ namespace OrchardCore.Content.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Orchard.Contents.Permissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.ViewContent, contentItem))
             {
                 return Unauthorized();
             }
@@ -133,7 +133,7 @@ namespace OrchardCore.Content.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Orchard.Contents.Permissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.ViewContent, contentItem))
             {
                 return Unauthorized();
             }

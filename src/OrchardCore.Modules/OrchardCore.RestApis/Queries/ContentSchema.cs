@@ -1,8 +1,9 @@
 using System;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.RestApis.Types;
 
-namespace Orchard.RestApis.Queries
+namespace OrchardCore.RestApis.Queries
 {
     public class ContentSchema : Schema
     {
@@ -10,6 +11,8 @@ namespace Orchard.RestApis.Queries
             : base((type) => (IGraphType)serviceProvider.GetService(type))
         {
             Query = serviceProvider.GetService<ContentType>();
+            RegisterType<TitlePartType>();
+            RegisterType<AutoRoutePartType>();
         }
     }
 }

@@ -1,10 +1,10 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
 
-namespace Orchard.RestApis
+namespace OrchardCore.RestApis
 {
     public class Startup : StartupBase
     {

@@ -8,10 +8,8 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Services;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.Core.XmlRpc;
 using OrchardCore.Data.Migration;
 using OrchardCore.Feeds;
-using OrchardCore.JsonApi;
 using OrchardCore.Lists.Drivers;
 using OrchardCore.Lists.Feeds;
 using OrchardCore.Lists.Indexes;
@@ -19,6 +17,7 @@ using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
 using OrchardCore.Lists.Settings;
 using YesSql.Indexes;
+using OrchardCore.RestApis;
 
 namespace OrchardCore.Lists
 {

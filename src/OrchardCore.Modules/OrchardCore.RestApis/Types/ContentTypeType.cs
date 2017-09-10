@@ -1,8 +1,8 @@
 using GraphQL.Types;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace Orchard.RestApis.Types
+namespace OrchardCore.RestApis.Types
 {
     public class ContentTypeType : ObjectGraphType<ContentTypeDefinition>
     {

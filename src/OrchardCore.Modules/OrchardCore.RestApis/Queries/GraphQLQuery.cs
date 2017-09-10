@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Orchard.RestApis.Queries
+namespace OrchardCore.RestApis.Queries
 {
     public class GraphQLQuery
     {

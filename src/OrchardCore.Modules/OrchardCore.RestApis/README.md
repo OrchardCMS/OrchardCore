@@ -1,4 +1,4 @@
-# Json Apis (Orchard.RestApis)
+# Json Apis (OrchardCore.RestApis)
 
 The JsonApi implrements the jsonapi.org specification.
 
@@ -27,7 +27,7 @@ Orchard
   ContentItems
     ContentType
 	ContentParts
-	
+
 ## Get Content Item By Id
 ```json
 query {
