@@ -1,6 +1,5 @@
 using Fluid;
 using Fluid.Values;
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
@@ -15,7 +14,7 @@ using OrchardCore.Liquid.Handlers;
 using OrchardCore.Liquid.Indexing;
 using OrchardCore.Liquid.Model;
 using OrchardCore.Liquid.Services;
-using System.Security.Claims;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Liquid
 {
@@ -24,8 +23,6 @@ namespace OrchardCore.Liquid
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentItem>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ClaimsPrincipal>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ClaimsIdentity>();
 
             // When accessing a property of a JObject instance
             TemplateContext.GlobalMemberAccessStrategy.Register<JObject>((obj, name) => obj[name]);

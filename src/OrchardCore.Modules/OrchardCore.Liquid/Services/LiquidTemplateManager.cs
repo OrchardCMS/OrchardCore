@@ -35,7 +35,7 @@ namespace OrchardCore.Liquid.Services
 
             var errors = Enumerable.Empty<string>();
 
-            var result = _memoryCache.GetOrCreate<LiquidViewTemplate>(source, (ICacheEntry e) =>
+            var result = _memoryCache.GetOrCreate(source, (ICacheEntry e) =>
             {
                 if (LiquidViewTemplate.TryParse(source, out var parsed, out errors))
                 {
@@ -56,17 +56,7 @@ namespace OrchardCore.Liquid.Services
                 LiquidViewTemplate.TryParse(String.Join(System.Environment.NewLine, errors), out result, out errors);
             }
 
-            foreach (var registration in _liquidOptions.FilterRegistrations)
-            {
-                context.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
-                {
-                    var type = registration.Value;
-                    var filter = _serviceProvider.GetService(registration.Value) as ILiquidFilter;
-                    return filter.ProcessAsync(input, arguments, ctx);
-                });
-            }
-
-            return result.RenderAsync(textWriter, encoder, context);
+            return result.RenderAsync(_liquidOptions, _serviceProvider, textWriter, encoder, context);
         }
     }
 }
