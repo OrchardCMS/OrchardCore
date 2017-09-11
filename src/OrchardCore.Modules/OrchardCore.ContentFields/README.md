@@ -91,11 +91,11 @@ For instance the filename for the Wysiwyg editor on the Html Field is named `Htm
 ## CREDITS
 
 ### bootstrap-slider
-https://github.com/seiyria/bootstrap-slider
-Copyright (c) 2017 Kyle Kemp, Rohit Kalkur, and contributors
+<https://github.com/seiyria/bootstrap-slider>  
+Copyright (c) 2017 Kyle Kemp, Rohit Kalkur, and contributors  
 License: MIT
 
 ### Bootstrap Switch
-https://github.com/Bttstrp/bootstrap-switch
-Copyright (c) 2013-2015 The authors of Bootstrap Switch
+<https://github.com/Bttstrp/bootstrap-switch>  
+Copyright (c) 2013-2015 The authors of Bootstrap Switch  
 License: MIT

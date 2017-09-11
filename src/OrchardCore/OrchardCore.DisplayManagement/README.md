@@ -73,7 +73,7 @@ Renders a Date and Time value using the timezone of the request.
 | Parameter | Type | Description |
 | --------- | ---- |------------ |
 | `Utc` | `DateTime?` | The date and time to render. If not specified, the current time will be used. |
-| `Format` | `string` | The .NET format string. If not specified the long format `dddd, MMMM d, yyyy h:mm:ss tt` will be used. The accepted format can be found at https://msdn.microsoft.com/en-us/library/8kb3ddd4(v=vs.110).aspx |
+| `Format` | `string` | The .NET format string. If not specified the long format `dddd, MMMM d, yyyy h:mm:ss tt` will be used. The accepted format can be found at <https://msdn.microsoft.com/en-us/library/8kb3ddd4(v=vs.110).aspx> |
 
 Tag helper example:
 

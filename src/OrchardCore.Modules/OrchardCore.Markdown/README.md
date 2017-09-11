@@ -93,11 +93,11 @@ You can override the HTML editor for the `Default` editor by creating a shape fi
 ## CREDITS
 
 ### Markdig
-https://github.com/lunet-io/markdig
-Copyright (c) 2016, Alexandre Mutel
+<https://github.com/lunet-io/markdig>  
+Copyright (c) 2016, Alexandre Mutel  
 BSD-2
 
 ### SimpleMDE
-https://github.com/NextStepWebs/simplemde-markdown-editor
-Copyright (c) 2015 Next Step Webs, Inc.
+<https://github.com/NextStepWebs/simplemde-markdown-editor>
+Copyright (c) 2015 Next Step Webs, Inc.  
 MIT

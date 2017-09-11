@@ -95,6 +95,6 @@ The following properties are available on `BodyPartViewModel`
 ## CREDITS
 
 ### Trumbowyg
-https://github.com/Alex-D/Trumbowyg
-Copyright (c) 2012-2016 Alexandre Demode (Alex-D)
+<https://github.com/Alex-D/Trumbowyg>  
+Copyright (c) 2012-2016 Alexandre Demode (Alex-D)  
 License: MIT

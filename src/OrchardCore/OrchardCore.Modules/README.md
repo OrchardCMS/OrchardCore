@@ -1,14 +1,14 @@
 # Introduction
 
-The library ASP.Net Core Modules provides a mechanism to have a self contained modular system where you can opt in to a specific application framework and not have the design of you application be dictated to by such.
+The library Orchard Core Modules provides a mechanism to have a self contained modular system where you can opt in to a specific application framework and not have the design of you application be dictated to by such.
 
 ## Getting started
 
 First, create a brand new web application.
 
-Within this new application we are initially going to focus on two files, `project.json` and `Startup.cs`. If you don't have either of these... start again!
+Within this new application we are initially going to focus `Startup.cs`.
 
-Okay so first, let's open up `project.json`.
+Okay so first, let's open up `Startup.cs`.
 
 Within the ConfigureServices method add these lines:
 
@@ -35,7 +35,7 @@ MyNewWebApplicaion
     \ Module2
 ```
 
-Once it has found that manifest file, and said file is valid, it will then look for all classes that inherit off of `StartupBase`, instansiate them and then call the methods on here. An example of one is:
+Once it has found that manifest file, and said file is valid, it will then look for all classes that inherit off of `StartupBase`, instantiate them and then call the methods on here. An example of one is:
 
 ```c#
 public class Startup : StartupBase
@@ -47,7 +47,7 @@ public class Startup : StartupBase
 }
 ```
 
-By doing this you allow your modules to be self contained, completely decoupled from the Hosting applicaiton.
+By doing this you allow your modules to be self contained, completely decoupled from the Hosting application.
 
 !!! note
     If you drop a new module in, then you will need to restart the application for it to be found.
@@ -87,7 +87,8 @@ services.AddModuleServices(configure => configure
 );
 ```
 
-> Note the addition of `.AddMvcModules(services.BuildServiceProvider())`
+!!! note 
+    Note the addition of `.AddMvcModules(services.BuildServiceProvider())`
 
 That's it, done. Asp.Net Mvc is now part of your pipeline.
 
@@ -102,8 +103,10 @@ app.UseModules(modules => modules
 );
 ```
 
-> Note the addition of `.UseNancyModules()`
+!!! note 
+    Note the addition of `.UseNancyModules()`
 
 That's it, done. NancyFx is now part of your pipeline. What this means is that Nancy modules will be automatically discovered.
 
-> Note. There is no need to register a Nancy Module within its own Startup class.
+!!! note 
+    There is no need to register a Nancy Module within its own Startup class.

@@ -15,7 +15,7 @@ PO files are found with the following steps:
 
 This article explains how PO files are organized, including plural forms.
 
-https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html
+<https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html>
 
 
 ## Translation contexts
