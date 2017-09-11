@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Indexing;
 
 namespace OrchardCore.Contents.Indexing

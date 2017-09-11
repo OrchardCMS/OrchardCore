@@ -1,5 +1,5 @@
 ﻿using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;

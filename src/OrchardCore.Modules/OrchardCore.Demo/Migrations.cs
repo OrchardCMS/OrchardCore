@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement.MetaData;
+﻿using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 
 namespace OrchardCore.Demo

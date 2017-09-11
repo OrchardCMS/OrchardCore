@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Environment.Navigation;
 using System;

@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentTypes.ViewModels;
 
 namespace OrchardCore.ContentTypes.ViewComponents

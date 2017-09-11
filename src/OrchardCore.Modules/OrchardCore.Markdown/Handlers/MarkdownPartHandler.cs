@@ -1,7 +1,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Markdown.Model;
 using OrchardCore.Markdown.Settings;

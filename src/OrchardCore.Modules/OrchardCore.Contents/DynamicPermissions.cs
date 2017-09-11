@@ -1,7 +1,7 @@
 ﻿//using System;
 //using System.Linq;
 //using System.Collections.Generic;
-//using OrchardCore.ContentManagement.MetaData;
+//using OrchardCore.ContentManagement.Metadata;
 //using OrchardCore.ContentManagement.Metadata.Models;
 //using OrchardCore.Contents.Settings;
 //using OrchardCore.Environment.Extensions.Models;

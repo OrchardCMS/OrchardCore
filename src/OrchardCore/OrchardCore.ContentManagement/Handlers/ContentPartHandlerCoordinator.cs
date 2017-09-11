@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.ContentManagement.Drivers.Coordinators
 {
