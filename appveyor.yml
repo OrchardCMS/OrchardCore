@@ -29,7 +29,7 @@ build_script:
   - dotnet pack -c Release
 
   - ps: |
-      if ($env:APPVEYOR_REPO_BRANCH -eq "dockerci")
+      if ($env:APPVEYOR_REPO_BRANCH -eq "master")
       {
         cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
         dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release

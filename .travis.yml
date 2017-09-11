@@ -17,7 +17,7 @@ script:
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
-  - if [[ "$TRAVIS_BRANCH" == "dockerci" ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+  - if [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         cd $TRAVIS_BUILD_DIR/src/OrchardCore.Cms.Web;
         dotnet publish -c Release -o $TRAVIS_BUILD_DIR/.build/release;
         cd $TRAVIS_BUILD_DIR;
