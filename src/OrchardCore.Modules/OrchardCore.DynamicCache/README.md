@@ -11,6 +11,7 @@ itself based on `IMemoryCache`.
 ### Example:
 
 Layout Shape (not cached)
+
 - Shape A
   - Shape A1 (varies by role)
   - Shape A2
@@ -28,6 +29,7 @@ the `ShapeMetadata`). Instead, its ESI tags will be processed and replaced by th
 
 ## Invalidating cached shapes
 If a shape cache content is invalidated, it will be reprocessed. 
+
 - If its children are still cached then their cached value will be used.
 - Invalidating a shape will also invalidate all parent shapes.
 
@@ -75,7 +77,8 @@ Example: `myShape.Cache("myshape")`
 | `AddTag(string)` | Adds a tag to the cache entry to that it can be invalidated by this tag value. |
 | `RemoveTag(string)` | Removes the specified tag. |
 
-> Note: `AddDependency` is different that `AddContext` as it doesn't store multiple values for each context, but invalidates
+!!! note
+    `AddDependency` is different that `AddContext` as it doesn't store multiple values for each context, but invalidates
 the cached shape content when the value of the context varies. Internally they share the same implementation as the physical
 cache key will contain the dependency context value.
 

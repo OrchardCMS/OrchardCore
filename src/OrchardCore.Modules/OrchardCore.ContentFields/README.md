@@ -74,7 +74,7 @@ a new choice in the list of available editors for a field, create a new shape te
 template: `{FIELDTYPE}_Option__{EDITORNAME}`
 This shape type will match a template file named `{FIELDTYPE}-{EDITORNAME}.Option.cshtml`
 
-This template will need to render an `<option>` tag. Here is an example for a Wysiwig options on the 
+This template will need to render an `<option>` tag. Here is an example for a Wysiwyg options on the 
 Html Field:
 ```csharp
 @{
@@ -88,3 +88,14 @@ represented by a template file named `{FIELDTYPE}-{EDITORNAME}Editor.cshtml`.
 
 For instance the filename for the Wysiwyg editor on the Html Field is named `HtmlField-Wysiwyg.Editor.cshtml`.
 
+## CREDITS
+
+### bootstrap-slider
+https://github.com/seiyria/bootstrap-slider
+Copyright (c) 2017 Kyle Kemp, Rohit Kalkur, and contributors
+License: MIT
+
+### Bootstrap Switch
+https://github.com/Bttstrp/bootstrap-switch
+Copyright (c) 2013-2015 The authors of Bootstrap Switch
+License: MIT

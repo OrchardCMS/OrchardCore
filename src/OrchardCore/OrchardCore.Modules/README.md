@@ -49,7 +49,8 @@ public class Startup : StartupBase
 
 By doing this you allow your modules to be self contained, completely decoupled from the Hosting applicaiton.
 
-> Note: If you drop a new module in, then you will need to restart the application for it to be found.
+!!! note
+    If you drop a new module in, then you will need to restart the application for it to be found.
 
 ## Add Extra Locations
 By default module discovery is linked to the `Modules` folder. This however can be extended.

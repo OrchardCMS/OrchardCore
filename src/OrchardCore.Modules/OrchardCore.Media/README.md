@@ -2,7 +2,7 @@
 
 The Media modules provides a UI to upload and organize binary files that can be used while creating content. 
 
-The media processing token filters can also create custom sized images.
+The media processing liquid filters can also create custom sized images.
 
 ## HTML filters
 
@@ -86,6 +86,6 @@ Constrains the resized image to fit the bounds of its container maintaining the 
 ##### min
 Resizes the image until the shortest side reaches the set given dimension. Upscaling is disabled in this mode and the original image will be returned if attempted.
 
-##### strech
+##### stretch
 
 Stretches the resized image to fit the bounds of its container.

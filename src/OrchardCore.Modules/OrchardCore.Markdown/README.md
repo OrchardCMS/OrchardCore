@@ -7,7 +7,7 @@ These shapes are available for theming
 ### MarkdownPart
 
 This shape is rendered when a `MarkdownPart` is attached to a content item.
-The shape based class is of `MarkdownPartViewModel`.
+The shape based class is of type `MarkdownPartViewModel`.
 
 The following properties are available on the `MarkdownPartViewModel` class.
 
@@ -22,7 +22,7 @@ The following properties are available on the `MarkdownPartViewModel` class.
 ### MarkdownField
 
 This shape is rendered when a `MarkdownField` is attached to a content part.
-The shape based class is of `MarkdownFieldViewModel`.
+The shape based class is of type `MarkdownFieldViewModel`.
 
 The following properties are available on the `MarkdownFieldViewModel` class.
 

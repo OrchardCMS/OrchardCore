@@ -1,7 +1,7 @@
 # Localization (OrchardCore.Localization)
 
 This modules provides the infrastructure necessary to support the PO (Portable Object) localization file format.
-It also support plural forms.
+It also supports plural forms.
 
 ## PO files locations
 
