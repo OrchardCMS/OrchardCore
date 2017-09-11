@@ -29,14 +29,14 @@ build_script:
   - dotnet pack -c Release
 
   - ps: |
-      if ($env:APPVEYOR_REPO_BRANCH -eq "master")
+      if ($env:APPVEYOR_REPO_BRANCH -eq "dockerci")
       {
         cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
         dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
         cd $env:APPVEYOR_BUILD_FOLDER
-        docker build -t orchardproject/orchardcore-cms-web:latest .
+        docker build -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:1.0.0-beta1 .
         docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
-        docker push orchardproject/orchardcore-cms-web  
+        docker push orchardproject/orchardcore-cms-windows
       }
 
 test_script:
