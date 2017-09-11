@@ -10,7 +10,8 @@ edited in the standard Settings section and can be protected with specific permi
 Custom Settings are organized in sections. Each section is represented by a Content Type with the `CustomSettings` stereotype.
 When creating such section, remember to disable `Creatable`, `Listable`, `Draftable` and `Securable` metadata as they don't apply.
 
-> Don't mark and existing Content Type with this `CustomSettings` stereotype as this will break exsiting content items of this type.
+!!! warning
+    Don't mark and existing Content Type with this `CustomSettings` stereotype as this will break exsiting content items of this type.
 
 Custom Settings are then comprised of parts and fields like any other content type. Once created, open the Setting menu item and each
 of these sections should appear alongside the module provided ones.
