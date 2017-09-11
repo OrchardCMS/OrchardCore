@@ -25,5 +25,4 @@ script:
         docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
         docker push orchardproject/orchardcore-cms-linux
     fi
-
-- if test "$TRAVIS_OS_NAME" == "linux"; then dotnet test -c Release ./test/OrchardCore.Tests/OrchardCore.Tests.csproj; fi
+  - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet test -c Release ./test/OrchardCore.Tests/OrchardCore.Tests.csproj; fi
