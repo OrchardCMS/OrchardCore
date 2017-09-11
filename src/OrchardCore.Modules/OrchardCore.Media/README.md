@@ -89,3 +89,13 @@ Resizes the image until the shortest side reaches the set given dimension. Upsca
 ##### stretch
 
 Stretches the resized image to fit the bounds of its container.
+
+
+## CREDITS
+
+### ImageSharp
+
+https://sixlabors.com/projects/imagesharp/
+
+Copyright 2012 James South
+Licensed under the Apache License, Version 2.0

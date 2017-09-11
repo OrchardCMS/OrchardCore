@@ -357,3 +357,10 @@ Invokes the `style` tag helper from the **Orchard.ResourceManagement** package.
 
 Invokes the `a` tag helper from the MVC package.
 
+## CREDITS
+
+### Fluid
+
+https://github.com/sebastienros/fluid
+Copyright (c) 2017 Sebastien Ros
+MIT License
