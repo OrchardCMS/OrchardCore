@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,11 +37,11 @@ namespace OrchardCore.Cms.Web
             }
 
             app.UseStaticFiles();
-            loggerFactory.AddConsole(Configuration);
             app.UseNLogWeb(loggerFactory, env);
 
             if (env.IsDevelopment())
             {
+                loggerFactory.AddConsole(Configuration);
                 loggerFactory.AddDebug();
             }
 
