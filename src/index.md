@@ -3,11 +3,11 @@
 Orchard Core is a re-implementation of [Orchard CMS](https://github.com/OrchardCMS/Orchard) in [ASP.NET Core](http://www.asp.net/vnext). You can check out the [Orchard Core presentation from the last Orchard Harvest](https://www.youtube.com/watch?v=TK6a_HfD0O8) to get an introductory overview of its features and goals.
 
 [![Join the chat at https://gitter.im/OrchardCMS/Orchard2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/Orchard2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://github.com/OrchardCMS/Orchard2/blob/master/LICENSE.txt)
+[![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://github.com/OrchardCMS/OrchardCore/blob/master/LICENSE.txt)
 
 ## Build Status
 
-[![Build Status](https://img.shields.io/travis/OrchardCMS/Orchard2.svg?label=travis-ci&branch=master&style=flat-square)](https://travis-ci.org/OrchardCMS/Orchard2/branches)
+[![Build Status](https://img.shields.io/travis/OrchardCMS/OrchardCore.svg?label=travis-ci&branch=master&style=flat-square)](https://travis-ci.org/OrchardCMS/Orchard2/branches)
 [![Build status](https://img.shields.io/appveyor/ci/alexbocharov/orchard2/master.svg?label=appveyor&style=flat-square)](https://ci.appveyor.com/project/alexbocharov/orchard2/branch/master)
 
 ## Orchard CMS
