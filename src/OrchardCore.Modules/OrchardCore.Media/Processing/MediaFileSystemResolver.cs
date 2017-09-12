@@ -44,7 +44,7 @@ namespace OrchardCore.Media.Processing
         /// <inheritdoc/>
         public Task<bool> IsValidRequestAsync(HttpContext context, ILogger logger)
         {
-            return Task.FromResult(FormatHelpers.GetExtension(this.options.Configuration, context.Request.GetDisplayUrl()) != null);
+            return Task.FromResult(FormatHelpers.GetExtension(this.options.Configuration, context.Request.Path) != null);
         }
 
         /// <inheritdoc/>
