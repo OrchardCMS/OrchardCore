@@ -2,6 +2,9 @@
 
   <Import Project="..\OrchardCore.Build\Dependencies.props" />
 
+  <!-- Necessary as we reference the Project and not the Package -->
+  <Import Project="..\OrchardCore\OrchardCore.Application\OrchardCore.Application.targets" />
+  
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
