@@ -7,7 +7,7 @@ Orchard Core is a re-implementation of [Orchard CMS](https://github.com/OrchardC
 
 ## Build Status
 
-[![Build Status](https://img.shields.io/travis/OrchardCMS/OrchardCore.svg?label=travis-ci&branch=master&style=flat-square)](https://travis-ci.org/OrchardCMS/Orchard2/branches)
+[![Build Status](https://img.shields.io/travis/OrchardCMS/OrchardCore.svg?label=travis-ci&branch=master&style=flat-square)](https://travis-ci.org/OrchardCMS/OrchardCore/branches)
 [![Build status](https://img.shields.io/appveyor/ci/alexbocharov/orchard2/master.svg?label=appveyor&style=flat-square)](https://ci.appveyor.com/project/alexbocharov/orchard2/branch/master)
 
 ## Orchard CMS
@@ -20,18 +20,18 @@ Orchard is a free, [open source](https://github.com/OrchardCMS/Orchard), communi
 
 The software is complete enough for internal testing. This is typically done by people other than the software engineers who wrote it, but still within the same organization or community that developed the software. 
 
-Here is a more detailed [roadmap](https://github.com/OrchardCMS/Orchard2/wiki/Roadmap).
+Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki/Roadmap).
 
 ## Getting Started
 
-- Clone the repository using the command `git clone https://github.com/OrchardCMS/Orchard2.git` and checkout the `master` branch. 
+- Clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `master` branch. 
 
 ### Command line
 
 - Install the latest versions (current) for both Runtime and SDK of .NET Core from this page https://www.microsoft.com/net/download/core
 - Call `dotnet restore`.
 - Call `dotnet build`.
-- Next navigate to `D:\Orchard2\src\OrchardCore.Cms.Web` or wherever your respective folder is on the command line in Administrator mode.
+- Next navigate to `D:\OrchardCore\src\OrchardCore.Cms.Web` or wherever your respective folder is on the command line in Administrator mode.
 - Call `dotnet run`.
 - Then open the `http://localhost:5000` URL in your browser.
 
@@ -43,4 +43,4 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/Orchard2/wiki/Ro
 
 ### Contributing
 
-We currently follow the these [engineering guidelines](https://github.com/OrchardCMS/Orchard2/wiki/Engineering-Guidelines).
+We currently follow the these [engineering guidelines](https://github.com/OrchardCMS/OrchardCore/wiki/Engineering-Guidelines).
