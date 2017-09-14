@@ -33,6 +33,10 @@ namespace OrchardCore.RestApis
             services.AddScoped<TitlePartType>();
             services.AddScoped<AutoRoutePartType>();
 
+            services.AddScoped<IObjectGraphType, TitlePartType>();
+            services.AddScoped<IObjectGraphType, AutoRoutePartType>();
+            
+
             services.AddScoped<ContentPartInterface>();
             
             services.AddScoped<ISchema, ContentSchema>();
