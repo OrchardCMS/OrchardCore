@@ -18,8 +18,8 @@ namespace OrchardCore.Mvc
 {
     public class SharedViewCompilerProvider : IViewCompilerProvider
     {
-        private static object _initializeLock = new object();
-        private static bool _initialized;
+        private object _initializeLock = new object();
+        private bool _initialized;
 
         private readonly ApplicationPartManager _applicationPartManager;
         private readonly IRazorViewEngineFileProviderAccessor _fileProviderAccessor;
@@ -65,7 +65,7 @@ namespace OrchardCore.Mvc
                 throw new InvalidOperationException(message);
             }
 
-            return LazyInitializer.EnsureInitialized<IViewCompiler>(
+            return LazyInitializer.EnsureInitialized(
                 ref _compiler,
                 ref _initialized,
                 ref _initializeLock,
