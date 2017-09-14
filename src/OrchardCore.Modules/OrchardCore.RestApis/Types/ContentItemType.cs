@@ -28,34 +28,34 @@ namespace OrchardCore.RestApis.Types
             //    );
 
 
-            Field<ListGraphType<ContentPartInterface>>(
-          "parts",
-          resolve: context =>
-          {
+          //  Field<ListGraphType<ContentPartInterface>>(
+          //"parts",
+          //resolve: context =>
+          //{
+              
+          //    var typeDefinition = contentDefinitionManager.GetTypeDefinition(context.Source.ContentType);
 
-              var typeDefinition = contentDefinitionManager.GetTypeDefinition(context.Source.ContentType);
+          //    var typeParts = new List<ContentElement>();
 
-              var typeParts = new List<ContentElement>();
+          //    foreach (var part in typeDefinition.Parts)
+          //    {
+          //        var name = part.Name; // About
+          //              var partName = part.PartDefinition.Name; // BagPart
 
-              foreach (var part in typeDefinition.Parts)
-              {
-                  var name = part.Name; // About
-                        var partName = part.PartDefinition.Name; // BagPart
+          //              var contentPart = contentParts.FirstOrDefault(x => x.GetType().Name == partName);
 
-                        var contentPart = contentParts.FirstOrDefault(x => x.GetType().Name == partName);
+          //        if (contentPart != null)
+          //        {
+          //            typeParts.Add(context
+          //                .Source
+          //                .Get(
+          //                    contentPart.GetType(),
+          //                    name));
+          //        }
+          //    }
 
-                  if (contentPart != null)
-                  {
-                      typeParts.Add(context
-                          .Source
-                          .Get(
-                              contentPart.GetType(),
-                              name));
-                  }
-              }
-
-              return typeParts;
-          });
+          //    return typeParts;
+          //});
 
 
 
@@ -77,6 +77,8 @@ namespace OrchardCore.RestApis.Types
             Name = "titlepart";
 
             Interface<ContentPartInterface>();
+
+            IsTypeOf = value => value is TitlePart;
         }
     }
 
@@ -87,6 +89,8 @@ namespace OrchardCore.RestApis.Types
             Name = "autoroutepart";
 
             Interface<ContentPartInterface>();
+
+            IsTypeOf = value => value is AutoroutePart;
         }
     }
 
@@ -101,6 +105,8 @@ namespace OrchardCore.RestApis.Types
             );
 
             Interface<ContentPartInterface>();
+
+            IsTypeOf = value => value is BagPart;
         }
     }
 }

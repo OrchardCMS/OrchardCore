@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using GraphQL.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -31,6 +32,8 @@ namespace OrchardCore.RestApis.Controllers
         [HttpGet]
         public async Task<IActionResult> Graphql(string query)
         {
+            var schema = new SchemaPrinter(_schema);
+            Console.WriteLine(schema.Print());
             var executionOptions = new ExecutionOptions { Schema = _schema, Query = query };
 
             try
