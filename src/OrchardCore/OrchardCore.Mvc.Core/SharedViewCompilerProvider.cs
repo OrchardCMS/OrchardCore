@@ -18,7 +18,6 @@ namespace OrchardCore.Mvc
 {
     public class SharedViewCompilerProvider : IViewCompilerProvider
     {
-        private static IList<CompiledViewDescriptor> _viewDescriptors;
         private static object _initializeLock = new object();
         private static bool _initialized;
 
@@ -29,7 +28,8 @@ namespace OrchardCore.Mvc
         private readonly RazorTemplateEngine _razorTemplateEngine;
         private readonly CSharpCompiler _csharpCompiler;
         private readonly RazorViewEngineOptions _viewEngineOptions;
-        private readonly ILogger<RazorViewCompiler> _logger;
+        private readonly ILogger<SharedViewCompilerProvider> _logger;
+        private IViewCompiler _compiler;
 
 
         public SharedViewCompilerProvider(
@@ -49,7 +49,7 @@ namespace OrchardCore.Mvc
             _razorTemplateEngine = razorTemplateEngine;
             _csharpCompiler = csharpCompiler;
             _viewEngineOptions = viewEngineOptionsAccessor.Value;
-            _logger = loggerFactory.CreateLogger<RazorViewCompiler>();
+            _logger = loggerFactory.CreateLogger<SharedViewCompilerProvider>();
         }
 
         public IViewCompiler GetCompiler()
@@ -65,22 +65,14 @@ namespace OrchardCore.Mvc
                 throw new InvalidOperationException(message);
             }
 
-            var viewDescriptors = LazyInitializer.EnsureInitialized(
-                ref _viewDescriptors,
+            return LazyInitializer.EnsureInitialized<IViewCompiler>(
+                ref _compiler,
                 ref _initialized,
                 ref _initializeLock,
-                CreateViewDescriptors);
-
-            return new RazorViewCompiler(
-                _fileProviderAccessor.FileProvider,
-                _razorTemplateEngine,
-                _csharpCompiler,
-                _viewEngineOptions.CompilationCallback,
-                viewDescriptors,
-                _logger);
+                CreateCompiler);
         }
 
-        private IList<CompiledViewDescriptor> CreateViewDescriptors()
+        private IViewCompiler CreateCompiler()
         {
             var feature = new ViewsFeature();
 
@@ -101,7 +93,13 @@ namespace OrchardCore.Mvc
                 provider.PopulateFeature(assemblyParts, feature);
             }
 
-            return feature.ViewDescriptors;
+            return new SharedRazorViewCompiler(
+                _fileProviderAccessor.FileProvider,
+                _razorTemplateEngine,
+                _csharpCompiler,
+                _viewEngineOptions.CompilationCallback,
+                feature.ViewDescriptors,
+                _logger);
         }
     }
 }
