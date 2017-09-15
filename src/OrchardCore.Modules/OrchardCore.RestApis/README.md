@@ -47,3 +47,23 @@ query {
 	}
 }
 ```
+
+## Get the Schema for a Landing Page
+```json
+{
+	__type(name: "LandingPage")
+	{
+		name
+		fields
+		{
+			name
+			type
+			{
+				name
+				kind
+			}
+		}
+	}
+}
+```
+

@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using GraphQL;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Internal;
@@ -34,7 +35,7 @@ namespace OrchardCore.RestApis.Queries
 
             foreach (var typeDefinition in typeDefinitions)
             {
-                var typeType = new ObjectGraphType
+                var typeType = new ContentItemType(contentDefinitionManager)
                 {
                     Name = typeDefinition.Name
                 };
@@ -57,7 +58,8 @@ namespace OrchardCore.RestApis.Queries
                             typeType.AddField(new FieldType
                             {
                                 Name = name,
-                                ResolvedType = (IObjectGraphType)serviceProvider.GetService(p.GetType())
+                                ResolvedType = (IObjectGraphType)serviceProvider.GetService(p.GetType()),
+                                Resolver = new FuncFieldResolver<ContentItemType, Task<object>>(context => null)
                             });
                         }
                     }
@@ -66,7 +68,11 @@ namespace OrchardCore.RestApis.Queries
                 contentType.AddField(new FieldType
                 {
                     Name = typeDefinition.Name,
-                    ResolvedType = typeType
+                    ResolvedType = typeType,
+                    Arguments = new QueryArguments(
+                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the content item" }
+                    ),
+                    Resolver = new FuncFieldResolver<ContentItemType, Task<object>>(async context => await serviceProvider.GetService<IContentManager>().GetAsync(context.GetArgument<string>("id")))
                 });
             }
             ////AddField(new EventStreamFieldType

@@ -11,7 +11,6 @@ namespace OrchardCore.RestApis.Types
     public class ContentItemType : AutoRegisteringObjectGraphType<ContentItem>
     {
         public ContentItemType(
-            IEnumerable<ContentPart> contentParts,
             IContentDefinitionManager contentDefinitionManager)
         {
             Name = "contentitem";
