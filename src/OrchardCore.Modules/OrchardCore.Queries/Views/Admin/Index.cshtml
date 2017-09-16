@@ -8,13 +8,14 @@
             <button type="button" class="btn btn-primary" role="button" data-toggle="modal" data-target="#modalAddQuery">@T["Add Query"]</button>
         </li>
     </ul>
-        <form asp-action="Index" method="get" class="form-inline my-2 my-lg-0">
-            <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
-            <button type="submit" class="btn btn-secondary">@T["Search"]</button>
-        </form>
+    <form asp-action="Index" method="get" class="form-inline my-2 my-lg-0">
+        <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+        <button type="submit" class="btn btn-secondary">@T["Search"]</button>
+    </form>
 </nav>
 
-<form asp-action="Index"> @* the form is nessecary to generate and antiforgery token for the delete action *@
+<form asp-action="Index">
+    @* the form is nessecary to generate and antiforgery token for the delete action *@
 
     @if (Model.Queries.Any())
     {
@@ -48,20 +49,23 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="card-columns">
-                    @if (!Model.QuerySourceNames.Any())
-                    {
-                        <h3>@T["You need to enable a feature which provides a query source."]</h3>
-                    }
+                @if (!Model.QuerySourceNames.Any())
+                {
+                    <p class="p-3 mb-2 bg-warning text-white">@T["You need to enable a feature which provides a query source."] <a asp-action="Features" asp-controller="Admin" asp-area="OrchardCore.Features">@T["Go to Features"]</a></p>
+                }
+                else
+                {
+                    <div class="card-columns">
 
-                    @foreach (var source in Model.QuerySourceNames)
-                    {
-                        OrchardCore.DisplayManagement.IShape shape = New.Query_Link(Name: source);
-                        shape.Metadata.Alternates.Add("Query_Link__" + source);
+                        @foreach (var source in Model.QuerySourceNames)
+                        {
+                            OrchardCore.DisplayManagement.IShape shape = New.Query_Link(Name: source);
+                            shape.Metadata.Alternates.Add("Query_Link__" + source);
 
-                        @await DisplayAsync(shape)
-                    }
-                </div>
+                            @await DisplayAsync(shape)
+                        }
+                    </div>
+                }
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
