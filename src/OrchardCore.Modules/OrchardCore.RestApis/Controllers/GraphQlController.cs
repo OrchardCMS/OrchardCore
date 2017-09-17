@@ -1,14 +1,15 @@
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using GraphQL;
+using GraphQL.Instrumentation;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using GraphQL.Utilities;
+using GraphQL.Validation.Complexity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using OrchardCore.RestApis.Queries;
-using YesSql;
 
 namespace OrchardCore.RestApis.Controllers
 {
@@ -30,10 +31,9 @@ namespace OrchardCore.RestApis.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Graphql(string query)
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAsync(string query)
         {
-            var schema = new SchemaPrinter(_schema);
-            Console.WriteLine(schema.Print());
             var executionOptions = new ExecutionOptions { Schema = _schema, Query = query };
 
             try
@@ -55,9 +55,47 @@ namespace OrchardCore.RestApis.Controllers
                 return BadRequest(ex);
             }
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult PostAsync()
+        {
+            return Ok();
+            //var inputs = query.Variables.ToInputs();
+            //var queryToExecute = query.Query;
+
+            ////if (!string.IsNullOrWhiteSpace(query.NamedQuery))
+            ////{
+            ////    queryToExecute = _namedQueries[query.NamedQuery];
+            ////}
+
+            //var result = await _documentExecuter.ExecuteAsync(_ =>
+            //{
+            //    _.Schema = _schema;
+            //    _.Query = queryToExecute;
+            //    _.OperationName = query.OperationName;
+            //    _.Inputs = inputs;
+
+            //    _.ComplexityConfiguration = new ComplexityConfiguration { MaxDepth = 15 };
+            //    _.FieldMiddleware.Use<InstrumentFieldsMiddleware>();
+
+            //});
+            
+
+            //return Json(result);
+        }
     }
 
-    public static class ObjectGraphTypeExtensions
+
+ public class GraphQLQuery
+{
+    public string OperationName { get; set; }
+    public string NamedQuery { get; set; }
+    public string Query { get; set; }
+    public string Variables { get; set; }
+}
+
+public static class ObjectGraphTypeExtensions
     {
         public static void Field(
             this IObjectGraphType obj,

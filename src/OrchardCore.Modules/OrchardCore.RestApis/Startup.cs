@@ -10,7 +10,7 @@ namespace OrchardCore.RestApis
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddJsonApi();
+            //services.AddJsonApi();
             services.AddGraphQL();
         }
 

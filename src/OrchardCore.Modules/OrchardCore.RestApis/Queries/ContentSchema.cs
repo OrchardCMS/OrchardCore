@@ -17,7 +17,7 @@ namespace OrchardCore.RestApis.Queries
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<ContentPart> contentParts,
             IEnumerable<IObjectGraphType> objectGraphTypes)
-            : base((type) => (IGraphType)serviceProvider.GetService(type))
+            : base(new FuncDependencyResolver((type) => (IGraphType)serviceProvider.GetService(type)))
         {
             var contentType = serviceProvider.GetService<ContentType>();
 
