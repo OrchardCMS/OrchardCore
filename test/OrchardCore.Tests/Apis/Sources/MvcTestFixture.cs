@@ -12,9 +12,7 @@ namespace Microsoft.AspNetCore.Mvc.FunctionalTests
     public class MvcTestFixture<TStartup> : WebApplicationTestFixture<TStartup>
         where TStartup : class
     {
-        public MvcTestFixture() : base(Path.Combine("src", "OrchardCore.Cms.Web"))
-            {
-            }
+        public MvcTestFixture(string path) : base(path) { }
 
         protected override void ConfigureApplication(MvcWebApplicationBuilder<TStartup> builder)
         {

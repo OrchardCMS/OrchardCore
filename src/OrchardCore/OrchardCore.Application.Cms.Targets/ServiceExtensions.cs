@@ -48,7 +48,11 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddBareOrchard(this IServiceCollection services, IConfiguration configuration, string sitesDirectoryName)
         {
+            services.AddThemingHost();
+            services.AddManifestDefinition("Theme.txt", "theme");
+            services.AddExtensionLocation("Themes");
             services.AddSitesFolder("App_Data", sitesDirectoryName);
+            services.AddCommands();
             services.AddAuthentication();
             services.AddModules(modules =>
             {

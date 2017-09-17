@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -135,7 +136,7 @@ namespace OrchardCore.Tests.Apis
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task<HttpResponseMessage> PostAsJsonAsync<T>(
+        public static Task<HttpResponseMessage> PostAsJsonAsync<T>(
             this HttpClient client,
             string requestUri,
             T value,
@@ -146,8 +147,28 @@ namespace OrchardCore.Tests.Apis
                 Encoding.UTF8,
                 "application/json");
 
-            return await client.PostAsync(requestUri, content).ConfigureAwait(false);
+            client.DefaultRequestHeaders
+              .Accept
+              .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            return client.PostAsync(requestUri, content);
         }
 
+        public static Task<HttpResponseMessage> PostJsonAsync(
+            this HttpClient client,
+            string requestUri,
+            string json)
+        {
+            var content = new StringContent(
+                json,
+                Encoding.UTF8,
+                "application/json");
+
+            client.DefaultRequestHeaders
+              .Accept
+              .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            return client.PostAsync(requestUri, content);
+        }
     }
 }

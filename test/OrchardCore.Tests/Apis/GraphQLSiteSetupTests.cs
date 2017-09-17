@@ -1,40 +1,66 @@
+using System;
+using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.FunctionalTests;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using OrchardCore.Tests.Apis.Sources;
 using Xunit;
 
 namespace OrchardCore.Tests.Apis
 {
-    public class GraphQLSiteSetupTests :
-        IClassFixture<InMemorySiteContext>
+    public class GraphQLSiteSetupTests : IDisposable
     {
-        private readonly InMemorySiteContext _siteContext;
+        private MvcTestFixture<SiteStartup> _site;
 
-        public GraphQLSiteSetupTests(
-            InMemorySiteContext siteContext)
+        public GraphQLSiteSetupTests()
         {
-            _siteContext = siteContext;
+            var path = Path.Combine("src", "OrchardCore.Cms.Web");
+
+            var appData = Path.Combine(EnvironmentHelpers.GetApplicationPath(), "App_Data");
+
+            if (Directory.Exists(appData))
+            {
+                Directory.Delete(appData, true);
+            }
+
+            _site = new MvcTestFixture<SiteStartup>(path);
+        }
+
+        public void Dispose()
+        {
+            _site.Dispose();
         }
 
         [Fact]
-        public async Task ShouldSetSiteupUsingSqlLite()
+        public async Task ShouldSetSiteupUsingSqlite()
         {
-            var json = @"mutation {
-  createSite(site: {
-  siteName: 'test',
-	AdminUsername: '',
-	AdminEmail: '',
-	AdminPassword: '',
-	DatabaseProvider: 'sqllite',
-	RecipeName: 'saas.recipe.json'
-  })
-}"; 
+            string siteName = Guid.NewGuid().ToString().Replace("-", "");
 
-                var response = await _siteContext.Site.Client.PostAsJsonAsync("graphql", json);
+            var variables =
+@"{ 
+    ""site"": {
+        ""siteName"": """ + siteName + @""",
+        ""databaseProvider"": ""Sqlite"",
+        ""userName"": ""admin"",
+        ""email"": ""fu@bar.com"",
+        ""password"": ""Password01_"",
+        ""passwordConfirmation"": ""Password01_"",
+        ""recipeName"": ""blog.recipe.json""
+    }
+}";
 
-                response.EnsureSuccessStatusCode();
+            var json = @"{
+  ""query"": ""mutation ($site: SiteSetupInput!){ createSite(site: $site) { executionId } }"",
+  ""variables"": " + JsonConvert.SerializeObject(variables) + @"}";
 
-                var z = await response.Content.ReadAsStringAsync();
+            var response = await _site.Client.PostJsonAsync("graphql", json);
 
-                Assert.NotNull(z);
+            response.EnsureSuccessStatusCode();
+
+            var value = await response.Content.ReadAsStringAsync();
+
+            Assert.Equal(32, JObject.Parse(value)["data"]["createSite"]["executionId"].Value<string>().Length);
         }
     }
 }

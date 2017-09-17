@@ -1,7 +1,6 @@
-using System.Linq;
 using GraphQL.Types;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.RestApis.Types;
 using YesSql;

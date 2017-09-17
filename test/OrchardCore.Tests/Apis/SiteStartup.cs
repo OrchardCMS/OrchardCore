@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +11,7 @@ namespace OrchardCore.Tests.Apis
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddBareOrchard(null, Guid.NewGuid().ToString().Replace("-", string.Empty));
+            services.AddBareOrchard(null, Path.Combine("sites", "tests"));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

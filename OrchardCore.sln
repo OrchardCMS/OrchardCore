@@ -287,6 +287,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Application.Tar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.RestApis", "src\OrchardCore.Modules\OrchardCore.RestApis\OrchardCore.RestApis.csproj", "{21EF82F8-88C0-4139-B355-1A0616BB59B6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GraphQL", "..\graphql-dotnet\src\GraphQL\GraphQL.csproj", "{55E14C33-0B7A-4532-B2DF-8AE8B6038BAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -797,6 +799,10 @@ Global
 		{7625A5C3-2548-4B64-9FB1-B55866829F33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7625A5C3-2548-4B64-9FB1-B55866829F33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7625A5C3-2548-4B64-9FB1-B55866829F33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55E14C33-0B7A-4532-B2DF-8AE8B6038BAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55E14C33-0B7A-4532-B2DF-8AE8B6038BAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55E14C33-0B7A-4532-B2DF-8AE8B6038BAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55E14C33-0B7A-4532-B2DF-8AE8B6038BAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -940,6 +946,7 @@ Global
 		{6F5E6A59-C578-4C26-9016-06A0CD357FAE} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{2E9C3A0F-C804-47A5-82FC-582FE1B6493A} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{7625A5C3-2548-4B64-9FB1-B55866829F33} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{55E14C33-0B7A-4532-B2DF-8AE8B6038BAC} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
