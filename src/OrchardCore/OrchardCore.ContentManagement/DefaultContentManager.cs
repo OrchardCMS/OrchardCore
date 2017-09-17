@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.ContentManagement
@@ -131,10 +131,7 @@ namespace OrchardCore.ContentManagement
 
             if (contentItem == null)
             {
-                if (!options.IsDraftRequired)
-                {
-                    return null;
-                }
+                return null;
             }
 
             // Return item if obtained earlier in session
@@ -164,9 +161,6 @@ namespace OrchardCore.ContentManagement
                 // When draft is required and latest is published a new version is added
                 if (contentItem.Published)
                 {
-                    // Save the previous version
-                    _session.Save(contentItem);
-
                     contentItem = await BuildNewVersionAsync(contentItem);
                 }
 
@@ -308,6 +302,7 @@ namespace OrchardCore.ContentManagement
 
             if (latestVersion != null)
             {
+                _session.Save(latestVersion);
                 latestVersion.Latest = false;
                 buildingContentItem.Number = latestVersion.Number + 1;
             }
@@ -422,6 +417,7 @@ namespace OrchardCore.ContentManagement
 
             Handlers.Invoke(handler => handler.Removing(context), _logger);
 
+            contentItem.Number = -1;
             contentItem.Latest = false;
             _session.Save(contentItem);
 
