@@ -26,20 +26,20 @@ namespace OrchardCore.RestApis
         public static IServiceCollection AddGraphQL(this IServiceCollection services)
         {
             services.AddScoped<IDocumentExecuter, DocumentExecuter>();
-            services.AddScoped<ContentItemType>();
-            services.AddScoped<ContentTypeType>();
-            services.AddScoped<ContentType>();
+            //services.AddScoped<ContentItemType>();
+            //services.AddScoped<ContentTypeType>();
+            //services.AddScoped<ContentType>();
 
-            services.AddScoped<TitlePartType>();
-            services.AddScoped<AutoRoutePartType>();
+            //services.AddScoped<TitlePartType>();
+            //services.AddScoped<AutoRoutePartType>();
 
-            services.AddScoped<IObjectGraphType, TitlePartType>();
-            services.AddScoped<IObjectGraphType, AutoRoutePartType>();
+            //services.AddScoped<IObjectGraphType, TitlePartType>();
+            //services.AddScoped<IObjectGraphType, AutoRoutePartType>();
             
 
-            services.AddScoped<ContentPartInterface>();
+            //services.AddScoped<ContentPartInterface>();
             
-            services.AddScoped<ISchema, ContentSchema>();
+            //services.AddScoped<ISchema, ContentSchema>();
 
             return services;
         }

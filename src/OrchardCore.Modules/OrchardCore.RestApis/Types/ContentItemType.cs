@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GraphQL.Conventions;
-using GraphQL.Conventions.Relay;
 using GraphQL.Types;
 using OrchardCore.Autoroute.Model;
 using OrchardCore.ContentManagement;

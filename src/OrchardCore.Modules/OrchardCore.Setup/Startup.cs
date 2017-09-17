@@ -1,9 +1,11 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Setup.Services;
+using OrchardCore.Setup.Apis.GraphQL;
+using GraphQL.Types;
 
 namespace OrchardCore.Setup
 {
@@ -12,7 +14,13 @@ namespace OrchardCore.Setup
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ISetupService, SetupService>();
-		}
+
+            services.AddScoped<ISchema, SetupSchema>();
+
+            services.AddScoped<SiteType>();
+            services.AddScoped<SetupInputType>();
+            services.AddScoped<SetupMutation>();
+        }
 
 		public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
