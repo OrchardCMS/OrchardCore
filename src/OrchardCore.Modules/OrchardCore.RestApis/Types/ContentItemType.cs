@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using GraphQL.Types;
 using OrchardCore.Autoroute.Model;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Flows.Models;
 using OrchardCore.Title.Model;
 

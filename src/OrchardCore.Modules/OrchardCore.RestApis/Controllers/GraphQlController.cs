@@ -57,32 +57,34 @@ namespace OrchardCore.RestApis.Controllers
         }
 
         [HttpPost]
+        [IgnoreAntiforgeryToken]
         [AllowAnonymous]
-        public IActionResult PostAsync()
+        public async Task<IActionResult> PostAsync([FromBody] GraphQLQuery query)
         {
-            return Ok();
-            //var inputs = query.Variables.ToInputs();
-            //var queryToExecute = query.Query;
+            var inputs = query.Variables.ToInputs();
+            var queryToExecute = query.Query;
 
-            ////if (!string.IsNullOrWhiteSpace(query.NamedQuery))
-            ////{
-            ////    queryToExecute = _namedQueries[query.NamedQuery];
-            ////}
-
-            //var result = await _documentExecuter.ExecuteAsync(_ =>
+            //if (!string.IsNullOrWhiteSpace(query.NamedQuery))
             //{
-            //    _.Schema = _schema;
-            //    _.Query = queryToExecute;
-            //    _.OperationName = query.OperationName;
-            //    _.Inputs = inputs;
+            //    queryToExecute = _namedQueries[query.NamedQuery];
+            //}
 
-            //    _.ComplexityConfiguration = new ComplexityConfiguration { MaxDepth = 15 };
-            //    _.FieldMiddleware.Use<InstrumentFieldsMiddleware>();
+            var result = await _documentExecuter.ExecuteAsync(_ =>
+            {
+                _.Schema = _schema;
+                _.Query = queryToExecute;
+                _.OperationName = query.OperationName;
+                _.Inputs = inputs;
 
-            //});
-            
+                _.ExposeExceptions = true;
 
-            //return Json(result);
+                _.ComplexityConfiguration = new ComplexityConfiguration { MaxDepth = 15 };
+                _.FieldMiddleware.Use<InstrumentFieldsMiddleware>();
+
+            });
+
+
+            return Json(result);
         }
     }
 

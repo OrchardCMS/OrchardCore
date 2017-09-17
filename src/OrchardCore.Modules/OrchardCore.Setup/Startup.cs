@@ -15,11 +15,12 @@ namespace OrchardCore.Setup
         {
             services.AddScoped<ISetupService, SetupService>();
 
-            services.AddScoped<ISchema, SetupSchema>();
+            services.AddScoped<ISchema, SiteSetupSchema>();
 
-            services.AddScoped<SiteType>();
-            services.AddScoped<SetupInputType>();
-            services.AddScoped<SetupMutation>();
+            services.AddScoped<SiteQuery>();
+            services.AddScoped<SiteSetupMutation>();
+            services.AddScoped<SiteSetupOutcomeType>();
+            services.AddScoped<SiteSetupInputType>();
         }
 
 		public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

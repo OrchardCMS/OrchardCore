@@ -6,7 +6,7 @@ using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.RestApis.Types;
 
 namespace OrchardCore.RestApis.Queries
