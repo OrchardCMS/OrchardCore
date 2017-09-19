@@ -1,11 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Hosting.ShellBuilders;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -14,17 +14,20 @@ namespace OrchardCore.Environment.Shell.Builders
         private readonly ICompositionStrategy _compositionStrategy;
         private readonly IShellContainerFactory _shellContainerFactory;
         private readonly IEnumerable<ShellFeature> _shellFeatures;
+        private readonly IEnumerable<CommonShellFeature> _commonShellFeatures;
         private readonly ILogger _logger;
 
         public ShellContextFactory(
             ICompositionStrategy compositionStrategy,
             IShellContainerFactory shellContainerFactory,
             IEnumerable<ShellFeature> shellFeatures,
+            IEnumerable<CommonShellFeature> commonShellFeatures,
             ILogger<ShellContextFactory> logger)
         {
             _compositionStrategy = compositionStrategy;
             _shellContainerFactory = shellContainerFactory;
             _shellFeatures = shellFeatures;
+            _commonShellFeatures = commonShellFeatures;
             _logger = logger;
         }
 
@@ -35,7 +38,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
             }
 
-            var describedContext = await CreateDescribedContextAsync(settings, MinimumShellDescriptor());
+            var describedContext = await CreateDescribedContextAsync(settings, CommonShellDescriptor());
 
             ShellDescriptor currentDescriptor;
             using (var scope = describedContext.EnterServiceScope())
@@ -95,7 +98,23 @@ namespace OrchardCore.Environment.Shell.Builders
             return new ShellDescriptor
             {
                 SerialNumber = -1,
-                Features = new List<ShellFeature>(_shellFeatures),
+                Features = new List<ShellFeature>(_shellFeatures.Union(_commonShellFeatures)),
+                Parameters = new List<ShellParameter>()
+            };
+        }
+
+        /// <summary>
+        /// The common shell descriptor is used to bootstrap a temporary container that will be used
+        /// to retrieve the current shell descriptor.
+        /// </summary>
+        private ShellDescriptor CommonShellDescriptor()
+        {
+            // Load common features from the list of registered CommonShellFeature instances in the DI
+
+            return new ShellDescriptor
+            {
+                SerialNumber = -1,
+                Features = new List<ShellFeature>(_commonShellFeatures),
                 Parameters = new List<ShellParameter>()
             };
         }

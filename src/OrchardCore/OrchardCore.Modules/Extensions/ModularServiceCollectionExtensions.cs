@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Modules;
@@ -67,6 +67,23 @@ namespace Microsoft.Extensions.DependencyInjection
                 foreach (var featureId in featureIds)
                 {
                     services.AddTransient(sp => new ShellFeature(featureId));
+                };
+            });
+
+            return modules;
+        }
+
+        /// <summary>
+        /// Registers common features that are used to retrieve the actual tenant descriptors.
+        /// </summary>
+        public static ModularServiceCollection WithCommonFeatures(
+            this ModularServiceCollection modules, params string[] featureIds)
+        {
+            modules.Configure(services =>
+            {
+                foreach (var featureId in featureIds)
+                {
+                    services.AddTransient(sp => new CommonShellFeature(featureId));
                 };
             });
 
