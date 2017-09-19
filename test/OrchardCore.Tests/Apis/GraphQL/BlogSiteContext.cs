@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.FunctionalTests;
 using Newtonsoft.Json;
 using OrchardCore.Tests.Apis.Sources;
 
-namespace OrchardCore.Tests.Apis
+namespace OrchardCore.Tests.Apis.GraphQL
 {
     public class BlogSiteContext : IDisposable
     {

@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Tests.Apis.Sources;
 using Xunit;
 
-namespace OrchardCore.Tests.Apis
+namespace OrchardCore.Tests.Apis.GraphQL
 {
     public class GraphQLSiteSetupTests : IDisposable
     {
