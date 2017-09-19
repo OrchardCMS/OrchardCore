@@ -443,7 +443,6 @@ namespace OrchardCore.ContentManagement
 
             Handlers.Invoke(handler => handler.Removing(context), _logger);
 
-            contentItem.Number = -1;
             contentItem.Latest = false;
             _session.Save(contentItem);
 
