@@ -302,15 +302,20 @@ namespace OrchardCore.ContentManagement
 
             if (latestVersion != null)
             {
-                _session.Save(latestVersion);
                 latestVersion.Latest = false;
-                buildingContentItem.Number = latestVersion.Number + 1;
-            }
-            else
-            {
-                buildingContentItem.Number = 1;
             }
 
+            var number = Math.Max(latestVersion?.Number ?? 0, existingContentItem.Number);
+
+            // Another version might be higher
+            var highestVersion = await _session
+                .Query<ContentItem, ContentItemIndex>(x =>
+                    x.ContentItemId == existingContentItem.ContentItemId &&
+                    x.Number > number)
+                .OrderByDescending(x => x.Number)
+                .FirstOrDefaultAsync();
+
+            buildingContentItem.Number = (highestVersion?.Number ?? number) + 1;
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
             buildingContentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem);
             buildingContentItem.Latest = true;
@@ -320,6 +325,11 @@ namespace OrchardCore.ContentManagement
 
             Handlers.Invoke(handler => handler.Versioning(context), _logger);
             Handlers.Reverse().Invoke(handler => handler.Versioned(context), _logger);
+
+            if (latestVersion != null)
+            {
+                _session.Save(latestVersion);
+            }
 
             return context.BuildingContentItem;
         }
@@ -417,7 +427,6 @@ namespace OrchardCore.ContentManagement
 
             Handlers.Invoke(handler => handler.Removing(context), _logger);
 
-            contentItem.Number = -1;
             contentItem.Latest = false;
             _session.Save(contentItem);
 
