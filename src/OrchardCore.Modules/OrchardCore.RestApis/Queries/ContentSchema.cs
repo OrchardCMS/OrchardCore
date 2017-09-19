@@ -1,14 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.RestApis.Types;
 
 namespace OrchardCore.RestApis.Queries
@@ -82,7 +88,8 @@ namespace OrchardCore.RestApis.Queries
     
     public class ContentItemMutation : ObjectGraphType<object>
     {
-        public ContentItemMutation(IContentManager contentManager)
+        public ContentItemMutation(IContentManager contentManager,
+            IContentItemDisplayManager contentDisplay)
         {
             Name = "Mutation";
 
@@ -103,11 +110,9 @@ namespace OrchardCore.RestApis.Queries
                     contentItem.Author = contentItemFabrication.Author;
                     contentItem.Owner = contentItemFabrication.Owner;
 
-                    /*
-                     On the content item... have a string for contentparts
+                    var updateModel = new ApiUpdateModel(contentParts);
 
-                     Deserialize to json here... then loop around parts on the contenttype, and deserialize each on... and put it in?
-                    */
+                    await contentDisplay.UpdateEditorAsync(contentItem, updateModel);
 
                     if (contentItemFabrication.Published)
                     {
@@ -120,6 +125,51 @@ namespace OrchardCore.RestApis.Queries
 
                     return contentItem;
                 });
+        }
+    }
+
+    public class ApiUpdateModel : IUpdateModel
+    {
+        private readonly IModelMetadataProvider _metadataProvider;
+        private readonly JObject _model;
+
+        public ModelStateDictionary ModelState => new ModelStateDictionary();
+
+        public ApiUpdateModel(IModelMetadataProvider metadataProvider,  JObject model) {
+            _metadataProvider = metadataProvider;
+            _model = model;
+        }
+
+        public Task<bool> TryUpdateModelAsync<TModel>(TModel model) where TModel : class
+        {
+            return Task.FromResult(false);
+        }
+
+        public Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix) where TModel : class
+        {
+            return Task.FromResult(false);
+        }
+
+        public Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, params Expression<Func<TModel, object>>[] includeExpressions) where TModel : class
+        {
+            var expression = ModelBindingHelper.GetPropertyFilterExpression(includeExpressions);
+            var propertyFilter = expression.Compile();
+
+            var modelMetadata = _metadataProvider.GetMetadataForType(model.GetType());
+        
+            
+
+            return Task.FromResult(false);
+        }
+
+        public bool TryValidateModel(object model)
+        {
+            return false;
+        }
+
+        public bool TryValidateModel(object model, string prefix)
+        {
+            return false;
         }
     }
 
