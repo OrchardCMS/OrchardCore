@@ -96,7 +96,7 @@ namespace OrchardCore.ContentTypes.Services
             _contentDefinitionManager.StoreTypeDefinition(contentTypeDefinition);
             // Ensure it has its own part
             _contentDefinitionManager.AlterTypeDefinition(name, builder => builder.WithPart(name));
-            _contentDefinitionManager.AlterTypeDefinition(name, cfg => cfg.Creatable().Draftable().Listable().Securable());
+            _contentDefinitionManager.AlterTypeDefinition(name, cfg => cfg.Creatable().Draftable().Versionable().Listable().Securable());
 
             _contentDefinitionEventHandlers.Invoke(x => x.ContentTypeCreated(new ContentTypeCreatedContext { ContentTypeDefinition = contentTypeDefinition }), Logger);
 
