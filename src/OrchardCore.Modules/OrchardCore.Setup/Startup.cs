@@ -17,7 +17,6 @@ namespace OrchardCore.Setup
 
             services.AddScoped<ISchema, SiteSetupSchema>();
 
-            services.AddScoped<SiteQuery>();
             services.AddScoped<SiteSetupMutation>();
             services.AddScoped<SiteSetupOutcomeType>();
             services.AddScoped<SiteSetupInputType>();

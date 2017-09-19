@@ -1,20 +1,17 @@
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.FunctionalTests;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Tests.Apis.Sources;
-using Xunit;
 
 namespace OrchardCore.Tests.Apis
 {
-    public class GraphQLSiteSetupTests : IDisposable
+    public class BlogSiteContext : IDisposable
     {
-        private MvcTestFixture<SiteStartup> _site;
+        public MvcTestFixture<SiteStartup> Site { get; }
 
-        public GraphQLSiteSetupTests()
-        {
+        public BlogSiteContext()
+        { 
             var path = Path.Combine("src", "OrchardCore.Cms.Web");
 
             var appData = Path.Combine(EnvironmentHelpers.GetApplicationPath(), "App_Data", "Sites", "Tests");
@@ -24,12 +21,6 @@ namespace OrchardCore.Tests.Apis
                 Directory.Delete(appData, true);
             }
 
-            _site = new MvcTestFixture<SiteStartup>(path);
-        }
-
-        [Fact]
-        public async Task ShouldSetSiteupUsingSqlite()
-        {
             var siteName = Guid.NewGuid().ToString().Replace("-", "");
 
             var variables =
@@ -49,18 +40,18 @@ namespace OrchardCore.Tests.Apis
   ""query"": ""mutation ($site: SiteSetupInput!){ createSite(site: $site) { executionId } }"",
   ""variables"": " + JsonConvert.SerializeObject(variables) + @"}";
 
-            var response = await _site.Client.PostJsonAsync("graphql", json);
+            var site = new MvcTestFixture<SiteStartup>(path);
+
+            var response = site.Client.PostJsonAsync("graphql", json).GetAwaiter().GetResult();
 
             response.EnsureSuccessStatusCode();
 
-            var value = await response.Content.ReadAsStringAsync();
-
-            Assert.Equal(32, JObject.Parse(value)["data"]["createSite"]["executionId"].Value<string>().Length);
+            Site = site;
         }
 
         public void Dispose()
         {
-            _site.Dispose();
+            Site.Dispose();
         }
     }
 }

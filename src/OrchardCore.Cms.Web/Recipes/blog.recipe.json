@@ -61,6 +61,7 @@
         "OrchardCore.Title",
         "OrchardCore.Templates",
         "OrchardCore.Widgets",
+        "OrchardCore.RestApis",
 
         // Themes
         "TheBlogTheme",

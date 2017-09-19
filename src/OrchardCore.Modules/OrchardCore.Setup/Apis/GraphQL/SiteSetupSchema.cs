@@ -14,16 +14,7 @@ namespace OrchardCore.Setup.Apis.GraphQL
         public SiteSetupSchema(IServiceProvider serviceProvider)
             : base(new FuncDependencyResolver((type) => (IGraphType)serviceProvider.GetService(type)))
         {
-            Query = serviceProvider.GetService<SiteQuery>();
             Mutation = serviceProvider.GetService<SiteSetupMutation>();
-        }
-    }
-
-    public class SiteQuery : ObjectGraphType<object>
-    {
-        public SiteQuery()
-        {
-            Name = "Query";
         }
     }
 

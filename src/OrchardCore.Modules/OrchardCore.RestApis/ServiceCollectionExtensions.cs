@@ -39,7 +39,10 @@ namespace OrchardCore.RestApis
 
             //services.AddScoped<ContentPartInterface>();
             
-            //services.AddScoped<ISchema, ContentSchema>();
+            services.AddScoped<ISchema, ContentSchema>();
+            services.AddScoped<ContentItemMutation>();
+            services.AddScoped<ContentItemInputType>();
+            services.AddScoped<ContentItemType>();
 
             return services;
         }
