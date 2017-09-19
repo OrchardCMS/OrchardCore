@@ -145,14 +145,17 @@ namespace OrchardCore.ContentManagement
                     ContentItem existingVersion = null;
                     var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                    // Check if not versionable, meaning that we only only use 2 versions
+                    // Check if not versionable, meaning that we only use 2 versions
                     if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true))
                     {
-                        // Try to load the previous version
+                        // Try to load the highest of the 2 closest versions
+                        // Or another existing version which might be higher
                         existingVersion = await _session
                             .Query<ContentItem, ContentItemIndex>(x =>
                                 x.ContentItemId == contentItem.ContentItemId &&
-                                x.Number == contentItem.Number - 1)
+                                (x.Number == contentItem.Number - 1 ||
+                                x.Number > contentItem.Number))
+                            .OrderByDescending(x => x.Number)
                             .FirstOrDefaultAsync();
 
                         if (existingVersion != null)
@@ -165,16 +168,12 @@ namespace OrchardCore.ContentManagement
                     if (existingVersion != null)
                     {
                         // Then use it as a new draft
-                        _session.Save(existingVersion);
-                        //existingVersion.Latest = true;
-                        //existingVersion.Number = contentItem.Number + 1;
-                        existingVersion.Published = true;
+                        existingVersion.Latest = true;
                         existingVersion.Data = new JObject(contentItem.Data);
 
-                        //_session.Save(contentItem);
-                        //contentItem.Latest = false;
-                        //contentItem = existingVersion;
-                        contentItem.Published = false;
+                        _session.Save(contentItem);
+                        contentItem.Latest = false;
+                        contentItem = existingVersion;
                     }
                     else
                     {
@@ -325,7 +324,6 @@ namespace OrchardCore.ContentManagement
 
             if (latestVersion != null)
             {
-                _session.Save(latestVersion);
                 latestVersion.Latest = false;
                 buildingContentItem.Number = latestVersion.Number + 1;
             }
@@ -343,6 +341,11 @@ namespace OrchardCore.ContentManagement
 
             Handlers.Invoke(handler => handler.Versioning(context), _logger);
             Handlers.Reverse().Invoke(handler => handler.Versioned(context), _logger);
+
+            if (latestVersion != null)
+            {
+                _session.Save(latestVersion);
+            }
 
             return context.BuildingContentItem;
         }
