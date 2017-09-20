@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Extensions;
