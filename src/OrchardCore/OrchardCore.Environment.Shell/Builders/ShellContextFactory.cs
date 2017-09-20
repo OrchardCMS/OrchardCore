@@ -34,9 +34,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
             }
 
-            var descriptor = MinimumShellDescriptor();
-            descriptor.Id = -1;
-            var describedContext = await CreateDescribedContextAsync(settings, descriptor);
+            var describedContext = await CreateDescribedContextAsync(settings, MinimumShellDescriptor());
 
             ShellDescriptor currentDescriptor;
             using (var scope = describedContext.EnterServiceScope())

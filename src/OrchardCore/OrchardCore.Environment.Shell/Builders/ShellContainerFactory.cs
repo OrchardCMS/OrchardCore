@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -82,7 +83,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value.FeatureInfo;
                 featureAwareServiceCollection.SetCurrentFeature(feature);
 
-                if (blueprint.Descriptor.Id != -1)
+                if (blueprint.Descriptor.SerialNumber != -1 || settings.State == TenantState.Uninitialized)
                 {
                     startup.ConfigureServices(featureAwareServiceCollection);
                 }
