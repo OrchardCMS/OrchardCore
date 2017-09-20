@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Manifests;
@@ -9,6 +8,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Descriptor.Settings;
+using OrchardCore.Modules;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -67,23 +67,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 foreach (var featureId in featureIds)
                 {
                     services.AddTransient(sp => new ShellFeature(featureId));
-                };
-            });
-
-            return modules;
-        }
-
-        /// <summary>
-        /// Registers common features that are used to retrieve the actual tenant descriptors.
-        /// </summary>
-        public static ModularServiceCollection WithCommonFeatures(
-            this ModularServiceCollection modules, params string[] featureIds)
-        {
-            modules.Configure(services =>
-            {
-                foreach (var featureId in featureIds)
-                {
-                    services.AddTransient(sp => new CommonShellFeature(featureId));
                 };
             });
 

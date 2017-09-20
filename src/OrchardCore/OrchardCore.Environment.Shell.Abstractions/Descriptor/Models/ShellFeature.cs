@@ -13,12 +13,4 @@ namespace OrchardCore.Environment.Shell.Descriptor.Models
 
         public string Id { get; set; }
     }
-
-    public class CommonShellFeature : ShellFeature
-    {
-        public CommonShellFeature(string id)
-        {
-            Id = id;
-        }
-    }
 }

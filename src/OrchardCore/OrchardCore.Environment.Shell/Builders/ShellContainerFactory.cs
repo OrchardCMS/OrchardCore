@@ -82,7 +82,14 @@ namespace OrchardCore.Environment.Shell.Builders
                 var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value.FeatureInfo;
                 featureAwareServiceCollection.SetCurrentFeature(feature);
 
-                startup.ConfigureServices(featureAwareServiceCollection);
+                if (blueprint.Descriptor.Id != -1)
+                {
+                    startup.ConfigureServices(featureAwareServiceCollection);
+                }
+                else
+                {
+                    startup.ConfigureShellServices(featureAwareServiceCollection);
+                }
             }
 
             (moduleServiceProvider as IDisposable).Dispose();
