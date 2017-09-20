@@ -28,7 +28,6 @@ build_script:
   - dotnet restore
   - dotnet pack -c Release
 
-init:
   - ps: |
       if ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
       {
