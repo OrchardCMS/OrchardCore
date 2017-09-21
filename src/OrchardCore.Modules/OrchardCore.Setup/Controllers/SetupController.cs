@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,13 +37,13 @@ namespace OrchardCore.Setup.Controllers
         public async Task<ActionResult> Index()
         {
             var recipes = await _setupService.GetSetupRecipesAsync();
-            var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.First();
+            var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
 
             var model = new SetupViewModel
             {
                 DatabaseProviders = _databaseProviders,
                 Recipes = recipes,
-                RecipeName = defaultRecipe.Name
+                RecipeName = defaultRecipe?.Name
             };
 
             if (!String.IsNullOrEmpty(_shellSettings.ConnectionString))
