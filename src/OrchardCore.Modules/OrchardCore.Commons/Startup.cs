@@ -26,7 +26,6 @@ namespace OrchardCore.Commons
     {
         public override void ConfigureShellServices(IServiceCollection services)
         {
-            services.AddDeferredTasks();
             services.AddDataAccess();
             services.AddShellDescriptorStorage();
         }

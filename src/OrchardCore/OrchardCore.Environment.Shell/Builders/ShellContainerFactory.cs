@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Builders.Models;
-using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -44,8 +43,11 @@ namespace OrchardCore.Environment.Shell.Builders
             tenantServiceCollection.AddSingleton(blueprint.Descriptor);
             tenantServiceCollection.AddSingleton(blueprint);
 
-            AddCoreServices(tenantServiceCollection);
-            
+            if (!(blueprint.Descriptor is BootstrapShellDescriptor))
+            {
+                AddCoreServices(tenantServiceCollection);
+            }
+
             // Execute IStartup registrations
 
             // TODO: Use StartupLoader in RTM and then don't need to register the classes anymore then
@@ -83,7 +85,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value.FeatureInfo;
                 featureAwareServiceCollection.SetCurrentFeature(feature);
 
-                if (blueprint.Descriptor.SerialNumber != -1 || settings.State == TenantState.Uninitialized)
+                if (!(blueprint.Descriptor is BootstrapShellDescriptor))
                 {
                     startup.ConfigureServices(featureAwareServiceCollection);
                 }

@@ -34,7 +34,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
             }
 
-            var describedContext = await CreateDescribedContextAsync(settings, MinimumShellDescriptor());
+            var describedContext = await CreateDescribedContextAsync(settings, BootstrapShellDescriptor());
 
             ShellDescriptor currentDescriptor;
             using (var scope = describedContext.EnterServiceScope())
@@ -98,5 +98,19 @@ namespace OrchardCore.Environment.Shell.Builders
                 Parameters = new List<ShellParameter>()
             };
         }
+
+        private ShellDescriptor BootstrapShellDescriptor()
+        {
+            return new BootstrapShellDescriptor
+            {
+                SerialNumber = -1,
+                Features = new List<ShellFeature>(_shellFeatures),
+                Parameters = new List<ShellParameter>()
+            };
+        }
+    }
+
+    internal class BootstrapShellDescriptor : ShellDescriptor
+    {
     }
 }
