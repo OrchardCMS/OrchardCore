@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Modules;
 
 namespace Microsoft.AspNetCore.Builder
 {

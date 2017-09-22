@@ -1,13 +1,7 @@
 using System;
 using System.IO;
-using ImageSharp;
-using ImageSharp.Web.Caching;
-using ImageSharp.Web.Commands;
-using ImageSharp.Web.DependencyInjection;
-using ImageSharp.Web.Processors;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -26,8 +20,14 @@ using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.Settings;
+using OrchardCore.Modules;
 using OrchardCore.Recipes;
 using OrchardCore.StorageProviders.FileSystem;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Web.Caching;
+using SixLabors.ImageSharp.Web.Commands;
+using SixLabors.ImageSharp.Web.DependencyInjection;
+using SixLabors.ImageSharp.Web.Processors;
 
 namespace OrchardCore.Media
 {
