@@ -110,7 +110,7 @@ namespace OrchardCore.RestApis.Queries
                     contentItem.Author = contentItemFabrication.Author;
                     contentItem.Owner = contentItemFabrication.Owner;
 
-                    var updateModel = new ApiUpdateModel(contentParts);
+                    var updateModel = new ApiUpdateModel(null, contentParts);
 
                     await contentDisplay.UpdateEditorAsync(contentItem, updateModel);
 

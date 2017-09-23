@@ -1,17 +1,20 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.FunctionalTests;
-using Newtonsoft.Json;
 using OrchardCore.Tests.Apis.Sources;
+using Xunit;
 
-namespace OrchardCore.Tests.Apis.GraphQL
+namespace OrchardCore.Tests.Apis.Json
 {
-    public class BlogSiteContext : IDisposable
+    public class JsonSiteSetupTests : IDisposable
     {
-        public MvcTestFixture<SiteStartup> Site { get; }
+        private MvcTestFixture<SiteStartup> _site;
 
-        public BlogSiteContext()
-        { 
+        public JsonSiteSetupTests()
+        {
             var path = Path.Combine("src", "OrchardCore.Cms.Web");
 
             var appData = Path.Combine(EnvironmentHelpers.GetApplicationPath(), "App_Data", "Sites", "Tests");
@@ -21,11 +24,15 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 Directory.Delete(appData, true);
             }
 
+            _site = new MvcTestFixture<SiteStartup>(path);
+        }
+
+        [Fact]
+        public async Task ShouldSetSiteupUsingSqlite()
+        {
             var siteName = Guid.NewGuid().ToString().Replace("-", "");
 
-            var variables =
-@"{ 
-    ""site"": {
+            string json = @"{
         ""siteName"": """ + siteName + @""",
         ""databaseProvider"": ""Sqlite"",
         ""userName"": ""admin"",
@@ -33,25 +40,18 @@ namespace OrchardCore.Tests.Apis.GraphQL
         ""password"": ""Password01_"",
         ""passwordConfirmation"": ""Password01_"",
         ""recipeName"": ""Blog""
-    }
 }";
 
-            var json = @"{
-  ""query"": ""mutation ($site: SiteSetupInput!){ createSite(site: $site) { executionId } }"",
-  ""variables"": " + JsonConvert.SerializeObject(variables) + @"}";
+            var response = await _site.Client.PostJsonAsync("/api/site", json);
 
-            var site = new MvcTestFixture<SiteStartup>(path);
+            var value = await response.Content.ReadAsStringAsync();
 
-            var response = site.Client.PostJsonAsync("graphql", json).GetAwaiter().GetResult();
-
-            response.EnsureSuccessStatusCode();
-
-            Site = site;
+            //Assert.Equal(32, JObject.Parse(value)["data"]["createSite"]["executionId"].Value<string>().Length);
         }
 
         public void Dispose()
         {
-            Site.Dispose();
+            _site.Dispose();
         }
     }
 }

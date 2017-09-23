@@ -1,11 +1,11 @@
 using System;
+using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Setup.Services;
+using OrchardCore.Modules;
 using OrchardCore.Setup.Apis.GraphQL;
-using GraphQL.Types;
+using OrchardCore.Setup.Services;
 
 namespace OrchardCore.Setup
 {

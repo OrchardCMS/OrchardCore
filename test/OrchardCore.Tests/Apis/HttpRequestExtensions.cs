@@ -170,5 +170,25 @@ namespace OrchardCore.Tests.Apis
 
             return client.PostAsync(requestUri, content);
         }
+
+        public static Task<HttpResponseMessage> PostJsonApiAsync(
+            this HttpClient client,
+            string requestUri,
+            string json)
+        {
+            var content = new StringContent(
+                json,
+                Encoding.UTF8,
+                "application/vnd.api+json");
+
+            client.DefaultRequestHeaders
+              .Accept
+              .Add(new MediaTypeWithQualityHeaderValue("application/vnd.api+json"));
+
+            client.DefaultRequestHeaders
+                .Add("Content-Type", "application/vnd.api+json");
+
+            return client.PostAsync(requestUri, content);
+        }
     }
 }
