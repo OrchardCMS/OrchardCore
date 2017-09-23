@@ -1,17 +1,18 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.FunctionalTests;
-using Newtonsoft.Json;
 using OrchardCore.Tests.Apis.Sources;
+using Xunit;
 
-namespace OrchardCore.Tests.Apis.GraphQL
+namespace OrchardCore.Tests.Apis.JsonApi
 {
-    public class BlogSiteContext : IDisposable
+    public class JsonApiSiteSetupTests : IDisposable
     {
-        public MvcTestFixture<SiteStartup> Site { get; }
+        private MvcTestFixture<SiteStartup> _site;
 
-        public BlogSiteContext()
-        { 
+        public JsonApiSiteSetupTests()
+        {
             var path = Path.Combine("src", "OrchardCore.Cms.Web");
 
             var appData = Path.Combine(EnvironmentHelpers.GetApplicationPath(), "App_Data", "Sites", "Tests");
@@ -21,11 +22,18 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 Directory.Delete(appData, true);
             }
 
+            _site = new MvcTestFixture<SiteStartup>(path);
+        }
+
+        [Fact]
+        public async Task ShouldSetSiteupUsingSqlite()
+        {
             var siteName = Guid.NewGuid().ToString().Replace("-", "");
 
-            var variables =
-@"{ 
-    ""site"": {
+            string json = @"{
+  ""data"": {
+    ""type"": ""setup"",
+    ""attributes"": {
         ""siteName"": """ + siteName + @""",
         ""databaseProvider"": ""Sqlite"",
         ""userName"": ""admin"",
@@ -34,24 +42,21 @@ namespace OrchardCore.Tests.Apis.GraphQL
         ""passwordConfirmation"": ""Password01_"",
         ""recipeName"": ""Blog""
     }
+  }
 }";
 
-            var json = @"{
-  ""query"": ""mutation ($site: SiteSetupInput!){ createSite(site: $site) { executionId } }"",
-  ""variables"": " + JsonConvert.SerializeObject(variables) + @"}";
-
-            var site = new MvcTestFixture<SiteStartup>(path);
-
-            var response = site.Client.PostJsonAsync("graphql", json).GetAwaiter().GetResult();
+            var response = await _site.Client.PostJsonApiAsync("/", json);
 
             response.EnsureSuccessStatusCode();
 
-            Site = site;
+            var value = await response.Content.ReadAsStringAsync();
+
+            //Assert.Equal(32, JObject.Parse(value)["data"]["createSite"]["executionId"].Value<string>().Length);
         }
 
         public void Dispose()
         {
-            Site.Dispose();
+            _site.Dispose();
         }
     }
 }

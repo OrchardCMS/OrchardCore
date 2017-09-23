@@ -41,7 +41,7 @@ namespace OrchardCore.Setup.Apis.GraphQL
                         AdminEmail = site.Email,
                         AdminPassword = site.Password,
                         Errors = new Dictionary<string, string>(),
-                        Recipe = (await setupService.GetSetupRecipesAsync()).FirstOrDefault(rd => rd.RecipeFileInfo.Name == site.RecipeName),
+                        Recipe = (await setupService.GetSetupRecipesAsync()).FirstOrDefault(rd => rd.Name == site.RecipeName),
                         DatabaseProvider = site.DatabaseProvider
                     };
 
