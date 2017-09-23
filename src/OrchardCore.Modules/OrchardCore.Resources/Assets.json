@@ -6,14 +6,29 @@
   },
   {
     "inputs": [
-      "Assets/Bootstrap/Js/bootstrap.js"
+      "Assets/Bootstrap/js/bootstrap.js"
     ],
     "output": "Content/Scripts/bootstrap.js"
   },
   {
     "inputs": [
-      "Assets/Bootstrap/Js/popper.js"
+      "Assets/Bootstrap/js/popper.js"
     ],
     "output": "Content/Scripts/popper.js"
+  },
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/trumbowyg/scss/trumbowyg.scss",
+      "Assets/trumbowyg/plugins/*/ui/sass/*.scss"
+    ],
+    "output": "Content/Styles/trumbowyg.css"
+  },
+  {
+    "inputs": [
+      "Assets/trumbowyg/js/trumbowyg.js",
+      "Assets/trumbowyg/plugins/*/*.js"
+    ],
+    "output": "Content/Scripts/trumbowyg.js"
   }
 ]
