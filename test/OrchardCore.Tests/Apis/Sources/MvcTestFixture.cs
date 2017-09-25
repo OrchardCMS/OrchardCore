@@ -1,26 +1,43 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Tests.Apis.Sources;
 
 namespace Microsoft.AspNetCore.Mvc.FunctionalTests
 {
-    public class MvcTestFixture<TStartup> : WebApplicationTestFixture<TStartup>
+    public class OrchardTestFixture<TStartup> : WebApplicationTestFixture<TStartup>
         where TStartup : class
     {
-        public MvcTestFixture(string path) : base(path) { }
+        public string SiteName => "Sites_" + Guid.NewGuid().ToString().Replace("-", "");
+        public string AppData => Path.Combine(EnvironmentHelpers.GetApplicationPath(), "App_Data", SiteName);
 
-        protected override void ConfigureApplication(MvcWebApplicationBuilder<TStartup> builder)
+        public OrchardTestFixture()
+            : base(Path.Combine("test", "WebSites", typeof(TStartup).Assembly.GetName().Name))
         {
-            builder.ApplicationAssemblies.Clear();
-            builder.ApplicationAssemblies.Add(typeof(TStartup).GetTypeInfo().Assembly);
         }
 
-        protected override TestServer CreateServer(MvcWebApplicationBuilder<TStartup> builder)
+        public OrchardTestFixture(string solutionRelativePath)
+            : base(solutionRelativePath)
+        {
+        }
+
+        protected override void ConfigureWebHost(IWebHostBuilder builder) {
+            if (Directory.Exists(AppData))
+            {
+                Directory.Delete(AppData, true);
+            }
+
+            builder.ConfigureServices(x => x.AddSingleton(new TestSiteConfiguration { SiteName = SiteName }));
+        }
+
+        protected override TestServer CreateServer(IWebHostBuilder builder)
         {
             var originalCulture = CultureInfo.CurrentCulture;
             var originalUICulture = CultureInfo.CurrentUICulture;
@@ -36,5 +53,9 @@ namespace Microsoft.AspNetCore.Mvc.FunctionalTests
                 CultureInfo.CurrentUICulture = originalUICulture;
             }
         }
+    }
+
+    public class TestSiteConfiguration {
+        public string SiteName { get; set; }
     }
 }

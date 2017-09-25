@@ -11,37 +11,26 @@ namespace OrchardCore.Tests.Apis.GraphQL
 {
     public class GraphQLSiteSetupTests : IDisposable
     {
-        private MvcTestFixture<SiteStartup> _site;
+        private OrchardTestFixture<SiteStartup> _site;
 
         public GraphQLSiteSetupTests()
         {
-            var path = Path.Combine("src", "OrchardCore.Cms.Web");
-
-            var appData = Path.Combine(EnvironmentHelpers.GetApplicationPath(), "App_Data", "Sites", "Tests");
-
-            if (Directory.Exists(appData))
-            {
-                Directory.Delete(appData, true);
-            }
-
-            _site = new MvcTestFixture<SiteStartup>(path);
+            _site = new OrchardTestFixture<SiteStartup>(EnvironmentHelpers.GetApplicationPath());
         }
 
         [Fact]
         public async Task ShouldSetSiteupUsingSqlite()
         {
-            var siteName = Guid.NewGuid().ToString().Replace("-", "");
-
             var variables =
 @"{ 
     ""site"": {
-        ""siteName"": """ + siteName + @""",
+        ""siteName"": """ + _site.SiteName + @""",
         ""databaseProvider"": ""Sqlite"",
         ""userName"": ""admin"",
         ""email"": ""fu@bar.com"",
         ""password"": ""Password01_"",
         ""passwordConfirmation"": ""Password01_"",
-        ""recipeName"": ""blog.recipe.json""
+        ""recipeName"": ""Blog""
     }
 }";
 
