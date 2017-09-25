@@ -185,9 +185,6 @@ namespace OrchardCore.Tests.Apis
               .Accept
               .Add(new MediaTypeWithQualityHeaderValue("application/vnd.api+json"));
 
-            client.DefaultRequestHeaders
-                .Add("Content-Type", "application/vnd.api+json");
-
             return client.PostAsync(requestUri, content);
         }
     }
