@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.FunctionalTests;
 using OrchardCore.Tests.Apis.Sources;
@@ -11,29 +8,18 @@ namespace OrchardCore.Tests.Apis.Json
 {
     public class JsonSiteSetupTests : IDisposable
     {
-        private MvcTestFixture<SiteStartup> _site;
+        private OrchardTestFixture<SiteStartup> _site;
 
         public JsonSiteSetupTests()
         {
-            var path = Path.Combine("src", "OrchardCore.Cms.Web");
-
-            var appData = Path.Combine(EnvironmentHelpers.GetApplicationPath(), "App_Data", "Sites", "Tests");
-
-            if (Directory.Exists(appData))
-            {
-                Directory.Delete(appData, true);
-            }
-
-            _site = new MvcTestFixture<SiteStartup>(path);
+            _site = new OrchardTestFixture<SiteStartup>(EnvironmentHelpers.GetApplicationPath());
         }
 
         [Fact]
         public async Task ShouldSetSiteupUsingSqlite()
         {
-            var siteName = Guid.NewGuid().ToString().Replace("-", "");
-
             string json = @"{
-        ""siteName"": """ + siteName + @""",
+        ""siteName"": """ + _site.SiteName + @""",
         ""databaseProvider"": ""Sqlite"",
         ""userName"": ""admin"",
         ""email"": ""fu@bar.com"",

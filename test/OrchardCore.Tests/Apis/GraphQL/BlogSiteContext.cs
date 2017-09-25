@@ -8,25 +8,16 @@ namespace OrchardCore.Tests.Apis.GraphQL
 {
     public class BlogSiteContext : IDisposable
     {
-        public MvcTestFixture<SiteStartup> Site { get; }
+        public OrchardTestFixture<SiteStartup> Site { get; }
 
         public BlogSiteContext()
-        { 
-            var path = Path.Combine("src", "OrchardCore.Cms.Web");
-
-            var appData = Path.Combine(EnvironmentHelpers.GetApplicationPath(), "App_Data", "Sites", "Tests");
-
-            if (Directory.Exists(appData))
-            {
-                Directory.Delete(appData, true);
-            }
-
-            var siteName = Guid.NewGuid().ToString().Replace("-", "");
+        {
+            Site = new OrchardTestFixture<SiteStartup>(EnvironmentHelpers.GetApplicationPath());
 
             var variables =
 @"{ 
     ""site"": {
-        ""siteName"": """ + siteName + @""",
+        ""siteName"": """ + Site.SiteName + @""",
         ""databaseProvider"": ""Sqlite"",
         ""userName"": ""admin"",
         ""email"": ""fu@bar.com"",
@@ -40,13 +31,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
   ""query"": ""mutation ($site: SiteSetupInput!){ createSite(site: $site) { executionId } }"",
   ""variables"": " + JsonConvert.SerializeObject(variables) + @"}";
 
-            var site = new MvcTestFixture<SiteStartup>(path);
-
-            var response = site.Client.PostJsonAsync("graphql", json).GetAwaiter().GetResult();
+            var response = Site.Client.PostJsonAsync("graphql", json).GetAwaiter().GetResult();
 
             response.EnsureSuccessStatusCode();
-
-            Site = site;
         }
 
         public void Dispose()
