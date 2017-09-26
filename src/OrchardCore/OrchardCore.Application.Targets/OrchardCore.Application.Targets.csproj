@@ -13,8 +13,8 @@
   -->
 
   <ItemGroup>
-    <None Include="OrchardCore.AsBundle.targets" Pack="true">
-      <PackagePath>build\$(TargetFramework)\OrchardCore.AsBundle.targets</PackagePath>
+    <None Include="OrchardCore.Application.targets" Pack="true">
+      <PackagePath>build\$(TargetFramework)\OrchardCore.Application.targets</PackagePath>
     </None>
   </ItemGroup>
 

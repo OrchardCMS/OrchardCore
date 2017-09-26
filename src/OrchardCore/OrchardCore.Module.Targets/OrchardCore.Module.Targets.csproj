@@ -4,10 +4,10 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
-  <!-- Add the OrchardCore.AsModule.props file in the package -->
+  <!-- Add the OrchardCore.Module.props file in the package -->
   <ItemGroup>
-    <None Include="OrchardCore.AsModule.props" Pack="true">
-      <PackagePath>build\$(TargetFramework)\OrchardCore.AsModule.props</PackagePath>
+    <None Include="OrchardCore.Module.props" Pack="true">
+      <PackagePath>build\$(TargetFramework)\OrchardCore.Module.props</PackagePath>
     </None>
     <None Include="Package.Build.props" Pack="true">
       <PackagePath>build\$(TargetFramework)\Package.Build.props</PackagePath>
