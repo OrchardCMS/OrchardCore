@@ -227,7 +227,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AsModule", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.StorageProviders.FileSystem", "src\OrchardCore\OrchardCore.StorageProviders.FileSystem\OrchardCore.StorageProviders.FileSystem.csproj", "{B908AEFE-C4D7-4B2A-96EB-3D30E81F67ED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AsTheme", "src\OrchardCore\OrchardCore.AsTheme\OrchardCore.AsTheme.csproj", "{06139E4B-C94D-4090-95AB-C6E137BE9756}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Theme.Targets", "src\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj", "{06139E4B-C94D-4090-95AB-C6E137BE9756}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Media.Abstractions", "src\OrchardCore\OrchardCore.Media.Abstractions\OrchardCore.Media.Abstractions.csproj", "{00E5C336-3CC2-421D-883C-CD3A9E74EFC0}"
 EndProject
