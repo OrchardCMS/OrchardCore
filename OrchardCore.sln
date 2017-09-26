@@ -285,7 +285,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.CustomSettings"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Setup.Abstractions", "src\OrchardCore\OrchardCore.Setup.Abstractions\OrchardCore.Setup.Abstractions.csproj", "{7625A5C3-2548-4B64-9FB1-B55866829F33}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Application", "src\OrchardCore\OrchardCore.Application\OrchardCore.Application.csproj", "{7D28EEFB-17FD-4D86-99E4-6B5A3C490BE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Application.Targets", "src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj", "{7D28EEFB-17FD-4D86-99E4-6B5A3C490BE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

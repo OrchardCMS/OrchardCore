@@ -4,7 +4,7 @@
   
   <!-- Necessary as we reference the Project and not the Package -->
   <Import Project="..\OrchardCore\OrchardCore.Cms\OrchardCore.Cms.props" />
-  <Import Project="..\OrchardCore\OrchardCore.Application\OrchardCore.Application.targets" />
+  <Import Project="..\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.targets" />
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
