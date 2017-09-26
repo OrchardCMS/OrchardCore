@@ -39,7 +39,7 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 
 - Download Visual Studio 2017 (any edition) from https://www.visualstudio.com/downloads/
 - Open `OrchardCore.sln`
-- Ensure `OrchardCore.Cms` is the startup project and run it
+- Ensure `OrchardCore.Cms.Web` is the startup project and run it
 
 ### Contributing
 
