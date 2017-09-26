@@ -6,7 +6,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Application\OrchardCore.Application.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\OrchardCore.AsBundle\OrchardCore.AsBundle.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Nancy\OrchardCore.Nancy.csproj" PrivateAssets="none" />
   </ItemGroup>
 

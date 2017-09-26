@@ -239,7 +239,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Application.Mvc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Media", "src\OrchardCore.Modules\OrchardCore.Media\OrchardCore.Media.csproj", "{633CD286-9D1C-4777-86F2-A2034F1C8C9C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Application.Nancy", "src\OrchardCore\OrchardCore.Application.Nancy\OrchardCore.Application.Nancy.csproj", "{3657478C-3BAE-4563-9C08-63A8C64A7CB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Application.Nancy.Targets", "src\OrchardCore\OrchardCore.Application.Nancy.Targets\OrchardCore.Application.Nancy.Targets.csproj", "{3657478C-3BAE-4563-9C08-63A8C64A7CB6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bundles", "Bundles", "{44E4D150-C374-4353-8BA7-8C575704D13E}"
 EndProject

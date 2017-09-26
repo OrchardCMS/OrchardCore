@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore\OrchardCore.Application.Nancy\OrchardCore.Application.Nancy.csproj" />
+    <ProjectReference Include="..\OrchardCore\OrchardCore.Application.Nancy.Targets\OrchardCore.Application.Nancy.Targets.csproj" />
     <ProjectReference Include="..\OrchardCore.Modules\OrchardCore.Nancy.HelloWorld\OrchardCore.Nancy.HelloWorld.csproj" />
   </ItemGroup>
 
