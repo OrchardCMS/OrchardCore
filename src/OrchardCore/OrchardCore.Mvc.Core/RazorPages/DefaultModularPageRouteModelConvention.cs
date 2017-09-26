@@ -16,8 +16,9 @@ namespace OrchardCore.Mvc.RazorPages
                     var moduleFolder = template.Substring(0, pageIndex);
                     var moduleId = moduleFolder.Substring(moduleFolder.LastIndexOf("/") + 1);
 
-                    selector.AttributeRouteModel.Template = moduleId + template
-                        .Replace("/Pages/", "/").Substring(pageIndex);
+                    template = moduleId + template.Replace("/Pages/", "/").Substring(pageIndex);
+                    selector.AttributeRouteModel.Name = template.Replace('/', '.');
+                    selector.AttributeRouteModel.Template = template;
                 }
             }
         }

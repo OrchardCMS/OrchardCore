@@ -10,7 +10,7 @@
             var modal = $('#mediaModalMarkdown').modal();
             $('#mediaSelectButton').on('click', function (v) {
                 var cm = editor.codemirror;
-                cm.replaceSelection('{{ "' + mediaApp.selectedMedia.mediaPath + '" | media_url | img_tag }}')
+                cm.replaceSelection('{{ "' + mediaApp.selectedMedia.mediaPath + '" | asset_url | img_tag }}')
                 $('#mediaModalMarkdown').modal('hide');
             });
         };
