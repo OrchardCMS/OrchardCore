@@ -100,11 +100,11 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
         ],
         // For custom button definitions
         btnsDef: {
-                image: {
+                align: {
                     dropdown: ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
                     ico: 'justifyLeft'
                 },
-                align: {
+                image: {
                     dropdown: ['insertImage', 'base64', 'noembed'],
                     ico: 'insertImage'
                 }
