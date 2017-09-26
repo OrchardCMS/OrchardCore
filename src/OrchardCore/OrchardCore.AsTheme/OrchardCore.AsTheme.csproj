@@ -11,7 +11,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.AsModule\OrchardCore.AsModule.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" PrivateAssets="none" />
   </ItemGroup>
 
 </Project>
