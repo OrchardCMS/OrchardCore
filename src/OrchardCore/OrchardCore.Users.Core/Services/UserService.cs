@@ -66,6 +66,7 @@ namespace OrchardCore.Users.Services
             if (!identityResult.Succeeded)
             {
                 ProcessValidationErrors(identityResult.Errors, user, reportError);
+                return null;
             }
 
             return user;
@@ -115,6 +116,9 @@ namespace OrchardCore.Users.Services
                         break;
                     case "PasswordTooShort":
                         reportError("Password", T["Passwords must be at least {0} characters.", _identityOptions.Value.Password.RequiredLength]);
+                        break;
+                    case "PasswordRequiresUniqueChars":
+                        reportError("Password", T["Passwords must contain at least {0} unqiue characters.", _identityOptions.Value.Password.RequiredUniqueChars]);
                         break;
 
                     // CurrentPassword

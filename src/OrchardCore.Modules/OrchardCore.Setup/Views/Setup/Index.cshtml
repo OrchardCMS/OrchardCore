@@ -16,37 +16,42 @@
     var options = identityOptions.Value;
     var passwordOptions = new HtmlContentBuilder();
     IHtmlContent separator = HtmlString.Empty;
-    
+
     if (options.Password.RequireNonAlphanumeric)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one non-alphanumeric"]);
         separator = T[", "];
     }
-    
+
     if (options.Password.RequireUppercase)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one uppercase"]);
         separator = T[", "];
     }
-    
+
     if (options.Password.RequireLowercase)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one lowercase"]);
         separator = T[", "];
     }
-    
+
     if (options.Password.RequireDigit)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one digit"]);
         separator = T[", "];
     }
-    
+
     if (separator != HtmlString.Empty)
     {
         separator = T[" and "];
     }
 
     passwordOptions.AppendHtml(separator).AppendHtml(T["{0} characters in total", options.Password.RequiredLength]);
+
+    if (options.Password.RequiredUniqueChars > 1)
+    {
+        passwordOptions.AppendHtml(T[", with {0} unique characters", options.Password.RequiredUniqueChars]);
+    }
 
     var passwordTooltip = T["Password must have at least {0}.", passwordOptions];
 }
