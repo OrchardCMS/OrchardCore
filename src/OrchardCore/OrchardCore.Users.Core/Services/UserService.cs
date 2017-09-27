@@ -118,7 +118,7 @@ namespace OrchardCore.Users.Services
                         reportError("Password", T["Passwords must be at least {0} characters.", _identityOptions.Value.Password.RequiredLength]);
                         break;
                     case "PasswordRequiresUniqueChars":
-                        reportError("Password", T["Passwords must contain at least {0} unqiue characters.", _identityOptions.Value.Password.RequiredUniqueChars]);
+                        reportError("Password", T["Passwords must contain at least {0} unique characters.", _identityOptions.Value.Password.RequiredUniqueChars]);
                         break;
 
                     // CurrentPassword
