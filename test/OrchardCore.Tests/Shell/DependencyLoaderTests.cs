@@ -48,6 +48,20 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
+        public void DoesNotRegisterTypesWithoutServiceAttribute()
+        {
+            var serviceCollection = new ServiceCollection();
+            var blueprintTypes = new[] { typeof(WontRegisterService) };
+
+            _dependencyLoader.RegisterDependencies(blueprintTypes, serviceCollection);
+
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var discoverableService = serviceProvider.GetService<WontRegisterService>();
+
+            Assert.Null(discoverableService);
+        }
+
+        [Fact]
         public void CanOverrideServicesUsingOverrideServiceAttribute()
         {
             var serviceCollection = new ServiceCollection();
@@ -144,6 +158,11 @@ namespace OrchardCore.Tests.Shell
 
         [ServiceImpl, Service]
         private class SelfService
+        {
+        }
+
+        [ServiceImpl]
+        private class WontRegisterService
         {
         }
 

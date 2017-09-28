@@ -69,7 +69,7 @@ namespace OrchardCore.Environment.Shell
         {
             var excludedTypesQuery =
                 from dependency in dependencies
-                let typeInfo = dependency.DependencyType.GetTypeInfo()
+                let typeInfo = dependency.DependencyTypeInfo
                 let replacedType = typeInfo.GetCustomAttribute<ServiceOverrideAttribute>()
                 where replacedType != null
                 select replacedType.TypeName;
