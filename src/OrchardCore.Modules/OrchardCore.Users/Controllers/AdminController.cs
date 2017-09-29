@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Security;
@@ -22,7 +23,7 @@ using YesSql;
 
 namespace OrchardCore.Users.Controllers
 {
-    public class AdminController : Controller
+    public class AdminController : Controller, IUpdateModel
     {
         private readonly UserManager<IUser> _userManager;
         private readonly ISession _session;
@@ -33,10 +34,12 @@ namespace OrchardCore.Users.Controllers
         private readonly dynamic New;
         private readonly RoleManager<IRole> _roleManager;
         private readonly IRoleProvider _roleProvider;
+        private readonly IDisplayManager<IUser> _userDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUserService _userService;
 
         public AdminController(
+            IDisplayManager<IUser> userDisplayManager,
             IAuthorizationService authorizationService,
             ISession session,
             UserManager<IUser> userManager,
@@ -50,6 +53,7 @@ namespace OrchardCore.Users.Controllers
             IUserService userService
             )
         {
+            _userDisplayManager = userDisplayManager;
             _notifier = notifier;
             _roleProvider = roleProvider;
             _roleManager = roleManager;
@@ -148,15 +152,19 @@ namespace OrchardCore.Users.Controllers
                 return Unauthorized();
             }
 
-            var roleNames = await GetRoleNamesAsync();
-            var roles = roleNames.Select(x => new RoleViewModel { Role = x }).ToArray();
+            var shape = await _userDisplayManager.BuildEditorAsync(new User(), this);
 
-            var model = new CreateUserViewModel
-            {
-                Roles = roles
-            };
+            return View(shape);
 
-            return View(model);
+            //var roleNames = await GetRoleNamesAsync();
+            //var roles = roleNames.Select(x => new RoleViewModel { Role = x }).ToArray();
+
+            //var model = new CreateUserViewModel
+            //{
+            //    Roles = roles
+            //};
+
+            //return View(model);
         }
 
         [HttpPost]
@@ -182,6 +190,11 @@ namespace OrchardCore.Users.Controllers
             return View(model);
         }
 
+        public class VM
+        {
+            public dynamic Shape { get; set; }
+        }
+
         public async Task<IActionResult> Edit(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
@@ -190,25 +203,33 @@ namespace OrchardCore.Users.Controllers
             }
 
             var currentUser = await _userManager.FindByIdAsync(id);
-
             if (currentUser == null)
             {
                 return NotFound();
             }
 
-            var roleNames = await GetRoleNamesAsync();
-            var userRoleNames = await _userManager.GetRolesAsync(currentUser);
-            var roles = roleNames.Select(x => new RoleViewModel { Role = x, IsSelected = userRoleNames.Contains(x, StringComparer.OrdinalIgnoreCase) }).ToArray();
+            var shape = await _userDisplayManager.BuildEditorAsync(currentUser, this);
 
-            var model = new EditUserViewModel
+            return View(new VM
             {
-                Id = id,
-                Email = await _userManager.GetEmailAsync(currentUser),
-                UserName = await _userManager.GetUserNameAsync(currentUser),
-                Roles = roles
-            };
+                Shape = shape
+            });
 
-            return View(model);
+
+
+            //var roleNames = await GetRoleNamesAsync();
+            //var userRoleNames = await _userManager.GetRolesAsync(currentUser);
+            //var roles = roleNames.Select(x => new RoleViewModel { Role = x, IsSelected = userRoleNames.Contains(x, StringComparer.OrdinalIgnoreCase) }).ToArray();
+
+            //var model = new EditUserViewModel
+            //{
+            //    Id = id,
+            //    Email = await _userManager.GetEmailAsync(currentUser),
+            //    UserName = await _userManager.GetUserNameAsync(currentUser),
+            //    Roles = roles
+            //};
+
+            //return View(model);
         }
 
         [HttpPost]

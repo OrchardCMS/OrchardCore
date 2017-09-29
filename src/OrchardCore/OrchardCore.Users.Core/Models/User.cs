@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using OrchardCore.Entities;
 
 namespace OrchardCore.Users.Models
 {
-    public class User : IUser
+    public class User : Entity, IUser
     {
         public int Id { get; set; }
         public string UserName { get; set; }
