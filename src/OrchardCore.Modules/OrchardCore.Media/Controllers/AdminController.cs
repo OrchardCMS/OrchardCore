@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.StorageProviders;
 
@@ -15,15 +17,18 @@ namespace OrchardCore.Media.Controllers
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IAuthorizationService _authorizationService;
         private readonly ILogger _logger;
+        private readonly IStringLocalizer T;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
             IAuthorizationService authorizationService,
-            ILogger<AdminController> logger)
+            ILogger<AdminController> logger,
+            IStringLocalizer<AdminController> stringLocalizer)
         {
             _mediaFileStore = mediaFileStore;
             _authorizationService = authorizationService;
             _logger = logger;
+            T = stringLocalizer;
         }
 
         public IActionResult Index()
@@ -125,7 +130,7 @@ namespace OrchardCore.Media.Controllers
                                 name = file.FileName,
                                 size = file.Length,
                                 folder = path,
-                                error = "Couldn't copy the file in the media store"
+                                error = T["Couldn't copy the file in the media store"].Value
                             });
                         }
                     }
@@ -136,7 +141,7 @@ namespace OrchardCore.Media.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("An error occured while uploading a media: " + ex.Message);
+                    _logger.LogError(T["An error occurred while uploading a media: "] + ex.Message);
 
                     result.Add(new
                     {
@@ -161,14 +166,14 @@ namespace OrchardCore.Media.Controllers
 
             if (string.IsNullOrEmpty(path))
             {
-                return StatusCode(StatusCodes.Status403Forbidden, "Cannot delete root media folder");
+                return StatusCode(StatusCodes.Status403Forbidden, HttpUtility.JavaScriptStringEncode(T["Cannot delete root media folder"]));
             }
 
             var mediaFolder = await _mediaFileStore.GetFolderAsync(path);
 
             if (mediaFolder == null || !mediaFolder.IsDirectory)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, "Cannot delete path");
+                return StatusCode(StatusCodes.Status403Forbidden, HttpUtility.JavaScriptStringEncode(T["Cannot delete path"].Value));
             }
 
             await _mediaFileStore.TryDeleteFolderAsync(path);
@@ -220,7 +225,7 @@ namespace OrchardCore.Media.Controllers
 
             if (mediaFolder == null || !mediaFolder.IsDirectory)
             {
-                return StatusCode(StatusCodes.Status404NotFound, "Cannot find path");
+                return StatusCode(StatusCodes.Status404NotFound, HttpUtility.JavaScriptStringEncode(T["Cannot find path"].Value));
             }
 
             var newPath = _mediaFileStore.Combine(path, name);
@@ -229,10 +234,10 @@ namespace OrchardCore.Media.Controllers
 
             if (mediaFolder != null)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, "Folder already exists");
+                return StatusCode(StatusCodes.Status403Forbidden, HttpUtility.JavaScriptStringEncode(string.Format(T["The folder '{0}' already exists."].Value, newPath)));
             }
 
-            await _mediaFileStore.TryCreateFolderAsync(newPath);
+            await _mediaFileStore.TryCreateFolderAsync(newPath.TrimStart('/'));
 
             mediaFolder = await _mediaFileStore.GetFolderAsync(newPath);
 
