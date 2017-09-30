@@ -45,6 +45,7 @@
         "Orchard.Feeds",
         "Orchard.Flows",
         "Orchard.Indexing",
+        "Orchard.OpenId",
         "Orchard.Lists",
         "Orchard.Liquid",
         "Orchard.Lucene",
