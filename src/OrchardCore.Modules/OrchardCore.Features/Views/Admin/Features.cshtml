@@ -1,4 +1,4 @@
-﻿@model FeaturesViewModel
+@model FeaturesViewModel
 
 @{
 //var lifecycleStatusClassDictionary = new Dictionary<LifecycleStatus, string> {
@@ -104,10 +104,10 @@
                                     @* Display the checkbox ?*@
                                     @if ((showEnable && !feature.IsEnabled) || (showDisable && feature.IsEnabled))
                                     {
-                                        <div class="checkbox">
+                                        <div class="form-check">
                                             <h5>
-                                                <label for="@feature.Descriptor.Id">
-                                                    <input type="checkbox" name="featureIds" id="@feature.Descriptor.Id" value="@feature.Descriptor.Id" />
+                                                <label for="@feature.Descriptor.Id" class="form-check-label">
+                                                    <input type="checkbox" name="featureIds" id="@feature.Descriptor.Id" value="@feature.Descriptor.Id" class="form-check-input" />
                                                     @featureName
                                                 </label>
                                             </h5>
@@ -124,7 +124,7 @@
                                         {
                                             @foreach (var d in dependencies)
                                             {
-                                                <span class="badge badge-default">
+                                                <span class="badge badge-info">
                                                     @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
                                                 </span>
                                             }
