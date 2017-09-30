@@ -166,7 +166,7 @@ namespace OrchardCore.Media.Controllers
 
             if (string.IsNullOrEmpty(path))
             {
-                return StatusCode(StatusCodes.Status403Forbidden, HttpUtility.JavaScriptStringEncode(T["Cannot delete root media folder"]));
+                return StatusCode(StatusCodes.Status403Forbidden, HttpUtility.JavaScriptStringEncode(T["Cannot delete root media folder"].Value));
             }
 
             var mediaFolder = await _mediaFileStore.GetFolderAsync(path);
