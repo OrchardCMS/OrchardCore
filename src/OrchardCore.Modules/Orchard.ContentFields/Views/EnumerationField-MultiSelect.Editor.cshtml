@@ -1,0 +1,25 @@
+@model Orchard.ContentFields.ViewModels.EditEnumerationFieldViewModel
+@using Orchard.ContentFields.Settings;
+@using Orchard.ContentManagement.Metadata.Models
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<EnumerationFieldSettings>();
+    string name = Model.PartFieldDefinition.DisplayName();
+    string[] options = (!String.IsNullOrWhiteSpace(settings.Options)) ? settings.Options.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None) : new string[] { T["Select an option"].ToString() };
+    IEnumerable<SelectListItem> items = options.Select(o => new SelectListItem { Text = o, Value = o });
+}
+
+<script asp-name="bootstrap-select" depends-on="admin" asp-src="/Orchard.Resources/Scripts/bootstrap-select.min.js" debug-src="/Orchard.Resources/Scripts/bootstrap-select.js" at="Foot"></script>
+<style asp-name="bootstrap-select" asp-src="/Orchard.Resources/Styles/bootstrap-select.min.css" debug-src="/Orchard.Resources/Styles/bootstrap-select.css"></style>
+
+<fieldset class="form-group">
+    <div class="row col-sm">
+        <label asp-for="SelectedValues">@name</label>
+        <select asp-for="SelectedValues" class="form-control content-preview-select selectpicker" asp-items="items" multiple></select>
+        <span class="hint">@settings.Hint</span>
+    </div>
+</fieldset>
+<script at="Foot">
+    $(function () {
+        $('#@Html.IdFor(m => m.SelectedValues)').selectpicker();
+    });
+</script>
