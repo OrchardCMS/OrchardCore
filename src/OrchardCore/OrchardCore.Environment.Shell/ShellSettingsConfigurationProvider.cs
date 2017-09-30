@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -40,6 +40,7 @@ namespace OrchardCore.Environment.Shell
         public void SaveToSource(string name, IDictionary<string, string> configuration)
         {
             var settingsFile = ObtainSettingsPath(Path.Combine(
+                        _hostingEnvironment.ContentRootPath,
                         _optionsAccessor.Value.ShellsRootContainerName,
                         _optionsAccessor.Value.ShellsContainerName,
                         name));

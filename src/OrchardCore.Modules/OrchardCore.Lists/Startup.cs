@@ -8,7 +8,6 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Services;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.XmlRpc;
 using OrchardCore.Data.Migration;
 using OrchardCore.Feeds;
 using OrchardCore.Lists.Drivers;
@@ -18,6 +17,7 @@ using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
 using OrchardCore.Lists.Settings;
 using YesSql.Indexes;
+using OrchardCore.RestApis;
 
 namespace OrchardCore.Lists
 {
@@ -41,6 +41,9 @@ namespace OrchardCore.Lists
             services.AddScoped<IFeedQueryProvider, ListFeedQuery>();
             services.AddScoped<IContentPartDisplayDriver, ListPartFeedDisplayDriver>();
             services.AddScoped<IContentPartHandler, ListPartFeedHandler>();
+
+            services.AddScoped<IApiPartDriver, ListPartApiPartDriver>();
+            services.AddScoped<IContentApiFilter, ListPartContentApiFilter>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

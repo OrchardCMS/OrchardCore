@@ -116,7 +116,26 @@ namespace OrchardCore.Contents
                 defaults: new { controller = "Admin", action = "List" }
             );
 
+            routes.MapAreaRoute(
+                name: "Api.GetContents.ByType",
+                areaName: "OrchardCore.Contents",
+                template: "Api/Contents/{contentType}",
+                defaults: new { controller = "Api", action = "GetByContentType" }
+            );
 
+            routes.MapAreaRoute(
+                name: "Api.GetContents.ByTypeAndId",
+                areaName: "OrchardCore.Contents",
+                template: "Api/Contents/{contentType}/{contentItemId}",
+                defaults: new { controller = "Api", action = "GetByContentTypeAndId" }
+            );
+
+            routes.MapAreaRoute(
+                name: "Api.GetContents.ByRelationship",
+                areaName: "OrchardCore.Contents",
+                template: "Api/Contents/{contentType}/{contentItemId}/relationships/{nestedContentType}",
+                defaults: new { controller = "Api", action = "GetByContentByRelationship" }
+            );
         }
     }
 }

@@ -1,0 +1,16 @@
+{
+  "data": {
+    "id": "ABC",
+    "type": "article",
+    "attributes": {
+      "number": 0,
+      "published": false,
+      "latest": false,
+      "contentParts": {
+        "StubContentPart": {
+          "Name": "FuBar"
+        }
+      }
+    }
+  }
+}
