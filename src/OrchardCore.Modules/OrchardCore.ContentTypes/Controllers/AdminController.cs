@@ -129,7 +129,6 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var typeViewModel = new EditTypeViewModel(contentTypeDefinition);
 
-
             _notifier.Success(T["The \"{0}\" content type has been created.", typeViewModel.DisplayName]);
 
             return RedirectToAction("AddPartsTo", new { id = typeViewModel.Name });
@@ -415,17 +414,16 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            var contentPartDefinition = _contentDefinitionManager.GetPartDefinition(id);
+            var partViewModel = _contentDefinitionService.GetPart(id);
 
-            if (contentPartDefinition == null)
+            if (partViewModel == null)
             {
                 return NotFound();
             }
 
-            var viewModel = new EditPartViewModel(contentPartDefinition);
-            viewModel.Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, this);
+            partViewModel.Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(partViewModel.PartDefinition, this);
 
-            return View(viewModel);
+            return View(partViewModel);
         }
 
         [HttpPost, ActionName("EditPart")]
@@ -443,6 +441,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             var viewModel = new EditPartViewModel(contentPartDefinition);
+            viewModel.DisplayName = contentPartDefinition.DisplayName;
             viewModel.Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, this);
 
             if (!ModelState.IsValid)

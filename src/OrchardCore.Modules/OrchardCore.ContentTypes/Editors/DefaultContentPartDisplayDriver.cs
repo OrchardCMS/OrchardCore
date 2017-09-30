@@ -8,11 +8,11 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Editors
 {
-    public class DefaultContentTypeDisplayDriver : ContentTypeDisplayDriver
+    public class DefaultContentPartDisplayDriver : ContentPartDisplayDriver
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public DefaultContentTypeDisplayDriver(
+        public DefaultContentPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
             IStringLocalizer<DefaultContentDefinitionDisplayManager> localizer)
         {
@@ -22,18 +22,18 @@ namespace OrchardCore.ContentTypes.Editors
 
         public IStringLocalizer T { get; }
 
-        public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
+        public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition)
         {
-            return Shape<ContentTypeViewModel>("ContentType_Edit", model =>
+            return Shape<ContentPartViewModel>("ContentPart_Edit", model =>
             {
-                model.DisplayName = contentTypeDefinition.DisplayName;
+                model.DisplayName = contentPartDefinition.DisplayName;
                 return Task.CompletedTask;
-            }).Location("Content");
+            }).Location("Content:before");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ContentPartDefinition contentPartDefinition, UpdatePartEditorContext context)
         {
-            var model = new ContentTypeViewModel();
+            var model = new ContentPartViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
@@ -41,10 +41,10 @@ namespace OrchardCore.ContentTypes.Editors
 
             if (String.IsNullOrWhiteSpace(model.DisplayName))
             {
-                context.Updater.ModelState.AddModelError("DisplayName", T["The Content Type display name can't be empty."]);
+                context.Updater.ModelState.AddModelError("DisplayName", T["The Content Part display name can't be empty."]);
             }
 
-            return Edit(contentTypeDefinition, context.Updater);
+            return Edit(contentPartDefinition, context.Updater);
         }
     }
 }

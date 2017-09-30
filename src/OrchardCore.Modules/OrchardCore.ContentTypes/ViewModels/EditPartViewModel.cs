@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -16,6 +16,7 @@ namespace OrchardCore.ContentTypes.ViewModels
         public EditPartViewModel(ContentPartDefinition contentPartDefinition)
         {
             Name = contentPartDefinition.Name;
+            DisplayName = contentPartDefinition.DisplayName;
             Settings = contentPartDefinition.Settings;
             PartDefinition = contentPartDefinition;
         }

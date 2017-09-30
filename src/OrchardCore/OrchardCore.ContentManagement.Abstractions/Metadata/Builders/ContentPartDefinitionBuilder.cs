@@ -10,13 +10,14 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
     {
         private readonly ContentPartDefinition _part;
         private string _name;
+        private string _displayName;
         private readonly IList<ContentPartFieldDefinition> _fields;
         private readonly JObject _settings;
 
         public ContentPartDefinition Current { get; private set; }
 
         public ContentPartDefinitionBuilder()
-            : this(new ContentPartDefinition(null))
+            : this(new ContentPartDefinition(null, null))
         {
         }
 
@@ -32,6 +33,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             else
             {
                 _name = existing.Name;
+                _displayName = existing.DisplayName;
                 _fields = existing.Fields.ToList();
                 _settings = new JObject(existing.Settings);
             }
@@ -41,12 +43,18 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartDefinition Build()
         {
-            return new ContentPartDefinition(_name, _fields, _settings);
+            return new ContentPartDefinition(_name, _displayName, _fields, _settings);
         }
 
         public ContentPartDefinitionBuilder Named(string name)
         {
             _name = name;
+            return this;
+        }
+
+        public ContentPartDefinitionBuilder DisplayedAs(string displayName)
+        {
+            _displayName = displayName;
             return this;
         }
 

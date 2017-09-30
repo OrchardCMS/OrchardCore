@@ -74,9 +74,11 @@ namespace OrchardCore.ContentManagement
         {
             return _partDefinitions.GetOrAdd(name, n =>
             {
-                return Build(GetContentDefinitionRecord()
-                .ContentPartDefinitionRecords
-                .FirstOrDefault(x => x.Name == name));
+                var contentPartDefinitionRecord = GetContentDefinitionRecord()
+                    .ContentPartDefinitionRecords
+                    .FirstOrDefault(x => x.Name == name);
+
+                return Build(contentPartDefinitionRecord);
             });
         }
 
@@ -203,6 +205,7 @@ namespace OrchardCore.ContentManagement
 
         private void Apply(ContentPartDefinition model, ContentPartDefinitionRecord record)
         {
+            record.DisplayName = model.DisplayName;
             record.Settings = model.Settings;
 
             var toRemove = record.ContentPartFieldDefinitionRecords
@@ -266,6 +269,7 @@ namespace OrchardCore.ContentManagement
         {
             return source == null ? null : new ContentPartDefinition(
                 source.Name,
+                source.DisplayName,
                 source.ContentPartFieldDefinitionRecords.Select(Build),
                 source.Settings);
         }
