@@ -1,4 +1,13 @@
-﻿@model EditUserViewModel
+@model OrchardCore.Users.Controllers.AdminController.VM
+
+<h1>@RenderTitleSegments(T["Edit User"])</h1>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    @Html.ValidationSummary()
+    @await DisplayAsync(Model.Shape)
+</form>
+
+@*@model EditUserViewModel
 @using OrchardCore.Users.ViewModels;
 
 <h1>@RenderTitleSegments(T["Edit User"])</h1>
@@ -38,4 +47,4 @@
             <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
         </div>
     </fieldset>
-</form>
+</form>*@

@@ -1,0 +1,15 @@
+@model EditUserViewModel
+
+<input type="hidden" asp-for="Id" />
+
+<div class="form-group" asp-validation-class-for="UserName">
+    <label asp-for="UserName">@T["User name"]</label>
+    <span asp-validation-for="UserName" class="text-danger">@T["The user name is required."]</span>
+    <input asp-for="UserName" class="form-control" autofocus />
+</div>
+
+<div class="form-group" asp-validation-class-for="Email">
+    <label for="Email">@T["Email"]</label>
+    <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
+    <input asp-for="Email" class="form-control" type="email" />
+</div>
