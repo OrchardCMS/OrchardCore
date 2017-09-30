@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <!--
@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <None Include="OrchardCore.AsBundle.targets" Pack="true">
-      <PackagePath>build\netstandard1.6\OrchardCore.AsBundle.targets</PackagePath>
+      <PackagePath>build\$(TargetFramework)\OrchardCore.AsBundle.targets</PackagePath>
     </None>
   </ItemGroup>
 

@@ -1,0 +1,28 @@
+﻿using OrchardCore.Modules;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Data.Migration;
+using OrchardCore.Indexing;
+using OrchardCore.Title.Drivers;
+using OrchardCore.Title.Handlers;
+using OrchardCore.Title.Indexing;
+using OrchardCore.Title.Model;
+
+namespace OrchardCore.Title
+{
+    public class Startup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Title Part
+            services.AddScoped<IContentPartDisplayDriver, TitlePartDisplay>();
+            services.AddSingleton<ContentPart, TitlePart>();
+            services.AddScoped<IContentPartHandler, TitlePartHandler>();
+            services.AddScoped<IContentPartIndexHandler, TitlePartIndexHandler>();
+
+            services.AddScoped<IDataMigration, Migrations>();
+        }
+    }
+}

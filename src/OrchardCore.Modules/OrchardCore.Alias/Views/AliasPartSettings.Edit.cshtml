@@ -1,0 +1,9 @@
+@model OrchardCore.Alias.Settings.AliasPartSettingsViewModel
+
+<fieldset class="form-group">
+    <div class="row col-lg">
+        <label asp-for="Pattern">@T["Pattern"]</label>
+        <input asp-for="Pattern" class="form-control" />
+        <span class="hint">@T["The pattern used to render the alias of this content type."]</span>
+    </div>
+</fieldset>
