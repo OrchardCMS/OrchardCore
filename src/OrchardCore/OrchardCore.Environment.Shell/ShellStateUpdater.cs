@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
-using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.State;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -21,17 +20,14 @@ namespace OrchardCore.Environment.Shell
         private readonly IShellStateManager _stateManager;
         private readonly IExtensionManager _extensionManager;
         private readonly IEnumerable<IFeatureEventHandler> _featureEventHandlers;
-        private readonly IDeferredTaskEngine _deferredTaskEngine;
 
         public ShellStateUpdater(
             ShellSettings settings,
             IShellStateManager stateManager,
             IExtensionManager extensionManager,
             IEnumerable<IFeatureEventHandler> featureEventHandlers,
-            IDeferredTaskEngine deferredTaskEngine,
-            ILogger<ShellStateCoordinator> logger)
+            ILogger<ShellStateUpdater> logger)
         {
-            _deferredTaskEngine = deferredTaskEngine;
             _settings = settings;
             _stateManager = stateManager;
             _extensionManager = extensionManager;
