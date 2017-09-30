@@ -1,0 +1,14 @@
+﻿@{
+    IEnumerable<Orchard.Workflows.Models.WorkflowRecord> activities = Model.Workflows;
+    var count = activities.Count();
+}
+
+@if (count > 0) {
+    <ul class="pageStatus">
+        <li title="@T("Running workflows")" >
+            <img class="icon" src="@Href("~/Modules/Orchard.Workflows/Styles/Images/cog.png")" alt="@T("Running ({0})", count)" />
+            <a href="@Url.Action("List", "Admin", new { area = "Orchard.Workflows", id = (int)Model.ContentPart.Id })">@T.Plural("{0} Workflow", "{0} Workflows", count, count).Text</a>
+            &nbsp;|&nbsp;
+        </li>
+    </ul>
+}

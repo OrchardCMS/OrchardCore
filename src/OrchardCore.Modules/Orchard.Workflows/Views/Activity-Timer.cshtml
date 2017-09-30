@@ -1,0 +1,17 @@
+﻿@using Orchard.Utility.Extensions
+
+@{
+    string name = Model.Name;
+    IHtmlString title = null;
+    if (Model.State != null && HasText(Model.State.Unity)) {
+        string amount = Model.State.Amount;
+        string unity = Model.State.Unity;
+        title = T("{0} {1} after", amount, T(unity));
+    }
+}
+
+<div class="event" title="@title">
+    <div class="timer" ></div>
+    @*@name.CamelFriendly()*@
+</div>
+
