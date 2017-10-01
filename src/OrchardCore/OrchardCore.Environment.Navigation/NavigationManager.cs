@@ -81,12 +81,12 @@ namespace OrchardCore.Environment.Navigation
             {
                 var source = items[i];
                 var merged = false;
-                for (var j = items.Count - 1; j > i ; j--)
+                for (var j = items.Count - 1; j > i; j--)
                 {
                     var cursor = items[j];
 
                     // A match is found, add all its items to the source
-                    if(String.Equals(cursor.Text.Name, source.Text.Name, StringComparison.OrdinalIgnoreCase))
+                    if (String.Equals(cursor.Text.Name, source.Text.Name, StringComparison.OrdinalIgnoreCase))
                     {
                         merged = true;
                         foreach (var child in cursor.Items)
@@ -143,17 +143,18 @@ namespace OrchardCore.Environment.Navigation
         }
 
         /// <summary>
-        ///
+        /// Gets the url.from a menu item url a routeValueDictionary and an actionContext.
         /// </summary>
-        /// <param name="menuItemUrl"></param>
+        /// <param name="menuItemUrl">The </param>
         /// <param name="routeValueDictionary"></param>
+        /// <param name="actionContext"></param>
         /// <returns></returns>
         private string GetUrl(string menuItemUrl, RouteValueDictionary routeValueDictionary, ActionContext actionContext)
         {
             string url;
             if (routeValueDictionary == null || routeValueDictionary.Count == 0)
             {
-                if (!String.IsNullOrEmpty(menuItemUrl))
+                if (String.IsNullOrEmpty(menuItemUrl))
                 {
                     return "#";
                 }
@@ -197,6 +198,7 @@ namespace OrchardCore.Environment.Navigation
                     url = appPath + "/" + url;
                 }
             }
+
             return url;
         }
 
@@ -210,11 +212,11 @@ namespace OrchardCore.Environment.Navigation
             foreach (var item in items)
             {
                 // TODO: Attach actual user and remove this clause
-                if(user == null)
+                if (user == null)
                 {
                     filtered.Add(item);
                 }
-                else if(!item.Permissions.Any())
+                else if (!item.Permissions.Any())
                 {
                     filtered.Add(item);
                 }
