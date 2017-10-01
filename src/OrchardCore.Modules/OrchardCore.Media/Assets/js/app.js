@@ -192,7 +192,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     error: function (error) {
                         $('#createFolderModal-errors').empty();
-                        $('<div class="alert alert-danger" role="alert"></div>').text(error.responseText).appendTo($('#createFolderModal-errors'));
+                        $('<div class="alert alert-danger" role="alert"></div>').text(decodeURIComponent(JSON.parse('"' + error.responseText + '"'))).appendTo($('#createFolderModal-errors'));
                     }
                 });
             });
