@@ -6,7 +6,7 @@
 
   <!-- Add the OrchardCore.Module.props file in the package -->
   <ItemGroup>
-    <None Include="OrchardCore.Module.props" Pack="true">
+    <None Include="OrchardCore.Module.Targets.props" Pack="true">
       <PackagePath>build\$(TargetFramework)\OrchardCore.Module.Targets.props</PackagePath>
     </None>
     <None Include="Package.Build.props" Pack="true">

@@ -7,7 +7,7 @@
 
   <!-- Add a ".props" file in the package specific to the "Cms" bundle -->
   <ItemGroup>
-    <None Include="OrchardCore.Application.Cms.props" Pack="true">
+    <None Include="OrchardCore.Application.Cms.Targets.props" Pack="true">
       <PackagePath>build\netstandard2.0\OrchardCore.Application.Cms.Targets.props</PackagePath>
     </None>
   </ItemGroup>

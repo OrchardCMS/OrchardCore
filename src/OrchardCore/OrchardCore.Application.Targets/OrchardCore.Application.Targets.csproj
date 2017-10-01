@@ -13,7 +13,7 @@
   -->
 
   <ItemGroup>
-    <None Include="OrchardCore.Application.targets" Pack="true">
+    <None Include="OrchardCore.Application.Targets.targets" Pack="true">
       <PackagePath>build\$(TargetFramework)\OrchardCore.Application.Targets.targets</PackagePath>
     </None>
   </ItemGroup>
