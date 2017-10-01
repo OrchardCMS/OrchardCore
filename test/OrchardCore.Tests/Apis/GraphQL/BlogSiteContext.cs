@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using Microsoft.AspNetCore.Mvc.FunctionalTests;
 using Newtonsoft.Json;
 using OrchardCore.Tests.Apis.Sources;

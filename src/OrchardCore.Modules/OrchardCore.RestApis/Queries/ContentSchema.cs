@@ -30,7 +30,7 @@ namespace OrchardCore.RestApis.Queries
             Mutation = serviceProvider.GetService<ContentItemMutation>();
 
 
-            //var contentType = serviceProvider.GetService<ContentType>();
+            var contentType = serviceProvider.GetService<ContentType>();
 
             //var typeDefinitions = contentDefinitionManager.ListTypeDefinitions();
 
@@ -77,9 +77,8 @@ namespace OrchardCore.RestApis.Queries
             ////    Resolver = new EventStreamResolver(Subscribe)
             ////});
 
+            Query = contentType;
 
-
-            //Query = contentType;
             //RegisterType<TitlePartType>();
             //RegisterType<AutoRoutePartType>();
             //RegisterType<BagPartType>();

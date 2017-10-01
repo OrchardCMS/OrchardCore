@@ -1,10 +1,7 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.FunctionalTests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Tests.Apis.Sources;
 using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL
@@ -20,10 +17,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
         [Fact]
         public async Task ShouldCreateABlog() {
-            var siteName = Guid.NewGuid().ToString().Replace("-", "");
-
             var titlePart = @"titlePart: { ""title"": ""Hi There"" }";
-
 
             var variables =
 @"{ 
@@ -39,8 +33,11 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var response = await _siteContext.Site.Client.PostJsonAsync("graphql", json);
 
-            response.EnsureSuccessStatusCode();
-        }
+            Assert.True(response.IsSuccessStatusCode);
+            var result = JObject.Parse(await response.Content.ReadAsStringAsync());
 
+            //"{\"data\":{\"createContentItem\":{\"id\":81}}}"
+            Assert.NotEmpty(result["data"]["createContentItem"]["id"].ToString());
+        }
     }
 }

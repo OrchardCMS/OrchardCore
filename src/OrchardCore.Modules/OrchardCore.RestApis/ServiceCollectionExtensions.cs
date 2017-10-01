@@ -44,6 +44,8 @@ namespace OrchardCore.RestApis
             services.AddScoped<ContentItemInputType>();
             services.AddScoped<ContentItemType>();
 
+            services.AddScoped<ContentType>();
+
             return services;
         }
     }
