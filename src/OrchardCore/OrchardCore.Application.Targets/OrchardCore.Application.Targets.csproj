@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <None Include="OrchardCore.Application.targets" Pack="true">
-      <PackagePath>build\$(TargetFramework)\OrchardCore.Application.targets</PackagePath>
+      <PackagePath>build\$(TargetFramework)\OrchardCore.Application.Targets.targets</PackagePath>
     </None>
   </ItemGroup>
 
