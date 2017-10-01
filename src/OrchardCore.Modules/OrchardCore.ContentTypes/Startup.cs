@@ -1,6 +1,5 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentTypes.Deployment;
@@ -10,6 +9,7 @@ using OrchardCore.ContentTypes.Services;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
+using OrchardCore.Modules;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 
@@ -27,6 +27,7 @@ namespace OrchardCore.ContentTypes
             services.AddScoped<IContentDefinitionDisplayHandler, ContentDefinitionDisplayCoordinator>();
             services.AddScoped<IContentDefinitionDisplayManager, DefaultContentDefinitionDisplayManager>();
             services.AddScoped<IContentPartDefinitionDisplayDriver, ContentPartSettingsDisplayDriver>();
+            services.AddScoped<IContentPartDefinitionDisplayDriver, DefaultContentPartDisplayDriver>();
             services.AddScoped<IContentTypeDefinitionDisplayDriver, ContentTypeSettingsDisplayDriver>();
             services.AddScoped<IContentTypeDefinitionDisplayDriver, DefaultContentTypeDisplayDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartSettingsDisplayDriver>();

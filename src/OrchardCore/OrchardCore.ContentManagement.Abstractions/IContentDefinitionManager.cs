@@ -46,7 +46,7 @@ namespace OrchardCore.ContentManagement.Metadata
         }
         public static void AlterPartDefinition(this IContentDefinitionManager manager, string name, Action<ContentPartDefinitionBuilder> alteration)
         {
-            var partDefinition = manager.GetPartDefinition(name) ?? new ContentPartDefinition(name);
+            var partDefinition = manager.GetPartDefinition(name) ?? new ContentPartDefinition(name, name.CamelFriendly());
             var builder = new ContentPartDefinitionBuilder(partDefinition);
             alteration(builder);
             manager.StorePartDefinition(builder.Build());

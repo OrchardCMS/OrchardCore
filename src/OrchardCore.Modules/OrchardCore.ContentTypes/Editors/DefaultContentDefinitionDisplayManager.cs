@@ -133,7 +133,8 @@ namespace OrchardCore.ContentTypes.Editors
                 throw new ArgumentNullException(nameof(contentPartDefinition));
             }
 
-            var contentPartDefinitionShape = CreateContentShape("ContentPartDefinition_Edit");
+            dynamic contentPartDefinitionShape = CreateContentShape("ContentPartDefinition_Edit");
+            contentPartDefinitionShape.ContentPartDefinition = contentPartDefinition;
 
             UpdatePartEditorContext partContext = null;
 
@@ -178,7 +179,6 @@ namespace OrchardCore.ContentTypes.Editors
             await BindPlacementAsync(partContext);
 
             await _handlers.InvokeAsync(handler => handler.BuildTypePartEditorAsync(contentTypePartDefinition, partContext), Logger);
-
 
             return typePartDefinitionShape;
         }
