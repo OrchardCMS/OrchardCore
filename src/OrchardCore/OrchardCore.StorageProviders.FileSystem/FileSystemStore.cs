@@ -140,7 +140,7 @@ namespace OrchardCore.StorageProviders.FileSystem
             try
             {
                 // Use CreateSubdirectory to ensure the directory doesn't go over its boundaries
-                new DirectoryInfo(_localPath).CreateSubdirectory(subpath);
+                new DirectoryInfo(_localPath).CreateSubdirectory(subpath.TrimStart('/'));
                 return Task.FromResult(true);
             }
             catch

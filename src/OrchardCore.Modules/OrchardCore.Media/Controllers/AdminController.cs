@@ -237,7 +237,7 @@ namespace OrchardCore.Media.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, HttpUtility.JavaScriptStringEncode(string.Format(T["The folder '{0}' already exists."].Value, newPath)));
             }
 
-            await _mediaFileStore.TryCreateFolderAsync(newPath.TrimStart('/'));
+            await _mediaFileStore.TryCreateFolderAsync(newPath);
 
             mediaFolder = await _mediaFileStore.GetFolderAsync(newPath);
 
