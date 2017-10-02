@@ -9,7 +9,6 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Internal;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -29,47 +28,47 @@ namespace OrchardCore.RestApis.Queries
         {
             Mutation = serviceProvider.GetService<ContentItemMutation>();
 
-
             var contentType = serviceProvider.GetService<ContentType>();
 
-            //var typeDefinitions = contentDefinitionManager.ListTypeDefinitions();
+            var typeDefinitions = contentDefinitionManager.ListTypeDefinitions();
 
-            //foreach (var typeDefinition in typeDefinitions)
-            //{
-            //    var typeType = new ObjectGraphType
-            //    {
-            //        Name = typeDefinition.Name
-            //    };
+            foreach (var typeDefinition in typeDefinitions)
+            {
+                var typeType = new ObjectGraphType
+                {
+                    Name = typeDefinition.Name
+                };
 
-            //    foreach (var part in typeDefinition.Parts)
-            //    {
-            //        var name = part.Name; // About
-            //        var partName = part.PartDefinition.Name; // BagPart
+                foreach (var part in typeDefinition.Parts)
+                {
+                    var name = part.Name; // About
+                    var partName = part.PartDefinition.Name; // BagPart
 
-            //        var contentPart = contentParts.FirstOrDefault(x => x.GetType().Name == partName);
+                    var contentPart = contentParts.FirstOrDefault(x => x.GetType().Name == partName);
 
-            //        if (contentPart != null)
-            //        {
-            //            var p = objectGraphTypes.FirstOrDefault(x => x.IsTypeOf(contentPart));
+                    if (contentPart != null)
+                    {
+                        var p = objectGraphTypes.FirstOrDefault(x => x.IsTypeOf(contentPart));
 
-            //            if (p != null)
-            //            {
-            //                typeType.AddField(new FieldType
-            //                {
-            //                    //Type = contentPart.GetType(),
-            //                    Name = name,
-            //                    ResolvedType = (IObjectGraphType)serviceProvider.GetService(p.GetType())
-            //                });
-            //            }
-            //        }
-            //    }
+                        if (p != null)
+                        {
+                            // Add Field needs to be like Content Item and Content Items.... so you can filter by blog...
 
-            //    contentType.AddField(new FieldType
-            //    {
-            //        Name = typeDefinition.Name,
-            //        ResolvedType = typeType
-            //    });
-            //}
+                            typeType.AddField(new FieldType
+                            {
+                                Name = name,
+                                ResolvedType = (IObjectGraphType)serviceProvider.GetService(p.GetType())
+                            });
+                        }
+                    }
+                }
+
+                contentType.AddField(new FieldType
+                {
+                    Name = typeDefinition.Name,
+                    ResolvedType = typeType
+                });
+            }
             ////AddField(new EventStreamFieldType
             ////{
             ////    Name = "messageAdded",
@@ -79,7 +78,7 @@ namespace OrchardCore.RestApis.Queries
 
             Query = contentType;
 
-            //RegisterType<TitlePartType>();
+            RegisterType<TitlePartType>();
             //RegisterType<AutoRoutePartType>();
             //RegisterType<BagPartType>();
         }
@@ -155,8 +154,6 @@ namespace OrchardCore.RestApis.Queries
             var propertyFilter = expression.Compile();
 
             var modelMetadata = _metadataProvider.GetMetadataForType(model.GetType());
-        
-            
 
             return Task.FromResult(false);
         }
