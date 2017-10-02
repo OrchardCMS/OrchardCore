@@ -1,4 +1,4 @@
-﻿<div class="edit-item">
+<div class="edit-item">
     <div class="edit-item-primary">
         @if (Model.Content != null)
         {
@@ -23,8 +23,3 @@
         }
     </div>
 </div>
-
-@if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
-{
-    @Html.Hidden("returnUrl", Context.Request.Query["returnUrl"])
-}

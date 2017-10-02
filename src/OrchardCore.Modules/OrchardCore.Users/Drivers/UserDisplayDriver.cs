@@ -74,15 +74,7 @@ namespace OrchardCore.Users.Drivers
                 }
 
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
-                var createdUser = await _userService.CreateUserAsync(model.UserName, model.Email, roleNames, model.Password, (key, message) => context.Updater.ModelState.AddModelError(key, message));
-
-                //if (user != null)
-                //{
-                //    _notifier.Success(TH["User created successfully"]);
-                //    return;
-                //}
-
-                //_session.Cancel();
+                await _userService.CreateUserAsync(model.UserName, model.Email, roleNames, model.Password, (key, message) => context.Updater.ModelState.AddModelError(key, message));
             }
             else
             {
@@ -137,9 +129,7 @@ namespace OrchardCore.Users.Drivers
                     }
 
                     var result = await _userManager.UpdateAsync(user);
-
-                    //_session.Cancel();
-
+                    
                     foreach (var error in result.Errors)
                     {
                         context.Updater.ModelState.AddModelError(string.Empty, error.Description);
