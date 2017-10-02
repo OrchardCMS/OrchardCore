@@ -1,6 +1,5 @@
 @model UsersIndexViewModel
-@using OrchardCore.Users.ViewModels;
-@inject Microsoft.AspNetCore.Identity.UserManager<OrchardCore.Users.IUser> UserManager
+
 
 <h1>@RenderTitleSegments(T["Users"])</h1>
 
@@ -50,14 +49,7 @@
         @foreach (var entry in Model.Users)
         {
             <li class="list-group-item">
-                <div class="properties">
-                    <div class="related">
-                        <a asp-action="Edit" asp-route-id="@await UserManager.GetUserIdAsync(entry.User)" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                        <a asp-action="Delete" asp-route-id="@await UserManager.GetUserIdAsync(entry.User)" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-                    </div>
-
-                    @await UserManager.GetUserNameAsync(entry.User)
-                </div>
+                @await DisplayAsync(entry.Shape)
             </li>
         }
     </ul>
