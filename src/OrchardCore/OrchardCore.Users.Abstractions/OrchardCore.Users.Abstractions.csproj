@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Entities\OrchardCore.Entities.csproj" />
     <ProjectReference Include="..\OrchardCore.Security.Abstractions\OrchardCore.Security.Abstractions.csproj" />
   </ItemGroup>
 
