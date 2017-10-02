@@ -12,6 +12,14 @@ namespace OrchardCore.Users.ViewModels
         [Required]
         [EmailAddress]
         public string Email { get; set; }
+        
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        [DataType(DataType.Password)]
+        public string PasswordConfirmation { get; set; }
+
+        public bool DisplayPasswordFields { get; set; }
 
         public RoleViewModel[] Roles { get; set; }
     }

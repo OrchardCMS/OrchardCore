@@ -1,0 +1,30 @@
+﻿<div class="edit-item">
+    <div class="edit-item-primary">
+        @if (Model.Content != null)
+        {
+            <div class="edit-item-content">
+                @await DisplayAsync(Model.Content)
+            </div>
+        }
+    </div>
+
+    <div class="edit-item-secondary group">
+        @if (Model.Actions != null)
+        {
+            <div class="edit-item-actions form-group">
+                @await DisplayAsync(Model.Actions)
+            </div>
+        }
+        @if (Model.Sidebar != null)
+        {
+            <div class="edit-item-sidebar group">
+                @await DisplayAsync(Model.Sidebar)
+            </div>
+        }
+    </div>
+</div>
+
+@if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
+{
+    @Html.Hidden("returnUrl", Context.Request.Query["returnUrl"])
+}
