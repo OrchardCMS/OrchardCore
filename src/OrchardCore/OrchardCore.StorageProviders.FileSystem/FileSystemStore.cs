@@ -31,6 +31,12 @@ namespace OrchardCore.StorageProviders.FileSystem
                 combined = "/" + combined;
             }
 
+            // Remove the initial '/' if it was not present
+            if (paths.Length > 0 && !paths[0].StartsWith("/") && combined.StartsWith("/"))
+            {
+                combined = combined.TrimStart('/');
+            }
+
             return combined;
         }
 
