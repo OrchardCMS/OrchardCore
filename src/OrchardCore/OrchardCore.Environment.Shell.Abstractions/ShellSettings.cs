@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using OrchardCore.Environment.Shell.Models;
 
@@ -19,7 +19,7 @@ namespace OrchardCore.Environment.Shell
 
         public ShellSettings(IDictionary<string, string> configuration)
         {
-            _values = configuration;
+            _values = new Dictionary<string, string>(configuration);
 
             if (!configuration.ContainsKey("State") || !Enum.TryParse(configuration["State"], true, out _tenantState)) {
                 _tenantState = TenantState.Invalid;
