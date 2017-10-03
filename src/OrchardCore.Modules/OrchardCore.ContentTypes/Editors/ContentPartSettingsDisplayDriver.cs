@@ -19,6 +19,7 @@ namespace OrchardCore.ContentTypes.Editors
                 model.Reusable = settings.Reusable;
                 model.Description = settings.Description;
                 model.DisplayName = settings.DisplayName;
+                model.ContentPartDefinition = contentPartDefinition;
 
                 return Task.CompletedTask;
             }).Location("Content");
