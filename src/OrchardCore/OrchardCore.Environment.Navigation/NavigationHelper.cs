@@ -68,7 +68,7 @@ namespace OrchardCore.Environment.Navigation
             bool match = menuItem.RouteValues != null && RouteMatches(menuItem.RouteValues, viewContext.RouteData.Values);
 
             // if route match failed, try comparing URL strings, if
-            if (!match && menuItem.Href != null)
+            if (!match && !String.IsNullOrWhiteSpace(menuItem.Href) && menuItem.Href != "#")
             {
                 string url = menuItem.Href.Replace("~/", viewContext.HttpContext.Request.PathBase);
                 match = viewContext.HttpContext.Request.Path.Equals(url, StringComparison.OrdinalIgnoreCase);
