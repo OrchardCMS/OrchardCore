@@ -23,7 +23,6 @@ namespace OrchardCore.Users.Controllers
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-        private readonly dynamic New;
         private readonly IDisplayManager<User> _userDisplayManager;
         private readonly INotifier _notifier;
 
@@ -120,13 +119,9 @@ namespace OrchardCore.Users.Controllers
 
             var model = new UsersIndexViewModel
             {
-                Users = results
-                    .Select(async x => new UserEntry
-                    {
-                        Shape = await _userDisplayManager.BuildDisplayAsync(x, this, "SummaryAdmin")
-                    })
-                    .Select(t=>t.Result)
-                    .ToList(),
+                Users = await Task.WhenAll(
+                    results.Select(async x => 
+                        new UserEntry { Shape = await _userDisplayManager.BuildDisplayAsync(x, this, "SummaryAdmin") })),
                 Options = options,
                 Pager = pagerShape
             };
