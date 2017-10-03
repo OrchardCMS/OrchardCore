@@ -27,6 +27,12 @@
     <None Update="Views\UserSaveButtons.Edit.cshtml">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
+    <None Update="Views\UserButtons.cshtml">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
+    <None Update="Views\UserFields.cshtml">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
     <None Update="Views\UserFields.Edit.cshtml">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>

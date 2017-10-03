@@ -5,17 +5,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
-using OrchardCore.Security;
-using OrchardCore.Security.Services;
 using OrchardCore.Settings;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 using YesSql;
 
@@ -26,35 +22,33 @@ namespace OrchardCore.Users.Controllers
         private readonly UserManager<IUser> _userManager;
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IHtmlLocalizer TH;
         private readonly ISiteService _siteService;
-        private readonly dynamic New;
         private readonly IDisplayManager<User> _userDisplayManager;
         private readonly INotifier _notifier;
+
+        private readonly dynamic New;
+        private readonly IHtmlLocalizer TH;
 
         public AdminController(
             IDisplayManager<User> userDisplayManager,
             IAuthorizationService authorizationService,
             ISession session,
             UserManager<IUser> userManager,
-            RoleManager<IRole> roleManager,
-            IRoleProvider roleProvider,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer,
+            INotifier notifier,
             ISiteService siteService,
             IShapeFactory shapeFactory,
-            INotifier notifier,
-            IUserService userService
+            IHtmlLocalizer<AdminController> htmlLocalizer
             )
         {
             _userDisplayManager = userDisplayManager;
-            _notifier = notifier;
-            New = shapeFactory;
-            _siteService = siteService;
-            TH = htmlLocalizer;
             _authorizationService = authorizationService;
             _session = session;
             _userManager = userManager;
+            _notifier = notifier;
+            _siteService = siteService;
+
+            New = shapeFactory;
+            TH = htmlLocalizer;
         }
         public async Task<ActionResult> Index(UserIndexOptions options, PagerParameters pagerParameters)
         {
@@ -125,9 +119,9 @@ namespace OrchardCore.Users.Controllers
 
             var model = new UsersIndexViewModel
             {
-                Users = results
-                    .Select(x => new UserEntry { User = x })
-                    .ToList(),
+                Users = await Task.WhenAll(
+                    results.Select(async x => 
+                        new UserEntry { Shape = await _userDisplayManager.BuildDisplayAsync(x, this, "SummaryAdmin") })),
                 Options = options,
                 Pager = pagerShape
             };

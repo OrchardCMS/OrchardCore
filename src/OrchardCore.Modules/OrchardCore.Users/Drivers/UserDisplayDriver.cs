@@ -34,6 +34,14 @@ namespace OrchardCore.Users.Drivers
             T = stringLocalizer;
         }
 
+        public override IDisplayResult Display(User user)
+        {
+            return Combine(
+                Shape<SummaryAdminUserViewModel>("UserFields", model => model.User = user).Location("SummaryAdmin", "Header:1"),
+                Shape<SummaryAdminUserViewModel>("UserButtons", model => model.User = user).Location("SummaryAdmin", "Actions:1")
+            );
+        }
+
         public override IDisplayResult Edit(User user)
         {
             return Shape<EditUserViewModel>("UserFields_Edit", async model =>
