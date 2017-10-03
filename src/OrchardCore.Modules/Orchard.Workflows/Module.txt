@@ -1,0 +1,11 @@
+﻿Name: Workflows
+AntiForgery: enabled
+Author: The Orchard Team
+Website: http://orchardproject.net
+Version: 2.0.x
+OrchardVersion: 2.0.x
+Category: Workflows
+Description: Provides tools to create custom workflows.
+Features:
+    Orchard.Workflows:
+        Description: Provides tools to create custom workflows.

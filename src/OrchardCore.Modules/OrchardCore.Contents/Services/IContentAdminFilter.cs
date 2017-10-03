@@ -11,4 +11,9 @@ namespace OrchardCore.Contents.Services
     {
         Task FilterAsync(IQuery<ContentItem> query, ListContentsViewModel model, PagerParameters pagerParameters, IUpdateModel updateModel);
     }
+
+    public interface IContentApiFilter
+    {
+        Task FilterAsync(IQuery<ContentItem> query, string parentContentItemId);
+    }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Extensions;
@@ -29,7 +29,45 @@ namespace Microsoft.Extensions.DependencyInjection
                     modules.WithConfiguration(configuration);
                 }
 
-                modules.WithDefaultFeatures("OrchardCore.Mvc", "OrchardCore.Settings", "OrchardCore.Setup", "OrchardCore.Recipes", "OrchardCore.Commons");
+                modules.WithDefaultFeatures(
+                    "OrchardCore.Mvc",
+                    "OrchardCore.Settings",
+                    "OrchardCore.Setup",
+                    "OrchardCore.Recipes",
+                    "OrchardCore.RestApis",
+                    "OrchardCore.Commons");
+            });
+
+            return services;
+        }
+
+        public static IServiceCollection AddBareOrchard(this IServiceCollection services, IConfiguration configuration)
+        {
+            return services.AddBareOrchard(configuration, "sites");
+        }
+
+        public static IServiceCollection AddBareOrchard(this IServiceCollection services, IConfiguration configuration, string sitesDirectoryName)
+        {
+            services.AddThemingHost();
+            services.AddManifestDefinition("Theme.txt", "theme");
+            services.AddExtensionLocation("Themes");
+            services.AddSitesFolder("App_Data", sitesDirectoryName);
+            services.AddCommands();
+            services.AddAuthentication();
+            services.AddModules(modules =>
+            {
+                if (configuration != null)
+                {
+                    modules.WithConfiguration(configuration);
+                }
+
+                modules.WithDefaultFeatures(
+                    "OrchardCore.Mvc", 
+                    "OrchardCore.Settings", 
+                    "OrchardCore.Setup", 
+                    "OrchardCore.Recipes", 
+                    "OrchardCore.RestApis",
+                    "OrchardCore.Commons");
             });
 
             return services;

@@ -10,7 +10,7 @@ namespace OrchardCore.CustomSettings
         private readonly CustomSettingsService _customSettingsService;
 
         public AdminMenu(
-            IStringLocalizer<AdminMenu> localizer, 
+            IStringLocalizer<AdminMenu> localizer,
             CustomSettingsService customSettingsService)
         {
             T = localizer;
@@ -18,7 +18,7 @@ namespace OrchardCore.CustomSettings
         }
 
         public IStringLocalizer T { get; set; }
-        
+
         public void BuildNavigation(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
@@ -26,10 +26,10 @@ namespace OrchardCore.CustomSettings
                 return;
             }
 
-            foreach(var type in _customSettingsService.GetSettingsTypes())
+            foreach (var type in _customSettingsService.GetSettingsTypes())
             {
                 builder
-                    .Add(T["Design"], design => design
+                    .Add(T["Configuration"], configuration => configuration
                         .Add(T["Settings"], settings => settings
                             .Add(new LocalizedString(type.DisplayName, type.DisplayName), layers => layers
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = type.Name })

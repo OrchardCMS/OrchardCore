@@ -65,13 +65,10 @@
             }
 
             <p>
-                @{
-                    var features = featureGroup.OrderBy(f => f.Descriptor.Name);
-                    var categoryFeatureNames = String.Join(" ", features.Select(f => f.Descriptor.Name));
-                }  
-                <h2 data-filter-value="@categoryFeatureNames">@categoryName</h2>
-                <ul class="list-group" data-filter-value="@categoryFeatureNames">
+                <h2>@categoryName</h2>
+                <ul class="list-group">
                     @{
+                        var features = featureGroup.OrderBy(f => f.Descriptor.Name);
                         foreach (var feature in features)
                         {
                             if (!Model.IsAllowed(feature.Descriptor.Extension))
@@ -91,7 +88,7 @@
                             var showDisable = true; // categoryName.ToString() != "Core";
                             var showEnable = Model.IsAllowed(feature.Descriptor.Extension) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup";
 
-                            <li class="list-group-item" data-filter-value="@featureName">
+                            <li class="list-group-item">
                                 <div class="properties">
                                     <div class="related">
                                         @if (showEnable && !feature.IsEnabled)
@@ -107,10 +104,10 @@
                                     @* Display the checkbox ?*@
                                     @if ((showEnable && !feature.IsEnabled) || (showDisable && feature.IsEnabled))
                                     {
-                                        <div class="checkbox">
+                                        <div class="form-check">
                                             <h5>
-                                                <label for="@feature.Descriptor.Id">
-                                                    <input type="checkbox" name="featureIds" id="@feature.Descriptor.Id" value="@feature.Descriptor.Id"/>
+                                                <label for="@feature.Descriptor.Id" class="form-check-label">
+                                                    <input type="checkbox" name="featureIds" id="@feature.Descriptor.Id" value="@feature.Descriptor.Id" class="form-check-input" />
                                                     @featureName
                                                 </label>
                                             </h5>
@@ -120,14 +117,14 @@
                                     {
                                         <h5>@featureName</h5>
                                     }
-
+                                    
                                     <p class="text-muted">@feature.Descriptor.Description</p>
                                     <div>
                                         @if (feature.Descriptor.Dependencies != null && feature.Descriptor.Dependencies.Any())
                                         {
                                             @foreach (var d in dependencies)
                                             {
-                                                <span class="badge badge-default">
+                                                <span class="badge badge-info">
                                                     @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
                                                 </span>
                                             }
@@ -143,9 +140,9 @@
                             </li>
                         }
                     }
-                </ul>
-            </p>
-        }
+                    </ul>
+                    </p>
+                        }
     }
 
     @*<li class="@featureClassName" id="@featureId" title="@string.Format(feature.IsEnabled ? "{0} is enabled" : "{0} is disabled", featureName)">
@@ -239,28 +236,5 @@
 <script at="Foot" type="text/javascript">
     //<![CDATA[
     var confirmDisableMessage = '@T["Disabling this feature will also disable the following dependent features. Are you sure you want to continue?"]'; //HttpUtility.JavaScriptStringEncode()
-
-
-    $(function() {
-        var searchBox = $('#search-box');
-
-        // On each keypress filter the list of features
-        searchBox.keyup(function(e) {
-            var search = $(this).val().toLowerCase();
-            var elementsToFilter = $("[data-filter-value]");
-
-            // On ESC, clear the search box and display all features
-            if (e.keyCode == 27 || search == '') {
-                searchBox.val('');
-                elementsToFilter.toggle(true);
-            } else {
-                elementsToFilter.each(function() {
-                    var text = $(this).data('filter-value').toLowerCase();
-                    var found = text.indexOf(search) > -1;
-                    $(this).toggle(found);
-                });
-            }
-        });
-    });
     //]]>
 </script>

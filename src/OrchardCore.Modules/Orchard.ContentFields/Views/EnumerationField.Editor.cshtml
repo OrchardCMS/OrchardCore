@@ -1,0 +1,17 @@
+﻿@model Orchard.ContentFields.ViewModels.EditEnumerationFieldViewModel
+@using Orchard.ContentFields.Settings;
+@using Orchard.ContentManagement.Metadata.Models
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<EnumerationFieldSettings>();
+    string name = Model.PartFieldDefinition.DisplayName();
+    string[] options = (!String.IsNullOrWhiteSpace(settings.Options)) ? settings.Options.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None) : new string[] { T["Select an option"].ToString() };
+    IEnumerable<SelectListItem> items = options.Select(o => new SelectListItem { Text = o, Value = o });
+}
+
+<fieldset class="form-group">
+    <div class="row col-sm">
+        <label asp-for="Value">@name</label>
+        <select asp-for="Value" class="form-control content-preview-select" asp-items="items"></select>
+        <span class="hint">@settings.Hint</span>
+    </div>
+</fieldset>

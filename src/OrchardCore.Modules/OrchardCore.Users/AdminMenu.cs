@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Navigation;
 using System;
 
@@ -21,13 +21,13 @@ namespace OrchardCore.Users
             }
 
             builder
-				.Add(T["Design"], design => design
-					.Add(T["Security"], "5", security => security
-						.Add(T["Users"], "5", installed => installed
-							.Action("Index", "Admin", "OrchardCore.Users")
-							.Permission(Permissions.ManageUsers)
-							.LocalNav()
-						)));
+                .Add(T["Configuration"], configuration => configuration
+                    .Add(T["Security"], "5", security => security
+                        .Add(T["Users"], "5", installed => installed
+                            .Action("Index", "Admin", "OrchardCore.Users")
+                            .Permission(Permissions.ManageUsers)
+                            .LocalNav()
+                        )));
         }
     }
 }

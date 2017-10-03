@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +15,12 @@ namespace OrchardCore.Modules
         /// Get the value to use to order startups. The default is 0.
         /// </summary>
         int Order { get; }
+
+        /// <summary>
+        /// This method gets called by the runtime to only add needed services to get the current shell descriptor.
+        /// </summary>
+        /// <param name="services">The collection of service descriptors.</param>
+        void ConfigureShellServices(IServiceCollection services);
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to add services to the container.
