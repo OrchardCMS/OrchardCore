@@ -1,11 +1,10 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Hosting.ShellBuilders;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -35,7 +34,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
             }
 
-            var describedContext = await CreateDescribedContextAsync(settings, MinimumShellDescriptor());
+            var describedContext = await CreateDescribedContextAsync(settings, BootstrapShellDescriptor());
 
             ShellDescriptor currentDescriptor;
             using (var scope = describedContext.EnterServiceScope())
@@ -100,5 +99,18 @@ namespace OrchardCore.Environment.Shell.Builders
             };
         }
 
+        private ShellDescriptor BootstrapShellDescriptor()
+        {
+            return new BootstrapShellDescriptor
+            {
+                SerialNumber = -1,
+                Features = new List<ShellFeature>(_shellFeatures),
+                Parameters = new List<ShellParameter>()
+            };
+        }
+    }
+
+    internal class BootstrapShellDescriptor : ShellDescriptor
+    {
     }
 }

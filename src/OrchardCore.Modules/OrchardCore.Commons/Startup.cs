@@ -1,7 +1,6 @@
 using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundTasks;
@@ -13,6 +12,7 @@ using OrchardCore.DisplayManagement.TagHelpers;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Data;
+using OrchardCore.Modules;
 using OrchardCore.Mvc;
 using OrchardCore.ResourceManagement;
 using OrchardCore.ResourceManagement.TagHelpers;
@@ -24,6 +24,12 @@ namespace OrchardCore.Commons
     /// </summary>
     public class Startup : StartupBase
     {
+        public override void ConfigureShellServices(IServiceCollection services)
+        {
+            services.AddDataAccess();
+            services.AddShellDescriptorStorage();
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddDeferredTasks();
