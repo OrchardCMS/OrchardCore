@@ -10,6 +10,7 @@ using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions;
+using Moq;
 
 namespace OrchardCore.Tests.Shell
 {
@@ -27,6 +28,7 @@ namespace OrchardCore.Tests.Shell
                 _applicationServiceProvider = applicationServices.BuildServiceProvider(),
                 new StubLoggerFactory(),
                 new NullLogger<ShellContainerFactory>(),
+                new Mock<IDependencyLoader>().Object,
                 applicationServices
             );
         }
