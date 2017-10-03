@@ -162,7 +162,12 @@
     <fieldset class="row connectionString" asp-validation-class-for="ConnectionString">
         <div class="form-group col-md-12">
             <label asp-for="ConnectionString">@T["Connection string"]</label>
-            <input asp-for="ConnectionString" class="form-control" />
+
+            <div class="input-group mb-2 mb-sm-0">
+                <input asp-for="ConnectionString" class="form-control pwd" type="password" />
+                <div class="input-group-addon reveal" title="@T["Show/hide connection string"]"><i class="fa fa-eye-slash" aria-hidden="true"></i></div>
+            </div>
+            
             <span asp-validation-for="ConnectionString" class="text-danger"></span>
             <span class="text-muted form-text small">@T["The connection string to your database instance. e.g., Data Source=<em>localhost</em>;Initial Catalog=<em>Orchard</em>;User Id=<em>userid</em>;Password=<em>password</em>"]</span>
         </div>
@@ -221,6 +226,15 @@
         $('#Password').popover({
             trigger: 'focus'
         })
+
+        $(".reveal").on('click',function() {
+            var $pwd = $(".pwd");
+            if ($pwd.attr('type') === 'password') {
+                $pwd.attr('type', 'text');
+            } else {
+                $pwd.attr('type', 'password');
+            }
+        });
     })
     //]]>
 </script>

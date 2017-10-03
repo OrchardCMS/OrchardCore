@@ -63,7 +63,7 @@
                 var formData = value;
                 if (!formData) return;
 
-                var encoded = window.btoa(formData);
+                var encoded = window.btoa(unescape(encodeURIComponent(formData)));
 
                 var chunks = Math.floor(encoded.length / 1364) + 1;
                 Cookies.set("orchard:templates:count", chunks, { path: "/" });

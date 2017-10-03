@@ -18,7 +18,7 @@ namespace OrchardCore.StorageProviders.FileSystem
             _localPath = localPath;
             _requestUrlPrefix = String.IsNullOrWhiteSpace(requestUrlPrefix) ? "" : "/" + NormalizePath(requestUrlPrefix);
             _pathPrefix = pathPrefix;
-            _publicPathPrefix = Combine(_requestUrlPrefix, _pathPrefix);
+            _publicPathPrefix = String.IsNullOrEmpty(_requestUrlPrefix) ? _pathPrefix : Combine(_requestUrlPrefix, _pathPrefix);
         }
 
         public string Combine(params string[] paths)
@@ -29,6 +29,12 @@ namespace OrchardCore.StorageProviders.FileSystem
             if (paths.Length > 0 && paths[0].StartsWith("/"))
             {
                 combined = "/" + combined;
+            }
+
+            // Remove the initial '/' if it was not present
+            if (paths.Length > 0 && !paths[0].StartsWith("/") && combined.StartsWith("/"))
+            {
+                combined = combined.TrimStart('/');
             }
 
             return combined;

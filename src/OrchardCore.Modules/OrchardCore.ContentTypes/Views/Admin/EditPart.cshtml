@@ -14,14 +14,6 @@
     @Html.ValidationSummary()
 
     <fieldset class="form-group">
-        <div class="row col-md ">
-            <label asp-for="DisplayName">@T["Display Name"]</label>
-            <input asp-for="DisplayName" class="form-control" />
-            <span class="hint">@T["Name of the type as it will be displayed in screens."]</span>
-        </div>
-    </fieldset>
-
-    <fieldset class="form-group">
         <div class="row col-sm">
             <label asp-for="Name">@T["Technical Name"]</label>
             <input asp-for="Name" class="form-control" readonly />

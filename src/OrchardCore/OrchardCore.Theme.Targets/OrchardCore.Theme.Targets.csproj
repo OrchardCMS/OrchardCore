@@ -6,8 +6,8 @@
 
   <!-- Add a ".props" file in the package specific to the "Theme" module type -->
   <ItemGroup>
-    <None Include="OrchardCore.Theme.props" Pack="true">
-      <PackagePath>build\netstandard2.0\OrchardCore.Theme.props</PackagePath>
+    <None Include="OrchardCore.Theme.Targets.props" Pack="true">
+      <PackagePath>build\netstandard2.0\OrchardCore.Theme.Targets.props</PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>
