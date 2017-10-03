@@ -52,7 +52,7 @@ namespace OrchardCore.Media
             services.AddSingleton<ContentPart, ImageMediaPart>();
             services.AddMedia();
 
-            services.AddLiquidFilter<MediaUrlFilter>("media_url");
+            services.AddLiquidFilter<MediaUrlFilter>("asset_url");
             services.AddLiquidFilter<ResizeUrlFilter>("resize_url");
             services.AddLiquidFilter<ImageTagFilter>("img_tag");
 

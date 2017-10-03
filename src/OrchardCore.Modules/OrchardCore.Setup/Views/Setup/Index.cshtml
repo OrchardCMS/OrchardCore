@@ -12,41 +12,46 @@
 }
 
 @{
-    var defaultRecipe = Model.Recipes.FirstOrDefault(x => x.Name == Model.RecipeName) ?? Model.Recipes.First();
+    var defaultRecipe = Model.Recipes.FirstOrDefault(x => x.Name == Model.RecipeName) ?? Model.Recipes.FirstOrDefault();
     var options = identityOptions.Value;
     var passwordOptions = new HtmlContentBuilder();
     IHtmlContent separator = HtmlString.Empty;
-    
+
     if (options.Password.RequireNonAlphanumeric)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one non-alphanumeric"]);
         separator = T[", "];
     }
-    
+
     if (options.Password.RequireUppercase)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one uppercase"]);
         separator = T[", "];
     }
-    
+
     if (options.Password.RequireLowercase)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one lowercase"]);
         separator = T[", "];
     }
-    
+
     if (options.Password.RequireDigit)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one digit"]);
         separator = T[", "];
     }
-    
+
     if (separator != HtmlString.Empty)
     {
         separator = T[" and "];
     }
 
     passwordOptions.AppendHtml(separator).AppendHtml(T["{0} characters in total", options.Password.RequiredLength]);
+
+    if (options.Password.RequiredUniqueChars > 1)
+    {
+        passwordOptions.AppendHtml(T[", with {0} unique characters", options.Password.RequiredUniqueChars]);
+    }
 
     var passwordTooltip = T["Password must have at least {0}.", passwordOptions];
 }
@@ -57,6 +62,13 @@
         <h1>@T["SETUP"]</h1>
         <p class="lead">@T["Please answer a few questions to configure your site."]</p>
     </div>
+
+    @if (defaultRecipe == null)
+    {
+        <div class="alert alert-danger" role="alert">
+            <strong>@T["No recipes available."]</strong> @T["It is not possible to set up a site without a recipe."]
+        </div>
+    }
 
     <div class="row">
         <fieldset class="form-group col-md-6" asp-validation-class-for="SiteName">
@@ -72,17 +84,28 @@
             <nav>
                 <div asp-validation-class-for="RecipeName">
                     <label asp-for="SiteName">@T["Recipe"]</label>
-                    <div id="recipes" class="dropdown">
-                        <button id="recipeButton" title="@defaultRecipe.Description" class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            @defaultRecipe.DisplayName
-                        </button>
-                        <div class="dropdown-menu">
-                            @foreach (var recipe in Model.Recipes.OrderBy(x => x.Name))
-                            {
-                                <a href="#" data-recipe-name="@recipe.Name" data-recipe-description="@recipe.Description" data-recipe-display-name="@recipe.DisplayName" class="dropdown-item">@recipe.DisplayName <span class="text-muted form-text small">@recipe.Description</span></a>
-                            }
+                    @if (defaultRecipe == null)
+                    {
+                        <div id="noRecipes" class="dropdown disabled">
+                            <button id="noRecipeButton" title="@T["No Recipes Available"]" class="btn btn-secondary dropdown-toggle disabled" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @T["No Recipes Available"]
+                            </button>
                         </div>
-                    </div>
+                    }
+                    else
+                    {
+                        <div id="recipes" class="dropdown">
+                            <button id="recipeButton" title="@defaultRecipe.Description" class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @defaultRecipe.DisplayName
+                            </button>
+                            <div class="dropdown-menu">
+                                @foreach (var recipe in Model.Recipes.OrderBy(x => x.Name))
+                                {
+                                    <a href="#" data-recipe-name="@recipe.Name" data-recipe-description="@recipe.Description" data-recipe-display-name="@recipe.DisplayName" class="dropdown-item">@recipe.DisplayName <span class="text-muted form-text small">@recipe.Description</span></a>
+                                }
+                            </div>
+                        </div>
+                    }
                     <span class="text-muted form-text small">@T["Recipes allow you to setup your site with additional pre-configured options, features and settings out of the box."]</span>
 
                 </div>

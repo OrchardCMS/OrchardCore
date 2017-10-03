@@ -5,7 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.AsModule\OrchardCore.AsModule.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Deployment.Abstractions\OrchardCore.Deployment.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Mvc.Abstractions\OrchardCore.Mvc.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
@@ -16,6 +17,18 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Shell.Abstractions\OrchardCore.Environment.Shell.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement.Abstractions\OrchardCore.ResourceManagement.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Views\Items\AllFeaturesDeploymentStep.Edit.cshtml">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
+    <None Update="Views\Items\AllFeaturesDeploymentStep.Summary.cshtml">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
+    <None Update="Views\Items\AllFeaturesDeploymentStep.Thumbnail.cshtml">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 ﻿using OrchardCore.Modules;
 
-namespace OrchardCore.AsModule
+namespace OrchardCore.Module.Targets
 {
     internal class Marker : StartupBase
     {

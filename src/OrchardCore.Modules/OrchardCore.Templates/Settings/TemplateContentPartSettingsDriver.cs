@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Templates.ViewModels;

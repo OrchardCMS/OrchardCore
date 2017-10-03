@@ -9,7 +9,6 @@ using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
 using Fluid.Values;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.Language;
@@ -121,7 +120,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     }
                 }
             }
-            
+
             var tagHelperType = Type.GetType(_descriptor.Name + ", " + _descriptor.AssemblyName);
 
             var _tagHelperActivator = _tagHelperActivators.GetOrAdd(tagHelperType, key =>
@@ -134,8 +133,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var tagHelperFactory = services.GetRequiredService<ITagHelperFactory>();
             var tagHelper = _tagHelperActivator(tagHelperFactory, (ViewContext)viewContext);
-            
-            var attributes = new TagHelperAttributeList();
+
+            var contextAttributes = new TagHelperAttributeList();
+            var outputAttributes = new TagHelperAttributeList();
 
             foreach (var name in arguments.Names)
             {
@@ -196,9 +196,13 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     }
                 }
 
+                var attr = new TagHelperAttribute(name.Replace("_", "-"), arguments[name].ToObjectValue());
+
+                contextAttributes.Add(attr);
+
                 if (!found)
                 {
-                    attributes.Add(new TagHelperAttribute(name.Replace("_", "-"), arguments[name].ToObjectValue()));
+                    outputAttributes.Add(attr);
                 }
             }
 
@@ -217,10 +221,10 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
             }
 
-            var tagHelperContext = new TagHelperContext(attributes,
+            var tagHelperContext = new TagHelperContext(contextAttributes,
                 new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
-            var tagHelperOutput = new TagHelperOutput(helper, attributes, (_, e)
+            var tagHelperOutput = new TagHelperOutput(helper, outputAttributes, (_, e)
                 => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content.ToString())));
 
             tagHelperOutput.Content.AppendHtml(content.ToString());
