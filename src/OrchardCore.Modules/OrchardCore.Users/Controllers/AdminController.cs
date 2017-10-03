@@ -23,14 +23,15 @@ namespace OrchardCore.Users.Controllers
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-        private readonly IDisplayManager<IUser> _userDisplayManager;
+        private readonly dynamic New;
+        private readonly IDisplayManager<User> _userDisplayManager;
         private readonly INotifier _notifier;
 
         private readonly dynamic New;
         private readonly IHtmlLocalizer TH;
 
         public AdminController(
-            IDisplayManager<IUser> userDisplayManager,
+            IDisplayManager<User> userDisplayManager,
             IAuthorizationService authorizationService,
             ISession session,
             UserManager<IUser> userManager,
@@ -174,12 +175,12 @@ namespace OrchardCore.Users.Controllers
             }
 
             var currentUser = await _userManager.FindByIdAsync(id);
-            if (currentUser == null)
+            if (!(currentUser is User))
             {
                 return NotFound();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(currentUser, this);
+            var shape = await _userDisplayManager.BuildEditorAsync((User) currentUser, this);
 
             return View(shape);
         }
@@ -199,7 +200,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(currentUser, this);
+            var shape = await _userDisplayManager.UpdateEditorAsync((User) currentUser, this);
 
             if (!ModelState.IsValid)
             {
@@ -221,7 +222,7 @@ namespace OrchardCore.Users.Controllers
 
             var currentUser = await _userManager.FindByIdAsync(id);
 
-            if (currentUser == null)
+            if (!(currentUser is User))
             {
                 return NotFound();
             }

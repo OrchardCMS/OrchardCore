@@ -150,9 +150,9 @@ namespace OrchardCore.Users
 
             services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
 
-            services.AddScoped<IDisplayManager<IUser>, DisplayManager<IUser>>();
-            services.AddScoped<IDisplayDriver<IUser>, UserDisplayDriver>();
-            services.AddScoped<IDisplayDriver<IUser>, UserButtonsDisplayDriver>();
+            services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
+            services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
+            services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
         }
     }
 }

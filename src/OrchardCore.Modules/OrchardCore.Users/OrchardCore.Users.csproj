@@ -21,13 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Views\IUser.SummaryAdmin.cshtml">
+    <None Update="Views\User.Create.cshtml">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
-    <None Update="Views\IUser.Create.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-    <None Update="Views\IUser.SaveButtons.cshtml">
+    <None Update="Views\UserSaveButtons.Edit.cshtml">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
     <None Update="Views\UserButtons.cshtml">
@@ -39,7 +36,7 @@
     <None Update="Views\UserFields.Edit.cshtml">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
-    <None Update="Views\IUser.Edit.cshtml">
+    <None Update="Views\User.Edit.cshtml">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
   </ItemGroup>

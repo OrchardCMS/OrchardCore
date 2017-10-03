@@ -7,12 +7,13 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Security.Services;
+using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class UserDisplayDriver : DisplayDriver<IUser>
+    public class UserDisplayDriver : DisplayDriver<User>
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IUserService _userService;
@@ -33,7 +34,7 @@ namespace OrchardCore.Users.Drivers
             T = stringLocalizer;
         }
 
-        public override IDisplayResult Display(IUser user)
+        public override IDisplayResult Display(User user)
         {
             return Combine(
                 Shape<SummaryAdminUserViewModel>("UserFields", model => model.User = user).Location("SummaryAdmin", "Header:1"),
@@ -41,7 +42,7 @@ namespace OrchardCore.Users.Drivers
             );
         }
 
-        public override IDisplayResult Edit(IUser user)
+        public override IDisplayResult Edit(User user)
         {
             return Shape<EditUserViewModel>("UserFields_Edit", async model =>
             {
@@ -57,7 +58,7 @@ namespace OrchardCore.Users.Drivers
             }).Location("Content:1");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(IUser user, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
             var model = new EditUserViewModel();
 
