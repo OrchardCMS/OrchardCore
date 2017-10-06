@@ -152,7 +152,7 @@
         }
     </div>
 
-    @if (Model.ConnectionStringPreset || (! string.IsNullOrEmpty(Model.DatabaseProvider) && !Model.DatabaseProviders.SingleOrDefault(dp => dp.Name == Model.DatabaseProvider).HasConnectionString))
+    @if (Model.ConnectionStringPreset || (! string.IsNullOrEmpty(Model.DatabaseProvider) && !Model.DatabaseProviders.SingleOrDefault(dp => dp.Value == Model.DatabaseProvider).HasConnectionString))
     {
         <input asp-for="ConnectionString" type="hidden" />
     }
