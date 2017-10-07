@@ -15,8 +15,7 @@
 </nav>
 
 <form asp-action="Index">
-    @* the form is nessecary to generate and antiforgery token for the delete action *@
-
+    @* the form is necessary to generate and antiforgery token for the delete action *@
     @if (Model.Queries.Any())
     {
         <ul class="list-group">
