@@ -3,21 +3,20 @@
 <h1>@RenderTitleSegments(T["Content Parts"])</h1>
 
 <nav class="admin-toolbar">
-
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-            <a asp-route-action="CreatePart" class="btn btn-primary" role="button">@T["Create new part"]</a>
+            <a asp-route-action="CreatePart" id="btnCreate" class="btn btn-primary" role="button">@T["Create new part"]</a>
         </li>
     </ul>
     <form class="form-inline my-2 my-lg-0">
-        <input id="search-box" class="form-control" type="text" placeholder="@T["Filter"]" autofocus="autofocus">
+        <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Filter"]" autofocus="autofocus">
     </form>
 </nav>
 
 <ul class="list-group">
     @foreach (var type in Model.Parts)
     {
-        <li class="list-group-item" data-filter-value="@type.DisplayName">
+        <li class="list-group-item" data-filter-value="@type.DisplayName" data-type-name="@type.Name">
             @Html.DisplayFor(m => type)
         </li>
     }
@@ -27,12 +26,12 @@
     $(function() {
         var searchBox = $('#search-box');
 
-        // On each keypress filter the list of features
+        // On each keypress filter the list of parts
         searchBox.keyup(function(e) {
             var search = $(this).val().toLowerCase();
             var elementsToFilter = $("[data-filter-value]");
 
-            // On ESC, clear the search box and display all features
+            // On ESC, clear the search box and display all parts
             if (e.keyCode == 27 || search == '') {
                 searchBox.val('');
                 elementsToFilter.toggle(true);
@@ -42,6 +41,19 @@
                     var found = text.indexOf(search) > -1;
                     $(this).toggle(found);
                 });
+            }
+
+            // On Enter, redirect to the edit page if the part exists or the create page with a suggestion
+            if (e.keyCode == 13) {
+                var visibleRows = $("[data-type-name]:visible");
+                if (visibleRows.length > 0) {
+                    var editLink = $(".related a:last", visibleRows[0]);
+                    location.href = editLink.attr("href");
+                } else {
+                    var primaryButton = $("#btnCreate");
+                    location.href = primaryButton.attr("href") + "?suggestion=" + search;
+                }
+                return;
             }
         });
     });
