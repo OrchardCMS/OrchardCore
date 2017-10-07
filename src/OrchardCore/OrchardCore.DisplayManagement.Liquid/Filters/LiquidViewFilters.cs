@@ -49,7 +49,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         {
             if (!context.AmbientValues.TryGetValue("ShapeFactory", out dynamic shapeFactory))
             {
-                throw new ArgumentException("ShapeFactory missing while invoking 'date_time'");
+                throw new ArgumentException("ShapeFactory missing while invoking 'new_shape'");
             }
 
             var type = input.ToStringValue();
