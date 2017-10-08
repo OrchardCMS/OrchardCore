@@ -1,5 +1,5 @@
 /*! =======================================================
-                      VERSION  9.7.2              
+                      VERSION  9.9.0              
 ========================================================= */
 "use strict";
 
@@ -296,6 +296,9 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 					var min = this.options.min === 0 ? 0 : Math.log(this.options.min);
 					var max = Math.log(this.options.max);
 					var value = Math.exp(min + (max - min) * percentage / 100);
+					if (Math.round(value) === this.options.max) {
+						return this.options.max;
+					}
 					value = this.options.min + Math.round((value - this.options.min) / this.options.step) * this.options.step;
 					/* Rounding to the nearest step could exceed the min or
       * max, so clip to those values. */
@@ -460,12 +463,12 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 
 				/* Create highlight range elements */
 				this.rangeHighlightElements = [];
-				if (Array.isArray(this.options.rangeHighlights) && this.options.rangeHighlights.length > 0) {
-					for (var j = 0; j < this.options.rangeHighlights.length; j++) {
-
+				var rangeHighlightsOpts = this.options.rangeHighlights;
+				if (Array.isArray(rangeHighlightsOpts) && rangeHighlightsOpts.length > 0) {
+					for (var j = 0; j < rangeHighlightsOpts.length; j++) {
 						var rangeHighlightElement = document.createElement("div");
-						rangeHighlightElement.className = "slider-rangeHighlight slider-selection";
-
+						var customClassString = rangeHighlightsOpts[j].class || "";
+						rangeHighlightElement.className = "slider-rangeHighlight slider-selection " + customClassString;
 						this.rangeHighlightElements.push(rangeHighlightElement);
 						sliderTrack.appendChild(rangeHighlightElement);
 					}
@@ -1878,25 +1881,23 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
   		Attach to global namespace
   	*********************************/
 		if ($ && $.fn) {
-			(function () {
-				var autoRegisterNamespace = void 0;
+			var autoRegisterNamespace = void 0;
 
-				if (!$.fn.slider) {
-					$.bridget(NAMESPACE_MAIN, Slider);
-					autoRegisterNamespace = NAMESPACE_MAIN;
-				} else {
-					if (windowIsDefined) {
-						window.console.warn("bootstrap-slider.js - WARNING: $.fn.slider namespace is already bound. Use the $.fn.bootstrapSlider namespace instead.");
-					}
-					autoRegisterNamespace = NAMESPACE_ALTERNATE;
+			if (!$.fn.slider) {
+				$.bridget(NAMESPACE_MAIN, Slider);
+				autoRegisterNamespace = NAMESPACE_MAIN;
+			} else {
+				if (windowIsDefined) {
+					window.console.warn("bootstrap-slider.js - WARNING: $.fn.slider namespace is already bound. Use the $.fn.bootstrapSlider namespace instead.");
 				}
-				$.bridget(NAMESPACE_ALTERNATE, Slider);
+				autoRegisterNamespace = NAMESPACE_ALTERNATE;
+			}
+			$.bridget(NAMESPACE_ALTERNATE, Slider);
 
-				// Auto-Register data-provide="slider" Elements
-				$(function () {
-					$("input[data-provide=slider]")[autoRegisterNamespace]();
-				});
-			})();
+			// Auto-Register data-provide="slider" Elements
+			$(function () {
+				$("input[data-provide=slider]")[autoRegisterNamespace]();
+			});
 		}
 	})($);
 
