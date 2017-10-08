@@ -11,8 +11,8 @@ namespace OrchardCore.Tests.Localization
 {
     public class PortableObjectStringLocalizerTests
     {
-        private static PluralizationRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
-        private static PluralizationRuleDelegate _enPluralRule = n => (n == 1) ? 0 : 1;
+        private static PluralizationRule _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
+        private static PluralizationRule _enPluralRule = n => (n == 1) ? 0 : 1;
         private Mock<ILocalizationManager> _localizationManager;
         private Mock<ILogger> _logger;
 
@@ -197,7 +197,7 @@ namespace OrchardCore.Tests.Localization
             SetupDictionary(cultureName, records, _csPluralRule);
         }
 
-        private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records, PluralizationRuleDelegate pluralRule)
+        private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records, PluralizationRule pluralRule)
         {
             var dictionary = new CultureDictionary(cultureName, pluralRule);
             dictionary.MergeTranslations(records);
