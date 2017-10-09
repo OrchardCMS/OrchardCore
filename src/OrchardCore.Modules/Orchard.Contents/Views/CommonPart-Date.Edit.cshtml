@@ -1,8 +1,0 @@
-﻿@using Orchard.Contents.ViewModels;
-@model DateEditorViewModel
-
-<fieldset class="form-group" asp-validation-class-for="CreatedUtc">
-    <label asp-for="CreatedUtc">@T["Created"] <span asp-validation-for="CreatedUtc"></span></label>
-    <input asp-for="CreatedUtc" class="form-control" />
-    <span class="hint">@T["The date when the content item was created or first published."]</span>
-</fieldset>

@@ -1,0 +1,21 @@
+@using OrchardCore.ContentManagement
+@using OrchardCore.ContentManagement.Metadata
+@using OrchardCore.Mvc.Utilities
+
+@inject IContentDefinitionManager ContentDefinitionManager
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var contentTypeDefinition = ContentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+    var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
+}
+
+<h1>@RenderTitleSegments(T["Edit {0}", typeDisplayName])</h1>
+
+<form asp-action="Edit" sp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
+    @Html.ValidationSummary()
+    @await DisplayAsync(Model)
+
+    <input type="hidden" name="MenuContentItemId" value="@Model.MenuContentItemId" />
+    <input type="hidden" name="MenuItemId" value="@Model.MenuItemId" />
+</form>

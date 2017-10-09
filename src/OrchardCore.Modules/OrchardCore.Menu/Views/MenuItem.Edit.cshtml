@@ -1,0 +1,41 @@
+﻿<style asp-src="/OrchardCore.Contents/Styles/Contents.min.css" debug-src="/OrchardCore.Contents/Styles/Contents.css"></style>
+
+<div class="edit-container">
+    <div class="edit-body">
+        <div class="edit-item-primary">
+            @if (Model.Content != null)
+            {
+                <div class="edit-item-content">
+                    @await DisplayAsync(Model.Content)
+                </div>
+            }
+        </div>
+        <div class="edit-item-parts">
+            @if (Model.Parts != null)
+            {
+                @await DisplayAsync(Model.Parts)
+            }
+        </div>
+
+        <div class="edit-item-secondary group">
+            @if (Model.Actions != null)
+            {
+                <div class="edit-item-actions form-group">
+                    @await DisplayAsync(Model.Actions)
+                </div>
+            }
+        </div>
+    </div>
+@if (Model.Sidebar != null)
+{
+    <div class="edit-sidebar-handler"></div>
+    <div class="edit-sidebar group">
+        @await DisplayAsync(Model.Sidebar)
+    </div>
+}
+</div>
+
+@if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
+{
+    @Html.Hidden("returnUrl", Context.Request.Query["returnUrl"])
+}

@@ -1,0 +1,58 @@
+@model UsersIndexViewModel
+
+
+<h1>@RenderTitleSegments(T["Users"])</h1>
+
+<nav class="admin-toolbar">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add User"]</a>
+        </li>
+        @*<li class="nav-item">
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    @T["Actions"]
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#">@T["Approve"]</a>
+                    <a class="dropdown-item" href="#">@T["Disable"]</a>
+                    <a class="dropdown-item" href="#">@T["Send challenge E-mail"]</a>
+                    <a class="dropdown-item" href="#">@T["Delete"]</a>
+                </div>
+            </div>
+        </li>*@
+        @*@Html.TextBoxFor(m => m.Options.Search, new { @class = "text" })
+            <label for="filterResults">@T("Filter:")</label>
+            <select id="filterResults" name="@Html.NameOf(m => m.Options.Filter)">
+                @Html.SelectOption(Model.Options.Filter, UsersFilter.All, T("All Users").ToString())
+                @Html.SelectOption(Model.Options.Filter, UsersFilter.Approved, T("Approved Users").ToString())
+                @Html.SelectOption(Model.Options.Filter, UsersFilter.Pending, T("Pending Users").ToString())
+                @Html.SelectOption(Model.Options.Filter, UsersFilter.EmailPending, T("Pending Emails").ToString())
+            </select>
+            <label for="sortResults">@T("Sort by:")</label>
+            <select id="sortResults" name="@Html.NameOf(m => m.Options.Order)">
+                @Html.SelectOption(Model.Options.Order, UsersOrder.Name, T("Name").ToString())
+                @Html.SelectOption(Model.Options.Order, UsersOrder.Email, T("Email").ToString())
+                @Html.SelectOption(Model.Options.Order, UsersOrder.CreatedUtc, T("Creation Time").ToString())
+                @Html.SelectOption(Model.Options.Order, UsersOrder.LastLoginUtc, T("Last Login Time").ToString())
+            </select>*@
+    </ul>
+    <form asp-action="Index" method="get" class="form-inline">
+        <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+        <button type="submit" class="btn btn-secondary my-2 my-sm-0">@T["Search"]</button>
+    </form>
+</nav>
+
+@using (Html.BeginForm())
+{
+    <ul class="list-group">
+        @foreach (var entry in Model.Users)
+        {
+            <li class="list-group-item">
+                @await DisplayAsync(entry.Shape)
+            </li>
+        }
+    </ul>
+}
+
+@await DisplayAsync(Model.Pager)

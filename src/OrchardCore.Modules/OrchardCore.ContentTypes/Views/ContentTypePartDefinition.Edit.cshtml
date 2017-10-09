@@ -1,0 +1,13 @@
+﻿@using OrchardCore.ContentManagement.Metadata.Models;
+@using OrchardCore.ContentManagement.Metadata.Settings;
+
+@{
+    ContentTypePartDefinition contentTypePartDefinition = Model.ContentPart;
+    var contentPartSettings = contentTypePartDefinition.PartDefinition.Settings.ToObject<ContentPartSettings>();
+    var description = contentTypePartDefinition.Description();
+}
+
+@if(Model.Content != null)
+{
+    @await DisplayAsync(Model.Content)
+}

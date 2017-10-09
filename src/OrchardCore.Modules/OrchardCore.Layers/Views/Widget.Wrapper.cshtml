@@ -1,0 +1,19 @@
+@using OrchardCore.DisplayManagement
+@using OrchardCore.Layers.Models
+
+@{ 
+    ContentItem widget = Model.Widget;
+    bool rendertitle = widget.Content.LayerMetadata.RenderTitle;
+}
+
+<div class="widget-container">
+    @if (rendertitle)
+    {
+        var widgetTitle = Factory.Create("Widget_Title", new { Widget = widget });
+        widgetTitle.Metadata.Alternates.Add("Widget_Title__" + widget.ContentType);
+
+        @await DisplayAsync(widgetTitle)
+    }
+
+    @await DisplayAsync(Model.Content)
+</div>

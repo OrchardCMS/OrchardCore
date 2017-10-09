@@ -1,0 +1,14 @@
+@using OrchardCore.ContentManagement.Metadata.Models;
+
+@{
+    ContentPartFieldDefinition contentPartFieldDefinition = Model.ContentField;
+}
+
+
+@if (Model.Content != null)
+{
+    <fieldset class="form-group">
+        @await DisplayAsync(Model.Content)
+    </fieldset>
+}
+

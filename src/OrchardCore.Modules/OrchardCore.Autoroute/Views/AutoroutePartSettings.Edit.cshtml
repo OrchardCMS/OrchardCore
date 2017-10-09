@@ -1,0 +1,28 @@
+@model OrchardCore.Autoroute.ViewModels.AutoroutePartSettingsViewModel
+
+<fieldset class="form-group">
+    <div class="row col-lg">
+        <label asp-for="Pattern">@T["Pattern"]</label>
+        <input asp-for="Pattern" class="form-control" />
+        <span class="hint">@T["The pattern used to render the custom url of this content type."]</span>
+    </div>
+
+</fieldset>
+
+<fieldset class="form-check">
+    <div class="row col-lg">
+        <label class="form-check-label">
+            <input asp-for="AllowCustomPath" type="checkbox" class="form-check-input" checked="@Model.AllowCustomPath" /> @T["Allow custom path"]
+            <span class="hint">@T["Check to allow users to set a custom path, otherwise it will be automatically generated."]</span>
+        </label>
+    </div>
+</fieldset>
+
+<fieldset class="form-check">
+    <div class="row col-lg">
+        <label class="form-check-label">
+            <input asp-for="ShowHomepageOption" type="checkbox" class="form-check-input" checked="@Model.ShowHomepageOption" /> @T["Show homepage options"]
+            <span class="hint">@T["Check to allow the content items of this content type to be set as the homepage. It will only be visible to users with the appropriate permission."]</span>
+        </label>
+    </div>
+</fieldset>
