@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
@@ -36,7 +36,9 @@ namespace OrchardCore.Admin
                 return;
             }
 
-            if (filterContext.HttpContext.Response.StatusCode != 200)
+            // Don't create the menu if the status code is 3xx
+            var statusCode = filterContext.HttpContext.Response.StatusCode;
+            if (statusCode >= 300 && statusCode < 400)
             {
                 return;
             }
