@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using GraphQL.Types;
 using OrchardCore.Autoroute.Model;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Flows.Models;
 using OrchardCore.Title.Model;
 
@@ -10,50 +8,9 @@ namespace OrchardCore.RestApis.Types
 {
     public class ContentItemType : AutoRegisteringObjectGraphType<ContentItem>
     {
-        public ContentItemType(
-            IContentDefinitionManager contentDefinitionManager)
+        public ContentItemType()
         {
             Name = "contentitem";
-
-            //Field("id", h => h.ContentItemId).Description("The id of the content item.");
-
-            //Field<ListGraphType>(
-            //    "metadata",
-            //    resolve: context => 
-            //    );
-
-
-          //  Field<ListGraphType<ContentPartInterface>>(
-          //"parts",
-          //resolve: context =>
-          //{
-              
-          //    var typeDefinition = contentDefinitionManager.GetTypeDefinition(context.Source.ContentType);
-
-          //    var typeParts = new List<ContentElement>();
-
-          //    foreach (var part in typeDefinition.Parts)
-          //    {
-          //        var name = part.Name; // About
-          //              var partName = part.PartDefinition.Name; // BagPart
-
-          //              var contentPart = contentParts.FirstOrDefault(x => x.GetType().Name == partName);
-
-          //        if (contentPart != null)
-          //        {
-          //            typeParts.Add(context
-          //                .Source
-          //                .Get(
-          //                    contentPart.GetType(),
-          //                    name));
-          //        }
-          //    }
-
-          //    return typeParts;
-          //});
-
-
-
         }
     }
 

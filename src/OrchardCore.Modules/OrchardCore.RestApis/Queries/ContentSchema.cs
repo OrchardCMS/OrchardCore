@@ -28,9 +28,9 @@ namespace OrchardCore.RestApis.Queries
 
             foreach (var typeDefinition in typeDefinitions)
             {
-                var typeType = new ContentItemType(contentDefinitionManager)
+                var typeType = new ContentItemType
                 {
-                    Name = typeDefinition.Name
+                    Name = typeDefinition.Name, // Blog
                 };
 
                 foreach (var part in typeDefinition.Parts)
@@ -66,7 +66,7 @@ namespace OrchardCore.RestApis.Queries
                     Arguments = new QueryArguments(
                         new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the content item" }
                     ),
-                    Resolver = new FuncFieldResolver<ContentItemType, Task<object>>(async context => await serviceProvider.GetService<IContentManager>().GetAsync(context.GetArgument<string>("id")))
+                    Resolver = new FuncFieldResolver<Task<ContentItem>>(context => serviceProvider.GetService<IContentManager>().GetAsync(context.GetArgument<string>("id")))
                 });
             }
             ////AddField(new EventStreamFieldType
