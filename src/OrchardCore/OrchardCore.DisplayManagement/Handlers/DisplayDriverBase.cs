@@ -17,7 +17,7 @@ namespace OrchardCore.DisplayManagement.Handlers
             return new ShapeResult(
                 typeof(TModel).Name,
                 ctx => ctx.ShapeFactory.Create<TModel>(typeof(TModel).Name, 
-                shape => initialize(shape))
+                async shape => await initialize(shape))
                 ).Prefix(Prefix);
         }
 
@@ -36,7 +36,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         {
             return new ShapeResult(
                 shapeType,
-                ctx => ctx.ShapeFactory.Create<TModel>(shapeType, shape => initialize(shape)))
+                ctx => ctx.ShapeFactory.Create<TModel>(shapeType, async shape => await initialize(shape)))
                 .Prefix(Prefix);
         }
 
