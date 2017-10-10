@@ -46,8 +46,8 @@ namespace OrchardCore.RestApis.Queries
 
                         if (p != null)
                         {
-                            // Add Field needs to be like Content Item and Content Items.... so you can filter by blog...
-
+                            // Add Field needs to be like Content Item and Content Items.... 
+                            // so you can filter by blog...
                             typeType.AddField(new FieldType
                             {
                                 Name = name,
@@ -64,11 +64,12 @@ namespace OrchardCore.RestApis.Queries
                     Name = typeDefinition.Name,
                     ResolvedType = typeType,
                     Arguments = new QueryArguments(
-                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the content item" }
+                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "contentItemId", Description = "contentItemId of the content item" }
                     ),
-                    Resolver = new FuncFieldResolver<Task<ContentItem>>(context => serviceProvider.GetService<IContentManager>().GetAsync(context.GetArgument<string>("id")))
+                    Resolver = new FuncFieldResolver<Task<ContentItem>>(context => serviceProvider.GetService<IContentManager>().GetAsync(context.GetArgument<string>("contentItemId")))
                 });
             }
+         
             ////AddField(new EventStreamFieldType
             ////{
             ////    Name = "messageAdded",
@@ -78,9 +79,7 @@ namespace OrchardCore.RestApis.Queries
 
             Query = contentType;
 
-            RegisterType<TitlePartType>();
-            //RegisterType<AutoRoutePartType>();
-            //RegisterType<BagPartType>();
+            RegisterTypes(objectGraphTypes.ToArray());
         }
     }
 }

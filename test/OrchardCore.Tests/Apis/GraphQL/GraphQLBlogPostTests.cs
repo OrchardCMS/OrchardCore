@@ -40,7 +40,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var blogId = await CreateBlog();
 
             var titlePart = @"titlePart: { ""title"": ""Hi There"" }";
-            var containedPart = @"containedPart: { ""listContentItemId"": " + blogId + " }";
+            var containedPart = @"containedPart: { ""listContentItemId"": """ + blogId + @""" }";
 
             var variables =
 @"{ 
@@ -70,7 +70,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var blogPostId = await CreateBlogPost(blogId, "Hi There");
 
-            var query = HttpUtility.UrlEncode("query { blog(id: \""+ blogId + "\") { titlePart { title } } }");
+            var query = HttpUtility.UrlEncode("query { blog(contentItemId: \"" + blogId + "\") { titlePart { title } } }");
             var response = await _siteContext.Site.Client.GetAsync("graphql?query=" + query);
 
             Assert.True(response.IsSuccessStatusCode);
