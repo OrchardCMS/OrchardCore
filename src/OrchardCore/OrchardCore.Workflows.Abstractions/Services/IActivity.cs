@@ -2,11 +2,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Entities;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
 {
-    public interface IActivity
+    public interface IActivity : IEntity
     {
         string Name { get; }
         LocalizedString Category { get; }
@@ -27,7 +28,7 @@ namespace OrchardCore.Workflows.Services
         /// Executes the current activity.
         /// </summary>
         /// <returns>The names of the resulting outcomes.</returns>
-        Task<IEnumerable<LocalizedString>> Execute(WorkflowContext workflowContext, ActivityContext activityContext);
+        Task<IEnumerable<LocalizedString>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext);
 
         /// <summary>
         /// Called on each activity when a workflow is about to start.

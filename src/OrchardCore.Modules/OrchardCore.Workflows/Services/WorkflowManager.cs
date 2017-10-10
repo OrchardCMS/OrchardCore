@@ -136,13 +136,16 @@ namespace OrchardCore.Workflows.Services
             }
         }
 
-        private ActivityContext CreateActivityContext(ActivityRecord activity)
+        private ActivityContext CreateActivityContext(ActivityRecord activityRecord)
         {
+            var activity = _activitiesManager.GetActivityByName(activityRecord.Name);
+            var entity = activity as Entity;
+
+            entity.Properties = activityRecord.Properties;
             return new ActivityContext
             {
-                Record = activity,
-                Activity = _activitiesManager.GetActivityByName(activity.Name),
-                State = new Lazy<dynamic>(() => DeserializeState(activity.State))
+                Record = activityRecord,
+                Activity = activity
             };
         }
 
@@ -263,7 +266,7 @@ namespace OrchardCore.Workflows.Services
                     continue;
                 }
 
-                var outcomes = (await activityContext.Activity.Execute(workflowContext, activityContext)).ToList();
+                var outcomes = (await activityContext.Activity.ExecuteAsync(workflowContext, activityContext)).ToList();
 
                 // Signal every activity that the activity is executed.
                 InvokeActivities(a => a.OnActivityExecuted(workflowContext, activityContext));

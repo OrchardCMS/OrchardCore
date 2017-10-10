@@ -1,13 +1,11 @@
-﻿using System;
 using System.Collections.Generic;
-using Orchard.Security.Permissions;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Workflows
 {
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageWorkflows = new Permission("ManageWorkflows", "Manage workflows");
-
 
         public IEnumerable<Permission> GetPermissions()
         {

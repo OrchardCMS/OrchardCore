@@ -4,6 +4,11 @@ using YesSql.Indexes;
 
 namespace OrchardCore.Workflows.Indexes
 {
+    public class WorkflowDefinitionByNameIndex : MapIndex
+    {
+        public string Name { get; set; }
+    }
+
     public class WorkflowDefinitionByStartActivityIndex : MapIndex
     {
         public string Name { get; set; }
@@ -16,6 +21,12 @@ namespace OrchardCore.Workflows.Indexes
     {
         public override void Describe(DescribeContext<WorkflowDefinition> context)
         {
+            context.For<WorkflowDefinitionByNameIndex>()
+                .Map(workflowDefinition => new WorkflowDefinitionByNameIndex
+                {
+                    Name = workflowDefinition.Name
+                });
+
             context.For<WorkflowDefinitionByStartActivityIndex>()
                 .Map(workflowDefinition =>
                 {

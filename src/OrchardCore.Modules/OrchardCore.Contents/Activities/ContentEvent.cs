@@ -1,26 +1,51 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Activities
 {
-    public abstract class ContentActivity : Workflows.Services.Activity
+    public abstract class ContentEvent : Event
     {
         protected readonly IStringLocalizer S;
 
-        public ContentActivity(IStringLocalizer s)
+        public ContentEvent(IStringLocalizer s)
         {
             S = s;
         }
 
+        public override bool CanStartWorkflow => true;
         public override LocalizedString Category => S["Content Items"];
 
         public override bool CanExecute(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            var content = GetContent(workflowContext);
-            return content != null;
+            try
+            {
+                var contentTypesState = activityContext.Activity.As<string>("ContentTypes");
+
+                // "" means 'any'.
+                if (string.IsNullOrEmpty(contentTypesState))
+                {
+                    return true;
+                }
+
+                var contentTypes = contentTypesState.Split(',');
+                var content = GetContent(workflowContext);
+
+                if (content == null)
+                {
+                    return false;
+                }
+
+                return contentTypes.Any(contentType => content.ContentItem.ContentType == contentType);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public override IEnumerable<LocalizedString> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)

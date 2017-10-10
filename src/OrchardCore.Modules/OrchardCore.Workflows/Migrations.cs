@@ -1,28 +1,24 @@
-﻿using Orchard.Data.Migration;
-using OrchardCore.Workflows.Models;
+using OrchardCore.Data.Migration;
+using OrchardCore.Workflows.Indexes;
 
 namespace OrchardCore.Workflows
 {
     public class Migrations : DataMigration
     {
-        public int Create() {
-            SchemaBuilder.CreateMapIndexTable(nameof(ActivityIndex), table => table
+        public int Create()
+        {
+            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionByStartActivityIndex), table => table
                 .Column<string>("Name")
-                .Column<bool>("DefinitionEnabled")
-                .Column<bool>("Start")
+                .Column<bool>("IsEnabled")
+                .Column<bool>("HasStart")
+                .Column<string>("StartActivityName")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(AwaitingActivityIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowInstanceByAwaitingActivitiesIndex), table => table
+                .Column<int>("ActivityId")
                 .Column<string>("ActivityName")
-                .Column<bool>("ActivityStart")
-            );
-
-            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionIndex), table => table
-                .Column<string>("Name")
-            );
-
-            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowWorkflowDefinitionIndex), table => table
-                .Column<int>("DefinitionId")
+                .Column<bool>("ActivityIsStart")
+                .Column<int>("WorkflowInstanceId")
             );
 
             return 1;

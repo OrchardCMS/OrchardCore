@@ -1,37 +1,38 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Security.Authentication;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Notify;
-using Orchard.Environment.Shell;
-using Orchard.Mvc.ActionConstraints;
-using Orchard.Navigation;
-using Orchard.Settings;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Mvc.ActionConstraints;
+using OrchardCore.Navigation;
+using OrchardCore.Settings;
+using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;
 using YesSql;
+using ActivityRecord = OrchardCore.Workflows.Models.Activity;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Workflows.Controllers
 {
-    public class AdminController : Controller, IUpdateModel {
+    public class AdminController : Controller, IUpdateModel
+    {
         private readonly ISiteService _siteService;
-        private readonly YesSql.ISession _session;
+        private readonly ISession _session;
         private readonly IActivitiesManager _activitiesManager;
         private readonly IAuthorizationService _authorizationService;
 
@@ -56,7 +57,8 @@ namespace OrchardCore.Workflows.Controllers
             HtmlEncoder htmlEncoder,
             IStringLocalizer<AdminController> s,
             IHtmlLocalizer<AdminController> h
-            ) {
+            )
+        {
             _siteService = siteService;
             _session = session;
             _activitiesManager = activitiesManager;
@@ -71,7 +73,8 @@ namespace OrchardCore.Workflows.Controllers
             H = h;
         }
 
-        public async Task<IActionResult> Index(AdminIndexOptions options, PagerParameters pagerParameters) {
+        public async Task<IActionResult> Index(AdminIndexOptions options, PagerParameters pagerParameters)
+        {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
                 return Unauthorized();
@@ -86,13 +89,13 @@ namespace OrchardCore.Workflows.Controllers
                 options = new AdminIndexOptions();
             }
 
-            var query = _session.Query<Workflow, WorkflowIndex>();
+            var query = _session.Query<WorkflowDefinition, WorkflowDefinitionByNameIndex>();
 
-            switch (options.Filter) {
+            switch (options.Filter)
+            {
                 case WorkflowDefinitionFilter.All:
-                    break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    break;
             }
 
             if (!string.IsNullOrWhiteSpace(options.Search))
@@ -100,7 +103,8 @@ namespace OrchardCore.Workflows.Controllers
                 query = query.Where(w => w.Name.Contains(options.Search));
             }
 
-            switch (options.Order) {
+            switch (options.Order)
+            {
                 case WorkflowDefinitionOrder.Name:
                     query = query.OrderBy(u => u.Name);
                     break;
@@ -113,7 +117,7 @@ namespace OrchardCore.Workflows.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            // Maintain previous route data when generating page links
+            // Maintain previous route data when generating page links.
             var routeData = new RouteData();
             routeData.Values.Add("Options.Filter", options.Filter);
             routeData.Values.Add("Options.Search", options.Search);
@@ -121,12 +125,15 @@ namespace OrchardCore.Workflows.Controllers
 
             var pagerShape = New.Pager(pager).TotalItemCount(count).RouteData(routeData);
 
-            var model = new AdminIndexViewModel {
+            var model = new AdminIndexViewModel
+            {
                 WorkflowDefinitions = results
-                    .Select(x => new WorkflowDefinitionEntry {
+                    .Select(x => new WorkflowDefinitionEntry
+                    {
                         Definition = x,
                         DefinitionId = x.Id,
-                        Name = x.Name})
+                        Name = x.Name
+                    })
                     .ToList(),
                 Options = options,
                 Pager = pagerShape
@@ -135,7 +142,7 @@ namespace OrchardCore.Workflows.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkEdit")]
         public async Task<IActionResult> BulkEdit(AdminIndexOptions options, PagerParameters pagerParameters)
         {
@@ -164,7 +171,7 @@ namespace OrchardCore.Workflows.Controllers
 
                     foreach (var entry in checkedEntries)
                     {
-                        var workflowDefinition = await _session.GetAsync<Workflow>(entry.DefinitionId);
+                        var workflowDefinition = await _session.GetAsync<WorkflowDefinition>(entry.DefinitionId);
 
                         if (workflowDefinition != null)
                         {
@@ -181,54 +188,28 @@ namespace OrchardCore.Workflows.Controllers
             return RedirectToAction("Index", new { page = pagerParameters.Page, pageSize = pagerParameters.PageSize });
         }
 
-        //public async Task<IActionResult> List(int id)
-        //{
-        //    if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
-        //    {
-        //        return Unauthorized();
-        //    }
-
-        //    var workflowDefinition = await _session.GetAsync<Workflow>(id);
-
-        //    if (workflowDefinition == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var workflows = await _session
-        //        .Query<Workflow, WorkflowIndex>(query => query.DefinitionId == workflowDefinition.Id)
-        //        .ListAsync();
-
-        //    var viewModel = New.ViewModel(
-        //        Definition: workflowDefinition,
-        //        Workflows: workflows
-        //        );
-
-        //    return View(viewModel);
-        //}
-
-        public async Task<IActionResult> EditProperties(int id = 0)
+        public async Task<IActionResult> EditProperties(int? id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
                 return Unauthorized();
             }
 
-            if (id == 0)
+            if (id == null)
             {
                 return View();
             }
             else
             {
-                var workflow = await _session.GetAsync<Workflow>(id);
+                var workflowDefinition = await _session.GetAsync<WorkflowDefinition>(id.Value);
 
-                return View(new AdminEditViewModel { WorkflowDefinition = new WorkflowDefinitionViewModel { Name = workflow.Name, Id = workflow.Id } });
+                return View(new AdminEditViewModel { WorkflowDefinition = new WorkflowDefinitionViewModel { Name = workflowDefinition.Name, Id = workflowDefinition.Id } });
             }
         }
 
 
-        [HttpPost, ActionName("EditProperties")]
-        public async Task<IActionResult> EditPropertiesPost(AdminEditViewModel adminEditViewModel, int id = 0)
+        [HttpPost, ActionName(nameof(EditProperties))]
+        public async Task<IActionResult> EditPropertiesPost(AdminEditViewModel adminEditViewModel, int? id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -245,11 +226,11 @@ namespace OrchardCore.Workflows.Controllers
                 return View();
             }
 
-            if (id == 0)
+            if (id == null)
             {
-                var workflowDefinition = new Workflow
+                var workflowDefinition = new WorkflowDefinition
                 {
-                    Name = adminEditViewModel.WorkflowDefinition.Name
+                    Name = adminEditViewModel.WorkflowDefinition.Name?.Trim()
                 };
 
                 _session.Save(workflowDefinition);
@@ -258,13 +239,13 @@ namespace OrchardCore.Workflows.Controllers
             }
             else
             {
-                var workflowDefinition = await _session.GetAsync<Workflow>(id);
+                var workflowDefinition = await _session.GetAsync<WorkflowDefinition>(id.Value);
                 if (workflowDefinition == null)
                 {
                     return NotFound();
                 }
 
-                workflowDefinition.Name = adminEditViewModel.WorkflowDefinition.Name;
+                workflowDefinition.Name = adminEditViewModel.WorkflowDefinition.Name?.Trim();
 
                 return RedirectToAction("Index");
             }
@@ -277,13 +258,13 @@ namespace OrchardCore.Workflows.Controllers
                 throw new AuthenticationException("");
             }
 
-            var workflowDefinition = id.HasValue ? await _session.GetAsync<Workflow>(id.Value) : null;
+            var workflowDefinition = id.HasValue ? await _session.GetAsync<WorkflowDefinition>(id.Value) : null;
             var isRunning = false;
 
             if (workflowDefinition != null)
             {
                 isRunning = await _session
-                    .Query<Workflow, WorkflowIndex>(query => query.Id == workflowDefinition.Id)
+                    .Query<WorkflowInstance, WorkflowInstanceByAwaitingActivitiesIndex>(query => query.Id == workflowDefinition.Id)
                     .CountAsync() > 0;
             }
             return Json(new { isRunning = isRunning });
@@ -296,24 +277,22 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            // convert the workflow definition into its view model
-            var workflowDefinition = await _session.GetAsync<Workflow>(id);
+            // Convert the workflow definition into its view model.
+            var workflowDefinition = await _session.GetAsync<WorkflowDefinition>(id);
             var workflowDefinitionViewModel = CreateWorkflowDefinitionViewModel(workflowDefinition);
-            var workflow = workflowId.HasValue ? await _session.GetAsync<Workflow>(workflowId.Value) : null;
 
             var viewModel = new AdminEditViewModel
             {
                 LocalId = string.IsNullOrEmpty(localId) ? Guid.NewGuid().ToString() : localId,
                 IsLocal = !string.IsNullOrEmpty(localId),
                 WorkflowDefinition = workflowDefinitionViewModel,
-                AllActivities = _activitiesManager.GetActivities(),
-                Workflow = workflow
+                AllActivities = _activitiesManager.GetActivities()
             };
 
             return View(viewModel);
         }
 
-        [HttpPost]
+        [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
@@ -321,7 +300,7 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowDefinition = await _session.GetAsync<Workflow>(id);
+            var workflowDefinition = await _session.GetAsync<WorkflowDefinition>(id);
 
             if (workflowDefinition != null)
             {
@@ -332,26 +311,7 @@ namespace OrchardCore.Workflows.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> DeleteWorkflow(int id, string returnUrl)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
-            {
-                return Unauthorized();
-            }
-
-            var workflow = await _session.GetAsync<Workflow>(id);
-
-            if (workflow != null)
-            {
-                _session.Delete(workflow);
-                _notifier.Success(H["Workflow deleted"]);
-            }
-            
-            return RedirectToLocal(returnUrl);
-        }
-
-        private WorkflowDefinitionViewModel CreateWorkflowDefinitionViewModel(Workflow workflowDefinition)
+        private WorkflowDefinitionViewModel CreateWorkflowDefinitionViewModel(WorkflowDefinition workflowDefinition)
         {
             if (workflowDefinition == null)
             {
@@ -373,8 +333,7 @@ namespace OrchardCore.Workflows.Controllers
                 activity.ClientId = x.ClientId;
                 activity.Left = x.X;
                 activity.Top = x.Y;
-                activity.Start = x.Start;
-                activity.State = FormParametersHelper.FromJsonString(x.State);
+                activity.Start = x.IsStart;
 
                 return activity;
             }));
@@ -389,12 +348,10 @@ namespace OrchardCore.Workflows.Controllers
                 return connection;
             }));
 
-            workflowDefinitionModel.JsonData = FormParametersHelper.ToJsonString(workflow);
-
             return workflowDefinitionModel;
         }
 
-        [HttpPost, ActionName("Edit")]
+        [HttpPost, ActionName(nameof(Edit))]
         [FormValueRequired("submit.Save")]
         public async Task<IActionResult> EditPost(int id, string localId, string data, bool clearWorkflows)
         {
@@ -403,53 +360,52 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowDefinition = await _session.GetAsync<Workflow>(id);
+            var workflowDefinition = await _session.GetAsync<WorkflowDefinition>(id);
 
             if (workflowDefinition == null)
             {
                 return NotFound();
             }
 
-            workflowDefinition.Enabled = true;
+            workflowDefinition.IsEnabled = true;
 
-            var state = FormParametersHelper.FromJsonString(data);
-            var activitiesIndex = new Dictionary<string, Activity>();
+            var activitiesIndex = new Dictionary<string, ActivityRecord>();
 
             workflowDefinition.Activities.Clear();
 
-            foreach (var activity in state.Activities)
-            {
-                Activity internalActivity;
+            //foreach (var activity in state.Activities)
+            //{
+            //    Activity internalActivity;
 
-                workflowDefinition.Activities.Add(internalActivity = new Activity
-                {
-                    Name = activity.Name,
-                    X = activity.Left,
-                    Y = activity.Top,
-                    Start = activity.Start,
-                    State = FormParametersHelper.ToJsonString(activity.State)
-                });
+            //    workflowDefinition.Activities.Add(internalActivity = new Activity
+            //    {
+            //        Name = activity.Name,
+            //        X = activity.Left,
+            //        Y = activity.Top,
+            //        Start = activity.Start,
+            //        State = FormParametersHelper.ToJsonString(activity.State)
+            //    });
 
-                activitiesIndex.Add((string)activity.ClientId, internalActivity);
-            }
+            //    activitiesIndex.Add((string)activity.ClientId, internalActivity);
+            //}
 
             workflowDefinition.Transitions.Clear();
 
-            foreach (var connection in state.Connections)
-            {
-                workflowDefinition.Transitions.Add(new Transition
-                {
-                    SourceActivityId = (string)connection.SourceId,
-                    DestinationActivityId = (string)connection.TargetId,
-                    SourceEndpoint = connection.SourceEndpoint
-                });
-            }
+            //foreach (var connection in state.Connections)
+            //{
+            //    workflowDefinition.Transitions.Add(new Transition
+            //    {
+            //        SourceActivityId = (string)connection.SourceId,
+            //        DestinationActivityId = (string)connection.TargetId,
+            //        SourceEndpoint = connection.SourceEndpoint
+            //    });
+            //}
 
             _session.Save(workflowDefinition);
 
-            var workflows = await _session
-                    .Query<Workflow, WorkflowWorkflowDefinitionIndex>(query => query.DefinitionId == workflowDefinition.Id)
-                    .ListAsync();
+            //var workflows = await _session
+            //        .Query<Workflow, WorkflowWorkflowDefinitionIndex>(query => query.DefinitionId == workflowDefinition.Id)
+            //        .ListAsync();
 
             //if (clearWorkflows)
             //{
@@ -485,9 +441,9 @@ namespace OrchardCore.Workflows.Controllers
             //    }
             //}
 
-            _notifier.Success(H["Workflow saved successfully"]);
+            _notifier.Success(H["Workflow saved successfully."]);
 
-            // Don't pass the localId to force the activites to refresh and use the deterministic clientId.
+            // Don't pass the localId to force the activities to refresh and use the deterministic clientId.
             return RedirectToAction("Edit", new { id });
         }
 
@@ -522,12 +478,12 @@ namespace OrchardCore.Workflows.Controllers
 
             if (model.State != null)
             {
-                var state = FormParametersHelper.ToDynamic(FormParametersHelper.ToString(model.State));
-                shape.State(state);
+                //var state = FormParametersHelper.ToDynamic(FormParametersHelper.ToString(model.State));
+                //shape.State(state);
             }
             else
             {
-                shape.State(FormParametersHelper.FromJsonString("{}"));
+                //shape.State(FormParametersHelper.FromJsonString("{}"));
             }
 
             var viewModel = New.ViewModel(Name: model.Name, EditorShape: shape);
@@ -553,23 +509,23 @@ namespace OrchardCore.Workflows.Controllers
 
             if (model.State != null)
             {
-                var state = FormParametersHelper.ToDynamic(FormParametersHelper.ToString(model.State));
-                shape.State(state);
+                //var state = FormParametersHelper.ToDynamic(FormParametersHelper.ToString(model.State));
+                //shape.State(state);
             }
             else
             {
-                shape.State(FormParametersHelper.FromJsonString("{}"));
+                //shape.State(FormParametersHelper.FromJsonString("{}"));
             }
 
             shape.Name = model.Name;
 
-            // form is bound on client side
+            // Form is bound on client side.
             var viewModel = New.ViewModel(LocalId: localId, ClientId: clientId, EditorShape: shape);
 
             return View(viewModel);
         }
 
-        [HttpPost, ActionName("EditActivity")]
+        [HttpPost, ActionName(nameof(EditActivity))]
         [FormValueRequired("_submit.Save")]
         public async Task<IActionResult> EditActivityPost(int id, string localId, string name, string clientId)
         {
@@ -602,9 +558,9 @@ namespace OrchardCore.Workflows.Controllers
             var model = new UpdatedActivityModel
             {
                 ClientId = clientId,
-                Data = FormParametersHelper.ToJsonString(Request.Form)
+                //Data = FormParametersHelper.ToJsonString(Request.Form)
             };
-            
+
             TempData["UpdatedViewModel"] = JsonConvert.SerializeObject(model);
 
             return RedirectToAction("Edit", new

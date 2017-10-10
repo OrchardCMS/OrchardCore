@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Data.Migration;
-using Orchard.Environment.Navigation;
-using Orchard.Security.Permissions;
+using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Modules;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
-using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Services;
 using YesSql.Indexes;
 
@@ -17,18 +17,10 @@ namespace OrchardCore.Workflows
             services.AddScoped<IActivitiesManager, ActivitiesManager>();
             services.AddScoped<IWorkflowManager, WorkflowManager>();
 
-            services.AddScoped<IIndexProvider, ActivityIndexProvider>();
-            services.AddScoped<IIndexProvider, AwaitingActivityIndexProvider>();
             services.AddScoped<IIndexProvider, WorkflowDefinitionIndexProvider>();
-            services.AddScoped<IIndexProvider, WorkflowWorkflowDefinitionIndexProvider>();
+            services.AddScoped<IIndexProvider, WorkflowInstanceIndexProvider>();
 
-            services.AddScoped<IActivity, DeleteActivity>();
-            services.AddScoped<IActivity, NotificationActivity>();
-            services.AddScoped<IActivity, ContentCreatedActivity>();
-            services.AddScoped<IActivity, ContentUpdatedActivity>();
-            services.AddScoped<IActivity, ContentPublishedActivity>();
-            services.AddScoped<IActivity, ContentVersionedActivity>();
-            services.AddScoped<IActivity, ContentRemovedActivity>();
+            services.AddScoped<IActivity, Notify>();
 
             services.AddScoped<IDataMigration, Migrations>();
 

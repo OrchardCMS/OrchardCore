@@ -1,21 +1,18 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Entities;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
 {
-    public abstract class Activity : IActivity
+    public abstract class Activity : Entity, IActivity
     {
         public abstract string Name { get; }
         public abstract LocalizedString Category { get; }
         public abstract LocalizedString Description { get; }
-
-        public virtual string Form
-        {
-            get { return null; }
-        }
 
         public abstract IEnumerable<LocalizedString> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext);
 
@@ -24,7 +21,15 @@ namespace OrchardCore.Workflows.Services
             return true;
         }
 
-        public abstract Task<IEnumerable<LocalizedString>> Execute(WorkflowContext workflowContext, ActivityContext activityContext);
+        public virtual Task<IEnumerable<LocalizedString>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        {
+            return Task.FromResult(Execute(workflowContext, activityContext));
+        }
+
+        public virtual IEnumerable<LocalizedString> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        {
+            yield break;
+        }
 
         public virtual void OnWorkflowStarting(WorkflowContext context, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -48,6 +53,16 @@ namespace OrchardCore.Workflows.Services
 
         public virtual void OnActivityExecuted(WorkflowContext workflowContext, ActivityContext activityContext)
         {
+        }
+
+        protected virtual T GetProperty<T>([CallerMemberName]string name = null)
+        {
+            return this.As<T>(name);
+        }
+
+        protected virtual void SetProperty<T>(T value, [CallerMemberName]string name = null)
+        {
+            this.Put(name, value);
         }
     }
 }

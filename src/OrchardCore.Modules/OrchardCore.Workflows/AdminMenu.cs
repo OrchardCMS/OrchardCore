@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.Localization;
-using Orchard.Environment.Navigation;
+using OrchardCore.Environment.Navigation;
 
-namespace OrchardCore.Workflows {
+namespace OrchardCore.Workflows
+{
     public class AdminMenu : INavigationProvider
     {
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
