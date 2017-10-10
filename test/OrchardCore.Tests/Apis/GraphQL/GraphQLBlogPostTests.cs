@@ -22,7 +22,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         {
             var blogId = await CreateBlog();
 
-            var query = @"query { contentitems(contentType: ""Blog"") { id } }";
+            var query = @"query { contentitems(contentType: ""Blog"") { contentItemId } }";
 
             var response = await _siteContext.Site.Client.GetAsync("graphql?query="+ query);
 
@@ -30,7 +30,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var content = await response.Content.ReadAsStringAsync();
 
-            var contentItemIds = JObject.Parse(content)["data"]["contentitems"].Select(x => x.Value<int>("id"));
+            var contentItemIds = JObject.Parse(content)["data"]["contentitems"].Select(x => x.Value<string>("contentItemId"));
             Assert.Contains(blogId, contentItemIds);
         }
 
@@ -51,7 +51,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 }";
 
             var json = @"{
-  ""query"": ""mutation ($contentItem: ContentItemInput!){ createContentItem(contentItem: $contentItem) { id } }"",
+  ""query"": ""mutation ($contentItem: ContentItemInput!){ createContentItem(contentItem: $contentItem) { contentItemId } }"",
   ""variables"": " + JsonConvert.SerializeObject(variables) + @"}";
 
             var response = await _siteContext.Site.Client.PostJsonAsync("graphql", json);
@@ -60,7 +60,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var result = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-            Assert.NotEmpty(result["data"]["createContentItem"]["id"].ToString());
+            Assert.NotEmpty(result["data"]["createContentItem"]["contentItemId"].ToString());
         }
 
         [Fact]
@@ -70,7 +70,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var blogPostId = await CreateBlogPost(blogId, "Hi There");
 
-            var query = HttpUtility.UrlEncode("query { blog(id: \"123\") { titlePart { title } } }");
+            var query = HttpUtility.UrlEncode("query { blog(id: \""+ blogId + "\") { titlePart { title } } }");
             var response = await _siteContext.Site.Client.GetAsync("graphql?query=" + query);
 
             Assert.True(response.IsSuccessStatusCode);
@@ -80,7 +80,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             Assert.Equal("Hi There", result["data"]["createContentItem"]["titlepart"]["title"].ToString());
         }
 
-        public async Task<int> CreateBlog()
+        public async Task<string> CreateBlog()
         {
             var titlePart = @"titlePart: { ""title"": ""Hi There"" }";
 
@@ -93,19 +93,19 @@ namespace OrchardCore.Tests.Apis.GraphQL
 }";
 
             var json = @"{
-  ""query"": ""mutation ($contentItem: ContentItemInput!){ createContentItem(contentItem: $contentItem) { id } }"",
+  ""query"": ""mutation ($contentItem: ContentItemInput!){ createContentItem(contentItem: $contentItem) { contentItemId } }"",
   ""variables"": " + JsonConvert.SerializeObject(variables) + @"}";
 
             var response = await _siteContext.Site.Client.PostJsonAsync("graphql", json);
 
             var result = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-            return int.Parse(result["data"]["createContentItem"]["id"].ToString());
+            return result["data"]["createContentItem"]["contentItemId"].ToString();
         }
 
-        public async Task<int> CreateBlogPost(int blogId, string title) {
+        public async Task<string> CreateBlogPost(string blogId, string title) {
             var titlePart = @"titlePart: { ""title"": """ + title + @""" }";
-            var containedPart = @"containedPart: { ""listContentItemId"": " + blogId + " }";
+            var containedPart = @"containedPart: { ""listContentItemId"": """ + blogId + @""" }";
 
             var variables =
 @"{ 
@@ -116,7 +116,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 }";
 
             var json = @"{
-  ""query"": ""mutation ($contentItem: ContentItemInput!){ createContentItem(contentItem: $contentItem) { id } }"",
+  ""query"": ""mutation ($contentItem: ContentItemInput!){ createContentItem(contentItem: $contentItem) { contentItemId } }"",
   ""variables"": " + JsonConvert.SerializeObject(variables) + @"}";
 
             var response = await _siteContext.Site.Client.PostJsonAsync("graphql", json);
@@ -125,7 +125,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var result = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-            return int.Parse(result["data"]["createContentItem"]["id"].ToString());
+            return result["data"]["createContentItem"]["contentItemId"].ToString();
         }
     }
 }
