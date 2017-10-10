@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
@@ -40,19 +41,19 @@ namespace OrchardCore.Tests.DisplayManagement
         }
 
         [Fact]
-        public void ShapeHasAttributesType()
+        public async Task ShapeHasAttributesType()
         {
             var factory = _serviceProvider.GetService<IShapeFactory>();
-            dynamic foo = factory.Create("Foo", ArgsUtility.Empty());
+            dynamic foo = await factory.CreateAsync("Foo", ArgsUtility.Empty());
             ShapeMetadata metadata = foo.Metadata;
             Assert.Equal("Foo", metadata.Type);
         }
 
         [Fact]
-        public void CreateShapeWithNamedArguments()
+        public async Task CreateShapeWithNamedArguments()
         {
             var factory = _serviceProvider.GetService<IShapeFactory>();
-            dynamic foo = factory.Create("Foo", ArgsUtility.Named(new { one = 1, two = "dos" }));
+            dynamic foo = await factory.CreateAsync("Foo", ArgsUtility.Named(new { one = 1, two = "dos" }));
             Assert.Equal(1, foo.one);
             Assert.Equal("dos", foo.two);
         }

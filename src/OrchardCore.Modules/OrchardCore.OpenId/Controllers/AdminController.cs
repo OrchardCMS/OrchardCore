@@ -86,7 +86,7 @@ namespace OrchardCore.OpenId.Controllers
 
             var results = await _applicationStore.GetAppsAsync(pager.GetStartIndex(), pager.PageSize);
 
-            var pagerShape = _shapeFactory.Create("Pager", new { TotalItemCount = await _applicationStore.GetCount() });
+            var pagerShape = await _shapeFactory.CreateAsync("Pager", new { TotalItemCount = await _applicationStore.GetCount() });
 
             var model = new OpenIdApplicationsIndexViewModel
             {

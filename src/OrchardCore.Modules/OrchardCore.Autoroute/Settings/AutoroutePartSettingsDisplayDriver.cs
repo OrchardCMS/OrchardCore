@@ -27,8 +27,6 @@ namespace OrchardCore.Autoroute.Settings
                 model.Pattern = settings.Pattern;
                 model.ShowHomepageOption = settings.ShowHomepageOption;
                 model.AutoroutePartSettings = settings;
-
-                return Task.CompletedTask;
             }).Location("Content");
         }
 

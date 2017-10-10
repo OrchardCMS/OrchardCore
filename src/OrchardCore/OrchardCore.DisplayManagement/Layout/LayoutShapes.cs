@@ -1,4 +1,4 @@
-﻿using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Descriptors;
 
 namespace OrchardCore.DisplayManagement.Zones
 {
@@ -8,10 +8,10 @@ namespace OrchardCore.DisplayManagement.Zones
         {
             builder
                 .Describe("Layout")
-                .OnCreating(creating => creating.Create = () => new ZoneHolding(() => creating.New.Zone()))
+                .OnCreating(creating => creating.Create = () => new ZoneHolding(() => creating.ShapeFactory.CreateAsync("Zone")))
                 .OnCreated(created => 
                 {
-                    var layout = created.Shape;
+                    dynamic layout = created.Shape;
 
                     layout.Head = created.New.DocumentZone(ZoneName: "Head");
                     layout.Body = created.New.DocumentZone(ZoneName: "Body");

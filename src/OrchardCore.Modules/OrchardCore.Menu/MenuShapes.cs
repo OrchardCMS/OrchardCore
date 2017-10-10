@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
@@ -66,7 +66,7 @@ namespace OrchardCore.Menu
 
                     foreach(var contentItem in menuItems)
                     {
-                        dynamic shape = shapeFactory.Create("MenuItem", Arguments.From(new
+                        dynamic shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
                         {
                             ContentItem = contentItem,
                             Level = 0,
@@ -95,12 +95,12 @@ namespace OrchardCore.Menu
                     {
                         foreach (var contentItem in menuItems)
                         {
-                            dynamic shape = shapeFactory.Create("MenuItem", Arguments.From(new
+                            dynamic shape = shapeFactory.CreateAsync("MenuItem", Arguments.From(new
                             {
                                 ContentItem = contentItem,
                                 Level = 0,
                                 Menu = menu,
-                            }));
+                            })).GetAwaiter().GetResult();
 
                             // Don't use Items.Add() or the collection won't be sorted
                             menuItem.Add(shape);

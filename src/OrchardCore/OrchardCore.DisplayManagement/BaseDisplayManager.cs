@@ -55,9 +55,9 @@ namespace OrchardCore.DisplayManagement
             return null;
         }
 
-        protected IShape CreateContentShape(string actualShapeType)
+        protected Task<IShape> CreateContentShapeAsync(string actualShapeType)
         {
-            return _shapeFactory.Create(actualShapeType, () => new ZoneHolding(() => _shapeFactory.Create("ContentZone", Arguments.Empty)));
+            return _shapeFactory.CreateAsync(actualShapeType, () => Task.FromResult<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("ContentZone", Arguments.Empty))));
         }
     }
 }

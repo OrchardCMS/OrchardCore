@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -32,7 +32,7 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager")
 				.OnCreated(created =>
 				{
-					var pager = created.Shape;
+					dynamic pager = created.Shape;
 
 					// Intializes the common properties of a Pager shape
 					// such that views can safely add values to them.
@@ -52,7 +52,7 @@ namespace OrchardCore.Navigation
 			builder.Describe("PagerSlim")
 				.OnCreated(created =>
 				{
-					var pager = created.Shape;
+                    dynamic pager = created.Shape;
 
 					// Intializes the common properties of a Pager shape
 					// such that views can safely add values to them.

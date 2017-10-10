@@ -27,7 +27,6 @@ namespace OrchardCore.ContentTypes.Editors
             return Shape<ContentTypeViewModel>("ContentType_Edit", model =>
             {
                 model.DisplayName = contentTypeDefinition.DisplayName;
-                return Task.CompletedTask;
             }).Location("Content");
         }
 

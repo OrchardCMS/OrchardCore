@@ -188,7 +188,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             var layoutAccessor = services.GetRequiredService<ILayoutAccessor>();
             context.AmbientValues.Add("LayoutAccessor", layoutAccessor);
 
-            var layout = layoutAccessor.GetLayout();
+            var layout = await layoutAccessor.GetLayoutAsync();
             context.AmbientValues.Add("ThemeLayout", layout);
 
             // TODO: Extract the request culture

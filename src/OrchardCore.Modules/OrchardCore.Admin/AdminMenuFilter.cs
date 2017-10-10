@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using OrchardCore.DisplayManagement;
@@ -6,7 +7,7 @@ using OrchardCore.Environment.Navigation;
 
 namespace OrchardCore.Admin
 {
-    public class AdminMenuFilter : IResultFilter
+    public class AdminMenuFilter : IAsyncResultFilter
     {
         private readonly INavigationManager _navigationManager;
         private readonly ILayoutAccessor _layoutAccessor;
@@ -22,17 +23,19 @@ namespace OrchardCore.Admin
             _shapeFactory = shapeFactory;
         }
 
-        public void OnResultExecuting(ResultExecutingContext filterContext)
+        public async Task OnResultExecutionAsync(ResultExecutingContext filterContext, ResultExecutionDelegate next)
         {
             // Should only run on a full view rendering result
             if (!(filterContext.Result is ViewResult))
             {
+                await next();
                 return;
             }
 
             // Should only run on the Admin
             if (!AdminAttribute.IsApplied(filterContext.HttpContext))
             {
+                await next();
                 return;
             }
 
@@ -40,22 +43,22 @@ namespace OrchardCore.Admin
             var statusCode = filterContext.HttpContext.Response.StatusCode;
             if (statusCode >= 300 && statusCode < 400)
             {
+                await next();
                 return;
             }
 
             // Populate main nav
-            IShape menuShape = _shapeFactory.Create("Navigation",
+            IShape menuShape = await _shapeFactory.CreateAsync("Navigation",
                 Arguments.From(new
                 {
                     MenuName = "admin",
                     RouteData = filterContext.RouteData,
                 }));
 
-            _layoutAccessor.GetLayout().Navigation.Add(menuShape);
-        }
+            dynamic layout = await _layoutAccessor.GetLayoutAsync();
+            layout.Navigation.Add(menuShape);
 
-        public void OnResultExecuted(ResultExecutedContext filterContext)
-        {
+            await next();
         }
     }
 }

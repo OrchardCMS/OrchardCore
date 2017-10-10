@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -52,7 +52,6 @@ namespace OrchardCore.Lists.Drivers
             return Shape("ListPart_ContainerId", shape =>
             {
                 shape.ContainerId = containerId;
-                return Task.CompletedTask;
             })
             .Location("Content");
         }

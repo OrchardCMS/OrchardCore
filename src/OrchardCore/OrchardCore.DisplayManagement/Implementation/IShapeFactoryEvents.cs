@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.DisplayManagement.Implementation
 {
@@ -14,8 +15,12 @@ namespace OrchardCore.DisplayManagement.Implementation
         public IShapeFactory ShapeFactory { get; set; }
         public dynamic New { get; set; }
         public string ShapeType { get; set; }
-        public Func<dynamic> Create { get; set; }
+        public Func<Task<IShape>> CreateAsync { get; set; }
         public IList<Action<ShapeCreatedContext>> OnCreated { get; set; }
+        public Func<IShape> Create
+        {
+            set => CreateAsync = () => Task.FromResult(value());
+        }
     }
 
     public class ShapeCreatedContext
@@ -23,7 +28,7 @@ namespace OrchardCore.DisplayManagement.Implementation
         public IShapeFactory ShapeFactory { get; set; }
         public dynamic New { get; set; }
         public string ShapeType { get; set; }
-        public dynamic Shape { get; set; }
+        public IShape Shape { get; set; }
     }
 
     public abstract class ShapeFactoryEvents : IShapeFactoryEvents

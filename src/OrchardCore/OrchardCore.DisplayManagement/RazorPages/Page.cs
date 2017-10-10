@@ -88,7 +88,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
                         throw new InvalidOperationException("Could not find a valid layout accessor");
                     }
 
-                    _themeLayout = layoutAccessor.GetLayout();
+                    _themeLayout = layoutAccessor.GetLayoutAsync().GetAwaiter().GetResult();
                 }
 
                 return _themeLayout;
