@@ -1,5 +1,6 @@
-﻿[
+[
   {
+    "generateSourceMaps": false,
     "inputs": [ "Assets/Bootstrap/scss/bootstrap.scss" ],
     "output": "Content/Styles/bootstrap.css"
   },
