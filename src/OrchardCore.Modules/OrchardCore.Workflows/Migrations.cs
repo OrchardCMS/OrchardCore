@@ -7,6 +7,10 @@ namespace OrchardCore.Workflows
     {
         public int Create()
         {
+            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionByNameIndex), table => table
+                .Column<string>("Name")
+            );
+
             SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionByStartActivityIndex), table => table
                 .Column<string>("Name")
                 .Column<bool>("IsEnabled")

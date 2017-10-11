@@ -17,8 +17,8 @@ namespace OrchardCore.Workflows
             services.AddScoped<IActivitiesManager, ActivitiesManager>();
             services.AddScoped<IWorkflowManager, WorkflowManager>();
 
-            services.AddScoped<IIndexProvider, WorkflowDefinitionIndexProvider>();
-            services.AddScoped<IIndexProvider, WorkflowInstanceIndexProvider>();
+            services.AddSingleton<IIndexProvider, WorkflowDefinitionIndexProvider>();
+            services.AddSingleton<IIndexProvider, WorkflowInstanceIndexProvider>();
 
             services.AddScoped<IActivity, Notify>();
 
