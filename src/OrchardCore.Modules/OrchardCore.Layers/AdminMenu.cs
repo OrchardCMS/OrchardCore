@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Layers.Drivers;
@@ -30,6 +30,7 @@ namespace OrchardCore.Layers
                         )))
                 .Add(T["Content"], design => design
                     .Add(T["Layers"], "5", layers => layers
+                        .Permission(Permissions.ManageLayers)
                         .Action("Index", "Admin", new { area = "OrchardCore.Layers" })
                         .LocalNav()
                     ));

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -35,9 +35,9 @@ namespace OrchardCore.Contents
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
 
             builder.Add(T["Content"], "1.4", content => content
-                .Permission(Permissions.EditOwnContent)
                 .AddClass("content").Id("content")
                 .Add(T["Content Items"], "1", contentItems => contentItems
+                    .Permission(Permissions.EditOwnContent)
                     .Action("List", "Admin", new { area = "OrchardCore.Contents" })
                     .LocalNav())
                 );
