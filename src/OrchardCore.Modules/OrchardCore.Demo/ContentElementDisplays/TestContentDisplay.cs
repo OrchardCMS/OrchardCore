@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -29,7 +29,7 @@ namespace OrchardCore.Demo.ContentElementDisplays
                 Shape("LowerDoll").Location("Detail", "Footer"),
                 // New shape
                 Shape("TestContentPartA",
-                    ctx => ctx.New.TestContentPartA().Creating(_creating++),
+                    async ctx => (await ctx.New.TestContentPartA()).Creating(_creating++),
                     shape =>
                     {
                         shape.Processing = _processing++;

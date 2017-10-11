@@ -13,12 +13,12 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// <summary>
         /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
         /// </summary>
-        public ShapeResult Shape<TModel>(Func<TModel, Task> initialize) where TModel : class
+        public ShapeResult Shape<TModel>(Func<TModel, Task> initializeAsync) where TModel : class
         {
             return new ShapeResult(
                 typeof(TModel).Name,
                 ctx => ctx.ShapeFactory.CreateAsync<TModel>(typeof(TModel).Name, 
-                shape => initialize(shape))
+                shape => initializeAsync(shape))
                 ).Prefix(Prefix);
         }
 
@@ -33,11 +33,11 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// <summary>
         /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
         /// </summary>
-        public ShapeResult Shape<TModel>(string shapeType, Func<TModel, Task> initialize) where TModel : class
+        public ShapeResult Shape<TModel>(string shapeType, Func<TModel, Task> initializeAsync) where TModel : class
         {
             return new ShapeResult(
                 shapeType,
-                ctx => ctx.ShapeFactory.CreateAsync(shapeType, initialize))
+                ctx => ctx.ShapeFactory.CreateAsync(shapeType, initializeAsync))
                 .Prefix(Prefix);
         }
 
@@ -104,9 +104,9 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// <summary>
         /// If the shape needs to be rendered, it is created by the delegate.
         /// </summary>
-        public ShapeResult Shape(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<dynamic, Task> initialize)
+        public ShapeResult Shape(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<dynamic, Task> initializeAsync)
         {
-            return new ShapeResult(shapeType, shapeBuilder, initialize).Prefix(Prefix);
+            return new ShapeResult(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
         }
 
         public CombinedResult Combine(params IDisplayResult[] results)

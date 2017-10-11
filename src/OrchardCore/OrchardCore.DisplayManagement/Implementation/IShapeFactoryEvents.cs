@@ -16,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Implementation
         public dynamic New { get; set; }
         public string ShapeType { get; set; }
         public Func<Task<IShape>> CreateAsync { get; set; }
-        public IList<Action<ShapeCreatedContext>> OnCreated { get; set; }
+        public IList<Func<ShapeCreatedContext, Task>> OnCreated { get; set; }
         public Func<IShape> Create
         {
             set => CreateAsync = () => Task.FromResult(value());

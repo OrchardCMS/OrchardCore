@@ -82,9 +82,13 @@ namespace OrchardCore.Tests.DisplayManagement
         public void ShapeFactoryUsesCustomShapeType()
         {
             var descriptor = new ShapeDescriptor();
-            descriptor.Creating = new List<Action<ShapeCreatingContext>>()
+            descriptor.CreatingAsync = new List<Func<ShapeCreatingContext, Task>>()
             {
-                (ctx) => { ctx.Create = () => new SubShape(); }
+                (ctx) => 
+                {
+                    ctx.Create = () => new SubShape();
+                    return Task.CompletedTask;
+                }
             };
 
             _shapeTable.Descriptors.Add("Foo", descriptor);
@@ -98,9 +102,13 @@ namespace OrchardCore.Tests.DisplayManagement
         public void ShapeFactoryWithCustomShapeTypeAppliesArguments()
         {
             var descriptor = new ShapeDescriptor();
-            descriptor.Creating = new List<Action<ShapeCreatingContext>>()
+            descriptor.CreatingAsync = new List<Func<ShapeCreatingContext, Task>>()
             {
-                (ctx) => { ctx.Create = () => new SubShape(); }
+                (ctx) => 
+                {
+                    ctx.Create = () => new SubShape();
+                    return Task.CompletedTask;
+                }
             };
 
             _shapeTable.Descriptors.Add("Foo", descriptor);

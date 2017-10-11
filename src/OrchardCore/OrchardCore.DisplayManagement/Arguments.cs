@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,6 +9,8 @@ namespace OrchardCore.DisplayManagement
 {
     public static class Arguments
     {
+        private static ConcurrentDictionary<Type, Func<object, NamedEnumerable<object>>> _propertiesAccessors = new ConcurrentDictionary<Type, Func<object, NamedEnumerable<object>>>();
+
         public static INamedEnumerable<T> FromT<T>(IEnumerable<T> arguments, IEnumerable<string> names)
         {
             return new NamedEnumerable<T>(arguments, names);
@@ -25,9 +28,20 @@ namespace OrchardCore.DisplayManagement
 
         public static INamedEnumerable<object> From(object propertyObject)
         {
-            var properties = propertyObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
-            var values = properties.Select(x => x.GetGetMethod().Invoke(propertyObject, null));
-            return new NamedEnumerable<object>(values, properties.Select(x => x.Name));
+            var propertiesAccessor = _propertiesAccessors.GetOrAdd(propertyObject.GetType(), type =>
+            {
+                var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+                var names = properties.Select(x => x.Name).ToArray();
+
+                return obj =>
+                {
+                    // properties and names are referenced in the closure
+                    var values = properties.Select(x => x.GetValue(obj, null)).ToArray();
+                    return new NamedEnumerable<object>(values, names);
+                };
+            });
+
+            return propertiesAccessor(propertyObject);
         }
 
         class NamedEnumerable<T> : INamedEnumerable<T>
@@ -35,6 +49,7 @@ namespace OrchardCore.DisplayManagement
             readonly List<T> _arguments;
             readonly List<string> _names;
             readonly T[] _positional;
+            private IDictionary<string, T> _named;
 
             public NamedEnumerable(IEnumerable<T> arguments, IEnumerable<string> names)
             {
@@ -47,6 +62,7 @@ namespace OrchardCore.DisplayManagement
                 _names = names.ToList();
 
                 _positional = Array.Empty<T>();
+
                 if (_arguments.Count != _names.Count)
                 {
                     _positional = _arguments.Take(_arguments.Count - _names.Count).ToArray();
@@ -63,33 +79,39 @@ namespace OrchardCore.DisplayManagement
                 return _arguments.GetEnumerator();
             }
 
-            IEnumerable<T> INamedEnumerable<T>.Positional
+            IList<T> INamedEnumerable<T>.Positional
             {
                 get { return _positional; }
             }
 
             IDictionary<string, T> INamedEnumerable<T>.Named
             {
-                get { return new Named(_arguments, _names); }
+                get { return _named ?? (_named = new Named(_arguments, _names)); }
             }
 
             class Named : IDictionary<string, T>
             {
-                private readonly IEnumerable<T> _arguments;
-                private readonly IEnumerable<string> _names;
+                private readonly IList<T> _arguments;
+                private readonly IList<string> _names;
+                private IEnumerable<KeyValuePair<string, T>> _enumerable;
 
-                private ICollection<T> _argumentsCollection;
-                private ICollection<string> _namesCollection;
-
-                public Named(IEnumerable<T> arguments, IEnumerable<string> names)
+                public Named(IList<T> arguments, IList<string> names)
                 {
-                    _arguments = arguments.Skip(arguments.Count() - names.Count());
+                    if (arguments.Count != names.Count)
+                    {
+                        _arguments = arguments.Skip(arguments.Count() - names.Count()).ToArray();
+                    }
+                    else
+                    {
+                        _arguments = arguments;
+                    }
+
                     _names = names;
                 }
 
                 IEnumerable<KeyValuePair<string, T>> MakeEnumerable()
                 {
-                    return _arguments.Zip(_names, (arg, name) => new KeyValuePair<string, T>(name, arg));
+                    return _enumerable ?? (_enumerable =_arguments.Zip(_names, (arg, name) => new KeyValuePair<string, T>(name, arg)));
                 }
 
                 IEnumerator<KeyValuePair<string, T>> IEnumerable<KeyValuePair<string, T>>.GetEnumerator()
@@ -129,7 +151,7 @@ namespace OrchardCore.DisplayManagement
 
                 int ICollection<KeyValuePair<string, T>>.Count
                 {
-                    get { return _names.Count(); }
+                    get { return _names.Count; }
                 }
 
                 bool ICollection<KeyValuePair<string, T>>.IsReadOnly
@@ -168,10 +190,14 @@ namespace OrchardCore.DisplayManagement
                 {
                     get
                     {
-                        return MakeEnumerable()
-                            .Where(kv => kv.Key == key)
-                            .Select(kv => kv.Value)
-                            .FirstOrDefault();
+                        if (((IDictionary<string, T>)this).TryGetValue(key, out T result))
+                        {
+                            return result;
+                        }
+                        else
+                        {
+                            return default(T);
+                        }
                     }
                     set { throw new NotImplementedException(); }
                 }
@@ -180,17 +206,17 @@ namespace OrchardCore.DisplayManagement
                 {
                     get
                     {
-                        return _namesCollection = _namesCollection ?? _names as ICollection<string> ?? _names.ToArray();
+                        return _names;
                     }
                 }
 
                 ICollection<T> IDictionary<string, T>.Values
                 {
-                    get { return _argumentsCollection = _argumentsCollection ?? _arguments as ICollection<T> ?? _arguments.ToArray(); }
+                    get { return _arguments; }
                 }
             }
         }
 
-        public static INamedEnumerable<object> Empty = From(Enumerable.Empty<object>(), Enumerable.Empty<string>());
+        public static INamedEnumerable<object> Empty = From(Array.Empty<object>(), Array.Empty<string>());
     }
 }

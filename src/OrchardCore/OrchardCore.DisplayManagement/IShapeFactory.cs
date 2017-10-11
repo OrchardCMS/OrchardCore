@@ -90,12 +90,12 @@ namespace OrchardCore.DisplayManagement
         /// <param name="shapeType">The shape type to create.</param>
         /// <param name="initialize">The initialization method.</param>
         /// <returns></returns>
-        public static Task<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, Func<TModel, Task> initialize)
+        public static Task<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, Func<TModel, Task> initializeAsync)
         {
             return factory.CreateAsync(shapeType, async () =>
             {
                 var shape = CreateShape(typeof(TModel));
-                await initialize((TModel)shape);
+                await initializeAsync((TModel)shape);
                 return shape;
             });
         }
@@ -110,11 +110,15 @@ namespace OrchardCore.DisplayManagement
                 if (parameters != null && parameters != Arguments.Empty)
                 {
                     var initializer = parameters.Positional.SingleOrDefault();
+
                     if (initializer != null)
                     {
-                        foreach (var prop in initializer.GetType().GetProperties())
+                        // Use the Arguments class to optimize reflection code
+                        var arguments = Arguments.From(initializer);
+
+                        foreach (var prop in arguments.Named)
                         {
-                            shape.Properties[prop.Name] = prop.GetValue(initializer, null);
+                            shape.Properties[prop.Key] = prop.Value;
                         }
                     }
                     else

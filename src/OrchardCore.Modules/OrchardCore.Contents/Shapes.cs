@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -41,7 +41,7 @@ namespace OrchardCore.Contents
 
             // This shapes provides a way to lazily load a content item render it in any display type.
             builder.Describe("ContentItem")
-                .OnProcessingAsync(async context =>
+                .OnProcessing(async context =>
                 {
                     var content = context.Shape;
                     string alias = content.Alias;

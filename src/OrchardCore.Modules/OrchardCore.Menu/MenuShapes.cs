@@ -23,7 +23,7 @@ namespace OrchardCore.Menu
                         menu.Metadata.Alternates.Add("Menu__" + EncodeAlternateElement(identifier));
                     }
                 })
-                .OnProcessingAsync(async context =>
+                .OnProcessing(async context =>
                 {
                     var menu = context.Shape;
                     string identifier = menu.ContentItemId ?? menu.Alias;
@@ -80,7 +80,7 @@ namespace OrchardCore.Menu
                 });
 
             builder.Describe("MenuItem")
-                .OnDisplaying(context =>
+                .OnDisplaying(async context =>
                 {
                     var menuItem = context.Shape;
                     ContentItem menuContentItem = menuItem.ContentItem;
@@ -95,12 +95,12 @@ namespace OrchardCore.Menu
                     {
                         foreach (var contentItem in menuItems)
                         {
-                            dynamic shape = shapeFactory.CreateAsync("MenuItem", Arguments.From(new
+                            dynamic shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
                             {
                                 ContentItem = contentItem,
                                 Level = 0,
                                 Menu = menu,
-                            })).GetAwaiter().GetResult();
+                            }));
 
                             // Don't use Items.Add() or the collection won't be sorted
                             menuItem.Add(shape);

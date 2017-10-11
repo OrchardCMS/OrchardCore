@@ -115,7 +115,7 @@ namespace OrchardCore.Users.Controllers
             routeData.Values.Add("Options.Search", options.Search);
             routeData.Values.Add("Options.Order", options.Order);
 
-            var pagerShape = New.Pager(pager).TotalItemCount(count).RouteData(routeData);
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
 
             var model = new UsersIndexViewModel
             {

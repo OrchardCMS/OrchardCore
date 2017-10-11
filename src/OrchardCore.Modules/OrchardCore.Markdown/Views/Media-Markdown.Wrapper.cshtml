@@ -4,5 +4,5 @@
 @if (!Context.Items.ContainsKey("Media_Wrapper__Markdown"))
 {
     Context.Items["Media_Wrapper__Markdown"] = new object();
-    @await DisplayAsync(New.Media_Modal__Markdown())
+    @await DisplayAsync(await New.Media_Modal__Markdown())
 }

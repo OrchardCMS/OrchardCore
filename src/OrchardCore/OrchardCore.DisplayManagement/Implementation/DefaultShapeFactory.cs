@@ -31,21 +31,18 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
-            // If the member ends with Async then return the task, otherwise await it here.
-            // Example:
             // await New.FooAsync()
-            // New.Foo()
+            // await New.Foo()
 
-            if (binder.Name.EndsWith("Async"))
+            var binderName = binder.Name;
+
+            if (binderName.EndsWith("Async"))
             {
-                var binderName = binder.Name.Substring(binder.Name.Length - "Async".Length);
-                result = ShapeFactoryExtensions.CreateAsync(this, binderName, Arguments.From(args, binder.CallInfo.ArgumentNames));
+                binderName = binder.Name.Substring(binder.Name.Length - "Async".Length);
             }
-            else
-            {
-                result = ShapeFactoryExtensions.CreateAsync(this, binder.Name, Arguments.From(args, binder.CallInfo.ArgumentNames)).GetAwaiter().GetResult();
-            }
-            
+
+            result = ShapeFactoryExtensions.CreateAsync(this, binderName, Arguments.From(args, binder.CallInfo.ArgumentNames));
+                        
 			return true;
         }
 
@@ -70,7 +67,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 New = this,
                 ShapeFactory = this,
                 ShapeType = shapeType,
-                OnCreated = new List<Action<ShapeCreatedContext>>(),
+                OnCreated = new List<Func<ShapeCreatedContext, Task>>(),
                 CreateAsync = shapeFactory
             };
 
@@ -84,9 +81,9 @@ namespace OrchardCore.DisplayManagement.Implementation
 
             if (shapeDescriptor != null)
             {
-                foreach (var ev in shapeDescriptor.Creating)
+                foreach (var ev in shapeDescriptor.CreatingAsync)
                 {
-                    ev(creatingContext);
+                    await ev(creatingContext);
                 }
             }
 
@@ -126,19 +123,18 @@ namespace OrchardCore.DisplayManagement.Implementation
                 ev.Created(createdContext);
             }
 
-            if (shapeDescriptor != null)
-            {
-                foreach (var ev in shapeDescriptor.Created)
+            if (shapeDescriptor != null) {
+                foreach (var ev in shapeDescriptor.CreatedAsync)
                 {
-                    ev(createdContext);
+                    await ev(createdContext);
                 }
             }
 
-            if (creatingContext.OnCreated != null)
+            if (creatingContext != null)
             {
                 foreach (var ev in creatingContext.OnCreated)
                 {
-                    ev(createdContext);
+                    await ev(createdContext);
                 }
             }
 

@@ -65,7 +65,7 @@ namespace OrchardCore.Templates.Controllers
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize);
 
-            var pagerShape = New.Pager(pager).TotalItemCount(count);
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
 
             var model = new TemplateIndexViewModel
             {
