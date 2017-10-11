@@ -1,0 +1,29 @@
+.workflows-activity-toolbox {
+    border: 1px solid #e4e5e6;
+    background: #f3f4f5;
+    padding: 15px;
+    height: 85vh;
+    overflow-y: auto;
+
+    fieldset {
+        margin-bottom: 15px;
+    }
+
+    .activity-toolbox-item {
+        margin-top: 8px;
+        cursor: -webkit-grab;
+        cursor: -moz-grab;
+        cursor: grab;
+
+        &.dragging {
+            cursor: -webkit-grabbing;
+            cursor: -moz-grabbing;
+            cursor: grabbing;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 0;
+        }
+    }
+}

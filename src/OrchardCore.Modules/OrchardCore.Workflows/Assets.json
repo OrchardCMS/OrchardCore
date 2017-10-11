@@ -1,0 +1,22 @@
+[
+  {
+    "inputs": [
+      "Assets/Sass/workflow-editor.scss",
+      "Assets/Sass/workflow-editor-activity-toolbox.scss"
+    ],
+    "output": "Content/Styles/workflows-workflow-editor.css"
+  },
+  {
+    "inputs": [
+      "Assets/Sass/admin-menu.scss"
+    ],
+    "output": "Content/Styles/menu.workflows-admin.css"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "Assets/Images/*"
+    ],
+    "output": "Content/Styles/Images/@"
+  }
+]

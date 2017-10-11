@@ -1,4 +1,4 @@
-﻿    var connectorPaintStyle = {
+    var connectorPaintStyle = {
         lineWidth: 2,
         strokeStyle: "#999",
         joinstyle: "round"
@@ -23,7 +23,6 @@
         connectorHoverStyle: connectorHoverStyle,
         overlays: [["Label", { location: [3, -1.5], cssClass: "sourceEndpointLabel" }]]
     };
-
 
     jsPlumb.bind("ready", function () {
 

@@ -289,6 +289,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Workflows", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Workflows.Abstractions", "src\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj", "{DE05E6A4-EDF4-4A88-80BF-328CA3AEAEAC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{68F6113F-2F08-4412-B5E7-41B7164A0C7F}"
+	ProjectSection(SolutionItems) = preProject
+		gulpfile.js = gulpfile.js
+		Package.json = Package.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

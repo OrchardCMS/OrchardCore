@@ -1,13 +1,8 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-
-*@
-
-@inherits Orchard.DisplayManagement.Razor.RazorPage<TModel>
+@inherits OrchardCore.DisplayManagement.Razor.RazorPage<TModel>
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@addTagHelper *, Orchard.Contents
-@addTagHelper *, Orchard.DisplayManagement
-@addTagHelper *, Orchard.ResourceManagement
+@addTagHelper *, OrchardCore.Contents
+@addTagHelper *, OrchardCore.DisplayManagement
+@addTagHelper *, OrchardCore.ResourceManagement
+@addTagHelper *, OrchardCore.Workflows.TagHelpers
 
-@using Orchard.ContentManagement;
-@using Orchard.DisplayManagement.Views;
+@using OrchardCore.DisplayManagement.Views;
