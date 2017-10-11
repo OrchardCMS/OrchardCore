@@ -1,2 +1,2 @@
-﻿msgid "Unknown system error"
+msgid "Unknown system error"
 msgstr "Error desconegut del sistema"
