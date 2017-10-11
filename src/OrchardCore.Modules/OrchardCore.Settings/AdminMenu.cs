@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Navigation;
 
@@ -23,6 +23,7 @@ namespace OrchardCore.Settings
             builder.Add(T["Design"], design => design
                 .Add(T["Settings"], "1", settings => settings
                     .Add(T["General"], T["General"], entry => entry
+                        .Permission(Permissions.ManageGroupSettings)
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })
                         .LocalNav()
                     )
