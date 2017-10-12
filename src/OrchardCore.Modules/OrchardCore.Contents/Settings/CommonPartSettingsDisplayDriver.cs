@@ -38,7 +38,6 @@ namespace OrchardCore.Lists.Settings
                 model.DisplayDateEditor = settings.DisplayDateEditor;
                 model.DisplayOwnerEditor = settings.DisplayOwnerEditor;
 
-                return Task.CompletedTask;
             }).Location("Content");
         }
 

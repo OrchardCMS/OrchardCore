@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -77,7 +77,7 @@ namespace OrchardCore.ContentManagement.Display
                 actualShapeType = actualShapeType + "_" + actualDisplayType;
             }
 
-            dynamic itemShape = CreateContentShape(actualShapeType);
+            dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
             itemShape.ContentItem = contentItem;
 
             ShapeMetadata metadata = itemShape.Metadata;
@@ -91,7 +91,7 @@ namespace OrchardCore.ContentManagement.Display
                 actualDisplayType,
                 groupId,
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 
@@ -115,7 +115,7 @@ namespace OrchardCore.ContentManagement.Display
 
             var actualShapeType = (stereotype ?? "Content") + "_Edit";
 
-            dynamic itemShape = CreateContentShape(actualShapeType);
+            dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
             itemShape.ContentItem = contentItem;
 
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
@@ -126,7 +126,7 @@ namespace OrchardCore.ContentManagement.Display
                 groupId,
                 htmlFieldPrefix,
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 
@@ -148,7 +148,7 @@ namespace OrchardCore.ContentManagement.Display
             var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
             var actualShapeType = (stereotype ?? "Content") + "_Edit";
 
-            dynamic itemShape = CreateContentShape(actualShapeType);
+            dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
             itemShape.ContentItem = contentItem;
 
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
@@ -159,7 +159,7 @@ namespace OrchardCore.ContentManagement.Display
                 groupId,
                 htmlFieldPrefix,
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 

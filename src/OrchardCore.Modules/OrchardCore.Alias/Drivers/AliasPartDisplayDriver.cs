@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
@@ -42,15 +42,13 @@ namespace OrchardCore.Alias.Drivers
             return settings;
         }
 
-        private Task BuildViewModel(AliasPartViewModel model, AliasPart part)
+        private void BuildViewModel(AliasPartViewModel model, AliasPart part)
         {
             var settings = GetAliasPartSettings(part);
 
             model.Alias = part.Alias;
             model.AliasPart = part;
             model.Settings = settings;
-
-            return Task.CompletedTask;
         }
     }
 }

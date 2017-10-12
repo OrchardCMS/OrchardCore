@@ -155,7 +155,7 @@ namespace OrchardCore.Contents.Controllers
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
                 pager.PageSize = maxPagedCount;
 
-            var pagerShape = New.Pager(pager).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync());
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync());
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
             var contentItemSummaries = new List<dynamic>();
@@ -164,7 +164,7 @@ namespace OrchardCore.Contents.Controllers
                 contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
             }
 
-            var viewModel = New.ViewModel()
+            var viewModel = (await New.ViewModel())
                 .ContentItems(contentItemSummaries)
                 .Pager(pagerShape)
                 .Options(model.Options)

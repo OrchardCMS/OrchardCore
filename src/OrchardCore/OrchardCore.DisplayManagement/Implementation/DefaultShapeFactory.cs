@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
@@ -30,33 +31,44 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
-            result = ShapeFactoryExtensions.Create(this, binder.Name, Arguments.From(args, binder.CallInfo.ArgumentNames));
+            // await New.FooAsync()
+            // await New.Foo()
+
+            var binderName = binder.Name;
+
+            if (binderName.EndsWith("Async"))
+            {
+                binderName = binder.Name.Substring(binder.Name.Length - "Async".Length);
+            }
+
+            result = ShapeFactoryExtensions.CreateAsync(this, binderName, Arguments.From(args, binder.CallInfo.ArgumentNames));
+                        
 			return true;
         }
 
-        private ShapeTable GetShapeTable()
+        private async Task<ShapeTable> GetShapeTableAsync()
         {
             if (_scopedShapeTable == null)
             {
-                var theme = _themeManager.GetThemeAsync().GetAwaiter().GetResult();
+                var theme = await _themeManager.GetThemeAsync();
                 _scopedShapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
             }
 
             return _scopedShapeTable;
         }
 
-        public IShape Create(string shapeType, Func<dynamic> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created)
+        public async Task<IShape> CreateAsync(string shapeType, Func<Task<IShape>> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created)
         {
             ShapeDescriptor shapeDescriptor;
-            GetShapeTable().Descriptors.TryGetValue(shapeType, out shapeDescriptor);
+            (await GetShapeTableAsync()).Descriptors.TryGetValue(shapeType, out shapeDescriptor);
 
             var creatingContext = new ShapeCreatingContext
             {
                 New = this,
                 ShapeFactory = this,
                 ShapeType = shapeType,
-                OnCreated = new List<Action<ShapeCreatedContext>>(),
-                Create = shapeFactory
+                OnCreated = new List<Func<ShapeCreatedContext, Task>>(),
+                CreateAsync = shapeFactory
             };
 
             creating?.Invoke(creatingContext);
@@ -69,9 +81,9 @@ namespace OrchardCore.DisplayManagement.Implementation
 
             if (shapeDescriptor != null)
             {
-                foreach (var ev in shapeDescriptor.Creating)
+                foreach (var ev in shapeDescriptor.CreatingAsync)
                 {
-                    ev(creatingContext);
+                    await ev(creatingContext);
                 }
             }
 
@@ -81,7 +93,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 New = creatingContext.New,
                 ShapeFactory = creatingContext.ShapeFactory,
                 ShapeType = creatingContext.ShapeType,
-                Shape = creatingContext.Create()
+                Shape = await creatingContext.CreateAsync()
             };
 
             var shape = createdContext.Shape as IShape;
@@ -111,19 +123,18 @@ namespace OrchardCore.DisplayManagement.Implementation
                 ev.Created(createdContext);
             }
 
-            if (shapeDescriptor != null)
-            {
-                foreach (var ev in shapeDescriptor.Created)
+            if (shapeDescriptor != null) {
+                foreach (var ev in shapeDescriptor.CreatedAsync)
                 {
-                    ev(createdContext);
+                    await ev(createdContext);
                 }
             }
 
-            if (creatingContext.OnCreated != null)
+            if (creatingContext != null)
             {
                 foreach (var ev in creatingContext.OnCreated)
                 {
-                    ev(createdContext);
+                    await ev(createdContext);
                 }
             }
 

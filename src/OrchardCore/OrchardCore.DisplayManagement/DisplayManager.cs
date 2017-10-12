@@ -50,7 +50,7 @@ namespace OrchardCore.DisplayManagement
                 actualShapeType = actualShapeType + "_" + actualDisplayType;
             }
 
-            var shape = CreateContentShape(actualShapeType);
+            var shape = await CreateContentShapeAsync(actualShapeType);
 
             // This provides a way to default a safe default and customize for each model type
             shape.Metadata.Alternates.Add($"{actualShapeType}__{model.GetType().Name}");
@@ -60,7 +60,7 @@ namespace OrchardCore.DisplayManagement
                 actualDisplayType,
                 group ?? "",
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 
@@ -70,7 +70,9 @@ namespace OrchardCore.DisplayManagement
             {
                 var result = await driver.BuildDisplayAsync(model, context);
                 if (result != null)
-                    result.Apply(context);
+                {
+                    await result.ApplyAsync(context);
+                }
             }, Logger);
 
             return shape;
@@ -80,7 +82,7 @@ namespace OrchardCore.DisplayManagement
         {
             var actualShapeType = typeof(TModel).Name + "_Edit";
 
-            var shape = CreateContentShape(actualShapeType);
+            var shape = await CreateContentShapeAsync(actualShapeType);
 
             // This provides a way to default a safe default and customize for each model type
             shape.Metadata.Alternates.Add($"{model.GetType().Name}_Edit");
@@ -91,7 +93,7 @@ namespace OrchardCore.DisplayManagement
                 group ?? "",
                 "",
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 
@@ -102,7 +104,7 @@ namespace OrchardCore.DisplayManagement
                 var result = await driver.BuildEditorAsync(model, context);
                 if (result != null)
                 {
-                    result.Apply(context);
+                    await result.ApplyAsync(context);
                 }
             }, Logger);
 
@@ -113,7 +115,7 @@ namespace OrchardCore.DisplayManagement
         {
             var actualShapeType = typeof(TModel).Name + "_Edit";
 
-            var shape = CreateContentShape(actualShapeType);
+            var shape = await CreateContentShapeAsync(actualShapeType);
 
             // This provides a way to default a safe default and customize for each model type
             shape.Metadata.Alternates.Add($"{model.GetType().Name}_Edit");
@@ -124,7 +126,7 @@ namespace OrchardCore.DisplayManagement
                 group ?? "",
                 "",
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 
@@ -135,7 +137,7 @@ namespace OrchardCore.DisplayManagement
                 var result = await driver.UpdateEditorAsync(model, context);
                 if (result != null)
                 {
-                    result.Apply(context);
+                    await result.ApplyAsync(context);
                 }
             }, Logger);
 

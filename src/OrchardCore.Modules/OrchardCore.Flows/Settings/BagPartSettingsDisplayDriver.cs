@@ -43,8 +43,6 @@ namespace OrchardCore.Flows.Settings
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
                 }
-
-                return Task.CompletedTask;
             }).Location("Content");
         }
 

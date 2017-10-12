@@ -95,7 +95,7 @@ namespace OrchardCore.Deployment.Controllers
             var routeData = new RouteData();
             routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = New.Pager(pager).TotalItemCount(count).RouteData(routeData);
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
 
             var model = new DeploymentPlanIndexViewModel
             {

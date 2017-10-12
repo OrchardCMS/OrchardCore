@@ -58,7 +58,7 @@
 
                         @foreach (var source in Model.QuerySourceNames)
                         {
-                            OrchardCore.DisplayManagement.IShape shape = New.Query_Link(Name: source);
+                            OrchardCore.DisplayManagement.IShape shape = await New.Query_Link(Name: source);
                             shape.Metadata.Alternates.Add("Query_Link__" + source);
 
                             @await DisplayAsync(shape)

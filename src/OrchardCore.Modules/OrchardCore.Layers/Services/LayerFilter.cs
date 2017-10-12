@@ -58,7 +58,7 @@ namespace OrchardCore.Layers.Services
 				var widgets = await _layerService.GetLayerWidgetsAsync(x => x.Published);
 				var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
 
-				var layout = _layoutAccessor.GetLayout();
+				dynamic layout = await _layoutAccessor.GetLayoutAsync();
 				var updater = _modelUpdaterAccessor.ModelUpdater;
 
 				var engine = _scriptingManager.GetScriptingEngine("js");
@@ -100,7 +100,7 @@ namespace OrchardCore.Layers.Services
 					widgetContent.Classes.Add("widget");
 					widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
 
-					var wrapper = _shapeFactory.Create("Widget_Wrapper", new { Widget = widget.ContentItem, Content = widgetContent });
+					var wrapper = await _shapeFactory.CreateAsync("Widget_Wrapper", new { Widget = widget.ContentItem, Content = widgetContent });
 					wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
 
 					var contentZone = layout.Zones[widget.Zone];

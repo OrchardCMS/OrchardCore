@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -77,7 +77,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 }
             }
 
-            var shape = _shapeFactory.Create(Type, Arguments.From(properties));
+            var shape = await _shapeFactory.CreateAsync(Type, Arguments.From(properties));
 
             if (!string.IsNullOrWhiteSpace(Cache))
             {

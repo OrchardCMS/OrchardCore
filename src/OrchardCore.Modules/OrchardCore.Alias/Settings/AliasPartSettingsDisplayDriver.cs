@@ -23,8 +23,6 @@ namespace OrchardCore.Alias.Settings
 
                 model.Pattern = settings.Pattern;
                 model.AliasPartSettings = settings;
-
-                return Task.CompletedTask;
             }).Location("Content");
         }
 

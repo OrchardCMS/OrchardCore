@@ -1,7 +1,9 @@
-﻿namespace OrchardCore.DisplayManagement.Layout
+using System.Threading.Tasks;
+
+namespace OrchardCore.DisplayManagement.Layout
 {
     public interface ILayoutAccessor
     {
-        dynamic GetLayout();
+        Task<IShape> GetLayoutAsync();
     }
 }
