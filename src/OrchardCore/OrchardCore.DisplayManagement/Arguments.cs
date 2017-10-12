@@ -99,7 +99,7 @@ namespace OrchardCore.DisplayManagement
                 {
                     if (arguments.Count != names.Count)
                     {
-                        _arguments = arguments.Skip(arguments.Count() - names.Count()).ToArray();
+                        _arguments = arguments.Skip(arguments.Count - names.Count).ToArray();
                     }
                     else
                     {
