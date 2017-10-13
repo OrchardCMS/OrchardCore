@@ -48,13 +48,21 @@ namespace OrchardCore.RestApis.Queries
                         {
                             // Add Field needs to be like Content Item and Content Items.... 
                             // so you can filter by blog...
-                            typeType.AddField(new FieldType
+                            var fieldType = new FieldType
                             {
                                 Name = name,
                                 ResolvedType = p,
-                                Resolver = new FuncFieldResolver<ContentItemType, Task<object>>(context => null),
-                                Type = p.GetType()
-                            });
+                                Resolver = new FuncFieldResolver<object>(context => {
+                                    var contentPartType = (Type)context.FieldDefinition.Metadata["contentPartType"];
+
+                                    return ((ContentItem)context.Source).Get(contentPartType, contentPartType.Name);
+                                }),
+                                Type = p.GetType(),
+                            };
+
+                            fieldType.Metadata.Add("contentPartType", contentPart.GetType());
+
+                            typeType.AddField(fieldType);
                         }
                     }
                 }
@@ -63,20 +71,14 @@ namespace OrchardCore.RestApis.Queries
                 {
                     Name = typeDefinition.Name,
                     ResolvedType = typeType,
+                    Type = typeof(ContentItemType),
                     Arguments = new QueryArguments(
                         new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "contentItemId", Description = "contentItemId of the content item" }
                     ),
-                    Resolver = new FuncFieldResolver<Task<ContentItem>>(context => serviceProvider.GetService<IContentManager>().GetAsync(context.GetArgument<string>("contentItemId")))
+                    Resolver = new FuncFieldResolver<Task<ContentItem>>(async context => await serviceProvider.GetService<IContentManager>().GetAsync(context.GetArgument<string>("contentItemId")))
                 });
             }
          
-            ////AddField(new EventStreamFieldType
-            ////{
-            ////    Name = "messageAdded",
-            ////    Type = typeof(MessageType),
-            ////    Resolver = new EventStreamResolver(Subscribe)
-            ////});
-
             Query = contentType;
 
             RegisterTypes(objectGraphTypes.ToArray());

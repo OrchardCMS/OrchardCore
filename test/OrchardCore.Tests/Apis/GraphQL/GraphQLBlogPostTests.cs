@@ -77,7 +77,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var result = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-            Assert.Equal("Hi There", result["data"]["createContentItem"]["titlepart"]["title"].ToString());
+            Assert.Equal("Hi There", result["data"]["blog"]["titlePart"]["title"].ToString());
         }
 
         public async Task<string> CreateBlog()

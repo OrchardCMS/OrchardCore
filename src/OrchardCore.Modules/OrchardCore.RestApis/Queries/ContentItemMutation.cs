@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -13,7 +15,10 @@ namespace OrchardCore.RestApis.Queries
     {
         public ContentItemMutation(IContentManager contentManager,
             IContentItemDisplayManager contentDisplay,
-            IModelMetadataProvider modelMetadataProvider)
+            IModelMetadataProvider metadataProvider,
+            IModelBinderFactory modelBinderFactory,
+            IHttpContextAccessor httpContextAccessor,
+            IObjectModelValidator objectModelValidator)
         {
             Name = "Mutation";
 
@@ -34,7 +39,7 @@ namespace OrchardCore.RestApis.Queries
                     contentItem.Author = contentItemFabrication.Author;
                     contentItem.Owner = contentItemFabrication.Owner;
 
-                    var updateModel = new ApiUpdateModel(modelMetadataProvider, contentParts);
+                    var updateModel = new ApiUpdateModel(metadataProvider, modelBinderFactory, httpContextAccessor, objectModelValidator, contentParts);
 
                     await contentDisplay.UpdateEditorAsync(contentItem, updateModel);
 

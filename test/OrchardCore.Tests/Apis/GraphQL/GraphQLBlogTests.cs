@@ -28,7 +28,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 }";
 
             var json = @"{
-  ""query"": ""mutation ($contentItem: ContentItemInput!){ createContentItem(contentItem: $contentItem) { id } }"",
+  ""query"": ""mutation ($contentItem: ContentItemInput!){ createContentItem(contentItem: $contentItem) { contentItemId } }"",
   ""variables"": " + JsonConvert.SerializeObject(variables) + @"}";
 
             var response = await _siteContext.Site.Client.PostJsonAsync("graphql", json);
@@ -37,7 +37,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var result = JObject.Parse(await response.Content.ReadAsStringAsync());
 
             //"{\"data\":{\"createContentItem\":{\"id\":81}}}"
-            Assert.NotEmpty(result["data"]["createContentItem"]["id"].ToString());
+            Assert.NotEmpty(result["data"]["createContentItem"]["contentItemId"].ToString());
         }
     }
 }
