@@ -150,7 +150,6 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
     if ((!doConcat || assetGroup.inputPaths.length < 2) && !containsLessOrScss)
         generateSourceMaps = false;
 
-    console.log("SourceMaps: " + generateSourceMaps + ", Input: " + assetGroup.inputPaths );
     var minifiedStream = gulp.src(assetGroup.inputPaths) // Minified output, source mapping completely disabled.
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
@@ -219,6 +218,8 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
     // Source maps are useless if neither concatenating nor transforming.
     if ((!doConcat || assetGroup.inputPaths.length < 2) && !assetGroup.inputPaths.some(function (inputPath) { return path.extname(inputPath).toLowerCase() === ".ts"; }))
         generateSourceMaps = false;
+
+    console.log(assetGroup.inputPaths);
     return gulp.src(assetGroup.inputPaths)
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
@@ -233,8 +234,14 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
             declaration: false,
             noImplicitAny: true,
             noEmitOnError: true,
-            sortOutput: true,
-        }).js))
+            lib: [
+                "dom",
+                "es5",
+                "scripthost",
+                "es2015.iterable"
+            ],
+            target: "es5",
+        })))
         .pipe(gulpif(doConcat, concat(assetGroup.outputFileName)))
         .pipe(header(
             "/*\n" +
