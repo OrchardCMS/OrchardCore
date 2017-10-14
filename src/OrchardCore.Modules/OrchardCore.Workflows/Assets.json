@@ -4,7 +4,7 @@
       "Assets/Sass/workflow-editor.scss",
       "Assets/Sass/workflow-editor-activity-toolbox.scss"
     ],
-    "output": "Content/Styles/workflows-workflow-editor.css"
+    "output": "Content/Styles/orchard.workflows-workflow-editor.css"
   },
   {
     "inputs": [
@@ -18,5 +18,9 @@
       "Assets/Images/*"
     ],
     "output": "Content/Styles/Images/@"
+  },
+  {
+    "inputs": [ "Assets/Scripts/workflow-editor.ts" ],
+    "output": "Content/Scripts/orchard.workflows-workflow-editor.js"
   }
 ]

@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Scripts\workflow-editor.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\Scripts\workflow-editor.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Navigation\OrchardCore.Environment.Navigation.csproj" />
@@ -24,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Assets\TypeScript\" />
+    <Folder Include="Content\Scripts\" />
     <Folder Include="Content\Styles\Images\" />
     <Folder Include="Models\" />
   </ItemGroup>
