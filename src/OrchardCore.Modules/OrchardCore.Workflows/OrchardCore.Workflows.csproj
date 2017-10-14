@@ -5,6 +5,7 @@
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />
+    <TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,6 +43,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="Assets\Lib\jquery\typings.d.ts" />
+    <TypeScriptCompile Include="Assets\Lib\jsplumb\typings.d.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Assets\Images\cog.png">
       <PackagePath>assets\$(PackageId)\</PackagePath>
       <Pack>true</Pack>
@@ -54,5 +60,21 @@
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
   </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptTarget>ES6</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptModuleKind>ES6</TypeScriptModuleKind>
+    <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>True</TypeScriptNoImplicitAny>
+    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptOutFile />
+    <TypeScriptOutDir />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
+  </PropertyGroup>
 
 </Project>

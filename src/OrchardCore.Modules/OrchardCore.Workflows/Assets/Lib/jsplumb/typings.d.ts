@@ -1,44 +1,40 @@
-// Type definitions for jsPlumb jQuery adapter 1.3
-// Project: http://jsplumb.org
-// Definitions by: Steve Shearn <https://github.com/shearnie>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-// TypeScript Version: 2.3
-
-/// <reference path="../../../../../OrchardCore.Resources/Assets/jQuery/Types/jquery-latest.d.ts"/>
-
+///<reference path="../../../../OrchardCore.Resources/Assets/jQuery/Typings/jquery-latest.d.ts" />
 declare var jsPlumb: jsPlumbInstance;
 
 interface jsPlumbInstance {
     setRenderMode(renderMode: string): string;
-    bind(event: string, callback: (e: any) => void ): void;
+    bind(event: string, callback: (connection: any, e: any) => void): void;
     unbind(event?: string): void;
     ready(callback: () => void): void;
     importDefaults(defaults: Defaults): void;
     Defaults: Defaults;
     restoreDefaults(): void;
     addClass(el: any, clazz: string): void;
-    addEndpoint(ep: string): any;
+    addEndpoint(ep: string, source: Endpoint, sourceOptions?: SourceOptions): any;
     removeClass(el: any, clazz: string): void;
     hasClass(el: any, clazz: string): void;
-        draggable(el: string, options?: DragOptions): jsPlumbInstance;
-        draggable(ids: string[], options?: DragOptions): jsPlumbInstance;
-        connect(connection: ConnectParams, referenceParams?: ConnectParams): Connection;
-        makeSource(el: string, options: SourceOptions): void;
-        makeTarget(el: string, options: TargetOptions): void;
-        repaintEverything(): void;
-        detachEveryConnection(): void;
+    draggable(el: any, options?: DragOptions): jsPlumbInstance;
+    draggable(ids: string[], options?: DragOptions): jsPlumbInstance;
+    connect(connection: ConnectParams, referenceParams?: ConnectParams): Connection;
+    makeSource(el: string, options: SourceOptions): void;
+    makeTarget(el: string, options: TargetOptions): void;
+    repaintEverything(): void;
+    detachEveryConnection(): void;
     detachAllConnections(el: string): void;
-        removeAllEndpoints(el: string, recurse?: boolean): jsPlumbInstance;
-        removeAllEndpoints(el: Element, recurse?: boolean): jsPlumbInstance;
-        select(params: SelectParams): Connections;
-        getConnections(options?: any, flat?: any): any[];
-        deleteEndpoint(uuid: string, doNotRepaintAfterwards?: boolean): jsPlumbInstance;
-        deleteEndpoint(endpoint: Endpoint, doNotRepaintAfterwards?: boolean): jsPlumbInstance;
-        repaint(el: string): jsPlumbInstance;
-        repaint(el: Element): jsPlumbInstance;
-        getInstance(): jsPlumbInstance;
+    removeAllEndpoints(el: string, recurse?: boolean): jsPlumbInstance;
+    removeAllEndpoints(el: Element, recurse?: boolean): jsPlumbInstance;
+    select(params: SelectParams): Connections;
+    getConnections(options?: any, flat?: any): any[];
+    deleteEndpoint(uuid: string, doNotRepaintAfterwards?: boolean): jsPlumbInstance;
+    deleteEndpoint(endpoint: Endpoint, doNotRepaintAfterwards?: boolean): jsPlumbInstance;
+    repaint(el: string): jsPlumbInstance;
+    repaint(el: Element): jsPlumbInstance;
+    getInstance(): jsPlumbInstance;
     getInstance(defaults: Defaults): jsPlumbInstance;
     getInstanceIndex(): number;
+    registerConnectionType(name: string, type: ConnectionType): jsPlumbInstance;
+    batch(func: Function): jsPlumbInstance;
+    getSelector(sel: string): any;
 
     SVG: string;
     CANVAS: string;
@@ -56,19 +52,30 @@ interface Defaults {
     DragOptions?: DragOptions;
 }
 
-interface PaintStyle {
-    strokeStyle: string;
-    lineWidth: number;
+interface ConnectionType {
+    connector: string,
+    paintStyle: PaintStyle,
+    hoverPaintStyle: PaintStyle,
+    overlays: Array<string>
 }
 
-interface ArrowOverlay {
+interface PaintStyle {
+    stroke?: string;
+    strokeWidth?: number;
+}
+
+interface Overlay {
+    setLabel(label: string): void;
+}
+
+interface ArrowOverlay extends Overlay {
     location: number;
     id: string;
     length: number;
     foldback: number;
 }
 
-interface LabelOverlay {
+interface LabelOverlay extends Overlay {
     label: string;
     id: string;
     location: number;
@@ -88,18 +95,24 @@ interface ConnectParams {
     anchor?: string;
     anchors?: any[];
     label?: string;
+    uuids: Array<string>;
+    editable: boolean;
 }
 
 interface DragOptions {
-    containment?: string;
+    scope?: string;
+    cursor?: string;
+    zIndex?: number;
+    grid?: Array<number>;
 }
 
 interface SourceOptions {
-    parent: string;
+    parent?: string;
     endpoint?: string;
     anchor?: string;
     connector?: any[];
     connectorStyle?: PaintStyle;
+    uuid?: string;
 }
 
 interface TargetOptions {
@@ -126,6 +139,9 @@ interface Connection {
     setDetachable(detachable: boolean): void;
     setParameter<T>(name: string, value: T): void;
     endpoints: Endpoint[];
+    getOverlay(name: string): Overlay;
+    sourceId: string;
+    targetId: string;
 }
 
 interface Endpoint {
