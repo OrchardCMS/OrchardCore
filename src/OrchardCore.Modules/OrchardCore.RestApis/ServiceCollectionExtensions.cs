@@ -29,6 +29,8 @@ namespace OrchardCore.RestApis
             services.AddScoped<IDocumentExecuter, DocumentExecuter>();
 
             services.AddGraphType<TitlePartType>();
+            services.AddGraphType<AutoRoutePartType>();
+            services.AddGraphType<BagPartType>();
 
             //services.AddScoped<ContentItemType>();
             //services.AddScoped<ContentTypeType>();

@@ -68,10 +68,6 @@ namespace OrchardCore.RestApis.Queries
 
                 modelState.SetModelValue(content.Path.Replace(name + ".", ""), content.ToString(), content.ToString());
                 modelState.SetModelValue(content.Path, content.ToString(), content.ToString());
-                //var  splitContentToken = content.Path.Split('.');
-
-                //var path = string.Join(".", splitContentToken.Select(t => char.ToLower(t[0]) + t.Substring(1)));
-                //modelState.SetModelValue(path, content.ToString(), content.ToString());
             }
 
             var actionContext = new Microsoft.AspNetCore.Mvc.ActionContext(

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules.Cms", "OrchardCore.Modules.Cms", "{90030E85-0C4F-456F-B879-443E8A3F220D}"
 EndProject
@@ -288,6 +288,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.RestApis", "src\OrchardCore.Modules\OrchardCore.RestApis\OrchardCore.RestApis.csproj", "{21EF82F8-88C0-4139-B355-1A0616BB59B6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GraphQL", "..\graphql-dotnet\src\GraphQL\GraphQL.csproj", "{55E14C33-0B7A-4532-B2DF-8AE8B6038BAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.GraphQL.Client", "src\OrchardCore\OrchardCore.GraphQL.Client\OrchardCore.GraphQL.Client.csproj", "{2B1268AA-4920-46CD-99C2-9BFBED074FFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -811,6 +813,10 @@ Global
 		{55E14C33-0B7A-4532-B2DF-8AE8B6038BAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55E14C33-0B7A-4532-B2DF-8AE8B6038BAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55E14C33-0B7A-4532-B2DF-8AE8B6038BAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B1268AA-4920-46CD-99C2-9BFBED074FFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B1268AA-4920-46CD-99C2-9BFBED074FFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B1268AA-4920-46CD-99C2-9BFBED074FFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B1268AA-4920-46CD-99C2-9BFBED074FFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -957,6 +963,7 @@ Global
 		{7D28EEFB-17FD-4D86-99E4-6B5A3C490BE3} = {3398AB60-2DB7-464C-B211-C4120BE75582}
 		{21EF82F8-88C0-4139-B355-1A0616BB59B6} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{55E14C33-0B7A-4532-B2DF-8AE8B6038BAC} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
+		{2B1268AA-4920-46CD-99C2-9BFBED074FFC} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

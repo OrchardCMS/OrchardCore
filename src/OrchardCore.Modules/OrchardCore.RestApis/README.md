@@ -28,42 +28,24 @@ Orchard
     ContentType
 	ContentParts
 
-## Get Content Item By Id
+## Queries and Mutations
+
+### Fields
+
+Query
 ```json
 query {
-	contentitem(id: "4deh835p7emt23gpxz15wmz5x5") {
-	    id
-	    contentType
-	}
+    contentItem {
+        contentItemId
+    }
 }
 ```
 
-## Get Content Items By Type
+Produces
 ```json
 query {
-	contentitem(contentType: "Blog") {
-	    id
-	    contentType
-	}
+    contentItem {
+        SFDSKF823RK3O
+    }
 }
 ```
-
-## Get the Schema for a Landing Page
-```json
-{
-	__type(name: "LandingPage")
-	{
-		name
-		fields
-		{
-			name
-			type
-			{
-				name
-				kind
-			}
-		}
-	}
-}
-```
-

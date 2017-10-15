@@ -54,6 +54,7 @@
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Extensions\OrchardCore.Environment.Extensions.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Extensions.Abstractions\OrchardCore.Environment.Extensions.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Shell\OrchardCore.Environment.Shell.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.GraphQL.Client\OrchardCore.GraphQL.Client.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Hosting.Console\OrchardCore.Hosting.Console.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Localization.Core\OrchardCore.Localization.Core.csproj" />

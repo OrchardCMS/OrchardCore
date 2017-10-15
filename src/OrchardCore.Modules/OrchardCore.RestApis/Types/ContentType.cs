@@ -19,26 +19,26 @@ namespace OrchardCore.RestApis.Queries
             FieldAsync<ContentItemType>(
               "contentitem",
               arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the content item" }
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "contentItemId", Description = "content item id" }
                 ),
-              resolve: async context => await contentManager.GetAsync(context.GetArgument<string>("id"))
+              resolve: async context => await contentManager.GetAsync(context.GetArgument<string>("contentItemId"))
             );
 
             FieldAsync<ListGraphType<ContentItemType>>(
               "contentitems",
               arguments: new QueryArguments(
-                    new QueryArgument<StringGraphType> { Name = "id", Description = "id of the content item" },
+                    new QueryArgument<IntGraphType> { Name = "id", Description = "id of the content item" },
                     new QueryArgument<BooleanGraphType> { Name = "published", Description = "is the content item published" },
                     new QueryArgument<StringGraphType> { Name = "latest", Description = "is the content item the latest version" },
                     new QueryArgument<IntGraphType> { Name = "number", Description = "version number, 1,2,3 etc" },
                     new QueryArgument<StringGraphType> { Name = "contentType", Description = "type of content item" },
-                    new QueryArgument<StringGraphType> { Name = "contentItemId", Description = "same as id" },
+                    new QueryArgument<StringGraphType> { Name = "contentItemId", Description = "content item id" },
                     new QueryArgument<StringGraphType> { Name = "contentItemIVersionId", Description = "the id of the version" }
                 ),
               resolve: async context => {
-                  if (context.HasPopulatedArgument("id"))
+                  if (context.HasPopulatedArgument("contentItemId"))
                   {
-                      return new[] { await contentManager.GetAsync(context.GetArgument<string>("id")) };
+                      return new[] { await contentManager.GetAsync(context.GetArgument<string>("contentItemId")) };
                   }
 
                   var query = session.Query<ContentItem, ContentItemIndex>();
@@ -48,6 +48,11 @@ namespace OrchardCore.RestApis.Queries
                   //    query = query.WithParameter(argument.Key, argument.Value);
                   //}
 
+                  if (context.HasPopulatedArgument("id"))
+                  {
+                      var value = context.GetArgument<int>("id");
+                      query = query.Where(q => q.Id == value);
+                  }
 
                   if (context.HasPopulatedArgument("published"))
                   {
