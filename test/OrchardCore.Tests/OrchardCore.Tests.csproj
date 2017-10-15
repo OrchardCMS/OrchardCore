@@ -7,6 +7,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>OrchardCore.Tests</AssemblyName>
     <PackageId>OrchardCore.Tests</PackageId>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>

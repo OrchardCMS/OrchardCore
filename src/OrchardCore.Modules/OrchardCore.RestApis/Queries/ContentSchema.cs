@@ -106,6 +106,9 @@ namespace OrchardCore.RestApis.Queries
                             var value = context.GetArgument<bool>("published");
                             query = query.Where(q => q.Published == value);
                         }
+                        else {
+                            query = query.Where(q => q.Published == true);
+                        }
 
                         if (context.HasPopulatedArgument("latest"))
                         {
@@ -122,6 +125,10 @@ namespace OrchardCore.RestApis.Queries
                         if (context.HasPopulatedArgument("contentType"))
                         {
                             var value = context.GetArgument<string>("contentType");
+                            query = query.Where(q => q.ContentType == value);
+                        }
+                        else {
+                            var value = (context.ReturnType as ListGraphType).ResolvedType.Name;
                             query = query.Where(q => q.ContentType == value);
                         }
 

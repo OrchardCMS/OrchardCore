@@ -6,16 +6,16 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
     {
         public BlogContext() : base()
         {
-            BlogContentItemId = Client
+            var result = Client
                 .Content
-                .CreateAsync("Blog", builder =>
-                {
+                .QueryAsync("Blog", builder => {
                     builder
-                        .WithContentPart("TitlePart")
-                        .AddField("Title", "Hi There!");
+                        .AddField("contentItemId");
                 })
                 .GetAwaiter()
                 .GetResult();
+
+            BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();
         }
 
         public string BlogContentItemId { get; }
