@@ -203,22 +203,22 @@ namespace OrchardCore.Workflows.Controllers
             {
                 var workflowDefinition = await _session.GetAsync<WorkflowDefinition>(id.Value);
 
-                return View(new AdminEditViewModel { WorkflowDefinition = new WorkflowDefinitionViewModel { Name = workflowDefinition.Name, Id = workflowDefinition.Id } });
+                return View(new WorkflowDefinitionViewModel { Name = workflowDefinition.Name, Id = workflowDefinition.Id });
             }
         }
 
 
         [HttpPost, ActionName(nameof(EditProperties))]
-        public async Task<IActionResult> EditPropertiesPost(AdminEditViewModel adminEditViewModel, int? id)
+        public async Task<IActionResult> EditPropertiesPost(WorkflowDefinitionViewModel viewModel, int? id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
                 return Unauthorized();
             }
 
-            if (string.IsNullOrWhiteSpace(adminEditViewModel.WorkflowDefinition.Name))
+            if (string.IsNullOrWhiteSpace(viewModel.Name))
             {
-                ModelState.AddModelError("Name", S["The Name can't be empty."]);
+                ModelState.AddModelError("Name", S["The name can't be empty."]);
             }
 
             if (!ModelState.IsValid)
@@ -230,7 +230,7 @@ namespace OrchardCore.Workflows.Controllers
             {
                 var workflowDefinition = new WorkflowDefinition
                 {
-                    Name = adminEditViewModel.WorkflowDefinition.Name?.Trim()
+                    Name = viewModel.Name?.Trim()
                 };
 
                 _session.Save(workflowDefinition);
@@ -245,7 +245,8 @@ namespace OrchardCore.Workflows.Controllers
                     return NotFound();
                 }
 
-                workflowDefinition.Name = adminEditViewModel.WorkflowDefinition.Name?.Trim();
+                workflowDefinition.Name = viewModel.Name?.Trim();
+                _session.Save(workflowDefinition);
 
                 return RedirectToAction("Index");
             }
@@ -270,7 +271,7 @@ namespace OrchardCore.Workflows.Controllers
             return Json(new { isRunning = isRunning });
         }
 
-        public async Task<IActionResult> Edit(int id, string localId, int? workflowId)
+        public async Task<IActionResult> Edit(int id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -281,12 +282,15 @@ namespace OrchardCore.Workflows.Controllers
             var workflowDefinition = await _session.GetAsync<WorkflowDefinition>(id);
             var workflowDefinitionViewModel = CreateWorkflowDefinitionViewModel(workflowDefinition);
 
-            var viewModel = new AdminEditViewModel
+            var viewModel = new WorkflowEditViewModel
             {
-                LocalId = string.IsNullOrEmpty(localId) ? Guid.NewGuid().ToString() : localId,
-                IsLocal = !string.IsNullOrEmpty(localId),
-                WorkflowDefinition = workflowDefinitionViewModel,
-                AllActivities = _activitiesManager.GetActivities()
+                WorkflowDefinitionViewModel = workflowDefinitionViewModel,
+                WorkflowEditor = New.WorkflowEditor(
+                    WorkflowDefinition: workflowDefinition,
+                    ActivityToolbox: New.ActivityToolbox(
+                        Activities: _activitiesManager.GetActivities().ToList()
+                    )
+                )
             };
 
             return View(viewModel);

@@ -1,10 +1,9 @@
 @using OrchardCore.Mvc.Utilities
-@using OrchardCore.Workflows.Models
 @using OrchardCore.Workflows.Services
 @using OrchardCore.Workflows.Helpers
 
 @{
-    IList<IActivity> allActivities = Model.AllActivities;
+    IList<IActivity> allActivities = Model.Activities;
 }
 <div class="workflows-activity-toolbox">
     <fieldset class="workflows-activity-toolbox-filter">

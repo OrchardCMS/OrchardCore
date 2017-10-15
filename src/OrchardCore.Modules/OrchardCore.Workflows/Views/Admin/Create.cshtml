@@ -1,9 +1,10 @@
-﻿@model OrchardCore.Workflows.ViewModels.AdminEditViewModel
+@model OrchardCore.Workflows.ViewModels.WorkflowDefinitionViewModel
 
+<h1>@RenderTitleSegments(T["Create Workflow Definition"])</h1>
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post">
     <fieldset class="form-group" asp-validation-class-for="Name">
-        <label asp-for="Rule">@T["Name"] <span asp-validation-for="Name"></span></label>
+        <label asp-for="Name">@T["Name"] <span asp-validation-for="Name"></span></label>
         <input asp-for="Name" class="form-control" type="text" />
     </fieldset>
 

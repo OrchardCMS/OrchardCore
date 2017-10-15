@@ -1,6 +1,6 @@
 .workflow-editor-canvas {
 
-    .window {
+    .activity {
         border: 1px solid #346789;
         box-shadow: 2px 2px 19px #aaa;
         -o-box-shadow: 2px 2px 19px #aaa;
@@ -33,14 +33,10 @@
             -moz-box-shadow: 2px 2px 19px #444;
             opacity: 0.6;
         }
-    }
 
-    .active {
-        border: 1px dotted green;
-    }
-
-    .hover {
-        border: 1px dotted red;
+        &.jtk-connected {
+            border: 1px solid green;
+        }
     }
 
     .jtk-connector {
@@ -52,25 +48,19 @@
         cursor: pointer;
     }
 
-    .aLabel {
+    .connection-label {
         background-color: white;
         padding: 0.4em;
         font: 12px sans-serif;
         color: #444;
         z-index: 21;
-        border: 1px dotted gray;
-        opacity: 0.8;
         cursor: pointer;
     }
 
-    .aLabel.jtk-hover {
+    .connection-label.jtk-hover {
         background-color: #5C96BC;
         color: white;
         border: 1px solid white;
-    }
-
-    .window.jtk-connected {
-        border: 1px solid green;
     }
 
     .jtk-drag {

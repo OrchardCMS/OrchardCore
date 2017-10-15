@@ -16,8 +16,8 @@ interface jsPlumbInstance {
     draggable(el: any, options?: DragOptions): jsPlumbInstance;
     draggable(ids: string[], options?: DragOptions): jsPlumbInstance;
     connect(connection: ConnectParams, referenceParams?: ConnectParams): Connection;
-    makeSource(el: string, options: SourceOptions): void;
-    makeTarget(el: string, options: TargetOptions): void;
+    makeSource(el: any, options: SourceOptions): void;
+    makeTarget(el: any, options: TargetOptions): void;
     repaintEverything(): void;
     detachEveryConnection(): void;
     detachAllConnections(el: string): void;
@@ -27,6 +27,7 @@ interface jsPlumbInstance {
     getConnections(options?: any, flat?: any): any[];
     deleteEndpoint(uuid: string, doNotRepaintAfterwards?: boolean): jsPlumbInstance;
     deleteEndpoint(endpoint: Endpoint, doNotRepaintAfterwards?: boolean): jsPlumbInstance;
+    deleteConnection(connection: Connection): jsPlumbInstance;
     repaint(el: string): jsPlumbInstance;
     repaint(el: Element): jsPlumbInstance;
     getInstance(): jsPlumbInstance;
@@ -120,7 +121,7 @@ interface TargetOptions {
     maxConnections?: number;
     uniqueEndpoint?: boolean;
     deleteEndpointsOnDetach?: boolean;
-    endpoint?: string;
+    endpoint?: any;
     dropOptions?: DropOptions;
     anchor?: any;
 }
