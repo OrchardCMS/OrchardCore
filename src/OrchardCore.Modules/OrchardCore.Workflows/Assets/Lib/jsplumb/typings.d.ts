@@ -10,7 +10,7 @@ interface jsPlumbInstance {
     Defaults: Defaults;
     restoreDefaults(): void;
     addClass(el: any, clazz: string): void;
-    addEndpoint(ep: string, source: Endpoint, sourceOptions?: SourceOptions): any;
+    addEndpoint(ep: any, source: Endpoint, sourceOptions?: SourceOptions): any;
     removeClass(el: any, clazz: string): void;
     hasClass(el: any, clazz: string): void;
     draggable(el: any, options?: DragOptions): jsPlumbInstance;
@@ -61,8 +61,13 @@ interface ConnectionType {
 }
 
 interface PaintStyle {
+    fill?: string;
+    radius?: number;
     stroke?: string;
     strokeWidth?: number;
+    joinstyle?: string;
+    outlineStroke?: string;
+    outlineWidth?: number;
 }
 
 interface Overlay {
@@ -114,6 +119,7 @@ interface SourceOptions {
     connector?: any[];
     connectorStyle?: PaintStyle;
     uuid?: string;
+    overlays?: Array<any>;
 }
 
 interface TargetOptions {
@@ -146,4 +152,14 @@ interface Connection {
 }
 
 interface Endpoint {
+    endpoint?: string;
+    anchor?: string;
+    paintStyle?: PaintStyle;
+    isSource?: boolean;
+    connector?: Array<any>;
+    connectorStyle?: PaintStyle;
+    hoverPaintStyle?: PaintStyle;
+    connectorHoverStyle?: PaintStyle;
+    dragOptions?: DragOptions;
+    overlays: Array<any>;
 }

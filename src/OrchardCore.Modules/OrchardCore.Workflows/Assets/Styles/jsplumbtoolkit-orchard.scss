@@ -1,4 +1,7 @@
 .workflow-editor-canvas {
+    overflow: hidden !important;
+    position: relative;
+    touch-action: none;
 
     .activity {
         border: 1px solid #346789;
@@ -12,7 +15,7 @@
         width: 80px;
         height: 80px;
         line-height: 80px;
-        cursor: pointer;
+        cursor: move;
         text-align: center;
         z-index: 20;
         position: absolute;
@@ -48,19 +51,22 @@
         cursor: pointer;
     }
 
+    .endpointTargetLabel, .endpointSourceLabel {
+        font-size: 8px;
+    }
+
+    .jtk-overlay {
+        background-color: transparent;
+    }
+
     .connection-label {
         background-color: white;
         padding: 0.4em;
+        border: 1px solid #999999;
         font: 12px sans-serif;
         color: #444;
         z-index: 21;
-        cursor: pointer;
-    }
-
-    .connection-label.jtk-hover {
-        background-color: #5C96BC;
-        color: white;
-        border: 1px solid white;
+        cursor: default;
     }
 
     .jtk-drag {
@@ -69,10 +75,6 @@
 
     path, .jtk-endpoint {
         cursor: pointer;
-    }
-
-    .jtk-overlay {
-        background-color: transparent;
     }
 }
 
