@@ -74,15 +74,17 @@ namespace OrchardCore.RestApis.Queries
                     Name = typeDefinition.Name,
                     ResolvedType = new ListGraphType(typeType),
 
-                    Arguments = new QueryArguments(
-                        new QueryArgument<IntGraphType> { Name = "id", Description = "id of the content item" },
-                        new QueryArgument<BooleanGraphType> { Name = "published", Description = "is the content item published" },
-                        new QueryArgument<StringGraphType> { Name = "latest", Description = "is the content item the latest version" },
-                        new QueryArgument<IntGraphType> { Name = "number", Description = "version number, 1,2,3 etc" },
-                        new QueryArgument<StringGraphType> { Name = "contentType", Description = "type of content item" },
-                        new QueryArgument<StringGraphType> { Name = "contentItemId", Description = "same as id" },
-                        new QueryArgument<StringGraphType> { Name = "contentItemIVersionId", Description = "the id of the version" }
-                    ),
+                    Arguments = new QueryArguments(new QueryArgument(typeType) { Name = typeDefinition.Name }),
+
+                    //Arguments = new QueryArguments(
+                    //    new QueryArgument<IntGraphType> { Name = "id", Description = "id of the content item" },
+                    //    new QueryArgument<BooleanGraphType> { Name = "published", Description = "is the content item published" },
+                    //    new QueryArgument<StringGraphType> { Name = "latest", Description = "is the content item the latest version" },
+                    //    new QueryArgument<IntGraphType> { Name = "number", Description = "version number, 1,2,3 etc" },
+                    //    new QueryArgument<StringGraphType> { Name = "contentType", Description = "type of content item" },
+                    //    new QueryArgument<StringGraphType> { Name = "contentItemId", Description = "same as id" },
+                    //    new QueryArgument<StringGraphType> { Name = "contentItemIVersionId", Description = "the id of the version" }
+                    //),
 
                     Resolver = new FuncFieldResolver<Task<IEnumerable<ContentItem>>>(async context => {
                         var contentManager = serviceProvider.GetService<IContentManager>();
