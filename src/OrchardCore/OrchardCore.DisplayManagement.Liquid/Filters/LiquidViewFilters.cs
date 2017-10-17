@@ -45,11 +45,11 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 .GetString(input.ToStringValue(), parameters.ToArray())));
         }
 
-        public static Task<FluidValue> NewShape(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static async Task<FluidValue> NewShape(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("ShapeFactory", out dynamic shapeFactory))
             {
-                throw new ArgumentException("ShapeFactory missing while invoking 'date_time'");
+                throw new ArgumentException("ShapeFactory missing while invoking 'new_shape'");
             }
 
             var type = input.ToStringValue();
@@ -60,8 +60,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 properties.Add(LowerKebabToPascalCase(name), arguments[name].ToObjectValue());
             }
 
-            return Task.FromResult(FluidValue.Create(((IShapeFactory)shapeFactory)
-                .Create(type, Arguments.From(properties))));
+            return FluidValue.Create(await ((IShapeFactory)shapeFactory).CreateAsync(type, Arguments.From(properties)));
         }
 
         public static async Task<FluidValue> ShapeString(FluidValue input, FilterArguments arguments, TemplateContext context)

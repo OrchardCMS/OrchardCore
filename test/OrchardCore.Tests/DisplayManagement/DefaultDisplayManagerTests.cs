@@ -257,8 +257,8 @@ namespace OrchardCore.Tests.DisplayManagement
 
             var displayingEventCount = 0;
             var displayedEventCount = 0;
-            descriptor.Displaying = new Action<ShapeDisplayContext>[] { ctx => { ++displayingEventCount; } };
-            descriptor.Displayed = new Action<ShapeDisplayContext>[] { ctx => { ++displayedEventCount; ctx.ChildContent = new HtmlString("[" + ctx.ChildContent.ToString() + "]"); } };
+            descriptor.DisplayingAsync = new Func<ShapeDisplayContext, Task>[] { ctx => { ++displayingEventCount; return Task.CompletedTask; } };
+            descriptor.DisplayedAsync = new Func<ShapeDisplayContext, Task>[] { ctx => { ++displayedEventCount; ctx.ChildContent = new HtmlString("[" + ctx.ChildContent.ToString() + "]"); return Task.CompletedTask; } };
 
             var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
 
@@ -303,7 +303,7 @@ namespace OrchardCore.Tests.DisplayManagement
                     Type = "Foo"
                 }
             };
-            descriptorFoo.Displaying = new Action<ShapeDisplayContext>[] { ctx => ctx.ShapeMetadata.Alternates.Add("Bar") };
+            descriptorFoo.DisplayingAsync = new Func<ShapeDisplayContext, Task>[] { ctx => { ctx.ShapeMetadata.Alternates.Add("Bar"); return Task.CompletedTask; } };
             var resultWithOverride = await htmlDisplay.ExecuteAsync(CreateDisplayContext(shapeFoo));
 
             Assert.Equal("alpha", resultNormally.ToString());

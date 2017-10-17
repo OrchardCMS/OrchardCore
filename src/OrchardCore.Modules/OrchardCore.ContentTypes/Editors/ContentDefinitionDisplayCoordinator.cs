@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
@@ -36,7 +36,7 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.BuildEditorAsync(model, context);
                 if (result != null)
-                    result.Apply(context);
+                    await result.ApplyAsync(context);
             }, Logger);
         }
 
@@ -46,7 +46,7 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);
                 if (result != null)
-                    result.Apply(context);
+                    await result.ApplyAsync(context);
             }, Logger);
         }
 
@@ -56,7 +56,7 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.BuildEditorAsync(model, context);
                 if (result != null)
-                    result.Apply(context);
+                    await result.ApplyAsync(context);
             }, Logger);
         }
 
@@ -66,7 +66,7 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);
                 if (result != null)
-                    result.Apply(context);
+                    await result.ApplyAsync(context);
             }, Logger);
         }
 
@@ -76,7 +76,7 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.BuildEditorAsync(model, context);
                 if (result != null)
-                    result.Apply(context);
+                    await result.ApplyAsync(context);
             }, Logger);
         }
 
@@ -86,7 +86,7 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);
                 if (result != null)
-                    result.Apply(context);
+                    await result.ApplyAsync(context);
             }, Logger);
         }
 
@@ -96,7 +96,7 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.BuildEditorAsync(model, context);
                 if (result != null)
-                    result.Apply(context);
+                    await result.ApplyAsync(context);
             }, Logger);
         }
 
@@ -106,7 +106,7 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);
                 if (result != null)
-                    result.Apply(context);
+                    await result.ApplyAsync(context);
             }, Logger);
         }
     }

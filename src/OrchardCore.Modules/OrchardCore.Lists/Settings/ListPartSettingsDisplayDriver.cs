@@ -44,8 +44,6 @@ namespace OrchardCore.Lists.Settings
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
                 }
-
-                return Task.CompletedTask;
             }).Location("Content");
         }
 

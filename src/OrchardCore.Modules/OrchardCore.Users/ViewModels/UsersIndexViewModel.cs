@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using OrchardCore.Security;
-using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.ViewModels
 {
@@ -13,7 +11,7 @@ namespace OrchardCore.Users.ViewModels
 
     public class UserEntry
     {
-        public IUser User { get; set; }
+        public dynamic Shape { get; set; }
         public bool IsChecked { get; set; }
     }
 

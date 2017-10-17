@@ -1,5 +1,6 @@
-﻿using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Handlers;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.DisplayManagement.Views
 {
@@ -17,19 +18,19 @@ namespace OrchardCore.DisplayManagement.Views
             _results = results;
         }
 
-        public void Apply(BuildDisplayContext context)
+        public async Task ApplyAsync(BuildDisplayContext context)
         {
             foreach (var result in _results)
             {
-                result.Apply(context);
+                await result.ApplyAsync(context);
             }
         }
 
-        public void Apply(BuildEditorContext context)
+        public async Task ApplyAsync(BuildEditorContext context)
         {
             foreach (var result in _results)
             {
-                result.Apply(context);
+                await result.ApplyAsync(context);
             }
         }
 

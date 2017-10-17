@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -117,7 +117,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 			builder.Describe("List")
 				.OnCreated(created =>
 				{
-					var list = created.Shape;
+					dynamic list = created.Shape;
 
 					// Intializes the common properties of a List shape
 					// such that views can safely add values to them.

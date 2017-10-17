@@ -44,7 +44,7 @@ test_script:
 clone_depth: 1
 test: on
 artifacts:
-- path: '**\*.nupkg'
+- path: 'src\**\*.nupkg'
 deploy:
   on:
     branch: master

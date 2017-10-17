@@ -23,6 +23,7 @@ namespace OrchardCore.Media
             builder
                 .Add(S["Content"], design => design
                     .Add(S["Assets"], "3", layers => layers
+                        .Permission(Permissions.ManageOwnMedia)
                         .Action("Index", "Admin", new { area = "OrchardCore.Media" })
                         .LocalNav()
                     ));

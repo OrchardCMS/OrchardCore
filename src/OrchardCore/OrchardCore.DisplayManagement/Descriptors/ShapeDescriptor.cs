@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,25 +64,25 @@ namespace OrchardCore.DisplayManagement.Descriptors
             }
         }
 
-        public override IEnumerable<Action<ShapeCreatingContext>> Creating
+        public override IEnumerable<Func<ShapeCreatingContext, Task>> CreatingAsync
         {
-            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.Creating); }
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.CreatingAsync); }
         }
-        public override IEnumerable<Action<ShapeCreatedContext>> Created
+        public override IEnumerable<Func<ShapeCreatedContext, Task>> CreatedAsync
         {
-            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.Created); }
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.CreatedAsync); }
         }
-        public override IEnumerable<Action<ShapeDisplayContext>> Displaying
+        public override IEnumerable<Func<ShapeDisplayContext, Task>> DisplayingAsync
         {
-            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.Displaying); }
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.DisplayingAsync); }
         }
         public override IEnumerable<Func<ShapeDisplayContext, Task>> ProcessingAsync
         {
             get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.ProcessingAsync); }
         }
-        public override IEnumerable<Action<ShapeDisplayContext>> Displayed
+        public override IEnumerable<Func<ShapeDisplayContext, Task>> DisplayedAsync
         {
-            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.Displayed); }
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.DisplayedAsync); }
         }
 
         public override Func<ShapePlacementContext, PlacementInfo> Placement
@@ -119,11 +119,11 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             if (!(this is ShapeDescriptorIndex))
             {
-                Creating = Enumerable.Empty<Action<ShapeCreatingContext>>();
-                Created = Enumerable.Empty<Action<ShapeCreatedContext>>();
-                Displaying = Enumerable.Empty<Action<ShapeDisplayContext>>();
+                CreatingAsync = Enumerable.Empty<Func<ShapeCreatingContext, Task>>();
+                CreatedAsync = Enumerable.Empty<Func<ShapeCreatedContext, Task>>();
+                DisplayingAsync = Enumerable.Empty<Func<ShapeDisplayContext, Task>>();
                 ProcessingAsync = Enumerable.Empty<Func<ShapeDisplayContext, Task>>();
-                Displayed = Enumerable.Empty<Action<ShapeDisplayContext>>();
+                DisplayedAsync = Enumerable.Empty<Func<ShapeDisplayContext, Task>>();
                 Wrappers = new List<string>();
                 BindingSources = new List<string>();
                 Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase);
@@ -168,11 +168,11 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         public virtual IDictionary<string, ShapeBinding> Bindings { get; set; }
 
-        public virtual IEnumerable<Action<ShapeCreatingContext>> Creating { get; set; }
-        public virtual IEnumerable<Action<ShapeCreatedContext>> Created { get; set; }
-        public virtual IEnumerable<Action<ShapeDisplayContext>> Displaying { get; set; }
+        public virtual IEnumerable<Func<ShapeCreatingContext, Task>> CreatingAsync { get; set; }
+        public virtual IEnumerable<Func<ShapeCreatedContext, Task>> CreatedAsync { get; set; }
+        public virtual IEnumerable<Func<ShapeDisplayContext, Task>> DisplayingAsync { get; set; }
         public virtual IEnumerable<Func<ShapeDisplayContext, Task>> ProcessingAsync { get; set; }
-        public virtual IEnumerable<Action<ShapeDisplayContext>> Displayed { get; set; }
+        public virtual IEnumerable<Func<ShapeDisplayContext, Task>> DisplayedAsync { get; set; }
 
         public virtual Func<ShapePlacementContext, PlacementInfo> Placement { get; set; }
         public string DefaultPlacement { get; set; }

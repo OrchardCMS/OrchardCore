@@ -23,8 +23,6 @@ namespace OrchardCore.Widgets.Settings
 
                 model.Zones = String.Join(", ", settings.Zones);
                 model.WidgetsListPartSettings = settings;
-
-                return Task.CompletedTask;
             }).Location("Content");
         }
 

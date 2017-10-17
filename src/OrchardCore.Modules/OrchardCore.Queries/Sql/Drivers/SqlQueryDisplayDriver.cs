@@ -22,14 +22,10 @@ namespace OrchardCore.Queries.Sql.Drivers
                 Shape("SqlQuery_SummaryAdmin", model =>
                 {
                     model.Query = query;
-
-                    return Task.CompletedTask;
                 }).Location("Content:5"),
                 Shape("SqlQuery_Buttons_SummaryAdmin", model =>
                 {
                     model.Query = query;
-
-                    return Task.CompletedTask;
                 }).Location("Actions:2")
             );
         }

@@ -1,0 +1,5 @@
+@model SummaryAdminUserViewModel
+@inject Microsoft.AspNetCore.Identity.UserManager<OrchardCore.Users.IUser> UserManager
+    
+<a asp-action="Edit" asp-route-id="@await UserManager.GetUserIdAsync(Model.User)" class="btn btn-primary btn-sm">@T["Edit"]</a>
+<a asp-action="Delete" asp-route-id="@await UserManager.GetUserIdAsync(Model.User)" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>

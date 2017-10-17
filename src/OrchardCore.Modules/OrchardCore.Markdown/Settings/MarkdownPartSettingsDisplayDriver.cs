@@ -23,8 +23,6 @@ namespace OrchardCore.Markdown.Settings
 
                 model.Editor = settings.Editor;
                 model.MarkdownPartSettings = settings;
-
-                return Task.CompletedTask;
             }).Location("Content");
         }
 

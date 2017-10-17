@@ -15,8 +15,7 @@
 </nav>
 
 <form asp-action="Index">
-    @* the form is nessecary to generate and antiforgery token for the delete action *@
-
+    @* the form is necessary to generate and antiforgery token for the delete action *@
     @if (Model.Queries.Any())
     {
         <ul class="list-group">
@@ -59,7 +58,7 @@
 
                         @foreach (var source in Model.QuerySourceNames)
                         {
-                            OrchardCore.DisplayManagement.IShape shape = New.Query_Link(Name: source);
+                            OrchardCore.DisplayManagement.IShape shape = await New.Query_Link(Name: source);
                             shape.Metadata.Alternates.Add("Query_Link__" + source);
 
                             @await DisplayAsync(shape)

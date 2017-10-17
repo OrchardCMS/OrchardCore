@@ -60,7 +60,7 @@ namespace OrchardCore.Lists.Drivers
                     shape.ContentItems = containedItemsSummaries;
                     shape.ContentItem = listPart.ContentItem;
                     shape.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
-                    shape.Pager = context.New.PagerSlim(pager);
+                    shape.Pager = await context.New.PagerSlim(pager);
                 })
                 .Location("DetailAdmin", "Content:10"),
 
@@ -83,7 +83,7 @@ namespace OrchardCore.Lists.Drivers
                     shape.ContentItems = containedItemsSummaries;
                     shape.ContentItem = listPart.ContentItem;
                     shape.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
-                    shape.Pager = context.New.PagerSlim(pager);
+                    shape.Pager = await context.New.PagerSlim(pager);
                 })
                 .Displaying(displaying =>
                 {

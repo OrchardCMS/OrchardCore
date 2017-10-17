@@ -15,7 +15,7 @@
         <select asp-for="Editor" class="form-control">
             @foreach (var markdownEditorShape in markdownEditorShapes)
             {
-                dynamic shape = Factory.Create(markdownEditorShape);
+                dynamic shape = await Factory.CreateAsync(markdownEditorShape);
                 shape.Editor = Model.Editor;
                 @await DisplayAsync(shape)
             }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
@@ -40,71 +41,79 @@ namespace OrchardCore.Tests.DisplayManagement
         }
 
         [Fact]
-        public void ShapeHasAttributesType()
+        public async Task ShapeHasAttributesType()
         {
             var factory = _serviceProvider.GetService<IShapeFactory>();
-            dynamic foo = factory.Create("Foo", ArgsUtility.Empty());
+            dynamic foo = await factory.CreateAsync("Foo", ArgsUtility.Empty());
             ShapeMetadata metadata = foo.Metadata;
             Assert.Equal("Foo", metadata.Type);
         }
 
         [Fact]
-        public void CreateShapeWithNamedArguments()
+        public async Task CreateShapeWithNamedArguments()
         {
             var factory = _serviceProvider.GetService<IShapeFactory>();
-            dynamic foo = factory.Create("Foo", ArgsUtility.Named(new { one = 1, two = "dos" }));
+            dynamic foo = await factory.CreateAsync("Foo", ArgsUtility.Named(new { one = 1, two = "dos" }));
             Assert.Equal(1, foo.one);
             Assert.Equal("dos", foo.two);
         }
 
         [Fact]
-        public void CallSyntax()
+        public async Task CallSyntax()
         {
             dynamic factory = _serviceProvider.GetService<IShapeFactory>();
-            var foo = factory.Foo();
+            var foo = await factory.Foo();
             ShapeMetadata metadata = foo.Metadata;
             Assert.Equal("Foo", metadata.Type);
         }
 
         [Fact]
-        public void CallInitializer()
+        public async Task CallInitializer()
         {
             dynamic factory = _serviceProvider.GetService<IShapeFactory>();
             var bar = new { One = 1, Two = "two" };
-            var foo = factory.Foo(bar);
+            var foo = await factory.Foo(bar);
 
             Assert.Equal(1, foo.One);
             Assert.Equal("two", foo.Two);
         }
 
         [Fact]
-        public void ShapeFactoryUsesCustomShapeType()
+        public async Task ShapeFactoryUsesCustomShapeType()
         {
             var descriptor = new ShapeDescriptor();
-            descriptor.Creating = new List<Action<ShapeCreatingContext>>()
+            descriptor.CreatingAsync = new List<Func<ShapeCreatingContext, Task>>()
             {
-                (ctx) => { ctx.Create = () => new SubShape(); }
+                (ctx) => 
+                {
+                    ctx.Create = () => new SubShape();
+                    return Task.CompletedTask;
+                }
             };
 
             _shapeTable.Descriptors.Add("Foo", descriptor);
             dynamic factory = _serviceProvider.GetService<IShapeFactory>();
-            var foo = factory.Foo();
+            var foo = await factory.Foo();
 
             Assert.IsType<SubShape>(foo);
         }
 
         [Fact]
-        public void ShapeFactoryWithCustomShapeTypeAppliesArguments()
+        public async Task ShapeFactoryWithCustomShapeTypeAppliesArguments()
         {
             var descriptor = new ShapeDescriptor();
-            descriptor.Creating = new List<Action<ShapeCreatingContext>>()
+            descriptor.CreatingAsync = new List<Func<ShapeCreatingContext, Task>>()
             {
-                (ctx) => { ctx.Create = () => new SubShape(); }
+                (ctx) => 
+                {
+                    ctx.Create = () => new SubShape();
+                    return Task.CompletedTask;
+                }
             };
 
             _shapeTable.Descriptors.Add("Foo", descriptor);
             dynamic factory = _serviceProvider.GetService<IShapeFactory>();
-            var foo = factory.Foo(Bar: "Bar", Baz: "Baz");
+            var foo = await factory.Foo(Bar: "Bar", Baz: "Baz");
 
             Assert.Equal("Bar", foo.Bar);
             Assert.Equal("Baz", foo.Baz);

@@ -19,8 +19,6 @@ namespace OrchardCore.ContentTypes.Editors
                 model.Draftable = settings.Draftable;
                 model.Securable = settings.Securable;
                 model.Stereotype = settings.Stereotype;
-
-                return Task.CompletedTask;
             }).Location("Content:5");
         }
 
