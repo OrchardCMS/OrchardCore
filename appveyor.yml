@@ -26,16 +26,16 @@ install:
   # Get the latest stable version of Node.js or io.js
   - ps: Install-Product node $env:nodejs_version
   - ps: $env:BuildNumber= $env:APPVEYOR_BUILD_NUMBER
-  - ps: $env:IsMasterBranch = ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
-  - ps: $env:IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
+  - ps: $IsMasterBranch = ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
+  - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
 init:
   - git config --global core.autocrlf true
 build_script:
   - dotnet --version
-  - ps: if (($env:IsMasterBranch) -or ($env:IsDevBranch)) { dotnet pack -c Release }
+  - ps: if (($IsMasterBranch -eq $true) -or ($IsDevBranch -eq $true)) { dotnet pack -c Release }
 
   - ps: |
-      if ($env:IsMasterBranch)
+      if ($IsMasterBranch -eq $true)
       {
         cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
         dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
@@ -54,5 +54,5 @@ artifacts:
 - path: 'src\**\*.nupkg'
 
 deploy_script:
-- ps:  if ($env:IsMasterBranch) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:NUGET_API_KEY -Source https://www.nuget.org/api/v2/package } }
-- ps:  if ($env:IsDevBranch) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:MYGET_API_KEY -Source https://www.myget.org/F/orchardcore-preview/api/v2/package } }
+- ps:  if ($IsMasterBranch -eq $true) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:NUGET_API_KEY -Source https://www.nuget.org/api/v2/package } }
+- ps:  if ($IsDevBranch -eq $true) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:MYGET_API_KEY -Source https://www.myget.org/F/orchardcore-preview/api/v2/package } }
