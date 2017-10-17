@@ -25,7 +25,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                         .AddField("contentItemId");
                 });
 
-            this.Assent(result.ToString());
+            Assert.Single(result["data"]["blog"].Children());
+            Assert.NotEmpty(result["data"]["blog"].Children()["contentItemId"]);
         }
 
         [Fact]
@@ -58,6 +59,61 @@ namespace OrchardCore.Tests.Apis.GraphQL
                         .AddField("Title");
                 });
 
+            this.Assent(result.ToString());
+        }
+
+        [Fact]
+        public async Task ShouldQueryByBlogPostAutoroutePArt()
+        {
+            var blogPostContentItemId1 = await _context
+                .Client
+                .Content
+                .CreateAsync("BlogPost", builder =>
+                {
+                    builder
+                        .WithContentPart("TitlePart")
+                        .AddField("Title", "Some sorta blogpost!");
+
+                    builder
+                        .WithContentPart("AutoroutePart")
+                        .AddField("Path", "Path1");
+
+                    builder
+                        .WithContentPart("ContainedPart")
+                        .AddField("ListContentItemId", _context.BlogContentItemId);
+                });
+
+            var blogPostContentItemId2 = await _context
+                .Client
+                .Content
+                .CreateAsync("BlogPost", builder =>
+                {
+                    builder
+                        .WithContentPart("TitlePart")
+                        .AddField("Title", "Some sorta other blogpost!");
+
+                    builder
+                        .WithContentPart("AutoroutePart")
+                        .AddField("Path", "Path2");
+
+                    builder
+                        .WithContentPart("ContainedPart")
+                        .AddField("ListContentItemId", _context.BlogContentItemId);
+                });
+
+            var result = await _context
+                .Client
+                .Content
+                .QueryAsync("BlogPost", builder =>
+                {
+                    builder
+                        .WithQueryField("autoroutePart", @"{path: \""Path1\""}");
+
+                    builder
+                        .WithNestedField("TitlePart")
+                        .AddField("Title");
+                });
+            //body = @"query { blogPost( autoroutePart: ""{path: \""Path1\""}"" ) { titlePart { title } } }"
             this.Assent(result.ToString());
         }
     }

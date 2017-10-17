@@ -1,9 +1,0 @@
-{
-  "data": {
-    "blog": [
-      {
-        "contentItemId": "4ngzzyhgw6xn56gtc0b848v2cz"
-      }
-    ]
-  }
-}
