@@ -5,6 +5,9 @@ services:
 dist: trusty
 mono: none
 dotnet: 2.0.0
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install openssl ; fi
 env:
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
