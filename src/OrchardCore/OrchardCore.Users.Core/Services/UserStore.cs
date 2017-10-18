@@ -41,7 +41,7 @@ namespace OrchardCore.Users.Services
         }
 
         #region IUserStore<IUser>
-        public Task<IdentityResult> CreateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IdentityResult> CreateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
@@ -50,7 +50,16 @@ namespace OrchardCore.Users.Services
 
             _session.Save(user);
 
-            return Task.FromResult(IdentityResult.Success);
+            try
+            {
+                await _session.CommitAsync();
+            }
+            catch
+            {
+                return IdentityResult.Failed();
+            }
+
+            return IdentityResult.Success;
         }
 
         public async Task<IdentityResult> DeleteAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
