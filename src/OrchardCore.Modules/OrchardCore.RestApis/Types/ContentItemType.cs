@@ -18,7 +18,7 @@ namespace OrchardCore.RestApis.Types
     {
         public ContentPartInterface()
         {
-            Name = "contentpart";
+            Name = "ContentPart";
         }
     }
 
@@ -26,7 +26,7 @@ namespace OrchardCore.RestApis.Types
     {
         public TitlePartType()
         {
-            Name = "titlepart";
+            Name = typeof(TitlePart).Name;
 
             Interface<ContentPartInterface>();
 
@@ -38,7 +38,7 @@ namespace OrchardCore.RestApis.Types
     {
         public AutoRoutePartType()
         {
-            Name = "autoroutepart";
+            Name = typeof(AutoroutePart).Name;
 
             Interface<ContentPartInterface>();
 
@@ -50,9 +50,9 @@ namespace OrchardCore.RestApis.Types
     {
         public BagPartType()
         {
-            Name = "bagpart";
+            Name = typeof(BagPart).Name;
 
-            Field<ListGraphType<ContentItemType>>("contentitems", resolve: 
+            Field<ListGraphType<ContentItemType>>("ContentItems", resolve: 
                 context => context.Source.ContentItems
             );
 

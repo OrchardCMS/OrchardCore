@@ -27,6 +27,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             Assert.Single(result["data"]["blog"].Children());
             Assert.NotEmpty(result["data"]["blog"].Children()["contentItemId"]);
+
+
+
         }
 
         [Fact]
@@ -45,7 +48,20 @@ namespace OrchardCore.Tests.Apis.GraphQL
                         .WithContentPart("ContainedPart")
                         .AddField("ListContentItemId", _context.BlogContentItemId);
                 });
+            
+            await _context
+                .Client
+                .Content
+                .QueryAsync("BlogPost", builder =>
+                {
+                    builder
+                        .WithQueryField("contentItemId", blogPostContentItemId);
 
+                    builder
+                        .WithNestedField("TitlePart")
+                        .AddField("Title");
+                });
+            
             var result = await _context
                 .Client
                 .Content
@@ -63,7 +79,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         }
 
         [Fact]
-        public async Task ShouldQueryByBlogPostAutoroutePArt()
+        public async Task ShouldQueryByBlogPostAutoroutePart()
         {
             var blogPostContentItemId1 = await _context
                 .Client
@@ -107,7 +123,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .QueryAsync("BlogPost", builder =>
                 {
                     builder
-                        .WithQueryField("AutoroutePart", "{path: \"\"Path1\"\"}");
+                        .WithQueryField("AutoroutePart", "{ path: \"Path1\" }");
 
                     builder
                         .WithNestedField("TitlePart")

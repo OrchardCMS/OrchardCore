@@ -45,7 +45,7 @@ namespace OrchardCore.RestApis
             services.AddScoped<ContentItemInputType>();
             services.AddScoped<ContentItemType>();
 
-            services.AddScoped<ContentType>();
+            services.AddScoped<GraphQlQueryType>();
 
             return services;
         }

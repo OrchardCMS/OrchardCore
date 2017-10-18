@@ -5,6 +5,7 @@ using GraphQL;
 using GraphQL.Instrumentation;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using GraphQL.Utilities;
 using GraphQL.Validation.Complexity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,9 @@ namespace OrchardCore.RestApis.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetAsync(string query)
         {
+
+            var printer = new SchemaPrinter(_schema);
+            var t = printer.Print();
             var executionOptions = new ExecutionOptions { Schema = _schema, Query = query };
 
             try

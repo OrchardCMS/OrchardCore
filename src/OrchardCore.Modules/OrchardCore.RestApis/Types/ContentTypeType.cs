@@ -8,7 +8,7 @@ namespace OrchardCore.RestApis.Types
     {
         public ContentTypeType(IContentManager contentManager)
         {
-            Name = "contenttype";
+            Name = typeof(ContentTypeDefinition).Name;
 
             Field(h => h.Name).Description("The content type.");
         }
