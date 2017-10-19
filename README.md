@@ -10,8 +10,8 @@ Orchard Core is a re-implementation of [Orchard CMS](https://github.com/OrchardC
 
 ## Build Status
 
-[![Build Status](https://img.shields.io/travis/OrchardCMS/OrchardCore.svg?label=travis-ci&branch=master&style=flat-square)](https://travis-ci.org/OrchardCMS/OrchardCore/branches)
-[![Build status](https://img.shields.io/appveyor/ci/alexbocharov/orchard2/master.svg?label=appveyor&style=flat-square)](https://ci.appveyor.com/project/alexbocharov/orchard2/branch/master)
+[![Build Status](https://img.shields.io/travis/OrchardCMS/OrchardCore.svg?label=travis-ci&branch=dev&style=flat-square)](https://travis-ci.org/OrchardCMS/OrchardCore/branches)
+[![Build status](https://img.shields.io/appveyor/ci/alexbocharov/orchard2/dev.svg?label=appveyor&style=flat-square)](https://ci.appveyor.com/project/alexbocharov/orchard2/branch/dev)
 
 ## Orchard CMS
 
