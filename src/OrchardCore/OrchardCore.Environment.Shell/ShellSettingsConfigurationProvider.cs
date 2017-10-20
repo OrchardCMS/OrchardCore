@@ -29,6 +29,11 @@ namespace OrchardCore.Environment.Shell
                         _optionsAccessor.Value.ShellsApplicationDataPath,
                         _optionsAccessor.Value.ShellsContainerName);
 
+            if (!Directory.Exists(tenantSettingsPath))
+            {
+                return;
+            }
+
             var tenants = Directory.GetDirectories(tenantSettingsPath);
 
             foreach (var tenant in tenants)
