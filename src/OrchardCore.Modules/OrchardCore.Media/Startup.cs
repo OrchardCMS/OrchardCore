@@ -155,8 +155,7 @@ namespace OrchardCore.Media
 
         private string GetMediaPath(IHostingEnvironment env, ShellOptions shellOptions, ShellSettings shellSettings)
         {
-            var relativeMediaPath = Path.Combine(shellOptions.ShellsRootContainerName, shellOptions.ShellsContainerName, shellSettings.Name, "Media");
-            return env.ContentRootFileProvider.GetFileInfo(relativeMediaPath).PhysicalPath;
+            return Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, "Media");
         }
     }
 }
