@@ -45,6 +45,16 @@ build_script:
         docker push orchardproject/orchardcore-cms-windows
       }
 
+      if ($IsDevBranch -eq $true)
+      {
+        cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
+        dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
+        cd $env:APPVEYOR_BUILD_FOLDER
+        docker build -t orchardproject/orchardcore-cms-windows:dev .
+        docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+        docker push orchardproject/orchardcore-cms-windows
+      }
+
 test_script:
   - dotnet test -c Release .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
 clone_depth: 1
