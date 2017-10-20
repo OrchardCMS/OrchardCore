@@ -78,16 +78,16 @@ namespace OrchardCore.OpenId
             services.TryAddEnumerable(new[]
             {
                 // Orchard-specific initializers:
-                ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictOptions>, OpenIdConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<JwtBearerOptions>, OpenIdConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<OAuthValidationOptions>, OpenIdConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, OpenIdConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<OpenIddictOptions>, OpenIdConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<JwtBearerOptions>, OpenIdConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<OAuthValidationOptions>, OpenIdConfiguration>(),
 
                 // Built-in initializers:
-                ServiceDescriptor.Singleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigureOptions>(),
-                ServiceDescriptor.Singleton<IPostConfigureOptions<OAuthValidationOptions>, OAuthValidationInitializer>(),
-                ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIddictOptions>, OpenIddictInitializer>(),
-                ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIddictOptions>, OpenIdConnectServerInitializer>()
+                ServiceDescriptor.Transient<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigureOptions>(),
+                ServiceDescriptor.Transient<IPostConfigureOptions<OAuthValidationOptions>, OAuthValidationInitializer>(),
+                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictOptions>, OpenIddictInitializer>(),
+                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictOptions>, OpenIdConnectServerInitializer>()
             });
         }
     }

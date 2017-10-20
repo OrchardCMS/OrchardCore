@@ -145,6 +145,9 @@ namespace OrchardCore.StorageProviders.FileSystem
         {
             try
             {
+                // Remove trailing slashes
+                subpath = subpath.TrimStart('/', '\\');
+
                 // Use CreateSubdirectory to ensure the directory doesn't go over its boundaries
                 new DirectoryInfo(_localPath).CreateSubdirectory(subpath);
                 return Task.FromResult(true);
