@@ -49,3 +49,12 @@ query {
     }
 }
 ```
+
+## Resources
+
+https://github.com/facebook/graphql
+https://www.graph.cool/docs/reference/functions/request-pipeline/transform-input-arguments-caich7oeph/
+http://graphql.org/learn/schema/#interfaces
+https://blog.graph.cool/designing-powerful-apis-with-graphql-query-parameters-8c44a04658a9
+
+This one! https://scaphold.io/community/blog/querying-relational-data-with-graphql/
