@@ -10,21 +10,15 @@ namespace Microsoft.AspNetCore.Builder
 {
     public static class ModularApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseModules(this IApplicationBuilder app)
+        public static IApplicationBuilder UseModules(this IApplicationBuilder app, Action<ModularApplicationBuilder> modules = null)
         {
             // Ensure the shell tenants are loaded when a request comes in
             // and replaces the current service provider for the tenant's one.
             app.UseMiddleware<ModularTenantContainerMiddleware>();
-            app.UseMiddleware<ModularTenantRouterMiddleware>();
-
-            return app;
-        }
-
-        public static IApplicationBuilder UseModules(this IApplicationBuilder app, Action<ModularApplicationBuilder> modules)
-        {
-            app.UseModules();
 
             app.ConfigureModules(modules);
+
+            app.UseMiddleware<ModularTenantRouterMiddleware>();
 
             return app;
         }
@@ -32,7 +26,7 @@ namespace Microsoft.AspNetCore.Builder
         public static IApplicationBuilder ConfigureModules(this IApplicationBuilder app, Action<ModularApplicationBuilder> modules)
         {
             var modularApplicationBuilder = new ModularApplicationBuilder(app);
-            modules(modularApplicationBuilder);
+            modules?.Invoke(modularApplicationBuilder);
 
             return app;
         }
