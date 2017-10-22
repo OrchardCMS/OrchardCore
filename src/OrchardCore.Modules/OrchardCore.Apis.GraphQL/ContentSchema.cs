@@ -6,19 +6,24 @@ using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Mutations;
 using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.Apis.GraphQL.Types;
+using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Apis.Queries
+namespace OrchardCore.Apis.GraphQL
 {
     public class ContentSchema : Schema
     {
         public ContentSchema(IServiceProvider serviceProvider,
-            IEnumerable<IObjectGraphType> objectGraphTypes)
-            : base(new FuncDependencyResolver((type) => (IGraphType)serviceProvider.GetService(type)))
+            IEnumerable<ContentPart> contentParts,
+            IDependencyResolver dependencyResolver)
+            : base(dependencyResolver)
         {
             Mutation = serviceProvider.GetService<MutationsSchema>();
             Query = serviceProvider.GetService<QueriesSchema>();
 
-            RegisterTypes(objectGraphTypes.ToArray());
+            RegisterTypes(
+                contentParts.Select(
+                    contentPart => new ContentPartAutoRegisteringObjectGraphType(contentPart)).ToArray());
         }
     }
 }

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using YesSql;
-using OrchardCore.Apis.GraphQL.Types;
 
 namespace OrchardCore.Apis.GraphQL.Queries
 {
@@ -59,7 +59,9 @@ namespace OrchardCore.Apis.GraphQL.Queries
 
                     if (contentPart != null)
                     {
-                        var p = _objectGraphTypes.FirstOrDefault(x => x.IsTypeOf(contentPart));
+                        var p = new ContentPartAutoRegisteringObjectGraphType(contentPart);
+
+                        //var p = _objectGraphTypes.FirstOrDefault(x => x.IsTypeOf(contentPart));
 
                         if (p != null)
                         {

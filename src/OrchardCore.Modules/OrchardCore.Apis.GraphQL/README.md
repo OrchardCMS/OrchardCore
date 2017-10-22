@@ -49,7 +49,7 @@ query {
 
 This query will return a list of blog's. These endpoints do not have a singular representation.
 
-#### Query with content parts
+#### Query, returning content part details
 All content items contain content parts, and once you have a content item, you will more than likely want details of, lets say the title on the titlePart.
 
 So lets return a Blog, with an Id of "D394KFSDERFDM", and display its Title contained on the TitlePart.
@@ -111,7 +111,7 @@ The content type, eg. `Blog` or `Page`
 
 ##### contentParts (`!String`)
 A Json serialized list of content parts, eg.
-```graphql
+```json
 contentParts: "
   titlePart: { Title: "Dragonball Z" },
   bodyPart: { Text: "Rocks" }
@@ -133,7 +133,7 @@ For example, the Blog object has a field called contentItemId, which is a String
 Objects from the Orchard GraphQL query system are dynamically generated from the content type system.
 
 
-
+## 
 
 ## Resources
 

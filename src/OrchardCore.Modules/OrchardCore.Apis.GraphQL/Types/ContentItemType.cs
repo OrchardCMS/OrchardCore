@@ -7,7 +7,7 @@ namespace OrchardCore.Apis.GraphQL.Types
     {
         public ContentItemType()
         {
-            Name = "contentitem";
+            Name = "ContentItem";
         }
     }
 }

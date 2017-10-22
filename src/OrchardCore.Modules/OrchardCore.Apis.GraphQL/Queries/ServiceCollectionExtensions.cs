@@ -3,15 +3,16 @@ using OrchardCore.Apis.GraphQL.Types;
 
 namespace OrchardCore.Apis.GraphQL.Queries
 {
-    public static class GraphQLServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
         public static void AddGraphQLQueries(this IServiceCollection services)
         {
-            services.AddScoped<QueriesSchema>();
             services.AddGraphQueryType<ContentItemQuery>();
             services.AddGraphQueryType<ContentItemsQuery>();
-            services.AddScoped<IDynamicQueryFieldTypeProvider, DynamicQueryFieldTypeProvider>();
             services.AddScoped<ContentItemType>();
+
+            services.AddScoped<IDynamicQueryFieldTypeProvider, DynamicQueryFieldTypeProvider>();
+            services.AddScoped<QueriesSchema>();
         }
 
         public static void AddGraphQueryType<T>(this IServiceCollection services) where T : QueryFieldType

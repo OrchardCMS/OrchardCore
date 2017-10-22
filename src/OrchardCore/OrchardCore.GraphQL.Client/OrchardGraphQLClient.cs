@@ -121,7 +121,7 @@ namespace OrchardCore.GraphQL.Client
 
         public ContentTypeQueryResourceBuilder AddField(string name)
         {
-            _keys.Add(name);
+            _keys.Add(name.ToGraphQLStringFormat());
 
             return this;
         }
@@ -147,7 +147,7 @@ namespace OrchardCore.GraphQL.Client
             {
                 sb.Append("(");
 
-                for (int i = 0; i < _queryFields.Count; i++)
+                for (var i = 0; i < _queryFields.Count; i++)
                 {
                     var item = _queryFields.ElementAt(i);
                     sb.AppendFormat("{0}: \"{1}\"", item.Key.ToGraphQLStringFormat(), item.Value);
@@ -163,10 +163,7 @@ namespace OrchardCore.GraphQL.Client
 
             sb.Append(" { ");
 
-            foreach (var item in _keys)
-            {
-                sb.Append(item.ToGraphQLStringFormat() + " ");
-            }
+            sb.Append(" " + string.Join(" ", _keys) + " ");
 
             foreach (var item in _nested)
             {
@@ -210,7 +207,7 @@ namespace OrchardCore.GraphQL.Client
             sb.AppendFormat("{0}: {{ ", _contentPartName.ToGraphQLStringFormat());
 
 
-            for (int i = 0; i < _keysWithValues.Count; i++)
+            for (var i = 0; i < _keysWithValues.Count; i++)
             {
                 var item = _keysWithValues.ElementAt(i);
                 sb.AppendFormat("{0}: \"{1}\"", item.Key.ToGraphQLStringFormat(), item.Value);

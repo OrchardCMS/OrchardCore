@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using YesSql;
-using OrchardCore.Apis.GraphQL.Types;
 
 namespace OrchardCore.Apis.GraphQL.Queries
 {

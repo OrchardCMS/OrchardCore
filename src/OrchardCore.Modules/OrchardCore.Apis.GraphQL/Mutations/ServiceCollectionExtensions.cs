@@ -3,7 +3,7 @@ using OrchardCore.Apis.GraphQL.Mutations.Types;
 
 namespace OrchardCore.Apis.GraphQL.Mutations
 {
-    public static class GraphQLServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
         public static void AddGraphQLMutations(this IServiceCollection services) {
             services.AddScoped<MutationsSchema>();
