@@ -23,37 +23,5 @@ namespace OrchardCore.RestApis
 
             return services;
         }
-
-        public static IServiceCollection AddGraphQL(this IServiceCollection services)
-        {
-            services.AddScoped<IDocumentExecuter, DocumentExecuter>();
-
-            services.AddGraphType<TitlePartType>();
-            services.AddGraphType<AutoRoutePartType>();
-            services.AddGraphType<BagPartType>();
-
-            //services.AddScoped<ContentItemType>();
-            //services.AddScoped<ContentTypeType>();
-            //services.AddScoped<ContentType>();
-
-            //services.AddScoped<AutoRoutePartType>();
-            //services.AddScoped<IObjectGraphType, AutoRoutePartType>();
-            //services.AddScoped<ContentPartInterface>();
-
-            services.AddScoped<ISchema, ContentSchema>();
-            services.AddScoped<ContentItemMutation>();
-            services.AddScoped<ContentItemInputType>();
-            services.AddScoped<ContentItemType>();
-
-            services.AddScoped<GraphQlQueryType>();
-
-            return services;
-        }
-
-        public static void AddGraphType<T>(this IServiceCollection services) where T : class, IObjectGraphType
-        {
-            services.AddScoped<T>();
-            services.AddScoped<IObjectGraphType, T>();
-        }
     }
 }

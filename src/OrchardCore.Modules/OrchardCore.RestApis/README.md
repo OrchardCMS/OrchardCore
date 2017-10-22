@@ -3,52 +3,62 @@
 The JsonApi implrements the jsonapi.org specification.
 
 ## Query
+Every GraphQL schema has a root type for both queries and mutations. The query type defines GraphQL operations that retrieve data from the server.
 
-The content types in orchard are not pluralized, an therefore they are not pluralized through the api.
+## Mutations
+Every GraphQL schema has a root type for both queries and mutations. The mutation type defines GraphQL operations that change data on the server. It is analogous to performing HTTP verbs such as `POST`, `PATCH`, and `DELETE`.
 
-### All content of content type
-To get all content of a particular content type, in this example a Blog
+### createSite
+Create a tenant
 
-/api/contents/blog
+#### Input Fields
 
-### Content by Id
-To get all content of a particular Id you must know its type, so if the blog has an id of 10, it will be
+##### siteName
+The name of the site
 
-/api/contents/blog/10
+##### databaseProvider
+The database the tenant will use, eg. Sqlite
 
-### Nested content
-A content type might implement a content part that contains nested content, to query this you do this
+##### userName
+The user name of the site admin
 
-/api/contents/blog/10/relationships/blogpost
+##### email
+The email address of the site admin
 
-# Orchard GraphQL structure
+##### password
+password to log in with
 
-Orchard
-  ContentItems
-    ContentType
-	ContentParts
+##### recipeName
+The recipe to run to load the site, eg. `Blog` or `Agency`
 
-## Queries and Mutations
+The recipe names are defined in the recipe files marked `*.recipe.json`.
 
-### Fields
+### createContentItem
+Creates a content item
 
-Query
+#### Input Fields
+
+##### contentType (`!String`)
+The content type, eg. `Blog` or `Page`
+
+##### contentParts (`!String`)
+A Json serialized list of content parts, eg.
 ```json
-query {
-    contentItem {
-        contentItemId
-    }
-}
+contentParts: "
+  titlePart: { Title: "Dragonball Z" },
+  bodyPart: { Text: "Rocks" }
+"
 ```
 
-Produces
-```json
-query {
-    contentItem {
-        SFDSKF823RK3O
-    }
-}
-```
+## Objects
+Objects in GraphQL represent the resources you can access. An object can contain a list of fields, which are specifically typed.
+
+For example, the Blog object has a field called contentItemId, which is a String.
+
+Objects from the Orchard GraphQL query system are dynamically generated from the content type system.
+
+
+
 
 ## Resources
 

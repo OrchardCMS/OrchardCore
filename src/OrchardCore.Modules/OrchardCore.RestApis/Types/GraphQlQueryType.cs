@@ -24,14 +24,6 @@ namespace OrchardCore.RestApis.Queries
         {
             Name = "Query";
 
-            FieldAsync<ContentItemType>(
-              "contentitem",
-              arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "contentItemId", Description = "content item id" }
-                ),
-              resolve: async context => await contentManager.GetAsync(context.GetArgument<string>("contentItemId"))
-            );
-
             FieldAsync<ListGraphType<ContentItemType>>(
               "contentitems",
               arguments: new QueryArguments(

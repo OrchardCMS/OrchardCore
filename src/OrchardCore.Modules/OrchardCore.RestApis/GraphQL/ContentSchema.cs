@@ -4,6 +4,8 @@ using System.Linq;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.RestApis.GraphQL.Mutations;
+using OrchardCore.RestApis.GraphQL.Queries;
 
 namespace OrchardCore.RestApis.Queries
 {
@@ -13,8 +15,8 @@ namespace OrchardCore.RestApis.Queries
             IEnumerable<IObjectGraphType> objectGraphTypes)
             : base(new FuncDependencyResolver((type) => (IGraphType)serviceProvider.GetService(type)))
         {
-            Mutation = serviceProvider.GetService<ContentItemMutation>();
-            Query = serviceProvider.GetService<GraphQlQueryType>();
+            Mutation = serviceProvider.GetService<MutationsSchema>();
+            Query = serviceProvider.GetService<QueriesSchema>();
 
             RegisterTypes(objectGraphTypes.ToArray());
         }
