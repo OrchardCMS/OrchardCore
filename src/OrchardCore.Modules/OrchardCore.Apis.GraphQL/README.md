@@ -8,7 +8,7 @@ Every GraphQL schema has a root type for both queries and mutations. The query t
 ### contentItem
 The following query looks up a content item on the contentItemId `A913LFSOAQWEM`, the query then returns the `contentItemId` and `contentType`
 
-```json
+```graphql
 query {
   contentItem(contentItemId:"A913LFSOAQWEM") {
     contentItemId
@@ -24,7 +24,7 @@ Similar to the previous query, this query will return a list of content items, r
 
 This query will return all the `contentItemId` and `contentType` vaules of content with a content type of `BlogPost`.
 
-```json
+```graphql
 query {
   contentItems(contentType: "BlogPost") {
     contentItemId
@@ -38,7 +38,7 @@ Because Orchard has a very fluid content model, i.e. You can create content type
 
 An example is, lets say a `Blog` content type exists within the content type system, you can query all blogs.
 
-```json
+```graphql
 query {
   blog(id: "D394KFSDERFDM") {
     contentItemId
@@ -54,7 +54,7 @@ All content items contain content parts, and once you have a content item, you w
 
 So lets return a Blog, with an Id of "D394KFSDERFDM", and display its Title contained on the TitlePart.
 
-```json
+```graphql
 query {
   blog(id: "D394KFSDERFDM") {
     contentItemId
@@ -111,7 +111,7 @@ The content type, eg. `Blog` or `Page`
 
 ##### contentParts (`!String`)
 A Json serialized list of content parts, eg.
-```json
+```graphql
 contentParts: "
   titlePart: { Title: "Dragonball Z" },
   bodyPart: { Text: "Rocks" }
