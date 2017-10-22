@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Menu.Models;
@@ -35,7 +35,6 @@ namespace OrchardCore.Lists.Drivers
             return Shape<MenuPartEditViewModel>("MenuPart_Edit", model =>
             {
                 model.MenuPart = part;
-                return Task.CompletedTask;
             });
         }
 

@@ -7,7 +7,7 @@ These shapes are available for theming
 ### MarkdownPart
 
 This shape is rendered when a `MarkdownPart` is attached to a content item.
-The shape based class is of `MarkdownPartViewModel`.
+The shape based class is of type `MarkdownPartViewModel`.
 
 The following properties are available on the `MarkdownPartViewModel` class.
 
@@ -22,7 +22,7 @@ The following properties are available on the `MarkdownPartViewModel` class.
 ### MarkdownField
 
 This shape is rendered when a `MarkdownField` is attached to a content part.
-The shape based class is of `MarkdownFieldViewModel`.
+The shape based class is of type `MarkdownFieldViewModel`.
 
 The following properties are available on the `MarkdownFieldViewModel` class.
 
@@ -93,11 +93,11 @@ You can override the HTML editor for the `Default` editor by creating a shape fi
 ## CREDITS
 
 ### Markdig
-https://github.com/lunet-io/markdig
-Copyright (c) 2016, Alexandre Mutel
+<https://github.com/lunet-io/markdig>  
+Copyright (c) 2016, Alexandre Mutel  
 BSD-2
 
 ### SimpleMDE
-https://github.com/NextStepWebs/simplemde-markdown-editor
-Copyright (c) 2015 Next Step Webs, Inc.
+<https://github.com/NextStepWebs/simplemde-markdown-editor>
+Copyright (c) 2015 Next Step Webs, Inc.  
 MIT

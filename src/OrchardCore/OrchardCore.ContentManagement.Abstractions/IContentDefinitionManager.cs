@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Mvc.Utilities;
 using System.Threading.Tasks;
 
-namespace OrchardCore.ContentManagement.MetaData
+namespace OrchardCore.ContentManagement.Metadata
 {
     /// <summary>
     /// This interface provides each client with

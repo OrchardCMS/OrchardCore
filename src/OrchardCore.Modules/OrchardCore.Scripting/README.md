@@ -35,7 +35,7 @@ a new scripting engine by implementing the `IScriptingEngine` interface.
 Any module can provide custom methods for scripts independently of the chosen language. 
 For instance the Contents module provides a `uuid()` helper method that computes a unique content item identifier.
 
-To create a global method implement `IGlobalMethod` then add it to the current `IScriptingManager` 
+To create a global method implement `IGlobalMethodProvider` then add it to the current `IScriptingManager` 
 instance like this:
 
 ```

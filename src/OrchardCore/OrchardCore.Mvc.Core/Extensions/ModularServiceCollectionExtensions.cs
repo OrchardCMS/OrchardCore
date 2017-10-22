@@ -35,6 +35,8 @@ namespace OrchardCore.Mvc
         public static IServiceCollection AddMvcModules(this IServiceCollection services,
             IServiceProvider applicationServices)
         {
+            services.TryAddSingleton(new ApplicationPartManager());
+
             var builder = services.AddMvcCore(options =>
             {
                 // Do we need this?

@@ -4,6 +4,7 @@
     var settings = Model.Settings.ToObject<ContentTypeSettings>();
 }
 <div class="properties">
+    <a asp-route-action="Edit" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Name">@Model.DisplayName</a>
     <div class="related">
         @if (settings.Creatable)
         {
@@ -12,7 +13,6 @@
         <a asp-route-action="List" asp-route-area="OrchardCore.Contents" asp-route-id="@Model.Name" class="btn btn-secondary btn-sm" role="button">@T["List Items"]</a>
         <a asp-route-action="Edit" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
     </div>
-    <a asp-route-action="Edit" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Name">@Model.DisplayName</a>
     @if (!string.IsNullOrWhiteSpace(settings.Stereotype))
     {
         <span class="badge badge-info badge-pill" title="Stereotype">@settings.Stereotype</span>

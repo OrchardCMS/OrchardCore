@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Media.Models;
 
 namespace OrchardCore.Media

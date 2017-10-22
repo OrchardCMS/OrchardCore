@@ -1,7 +1,7 @@
 # Localization (OrchardCore.Localization)
 
 This modules provides the infrastructure necessary to support the PO (Portable Object) localization file format.
-It also support plural forms.
+It also supports plural forms.
 
 ## PO files locations
 
@@ -15,7 +15,7 @@ PO files are found with the following steps:
 
 This article explains how PO files are organized, including plural forms.
 
-https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html
+<https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html>
 
 
 ## Translation contexts

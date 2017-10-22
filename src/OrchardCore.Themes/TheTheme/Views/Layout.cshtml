@@ -14,7 +14,7 @@
 
     <style asp-name="bootstrap" use-cdn="true" version="3"></style>
     <style asp-name="bootstrap-theme"></style>
-    <style asp-src="https://getbootstrap.com/examples/theme/theme.css"></style>
+    <style asp-src="https://getbootstrap.com/docs/3.3/examples/theme/theme.css"></style>
 
     <resources type="Meta" />
     <resources type="HeadLink" />
@@ -36,7 +36,7 @@
             </div>
             <div id="navbar" class="collapse navbar-collapse">
 
-                @*@await DisplayAsync(New.Menu(ContentItemId: "main-menu"))*@
+                @*@await DisplayAsync(await New.Menu(ContentItemId: "main-menu"))*@
                 <menu alias="alias:main-menu" cache-id="main-menu" cache-duration="00:05:00" cache-tag="alias:main-menu" />
 
                 <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post">

@@ -11,23 +11,25 @@ itself based on `IMemoryCache`.
 ### Example:
 
 Layout Shape (not cached)
+
 - Shape A
-  - Shape A1 (varies by role)
-  - Shape A2
+    - Shape A1 (varies by role)
+    - Shape A2
 - Shape B
-  - Shape B1 (varies by query string)
-  - Shape B2
+    - Shape B1 (varies by query string)
+    - Shape B2
 
 ## Rendering cached shapes
 When the page is rendered this first time, all shapes will be evaluated and stored in the `IDynamicCache` service. The content
 of the cached parent shapes will replace their child ones by placeholders similar to ESI 
-(https://en.wikipedia.org/wiki/Edge_Side_Includes). 
+(<https://en.wikipedia.org/wiki/Edge_Side_Includes>). 
 
 On subsequent requests, if a shape has been cached then it won't be processed (`Processing` event in
 the `ShapeMetadata`). Instead, its ESI tags will be processed and replaced by the child content if it's still valid.
 
 ## Invalidating cached shapes
 If a shape cache content is invalidated, it will be reprocessed. 
+
 - If its children are still cached then their cached value will be used.
 - Invalidating a shape will also invalidate all parent shapes.
 
@@ -75,7 +77,8 @@ Example: `myShape.Cache("myshape")`
 | `AddTag(string)` | Adds a tag to the cache entry to that it can be invalidated by this tag value. |
 | `RemoveTag(string)` | Removes the specified tag. |
 
-> Note: `AddDependency` is different that `AddContext` as it doesn't store multiple values for each context, but invalidates
+!!! note
+    `AddDependency` is different that `AddContext` as it doesn't store multiple values for each context, but invalidates
 the cached shape content when the value of the context varies. Internally they share the same implementation as the physical
 cache key will contain the dependency context value.
 

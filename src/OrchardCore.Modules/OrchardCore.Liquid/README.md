@@ -10,7 +10,7 @@ For more information about the Liquid syntax, please refer to this site: https:/
 All outputs are encoded into HTML by default. It means that any string that returns some HTML reserved chars will
 be converted to the corresponding HTML entities. If you need to render some raw HTML chars you can use the `Raw` filter.
 
-## Filters
+## Content Item Filters
 
 All the default filters that are available in the standard Liquid syntax are available in OrchardCore. On top of that each Orchard module can
 provide custom filters for their own purpose. Here is a list of common filters that apply to content items.
@@ -89,6 +89,20 @@ Output
 Wednesday, 02 August 2017 11:54:48
 ```
 
+### t
+
+Localizes a string using the current culture.
+
+Input
+```
+{{ "Hello!" | t }}
+```
+
+Output
+```
+Bonjour!
+```
+
 ## Properties
 
 By default the liquid templates have access to a common set of objects.
@@ -145,3 +159,208 @@ The following properties are available on the `User` object.
 | Property | Example | Description |
 | --------- | ---- |------------ |
 | `Identity.Name` | `admin` | The name of the authenticated user |
+
+## Shape Filters
+
+These filters let you create, filter and display shapes.
+
+### new_shape
+
+Returns a shape with the specified name as input.
+
+Input
+```
+{% assign date_time = "DateTime" | new_shape %}
+```
+
+### shape_string
+
+Renders a shape to a string value.
+
+Input
+```
+{{ "DateTime" | new_shape | shape_string }}
+
+```
+
+Output
+```
+Monday, September 11, 2017 3:29:26 PM
+```
+
+### clear_alternates
+
+Removes any alternates from an input shape.
+
+Input
+```
+{{ my_shape | clean_alternates }}
+
+```
+
+### shape_type
+
+Replaces the shape type of an input shape.
+
+Input
+```
+{{ my_shape | shape_type: "OtherShapeType" }}
+
+```
+
+### display_type
+
+Replaces the display type of an input shape.
+
+Input
+```
+{{ my_shape | display_type: "Summary" }}
+
+```
+
+### shape_position
+
+Replaces the position of an input shape.
+
+Input
+```
+{{ my_shape | shape_position: "Content:before" }}
+
+```
+
+### shape_tab
+
+Replaces the tab of an input shape.
+Input
+```
+{{ my_shape | shape_tab: "properties" }}
+
+```
+
+### remove_item
+
+Removes a named shape from an input shape items.
+
+Input
+```
+{% display Model.Content | remove_item: "BodyPart" %}
+```
+
+In this example, the `Model.Content` property evaluates to a zone shape, typically from a Content Item shape template, which contains the `BodyPart` shape
+rendered for the Body Part element. This call will remove the specific shape named `BodyPart`.
+
+### set_properties
+
+Replaces a property of an input shape.
+
+```
+{{ Model.Pager | set_properties: next_class: 'next', next_text: '>>' }}
+```
+
+## Layout Tags
+
+### render_body
+
+In a layout, renders the body of the current view.
+
+Input
+```
+{% render_body %}
+```
+
+### render_section
+
+In a layout, renders the section with the specified name.
+
+Input
+```
+{% render_section "Header", required: false %}
+```
+
+### page_title
+
+Alters and renders the title of the current page.
+
+Input
+```
+{% page_title Site.SiteName, position: "before", separator: " - " %}
+```
+
+The default parameter is a text that is appended to the current value of the title.
+`position` is where the value is appended, in this example at the beginning.
+`separator` is a string that is used to separate all the fragments of the title.
+
+## Shape Tags
+
+### display
+
+Renders a shape. Similar to the `shape_string` filter.
+
+Input
+```
+{% assign date_time = "DateTime" | new_shape %}
+{% display date_time %}
+```
+
+Output
+```
+Monday, September 11, 2017 3:29:26 PM
+```
+
+### shape
+
+Renders a specific named tag with its properties
+
+Input
+```
+{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_duration: "00:05:00", cache_tag: "alias:main-menu" %}
+```
+
+### zone
+
+Renders some HTML content in the specified zone.
+
+Input
+```
+{% zone "Header" %}
+    <!-- some content goes here -->
+{% endzone %}
+```
+
+The content of this block can then be reused from the Layout using the `{% display Model.Header %}` code.
+
+## Tag Helper tags
+
+ASP.NET Core MVC provides a set of tag helpers to render predefined html outputs. The Liquid module provides a way to call into these Tag Helpers using custom liquid tags.
+
+### link
+
+Invokes the `link` tag helper from the **Orchard.ResourceManagement** package.
+
+### meta
+
+Invokes the `meta` tag helper from the **Orchard.ResourceManagement** package.
+
+### resources
+
+Invokes the `resources` tag helper from the **Orchard.ResourceManagement** package.
+
+### script
+
+Invokes the `script` tag helper from the **Orchard.ResourceManagement** package.
+
+### style
+
+Invokes the `style` tag helper from the **Orchard.ResourceManagement** package.
+
+### a
+
+Invokes the `a` tag helper from the MVC package.
+
+## CREDITS
+
+### Fluid
+
+https://github.com/sebastienros/fluid
+Copyright (c) 2017 Sebastien Ros
+MIT License

@@ -36,9 +36,9 @@ namespace OrchardCore.Liquid.Services
 
         public void Discover(ShapeTableBuilder builder)
         {
-            builder.Describe("LiquidPart").OnProcessingAsync(BuildViewModelAsync);
-            builder.Describe("LiquidPart_Summary").OnProcessingAsync(BuildViewModelAsync);
-            builder.Describe("LiquidPart_Edit").OnProcessingAsync(BuildViewModelAsync);            
+            builder.Describe("LiquidPart").OnProcessing(BuildViewModelAsync);
+            builder.Describe("LiquidPart_Summary").OnProcessing(BuildViewModelAsync);
+            builder.Describe("LiquidPart_Edit").OnProcessing(BuildViewModelAsync);            
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿# OrchardCore.OpenId
+# OrchardCore.OpenId
 
 OrchardCore.OpenId provides an implementation of an OpenID Connect server based on [OpenIddict](https://github.com/openiddict/openiddict-core) library. 
 It allows Orchard Core to act as identity provider to support token authentication without the need of an external identity provider.
@@ -164,3 +164,10 @@ Import-PfxCertificate -FilePath C:\securelocation\connect.example.com.pfx cert:\
     4. Check Allow Read
 + WinHttpCertCfg.exe (grants Full Control)
     1. For example: `winhttpcertcfg -g -c LOCAL_MACHINE\My -s connect.example.com -a AppPoolIdentityName` https://msdn.microsoft.com/en-us/library/windows/desktop/aa384088(v=vs.85).aspx
+
+## CREDITS
+
+### OpenIddict
+
+https://github.com/openiddict
+License under Apache License 2.0

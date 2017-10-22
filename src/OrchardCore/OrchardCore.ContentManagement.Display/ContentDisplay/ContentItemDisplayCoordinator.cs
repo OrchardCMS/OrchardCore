@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -56,7 +56,7 @@ namespace OrchardCore.ContentManagement.Display
                     var result = await displayDriver.BuildDisplayAsync(contentItem, context);
                     if (result != null)
                     {
-                        result.Apply(context);
+                        await result.ApplyAsync(context);
                     }
                 }
                 catch (Exception ex)
@@ -81,7 +81,7 @@ namespace OrchardCore.ContentManagement.Display
                             var result = await displayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
                             if (result != null)
                             {
-                                result.Apply(context);
+                                await result.ApplyAsync(context);
                             }
                         }
                         catch (Exception ex)
@@ -100,7 +100,7 @@ namespace OrchardCore.ContentManagement.Display
                                 var result = await displayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
                                 if (result != null)
                                 {
-                                    result.Apply(context);
+                                    await result.ApplyAsync(context);
                                 }
                             }
                             catch (Exception ex)
@@ -120,7 +120,7 @@ namespace OrchardCore.ContentManagement.Display
                 return;
 
             dynamic contentShape = context.Shape;
-            dynamic partsShape = context.ShapeFactory.Create("Zone", Arguments.Empty);
+            dynamic partsShape = await context.ShapeFactory.CreateAsync("Zone", Arguments.Empty);
             contentShape.Zones["Parts"] = partsShape;
 
             foreach (var displayDriver in _displayDrivers)
@@ -130,7 +130,7 @@ namespace OrchardCore.ContentManagement.Display
                     var result = await displayDriver.BuildEditorAsync(contentItem, context);
                     if (result != null)
                     {
-                        result.Apply(context);
+                        await result.ApplyAsync(context);
                     }
                 }
                 catch (Exception ex)
@@ -147,7 +147,7 @@ namespace OrchardCore.ContentManagement.Display
                 part.ContentItem = contentItem;
 
                 // Create a custom shape to render all the part shapes into it
-                dynamic typePartShape = context.ShapeFactory.Create("ContentPart_Edit", Arguments.Empty);
+                dynamic typePartShape = await context.ShapeFactory.CreateAsync("ContentPart_Edit", Arguments.Empty);
                 typePartShape.ContentPart = part;
                 typePartShape.ContentTypePartDefinition = typePartDefinition;
 
@@ -163,7 +163,7 @@ namespace OrchardCore.ContentManagement.Display
                     var result = await contentDisplay.BuildEditorAsync(part, typePartDefinition, context);
                     if (result != null)
                     {
-                        result.Apply(context);
+                        await result.ApplyAsync(context);
                     }
                 }, Logger);
 
@@ -179,7 +179,7 @@ namespace OrchardCore.ContentManagement.Display
                         var result = await contentDisplay.BuildEditorAsync(part, partFieldDefinition, typePartDefinition, context);
                         if (result != null)
                         {
-                            result.Apply(context);
+                            await result.ApplyAsync(context);
                         }
                     }, Logger);
                 }
@@ -193,7 +193,7 @@ namespace OrchardCore.ContentManagement.Display
                 return;
 
             dynamic contentShape = context.Shape;
-            dynamic partsShape = context.ShapeFactory.Create("Zone", Arguments.Empty);
+            dynamic partsShape = await context.ShapeFactory.CreateAsync("Zone", Arguments.Empty);
             contentShape.Zones["Parts"] = partsShape;
 
             foreach (var displayDriver in _displayDrivers)
@@ -203,7 +203,7 @@ namespace OrchardCore.ContentManagement.Display
                     var result = await displayDriver.UpdateEditorAsync(contentItem, context);
                     if (result != null)
                     {
-                        result.Apply(context);
+                        await result.ApplyAsync(context);
                     }
                 }
                 catch (Exception ex)
@@ -220,7 +220,7 @@ namespace OrchardCore.ContentManagement.Display
                 part.ContentItem = contentItem;
 
                 // Create a custom shape to render all the part shapes into it
-                dynamic typePartShape = context.ShapeFactory.Create("ContentPart_Edit", Arguments.Empty);
+                dynamic typePartShape = await context.ShapeFactory.CreateAsync("ContentPart_Edit", Arguments.Empty);
                 typePartShape.ContentPart = part;
                 typePartShape.ContentTypePartDefinition = typePartDefinition;
 
@@ -236,7 +236,7 @@ namespace OrchardCore.ContentManagement.Display
                     var result = await contentDisplay.UpdateEditorAsync(part, typePartDefinition, context);
                     if (result != null)
                     {
-                        result.Apply(context);
+                        await result.ApplyAsync(context);
                     }
                 }, Logger);
 
@@ -252,7 +252,7 @@ namespace OrchardCore.ContentManagement.Display
                         var result = await contentDisplay.UpdateEditorAsync(part, partFieldDefinition, typePartDefinition, context);
                         if (result != null)
                         {
-                            result.Apply(context);
+                            await result.ApplyAsync(context);
                         }
                     }, Logger);
                 }

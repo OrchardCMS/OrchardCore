@@ -8,13 +8,16 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.Demo.Commands;
 using OrchardCore.Demo.ContentElementDisplays;
+using OrchardCore.Demo.Drivers;
 using OrchardCore.Demo.Services;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.RazorPages;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Demo
 {
@@ -59,6 +62,8 @@ namespace OrchardCore.Demo
             services.AddScoped<IContentDisplayDriver, TestContentElementDisplay>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
+
+            services.AddScoped<IDisplayDriver<User>, UserProfileDisplayDriver>();
 
             services.Configure<RazorPagesOptions>(options =>
             {

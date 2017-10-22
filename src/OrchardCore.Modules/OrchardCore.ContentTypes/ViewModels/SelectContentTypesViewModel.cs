@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.ContentTypes.ViewModels
 {

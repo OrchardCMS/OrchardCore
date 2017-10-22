@@ -1,6 +1,6 @@
 @using OrchardCore.Flows.Models;
 
-@inject OrchardCore.ContentManagement.MetaData.IContentDefinitionManager ContentDefinitionManager
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
     var contentType = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;

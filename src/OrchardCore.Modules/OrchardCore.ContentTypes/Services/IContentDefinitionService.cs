@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentTypes.ViewModels;
 
 namespace OrchardCore.ContentTypes.Services

@@ -87,7 +87,7 @@ Here is an example for creating a SQL query from a Queries recipe step:
 
 ## query
 
-The `query` filger provides a way to access named queries.
+The `query` filter provides a way to access named queries.
 To access a named query, use the name as the input.
 
 

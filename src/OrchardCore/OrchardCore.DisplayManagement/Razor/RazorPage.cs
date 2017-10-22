@@ -39,9 +39,9 @@ namespace OrchardCore.DisplayManagement.Razor
         /// <example>
         /// Usage:
         /// <code>
-        /// New.MyShape()
-        /// New.MyShape(A: 1, B: "Some text")
-        /// New.MyShape().A(1).B("Some text")
+        /// await New.MyShape()
+        /// await New.MyShape(A: 1, B: "Some text")
+        /// (await New.MyShape()).A(1).B("Some text")
         /// </code>
         /// </example>
         public dynamic New
@@ -88,7 +88,7 @@ namespace OrchardCore.DisplayManagement.Razor
                         throw new InvalidOperationException("Could not find a valid layout accessor");
                     }
 
-                    _themeLayout = layoutAccessor.GetLayout();
+                    _themeLayout = layoutAccessor.GetLayoutAsync().GetAwaiter().GetResult();
                 }
 
                 return _themeLayout;

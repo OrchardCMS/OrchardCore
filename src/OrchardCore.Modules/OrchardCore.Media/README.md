@@ -2,19 +2,19 @@
 
 The Media modules provides a UI to upload and organize binary files that can be used while creating content. 
 
-The media processing token filters can also create custom sized images.
+The media processing liquid filters can also create custom sized images.
 
 ## HTML filters
 
 The following filters allow for media manipulation:
 
-### media_url
+### asset_url
 
 Returns the url of a media based on its location in the media library.
 
 #### Input
 
-`{{ 'animals/kittens.jpg' | media_url }}`
+`{{ 'animals/kittens.jpg' | asset_url }}`
 
 #### Output
 
@@ -26,7 +26,7 @@ Renders an `<img src />` HTML tag.
 
 #### Input
 
-`{{ 'animals/kittens.jpg' | media_url | img_tag }}`
+`{{ 'animals/kittens.jpg' | asset_url | img_tag }}`
 
 #### Output
 
@@ -46,7 +46,7 @@ Convert the input url to create a dynamic image with the specified size argument
 
 #### Input
 
-`{{ 'animals/kittens.jpg' | media_url | resize_url: 100, 240 | img_tag }}`
+`{{ 'animals/kittens.jpg' | asset_url | resize_url: 100, 240 | img_tag }}`
 
 #### Output
 
@@ -86,6 +86,16 @@ Constrains the resized image to fit the bounds of its container maintaining the 
 ##### min
 Resizes the image until the shortest side reaches the set given dimension. Upscaling is disabled in this mode and the original image will be returned if attempted.
 
-##### strech
+##### stretch
 
 Stretches the resized image to fit the bounds of its container.
+
+
+## CREDITS
+
+### ImageSharp
+
+https://sixlabors.com/projects/imagesharp/
+
+Copyright 2012 James South
+Licensed under the Apache License, Version 2.0

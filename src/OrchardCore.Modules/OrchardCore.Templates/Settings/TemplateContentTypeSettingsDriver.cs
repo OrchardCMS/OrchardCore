@@ -42,7 +42,6 @@ namespace OrchardCore.Templates.Settings
                         Description = S["Template for a {0} content item in summary views", contentTypeDefinition.DisplayName]
                     });
 
-                return Task.CompletedTask;
             }).Location("Content");
         }
     }

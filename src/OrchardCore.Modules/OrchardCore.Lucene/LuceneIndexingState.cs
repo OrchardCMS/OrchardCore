@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Microsoft.AspNetCore.Hosting;
+using System.IO;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
@@ -13,20 +12,15 @@ namespace OrchardCore.Lucene
     public class LuceneIndexingState
     {
         private readonly string _indexSettingsFilename;
-        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly JObject _content;
 
         public LuceneIndexingState(
-            IHostingEnvironment hostingEnvironment,
             IOptions<ShellOptions> shellOptions,
             ShellSettings shellSettings
             )
         {
-            _hostingEnvironment = hostingEnvironment;
-
             _indexSettingsFilename = Path.Combine(
-                _hostingEnvironment.ContentRootPath,
-                shellOptions.Value.ShellsRootContainerName, 
+                shellOptions.Value.ShellsApplicationDataPath, 
                 shellOptions.Value.ShellsContainerName, 
                 shellSettings.Name, 
                 "lucene.status.json");

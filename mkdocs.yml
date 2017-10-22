@@ -2,8 +2,8 @@ site_name: Orchard Core Documentation
 theme: readthedocs
 
 # Repository
-repo_name: OrchardCMS/Orchard2
-repo_url: https://github.com/OrchardCMS/Orchard2
+repo_name: OrchardCMS/OrchardCore
+repo_url: https://github.com/OrchardCMS/OrchardCore
 
 # Options
 docs_dir: src

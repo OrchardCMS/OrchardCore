@@ -4,7 +4,7 @@ using Fluid;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Settings;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
 using OrchardCore.Settings;

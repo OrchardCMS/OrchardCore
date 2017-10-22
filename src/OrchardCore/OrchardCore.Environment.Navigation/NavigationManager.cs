@@ -13,7 +13,7 @@ namespace OrchardCore.Environment.Navigation
 {
     public class NavigationManager : INavigationManager
     {
-        private static string[] Schemes = new[] { "http", "https", "tel", "mailto" };
+        private static string[] Schemes = { "http", "https", "tel", "mailto" };
 
         private readonly IEnumerable<INavigationProvider> _navigationProviders;
         private readonly ILogger _logger;
@@ -62,10 +62,13 @@ namespace OrchardCore.Environment.Navigation
             Merge(menuItems);
 
             // Remove unauthorized menu items
-            menuItems = Reduce(menuItems, actionContext.HttpContext.User);
+            menuItems = Authorize(menuItems, actionContext.HttpContext.User);
 
             // Compute Url and RouteValues properties to Href
             menuItems = ComputeHref(menuItems, actionContext);
+
+            // Keep only menu items with an Href, or that have child items with an Href
+            menuItems = Reduce(menuItems);
 
             return menuItems;
         }
@@ -81,12 +84,12 @@ namespace OrchardCore.Environment.Navigation
             {
                 var source = items[i];
                 var merged = false;
-                for (var j = items.Count - 1; j > i ; j--)
+                for (var j = items.Count - 1; j > i; j--)
                 {
                     var cursor = items[j];
 
                     // A match is found, add all its items to the source
-                    if(String.Equals(cursor.Text.Name, source.Text.Name, StringComparison.OrdinalIgnoreCase))
+                    if (String.Equals(cursor.Text.Name, source.Text.Name, StringComparison.OrdinalIgnoreCase))
                     {
                         merged = true;
                         foreach (var child in cursor.Items)
@@ -143,17 +146,18 @@ namespace OrchardCore.Environment.Navigation
         }
 
         /// <summary>
-        ///
+        /// Gets the url.from a menu item url a routeValueDictionary and an actionContext.
         /// </summary>
-        /// <param name="menuItemUrl"></param>
+        /// <param name="menuItemUrl">The </param>
         /// <param name="routeValueDictionary"></param>
+        /// <param name="actionContext"></param>
         /// <returns></returns>
         private string GetUrl(string menuItemUrl, RouteValueDictionary routeValueDictionary, ActionContext actionContext)
         {
             string url;
             if (routeValueDictionary == null || routeValueDictionary.Count == 0)
             {
-                if (!String.IsNullOrEmpty(menuItemUrl))
+                if (String.IsNullOrEmpty(menuItemUrl))
                 {
                     return "#";
                 }
@@ -197,24 +201,25 @@ namespace OrchardCore.Environment.Navigation
                     url = appPath + "/" + url;
                 }
             }
+
             return url;
         }
 
         /// <summary>
         /// Updates the items by checking for permissions
         /// </summary>
-        private List<MenuItem> Reduce(IEnumerable<MenuItem> items, ClaimsPrincipal user)
+        private List<MenuItem> Authorize(IEnumerable<MenuItem> items, ClaimsPrincipal user)
         {
             var filtered = new List<MenuItem>();
 
             foreach (var item in items)
             {
                 // TODO: Attach actual user and remove this clause
-                if(user == null)
+                if (user == null)
                 {
                     filtered.Add(item);
                 }
-                else if(!item.Permissions.Any())
+                else if (!item.Permissions.Any())
                 {
                     filtered.Add(item);
                 }
@@ -232,10 +237,40 @@ namespace OrchardCore.Environment.Navigation
                 // Process child items
                 var oldItems = item.Items;
 
-                item.Items = Reduce(item.Items, user).ToList();
+                item.Items = Authorize(item.Items, user).ToList();
             }
 
             return filtered;
+        }
+
+        /// <summary>
+        /// Retains only menu items with an Href, or that have child items with an Href
+        /// </summary>
+        private List<MenuItem> Reduce(IEnumerable<MenuItem> items)
+        {
+            var filtered = items.ToList();
+
+            foreach (var item in items)
+            {
+                if (!HasHrefOrChildHref(item))
+                {
+                    filtered.Remove(item);
+                }
+
+                item.Items = Reduce(item.Items);
+            }
+
+            return filtered;
+        }
+
+        private static bool HasHrefOrChildHref(MenuItem item)
+        {
+            if (item.Href != "#")
+            {
+                return true;
+            }
+
+            return item.Items.Any(HasHrefOrChildHref);
         }
     }
 }

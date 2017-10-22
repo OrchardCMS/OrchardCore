@@ -6,7 +6,7 @@ using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;

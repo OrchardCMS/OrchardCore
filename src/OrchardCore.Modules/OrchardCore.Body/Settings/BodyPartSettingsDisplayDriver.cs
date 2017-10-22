@@ -24,7 +24,6 @@ namespace OrchardCore.Body.Settings
                 model.Editor = settings.Editor;
                 model.BodyPartSettings = settings;
 
-                return Task.CompletedTask;
             }).Location("Content");
         }
 

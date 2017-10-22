@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Theming;
@@ -35,7 +35,7 @@ namespace OrchardCore.Tests.Stubs
         }
         public Task<IExtensionInfo> GetThemeAsync()
         {
-            return Task.Run(() => _dec);
+            return Task.FromResult(_dec);
         }
     }
 }

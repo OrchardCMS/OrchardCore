@@ -30,7 +30,12 @@ namespace Microsoft.Extensions.Localization
 
             return localizer[pluralForms[0], new PluralizationArgument { Count = count, Forms = pluralForms, Arguments = arguments }];
         }
-
+    }
+}
+namespace Microsoft.AspNetCore.Mvc.Localization
+{ 
+    public static class ViewLocalizerExtensions
+    {
         public static LocalizedHtmlString Plural(this IViewLocalizer localizer, int count, string singular, string plural, params object[] arguments)
         {
             if (plural == null)

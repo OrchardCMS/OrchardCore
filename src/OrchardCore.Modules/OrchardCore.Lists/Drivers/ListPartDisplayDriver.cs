@@ -9,7 +9,7 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.MetaData;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -60,7 +60,7 @@ namespace OrchardCore.Lists.Drivers
                     shape.ContentItems = containedItemsSummaries;
                     shape.ContentItem = listPart.ContentItem;
                     shape.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
-                    shape.Pager = context.New.PagerSlim(pager);
+                    shape.Pager = await context.New.PagerSlim(pager);
                 })
                 .Location("DetailAdmin", "Content:10"),
 
@@ -83,7 +83,7 @@ namespace OrchardCore.Lists.Drivers
                     shape.ContentItems = containedItemsSummaries;
                     shape.ContentItem = listPart.ContentItem;
                     shape.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
-                    shape.Pager = context.New.PagerSlim(pager);
+                    shape.Pager = await context.New.PagerSlim(pager);
                 })
                 .Displaying(displaying =>
                 {

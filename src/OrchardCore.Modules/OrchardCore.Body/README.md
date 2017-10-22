@@ -7,7 +7,7 @@ These shapes are available for theming
 ### BodyPart
 
 This shape is rendered when a `BodyPart` is attached to a content item.
-The shape based class is of `BodyPartViewModel`.
+The shape based class is of type `BodyPartViewModel`.
 
 The following properties are available on the `BodyPartViewModel` class.
 
@@ -24,6 +24,7 @@ The __Body Part__ editor can be different for each content type. In the __Body P
 content type, just select the one that needs to be used.
 
 There are two predefined editor names:
+
 - `Default` is the editor that is used by default
 - `Wysiwyg` is the editor that provides a WYSIWYG experience
 
@@ -94,6 +95,6 @@ The following properties are available on `BodyPartViewModel`
 ## CREDITS
 
 ### Trumbowyg
-https://github.com/Alex-D/Trumbowyg
-Copyright (c) 2012-2016 Alexandre Demode (Alex-D)
+<https://github.com/Alex-D/Trumbowyg>  
+Copyright (c) 2012-2016 Alexandre Demode (Alex-D)  
 License: MIT

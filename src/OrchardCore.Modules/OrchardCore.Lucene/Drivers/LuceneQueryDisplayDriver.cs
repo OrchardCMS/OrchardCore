@@ -25,18 +25,8 @@ namespace OrchardCore.Lucene.Drivers
         public override IDisplayResult Display(LuceneQuery query, IUpdateModel updater)
         {
             return Combine(
-                Shape("LuceneQuery_SummaryAdmin", model =>
-                {
-                    model.Query = query;
-
-                    return Task.CompletedTask;
-                }).Location("Content:5"),
-                Shape("LuceneQuery_Buttons_SummaryAdmin", model =>
-                {
-                    model.Query = query;
-
-                    return Task.CompletedTask;
-                }).Location("Actions:2")
+                Shape("LuceneQuery_SummaryAdmin", model => { model.Query = query; }).Location("Content:5"),
+                Shape("LuceneQuery_Buttons_SummaryAdmin", model => { model.Query = query; }).Location("Actions:2")
             );
         }
 

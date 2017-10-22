@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Net;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.DisplayManagement.Notify
 {
-    public class NotifyFilter : IActionFilter, IResultFilter
+    public class NotifyFilter : IActionFilter, IAsyncResultFilter
     {
         public const string CookiePrefix = "orch_notify";
         private readonly INotifier _notifier;
@@ -94,37 +95,41 @@ namespace OrchardCore.DisplayManagement.Notify
             }
         }
 
-        public void OnResultExecuting(ResultExecutingContext filterContext)
+        public async Task OnResultExecutionAsync(ResultExecutingContext filterContext, ResultExecutionDelegate next)
         {
             if (_shouldDeleteCookie)
             {
                 DeleteCookies(filterContext);
+
+                await next();
                 return;
             }
 
             if (!(filterContext.Result is ViewResult))
             {
+                await next();
                 return;
             }
 
             if (_existingEntries.Length == 0)
             {
+                await next();
                 return;
             }
 
-            var messagesZone = _layoutAccessor.GetLayout().Zones["Messages"];
+            dynamic layout = await _layoutAccessor.GetLayoutAsync();
+            var messagesZone = layout.Zones["Messages"];
+
             foreach (var messageEntry in _existingEntries)
             {
                 messagesZone = messagesZone.Add(_shapeFactory.Message(messageEntry));
             }
 
             DeleteCookies(filterContext);
-        }
 
-        public void OnResultExecuted(ResultExecutedContext filterContext)
-        {
+            await next();
         }
-
+        
         private void DeleteCookies(ResultExecutingContext filterContext)
         {
             filterContext.HttpContext.Response.Cookies.Delete(CookiePrefix, new CookieOptions { Path = _tenantPath });

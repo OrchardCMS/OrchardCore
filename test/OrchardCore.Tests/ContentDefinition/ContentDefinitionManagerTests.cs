@@ -1,7 +1,7 @@
 ﻿//using Microsoft.Extensions.DependencyInjection;
 //using Microsoft.Extensions.Logging;
 //using OrchardCore.ContentManagement.Metadata;
-//using OrchardCore.ContentManagement.MetaData;
+//using OrchardCore.ContentManagement.Metadata;
 //using OrchardCore.ContentManagement.Metadata.Builders;
 //using System;
 //using System.Collections.Generic;

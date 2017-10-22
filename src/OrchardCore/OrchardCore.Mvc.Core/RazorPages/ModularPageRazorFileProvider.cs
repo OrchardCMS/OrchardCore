@@ -39,7 +39,7 @@ namespace OrchardCore.Mvc.RazorPages
                 }
             }
 
-            return null;
+            return new NotFoundDirectoryContents();
         }
 
         public IFileInfo GetFileInfo(string subpath)

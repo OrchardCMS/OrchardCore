@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -84,13 +85,16 @@ namespace OrchardCore.DisplayManagement.LocationExpander
 
             var result = new List<string>();
 
-            foreach (var theme in currentThemeAndBaseThemesOrdered)
+            if (!String.IsNullOrEmpty(context.AreaName))
             {
-                if (context.AreaName != theme.Id)
+                foreach (var theme in currentThemeAndBaseThemesOrdered)
                 {
-                    var themeViewsPath = '/' + theme.Extension.SubPath + "/Views/" + context.AreaName;
-                    result.Add(themeViewsPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
-                    result.Add(themeViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
+                    if (context.AreaName != theme.Id)
+                    {
+                        var themeViewsPath = '/' + theme.Extension.SubPath + "/Views/" + context.AreaName;
+                        result.Add(themeViewsPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
+                        result.Add(themeViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
+                    }
                 }
             }
 
