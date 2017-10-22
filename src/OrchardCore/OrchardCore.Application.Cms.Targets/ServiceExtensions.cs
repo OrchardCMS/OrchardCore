@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     "OrchardCore.Settings",
                     "OrchardCore.Setup",
                     "OrchardCore.Recipes",
-                    "OrchardCore.RestApis",
+                    "OrchardCore.Apis.GraphQL",
                     "OrchardCore.Commons");
             });
 
@@ -65,8 +65,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     "OrchardCore.Mvc", 
                     "OrchardCore.Settings", 
                     "OrchardCore.Setup", 
-                    "OrchardCore.Recipes", 
-                    "OrchardCore.RestApis",
+                    "OrchardCore.Recipes",
+                    "OrchardCore.Apis.GraphQL",
                     "OrchardCore.Commons");
             });
 
