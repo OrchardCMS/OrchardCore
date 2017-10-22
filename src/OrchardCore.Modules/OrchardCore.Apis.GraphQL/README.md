@@ -5,6 +5,69 @@ The JsonApi implrements the jsonapi.org specification.
 ## Query
 Every GraphQL schema has a root type for both queries and mutations. The query type defines GraphQL operations that retrieve data from the server.
 
+### contentItem
+The following query looks up a content item on the contentItemId `A913LFSOAQWEM`, the query then returns the `contentItemId` and `contentType`
+
+```json
+query {
+  contentItem(contentItemId:"A913LFSOAQWEM") {
+    contentItemId
+    contentType
+  }
+}
+```
+
+The schema at this point doesnt know about contentparts. This query is for just the raw content item.
+
+### contentItems
+Similar to the previous query, this query will return a list of content items, rather than a singular one.
+
+This query will return all the `contentItemId` and `contentType` vaules of content with a content type of `BlogPost`.
+
+```json
+query {
+  contentItems(contentType: "BlogPost") {
+    contentItemId
+    contentType
+  }
+}
+```
+
+### Dynamic Querying
+Because Orchard has a very fluid content model, i.e. You can create content types on the fly, and these are not represented in code, content types are dynamically built.
+
+An example is, lets say a `Blog` content type exists within the content type system, you can query all blogs.
+
+```json
+query {
+  blog(id: "D394KFSDERFDM") {
+    contentItemId
+    contentType
+  }
+}
+```
+
+This query will return a list of blog's. These endpoints do not have a singular representation.
+
+#### Query with content parts
+All content items contain content parts, and once you have a content item, you will more than likely want details of, lets say the title on the titlePart.
+
+So lets return a Blog, with an Id of "D394KFSDERFDM", and display its Title contained on the TitlePart.
+
+```json
+query {
+  blog(id: "D394KFSDERFDM") {
+    contentItemId
+    contentType
+    titlePart {
+        title
+    }
+  }
+}
+```
+
+> Note: Only content parts that exist on content items will work
+
 ## Mutations
 Every GraphQL schema has a root type for both queries and mutations. The mutation type defines GraphQL operations that change data on the server. It is analogous to performing HTTP verbs such as `POST`, `PATCH`, and `DELETE`.
 
