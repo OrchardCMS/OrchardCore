@@ -16,21 +16,6 @@
 			"args": [ "dotnet restore --no-cache" ]
 		},
 		{
-			"taskName": "Solution: Dotnet Build Debug",
-			"args": [ "dotnet build src/**/project.json -c Debug" ],
-			"problemMatcher": "$msCompile"
-		},
-		{
-			"taskName": "Solution: Dotnet Rebuild Debug",
-			"args": [ "dotnet build src/**/project.json --no-incremental -c Debug" ],
-			"problemMatcher": "$msCompile"
-		},
-		{
-			"taskName": "Solution: Dotnet Build Release",
-			"args": [ "dotnet build src/**/project.json -c Release" ],
-			"problemMatcher": "$msCompile"
-		},
-		{
 			"taskName": "Web App: Dotnet Build Debug",
 			"args": [ "dotnet build ${workspaceRoot}/src/OrchardCore.Cms.Web -c Debug" ],
 			"isBuildCommand": true,
