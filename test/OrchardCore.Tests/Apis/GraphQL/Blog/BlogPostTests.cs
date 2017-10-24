@@ -27,9 +27,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             Assert.Single(result["data"]["blog"].Children());
             Assert.NotEmpty(result["data"]["blog"].Children()["contentItemId"]);
-
-
-
         }
 
         [Fact]

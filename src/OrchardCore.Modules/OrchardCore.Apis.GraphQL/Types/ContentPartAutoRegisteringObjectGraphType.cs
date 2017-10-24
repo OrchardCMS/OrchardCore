@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Reflection;
 using GraphQL;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using OrchardCore.ContentManagement;
 
@@ -20,14 +21,19 @@ namespace OrchardCore.Apis.GraphQL.Types
 
             foreach (var propertyInfo in properties)
             {
-                Field(
-                    type: propertyInfo.PropertyType.GetGraphTypeFromType(propertyInfo.PropertyType.IsNullable()), 
-                    name: propertyInfo.Name.ToGraphQLStringFormat(),
-                    resolve: context => {
+                var field = new FieldType
+                {
+                    Type = propertyInfo.PropertyType.GetGraphTypeFromType(propertyInfo.PropertyType.IsNullable()),
+                    Name = propertyInfo.Name.ToGraphQLStringFormat(),
+                    Resolver = new FuncFieldResolver<object, object>((context) =>
+                    {
                         var values = context.Source.As<ContentElement>().AsDictionary();
 
-                        return values.First(x => x.Key.ToGraphQLStringFormat() == context.FieldName);
-                    });
+                        return values.First(x => x.Key.ToGraphQLStringFormat() == context.FieldName).Value;
+                    })
+                };
+
+                AddField(field);  
             }
             
             IsTypeOf = obj => obj.GetType() == type;
