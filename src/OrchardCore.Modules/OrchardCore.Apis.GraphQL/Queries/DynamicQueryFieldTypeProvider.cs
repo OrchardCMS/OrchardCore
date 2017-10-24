@@ -61,8 +61,6 @@ namespace OrchardCore.Apis.GraphQL.Queries
                     {
                         var p = new ContentPartAutoRegisteringObjectGraphType(contentPart);
 
-                        //var p = _objectGraphTypes.FirstOrDefault(x => x.IsTypeOf(contentPart));
-
                         if (p != null)
                         {
                             // Add Field needs to be like Content Item and Content Items.... 
