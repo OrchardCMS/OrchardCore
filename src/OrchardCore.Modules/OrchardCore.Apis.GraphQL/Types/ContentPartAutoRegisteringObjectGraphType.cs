@@ -21,10 +21,13 @@ namespace OrchardCore.Apis.GraphQL.Types
 
             foreach (var propertyInfo in properties)
             {
+                var graphType = propertyInfo.PropertyType.GetGraphTypeFromType(propertyInfo.PropertyType.IsNullable());
+
                 var field = new FieldType
                 {
-                    Type = propertyInfo.PropertyType.GetGraphTypeFromType(propertyInfo.PropertyType.IsNullable()),
+                    Type = graphType,
                     Name = propertyInfo.Name.ToGraphQLStringFormat(),
+                    ResolvedType = graphType.BuildNamedType(),
                     Resolver = new FuncFieldResolver<object, object>((context) =>
                     {
                         var values = context.Source.As<ContentElement>().AsDictionary();
@@ -33,9 +36,9 @@ namespace OrchardCore.Apis.GraphQL.Types
                     })
                 };
 
-                AddField(field);  
+                AddField(field);
             }
-            
+
             IsTypeOf = obj => obj.GetType() == type;
         }
     }

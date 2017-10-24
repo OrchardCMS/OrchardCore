@@ -45,7 +45,10 @@ namespace OrchardCore.GraphQL.Client
 
             var response = await _client.PostJsonAsync("graphql", json);
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(await response.Content.ReadAsStringAsync());
+            }
 
             var result = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -62,7 +65,10 @@ namespace OrchardCore.GraphQL.Client
             var response = await _client
                 .GetAsync("graphql?query=" + HttpUtility.UrlEncode(variables));
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(await response.Content.ReadAsStringAsync());
+            }
 
             return JObject.Parse(await response.Content.ReadAsStringAsync());
         }
