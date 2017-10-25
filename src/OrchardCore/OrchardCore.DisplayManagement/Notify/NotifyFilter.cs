@@ -122,7 +122,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
             foreach (var messageEntry in _existingEntries)
             {
-                messagesZone = messagesZone.Add(_shapeFactory.Message(messageEntry));
+                messagesZone = messagesZone.Add(await _shapeFactory.Message(messageEntry));
             }
 
             DeleteCookies(filterContext);
