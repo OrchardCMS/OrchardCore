@@ -37,6 +37,7 @@ pages:
         - Indexing: OrchardCore.Modules/OrchardCore.Indexing/README.md
         - Lucene: OrchardCore.Modules/OrchardCore.Lucene/README.md
         - Queries: OrchardCore.Modules/OrchardCore.Queries/README.md
+        - Templates: OrchardCore.Modules/OrchardCore.Templates/README.md
         - Liquid: OrchardCore.Modules/OrchardCore.Liquid/README.md
         - Custom Settings: OrchardCore.Modules/OrchardCore.CustomSettings/README.md
     - Core Modules:
