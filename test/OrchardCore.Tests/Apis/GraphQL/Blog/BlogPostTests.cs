@@ -120,7 +120,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .QueryAsync("BlogPost", builder =>
                 {
                     builder
-                        .WithQueryField("AutoroutePart", "{ path: \"Path1\" }");
+                        .WithQueryField("AutoroutePart", "path: \"Path1\"");
 
                     builder
                         .WithNestedField("TitlePart")

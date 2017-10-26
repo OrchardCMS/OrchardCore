@@ -50,46 +50,70 @@ namespace OrchardCore.Apis.GraphQL.Queries
                     Name = typeDefinition.Name, // Blog
                 };
 
+                var queryArguments = new List<QueryArgument>();
+
                 foreach (var part in typeDefinition.Parts)
                 {
                     var name = part.Name; // About
                     var partName = part.PartDefinition.Name; // BagPart
-
+                    
                     var contentPart = _contentParts.FirstOrDefault(x => x.GetType().Name == partName);
 
                     if (contentPart != null)
                     {
-                        var p = new ContentPartAutoRegisteringObjectGraphType(contentPart);
+                        var graphType = new ContentPartAutoRegisteringObjectGraphType(contentPart);
 
-                        if (p != null)
+                        // Add Field needs to be like Content Item and Content Items.... 
+                        // so you can filter by blog...
+                        var fieldType = new FieldType
                         {
-                            // Add Field needs to be like Content Item and Content Items.... 
-                            // so you can filter by blog...
-                            var fieldType = new FieldType
-                            {
-                                Name = name,
-                                ResolvedType = p,
-                                Resolver = new FuncFieldResolver<object>(context => {
-                                    var contentPartType = (Type)context.FieldDefinition.Metadata["contentPartType"];
+                            Name = name,
+                            ResolvedType = graphType,
+                            Resolver = new FuncFieldResolver<object>(context => {
+                                var contentPartType = (Type)context.FieldDefinition.Metadata["contentPartType"];
 
-                                    return ((ContentItem)context.Source).Get(contentPartType, contentPartType.Name);
-                                }),
-                                Type = p.GetType(),
-                            };
+                                return ((ContentItem)context.Source).Get(contentPartType, contentPartType.Name);
+                            }),
+                            Type = graphType.GetType(),
+                        };
 
-                            fieldType.Metadata.Add("contentPartType", contentPart.GetType());
+                        fieldType.Metadata.Add("contentPartType", contentPart.GetType());
 
-                            typeType.AddField(fieldType);
-                        }
+                        typeType.AddField(fieldType);
+
+                        // http://facebook.github.io/graphql/October2016/#sec-Input-Object-Values
+                        queryArguments.Add(new QueryArgument(graphType) { Name = name.ToGraphQLStringFormat() });
+
+                        //foreach (var field in graphType.Fields)
+                        //{
+                        //    var fieldName = field.Name.ToGraphQLStringFormat(); // title from titlePart
+
+                        //    var searchFieldName = partName.ToGraphQLStringFormat() + "_" + fieldName;
+
+                        //    queryArguments.Add(new QueryArgument(graphType) { Name = searchFieldName });
+                        //}
+
+                        /*
+                            query {
+                                blog(autoroutePart: { alias: "/blah" } ) {
+                                    titlePart {
+                                        title
+                                    }
+                                }
+                            }
+                        */
                     }
                 }
 
-
-                fieldTypes.Add(new ContentItemsQuery(_contentManager, _session)
+                var query = new ContentItemsQuery(_contentManager, _session)
                 {
                     Name = typeDefinition.Name,
                     ResolvedType = new ListGraphType(typeType)
-                });
+                };
+
+                query.Arguments.AddRange(queryArguments);
+
+                fieldTypes.Add(query);
             }
 
             return fieldTypes;
