@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -14,6 +15,39 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     /// <typeparam name="TPart"></typeparam>
     public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, IContentPartDisplayDriver where TPart : ContentPart, new()
     {
+        private ContentTypePartDefinition _typePartDefinition;
+
+        public override ShapeResult Shape(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
+        {
+            // e.g., BodyPart.Summary, BodyPart-BlogPost, BagPart-LandingPage-Services
+            // context.Shape is the ContentItem shape, we need to alter the part shape
+
+            var result = base.Shape(shapeType, shapeBuilder, initializeAsync);
+
+            if (_typePartDefinition != null)
+            {
+                result.Displaying(ctx =>
+                {
+                    // [PartType]_[DisplayType], e.g. BodyPart.Summary
+                    ctx.ShapeMetadata.Alternates.Add($"{_typePartDefinition.PartDefinition.Name}_{ctx.ShapeMetadata.DisplayType}");
+
+                    // [PartType]__[ContentType]
+                    ctx.ShapeMetadata.Alternates.Add($"{_typePartDefinition.PartDefinition.Name}__{_typePartDefinition.ContentTypeDefinition.Name}");
+
+                    // [PartType]_[DisplayType]__[ContentType], e.g. BodyPart-Blog.Summary
+                    ctx.ShapeMetadata.Alternates.Add($"{_typePartDefinition.PartDefinition.Name}_{ctx.ShapeMetadata.DisplayType}__{_typePartDefinition.ContentTypeDefinition.Name}");
+
+                    // Named part have [PartType]__[ContentType]__[PartName], e.g. BagPart-LandingPage-Features
+                    if (_typePartDefinition.PartDefinition.Name != _typePartDefinition.Name)
+                    {
+                        ctx.ShapeMetadata.Alternates.Add($"{_typePartDefinition.PartDefinition.Name}__{_typePartDefinition.ContentTypeDefinition.Name}__{_typePartDefinition.Name}");
+                    }
+                });
+            }
+
+            return result;
+        }
+
         Task<IDisplayResult> IContentPartDisplayDriver.BuildDisplayAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
         {
             var part = contentPart as TPart;
@@ -24,6 +58,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             }
 
             BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
+
+            _typePartDefinition = typePartDefinition;
 
             var buildDisplayContext = new BuildPartDisplayContext(typePartDefinition, context);
 

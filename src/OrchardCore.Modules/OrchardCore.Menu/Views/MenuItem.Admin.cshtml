@@ -1,4 +1,4 @@
-﻿@*
+@*
     Main shape for Admin display types of MenuItem stereotype items, which is used to render
     a menu item in the hierarchy editor.
     It is recursive so that if the menu item has MenuItemsListPart the sub items will also
@@ -57,7 +57,7 @@
             @foreach (var menuItem in menuItems.MenuItems)
             {
 
-                var menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
+                dynamic menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
                 menuItemShape.MenuPart = Model.MenuPart;
                 menuItemShape.Index = Model.Index + "-" + index++;
                 @await DisplayAsync(menuItemShape);

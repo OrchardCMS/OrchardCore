@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,7 +42,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         /// <summary>
         /// Event use for a specific shape instance.
         /// </summary>
-        public IEnumerable<Func<dynamic, Task>> ProcessingAsync { get; private set; }
+        public IEnumerable<Func<IShape, Task>> ProcessingAsync { get; private set; }
 
         /// <summary>
         /// Event use for a specific shape instance.
@@ -57,7 +57,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             Displaying = Displaying.Concat(new[] { context });
         }
 
-        public void OnProcessing(Func<dynamic, Task> context)
+        public void OnProcessing(Func<IShape, Task> context)
         {
             ProcessingAsync = ProcessingAsync.Concat(new[] { context });
         }

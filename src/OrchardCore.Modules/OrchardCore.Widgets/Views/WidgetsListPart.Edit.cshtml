@@ -33,7 +33,7 @@
                             var prefix = Guid.NewGuid().ToString("n");
                             <div class="widget-template">
                                 @{
-                                    var widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, "", prefix);
+                                    dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, "", prefix);
 
                                     widgetEditor.ZonesName = Html.NameFor(x => x.Zones);
                                     widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
