@@ -21,4 +21,10 @@
     <PackageReference Include="Microsoft.Extensions.Localization" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="README.md">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
+  </ItemGroup>
+
 </Project>

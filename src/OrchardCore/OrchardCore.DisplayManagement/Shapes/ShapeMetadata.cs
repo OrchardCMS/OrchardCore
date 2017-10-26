@@ -14,8 +14,8 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public ShapeMetadata()
         {
-            Wrappers = new List<string>();
-            Alternates = new List<string>();
+            Wrappers = new AlternatesCollection();
+            Alternates = new AlternatesCollection();
             BindingSources = new List<string>();
             Displaying = Enumerable.Empty<Action<ShapeDisplayContext>>();
             Displayed = Enumerable.Empty<Action<ShapeDisplayContext>>();
@@ -28,8 +28,9 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string Tab { get; set; }
         public string PlacementSource { get; set; }
         public string Prefix { get; set; }
-        public IList<string> Wrappers { get; set; }
-        public IList<string> Alternates { get; set; }
+        public string Name { get; set; }
+        public AlternatesCollection Wrappers { get; set; }
+        public AlternatesCollection Alternates { get; set; }
         public bool IsCached => _cacheContext != null;
         public bool WasExecuted { get; set; }
         public IHtmlContent ChildContent { get; set; }

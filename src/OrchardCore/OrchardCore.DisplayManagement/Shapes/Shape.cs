@@ -87,7 +87,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 		{
 			for (var i = _items.Count - 1; i >= 0 ; i--)
 			{
-                if (_items[i] is IShape shape && shape.Metadata.Prefix == shapeName)
+                if (_items[i] is IShape shape && shape.Metadata.Name == shapeName)
                 {
                     _items.RemoveAt(i);
 					return;
@@ -99,7 +99,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 		{
 			for (var i = 0; i < _items.Count; i++)
 			{
-                if (_items[i] is IShape shape && shape.Metadata.Prefix == shapeName)
+                if (_items[i] is IShape shape && shape.Metadata.Name == shapeName)
 				{
 					return shape;
 				}

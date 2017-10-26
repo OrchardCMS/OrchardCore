@@ -15,6 +15,7 @@ namespace OrchardCore.DisplayManagement.Views
         private IDictionary<string,string> _otherLocations;
         public string _differentiator;
         private string _prefix;
+        private string _name;
         private string _cacheId;
         private readonly string _shapeType;
         private readonly Func<IBuildShapeContext, Task<IShape>> _shapeBuilder;
@@ -105,6 +106,7 @@ namespace OrchardCore.DisplayManagement.Views
 
             ShapeMetadata newShapeMetadata = newShape.Metadata;
             newShapeMetadata.Prefix = _prefix;
+            newShapeMetadata.Name = _name ?? _shapeType;
             newShapeMetadata.DisplayType = displayType;
             newShapeMetadata.PlacementSource = placement.Source;
             newShapeMetadata.Tab = placement.GetTab();
@@ -135,19 +137,16 @@ namespace OrchardCore.DisplayManagement.Views
                 newShapeMetadata.Wrappers.Clear();
             }
 
-            if (placement.Alternates != null)
+            if (placement != null)
             {
-                foreach (var alternate in placement?.Alternates)
+                if (placement.Alternates != null)
                 {
-                    newShapeMetadata.Alternates.Add(alternate);
+                    newShapeMetadata.Alternates.AddRange(placement.Alternates);
                 }
-            }
 
-            if (placement.Wrappers != null)
-            {
-                foreach (var wrapper in placement.Wrappers)
+                if (placement.Wrappers != null)
                 {
-                    newShapeMetadata.Wrappers.Add(wrapper);
+                    newShapeMetadata.Wrappers.AddRange(placement.Wrappers);
                 }
             }
 
@@ -200,6 +199,18 @@ namespace OrchardCore.DisplayManagement.Views
         public ShapeResult Prefix(string prefix)
         {
             _prefix = prefix;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the name of the shape within its container.
+        /// </summary>
+        /// <remarks>
+        /// The goal is to identify it as part of a collection of shapes.
+        /// </remarks>
+        public ShapeResult Name(string name)
+        {
+            _name = name;
             return this;
         }
 

@@ -26,6 +26,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             if (_typePartDefinition != null)
             {
+                result.Name(_typePartDefinition.Name);
+
                 result.Displaying(ctx =>
                 {
                     // [PartType]_[DisplayType], e.g. BodyPart.Summary
@@ -37,10 +39,13 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     // [PartType]_[DisplayType]__[ContentType], e.g. BodyPart-Blog.Summary
                     ctx.ShapeMetadata.Alternates.Add($"{_typePartDefinition.PartDefinition.Name}_{ctx.ShapeMetadata.DisplayType}__{_typePartDefinition.ContentTypeDefinition.Name}");
 
-                    // Named part have [PartType]__[ContentType]__[PartName], e.g. BagPart-LandingPage-Features
+                    // Named part have 
+                    // - [PartType]__[ContentType]__[PartName], e.g. BagPart-LandingPage-Features
+                    // - [PartType]_[DisplayType]__[ContentType]__[PartName], e.g. BagPart-LandingPage-Features.Summary
                     if (_typePartDefinition.PartDefinition.Name != _typePartDefinition.Name)
                     {
                         ctx.ShapeMetadata.Alternates.Add($"{_typePartDefinition.PartDefinition.Name}__{_typePartDefinition.ContentTypeDefinition.Name}__{_typePartDefinition.Name}");
+                        ctx.ShapeMetadata.Alternates.Add($"{_typePartDefinition.PartDefinition.Name}_{ctx.ShapeMetadata.DisplayType}__{_typePartDefinition.ContentTypeDefinition.Name}__{_typePartDefinition.Name}");
                     }
                 });
             }
