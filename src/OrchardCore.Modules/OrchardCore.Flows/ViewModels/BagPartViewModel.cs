@@ -7,5 +7,6 @@ namespace OrchardCore.Flows.ViewModels
     {
         public BagPart BagPart { get; set; }
         public BuildPartDisplayContext BuildPartDisplayContext { get; set; }
+        public BagPartSettings Settings { get; set; }
     }
 }

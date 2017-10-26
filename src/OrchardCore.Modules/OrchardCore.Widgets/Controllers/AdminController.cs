@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -46,7 +46,7 @@ namespace OrchardCore.Widgets.Controllers
 
             contentItem.Weld(new WidgetMetadata());
 
-            var editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, htmlFieldPrefix: prefix);
+            dynamic editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, htmlFieldPrefix: prefix);
 
             editor.ZonesName = zonesName;
             editor.PrefixesName = prefixesName;

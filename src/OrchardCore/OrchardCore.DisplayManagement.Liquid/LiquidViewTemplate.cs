@@ -107,16 +107,21 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         private static Func<object, string, object> _getter => (o, n) =>
         {
-            if ((o as Shape).Properties.TryGetValue(n, out object result))
+            if (o is Shape shape)
             {
-                return result;
-            }
-
-            foreach (var item in (o as Shape).Items)
-            {
-                if (item is IShape && item.Metadata.Type == n)
+                if (shape.Properties.TryGetValue(n, out object result))
                 {
-                    return item;
+                    return result;
+                }
+
+                foreach (var item in shape.Items)
+                {
+                    // The prefix is the Name of the part. It also works for named parts,
+                    // so we can access Model.Content.MyNamedPart
+                    if (item is IShape itemShape && itemShape.Metadata.Prefix == n)
+                    {
+                        return item;
+                    }
                 }
             }
 

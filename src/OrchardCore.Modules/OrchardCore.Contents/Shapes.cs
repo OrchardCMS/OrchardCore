@@ -58,9 +58,9 @@ namespace OrchardCore.Contents
                     var displayManager = context.ServiceProvider.GetRequiredService<IContentItemDisplayManager>();
                     var updateModelAccessor = context.ServiceProvider.GetRequiredService<IUpdateModelAccessor>();
 
-                    string contentItemId = await aliasManager.GetContentItemIdAsync(alias);
+                    var contentItemId = await aliasManager.GetContentItemIdAsync(alias);
 
-                    ContentItem contentItem = await contentManager.GetAsync(contentItemId);
+                    var contentItem = await contentManager.GetAsync(contentItemId);
 
                     if (contentItem == null)
                     {
@@ -73,7 +73,7 @@ namespace OrchardCore.Contents
 
                     if (!String.IsNullOrEmpty(alternate))
                     {
-                        ((IShape)displayShape).Metadata.Alternates.Add(displayShape);
+                        displayShape.Metadata.Alternates.Add(alternate);
                     }
 
                     content.Add(displayShape);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -58,7 +58,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = _contentManager.New(id);
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this);
 
             model.MenuContentItemId = menuContentItemId;
             model.MenuItemId = menuItemId;
@@ -160,7 +160,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = menuItem.ToObject<ContentItem>();
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this);
 
             model.MenuContentItemId = menuContentItemId;
             model.MenuItemId = menuItemId;

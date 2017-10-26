@@ -76,9 +76,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
         public static Task<FluidValue> ClearAlternates(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            var shape = input.ToObjectValue() as IShape;
-
-            if (shape?.Metadata.Alternates.Count > 0)
+            if(input.ToObjectValue() is Shape shape && shape.Metadata.Alternates.Count > 0)
             {
                 shape.Metadata.Alternates.Clear();
             }
@@ -88,9 +86,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
         public static Task<FluidValue> ShapeType(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            var shape = input.ToObjectValue() as IShape;
-
-            if (shape?.Metadata != null)
+            if (input.ToObjectValue() is Shape shape)
             {
                 shape.Metadata.Type = arguments.At(0).ToStringValue();
             }
@@ -100,9 +96,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
         public static Task<FluidValue> DisplayType(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            var shape = input.ToObjectValue() as IShape;
-
-            if (shape?.Metadata != null)
+            if (input.ToObjectValue() is Shape shape)
             {
                 shape.Metadata.DisplayType = arguments.At(0).ToStringValue();
             }
@@ -112,9 +106,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
         public static Task<FluidValue> ShapePosition(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            var shape = input.ToObjectValue() as IShape;
-
-            if (shape?.Metadata != null)
+            if (input.ToObjectValue() is Shape shape)
             {
                 shape.Metadata.Position = arguments.At(0).ToStringValue();
             }
@@ -124,9 +116,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
         public static Task<FluidValue> ShapeTab(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            var shape = input.ToObjectValue() as IShape;
-
-            if (shape?.Metadata != null)
+            if (input.ToObjectValue() is Shape shape)
             {
                 shape.Metadata.Tab = arguments.At(0).ToStringValue();
             }
@@ -136,9 +126,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
         public static Task<FluidValue> RemoveItem(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            var shape = input.ToObjectValue() as Shape;
-
-            if (shape?.Items != null)
+            if (input.ToObjectValue() is Shape shape && shape.Items != null)
             {
                 shape.Remove(arguments.At(0).ToStringValue());
             }
