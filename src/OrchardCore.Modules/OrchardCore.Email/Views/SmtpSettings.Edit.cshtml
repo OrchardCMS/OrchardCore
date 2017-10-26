@@ -1,0 +1,161 @@
+@model OrchardCore.Email.Models.SmtpSettings
+
+
+<script asp-name="bootstrap" version="4.0.0" use-cdn="true" at="Foot"></script>
+
+
+
+<fieldset class="form-group" asp-validation-class-for="DefaultSender">
+    <label asp-for="DefaultSender">@T["Sender email address"] <span asp-validation-for="DefaultSender"></span></label>
+    <input asp-for="DefaultSender" class="form-control" type="email" />
+    <span class="hint">@T["The default email address to use as a sender."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Host">
+    <label asp-for="Host">@T["Host name"] <span asp-validation-for="Host"></span></label>
+    <input asp-for="Host" class="form-control" type="text" />
+    <span class="hint">@T["The SMTP server domain, e.g. <i>smtp.mailprovider.com</i>."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Port">
+    <label asp-for="Port">@T["Port number"] <span asp-validation-for="Port"></span></label>
+    <input asp-for="Port" class="form-control" type="number" step="any" min="0" max="65535" />
+    <span class="hint">@T["The SMTP server port, usually 25."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="EnableSsl">
+    <input asp-for="EnableSsl" type="checkbox" />
+    <label asp-for="EnableSsl">@T["Enable SSL communications"] <span asp-validation-for="EnableSsl"></span></label>
+    <span class="hint d-block">@T["Check if the SMTP server requires SSL communications."]</span>
+</fieldset>
+
+<fieldset class="form-group clearfix" asp-validation-class-for="RequireCredentials">
+    <input asp-for="RequireCredentials" type="checkbox" data-toggle="collapse" data-target=".requireCredential" />
+    <label asp-for="RequireCredentials">@T["Require credentials"] <span asp-validation-for="RequireCredentials"></span></label>
+</fieldset>
+
+<div class="requireCredential collapse @(Model.RequireCredentials ? "show" : "")">
+    <fieldset class="form-group" asp-validation-class-for="UseDefaultCredentials">
+        <input asp-for="UseDefaultCredentials" type="checkbox" data-toggle="collapse-toggle" data-target=".useCustomCredential" />
+        <label asp-for="UseDefaultCredentials">@T["Use Windows authentication"] <span asp-validation-for="UseDefaultCredentials"></span></label>
+        <span class="hint">@T["When this option is selected, the aplication pool or host-process identity is used to authenticate with the mail server."]</span>
+    </fieldset>
+
+    <div class="useCustomCredential collapse @(Model.UseDefaultCredentials? "": "show")">
+        <fieldset class="form-group" asp-validation-class-for="UserName">
+            <label asp-for="UserName">@T["User name"] <span asp-validation-for="UserName"></span></label>
+            <input asp-for="UserName" class="form-control" type="text" />
+            <span class="hint">@T["The username for authentication."]</span>
+        </fieldset>
+
+        <fieldset class="form-group" asp-validation-class-for="Password">
+            <label asp-for="Password">@T["Password"] <span asp-validation-for="Password"></span></label>
+            <input asp-for="Password" class="form-control" type="password" />
+            <span class="hint">@T["The password for authentication."]</span>
+        </fieldset>
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-header">@T["Test those settings"]</div>
+    <div class="card-block">
+        <div class="form-group">
+            <label for="emailtestto">@T["To"]</label>
+            <input type="text" id="emailtestto" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="emailtestbcc">@T["Bcc"]</label>
+            <input type="text" id="emailtestbcc" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="emailtestcc">@T["Cc"]</label>
+            <input type="text" id="emailtestcc" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="emailtestreplyto">@T["Reply To"]</label>
+            <input type="text" id="emailtestreplyto" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="emailtestsubject">@T["Subject"]</label>
+            <input type="text" id="emailtestsubject" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="emailtestbody">@T["Body"]</label>
+            <textarea id="emailtestbody" class="form-control" rows="5"></textarea>
+        </div>
+        <div>
+            <button type="button" id="emailtestsend" class="button grey">@T["Send"]</button>
+        </div>
+        <div id="emailtesterror" class="message-Error" style="display:none;"></div>
+        <div id="emailtestinfo" class="message-Information" style="display:none;"></div>
+    </div>
+
+
+    <script type="text/javascript" at="Foot">
+            $(function () {
+                var url = "@Url.Action( "SmtpSettingsTest", "Admin", new {area = "OrchardCore.Email"})",
+                    error = $("#emailtesterror"),
+                    info = $("#emailtestinfo"),
+                    from = $("#@Html.IdFor(m => m.DefaultSender)"),
+                    host = $("#@Html.IdFor( m => m.Host)"),
+                    port = $("#@Html.IdFor( m => m.Port)"),
+                    enableSsl = $("#@Html.IdFor( m => m.EnableSsl)"),
+                    requireCredentials = $("#@Html.IdFor( m => m.RequireCredentials)"),
+                    useDefaultCredentials = $("input[name='@Html.NameFor(m => m.UseDefaultCredentials)']"),
+                    userName = $("#@Html.IdFor( m => m.UserName)"),
+                    password = $("#@Html.IdFor( m => m.Password)"),
+                    to = $("#emailtestto"),
+                    subject = $("#emailtestsubject"),
+                    body = $("#emailtestbody"),
+                    replyto = $("#emailtestreplyto"),
+                    bcc = $("#emailtestbcc"),
+                    cc = $("#emailtestcc");
+
+                $("#emailtestsend").click(function () {
+                    $.post(url, {
+                        defaultSender: from.val(),
+                        from: from.val(),
+                        host: host.val(),
+                        port: port.val(),
+                        enableSsl: enableSsl.prop("checked"),
+                        requireCredentials: requireCredentials.prop("checked"),
+                        useDefaultCredentials: useDefaultCredentials.filter(':checked').val(),
+                        userName: userName.val(),
+                        password: password.val(),
+                        to: to.val(),
+                        subject: subject.val(),
+                        body: body.val(),
+                        replyto: replyto.val(),
+                        bcc: bcc.val(),
+                        cc: cc.val(),
+                        __RequestVerificationToken: to.closest("form").find("input[name=__RequestVerificationToken]").val()
+                    })
+                    .fail(function (data) {
+                        error.html(data.statusText).show();
+                        info.hide();
+                    })
+                    .done(function (data) {
+                        if (data.error) {
+                            error.html(data.error).show();
+                            info.hide();
+                        } else {
+                            info.html(data.status).show();
+                            error.hide();
+                        }
+                    });
+                });
+            });
+    </script>
+</div>
+
+<script type="text/javascript" at="Foot">
+    $(function() {
+        $(document).on("click", "[data-toggle='collapse-toggle']", function(event) {
+            var target = $($(this).data("target"));
+            target.hasClass("show") ? target.collapse("hide") : target.collapse("show");
+        });
+    });
+</script>
+
