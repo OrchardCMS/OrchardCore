@@ -18,8 +18,8 @@ namespace OrchardCore.Apis.GraphQL.Queries
                         Name = "contentItemId", Description = "content item id" }
                 );
 
-            Resolver = new FuncFieldResolver<object, Task<object>>(async (context) => {
-                return await contentManager.GetAsync(context.GetArgument<string>("contentItemId"));
+            Resolver = new SlowFuncFieldResolver<object, Task<ContentItem>>((context) => {
+                return contentManager.GetAsync(context.GetArgument<string>("contentItemId"));
             });
         }
     }

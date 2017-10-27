@@ -1,16 +1,11 @@
-using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Instrumentation;
-using GraphQL.Resolvers;
 using GraphQL.Types;
-using GraphQL.Utilities;
 using GraphQL.Validation.Complexity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace OrchardCore.Apis.Controllers
 {
@@ -33,31 +28,9 @@ namespace OrchardCore.Apis.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAsync(string query)
+        public Task<IActionResult> GetAsync(string query)
         {
-
-            var printer = new SchemaPrinter(_schema);
-            var t = printer.Print();
-            var executionOptions = new ExecutionOptions { Schema = _schema, Query = query };
-
-            try
-            {
-                var result = await _documentExecuter.ExecuteAsync(executionOptions);
-
-                if (result.Errors?.Count > 0)
-                {
-                    _logger.LogError("GraphQL errors: {0}", result.Errors);
-                    return BadRequest(result);
-                }
-
-                _logger.LogDebug("GraphQL execution result: {result}", JsonConvert.SerializeObject(result.Data));
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Document exexuter exception", ex);
-                return BadRequest(ex);
-            }
+            return PostAsync(new GraphQLQuery { Query = query, Variables = "" });
         }
 
         [HttpPost]
@@ -85,7 +58,7 @@ namespace OrchardCore.Apis.Controllers
                 _.ComplexityConfiguration = new ComplexityConfiguration { MaxDepth = 15 };
                 _.FieldMiddleware.Use<InstrumentFieldsMiddleware>();
 
-            });
+            }).ConfigureAwait(false);
 
 
             return Json(result);
@@ -93,27 +66,11 @@ namespace OrchardCore.Apis.Controllers
     }
 
 
- public class GraphQLQuery
-{
-    public string OperationName { get; set; }
-    public string NamedQuery { get; set; }
-    public string Query { get; set; }
-    public string Variables { get; set; }
-}
-
-public static class ObjectGraphTypeExtensions
+    public class GraphQLQuery
     {
-        public static void Field(
-            this IObjectGraphType obj,
-            string name,
-            IGraphType type,
-            Func<ResolveFieldContext, object> resolve = null)
-        {
-            var field = new FieldType();
-            field.Name = name;
-            field.ResolvedType = type;
-            field.Resolver = resolve != null ? new FuncFieldResolver<object>(resolve) : null;
-            obj.AddField(field);
-        }
+        public string OperationName { get; set; }
+        public string NamedQuery { get; set; }
+        public string Query { get; set; }
+        public string Variables { get; set; }
     }
 }

@@ -30,7 +30,7 @@ namespace OrchardCore.Apis.GraphQL.Mutations
 
             Type = typeof(ContentItemType);
 
-            Resolver = new FuncFieldResolver<object, Task<object>>(async (context) => {
+            Resolver = new SlowFuncFieldResolver<object, Task<object>>(async (context) => {
                 var contentItemFabrication = context.GetArgument<ContentItem>("contentItem");
 
                 var contentParts = JObject.Parse(

@@ -118,6 +118,7 @@ namespace OrchardCore.GraphQL.Client
 
         private List<string> _keys = new List<string>();
         private IDictionary<string, string> _queryFields = new Dictionary<string, string>();
+        private IDictionary<string, string> _nestedQueryFields = new Dictionary<string, string>();
         private List<ContentTypeQueryResourceBuilder> _nested = new List<ContentTypeQueryResourceBuilder>();
 
         public ContentTypeQueryResourceBuilder(string contentType)
@@ -147,17 +148,28 @@ namespace OrchardCore.GraphQL.Client
 
         public ContentTypeQueryResourceBuilder WithNestedQueryField(string fieldName, string fieldValue)
         {
-            throw new Exception("this hsoudl be used for nested objects maybe using a labda");
-            //return this;
+            _nestedQueryFields.Add(fieldName, fieldValue);
+            return this;
         }
 
         internal string Build()
         {
             var sb = new StringBuilder(_contentType.ToGraphQLStringFormat());
 
-            if (_queryFields.Count > 0)
+            if (_queryFields.Count > 0 || _nestedQueryFields.Count > 0)
             {
                 sb.Append("(");
+
+                for (var i = 0; i < _nestedQueryFields.Count; i++)
+                {
+                    var item = _nestedQueryFields.ElementAt(i);
+                    sb.AppendFormat("{0}: {{ {1} }}", item.Key.ToGraphQLStringFormat(), item.Value);
+
+                    if (i < (_nestedQueryFields.Count - 1))
+                    {
+                        sb.Append(" ");
+                    }
+                }
 
                 for (var i = 0; i < _queryFields.Count; i++)
                 {

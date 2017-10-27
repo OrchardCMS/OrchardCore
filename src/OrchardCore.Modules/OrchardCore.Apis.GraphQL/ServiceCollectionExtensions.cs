@@ -1,4 +1,5 @@
 using GraphQL;
+using GraphQL.Http;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Mutations;
@@ -11,7 +12,8 @@ namespace OrchardCore.Apis.GraphQL
         public static IServiceCollection AddGraphQL(this IServiceCollection services)
         {
             services.AddScoped<IDependencyResolver, InternalDependencyResolver>();
-            services.AddScoped<IDocumentExecuter, DocumentExecuter>();
+            services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
+            services.AddSingleton<IDocumentWriter, DocumentWriter>();
 
             //services.AddGraphQueryType<TitlePartType>();
             //services.AddGraphQueryType<AutoRoutePartType>();
