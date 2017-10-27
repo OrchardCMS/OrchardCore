@@ -37,6 +37,7 @@ namespace OrchardCore.Flows.Drivers
             return Shape<BagPartViewModel>("BagPart", m =>
             {
                 m.BagPart = bagPart;
+                m.ContentItems = bagPart.ContentItems;
                 m.BuildPartDisplayContext = context;
                 m.Settings = context.TypePartDefinition.Settings.ToObject<BagPartSettings>();
             })
