@@ -145,6 +145,12 @@ namespace OrchardCore.GraphQL.Client
             return this;
         }
 
+        public ContentTypeQueryResourceBuilder WithNestedQueryField(string fieldName, string fieldValue)
+        {
+            throw new Exception("this hsoudl be used for nested objects maybe using a labda");
+            //return this;
+        }
+
         internal string Build()
         {
             var sb = new StringBuilder(_contentType.ToGraphQLStringFormat());
