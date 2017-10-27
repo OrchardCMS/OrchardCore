@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using GraphQL;
@@ -7,21 +9,21 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Apis.GraphQL.Types
 {
-    public class ContentPartAutoRegisteringObjectGraphType : ObjectGraphType
+    public class ContentPartAutoRegisteringObjectGraphType : InputObjectGraphType, IObjectGraphType
     {
         public ContentPartAutoRegisteringObjectGraphType(ContentPart contentPart)
         {
             var type = contentPart.GetType();
 
             Name = type.Name;
-
+            
             var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                             .Where(p => p.PropertyType.GetTypeInfo().IsValueType || p.PropertyType == typeof(string))
                             .Where(p => !p.PropertyType.IsEnum);
 
             foreach (var propertyInfo in properties)
             {
-                var graphType = propertyInfo.PropertyType.GetGraphTypeFromType(propertyInfo.PropertyType.IsNullable());
+                var graphType = propertyInfo.PropertyType.GetGraphTypeFromType(true);// propertyInfo.PropertyType.IsNullable());
 
                 var field = new FieldType
                 {
@@ -40,6 +42,14 @@ namespace OrchardCore.Apis.GraphQL.Types
             }
 
             IsTypeOf = obj => obj.GetType() == type;
+        }
+
+        public Func<object, bool> IsTypeOf { get; set; }
+        public IEnumerable<Type> Interfaces { get; set; } = Enumerable.Empty<Type>();
+        public IEnumerable<IInterfaceGraphType> ResolvedInterfaces { get; set; } = Enumerable.Empty<IInterfaceGraphType>();
+
+        public void AddResolvedInterface(IInterfaceGraphType graphType)
+        {
         }
     }
 }

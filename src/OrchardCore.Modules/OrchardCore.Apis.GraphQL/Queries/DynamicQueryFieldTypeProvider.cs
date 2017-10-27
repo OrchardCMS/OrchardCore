@@ -84,15 +84,6 @@ namespace OrchardCore.Apis.GraphQL.Queries
                         // http://facebook.github.io/graphql/October2016/#sec-Input-Object-Values
                         queryArguments.Add(new QueryArgument(graphType) { Name = name.ToGraphQLStringFormat() });
 
-                        //foreach (var field in graphType.Fields)
-                        //{
-                        //    var fieldName = field.Name.ToGraphQLStringFormat(); // title from titlePart
-
-                        //    var searchFieldName = partName.ToGraphQLStringFormat() + "_" + fieldName;
-
-                        //    queryArguments.Add(new QueryArgument(graphType) { Name = searchFieldName });
-                        //}
-
                         /*
                             query {
                                 blog(autoroutePart: { alias: "/blah" } ) {

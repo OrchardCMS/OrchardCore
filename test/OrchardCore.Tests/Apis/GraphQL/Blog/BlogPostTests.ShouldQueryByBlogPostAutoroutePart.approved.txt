@@ -1,0 +1,11 @@
+{
+  "data": {
+    "blogPost": [
+      {
+        "titlePart": {
+          "title": "Some sorta blogpost!"
+        }
+      }
+    ]
+  }
+}
