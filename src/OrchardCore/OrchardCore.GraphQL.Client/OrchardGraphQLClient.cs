@@ -174,7 +174,7 @@ namespace OrchardCore.GraphQL.Client
                 for (var i = 0; i < _queryFields.Count; i++)
                 {
                     var item = _queryFields.ElementAt(i);
-                    sb.AppendFormat("{0}: {{ {1} }}", item.Key.ToGraphQLStringFormat(), item.Value);
+                    sb.AppendFormat("{0}: \"{1}\"", item.Key.ToGraphQLStringFormat(), item.Value);
 
                     if (i < (_queryFields.Count - 1))
                     {
