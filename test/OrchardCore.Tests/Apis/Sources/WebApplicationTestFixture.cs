@@ -104,7 +104,7 @@ namespace Microsoft.AspNetCore.Mvc.Testing
             var depsFile = new FileInfo(Path.Combine(AppContext.BaseDirectory, depsFileName));
             if (!depsFile.Exists)
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException($"MissingDepsFile({depsFile.FullName},{Path.GetFileName(depsFile.FullName)})");
             }
         }
 

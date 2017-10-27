@@ -96,7 +96,7 @@ namespace OrchardCore.Apis.GraphQL.Queries
                     }
                 }
 
-                var query = new ContentItemsQuery(_contentManager, _session)
+                var query = new ContentItemsQuery(_contentManager, _contentParts, _session)
                 {
                     Name = typeDefinition.Name,
                     ResolvedType = new ListGraphType(typeType)

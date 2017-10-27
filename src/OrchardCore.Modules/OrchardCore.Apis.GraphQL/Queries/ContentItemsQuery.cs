@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using OrchardCore.Apis.GraphQL.Types;
@@ -12,6 +14,7 @@ namespace OrchardCore.Apis.GraphQL.Queries
     public class ContentItemsQuery : QueryFieldType
     {
         public ContentItemsQuery(IContentManager contentManager,
+            IEnumerable<ContentPart> contentParts,
             ISession session)
         {
             Name = "ContentItems";
@@ -76,7 +79,37 @@ namespace OrchardCore.Apis.GraphQL.Queries
                     query = query.Where(q => q.ContentItemVersionId == value);
                 }
 
-                return await query.ListAsync();
+                var contentItems = await query.ListAsync();
+
+                foreach (var argument in context.Arguments)
+                {
+                    if (argument.Value != null)
+                    {
+                        var nestedValues = argument.Value as IDictionary<string, object>;
+
+                        if (nestedValues != null)
+                        {
+                            var contentPart = contentParts.First(cp => cp.GetType().Name.ToGraphQLStringFormat() == argument.Key);
+                            var contentPartType = contentPart.GetType();
+
+                            foreach (var nestedValue in nestedValues)
+                            {
+                                contentItems = contentItems.Where(ci => {
+                                    var foundPart = ci
+                                        .Get(contentPartType, contentPartType.Name)
+                                        .AsDictionary()
+                                        .First(k => k.Key.ToGraphQLStringFormat() == nestedValue.Key);
+
+                                    return foundPart.Value.Equals(nestedValue.Value);
+                                });
+                            }
+                        }
+                    }
+                }
+
+                var items = contentItems.ToList();
+
+                return items;
             });
         }
     }
