@@ -88,7 +88,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         {
             if (input.ToObjectValue() is Shape shape)
             {
-                shape.Metadata.Type = arguments.At(0).ToStringValue();
+                shape.Metadata.Type = arguments["type"].Or(arguments.At(0)).ToStringValue();
             }
 
             return Task.FromResult(input);
@@ -98,7 +98,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         {
             if (input.ToObjectValue() is Shape shape)
             {
-                shape.Metadata.DisplayType = arguments.At(0).ToStringValue();
+                shape.Metadata.DisplayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
             }
 
             return Task.FromResult(input);
@@ -108,7 +108,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         {
             if (input.ToObjectValue() is Shape shape)
             {
-                shape.Metadata.Position = arguments.At(0).ToStringValue();
+                shape.Metadata.Position = arguments["position"].Or(arguments.At(0)).ToStringValue();
             }
 
             return Task.FromResult(input);
@@ -118,7 +118,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         {
             if (input.ToObjectValue() is Shape shape)
             {
-                shape.Metadata.Tab = arguments.At(0).ToStringValue();
+                shape.Metadata.Tab = arguments["tab"].Or(arguments.At(0)).ToStringValue();
             }
 
             return Task.FromResult(input);
@@ -128,7 +128,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         {
             if (input.ToObjectValue() is Shape shape && shape.Items != null)
             {
-                shape.Remove(arguments.At(0).ToStringValue());
+                shape.Remove(arguments["item"].Or(arguments.At(0)).ToStringValue());
             }
 
             return Task.FromResult(input);
