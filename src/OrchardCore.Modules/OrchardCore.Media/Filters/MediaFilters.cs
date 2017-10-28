@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -33,7 +34,7 @@ namespace OrchardCore.Media.Filters
 
             foreach (var name in arguments.Names)
             {
-                imgTag += $" {name}=\"{arguments[name].ToStringValue()}\"";
+                imgTag += $" {name.Replace("_", "-")}=\"{arguments[name].ToStringValue()}\"";
             }
 
             imgTag += " />";
