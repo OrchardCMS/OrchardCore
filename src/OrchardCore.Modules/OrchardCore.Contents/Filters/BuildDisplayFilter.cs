@@ -25,9 +25,10 @@ namespace OrchardCore.Contents.Filters
                 throw new ArgumentException("Services missing while invoking 'build_display'");
             }
 
+            var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
             var displayManager = ((IServiceProvider)services).GetRequiredService<IContentItemDisplayManager>();
 
-            return FluidValue.Create(await displayManager.BuildDisplayAsync(contentItem, null, arguments.At(0).ToStringValue()));
+            return FluidValue.Create(await displayManager.BuildDisplayAsync(contentItem, null, displayType));
         }
     }
 }
