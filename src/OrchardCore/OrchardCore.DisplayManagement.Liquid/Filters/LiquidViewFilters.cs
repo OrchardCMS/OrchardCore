@@ -146,6 +146,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 foreach (var name in arguments.Names)
                 {
                     var argument = arguments[name];
+                    var propertyName = LowerKebabToPascalCase(name);
 
                     if (argument.Type == FluidValues.Array)
                     {
@@ -157,25 +158,25 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
                             if (type == FluidValues.String)
                             {
-                                obj[LowerKebabToPascalCase(name)] = values.Select(v => v.ToStringValue());
+                                obj[propertyName] = values.Select(v => v.ToStringValue());
                             }
                             else if (type == FluidValues.Number)
                             {
-                                obj[LowerKebabToPascalCase(name)] = values.Select(v => v.ToNumberValue());
+                                obj[propertyName] = values.Select(v => v.ToNumberValue());
                             }
                             else if (type == FluidValues.Boolean)
                             {
-                                obj[LowerKebabToPascalCase(name)] = values.Select(v => v.ToBooleanValue());
+                                obj[propertyName] = values.Select(v => v.ToBooleanValue());
                             }
                             else
                             {
-                                obj[LowerKebabToPascalCase(name)] = values.Select(v => v.ToObjectValue());
+                                obj[propertyName] = values.Select(v => v.ToObjectValue());
                             }
                         }
                     }
                     else
                     {
-                        obj[LowerKebabToPascalCase(name)] = argument.ToObjectValue();
+                        obj[propertyName] = argument.ToObjectValue();
                     }
                 }
             }
