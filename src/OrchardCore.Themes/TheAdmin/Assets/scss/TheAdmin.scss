@@ -19,6 +19,8 @@ $link-padding-left: 16px !default;
         @extend .bg-faded;
         @extend .navbar, .navbar-toggleable-md, .navbar-light, .fixed-top;
         min-height: $top-nav-height;
+        border-bottom: $border-content;
+        background-color: rgba(57,109,53,.4);
     }
 
     .ta-navbar-brand {
@@ -139,7 +141,6 @@ $link-padding-left: 16px !default;
             //border-left: 4px solid $gray-dark;
             color: $gray-lightest !important;
         }
-
         // Current category
         li.dropdown.active {
             background-color: $gray-dark;
