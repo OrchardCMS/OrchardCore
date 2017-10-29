@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -144,7 +145,38 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
                 foreach (var name in arguments.Names)
                 {
-                    obj[LowerKebabToPascalCase(name)] = arguments[name].ToObjectValue();
+                    var argument = arguments[name];
+
+                    if (argument.Type == FluidValues.Array)
+                    {
+                        var values = argument.Enumerate();
+
+                        if (values.Count() > 0)
+                        {
+                            var type = values.First().Type;
+
+                            if (type == FluidValues.String)
+                            {
+                                obj[LowerKebabToPascalCase(name)] = values.Select(v => v.ToStringValue());
+                            }
+                            else if (type == FluidValues.Number)
+                            {
+                                obj[LowerKebabToPascalCase(name)] = values.Select(v => v.ToNumberValue());
+                            }
+                            else if (type == FluidValues.Boolean)
+                            {
+                                obj[LowerKebabToPascalCase(name)] = values.Select(v => v.ToBooleanValue());
+                            }
+                            else
+                            {
+                                obj[LowerKebabToPascalCase(name)] = values.Select(v => v.ToObjectValue());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        obj[LowerKebabToPascalCase(name)] = argument.ToObjectValue();
+                    }
                 }
             }
 
