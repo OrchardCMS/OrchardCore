@@ -6046,7 +6046,7 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
 .ta-wrapper .ta-navbar-top {
   min-height: 55px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  background-color: rgba(57, 109, 53, 0.4); }
+  background-color: #b0c4b1; }
 
 .ta-wrapper .ta-navbar-brand {
   margin-left: 4px; }

@@ -20,7 +20,7 @@ $link-padding-left: 16px !default;
         @extend .navbar, .navbar-toggleable-md, .navbar-light, .fixed-top;
         min-height: $top-nav-height;
         border-bottom: $border-content;
-        background-color: rgba(57,109,53,.4);
+        background-color: #b0c4b1;
     }
 
     .ta-navbar-brand {
