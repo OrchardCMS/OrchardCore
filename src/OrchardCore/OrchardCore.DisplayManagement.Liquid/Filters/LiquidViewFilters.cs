@@ -141,8 +141,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
             if (obj != null)
             {
-                var properties = new Dictionary<string, object>();
-
                 foreach (var name in arguments.Names)
                 {
                     var argument = arguments[name];

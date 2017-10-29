@@ -116,9 +116,9 @@ namespace OrchardCore.DisplayManagement.Liquid
 
                 foreach (var item in shape.Items)
                 {
-                    // The prefix is the Name of the part. It also works for named parts,
+                    // It also works for named parts,
                     // so we can access Model.Content.MyNamedPart
-                    if (item is IShape itemShape && itemShape.Metadata.Prefix == n)
+                    if (item is IShape itemShape && itemShape.Metadata.Name == n)
                     {
                         return item;
                     }
