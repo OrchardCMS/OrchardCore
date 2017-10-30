@@ -19,6 +19,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             filters.AddAsyncFilter("new_shape", NewShape);
             filters.AddAsyncFilter("shape_string", ShapeString);
             filters.AddAsyncFilter("clear_alternates", ClearAlternates);
+            filters.AddAsyncFilter("add_alternates", AddAlternates);
+            filters.AddAsyncFilter("clear_classes", ClearClasses);
+            filters.AddAsyncFilter("add_classes", AddClasses);
             filters.AddAsyncFilter("shape_type", ShapeType);
             filters.AddAsyncFilter("display_type", DisplayType);
             filters.AddAsyncFilter("shape_position", ShapePosition);
@@ -80,6 +83,52 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             if(input.ToObjectValue() is Shape shape && shape.Metadata.Alternates.Count > 0)
             {
                 shape.Metadata.Alternates.Clear();
+            }
+
+            return Task.FromResult(input);
+        }
+
+        public static Task<FluidValue> AddAlternates(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            if (input.ToObjectValue() is Shape shape)
+            {
+                var alternates = arguments["alternates"].Or(arguments.At(0));
+
+                if (alternates.Type == FluidValues.Array)
+                {
+                    foreach (var value in alternates.Enumerate())
+                    {
+                        shape.Metadata.Alternates.Add(value.ToStringValue());
+                    }
+                }
+            }
+
+            return Task.FromResult(input);
+        }
+
+        public static Task<FluidValue> ClearClasses(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            if (input.ToObjectValue() is Shape shape && shape.Classes.Count > 0)
+            {
+                shape.Classes.Clear();
+            }
+
+            return Task.FromResult(input);
+        }
+
+        public static Task<FluidValue> AddClasses(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            if (input.ToObjectValue() is Shape shape)
+            {
+                var classes = arguments["classes"].Or(arguments.At(0));
+
+                if (classes.Type == FluidValues.Array)
+                {
+                    foreach (var value in classes.Enumerate())
+                    {
+                        shape.Classes.Add(value.ToStringValue());
+                    }
+                }
             }
 
             return Task.FromResult(input);
