@@ -297,6 +297,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Apis.GraphQL", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Apis.JsonApi", "src\OrchardCore.Modules\OrchardCore.Apis.JsonApi\OrchardCore.Apis.JsonApi.csproj", "{1D2659BF-FF67-426B-9DFE-EC28E2FBBF8B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.JsonApi.Client", "src\OrchardCore\OrchardCore.JsonApi.Client\OrchardCore.JsonApi.Client.csproj", "{BF58D531-C088-46B2-8472-1266E801E7A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -831,6 +833,10 @@ Global
 		{1D2659BF-FF67-426B-9DFE-EC28E2FBBF8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D2659BF-FF67-426B-9DFE-EC28E2FBBF8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D2659BF-FF67-426B-9DFE-EC28E2FBBF8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF58D531-C088-46B2-8472-1266E801E7A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF58D531-C088-46B2-8472-1266E801E7A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF58D531-C088-46B2-8472-1266E801E7A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF58D531-C088-46B2-8472-1266E801E7A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -981,6 +987,7 @@ Global
 		{A37F79B8-904B-4365-AF20-3F573938C89D} = {156244E0-3BB3-4843-9D2D-1B5C1A47F236}
 		{CB30E71D-AA29-411D-A8D9-D5C27041C622} = {156244E0-3BB3-4843-9D2D-1B5C1A47F236}
 		{1D2659BF-FF67-426B-9DFE-EC28E2FBBF8B} = {156244E0-3BB3-4843-9D2D-1B5C1A47F236}
+		{BF58D531-C088-46B2-8472-1266E801E7A5} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
