@@ -1,23 +1,13 @@
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display;
 
 namespace OrchardCore.Apis.GraphQL.Mutations
 {
     public class DeleteContentItemMutation : MutationFieldType
     {
-        public DeleteContentItemMutation(IContentManager contentManager,
-            IContentItemDisplayManager contentDisplay,
-            IModelMetadataProvider metadataProvider,
-            IModelBinderFactory modelBinderFactory,
-            IHttpContextAccessor httpContextAccessor,
-            IObjectModelValidator objectModelValidator)
+        public DeleteContentItemMutation(IContentManager contentManager)
         {
             Name = "DeleteContentItem";
 
@@ -25,7 +15,7 @@ namespace OrchardCore.Apis.GraphQL.Mutations
                 new QueryArgument<StringGraphType> { Name = "contentItemId" }
             );
 
-            Type = typeof(ContentItemType);
+            Type = typeof(DeletionStatus);
 
             Resolver = new SlowFuncFieldResolver<object, Task<DeletionStatus>>(async (context) => {
                 var contentItemId = context.GetArgument<string>("contentItemId");
@@ -39,7 +29,8 @@ namespace OrchardCore.Apis.GraphQL.Mutations
         }
     }
 
-    public class DeletionStatus {
+    public class DeletionStatus : GraphType
+    {
         public string Status { get; set; }
     }
 }

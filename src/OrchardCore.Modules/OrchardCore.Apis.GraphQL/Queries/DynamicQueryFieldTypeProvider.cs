@@ -70,6 +70,11 @@ namespace OrchardCore.Apis.GraphQL.Queries
                             Name = name,
                             ResolvedType = graphType,
                             Resolver = new FuncFieldResolver<object>(context => {
+                                if (context.Source == null)
+                                {
+                                    return null;
+                                }
+
                                 var contentPartType = (Type)context.FieldDefinition.Metadata["contentPartType"];
 
                                 return ((ContentItem)context.Source).Get(contentPartType, contentPartType.Name);

@@ -34,7 +34,14 @@ namespace OrchardCore.Apis.GraphQL.Queries
             Resolver = new SlowFuncFieldResolver<Task<IEnumerable<ContentItem>>>(async context => {
                 if (context.HasPopulatedArgument("contentItemId"))
                 {
-                    return new[] { await contentManager.GetAsync(context.GetArgument<string>("contentItemId")) };
+                    var contentItem = await contentManager.GetAsync(context.GetArgument<string>("contentItemId"));
+
+                    if (contentItem == null)
+                    {
+                        return Enumerable.Empty<ContentItem>();
+                    }
+
+                    return new[] { contentItem };
                 }
 
                 var isPublished = context.GetArgument<bool>("published");

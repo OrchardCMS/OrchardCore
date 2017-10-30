@@ -76,7 +76,7 @@ namespace OrchardCore.GraphQL.Client
         public async Task DeleteAsync(string blogPostContentItemId)
         {
             var json = @"{
-  ""query"": ""mutation DeleteContentItem { deleteContentItem( contentItemId: \"""+ blogPostContentItemId + @"\"" ) { status }"",
+  ""query"": ""mutation DeleteContentItem { deleteContentItem( contentItemId: \"""+ blogPostContentItemId + @"\"" ) { status } }"",
   ""variables"": """" }";
 
             var response = await _client.PostJsonAsync("graphql", json);
