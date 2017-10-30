@@ -127,8 +127,62 @@ namespace OrchardCore.Tests.Apis.GraphQL
                         .WithNestedField("TitlePart")
                         .AddField("Title");
                 });
-            //body = @"query { blogPost( autoroutePart: ""{path: \""Path1\""}"" ) { titlePart { title } } }"
+            
             this.Assent(result.ToString());
+        }
+
+        [Fact]
+        public async Task ShouldDeleteBlogPost()
+        {
+            var blogPostContentItemId = await _context
+                .Client
+                .Content
+                .CreateAsync("BlogPost", builder =>
+                {
+                    builder
+                        .WithContentPart("TitlePart")
+                        .AddField("Title", "Some sorta blogpost!");
+
+                    builder
+                        .WithContentPart("ContainedPart")
+                        .AddField("ListContentItemId", _context.BlogContentItemId);
+                });
+
+            var result = await _context
+                .Client
+                .Content
+                .QueryAsync("BlogPost", builder =>
+                {
+                    builder
+                        .WithQueryField("contentItemId", blogPostContentItemId);
+
+                    builder
+                        .WithNestedField("TitlePart")
+                        .AddField("Title");
+                });
+
+            Assert.True(result["data"]["blogPost"].HasValues);
+
+            await _context
+                .Client
+                .Content
+                .DeleteAsync(blogPostContentItemId);
+
+            var result2 = await _context
+                .Client
+                .Content
+                .QueryAsync("BlogPost", builder =>
+                {
+                    builder
+                        .WithQueryField("contentItemId", blogPostContentItemId);
+
+                    builder
+                        .WithNestedField("TitlePart")
+                        .AddField("Title");
+                });
+
+
+            Assert.False(result2["data"]["blogPost"].HasValues);
         }
     }
 }

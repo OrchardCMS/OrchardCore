@@ -72,6 +72,20 @@ namespace OrchardCore.GraphQL.Client
 
             return JObject.Parse(await response.Content.ReadAsStringAsync());
         }
+
+        public async Task DeleteAsync(string blogPostContentItemId)
+        {
+            var json = @"{
+  ""query"": ""mutation DeleteContentItem { deleteContentItem( contentItemId: \"""+ blogPostContentItemId + @"\"" ) { status }"",
+  ""variables"": """" }";
+
+            var response = await _client.PostJsonAsync("graphql", json);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(await response.Content.ReadAsStringAsync());
+            }
+        }
     }
 
     public class ContentTypeCreateResourceBuilder

@@ -8,6 +8,7 @@ namespace OrchardCore.Apis.GraphQL.Mutations
         public static void AddGraphQLMutations(this IServiceCollection services) {
             services.AddScoped<MutationsSchema>();
             services.AddGraphMutationType<CreateContentItemMutation>();
+            services.AddGraphMutationType<DeleteContentItemMutation>();
             services.AddScoped<ContentItemInputType>();
         }
 
