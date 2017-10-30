@@ -79,6 +79,14 @@ namespace OrchardCore.Email.Services
                     }
                 }
 
+                if ( emailMessage.Attachments != null && emailMessage.Attachments.Count > 0 )
+                {
+                    foreach ( var attachment in emailMessage.Attachments )
+                    {
+                        emailMessage.Attachments.Add( attachment );
+                    }
+                }
+
                 return GetClient().SendMailAsync( mailMessage );
             }
             catch ( Exception e )

@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Net.Mail;
+
 namespace OrchardCore.Email.Models
 {
     public class EmailMessage
@@ -18,5 +21,8 @@ namespace OrchardCore.Email.Models
         /// Comma or semicolon separated values.
         /// </summary>
         public string Cc { get; set; }
+
+        public List<Attachment> Attachments { get; set; }
     }
+    
 }
