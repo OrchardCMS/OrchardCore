@@ -1,11 +1,13 @@
-﻿using System.Net.Http;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Apis.Client.Abstractions;
 
 namespace OrchardCore.GraphQL.Client
 {
-    public class TenantResource {
+    public class TenantResource : ITenantResource
+    {
         private HttpClient _client;
 
         public TenantResource(HttpClient client)
