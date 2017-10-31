@@ -194,7 +194,37 @@ Removes any alternates from an input shape.
 
 Input
 ```
-{{ my_shape | clean_alternates }}
+{{ my_shape | clear_alternates }}
+
+```
+
+### add_alternates
+
+Adds alternates to an input shape.
+
+Input
+```
+{{ my_shape | add_alternates: "alternate1 alternate2" }}
+
+```
+
+### clear_classes
+
+Removes any classes from an input shape.
+
+Input
+```
+{{ my_shape | clear_classes }}
+
+```
+
+### add_classes
+
+Adds classes to an input shape.
+
+Input
+```
+{{ my_shape | add_classes: "class1 class2" }}
 
 ```
 
