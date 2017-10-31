@@ -2,7 +2,16 @@
 
 
 <script asp-name="bootstrap" version="4.0.0" use-cdn="true" at="Foot"></script>
+<style asp-name="font-awesome" use-cdn="true"></style>
+<style>
+    .card-header i {
+        transition: transform 0.3s;
+    }
 
+    .card-header.on i {
+        transform: rotate(90deg);
+    }
+</style>
 
 
 <fieldset class="form-group" asp-validation-class-for="DefaultSender">
@@ -58,9 +67,11 @@
 
 
 
-<div class="card">
-    <div class="card-header">@T["Test those settings"]</div>
-    <div class="card-block">
+<div class="card mb-5">
+    <div class="card-header" data-toggle="collapse" data-target=".card-block">
+        <i class="fa fa-chevron-right" aria-hidden="true"></i> @T["Test Settings"]
+    </div>
+    <div class="card-block collapse">
         <div class="form-group">
             <label for="emailtestto">@T["To"]</label>
             <input type="text" id="emailtestto" class="form-control" />
@@ -188,10 +199,21 @@
 
 <script type="text/javascript" at="Foot">
     $(function() {
+        // this is used in place of data-toggle=collapse because collpase take the
+        // value of checkbox as show/hide, instead of just toggle.
         $(document).on("click", "[data-toggle='collapse-toggle']", function(event) {
             var target = $($(this).data("target"));
             target.hasClass("show") ? target.collapse("hide") : target.collapse("show");
         });
+
+        $(".card-block")
+            .on("show.bs.collapse", function() {
+                $(this).siblings(".card-header").addClass("on");
+            })
+            .on("hide.bs.collapse", function() {
+                $(this).siblings(".card-header").removeClass("on");
+            })
+        ;
     });
 </script>
 
