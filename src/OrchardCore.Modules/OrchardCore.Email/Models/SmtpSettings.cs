@@ -1,6 +1,9 @@
+using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Entities;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Models
@@ -12,7 +15,7 @@ namespace OrchardCore.Email.Models
         public string DefaultSender { get; set; }
         [Required( AllowEmptyStrings = false )]
         public string Host { get; set; }
-        [Range(0,65535)]
+        [Range( 0, 65535 )]
         public int Port { get; set; } = 25;
         public bool EnableSsl { get; set; }
         public bool RequireCredentials { get; set; }
@@ -25,10 +28,16 @@ namespace OrchardCore.Email.Models
     public class SmtpSettingsConfiguration : IConfigureOptions<SmtpSettings>
     {
         private readonly ISiteService _site;
+        private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly ShellSettings _shellSettings;
 
-        public SmtpSettingsConfiguration(ISiteService site)
+        public SmtpSettingsConfiguration(ISiteService site,
+            IDataProtectionProvider dataProtectionProvider,
+            ShellSettings shellSettings)
         {
             _site = site;
+            _dataProtectionProvider = dataProtectionProvider;
+            _shellSettings = shellSettings;
         }
 
         public void Configure(SmtpSettings options)
@@ -44,7 +53,12 @@ namespace OrchardCore.Email.Models
             options.RequireCredentials = settings.RequireCredentials;
             options.UseDefaultCredentials = settings.UseDefaultCredentials;
             options.UserName = settings.UserName;
-            options.Password = settings.Password;
+            // decrypt the password
+            if ( !String.IsNullOrWhiteSpace( settings.Password ) )
+            {
+                var protector = _dataProtectionProvider.CreateProtector( nameof( SmtpSettingsConfiguration ), _shellSettings.Name );
+                options.Password = protector.Unprotect( settings.Password );
+            }
         }
     }
 }

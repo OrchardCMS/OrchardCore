@@ -68,6 +68,50 @@ namespace OrchardCore.Email.Controllers
 
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SmtpSavedSettingsTest(TestSmtpOptions testSettings, [FromServices]ISmtpService smtp)
+        {
+            if ( !await _authorizationService.AuthorizeAsync( User, Permissions.ManageEmailSettings ) )
+            {
+                return Unauthorized();
+            }
+
+            var logger = new FakeLogger<SmtpService>();
+
+            if ( !ModelState.IsValid )
+            {
+                logger.LogError( "Invalid settings" );
+                return Json( new { error = logger.Message } );
+            }
+
+            
+            try
+            {
+                await smtp.SendAsync( new EmailMessage
+                {
+                    From = testSettings.From,
+                    Recipients = testSettings.To,
+                    Cc = testSettings.Cc,
+                    Bcc = testSettings.Bcc,
+                    ReplyTo = testSettings.ReplyTo,
+                    Subject = testSettings.Subject,
+                    Body = testSettings.Body,
+                } );
+
+
+                if ( !String.IsNullOrEmpty( logger.Message ) )
+                {
+                    return Json( new { error = logger.Message } );
+                }
+
+                return Json( new { status = T["Message sent."].Value } );
+            }
+            catch ( Exception e )
+            {
+                return Json( new { error = e.Message } );
+            }
+        }
+
 
         private class FakeLogger<T> : ILogger<T>
         {

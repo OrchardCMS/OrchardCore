@@ -1,8 +1,10 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.DataProtection;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Models;
 using OrchardCore.Entities.DisplayManagement;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Drivers
@@ -10,6 +12,14 @@ namespace OrchardCore.Email.Drivers
     public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSettings>
     {
         public const string GroupId = "SmtpSettings";
+        private readonly ShellSettings _shellSettings;
+        private readonly IDataProtectionProvider _dataProtectionProvider;
+
+        public SmtpSettingsDisplayDriver(ShellSettings shellSettings, IDataProtectionProvider dataProtectionProvider)
+        {
+            _shellSettings = shellSettings;
+            _dataProtectionProvider = dataProtectionProvider;
+        }
 
         public override IDisplayResult Edit(SmtpSettings section)
         {
@@ -36,6 +46,11 @@ namespace OrchardCore.Email.Drivers
                 if ( string.IsNullOrWhiteSpace(section.Password))
                 {
                     section.Password = previousPassword;
+                } else
+                {
+                    // encrypt the password
+                    var protector = _dataProtectionProvider.CreateProtector( nameof( SmtpSettingsConfiguration ), _shellSettings.Name );
+                    section.Password = protector.Protect( section.Password );
                 }
             }
 

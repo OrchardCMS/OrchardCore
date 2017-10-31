@@ -86,7 +86,8 @@
             <textarea id="emailtestbody" class="form-control" rows="5"></textarea>
         </div>
         <div>
-            <button type="button" id="emailtestsend" class="button grey">@T["Send"]</button>
+            <button type="button" id="emailtestsend" class="button grey">@T["Send with Above Settings"]</button>
+            <button type="button" id="emailtestsavedsend" class="button grey">@T["Send with Saved Settings"]</button>
         </div>
         <div id="emailtesterror" class="message-Error" style="display:none;"></div>
         <div id="emailtestinfo" class="message-Information" style="display:none;"></div>
@@ -96,6 +97,7 @@
     <script type="text/javascript" at="Foot">
             $(function () {
                 var url = "@Url.Action( "SmtpSettingsTest", "Admin", new {area = "OrchardCore.Email"})",
+                    urlsaved = "@Url.Action( "SmtpSavedSettingsTest", "Admin", new {area = "OrchardCore.Email"})",
                     error = $("#emailtesterror"),
                     info = $("#emailtestinfo"),
                     from = $("#@Html.IdFor(m => m.DefaultSender)"),
@@ -115,6 +117,40 @@
 
                 $("#emailtestsend").click(function () {
                     $.post(url, {
+                        defaultSender: from.val(),
+                        from: from.val(),
+                        host: host.val(),
+                        port: port.val(),
+                        enableSsl: enableSsl.prop("checked"),
+                        requireCredentials: requireCredentials.prop("checked"),
+                        useDefaultCredentials: useDefaultCredentials.filter(':checked').val(),
+                        userName: userName.val(),
+                        password: password.val(),
+                        to: to.val(),
+                        subject: subject.val(),
+                        body: body.val(),
+                        replyto: replyto.val(),
+                        bcc: bcc.val(),
+                        cc: cc.val(),
+                        __RequestVerificationToken: to.closest("form").find("input[name=__RequestVerificationToken]").val()
+                    })
+                    .fail(function (data) {
+                        error.html(data.statusText).show();
+                        info.hide();
+                    })
+                    .done(function (data) {
+                        if (data.error) {
+                            error.html(data.error).show();
+                            info.hide();
+                        } else {
+                            info.html(data.status).show();
+                            error.hide();
+                        }
+                    });
+                });
+
+                $("#emailtestsavedsend").click(function () {
+                    $.post(urlsaved, {
                         defaultSender: from.val(),
                         from: from.val(),
                         host: host.val(),
