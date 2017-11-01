@@ -24,8 +24,8 @@ This template is called when displaying a content item with the `Detail` display
 
 | Template | Filename|
 | --------- | ------------ |
-| Content__BlogPost | Content-BlogPost.cshtml |
-| Content__Article | Content-Article.cshtml |
+| `Content__BlogPost` | Content-BlogPost.cshtml |
+| `Content__Article` | Content-Article.cshtml |
 
 #### Available properties
 
@@ -43,8 +43,8 @@ is displayed in a list, the `Summary` display type is commonly used.
 
 | Template | Filename|
 | --------- | ------------ |
-| Content_Summary__BlogPost | Content-BlogPost.Summary.cshtml |
-| Content_Summary__Article | Content-Article.Summary.cshtml |
+| `Content_Summary__BlogPost` | Content-BlogPost.Summary.cshtml |
+| `Content_Summary__Article` | Content-Article.Summary.cshtml |
 
 ### Widget__[ContentType]
 
@@ -54,8 +54,8 @@ This template is called when a widget is rendered on a page.
 
 | Template | Filename|
 | --------- | ------------ |
-| Widget__Paragraph | Widget-Paragraph.cshtml |
-| Widget__Blockquote | Widget-Blockquote.cshtml |
+| `Widget__Paragraph` | Widget-Paragraph.cshtml |
+| `Widget__Blockquote` | Widget-Blockquote.cshtml |
 
 #### Available properties
 
@@ -73,7 +73,7 @@ This template is called when a Content Part is rendered.
 
 | Template | Filename|
 | --------- | ------------ |
-| BodyPart | BodyPart.cshtml |
+| `BodyPart` | BodyPart.cshtml |
 
 #### Available properties
 
@@ -90,7 +90,7 @@ This template is called when a Content Part is rendered in a specific display ty
 
 | Template | Filename|
 | --------- | ------------ |
-| BodyPart_Summary | BodyPart.Summary.cshtml |
+| `BodyPart_Summary` | BodyPart.Summary.cshtml |
 
 #### Available properties
 
@@ -104,9 +104,9 @@ This template is called when a Content Part is rendered as part of a specific Co
 
 | Template | Filename|
 | --------- | ------------ |
-| ListPart__Blog | ListPart-Blog.cshtml |
-| BodyPart__BlogPost | BodyPart-BlogPost.cshtml |
-| BodyPart__Article | BodyPart-Article.cshtml |
+| `ListPart__Blog` | ListPart-Blog.cshtml |
+| `BodyPart__BlogPost` | BodyPart-BlogPost.cshtml |
+| `BodyPart__Article` | BodyPart-Article.cshtml |
 
 #### Available properties
 
@@ -123,14 +123,14 @@ This template is called when a Content Part is rendered as part of a specific Co
 
 | Template | Filename|
 | --------- | ------------ |
-| BodyPart_Summary__BlogPost | BodyPart-BlogPost.Summary.cshtml |
-| BodyPart_Summary__Article | BodyPart-Article.Summary.cshtml |
+| `BodyPart_Summary__BlogPost` | BodyPart-BlogPost.Summary.cshtml |
+| `BodyPart_Summary__Article` | BodyPart-Article.Summary.cshtml |
 
 #### Available properties
 
 Same ones as `[ContentPart]`
 
-### [ContentPart]__[ContentType]__[PartName]
+### `[ContentPart]__[ContentType]__[PartName]`
 
 This template is called when a Named Content Part is rendered as part of a specific Content Type.
 
@@ -138,14 +138,14 @@ This template is called when a Named Content Part is rendered as part of a speci
 
 | Template | Filename|
 | --------- | ------------ |
-| BagPart__LandingPage__Services | BagPart-LandingPage-Services.cshtml |
-| BagPart__LandingPage__Portfolio | BagPart-LandingPage-Portfolio.cshtml |
+| `BagPart__LandingPage__Services` | BagPart-LandingPage-Services.cshtml |
+| `BagPart__LandingPage__Portfolio` | BagPart-LandingPage-Portfolio.cshtml |
 
 #### Available properties
 
 Same ones as `[ContentPart]`
 
-### [ContentPart]__[ContentType]__[PartName]
+### `[ContentPart]__[ContentType]__[PartName]`
 
 This template is called when a Named Content Part is rendered as part of a specific Content Type and a specific Display Type.
 
@@ -153,8 +153,8 @@ This template is called when a Named Content Part is rendered as part of a speci
 
 | Template | Filename|
 | --------- | ------------ |
-| BagPart_Summary__LandingPage__Services | BagPart-LandingPage-Services.Summary.cshtml |
-| BagPart_Summary__LandingPage__Portfolio | BagPart-LandingPage-Portfolio.Summary.cshtml |
+| `BagPart_Summary__LandingPage__Services` | BagPart-LandingPage-Services.Summary.cshtml |
+| `BagPart_Summary__LandingPage__Portfolio` | BagPart-LandingPage-Portfolio.Summary.cshtml |
 
 #### Available properties
 
