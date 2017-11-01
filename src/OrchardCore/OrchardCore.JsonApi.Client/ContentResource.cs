@@ -1,8 +1,9 @@
-﻿using System.Net.Http;
+using System.Net.Http;
+using OrchardCore.Apis.Client.Abstractions;
 
 namespace OrchardCore.JsonApi.Client
 {
-    internal class ContentResource
+    internal class ContentResource : IContentResource
     {
         private HttpClient _client;
 
