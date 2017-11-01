@@ -28,13 +28,4 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Views\LuceneQuery.Edit.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-    <None Update="Views\Query-Lucene.Link.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-  </ItemGroup>
-
 </Project>
