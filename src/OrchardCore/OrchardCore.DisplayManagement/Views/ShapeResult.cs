@@ -13,9 +13,8 @@ namespace OrchardCore.DisplayManagement.Views
     {
         private string _defaultLocation;
         private IDictionary<string,string> _otherLocations;
-        public string _differentiator;
+        private string _differentiator;
         private string _prefix;
-        private string _name;
         private string _cacheId;
         private readonly string _shapeType;
         private readonly Func<IBuildShapeContext, Task<IShape>> _shapeBuilder;
@@ -51,11 +50,6 @@ namespace OrchardCore.DisplayManagement.Views
 
         private async Task ApplyImplementationAsync(BuildShapeContext context, string displayType)
         {
-            if (String.IsNullOrEmpty(_differentiator))
-            {
-                _differentiator = _prefix;
-            }
-
             // Look into specific implementations of placements (like placement.info files)
             var placement = context.FindPlacement(_shapeType, _differentiator, displayType, context);
 
@@ -106,7 +100,7 @@ namespace OrchardCore.DisplayManagement.Views
 
             ShapeMetadata newShapeMetadata = newShape.Metadata;
             newShapeMetadata.Prefix = _prefix;
-            newShapeMetadata.Name = _name ?? _shapeType;
+            newShapeMetadata.Name = _differentiator ?? _shapeType;
             newShapeMetadata.DisplayType = displayType;
             newShapeMetadata.PlacementSource = placement.Source;
             newShapeMetadata.Tab = placement.GetTab();
@@ -199,18 +193,6 @@ namespace OrchardCore.DisplayManagement.Views
         public ShapeResult Prefix(string prefix)
         {
             _prefix = prefix;
-            return this;
-        }
-
-        /// <summary>
-        /// Sets the name of the shape within its container.
-        /// </summary>
-        /// <remarks>
-        /// The goal is to identify it as part of a collection of shapes.
-        /// </remarks>
-        public ShapeResult Name(string name)
-        {
-            _name = name;
             return this;
         }
 

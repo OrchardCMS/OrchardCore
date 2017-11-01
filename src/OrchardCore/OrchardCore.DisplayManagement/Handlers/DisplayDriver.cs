@@ -15,14 +15,6 @@ namespace OrchardCore.DisplayManagement.Handlers
     {
 
         /// <summary>
-        /// Returns a unique prefix based on the model.
-        /// </summary>
-        public virtual string GeneratePrefix(TModel model)
-        {
-            return typeof(TModel).Name;
-        }
-
-        /// <summary>
         /// Returns <c>true</c> if the model can be handle by the current driver.
         /// </summary>
         /// <returns></returns>
@@ -38,12 +30,7 @@ namespace OrchardCore.DisplayManagement.Handlers
                 return Task.FromResult<IDisplayResult>(null);
             }
 
-            Prefix = GeneratePrefix(model);
-
-            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
-            {
-                Prefix = context.HtmlFieldPrefix + "." + Prefix;
-            }
+            BuildPrefix(model, context.HtmlFieldPrefix);
 
             return DisplayAsync(model, context);
         }
@@ -55,12 +42,7 @@ namespace OrchardCore.DisplayManagement.Handlers
                 return Task.FromResult<IDisplayResult>(null);
             }
 
-            Prefix = GeneratePrefix(model);
-
-            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
-            {
-                Prefix = context.HtmlFieldPrefix + "." + Prefix;
-            }
+            BuildPrefix(model, context.HtmlFieldPrefix);
 
             return EditAsync(model, context);
         }
@@ -72,12 +54,7 @@ namespace OrchardCore.DisplayManagement.Handlers
                 return Task.FromResult<IDisplayResult>(null);
             }
 
-            Prefix = GeneratePrefix(model);
-
-            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
-            {
-                Prefix = context.HtmlFieldPrefix + "." + Prefix;
-            }
+            BuildPrefix(model, context.HtmlFieldPrefix);
 
             return UpdateAsync(model, context);
         }
@@ -131,6 +108,16 @@ namespace OrchardCore.DisplayManagement.Handlers
         {
             return EditAsync(model, updater);
         }
+
+        protected virtual void BuildPrefix(TModel model, string htmlFieldPrefix)
+        {
+            Prefix = typeof(TModel).Name;
+
+            if (!String.IsNullOrEmpty(htmlFieldPrefix))
+            {
+                Prefix = htmlFieldPrefix + "." + Prefix;
+            }
+        }
     }
 
     public abstract class DisplayDriver<TModel> : 
@@ -151,14 +138,6 @@ namespace OrchardCore.DisplayManagement.Handlers
         where TUpdateContext : UpdateEditorContext
     {
         /// <summary>
-        /// Returns a unique prefix based on the model.
-        /// </summary>
-        public virtual string GeneratePrefix(TModel model)
-        {
-            return typeof(TModel).Name;
-        }
-
-        /// <summary>
         /// Returns <c>true</c> if the model can be handle by the current driver.
         /// </summary>
         /// <returns></returns>
@@ -176,12 +155,7 @@ namespace OrchardCore.DisplayManagement.Handlers
                 return Task.FromResult<IDisplayResult>(null);
             }
 
-            Prefix = GeneratePrefix(concrete);
-
-            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
-            {
-                Prefix = context.HtmlFieldPrefix + "." + Prefix;
-            }
+            BuildPrefix(concrete, context.HtmlFieldPrefix);
 
             return DisplayAsync(concrete, context);
         }
@@ -195,12 +169,7 @@ namespace OrchardCore.DisplayManagement.Handlers
                 return Task.FromResult<IDisplayResult>(null);
             }
 
-            Prefix = GeneratePrefix(concrete);
-
-            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
-            {
-                Prefix = context.HtmlFieldPrefix + "." + Prefix;
-            }
+            BuildPrefix(concrete, context.HtmlFieldPrefix);
 
             return EditAsync(concrete, context);
         }
@@ -214,12 +183,7 @@ namespace OrchardCore.DisplayManagement.Handlers
                 return Task.FromResult<IDisplayResult>(null);
             }
 
-            Prefix = GeneratePrefix(concrete);
-
-            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
-            {
-                Prefix = context.HtmlFieldPrefix + "." + Prefix;
-            }
+            BuildPrefix(concrete, context.HtmlFieldPrefix);
 
             return UpdateAsync(concrete, context);
         }

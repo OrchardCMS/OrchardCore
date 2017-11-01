@@ -22,30 +22,66 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             // e.g., BodyPart.Summary, BodyPart-BlogPost, BagPart-LandingPage-Services
             // context.Shape is the ContentItem shape, we need to alter the part shape
 
-            var result = base.Shape(shapeType, shapeBuilder, initializeAsync);
+            var result = base.Shape(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
 
+            // This should only be set in Display methods
             if (_typePartDefinition != null)
             {
-                result.Name(_typePartDefinition.Name);
+                var partName = _typePartDefinition.Name;
+                var partType = _typePartDefinition.PartDefinition.Name;
+                var contentType = _typePartDefinition.ContentTypeDefinition.Name;
+
+                if (partType == shapeType)
+                {
+                    // BodyPart, Services
+                    result.Differentiator($"{partName}");
+                }
+                else
+                {
+                    // ListPart-ListPartFeed
+                    result.Differentiator($"{partName}-{shapeType}");
+                }
 
                 result.Displaying(ctx =>
                 {
-                    // [PartType]_[DisplayType], e.g. BodyPart.Summary
-                    ctx.ShapeMetadata.Alternates.Add($"{_typePartDefinition.PartDefinition.Name}_{ctx.ShapeMetadata.DisplayType}");
+                    var displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
 
-                    // [PartType]__[ContentType]
-                    ctx.ShapeMetadata.Alternates.Add($"{_typePartDefinition.PartDefinition.Name}__{_typePartDefinition.ContentTypeDefinition.Name}");
+                    // [ShapeType]_[DisplayType], e.g. BodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
+                    ctx.ShapeMetadata.Alternates.Add($"{shapeType}_{ctx.ShapeMetadata.DisplayType}");
 
-                    // [PartType]_[DisplayType]__[ContentType], e.g. BodyPart-Blog.Summary
-                    ctx.ShapeMetadata.Alternates.Add($"{_typePartDefinition.PartDefinition.Name}_{ctx.ShapeMetadata.DisplayType}__{_typePartDefinition.ContentTypeDefinition.Name}");
-
-                    // Named part have 
-                    // - [PartType]__[ContentType]__[PartName], e.g. BagPart-LandingPage-Features
-                    // - [PartType]_[DisplayType]__[ContentType]__[PartName], e.g. BagPart-LandingPage-Features.Summary
-                    if (_typePartDefinition.PartDefinition.Name != _typePartDefinition.Name)
+                    if (shapeType == partType)
                     {
-                        ctx.ShapeMetadata.Alternates.Add($"{_typePartDefinition.PartDefinition.Name}__{_typePartDefinition.ContentTypeDefinition.Name}__{_typePartDefinition.Name}");
-                        ctx.ShapeMetadata.Alternates.Add($"{_typePartDefinition.PartDefinition.Name}_{ctx.ShapeMetadata.DisplayType}__{_typePartDefinition.ContentTypeDefinition.Name}__{_typePartDefinition.Name}");
+                        foreach (var displayType in displayTypes)
+                        {
+                            // [ContentType]_[DisplayType]__[PartType], e.g. Blog-BodyPart, LandingPage-BagPart
+                            ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partType}");
+                        }
+
+                        if (partType != partName)
+                        {
+                            foreach (var displayType in displayTypes)
+                            {
+                                // [ContentType]_[DisplayType]__[PartName], e.g. LandingPage-Services
+                                ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partName}");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var displayType in displayTypes)
+                        {
+                            // [ContentType]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
+                            ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partType}__{shapeType}");
+                        }
+
+                        if (partType != partName)
+                        {
+                            foreach (var displayType in displayTypes)
+                            {
+                                // [ContentType]_[DisplayType]__[PartName]__[ShapeType], e.g. LandingPage-Services-BagPartSummary
+                                ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partName}__{shapeType}");
+                            }
+                        }
                     }
                 });
             }
@@ -53,13 +89,13 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return result;
         }
 
-        Task<IDisplayResult> IContentPartDisplayDriver.BuildDisplayAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
+        async Task<IDisplayResult> IContentPartDisplayDriver.BuildDisplayAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
         {
             var part = contentPart as TPart;
 
             if (part == null)
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
             BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
@@ -68,7 +104,11 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             var buildDisplayContext = new BuildPartDisplayContext(typePartDefinition, context);
 
-            return DisplayAsync(part, buildDisplayContext);
+            var result = await DisplayAsync(part, buildDisplayContext);
+
+            _typePartDefinition = null;
+
+            return result;
         }
 
         Task<IDisplayResult> IContentPartDisplayDriver.BuildEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildEditorContext context)

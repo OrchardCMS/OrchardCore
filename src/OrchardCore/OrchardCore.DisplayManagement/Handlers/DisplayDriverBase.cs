@@ -7,7 +7,7 @@ namespace OrchardCore.DisplayManagement.Handlers
 {
     public class DisplayDriverBase
     {
-        protected virtual string Prefix { get; set; } = "";
+        protected string Prefix { get; set; } = "";
 
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// </remarks>
         public virtual ShapeResult Shape(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
-            return new ShapeResult(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
+            return new ShapeResult(shapeType, shapeBuilder, initializeAsync);
         }
 
         public CombinedResult Combine(params IDisplayResult[] results)
