@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace OrchardCore.Tests.Apis.GraphQL.Context
+namespace OrchardCore.Tests.Apis.JsonApi.Context
 {
     public class SiteContext : TestContext
     {

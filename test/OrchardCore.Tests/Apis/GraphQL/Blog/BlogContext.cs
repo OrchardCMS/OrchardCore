@@ -1,23 +1,24 @@
+using System.Threading.Tasks;
 using OrchardCore.Tests.Apis.GraphQL.Context;
 
 namespace OrchardCore.Tests.Apis.GraphQL.Blog
 {
     public class BlogContext : SiteContext
     {
-        public BlogContext() : base()
+        public string BlogContentItemId { get; private set; }
+
+        public override async Task InitializeAsync()
         {
-            var result = Client
+            await base.InitializeAsync();
+
+            var result = await Client
                 .Content
                 .QueryAsync("Blog", builder => {
                     builder
                         .AddField("contentItemId");
-                })
-                .GetAwaiter()
-                .GetResult();
+                });
 
             BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();
         }
-
-        public string BlogContentItemId { get; }
     }
 }

@@ -1,11 +1,13 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.FunctionalTests;
 using OrchardCore.GraphQL.Client;
 using OrchardCore.Tests.Apis.Sources;
+using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.Context
 {
-    public class TestContext : IDisposable
+    public class TestContext : IAsyncLifetime, IDisposable
     {
         public OrchardTestFixture<SiteStartup> Site { get; }
 
@@ -21,6 +23,16 @@ namespace OrchardCore.Tests.Apis.GraphQL.Context
         public void Dispose()
         {
             Site.Dispose();
+        }
+
+        public virtual Task InitializeAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task DisposeAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

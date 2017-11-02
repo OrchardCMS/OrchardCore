@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
 
 namespace OrchardCore.GraphQL.Client
 {
@@ -21,6 +19,6 @@ namespace OrchardCore.GraphQL.Client
             return builder;
         }
 
-        public abstract string Build();
+        public virtual string Build() { return null; }
     }
 }

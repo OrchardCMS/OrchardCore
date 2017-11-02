@@ -1,25 +1,38 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.FunctionalTests;
+using OrchardCore.JsonApi.Client;
 using OrchardCore.Tests.Apis.Sources;
+using Xunit;
 
 namespace OrchardCore.Tests.Apis.JsonApi.Context
 {
-    public class TestContext : IDisposable
+    public class TestContext : IAsyncLifetime, IDisposable
     {
         public OrchardTestFixture<SiteStartup> Site { get; }
 
-        public OrchardGraphQLClient Client { get; }
+        public OrchardJsonApiClient Client { get; }
 
         public TestContext()
         {
             Site = new OrchardTestFixture<SiteStartup>(EnvironmentHelpers.GetApplicationPath());
 
-            Client = new OrchardGraphQLClient(Site.Client);
+            Client = new OrchardJsonApiClient(Site.Client);
         }
 
         public void Dispose()
         {
             Site.Dispose();
+        }
+
+        public virtual Task InitializeAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task DisposeAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

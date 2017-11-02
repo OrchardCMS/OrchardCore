@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace OrchardCore.GraphQL.Client
 {
@@ -20,7 +18,7 @@ namespace OrchardCore.GraphQL.Client
 
         public ContentTypeQueryResourceBuilder AddField(string name)
         {
-            _keys.Add(name.ToGraphQLStringFormat());
+            _keys.Add(name);
 
             return this;
         }
@@ -44,51 +42,6 @@ namespace OrchardCore.GraphQL.Client
             return this;
         }
 
-        internal string Build()
-        {
-            var sb = new StringBuilder(_contentType.ToGraphQLStringFormat());
-
-            if (_queryFields.Count > 0 || _nestedQueryFields.Count > 0)
-            {
-                sb.Append("(");
-
-                for (var i = 0; i < _nestedQueryFields.Count; i++)
-                {
-                    var item = _nestedQueryFields.ElementAt(i);
-                    sb.AppendFormat("{0}: {{ {1} }}", item.Key.ToGraphQLStringFormat(), item.Value);
-
-                    if (i < (_nestedQueryFields.Count - 1))
-                    {
-                        sb.Append(" ");
-                    }
-                }
-
-                for (var i = 0; i < _queryFields.Count; i++)
-                {
-                    var item = _queryFields.ElementAt(i);
-                    sb.AppendFormat("{0}: \"{1}\"", item.Key.ToGraphQLStringFormat(), item.Value);
-
-                    if (i < (_queryFields.Count - 1))
-                    {
-                        sb.Append(" ");
-                    }
-                }
-
-                sb.Append(")");
-            }
-
-            sb.Append(" { ");
-
-            sb.Append(" " + string.Join(" ", _keys) + " ");
-
-            foreach (var item in _nested)
-            {
-                sb.Append(item.Build());
-            }
-
-            sb.Append(" }");
-
-            return sb.ToString();
-        }
+        public virtual string Build() { return null; }
     }
 }
