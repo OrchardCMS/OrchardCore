@@ -24,7 +24,7 @@ namespace OrchardCore.Themes
                 .Add(T["Themes"], "10", themes => themes
                     .AddClass("themes").Id("themes")
                     .Permission(Permissions.ApplyTheme)
-                    .Add(T["Active Themes"], "0", installed => installed
+                    .Add(T["Themes"], "0", installed => installed
                         .Action("Index", "Admin", new { area = "OrchardCore.Themes" })
                         .Permission(Permissions.ApplyTheme)
                         .LocalNav()
