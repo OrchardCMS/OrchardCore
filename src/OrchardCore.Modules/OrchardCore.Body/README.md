@@ -91,6 +91,8 @@ The following properties are available on `BodyPartViewModel`
 | Name | Type | Description |
 | -----| ---- |------------ |
 | `Body` | `string` | The HTML content in the body. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `BodyPart` shape instead |
+| `Content` | The raw content of the part |
+| `ContentItem` | The content item containing this part |
 
 ## CREDITS
 

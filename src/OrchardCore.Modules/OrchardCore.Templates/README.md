@@ -149,8 +149,8 @@ This template is called when a shape type is rendered in a given content part na
 
 | Template | Filename|
 | --------- | ------------ |
-| LandingPage__Services__BagPartSummary | LandingPage-Services-BagPartSummary.cshtml |
-| LandingPage_Summary__Services__BagPartSummary | LandingPage-Services-BagPartSummary.Summary.cshtml |
+| LandingPage__Services__CustomShape | LandingPage-Services-CustomShape.cshtml |
+| LandingPage_Summary__Services__CustomShape | LandingPage-Services-CustomShape.Summary.cshtml |
 
 ## Content Field templates
 
@@ -206,8 +206,8 @@ This template is called when a content field shape type is rendered for a given 
 
 | Template | Filename|
 | --------- | ------------ |
-| TextField__TextFieldSummary | TextField-TextFieldSummary.cshtml |
-| TextField_Summary__TextFieldSummary | TextField-TextFieldSummary.Summary.cshtml |
+| CustomField__CustomFieldSummary | CustomField-CustomFieldSummary.cshtml |
+| CustomField_Summary__CustomFieldSummary | CustomField-CustomFieldSummary.Summary.cshtml |
 
 ### [PartType]__[FieldName]__[ShapeType]
 
@@ -217,8 +217,8 @@ This template is called when a content field shape type is rendered for a given 
 
 | Template | Filename|
 | --------- | ------------ |
-|  BodyPart__Description__TextFieldSummary| BodyPart__Description__TextFieldSummary.cshtml |
-|  BodyPart_Summary__Description__TextFieldSummary| BodyPart__Description__TextFieldSummary.Summary.cshtml |
+|  BodyPart__Description__CustomFieldSummary| BodyPart__Description__CustomFieldSummary.cshtml |
+|  BodyPart_Summary__Description__CustomFieldSummary| BodyPart__Description__CustomFieldSummary.Summary.cshtml |
 
 ### [ContentType]__[PartName]__[FieldName]__[ShapeType]
 
@@ -228,17 +228,27 @@ This template is called when a content field shape type is rendered for a given 
 
 | Template | Filename|
 | --------- | ------------ |
-| Blog__BodyPart__Description__TextFieldSummary | Blog-BodyPart-Description-TextFieldSummary.cshtml |
-| LandingPage__Services__Description__TextFieldSummary | LandingPage-Services-Description-TextFieldSummary.cshtml |
-| Blog_Summary__BodyPart__Description__TextFieldSummary | Blog-BodyPart-Description-TextFieldSummary.Summary.cshtml |
-| LandingPage_Summary__Services__Description__TextFieldSummary | LandingPage-Services-Description-TextFieldSummary.Summary.cshtml |
+| Blog__BodyPart__Description__CustomFieldSummary | Blog-BodyPart-Description-CustomFieldSummary.cshtml |
+| LandingPage__Services__Description__CustomFieldSummary | LandingPage-Services-Description-CustomFieldSummary.cshtml |
+| Blog_Summary__BodyPart__Description__CustomFieldSummary | Blog-BodyPart-Description-CustomFieldSummary.Summary.cshtml |
+| LandingPage_Summary__Services__Description__CustomFieldSummary | LandingPage-Services-Description-CustomFieldSummary.Summary.cshtml |
 
-## Shape differentators
+## Shape differentiators
 
 The differentiator identifies uniquely a shape in a zone. When rendering a content item, the shape has a `Content` property that contains
 all the shapes provided by content display drivers, including the ones for content parts and content fields.
 
 Differentiators can be used to configure the placement information (c.f. [Placement documentation page](#)), or to access specific shapes in a zone using these template helpers:
+
+### Content Part differentiator
+
+If the shape type is the same as the content field name, the shape will be named `[PartName]-[FieldName]`, e.g. `BodyPart-Description`, `Services-Image`.
+If the shape type is different than the content field name, it will be `[PartName]-[FieldName]-[ShapeType]`, e.g. `BodyPart-Description-CustomFieldSummary`, `Services-Image-ImageFieldSummary`
+
+### Content Field differentiator
+
+If the shape type is the same as the content part name, the shape will be named `[PartName]`, e.g. `BodyPart`, `Services`.
+If the shape type is different than the content part name, it will be `[PartName]-[ShapeType]`, e.g. `ListPart-ListPartFeed`
 
 #### Razor
 
@@ -263,14 +273,3 @@ Display a specific shape by name
 ```
 {% display Model.Content.BodyPart %}
 ```
-
-### Content Part differentator
-
-If the shape type is the same as the content field name, the shape will be named `[PartName]-[FieldName]`, e.g. `BodyPart-Description`, `Services-Image`.
-If the shape type is different than the content field name, it will be `[PartName]-[FieldName]-[ShapeType]`, e.g. `BodyPart-Description-TextFieldSummary`, `Services-Image-ImageFieldSummary`
-
-### Content Field differentator
-
-If the shape type is the same as the content part name, the shape will be named `[PartName]`, e.g. `BodyPart`, `Services`.
-If the shape type is different than the content part name, it will be `[PartName]-[ShapeType]`, e.g. `ListPart-ListPartFeed`
-
