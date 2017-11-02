@@ -64,7 +64,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("tether")
-                .SetUrl("/OrchardCore.Resources/Scripts/tether.js", "/OrchardCore.Resources/Scripts/tether.js")
+                .SetUrl("/OrchardCore.Resources/Scripts/tether.min.js", "/OrchardCore.Resources/Scripts/tether.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js", "https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.js")
                 .SetVersion("1.4.0")
                 ;
