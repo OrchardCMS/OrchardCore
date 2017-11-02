@@ -337,6 +337,16 @@ Output
 Monday, September 11, 2017 3:29:26 PM
 ```
 
+### build_display
+
+Creates the display shape for a content item. It can be used in conjunction with `display` 
+to render a content item.
+
+Input
+```
+{% display mycontentitem | build_display: "Detail"  %}
+```
+
 ### shape
 
 Renders a specific named tag with its properties
