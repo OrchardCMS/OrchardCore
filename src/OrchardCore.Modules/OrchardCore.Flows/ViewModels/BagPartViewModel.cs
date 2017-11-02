@@ -8,7 +8,6 @@ namespace OrchardCore.Flows.ViewModels
     public class BagPartViewModel
     {
         public BagPart BagPart { get; set; }
-        public List<ContentItem> ContentItems => BagPart.ContentItems;
         public BuildPartDisplayContext BuildPartDisplayContext { get; set; }
         public BagPartSettings Settings { get; set; }
     }
