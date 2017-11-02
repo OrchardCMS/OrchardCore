@@ -19,6 +19,7 @@ Nightly (dev):
 
 [![Build Status](https://img.shields.io/travis/OrchardCMS/OrchardCore.svg?label=travis-ci&branch=dev&style=flat-square)](https://travis-ci.org/OrchardCMS/OrchardCore/branches)
 [![Build status](https://img.shields.io/appveyor/ci/alexbocharov/orchard2/dev.svg?label=appveyor&style=flat-square)](https://ci.appveyor.com/project/alexbocharov/orchard2/branch/dev)
+[![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://orchardcore.readthedocs.io/en/dev/)
 [![MyGet](https://img.shields.io/myget/orchardcore-preview/vpre/OrchardCore.Application.Cms.Targets.svg)](https://myget.org/feed/orchardcore-preview/package/nuget/OrchardCore.Application.Cms.Targets)
 
 ## Orchard CMS
