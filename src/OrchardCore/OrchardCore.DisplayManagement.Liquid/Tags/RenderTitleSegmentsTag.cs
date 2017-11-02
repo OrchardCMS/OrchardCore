@@ -24,7 +24,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var titleBuilder = ((IServiceProvider)services).GetRequiredService<IPageTitleBuilder>();
             var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
 
-            var segment = new HtmlString(arguments.At(0).ToStringValue());
+            var segment = new HtmlString(arguments["segment"].Or(arguments.At(0)).ToStringValue());
             var position = arguments.HasNamed("position") ? arguments["position"].ToStringValue() : "0";
             var separator = arguments.HasNamed("separator") ? new HtmlString(arguments["separator"].ToStringValue()) : null;
 
