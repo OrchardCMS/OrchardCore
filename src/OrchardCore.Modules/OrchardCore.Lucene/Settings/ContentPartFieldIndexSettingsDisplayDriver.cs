@@ -9,7 +9,7 @@ using OrchardCore.Indexing;
 
 namespace OrchardCore.Lucene.Settings
 {
-    public class ContentPartFieldIndexSettingsDisplayDriver : ContentPartFieldDisplayDriver
+    public class ContentPartFieldIndexSettingsDisplayDriver : ContentPartFieldDefinitionDisplayDriver
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;

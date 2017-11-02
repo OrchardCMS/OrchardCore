@@ -116,8 +116,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
                 foreach (var item in shape.Items)
                 {
-                    // It also works for named parts,
-                    // so we can access Model.Content.MyNamedPart
+                    // Resolve Model.Content.MyNamedPart
                     if (item is IShape itemShape && itemShape.Metadata.Name == n)
                     {
                         return item;

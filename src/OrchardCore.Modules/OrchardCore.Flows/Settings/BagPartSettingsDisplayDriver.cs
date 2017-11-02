@@ -12,7 +12,7 @@ using OrchardCore.Flows.ViewModels;
 
 namespace OrchardCore.Flows.Settings
 {
-    public class BagPartSettingsDisplayDriver : ContentTypePartDisplayDriver
+    public class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
