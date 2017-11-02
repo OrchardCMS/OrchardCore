@@ -2,11 +2,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Apis.Client.Abstractions;
 
 namespace OrchardCore.GraphQL.Client
 {
-    public class TenantResource : ITenantResource
+    public class TenantResource
     {
         private HttpClient _client;
 
@@ -23,24 +22,32 @@ namespace OrchardCore.GraphQL.Client
             string email,
             string recipeName)
         {
-            var variables =
-@"{ 
-    ""site"": {
-        ""siteName"": """ + siteName + @""",
-        ""databaseProvider"": """+ databaseProvider + @""",
-        ""userName"": """+userName+ @""",
-        ""email"": """ + email + @""",
-        ""password"": """ + password + @""",
-        ""passwordConfirmation"": """ + password + @""",
-        ""recipeName"": """ + recipeName + @"""
-    }
-}";
+            var variables = new JObject(
+                new JProperty(
+                    "data",
+                    new JObject(
+                        new JProperty("type", "setup"),
+                        new JProperty("attributes",
+                            new JObject(
+                            new JProperty("siteName", siteName),
+                            new JProperty("databaseProvider", databaseProvider),
+                            new JProperty("userName", userName),
+                            new JProperty("email", email),
+                            new JProperty("password", password),
+                            new JProperty("passwordConfirmation", password),
+                            new JProperty("recipeName", recipeName)
+                            )
+                        )
+                    )
+                )
+            );
 
-            var json = @"{
-  ""query"": ""mutation ($site: SiteSetupInput!){ createSite(site: $site) { executionId } }"",
-  ""variables"": " + JsonConvert.SerializeObject(variables) + @"}";
+            var requestJson = new JObject(
+                new JProperty("query", "mutation ($site: SiteSetupInput!){ createSite(site: $site) { executionId } }"),
+                new JProperty("variables", JsonConvert.SerializeObject(variables.ToString()))
+                );
 
-            var response = await _client.PostJsonAsync("graphql", json);
+            var response = await _client.PostJsonAsync("graphql", requestJson.ToString());
 
             response.EnsureSuccessStatusCode();
 

@@ -1,9 +1,8 @@
 using System.Net.Http;
-using OrchardCore.Apis.Client.Abstractions;
 
 namespace OrchardCore.GraphQL.Client
 {
-    public class OrchardGraphQLClient : IApiClient
+    public class OrchardGraphQLClient
     {
         private readonly HttpClient _client;
 
@@ -12,8 +11,8 @@ namespace OrchardCore.GraphQL.Client
             _client = client;
         }
 
-        public ITenantResource Tenants => new TenantResource(_client);
+        public TenantResource Tenants => new TenantResource(_client);
 
-        public IContentResource Content => new ContentResource(_client);
+        public ContentResource Content => new ContentResource(_client);
     }
 }

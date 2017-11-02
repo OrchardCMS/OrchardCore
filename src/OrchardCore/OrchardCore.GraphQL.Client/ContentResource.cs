@@ -4,11 +4,10 @@ using System.Threading.Tasks;
 using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Apis.Client.Abstractions;
 
 namespace OrchardCore.GraphQL.Client
 {
-    public class ContentResource : IContentResource
+    public class ContentResource
     {
         private HttpClient _client;
 
@@ -23,11 +22,12 @@ namespace OrchardCore.GraphQL.Client
 
             var variables = contentTypeBuilder.Build();
 
-            var json = @"{
-  ""query"": ""mutation ($contentItem: ContentItemInput!){ createContentItem(contentItem: $contentItem) { contentItemId } }"",
-  ""variables"": " + JsonConvert.SerializeObject(variables) + @"}";
+            var requestJson = new JObject(
+                new JProperty("query", "mutation ($contentItem: ContentItemInput!){ createContentItem(contentItem: $contentItem) { contentItemId } }"),
+                new JProperty("variables", JsonConvert.SerializeObject(variables.ToString()))
+                );
 
-            var response = await _client.PostJsonAsync("graphql", json);
+            var response = await _client.PostJsonAsync("graphql", requestJson.ToString());
 
             if (!response.IsSuccessStatusCode)
             {
@@ -59,11 +59,12 @@ namespace OrchardCore.GraphQL.Client
 
         public async Task DeleteAsync(string blogPostContentItemId)
         {
-            var json = @"{
-  ""query"": ""mutation DeleteContentItem { deleteContentItem( contentItemId: \"""+ blogPostContentItemId + @"\"" ) { status } }"",
-  ""variables"": """" }";
+            var requestJson = new JObject(
+                new JProperty("query", "mutation DeleteContentItem { deleteContentItem( contentItemId: \""+ blogPostContentItemId + @"\"") { status } }"),
+                new JProperty("variables", "")
+                );
 
-            var response = await _client.PostJsonAsync("graphql", json);
+            var response = await _client.PostJsonAsync("graphql", requestJson.ToString());
 
             if (!response.IsSuccessStatusCode)
             {

@@ -9,8 +9,4 @@
     <PackageReference Include="System.Net.Http" Version="4.3.3" />
   </ItemGroup>
   
-  <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Apis.Client.Abstractions\OrchardCore.Apis.Client.Abstractions.csproj" />
-  </ItemGroup>
-  
 </Project>
