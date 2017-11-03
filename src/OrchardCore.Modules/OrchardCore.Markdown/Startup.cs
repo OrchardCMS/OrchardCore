@@ -1,4 +1,4 @@
-using OrchardCore.Modules;
+using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -12,11 +12,19 @@ using OrchardCore.Markdown.Handlers;
 using OrchardCore.Markdown.Indexing;
 using OrchardCore.Markdown.Model;
 using OrchardCore.Markdown.Settings;
+using OrchardCore.Markdown.ViewModels;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Markdown
 {
     public class Startup : StartupBase
     {
+        static Startup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<MarkdownPartViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<MarkdownFieldViewModel>();
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             // Markdown Part

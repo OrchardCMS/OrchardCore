@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
@@ -20,6 +21,7 @@ using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.Settings;
+using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Recipes;
 using OrchardCore.StorageProviders.FileSystem;
@@ -33,6 +35,11 @@ namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {
+        static Startup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
+        }
+
         public static int[] Sizes = new[] { 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 };
 
         public override void ConfigureServices(IServiceCollection services)

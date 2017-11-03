@@ -9,7 +9,7 @@ The following shapes are rendered when the **BodyPart** is attached to a content
 | Name | Display Type | Default Location | Model Type |
 | ------| ------------ |----------------- | ---------- |
 | `BodyPart` | `Detail` | `Content:5` | `BodyPartViewModel` |
-| `BodyPart_Summary` | `Summary` | `Content:10` | `BodyPartViewModel` |
+| `BodyPart` | `Summary` | `Content:10` | `BodyPartViewModel` |
 
 ### BodyPartViewModel
 
