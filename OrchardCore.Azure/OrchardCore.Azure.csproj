@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WindowsAzure.Storage" Version="8.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\OrchardCore.Modules\OrchardCore.Media\OrchardCore.Media.csproj" />
+    <ProjectReference Include="..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Module.txt">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+      <Pack>true</Pack>
+    </None>
+    <None Update="README.md">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+      <Pack>true</Pack>
+    </None>
+  </ItemGroup>
+
+</Project>
