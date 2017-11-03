@@ -30,6 +30,7 @@ pages:
         - Content Fields: OrchardCore.Modules/OrchardCore.ContentFields/README.md
         - Content Preview: OrchardCore.Modules/OrchardCore.ContentPreview/README.md
         - Content Types: OrchardCore.Modules/OrchardCore.ContentTypes/README.md
+        - Lists: OrchardCore.Modules/OrchardCore.Lists/README.md
         - Markdown: OrchardCore.Modules/OrchardCore.Markdown/README.md
         - Media: OrchardCore.Modules/OrchardCore.Media/README.md
         - Menu: OrchardCore.Modules/OrchardCore.Menu/README.md
