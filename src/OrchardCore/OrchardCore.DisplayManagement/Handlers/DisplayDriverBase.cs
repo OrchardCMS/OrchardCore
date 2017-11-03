@@ -9,7 +9,6 @@ namespace OrchardCore.DisplayManagement.Handlers
     {
         protected string Prefix { get; set; } = "";
 
-
         /// <summary>
         /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
         /// </summary>
@@ -110,7 +109,8 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// </remarks>
         public virtual ShapeResult Shape(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
-            return new ShapeResult(shapeType, shapeBuilder, initializeAsync);
+            return new ShapeResult(shapeType, shapeBuilder, initializeAsync)
+                .Prefix(Prefix);
         }
 
         public CombinedResult Combine(params IDisplayResult[] results)
