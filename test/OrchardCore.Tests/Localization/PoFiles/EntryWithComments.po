@@ -1,0 +1,10 @@
+#  translator-comments
+#. extracted-comments
+#: reference…
+#, flag
+
+#| msgctxt previous-context
+#| msgid previous-untranslated-string
+msgctxt "OrchardCore.Localization"
+msgid "Unknown system error"
+msgstr "Error desconegut del sistema"

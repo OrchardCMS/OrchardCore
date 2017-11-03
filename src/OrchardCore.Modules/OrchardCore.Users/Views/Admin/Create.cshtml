@@ -1,0 +1,8 @@
+@model dynamic
+
+<h1>@RenderTitleSegments(T["Create User"])</h1>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    @Html.ValidationSummary()
+    @await DisplayAsync(Model)
+</form>

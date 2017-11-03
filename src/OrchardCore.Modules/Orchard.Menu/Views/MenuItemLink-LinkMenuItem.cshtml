@@ -1,8 +1,0 @@
-﻿@using Orchard.ContentManagement
-@using Orchard.Menu
-
-@{
-    ContentItem contentItem = Model.ContentItem;
-    var linkMenuItemPart = contentItem.As<LinkMenuItemPart>();
-}
-<a href="@Url.Content(linkMenuItemPart.Url)">@linkMenuItemPart.Name</a>

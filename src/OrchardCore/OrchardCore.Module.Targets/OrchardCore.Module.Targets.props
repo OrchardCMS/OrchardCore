@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- 
+    This file is packaged with "OrchardCore.AsModule.nupkg" in "./build" such that any Module that references
+    it will get its static assets copied to "$(ApplicationDirectory)\Packages".
+  -->
+
+  <PropertyGroup>
+    <ModuleManifest>Name: $(MSBuildProjectName)</ModuleManifest>
+    <ExcludedFiles>**\*.cs;*.csproj*;obj\**;bin\**;Assets.json;Assets\**;Properties\**;*.props;*.targets;.vs\**</ExcludedFiles>
+    <ModuleType Condition="'$(ModuleType)' == ''">Module</ModuleType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageAssetFiles Include="**\*" Exclude="$(ExcludedFiles)" />
+  </ItemGroup>
+
+  <Target Name="CheckManifestFile" AfterTargets="Build" Condition="!Exists('$(ModuleType).txt')">
+    <Message Text="Generating manifest file: $(MSBuildProjectName)" Importance="high" />
+    <WriteLinesToFile
+      File="obj\$(ModuleType).txt"
+      Lines="$(ModuleManifest)"
+      Overwrite="true"
+      Encoding="utf-8"
+      ContinueOnError="true" />
+  </Target>
+
+  <Target Name="CopyPackageAssetFiles" Condition="'$(ApplicationDirectory)' != '' And Exists('$(ApplicationDirectory)')">
+    <ItemGroup>
+      <ApplicationAssetFiles Include="$(ApplicationDirectory)\Packages\$(MSBuildProjectName)\**\*" />
+    </ItemGroup>
+    <Delete
+      Files="@(ApplicationAssetFiles)"
+      Condition="!Exists('%(RecursiveDir)%(Filename)%(Extension)')"
+      ContinueOnError="true"/>
+    <Message Text="Packaging asset files: $(MSBuildProjectName)" Importance="high" />
+    <Copy
+      SourceFiles="@(PackageAssetFiles)"
+      DestinationFolder="$(ApplicationDirectory)\Packages\$(MSBuildProjectName)\%(RecursiveDir)" />
+    <Copy
+      SourceFiles="obj\$(ModuleType).txt"
+      DestinationFolder="$(ApplicationDirectory)\Packages\$(MSBuildProjectName)"
+      Condition="!Exists('$(ModuleType).txt')" />
+  </Target>
+
+  <!-- Adds a custom .props file to the generated module package -->
+  
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Package.Build.props" Pack="true">
+      <PackagePath>build\$(TargetFramework)\$(PackageId).props</PackagePath>
+    </None>
+    <None Include="**\*" Exclude="$(ExcludedFiles)" Pack="true">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
+    <None Include="obj\$(ModuleType).txt" Pack="true" Condition="!Exists('$(ModuleType).txt')">
+      <PackagePath>assets\$(PackageId)\$(ModuleType).txt</PackagePath>
+    </None>
+  </ItemGroup>
+  
+</Project>
