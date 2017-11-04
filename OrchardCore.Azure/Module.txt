@@ -6,10 +6,8 @@ Version: 2.0.x
 OrchardVersion: 2.0.x
 Description: Provides integration features for hosting Orchard Core websites on Microsoft Azure.
 Features:
-    OrchardCore.Azure.Media:
-        Name: Azure Blob Storage for Media
+    OrchardCore.Azure.MediaStorage:
+        Name: Microsoft Azure Media Storage
         Dependencies: OrchardCore.Media
         Description: Enables support for storing media files in, and serving them from, Azure Blob Storage.
         Category: Hosting
-
-

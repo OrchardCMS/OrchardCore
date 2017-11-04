@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Azure
+namespace OrchardCore.Azure.Storage.Media
 {
+    [Feature("Orchard.Azure.MediaStorage")]
     public class Startup : StartupBase
     {
         static Startup()
