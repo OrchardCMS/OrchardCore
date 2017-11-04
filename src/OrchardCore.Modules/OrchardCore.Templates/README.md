@@ -130,7 +130,7 @@ This template is called when a content part name is rendered for a given content
 | LandingPage__Services | LandingPage-Services.cshtml |
 | LandingPage_Summary__Services | LandingPage-Services.Summary.cshtml |
 
-### [ContentType]\_[DisplayType]__[PartType]__[ShapeType]
+### [ContentType]\_[DisplayType]\_\_[PartType]\_\_[ShapeType]
 
 This template is called when a shape type is rendered in a given content part type for a given content type, with or without a given display type.
 
@@ -138,10 +138,10 @@ This template is called when a shape type is rendered in a given content part ty
 
 | Template | Filename|
 | --------- | ------------ |
-| Blog__ListPart__ListPartFeed | Blog__ListPart__ListPartFeed.cshtml |
-| Blog_Summary__ListPart__ListPartFeed | Blog__ListPart__ListPartFeed.Summary.cshtml |
+| Blog\_\_ListPart\_\_ListPartFeed | Blog__ListPart__ListPartFeed.cshtml |
+| Blog_Summary\_\_ListPart\_\_ListPartFeed | Blog__ListPart__ListPartFeed.Summary.cshtml |
 
-### [ContentType]\_[DisplayType]__[PartName]__[ShapeType]
+### [ContentType]\_[DisplayType]\_\_[PartName]\_\_[ShapeType]
 
 This template is called when a shape type is rendered in a given content part name for a given content type, with or without a given display type.
 
@@ -149,8 +149,8 @@ This template is called when a shape type is rendered in a given content part na
 
 | Template | Filename|
 | --------- | ------------ |
-| LandingPage__Services__CustomShape | LandingPage-Services-CustomShape.cshtml |
-| LandingPage_Summary__Services__CustomShape | LandingPage-Services-CustomShape.Summary.cshtml |
+| LandingPage\_\_Services\_\_CustomShape | LandingPage-Services-CustomShape.cshtml |
+| LandingPage_Summary\_\_Services\_\_CustomShape | LandingPage-Services-CustomShape.Summary.cshtml |
 
 ## Content Field templates
 
@@ -185,7 +185,7 @@ This template is called when a content field name is rendered for a given conten
 |  BodyPart__Description |  BodyPart-Description.cshtml |
 |  BodyPart_Summary__Description |  BodyPart-Description.Summary.cshtml |
 
-### [ContentType]__[PartName]__[FieldName]
+### [ContentType]\_\_[PartName]\_\_[FieldName]
 
 This template is called when a content field name is rendered for a given content type and content part name when the shape type matches the field type, with or without a given display type.
 
@@ -193,10 +193,10 @@ This template is called when a content field name is rendered for a given conten
 
 | Template | Filename|
 | --------- | ------------ |
-| Blog__BodyPart__Description | Blog-BodyPart-Description.cshtml |
-| LandingPage__Services__Image | LandingPage-Services-Image.cshtml |
-| Blog_Summary__BodyPart__Description | Blog-BodyPart-Description.Summary.cshtml |
-| LandingPage_Summary__Services__Image | LandingPage-Services-Image.Summary.cshtml |
+| Blog\_\_BodyPart\_\_Description | Blog-BodyPart-Description.cshtml |
+| LandingPage\_\_Services\_\_Image | LandingPage-Services-Image.cshtml |
+| Blog_Summary\_\_BodyPart\_\_Description | Blog-BodyPart-Description.Summary.cshtml |
+| LandingPage_Summary\_\_Services\_\_Image | LandingPage-Services-Image.Summary.cshtml |
 
 ### [FieldType]__[ShapeType]
 
@@ -209,7 +209,7 @@ This template is called when a content field shape type is rendered for a given 
 | CustomField__CustomFieldSummary | CustomField-CustomFieldSummary.cshtml |
 | CustomField_Summary__CustomFieldSummary | CustomField-CustomFieldSummary.Summary.cshtml |
 
-### [PartType]__[FieldName]__[ShapeType]
+### [PartType]\_\_[FieldName]\_\_[ShapeType]
 
 This template is called when a content field shape type is rendered for a given content field name in a given content part type, with or without a given display type.
 
@@ -217,10 +217,10 @@ This template is called when a content field shape type is rendered for a given 
 
 | Template | Filename|
 | --------- | ------------ |
-|  BodyPart__Description__CustomFieldSummary| BodyPart__Description__CustomFieldSummary.cshtml |
-|  BodyPart_Summary__Description__CustomFieldSummary| BodyPart__Description__CustomFieldSummary.Summary.cshtml |
+|  BodyPart\_\_Description\_\_CustomFieldSummary| BodyPart__Description__CustomFieldSummary.cshtml |
+|  BodyPart_Summary\_\_Description\_\_CustomFieldSummary| BodyPart__Description__CustomFieldSummary.Summary.cshtml |
 
-### [ContentType]__[PartName]__[FieldName]__[ShapeType]
+### [ContentType]\_\_[PartName]\_\_[FieldName]__[ShapeType]
 
 This template is called when a content field shape type is rendered for a given content field name in a given content part name in a given content type, with or without a given display type.
 
@@ -228,10 +228,10 @@ This template is called when a content field shape type is rendered for a given 
 
 | Template | Filename|
 | --------- | ------------ |
-| Blog__BodyPart__Description__CustomFieldSummary | Blog-BodyPart-Description-CustomFieldSummary.cshtml |
-| LandingPage__Services__Description__CustomFieldSummary | LandingPage-Services-Description-CustomFieldSummary.cshtml |
-| Blog_Summary__BodyPart__Description__CustomFieldSummary | Blog-BodyPart-Description-CustomFieldSummary.Summary.cshtml |
-| LandingPage_Summary__Services__Description__CustomFieldSummary | LandingPage-Services-Description-CustomFieldSummary.Summary.cshtml |
+| Blog__BodyPart\_\_Description\_\_CustomFieldSummary | Blog-BodyPart-Description-CustomFieldSummary.cshtml |
+| LandingPage\_\_Services\_\_Description\_\_CustomFieldSummary | LandingPage-Services-Description-CustomFieldSummary.cshtml |
+| Blog_Summary\_\_BodyPart\_\_Description\_\_CustomFieldSummary | Blog-BodyPart-Description-CustomFieldSummary.Summary.cshtml |
+| LandingPage_Summary\_\_Services\_\_Description\_\_CustomFieldSummary | LandingPage-Services-Description-CustomFieldSummary.Summary.cshtml |
 
 ## Shape differentiators
 
