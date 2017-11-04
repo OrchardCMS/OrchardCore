@@ -103,6 +103,20 @@ Output
 Bonjour!
 ```
 
+### Markdownify
+
+Converts a Markdown string to HTML.
+
+Input
+```
+{{ "### Services" | markdownify }}
+```
+
+Output
+```
+<h3>Services</h3>
+```
+
 ## Properties
 
 By default the liquid templates have access to a common set of objects.
