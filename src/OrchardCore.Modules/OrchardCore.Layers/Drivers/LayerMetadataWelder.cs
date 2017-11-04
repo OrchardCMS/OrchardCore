@@ -36,7 +36,7 @@ namespace OrchardCore.Layers.Drivers
 				layerMetadata = new LayerMetadata();
 
 				// Are we loading an editor that requires layer metadata?
-				if (await context.Updater.TryUpdateModelAsync(layerMetadata, "LayerMetadata", m => m.Zone, m => m.Position)
+				if (await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position)
 					&& !String.IsNullOrEmpty(layerMetadata.Zone))
 				{
 					model.Weld(layerMetadata);
