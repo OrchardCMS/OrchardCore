@@ -151,7 +151,7 @@ namespace OrchardCore.Queries.Controllers
 
             if (ModelState.IsValid)
             {
-                await _queryManager.SaveQueryAsync(query);
+                await _queryManager.SaveQueryAsync(query.Name, query);
 
                 _notifier.Success(H["Query created successfully"]);
                 return RedirectToAction("Index");
@@ -206,7 +206,7 @@ namespace OrchardCore.Queries.Controllers
 
             if (ModelState.IsValid)
             {
-                await _queryManager.SaveQueryAsync(query);
+                await _queryManager.SaveQueryAsync(model.Name, query);
 
                 _notifier.Success(H["Query updated successfully"]);
                 return RedirectToAction("Index");

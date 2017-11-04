@@ -76,7 +76,7 @@ namespace OrchardCore.DisplayManagement.Handlers
 
         public virtual IDisplayResult Display(TModel model)
         {
-            return null;
+            return NullShapeResult();
         }
 
         public virtual Task<IDisplayResult> EditAsync(TModel model, TEditorContext context)
@@ -95,6 +95,11 @@ namespace OrchardCore.DisplayManagement.Handlers
         }
 
         public virtual IDisplayResult Edit(TModel model)
+        {
+            return NullShapeResult();
+        }
+
+        private static IDisplayResult NullShapeResult()
         {
             return null;
         }

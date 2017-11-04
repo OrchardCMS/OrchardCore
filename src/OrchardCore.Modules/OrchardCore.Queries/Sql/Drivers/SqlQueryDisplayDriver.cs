@@ -41,6 +41,12 @@ namespace OrchardCore.Queries.Sql.Drivers
                 if (string.IsNullOrEmpty(query.Template))
                 {
                     updater.TryUpdateModelAsync(model, "", m => m.Query);
+
+                    // The value is empty for new queries, remove any errors
+                    if (string.IsNullOrEmpty(model.Query))
+                    {
+                        updater.ModelState.Clear();
+                    }
                 }
 
             }).Location("Content:5");
@@ -55,7 +61,7 @@ namespace OrchardCore.Queries.Sql.Drivers
                 model.ReturnDocuments = viewModel.ReturnDocuments;
             }
 
-            return Edit(model);
+            return Edit(model, updater);
         }
     }
 }
