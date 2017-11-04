@@ -24,27 +24,22 @@ namespace OrchardCore.GraphQL.Client
         {
             var variables = new JObject(
                 new JProperty(
-                    "data",
+                    "site",
                     new JObject(
-                        new JProperty("type", "setup"),
-                        new JProperty("attributes",
-                            new JObject(
-                            new JProperty("siteName", siteName),
-                            new JProperty("databaseProvider", databaseProvider),
-                            new JProperty("userName", userName),
-                            new JProperty("email", email),
-                            new JProperty("password", password),
-                            new JProperty("passwordConfirmation", password),
-                            new JProperty("recipeName", recipeName)
-                            )
-                        )
+                        new JProperty("siteName", siteName),
+                        new JProperty("databaseProvider", databaseProvider),
+                        new JProperty("userName", userName),
+                        new JProperty("email", email),
+                        new JProperty("password", password),
+                        new JProperty("passwordConfirmation", password),
+                        new JProperty("recipeName", recipeName)
                     )
                 )
             );
 
             var requestJson = new JObject(
                 new JProperty("query", "mutation ($site: SiteSetupInput!){ createSite(site: $site) { executionId } }"),
-                new JProperty("variables", JsonConvert.SerializeObject(variables.ToString()))
+                new JProperty("variables", variables.ToString())
                 );
 
             var response = await _client.PostJsonAsync("graphql", requestJson.ToString());

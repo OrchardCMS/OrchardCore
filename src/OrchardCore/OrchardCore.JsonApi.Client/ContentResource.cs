@@ -14,9 +14,9 @@ namespace OrchardCore.JsonApi.Client
             _client = client;
         }
 
-        public async Task<string> Create(string contentType, Action<ContentTypeCreateResourceBuilder> builder)
+        public Task<string> Create(string contentType, Action<ContentTypeCreateResourceBuilder> builder)
         {
-
+            return Task.FromResult("");
         }
     }
 }

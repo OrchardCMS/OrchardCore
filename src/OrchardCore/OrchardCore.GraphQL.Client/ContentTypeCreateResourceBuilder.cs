@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.GraphQL.Client
 {
@@ -30,15 +31,17 @@ namespace OrchardCore.GraphQL.Client
                 sb.AppendLine(cpb.Build() + ",");
             }
 
-            var variables =
-@"{ 
-    ""contentItem"": {
-        ""contentType"": """+ _contentType + @""", 
-        ""contentParts"": " + JsonConvert.SerializeObject("{" + sb.ToString() + "}") + @"
-    }
-}";
+            var variables = new JObject(
+                new JProperty(
+                    "contentItem",
+                    new JObject(
+                        new JProperty("contentType", _contentType),
+                        new JProperty("contentParts", "{" + sb.ToString() + "}")
+                    )
+                )
+            );
 
-            return variables;
+            return variables.ToString();
         }
     }
 }
