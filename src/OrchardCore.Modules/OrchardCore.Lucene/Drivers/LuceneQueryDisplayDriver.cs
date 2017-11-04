@@ -68,7 +68,7 @@ namespace OrchardCore.Lucene.Drivers
                 updater.ModelState.AddModelError(nameof(model.Index), S["The index field is required"]);
             }
 
-            return Edit(model);
+            return Edit(model, updater);
         }
     }
 }
