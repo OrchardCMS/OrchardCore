@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace OrchardCore.JsonApi.Client
+namespace OrchardCore.Apis.JsonApi.Client
 {
     internal static class HttpContentExtensions
     {

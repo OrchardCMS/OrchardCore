@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace OrchardCore.GraphQL.Client
+namespace OrchardCore.Apis.GraphQL.Client
 {
     /// <summary>
     /// The http request extensions.

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.GraphQL.Client
+namespace OrchardCore.Apis.GraphQL.Client
 {
     public class TenantResource
     {

@@ -5,7 +5,7 @@ using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.GraphQL.Client
+namespace OrchardCore.Apis.GraphQL.Client
 {
     public class ContentResource
     {

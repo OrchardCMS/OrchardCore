@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace OrchardCore.GraphQL.Client
+namespace OrchardCore.Apis.GraphQL.Client
 {
     internal static class HttpContentExtensions
     {

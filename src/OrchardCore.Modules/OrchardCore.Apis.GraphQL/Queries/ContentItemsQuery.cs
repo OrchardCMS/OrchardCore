@@ -50,7 +50,7 @@ namespace OrchardCore.Apis.GraphQL.Queries
                 var query = session.Query<ContentItem, ContentItemIndex>().Where(q =>
                     q.Published == isPublished &&
                     q.Latest == isLatest);
-
+                
                 if (context.HasPopulatedArgument("id"))
                 {
                     var value = context.GetArgument<int>("id");

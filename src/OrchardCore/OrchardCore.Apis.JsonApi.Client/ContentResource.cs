@@ -1,9 +1,9 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using OrchardCore.JsonApi.Client.Builders;
+using OrchardCore.Apis.JsonApi.Client.Builders;
 
-namespace OrchardCore.JsonApi.Client
+namespace OrchardCore.Apis.JsonApi.Client
 {
     public class ContentResource
     {

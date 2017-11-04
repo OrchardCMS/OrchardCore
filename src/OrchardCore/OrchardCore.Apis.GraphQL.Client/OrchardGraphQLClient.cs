@@ -1,12 +1,12 @@
 using System.Net.Http;
 
-namespace OrchardCore.JsonApi.Client
+namespace OrchardCore.Apis.GraphQL.Client
 {
-    public class OrchardJsonApiClient
+    public class OrchardGraphQLClient
     {
         private readonly HttpClient _client;
 
-        public OrchardJsonApiClient(HttpClient client)
+        public OrchardGraphQLClient(HttpClient client)
         {
             _client = client;
         }

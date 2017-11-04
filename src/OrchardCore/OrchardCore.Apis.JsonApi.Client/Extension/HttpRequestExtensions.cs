@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace OrchardCore.JsonApi.Client
+namespace OrchardCore.Apis.JsonApi.Client
 {
     /// <summary>
     /// The http request extensions.

@@ -58,8 +58,7 @@ namespace OrchardCore.Apis.Controllers
                 _.ComplexityConfiguration = new ComplexityConfiguration { MaxDepth = 15 };
                 _.FieldMiddleware.Use<InstrumentFieldsMiddleware>();
 
-            }).ConfigureAwait(false);
-
+            });
 
             return Json(result);
         }

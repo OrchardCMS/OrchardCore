@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OrchardCore.JsonApi.Client.Builders
+namespace OrchardCore.Apis.JsonApi.Client.Builders
 {
     public class ContentPartCreateResourceBuilder
     {

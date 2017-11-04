@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrchardCore.JsonApi.Client.Builders
+namespace OrchardCore.Apis.JsonApi.Client.Builders
 {
     public class ContentTypeCreateResourceBuilder
     {

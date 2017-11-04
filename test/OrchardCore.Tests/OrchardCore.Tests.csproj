@@ -49,6 +49,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Liquid\OrchardCore.Liquid.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Queries\OrchardCore.Queries.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.JsonApi.Client\OrchardCore.Apis.JsonApi.Client.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Application.Cms.Targets\OrchardCore.Application.Cms.Targets.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Data\OrchardCore.Data.csproj" />
@@ -56,9 +58,7 @@
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Extensions\OrchardCore.Environment.Extensions.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Extensions.Abstractions\OrchardCore.Environment.Extensions.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Shell\OrchardCore.Environment.Shell.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.GraphQL.Client\OrchardCore.GraphQL.Client.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Hosting.Console\OrchardCore.Hosting.Console.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.JsonApi.Client\OrchardCore.JsonApi.Client.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Localization.Core\OrchardCore.Localization.Core.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Modules.Abstractions\OrchardCore.Modules.Abstractions.csproj" />
