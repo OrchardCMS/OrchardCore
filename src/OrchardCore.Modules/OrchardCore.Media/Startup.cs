@@ -12,6 +12,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Environment.Shell;
+using OrchardCore.FileStorage;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Drivers;
 using OrchardCore.Media.Fields;
@@ -24,7 +25,7 @@ using OrchardCore.Media.Settings;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Recipes;
-using OrchardCore.StorageProviders.FileSystem;
+using OrchardCore.FileStorage.FileSystem;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
@@ -50,8 +51,12 @@ namespace OrchardCore.Media
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
 
-                string mediaPath = GetMediaPath(env, shellOptions.Value, shellSettings);
-                return new MediaFileStore(new FileSystemStore(mediaPath, shellSettings.RequestUrlPrefix, "/media"));
+                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
+                var fileStore = new FileSystemStore(mediaPath);
+
+                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, "media"); // Kind of hackish to use IFileStore.Combine() for a URL, I know...
+
+                return new MediaFileStore(fileStore, mediaUrlBase);
             });
 
             services.AddScoped<INavigationProvider, AdminMenu>();
@@ -71,7 +76,7 @@ namespace OrchardCore.Media
                         options.Configuration = Configuration.Default;
                         options.MaxBrowserCacheDays = 7;
                         options.MaxCacheDays = 365;
-                        options.OnValidate = validation => 
+                        options.OnValidate = validation =>
                         {
                             // Force some parameters to prevent disk filling.
                             // For more advanced resize parameters the usage of profiles will be necessary.
@@ -142,7 +147,7 @@ namespace OrchardCore.Media
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
             var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
 
-            string mediaPath = GetMediaPath(env, shellOptions.Value, shellSettings);
+            string mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
 
             if (!Directory.Exists(mediaPath))
             {
@@ -160,7 +165,7 @@ namespace OrchardCore.Media
             });
         }
 
-        private string GetMediaPath(IHostingEnvironment env, ShellOptions shellOptions, ShellSettings shellSettings)
+        private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings)
         {
             return Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, "Media");
         }

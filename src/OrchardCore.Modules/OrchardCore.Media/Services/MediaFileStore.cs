@@ -1,82 +1,93 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using OrchardCore.StorageProviders;
+using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Services
 {
     public class MediaFileStore : IMediaFileStore
     {
         private readonly IFileStore _fileStore;
+        private readonly string _publicUrlBase;
+
+        public MediaFileStore(IFileStore fileStore, string publicUrlBase)
+        {
+            _fileStore = fileStore;
+            _publicUrlBase = publicUrlBase;
+        }
 
         public MediaFileStore(IFileStore fileStore)
         {
             _fileStore = fileStore;
         }
 
-        public string Combine(params string[] paths)
+        public Task<IFileStoreEntry> GetFileInfoAsync(string path)
         {
-            return _fileStore.Combine(paths);
+            return _fileStore.GetFileInfoAsync(path);
         }
 
-        public Task<IEnumerable<IFile>> GetDirectoryContentAsync(string subpath = null)
+        public Task<IFileStoreEntry> GetDirectoryInfoAsync(string path)
         {
-            return _fileStore.GetDirectoryContentAsync(subpath);
+            return _fileStore.GetDirectoryInfoAsync(path);
         }
 
-        public Task<IFile> GetFileAsync(string subpath)
+        public Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = null)
         {
-            return _fileStore.GetFileAsync(subpath);
+            return _fileStore.GetDirectoryContentAsync(path);
         }
 
-        public Task<IFile> GetFolderAsync(string subpath)
+        public Task<bool> TryCreateDirectoryAsync(string path)
         {
-            return _fileStore.GetFolderAsync(subpath);
+            return _fileStore.TryCreateDirectoryAsync(path);
         }
 
-        public string GetPublicUrl(string subpath)
+        public Task<bool> TryDeleteFileAsync(string path)
         {
-            return _fileStore.GetPublicUrl(subpath);
+            return _fileStore.TryDeleteFileAsync(path);
         }
 
-        public Task<IFile> MapFileAsync(string absoluteUrl)
+        public Task<bool> TryDeleteDirectoryAsync(string path)
         {
-            return _fileStore.MapFileAsync(absoluteUrl);
+            return _fileStore.TryDeleteDirectoryAsync(path);
         }
 
-        public Task<bool> TryCopyFileAsync(string originalPath, string duplicatePath)
+        public Task MoveFileAsync(string oldPath, string newPath)
         {
-            return _fileStore.TryCopyFileAsync(originalPath, duplicatePath);
+            return _fileStore.MoveFileAsync(oldPath, newPath);
         }
 
-        public Task<bool> TryCreateFolderAsync(string subpath)
+        public Task MoveDirectoryAsync(string oldPath, string newPath)
         {
-            return _fileStore.TryCreateFolderAsync(subpath);
+            return _fileStore.MoveDirectoryAsync(oldPath, newPath);
         }
 
-        public Task<bool> TryDeleteFileAsync(string subpath)
+        public Task CopyFileAsync(string srcPath, string dstPath)
         {
-            return _fileStore.TryDeleteFileAsync(subpath);
+            return _fileStore.CopyFileAsync(srcPath, dstPath);
         }
 
-        public Task<bool> TryDeleteFolderAsync(string subpath)
+        public Task<Stream> GetFileStreamAsync(string path)
         {
-            return _fileStore.TryDeleteFolderAsync(subpath);
+            return _fileStore.GetFileStreamAsync(path);
         }
 
-        public Task<bool> TryMoveFileAsync(string oldPath, string newPath)
+        public Task CreateFileFromStream(string path, Stream inputStream, bool overwrite = false)
         {
-            return _fileStore.TryMoveFileAsync(oldPath, newPath);
+            return _fileStore.CreateFileFromStream(path, inputStream, overwrite);
         }
 
-        public Task<bool> TryMoveFolderAsync(string oldPath, string newPath)
+        public string MapPathToPublicUrl(string path)
         {
-            return _fileStore.TryMoveFolderAsync(oldPath, newPath);
+            return _publicUrlBase.TrimEnd('/') + "/" + this.NormalizePath(path);
         }
 
-        public Task<bool> TrySaveStreamAsync(string subpath, Stream inputStream)
+        public string MapPublicUrlToPath(string publicUrl)
         {
-            return _fileStore.TrySaveStreamAsync(subpath, inputStream);
+            if (!publicUrl.StartsWith(_publicUrlBase, StringComparison.OrdinalIgnoreCase))
+                throw new ArgumentOutOfRangeException(nameof(publicUrl), "The specified URL is not inside the URL scope of the file store.");
+
+            return publicUrl.Substring(_publicUrlBase.Length);
         }
     }
 }

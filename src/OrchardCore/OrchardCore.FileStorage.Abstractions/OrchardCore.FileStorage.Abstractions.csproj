@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <RootNamespace>OrchardCore.StorageProviders</RootNamespace>
+    <RootNamespace>OrchardCore.FileStorage</RootNamespace>
   </PropertyGroup>
 
 </Project>
