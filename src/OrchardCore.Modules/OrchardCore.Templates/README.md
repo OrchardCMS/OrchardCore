@@ -96,7 +96,7 @@ This template is called when a Content Part is rendered.
 | BodyPart | BodyPart.cshtml |
 | ListPartFeed | ListPartFeed.cshtml |
 
-### [ShapeType]_[DisplayType]
+### [ShapeType]\_[DisplayType]
 
 This template is called when a Content Part shape type is rendered in a specific display type.
 
@@ -106,7 +106,7 @@ This template is called when a Content Part shape type is rendered in a specific
 | --------- | ------------ |
 | BodyPart_Summary | BodyPart.Summary.cshtml |
 
-### [ContentType]_[DisplayType]__[PartType]
+### [ContentType]\_[DisplayType]__[PartType]
 
 This template is called when a content part type is rendered for a given content type, with or without a given display type.
 
@@ -119,7 +119,7 @@ This template is called when a content part type is rendered for a given content
 | Blog_Summary__BodyPart | Blog-BodyPart.Summary.cshtml |
 | LandingPage_Summary__BagPart | LandingPage-BagPart.Summary.cshtml |
 
-### [ContentType]_[DisplayType]__[PartName]
+### [ContentType]\_[DisplayType]__[PartName]
 
 This template is called when a content part name is rendered for a given content type, with or without a given display type.
 
@@ -130,7 +130,7 @@ This template is called when a content part name is rendered for a given content
 | LandingPage__Services | LandingPage-Services.cshtml |
 | LandingPage_Summary__Services | LandingPage-Services.Summary.cshtml |
 
-### [ContentType]_[DisplayType]__[PartType]__[ShapeType]
+### [ContentType]\_[DisplayType]__[PartType]__[ShapeType]
 
 This template is called when a shape type is rendered in a given content part type for a given content type, with or without a given display type.
 
@@ -141,7 +141,7 @@ This template is called when a shape type is rendered in a given content part ty
 | Blog__ListPart__ListPartFeed | Blog__ListPart__ListPartFeed.cshtml |
 | Blog_Summary__ListPart__ListPartFeed | Blog__ListPart__ListPartFeed.Summary.cshtml |
 
-### [ContentType]_[DisplayType]__[PartName]__[ShapeType]
+### [ContentType]\_[DisplayType]__[PartName]__[ShapeType]
 
 This template is called when a shape type is rendered in a given content part name for a given content type, with or without a given display type.
 
@@ -164,7 +164,7 @@ shapes.
 The properties available on a shape rendered for a content field are unique for each content
 field. Please refer to each content field documentation.
 
-### [ShapeType]_[DisplayType]
+### [ShapeType]\_[DisplayType]
 
 This template is called when a content field type is rendered in given display type.
 
