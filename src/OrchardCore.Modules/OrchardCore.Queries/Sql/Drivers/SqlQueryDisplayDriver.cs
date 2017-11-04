@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
@@ -9,11 +10,11 @@ namespace OrchardCore.Queries.Sql.Drivers
 {
     public class SqlQueryDisplayDriver : DisplayDriver<Query, SqlQuery>
     {
-        private IStringLocalizer _stringLocalizer;
+        private IStringLocalizer S;
 
         public SqlQueryDisplayDriver(IStringLocalizer<SqlQueryDisplayDriver> stringLocalizer)
         {
-            _stringLocalizer = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public override IDisplayResult Display(SqlQuery query, IUpdateModel updater)
@@ -41,14 +42,7 @@ namespace OrchardCore.Queries.Sql.Drivers
                 if (string.IsNullOrEmpty(query.Template))
                 {
                     updater.TryUpdateModelAsync(model, "", m => m.Query);
-
-                    // The value is empty for new queries, remove any errors
-                    if (string.IsNullOrEmpty(model.Query))
-                    {
-                        updater.ModelState.Clear();
-                    }
                 }
-
             }).Location("Content:5");
         }
 
@@ -59,6 +53,11 @@ namespace OrchardCore.Queries.Sql.Drivers
             {
                 model.Template = viewModel.Query;
                 model.ReturnDocuments = viewModel.ReturnDocuments;
+            }
+
+            if (String.IsNullOrWhiteSpace(model.Template))
+            {
+                updater.ModelState.AddModelError(nameof(model.Template), S["The query field is required"]);
             }
 
             return Edit(model, updater);
