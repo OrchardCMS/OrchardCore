@@ -42,10 +42,14 @@ namespace OrchardCore.Lucene.Drivers
                 // Extract query from the query string if we come from the main query editor
                 if (string.IsNullOrEmpty(query.Template))
                 {
-                    updater.TryUpdateModelAsync(model, "", m => m.Query);
+                    var queryStringModel = new QueryStringModel();
+                    updater.TryUpdateModelAsync(queryStringModel, "", m => m.Query);
+                    model.Query = queryStringModel.Query;
                 }
             }).Location("Content:5");
         }
+
+        internal class QueryStringModel { public string Query { get; set; } }
 
         public override async Task<IDisplayResult> UpdateAsync(LuceneQuery model, IUpdateModel updater)
         {
@@ -57,7 +61,7 @@ namespace OrchardCore.Lucene.Drivers
                 model.ReturnContentItems = viewModel.ReturnContentItems;
             }
 
-            return Edit(model);
+            return Edit(model, updater);
         }
     }
 }

@@ -40,17 +40,15 @@ namespace OrchardCore.Queries.Sql.Drivers
                 // Extract query from the query string if we come from the main query editor
                 if (string.IsNullOrEmpty(query.Template))
                 {
-                    updater.TryUpdateModelAsync(model, "", m => m.Query);
-
-                    // The value is empty for new queries, remove any errors
-                    if (string.IsNullOrEmpty(model.Query))
-                    {
-                        updater.ModelState.Clear();
-                    }
+                    var queryStringModel = new QueryStringModel();
+                    updater.TryUpdateModelAsync(queryStringModel, "", m => m.Query);
+                    model.Query = queryStringModel.Query;
                 }
 
             }).Location("Content:5");
         }
+
+        internal class QueryStringModel { public string Query { get; set; } }
 
         public override async Task<IDisplayResult> UpdateAsync(SqlQuery model, IUpdateModel updater)
         {
