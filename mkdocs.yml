@@ -7,7 +7,10 @@ repo_url: https://github.com/OrchardCMS/OrchardCore
 
 # Options
 docs_dir: src
-extra_css: []
+
+extra_css: 
+- docs/css/extra.css
+
 extra_javascript:
 - docs/js/extra.js
 
