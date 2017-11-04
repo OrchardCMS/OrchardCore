@@ -11,11 +11,5 @@ namespace OrchardCore.Apis.GraphQL.Mutations
             services.AddGraphMutationType<DeleteContentItemMutation>();
             services.AddScoped<ContentItemInputType>();
         }
-
-        public static void AddGraphMutationType<T>(this IServiceCollection services) where T : MutationFieldType
-        {
-            services.AddScoped<T>();
-            services.AddScoped<MutationFieldType, T>();
-        }
     }
 }

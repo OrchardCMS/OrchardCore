@@ -14,11 +14,5 @@ namespace OrchardCore.Apis.GraphQL.Queries
             services.AddScoped<IDynamicQueryFieldTypeProvider, DynamicQueryFieldTypeProvider>();
             services.AddScoped<QueriesSchema>();
         }
-
-        public static void AddGraphQueryType<T>(this IServiceCollection services) where T : QueryFieldType
-        {
-            services.AddScoped<T>();
-            services.AddScoped<QueryFieldType, T>();
-        }
     }
 }

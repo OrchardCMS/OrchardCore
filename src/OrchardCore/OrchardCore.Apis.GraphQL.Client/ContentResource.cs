@@ -2,7 +2,6 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Apis.GraphQL.Client
@@ -16,7 +15,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             _client = client;
         }
 
-        public async Task<string> CreateAsync(string contentType, Action<ContentTypeCreateResourceBuilder> builder) {
+        public async Task<string> Create(string contentType, Action<ContentTypeCreateResourceBuilder> builder) {
             var contentTypeBuilder = new ContentTypeCreateResourceBuilder(contentType);
             builder(contentTypeBuilder);
 
@@ -39,7 +38,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             return result["data"]["createContentItem"]["contentItemId"].ToString();
         }
 
-        public async Task<JObject> QueryAsync(string contentType, Action<ContentTypeQueryResourceBuilder> builder)
+        public async Task<JObject> Query(string contentType, Action<ContentTypeQueryResourceBuilder> builder)
         {
             var contentTypeBuilder = new ContentTypeQueryResourceBuilder(contentType);
             builder(contentTypeBuilder);
@@ -57,7 +56,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             return JObject.Parse(await response.Content.ReadAsStringAsync());
         }
 
-        public async Task DeleteAsync(string blogPostContentItemId)
+        public async Task Delete(string blogPostContentItemId)
         {
             var requestJson = new JObject(
                 new JProperty("query", @"mutation DeleteContentItem { deleteContentItem( contentItemId: """+ blogPostContentItemId + @""") { status } }"),
@@ -71,5 +70,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 throw new Exception(await response.Content.ReadAsStringAsync());
             }
         }
+
+        public QueriesResource Queries => new QueriesResource(_client);
     }
 }
