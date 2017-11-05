@@ -16,9 +16,12 @@ namespace OrchardCore.Apis.GraphQL.Arguments
 
             foreach (var propertyInfo in properties)
             {
-                propertyInfo.SetValue(
-                    value,
-                    resolveFieldContext.GetArgument(propertyInfo.PropertyType, propertyInfo.Name));
+                if (resolveFieldContext.HasPopulatedArgument(propertyInfo.Name))
+                {
+                    propertyInfo.SetValue(
+                        value,
+                        resolveFieldContext.GetArgument(propertyInfo.PropertyType, propertyInfo.Name));
+                }
             }
 
             return value;
