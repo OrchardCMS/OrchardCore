@@ -64,7 +64,7 @@
                 categoryClassName += " last";
             }
 
-            <p>
+            <div>
                 @{
                     var features = featureGroup.OrderBy(f => f.Descriptor.Name);
                     var categoryFeatureNames = String.Join(" ", features.Select(f => f.Descriptor.Name));
@@ -144,7 +144,7 @@
                         }
                     }
                 </ul>
-            </p>
+            </div>
         }
     }
 
