@@ -13,13 +13,13 @@ namespace OrchardCore.Contents.Apis.GraphQL.Mutations
             Name = "DeleteContentItem";
 
             Arguments = new QueryArguments(
-                new QueryArgument<StringGraphType> { Name = "contentItemId" }
+                new QueryArgument<StringGraphType> { Name = "ContentItemId" }
             );
 
             Type = typeof(DeletionStatus);
 
             Resolver = new SlowFuncFieldResolver<object, Task<DeletionStatus>>(async (context) => {
-                var contentItemId = context.GetArgument<string>("contentItemId");
+                var contentItemId = context.GetArgument<string>("ContentItemId");
 
                 var contentItem = await contentManager.GetAsync(contentItemId);
 

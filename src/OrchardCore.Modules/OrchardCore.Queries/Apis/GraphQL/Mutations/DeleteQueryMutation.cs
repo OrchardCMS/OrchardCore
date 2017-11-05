@@ -1,0 +1,41 @@
+using System.Threading.Tasks;
+using GraphQL.Resolvers;
+using GraphQL.Types;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Apis.GraphQL.Types;
+
+namespace OrchardCore.Queries.Apis.GraphQL.Mutations
+{
+    public class DeleteQueryMutation : MutationFieldType
+    {
+        public IStringLocalizer T { get; set; }
+
+        public DeleteQueryMutation(
+            IQueryManager queryManager,
+            IStringLocalizer<DeleteQueryMutation> t)
+        {
+            T = t;
+
+            Name = "DeleteQuery";
+
+            Arguments = new QueryArguments(
+                new QueryArgument<StringGraphType> { Name = "Name" }
+                );
+
+            Type = typeof(DeletionStatus);
+
+            Resolver = new SlowFuncFieldResolver<object, Task<DeletionStatus>>(async (context) => {
+                var name = context.GetArgument<string>("Name");
+
+                await queryManager.DeleteQueryAsync(name);
+
+                return new DeletionStatus { Status = "Ok" };
+            });
+        }
+    }
+
+    public class DeletionStatus : GraphType
+    {
+        public string Status { get; set; }
+    }
+}

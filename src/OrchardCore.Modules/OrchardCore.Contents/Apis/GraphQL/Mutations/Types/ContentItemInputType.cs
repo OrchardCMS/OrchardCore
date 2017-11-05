@@ -8,13 +8,13 @@ namespace OrchardCore.Contents.Apis.GraphQL.Mutations.Types
         {
             Name = "ContentItemInput";
 
-            Field<StringGraphType>("contentType");
-            Field<StringGraphType>("owner");
-            Field<StringGraphType>("author");
+            Field<StringGraphType>("ContentType");
+            Field<StringGraphType>("Owner");
+            Field<StringGraphType>("Author");
 
-            Field<BooleanGraphType>("published");
+            Field<BooleanGraphType>("Published");
 
-            Field<StringGraphType>("contentParts");
+            Field<StringGraphType>("ContentParts");
         }
     }
 }

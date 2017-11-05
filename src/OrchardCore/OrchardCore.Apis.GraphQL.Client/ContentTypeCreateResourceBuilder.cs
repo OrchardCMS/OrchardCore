@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Text;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Apis.GraphQL.Client
@@ -33,10 +32,10 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             var variables = new JObject(
                 new JProperty(
-                    "contentItem",
+                    "ContentItem",
                     new JObject(
-                        new JProperty("contentType", _contentType),
-                        new JProperty("contentParts", "{" + sb.ToString() + "}")
+                        new JProperty("ContentType", _contentType),
+                        new JProperty("ContentParts", "{" + sb.ToString() + "}")
                     )
                 )
             );

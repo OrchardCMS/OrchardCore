@@ -2,9 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Mutations;
 using OrchardCore.Apis.GraphQL.Types;
@@ -24,16 +21,16 @@ namespace OrchardCore.Contents.Apis.GraphQL.Mutations
             Name = "CreateContentItem";
 
             Arguments = new QueryArguments(
-                new QueryArgument<ContentItemInputType> { Name = "contentItem" }
+                new QueryArgument<ContentItemInputType> { Name = "ContentItem" }
             );
 
             Type = typeof(ContentItemType);
 
             Resolver = new SlowFuncFieldResolver<object, Task<object>>(async (context) => {
-                var contentItemFabrication = context.GetArgument<ContentItem>("contentItem");
+                var contentItemFabrication = context.GetArgument<ContentItem>("ContentItem");
 
                 var contentParts = JObject.Parse(
-                    (context.Arguments["contentItem"] as IDictionary<string, object>)["contentParts"].ToString());
+                    (context.Arguments["ContentItem"] as IDictionary<string, object>)["ContentParts"].ToString());
 
                 var contentItem = contentManager.New(contentItemFabrication.ContentType);
 
