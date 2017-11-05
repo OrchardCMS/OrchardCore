@@ -8,6 +8,7 @@ using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
 {
@@ -16,6 +17,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         public static FilterCollection WithLiquidViewFilters(this FilterCollection filters)
         {
             filters.AddAsyncFilter("t", Localize);
+            filters.AddAsyncFilter("html_classify", HtmlClassify);
             filters.AddAsyncFilter("new_shape", NewShape);
             filters.AddAsyncFilter("shape_string", ShapeString);
             filters.AddAsyncFilter("clear_alternates", ClearAlternates);
@@ -47,6 +49,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
             return Task.FromResult<FluidValue>(new StringValue(((IViewLocalizer)localizer)
                 .GetString(input.ToStringValue(), parameters.ToArray())));
+        }
+
+        public static Task<FluidValue> HtmlClassify(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+
+            return Task.FromResult<FluidValue>(new StringValue(input.ToStringValue().HtmlClassify()));
         }
 
         public static async Task<FluidValue> NewShape(FluidValue input, FilterArguments arguments, TemplateContext context)

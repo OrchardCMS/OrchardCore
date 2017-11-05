@@ -103,6 +103,20 @@ Output
 Bonjour!
 ```
 
+### html_classify
+
+Converts a string into a friendly html class.
+
+Input
+```
+{{ "LandingPage" | html_classify }}
+```
+
+Output
+```
+landing-page
+```
+
 ### Markdownify
 
 Converts a Markdown string to HTML.
