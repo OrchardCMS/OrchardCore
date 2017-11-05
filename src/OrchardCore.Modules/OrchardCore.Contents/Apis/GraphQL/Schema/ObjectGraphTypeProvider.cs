@@ -11,7 +11,6 @@ namespace OrchardCore.Contents.Apis.GraphQL.Schema
 
         public ObjectGraphTypeProvider(
             IEnumerable<ContentPart> contentParts)
-
         {
             _contentParts = contentParts;
         }

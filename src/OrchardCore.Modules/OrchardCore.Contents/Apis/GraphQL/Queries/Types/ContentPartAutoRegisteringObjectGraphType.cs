@@ -5,7 +5,6 @@ using System.Reflection;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Contents.Apis.GraphQL.Queries.Types
