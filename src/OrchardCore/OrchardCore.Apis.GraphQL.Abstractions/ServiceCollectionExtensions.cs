@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Apis.GraphQL;
+using OrchardCore.Apis.GraphQL.Types;
 
 namespace OrchardCore.Apis
 {

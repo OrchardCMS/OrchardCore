@@ -2,7 +2,7 @@ using GraphQL.Types;
 
 namespace OrchardCore.Apis.GraphQL
 {
-    internal static class ResolveFieldContextExtensions
+    public static class ResolveFieldContextExtensions
     {
         public static bool HasPopulatedArgument<TSource>(this ResolveFieldContext<TSource> source, string argumentName)
         {

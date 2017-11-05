@@ -1,7 +1,7 @@
 using GraphQL.Types;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Apis.GraphQL.Types
+namespace OrchardCore.Contents.Apis.GraphQL.Queries.Types
 {
     public class ContentItemType : AutoRegisteringObjectGraphType<ContentItem>
     {

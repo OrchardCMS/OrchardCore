@@ -18,7 +18,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var contentItemId = await _siteContext
                 .Client
                 .Content
-                .CreateAsync("Blog", builder => {
+                .Create("Blog", builder => {
                     builder
                         .WithContentPart("TitlePart")
                         .AddField("Title", "Hi There!");

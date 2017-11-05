@@ -1,9 +1,10 @@
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Apis.GraphQL.Mutations
+namespace OrchardCore.Contents.Apis.GraphQL.Mutations
 {
     public class DeleteContentItemMutation : MutationFieldType
     {

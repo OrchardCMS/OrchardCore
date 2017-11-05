@@ -22,24 +22,18 @@ namespace OrchardCore.Apis.GraphQL.Client
             string email,
             string recipeName)
         {
-            var variables = new JObject(
-                new JProperty(
-                    "site",
-                    new JObject(
-                        new JProperty("siteName", siteName),
-                        new JProperty("databaseProvider", databaseProvider),
-                        new JProperty("userName", userName),
-                        new JProperty("email", email),
-                        new JProperty("password", password),
-                        new JProperty("passwordConfirmation", password),
-                        new JProperty("recipeName", recipeName)
-                    )
-                )
-            );
-
             var requestJson = new JObject(
-                new JProperty("query", "mutation ($site: SiteSetupInput!){ createSite(site: $site) { executionId } }"),
-                new JProperty("variables", variables.ToString())
+                new JProperty("query", "mutation CreateTenant { " +
+                "createTenant(" +
+                @" SiteName: """ + siteName + @"""," +
+                @" DatabaseProvider: """ + databaseProvider + @"""," +
+                @" UserName: """ + userName + @"""," +
+                @" Email: """ + email + @"""," +
+                @" Password: """ + password + @"""," +
+                @" PasswordConfirmation: """ + password + @"""," +
+                @" RecipeName: """ + recipeName + @"""" +
+                " ) { executionId } }"),
+                new JProperty("variables", "")
                 );
 
             var response = await _client.PostJsonAsync("graphql", requestJson.ToString());
@@ -48,7 +42,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             var value = await response.Content.ReadAsStringAsync();
 
-            return JObject.Parse(value)["data"]["createSite"]["executionId"].ToString();
+            return JObject.Parse(value)["data"]["createTenant"]["executionId"].ToString();
         }
     }
 }

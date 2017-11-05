@@ -10,7 +10,5 @@ namespace OrchardCore.Apis.GraphQL.Client
         {
             _client = client;
         }
-
-        public void Create()
     }
 }

@@ -21,7 +21,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var result = await _context
                 .Client
                 .Content
-                .QueryAsync("Blog", builder => {
+                .Query("Blog", builder => {
                     builder
                         .AddField("contentItemId");
                 });
@@ -36,7 +36,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var blogPostContentItemId = await _context
                 .Client
                 .Content
-                .CreateAsync("BlogPost", builder =>
+                .Create("BlogPost", builder =>
                 {
                     builder
                         .WithContentPart("TitlePart")
@@ -50,7 +50,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             await _context
                 .Client
                 .Content
-                .QueryAsync("BlogPost", builder =>
+                .Query("BlogPost", builder =>
                 {
                     builder
                         .WithQueryField("contentItemId", blogPostContentItemId);
@@ -63,7 +63,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var result = await _context
                 .Client
                 .Content
-                .QueryAsync("BlogPost", builder =>
+                .Query("BlogPost", builder =>
                 {
                     builder
                         .WithQueryField("ContentItemId", blogPostContentItemId);
@@ -82,7 +82,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var blogPostContentItemId1 = await _context
                 .Client
                 .Content
-                .CreateAsync("BlogPost", builder =>
+                .Create("BlogPost", builder =>
                 {
                     builder
                         .WithContentPart("TitlePart")
@@ -100,7 +100,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var blogPostContentItemId2 = await _context
                 .Client
                 .Content
-                .CreateAsync("BlogPost", builder =>
+                .Create("BlogPost", builder =>
                 {
                     builder
                         .WithContentPart("TitlePart")
@@ -118,7 +118,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var result = await _context
                 .Client
                 .Content
-                .QueryAsync("BlogPost", builder =>
+                .Query("BlogPost", builder =>
                 {
                     builder
                         .WithNestedQueryField("AutoroutePart", "path: \"Path1\"");
@@ -137,7 +137,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var blogPostContentItemId = await _context
                 .Client
                 .Content
-                .CreateAsync("BlogPost", builder =>
+                .Create("BlogPost", builder =>
                 {
                     builder
                         .WithContentPart("TitlePart")
@@ -151,7 +151,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var result = await _context
                 .Client
                 .Content
-                .QueryAsync("BlogPost", builder =>
+                .Query("BlogPost", builder =>
                 {
                     builder
                         .WithQueryField("contentItemId", blogPostContentItemId);
@@ -166,12 +166,12 @@ namespace OrchardCore.Tests.Apis.GraphQL
             await _context
                 .Client
                 .Content
-                .DeleteAsync(blogPostContentItemId);
+                .Delete(blogPostContentItemId);
 
             var result2 = await _context
                 .Client
                 .Content
-                .QueryAsync("BlogPost", builder =>
+                .Query("BlogPost", builder =>
                 {
                     builder
                         .WithQueryField("contentItemId", blogPostContentItemId);

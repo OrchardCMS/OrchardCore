@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using GraphQL.Types;
+using OrchardCore.Apis.GraphQL.Types;
 
 namespace OrchardCore.Apis.GraphQL.Queries
 {
@@ -7,7 +8,7 @@ namespace OrchardCore.Apis.GraphQL.Queries
     {
         public QueriesSchema(
             IEnumerable<QueryFieldType> queryFields,
-            IDynamicQueryFieldTypeProvider provider)
+            IEnumerable<IDynamicQueryFieldTypeProvider> dynamicQueryFieldTypeProviders)
         {
             Name = "Query";
 
@@ -16,9 +17,12 @@ namespace OrchardCore.Apis.GraphQL.Queries
                 AddField(queryField);
             }
 
-            foreach (var queryField in provider.GetFields())
+            foreach (var dynamicQueryFieldTypeProvider in dynamicQueryFieldTypeProviders)
             {
-                AddField(queryField);
+                foreach (var queryField in dynamicQueryFieldTypeProvider.GetFields())
+                {
+                    AddField(queryField);
+                }
             }
         }
     }

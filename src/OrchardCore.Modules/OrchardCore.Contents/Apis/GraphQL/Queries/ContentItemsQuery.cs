@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
 using YesSql;
 
-namespace OrchardCore.Apis.GraphQL.Queries
+namespace OrchardCore.Contents.Apis.GraphQL.Queries
 {
     public class ContentItemsQuery : QueryFieldType
     {

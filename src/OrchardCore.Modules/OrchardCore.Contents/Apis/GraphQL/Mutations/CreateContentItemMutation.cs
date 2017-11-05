@@ -6,21 +6,20 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Apis.GraphQL.Mutations;
+using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.Apis.GraphQL.Mutations.Types;
-using OrchardCore.Apis.GraphQL.Types;
+using OrchardCore.Contents.Apis.GraphQL.Mutations.Types;
+using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
 
-namespace OrchardCore.Apis.GraphQL.Mutations
+namespace OrchardCore.Contents.Apis.GraphQL.Mutations
 {
     public class CreateContentItemMutation : MutationFieldType
     {
         public CreateContentItemMutation(IContentManager contentManager,
             IContentItemDisplayManager contentDisplay,
-            IModelMetadataProvider metadataProvider,
-            IModelBinderFactory modelBinderFactory,
-            IHttpContextAccessor httpContextAccessor,
-            IObjectModelValidator objectModelValidator)
+            IApiUpdateModel apiUpdateModel)
         {
             Name = "CreateContentItem";
 
@@ -41,7 +40,7 @@ namespace OrchardCore.Apis.GraphQL.Mutations
                 contentItem.Author = contentItemFabrication.Author;
                 contentItem.Owner = contentItemFabrication.Owner;
 
-                var updateModel = new ApiUpdateModel(metadataProvider, modelBinderFactory, httpContextAccessor, objectModelValidator, contentParts);
+                var updateModel = apiUpdateModel.WithModel(contentParts);
 
                 await contentDisplay.UpdateEditorAsync(contentItem, updateModel);
 

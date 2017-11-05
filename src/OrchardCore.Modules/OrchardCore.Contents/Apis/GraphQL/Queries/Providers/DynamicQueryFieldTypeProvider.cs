@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using OrchardCore.Apis.GraphQL.Types;
+using OrchardCore.Apis.GraphQL;
+using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
 using YesSql;
 
-namespace OrchardCore.Apis.GraphQL.Queries
+namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
 {
     public class DynamicQueryFieldTypeProvider : IDynamicQueryFieldTypeProvider
     {

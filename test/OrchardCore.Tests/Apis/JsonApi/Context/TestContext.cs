@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.FunctionalTests;
-using OrchardCore.JsonApi.Client;
+using OrchardCore.Apis.JsonApi.Client;
 using OrchardCore.Tests.Apis.Sources;
 using Xunit;
 

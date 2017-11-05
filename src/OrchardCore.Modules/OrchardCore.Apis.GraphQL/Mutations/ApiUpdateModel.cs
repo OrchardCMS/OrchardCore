@@ -7,30 +7,28 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Internal;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Newtonsoft.Json.Linq;
-using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.Apis.GraphQL.Mutations
 {
-    public class ApiUpdateModel : IUpdateModel
+    public class ApiUpdateModel : IApiUpdateModel
     {
         private readonly IModelMetadataProvider _metadataProvider;
         private readonly IModelBinderFactory _modelBinderFactory;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IObjectModelValidator _objectModelValidator;
-        private readonly JObject _model;
+
+        private JObject _model;
 
         public ModelStateDictionary ModelState => new ModelStateDictionary();
 
         public ApiUpdateModel(IModelMetadataProvider metadataProvider, 
             IModelBinderFactory modelBinderFactory,
             IHttpContextAccessor httpContextAccessor,
-            IObjectModelValidator objectModelValidator,
-            JObject model) {
+            IObjectModelValidator objectModelValidator) {
             _metadataProvider = metadataProvider;
             _modelBinderFactory = modelBinderFactory;
             _httpContextAccessor = httpContextAccessor;
             _objectModelValidator = objectModelValidator;
-            _model = model;
         }
 
         public Task<bool> TryUpdateModelAsync<TModel>(TModel model) where TModel : class
@@ -98,6 +96,12 @@ namespace OrchardCore.Apis.GraphQL.Mutations
         public bool TryValidateModel(object model, string prefix)
         {
             return false;
+        }
+
+        public IApiUpdateModel WithModel(JObject jObject)
+        {
+            _model = jObject;
+            return this;
         }
     }
 

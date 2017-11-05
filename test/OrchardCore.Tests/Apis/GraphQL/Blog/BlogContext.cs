@@ -13,7 +13,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
 
             var result = await Client
                 .Content
-                .QueryAsync("Blog", builder => {
+                .Query("Blog", builder => {
                     builder
                         .AddField("contentItemId");
                 });

@@ -9,7 +9,6 @@ namespace OrchardCore.Setup.Apis.GraphQL
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddGraphMutationType<CreateTenantMutation>();
-            services.AddScoped<CreateTenantInputType>();
             services.AddScoped<CreateTenantOutcomeType>();
         }
     }

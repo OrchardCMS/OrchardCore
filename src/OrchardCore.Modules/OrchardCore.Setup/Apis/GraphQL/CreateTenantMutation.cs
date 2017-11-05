@@ -1,17 +1,17 @@
 using System;
-using GraphQL;
-using GraphQL.Types;
-using OrchardCore.Setup.Services;
-using OrchardCore.Setup.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Data;
-using OrchardCore.Recipes.Models;
-using OrchardCore.Apis.GraphQL;
-using GraphQL.Resolvers;
 using System.Threading.Tasks;
+using GraphQL;
+using GraphQL.Resolvers;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Apis.GraphQL.Arguments;
+using OrchardCore.Apis.GraphQL.Types;
+using OrchardCore.Data;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Setup.Services;
+using OrchardCore.Setup.ViewModels;
 
 namespace OrchardCore.Setup.Apis.GraphQL
 {
@@ -37,15 +37,12 @@ namespace OrchardCore.Setup.Apis.GraphQL
 
             Name = "CreateTenant";
 
-            Arguments = new QueryArguments(
-                new QueryArgument<CreateTenantInputType> { Name = "site" }
-            );
+            Arguments = new AutoRegisteringQueryArguments<SetupViewModel>();
 
             Type = typeof(CreateTenantOutcomeType);
 
-
             Resolver = new SlowFuncFieldResolver<object, Task<object>>(async (context) => {
-                var model = context.GetArgument<SetupViewModel>("site");
+                var model = context.MapArgumentsTo<SetupViewModel>();
 
                 model.DatabaseProviders = _databaseProviders;
                 model.Recipes = await _setupService.GetSetupRecipesAsync();
@@ -135,7 +132,7 @@ namespace OrchardCore.Setup.Apis.GraphQL
                     return null;
                 }
 
-                return new SiteSetupOutcome
+                return new CreateTenantOutcome
                 {
                     ExecutionId = executionId
                 };
