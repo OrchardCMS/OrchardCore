@@ -131,22 +131,22 @@ namespace OrchardCore.FileStorage.FileSystem
             return Task.CompletedTask;
         }
 
-        public Task MoveDirectoryAsync(string oldPath, string newPath)
-        {
-            var physicalOldPath = GetPhysicalPath(oldPath);
+        //public Task MoveDirectoryAsync(string oldPath, string newPath)
+        //{
+        //    var physicalOldPath = GetPhysicalPath(oldPath);
 
-            if (!Directory.Exists(physicalOldPath))
-                throw new FileStoreException($"Cannot move directory '{oldPath}' because it does not exist.");
+        //    if (!Directory.Exists(physicalOldPath))
+        //        throw new FileStoreException($"Cannot move directory '{oldPath}' because it does not exist.");
 
-            var physicalNewPath = GetPhysicalPath(newPath);
+        //    var physicalNewPath = GetPhysicalPath(newPath);
 
-            if (File.Exists(physicalNewPath) || Directory.Exists(physicalNewPath))
-                throw new FileStoreException($"Cannot move directory because the new path '{newPath}' already exists.");
+        //    if (File.Exists(physicalNewPath) || Directory.Exists(physicalNewPath))
+        //        throw new FileStoreException($"Cannot move directory because the new path '{newPath}' already exists.");
 
-            Directory.Move(physicalOldPath, physicalNewPath);
+        //    Directory.Move(physicalOldPath, physicalNewPath);
 
-            return Task.CompletedTask;
-        }
+        //    return Task.CompletedTask;
+        //}
 
         public Task CopyFileAsync(string srcPath, string dstPath)
         {

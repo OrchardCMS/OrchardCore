@@ -8,7 +8,7 @@ namespace OrchardCore.FileStorage
     public interface IFileStoreEntry
     {
         /// <summary>
-        /// Gets the relative path of the file store entry within the file store.
+        /// Gets the full path of the file store entry within the file store.
         /// </summary>
         string Path { get; }
 
@@ -18,7 +18,7 @@ namespace OrchardCore.FileStorage
         string Name { get; }
 
         /// <summary>
-        /// Gets the relative path of the file store entry's containing directory within the file store.
+        /// Gets the full path of the file store entry's containing directory within the file store.
         /// </summary>
         string DirectoryPath { get; }
 
@@ -28,9 +28,9 @@ namespace OrchardCore.FileStorage
         long Length { get; }
 
         /// <summary>
-        /// Gets the date and time when the file store entry was last modified.
+        /// Gets the date and time in UTC when the file store entry was last modified.
         /// </summary>
-        DateTime LastModified { get; }
+        DateTime LastModifiedUtc { get; }
 
         /// <summary>
         /// Gets a boolean indicating whether the file store entry is a directory.

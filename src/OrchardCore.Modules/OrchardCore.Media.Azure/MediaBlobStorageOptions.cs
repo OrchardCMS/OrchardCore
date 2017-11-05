@@ -1,4 +1,6 @@
-namespace OrchardCore.Azure.Storage.Media
+using OrchardCore.FileStorage.AzureBlob;
+
+namespace OrchardCore.Media.Azure
 {
     public class MediaBlobStorageOptions : BlobStorageOptions
     {

@@ -1,6 +1,6 @@
-namespace OrchardCore.Azure.Storage
+namespace OrchardCore.FileStorage.AzureBlob
 {
-    public class BlobStorageOptions
+    public abstract class BlobStorageOptions
     {
         public string ConnectionString { get; set; }
         public string ContainerName { get; set; }

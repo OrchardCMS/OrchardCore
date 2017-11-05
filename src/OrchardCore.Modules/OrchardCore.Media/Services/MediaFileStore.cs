@@ -57,10 +57,10 @@ namespace OrchardCore.Media.Services
             return _fileStore.MoveFileAsync(oldPath, newPath);
         }
 
-        public Task MoveDirectoryAsync(string oldPath, string newPath)
-        {
-            return _fileStore.MoveDirectoryAsync(oldPath, newPath);
-        }
+        //public Task MoveDirectoryAsync(string oldPath, string newPath)
+        //{
+        //    return _fileStore.MoveDirectoryAsync(oldPath, newPath);
+        //}
 
         public Task CopyFileAsync(string srcPath, string dstPath)
         {

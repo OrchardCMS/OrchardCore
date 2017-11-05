@@ -9,9 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\OrchardCore.Modules\OrchardCore.Media\OrchardCore.Media.csproj" />
-    <ProjectReference Include="..\src\OrchardCore\OrchardCore.Media.Abstractions\OrchardCore.Media.Abstractions.csproj" />
-    <ProjectReference Include="..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.FileStorage.AzureBlob\OrchardCore.FileStorage.AzureBlob.csproj" />
+    <ProjectReference Include="..\OrchardCore.Media\OrchardCore.Media.csproj" />
   </ItemGroup>
 
   <ItemGroup>
