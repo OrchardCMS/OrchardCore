@@ -30,7 +30,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Mutations
                 var contentItemFabrication = context.GetArgument<ContentItem>("ContentItem");
 
                 var contentParts = JObject.Parse(
-                    (context.Arguments["ContentItem"] as IDictionary<string, object>)["ContentParts"].ToString());
+                    (context.Arguments["ContentItem"] as IDictionary<string, object>)["contentParts"].ToString());
 
                 var contentItem = contentManager.New(contentItemFabrication.ContentType);
 

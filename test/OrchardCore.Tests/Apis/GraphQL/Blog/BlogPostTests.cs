@@ -47,26 +47,13 @@ namespace OrchardCore.Tests.Apis.GraphQL
                         .AddField("ListContentItemId", _context.BlogContentItemId);
                 });
             
-            await _context
-                .Client
-                .Content
-                .Query("BlogPost", builder =>
-                {
-                    builder
-                        .WithQueryField("contentItemId", blogPostContentItemId);
-
-                    builder
-                        .WithNestedField("TitlePart")
-                        .AddField("Title");
-                });
-            
             var result = await _context
                 .Client
                 .Content
                 .Query("BlogPost", builder =>
                 {
                     builder
-                        .WithQueryField("ContentItemId", blogPostContentItemId);
+                        .WithQueryField("contentItemId", blogPostContentItemId);
 
                     builder
                         .WithNestedField("TitlePart")
@@ -121,7 +108,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .Query("BlogPost", builder =>
                 {
                     builder
-                        .WithNestedQueryField("AutoroutePart", "path: \"Path1\"");
+                        .WithNestedQueryField("AutoroutePart", "Path: \"Path1\"");
 
                     builder
                         .WithNestedField("TitlePart")

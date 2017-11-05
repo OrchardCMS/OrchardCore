@@ -87,7 +87,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
                         typeType.AddField(fieldType);
 
                         // http://facebook.github.io/graphql/October2016/#sec-Input-Object-Values
-                        queryArguments.Add(new QueryArgument(graphType) { Name = name.ToGraphQLStringFormat() });
+                        queryArguments.Add(new QueryArgument(graphType) { Name = name });
 
                         /*
                             query {

@@ -3,7 +3,7 @@
     "blogPost": [
       {
         "titlePart": {
-          "title": "Some sorta blogpost!"
+          "Title": "Some sorta blogpost!"
         }
       }
     ]

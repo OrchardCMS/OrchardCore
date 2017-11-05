@@ -29,13 +29,13 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Types
                 var field = new FieldType
                 {
                     Type = graphType,
-                    Name = propertyInfo.Name.ToGraphQLStringFormat(),
+                    Name = propertyInfo.Name,
                     ResolvedType = graphType.BuildNamedType(),
                     Resolver = new FuncFieldResolver<object, object>((context) =>
                     {
                         var values = context.Source.As<ContentElement>().AsDictionary();
 
-                        return values.First(x => x.Key.ToGraphQLStringFormat() == context.FieldName).Value;
+                        return values.First(x => x.Key == context.FieldName).Value;
                     })
                 };
 

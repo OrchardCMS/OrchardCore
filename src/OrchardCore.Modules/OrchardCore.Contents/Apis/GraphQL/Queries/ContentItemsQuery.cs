@@ -98,7 +98,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries
 
                         if (nestedValues != null)
                         {
-                            var contentPart = contentParts.First(cp => cp.GetType().Name.ToGraphQLStringFormat() == argument.Key);
+                            var contentPart = contentParts.First(cp => cp.GetType().Name == argument.Key);
                             var contentPartType = contentPart.GetType();
 
                             foreach (var nestedValue in nestedValues)
@@ -107,7 +107,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries
                                     var foundPart = ci
                                         .Get(contentPartType, contentPartType.Name)
                                         .AsDictionary()
-                                        .First(k => k.Key.ToGraphQLStringFormat() == nestedValue.Key);
+                                        .First(k => k.Key == nestedValue.Key);
 
                                     return foundPart.Value.Equals(nestedValue.Value);
                                 });

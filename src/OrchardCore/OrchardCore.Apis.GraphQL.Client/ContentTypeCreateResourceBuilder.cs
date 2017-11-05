@@ -32,10 +32,10 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             var variables = new JObject(
                 new JProperty(
-                    "ContentItem",
+                    "contentItem",
                     new JObject(
-                        new JProperty("ContentType", _contentType),
-                        new JProperty("ContentParts", "{" + sb.ToString() + "}")
+                        new JProperty("contentType", _contentType),
+                        new JProperty("contentParts", "{" + sb.ToString() + "}")
                     )
                 )
             );

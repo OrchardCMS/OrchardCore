@@ -55,7 +55,7 @@ namespace OrchardCore.Apis.GraphQL.Mutations
             var modelState = new ModelStateDictionary();
 
             var name = model.GetType().Name;
-            var token = _model[char.ToLower(name[0]) + name.Substring(1)];
+            var token = _model[name];
 
             if (token == null)
             {
@@ -127,7 +127,7 @@ namespace OrchardCore.Apis.GraphQL.Mutations
             }
 
             var splitKey = key.Split('.');
-            var path = string.Join(".", splitKey.Select(t => char.ToLower(t[0]) + t.Substring(1)));
+            var path = string.Join(".", splitKey);
 
             var token = _values.SelectToken(path);
             if (token == null)

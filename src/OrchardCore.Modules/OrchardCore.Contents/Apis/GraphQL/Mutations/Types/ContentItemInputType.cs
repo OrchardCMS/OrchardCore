@@ -1,8 +1,9 @@
 using GraphQL.Types;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Contents.Apis.GraphQL.Mutations.Types
 {
-    public class ContentItemInputType : InputObjectGraphType
+    public class ContentItemInputType : InputObjectGraphType<ContentItem>
     {
         public ContentItemInputType()
         {
