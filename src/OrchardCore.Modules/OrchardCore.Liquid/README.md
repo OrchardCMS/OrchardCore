@@ -103,13 +103,13 @@ Output
 Bonjour!
 ```
 
-### html_classify
+### html_class
 
 Converts a string into a friendly html class.
 
 Input
 ```
-{{ "LandingPage" | html_classify }}
+{{ "LandingPage" | html_class }}
 ```
 
 Output
