@@ -61,6 +61,11 @@ namespace OrchardCore.Layers.Drivers
 
             await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
+            if (viewModel.LayerMetadata == null)
+            {
+                return null;
+            }
+
             if (String.IsNullOrEmpty(viewModel.LayerMetadata.Zone))
             {
                 context.Updater.ModelState.AddModelError("LayerMetadata.Zone", S["Zone is missing"]);
