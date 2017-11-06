@@ -193,11 +193,6 @@ namespace OrchardCore.FileStorage.AzureBlob
             await TryDeleteFileAsync(oldPath);
         }
 
-        //public Task MoveDirectoryAsync(string oldPath, string newPath)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
         public async Task CopyFileAsync(string srcPath, string dstPath)
         {
             if (srcPath == dstPath)

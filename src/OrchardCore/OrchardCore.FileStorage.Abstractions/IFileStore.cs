@@ -76,14 +76,6 @@ namespace OrchardCore.FileStorage
         /// <exception cref="FileStoreException">Thrown if the specified file does not exist or if the <paramref name="newPath"/> path already exists.</exception>
         Task MoveFileAsync(string oldPath, string newPath);
 
-        ///// <summary>
-        ///// Renames or moves a directory to another location in the file store.
-        ///// </summary>
-        ///// <param name="oldPath">The path of the directory to be renamed/moved.</param>
-        ///// <param name="newPath">The new path of the directory after the rename/move.</param>
-        ///// <exception cref="FileStoreException">Thrown if the specified directory does not exist.</exception>
-        //Task MoveDirectoryAsync(string oldPath, string newPath);
-
         /// <summary>
         /// Creates a copy of a file in the file store.
         /// </summary>
