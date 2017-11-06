@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.Liquid;
@@ -13,9 +14,19 @@ namespace OrchardCore.Contents.Filters
     {
         public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            var contentItem = input.ToObjectValue() as ContentItem;
+            var obj = input.ToObjectValue();
 
-            if (contentItem == null)
+            if (!(obj is ContentItem contentItem))
+            {
+                contentItem = null;
+
+                if (obj is JObject jObject)
+                {
+                    contentItem = jObject.ToObject<ContentItem>();
+                }
+            }
+
+            if (contentItem == null || contentItem.ContentItemId == null)
             {
                 return NilValue.Instance;
             }
