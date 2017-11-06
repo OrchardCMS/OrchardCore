@@ -11,7 +11,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.FileStorage.AzureBlob
 {
     /// <summary>
-    /// 
+    /// Provides an <see cref="IFileStore"/> implementation that targets an underlying Azure Blob Storage account.
     /// </summary>
     /// <remarks>
     /// Azure Blob Storage has very different semantics for directories compared to a local file system, and
@@ -22,10 +22,15 @@ namespace OrchardCore.FileStorage.AzureBlob
     /// that reference can be created regardless of whether the directory exists, and it can only be used
     /// as a scoping container to operate on blobs within that directory namespace.
     /// 
-    /// As a consequence, this provider generally behaves as if any given directory always exists.
+    /// As a consequence, this provider generally behaves as if any given directory always exists. To 
+    /// simulate "creating" a directory (which cannot technically be done in blob storage) this provider creates
+    /// a marker file inside the directory, which makes the directory "exist" and appear when listing contents
+    /// subsequently. This marker file is ignored (excluded) when listing directory contents.
     /// </remarks>
     public class BlobFileStore : IFileStore
     {
+        private const string _directoryMarkerFileName = "OrchardCore.Media.txt";
+
         private readonly BlobStorageOptions _options;
         private readonly IClock _clock;
         private readonly CloudStorageAccount _storageAccount;
@@ -102,7 +107,9 @@ namespace OrchardCore.FileStorage.AzureBlob
                             results.Add(new BlobDirectory(itemPath, _clock.UtcNow));
                             break;
                         case CloudBlockBlob blobItem:
-                            results.Add(new BlobFile(itemPath, blobItem.Properties));
+                            // Ignore directory marker files.
+                            if (itemName != _directoryMarkerFileName)
+                                results.Add(new BlobFile(itemPath, blobItem.Properties));
                             break;
                     }
                 }
@@ -127,6 +134,11 @@ namespace OrchardCore.FileStorage.AzureBlob
 
             if (await blob.ExistsAsync())
                 throw new FileStoreException($"Cannot create directory because the path '{path}' already exists and is a file.");
+
+            // Create a directory marker file to make this directory appear when
+            // listing directories.
+            var placeholderBlob = GetBlobReference(this.Combine(path, _directoryMarkerFileName));
+            await placeholderBlob.UploadTextAsync("This is a directory marker file created by Orchard Core. It is safe to delete it.");
 
             return true;
         }
