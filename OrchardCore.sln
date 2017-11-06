@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules.Cms", "OrchardCore.Modules.Cms", "{90030E85-0C4F-456F-B879-443E8A3F220D}"
 EndProject
@@ -285,8 +285,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Setup.Abstracti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Application.Targets", "src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj", "{7D28EEFB-17FD-4D86-99E4-6B5A3C490BE3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DistribWebAPI", "DistribWebAPI", "{FFD613A8-F2EC-4FC6-ACFE-CC8A5A6C2F35}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.SSLCertificate", "src\OrchardCore.DistribWebAPI\Modules\Orchard.SSLCertificate\Orchard.SSLCertificate.csproj", "{95C20774-AE12-4CFE-BE1D-18C9E3357635}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{28371F92-C102-40BC-B6F4-59C8BB4069A8}"
@@ -302,6 +300,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistribWebAPI", "src\OrchardCore.DistribWebAPI\DistribWebAPI\DistribWebAPI.csproj", "{E97765ED-9CE1-46E0-A5E7-0FD97A347B13}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PCCOM.Distrib.WebAPIBundle", "src\OrchardCore.DistribWebAPI\Bundles\PCCOM.Distrib.WebAPIBundle\PCCOM.Distrib.WebAPIBundle.csproj", "{07C9225E-57C0-4A7F-9B2D-9979FAF88849}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PCCOM.Distrib.WebAPI.Invoices", "src\OrchardCore.DistribWebAPI\Modules\PCCOM.Distrib.WebAPI.Invoices\PCCOM.Distrib.WebAPI.Invoices.csproj", "{069E8539-5750-4485-BFB4-97D73697E840}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PCCOM.Distrib.WebAPI.WebClients", "src\OrchardCore.DistribWebAPI\Modules\PCCOM.Distrib.WebAPI.WebClients\PCCOM.Distrib.WebAPI.WebClients.csproj", "{423CCEEE-7CE1-4D2E-91E2-0F2E3B316B6E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -819,6 +821,18 @@ Global
 		{7D28EEFB-17FD-4D86-99E4-6B5A3C490BE3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{95C20774-AE12-4CFE-BE1D-18C9E3357635}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{95C20774-AE12-4CFE-BE1D-18C9E3357635}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{245D4E99-5625-47FC-8EE2-2433A5B6D1E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{245D4E99-5625-47FC-8EE2-2433A5B6D1E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{245D4E99-5625-47FC-8EE2-2433A5B6D1E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{245D4E99-5625-47FC-8EE2-2433A5B6D1E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A93A49E-972A-4F47-898C-0FF79D297104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A93A49E-972A-4F47-898C-0FF79D297104}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A93A49E-972A-4F47-898C-0FF79D297104}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A93A49E-972A-4F47-898C-0FF79D297104}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB309DE8-C472-44FB-9643-CFE6E3FAFF0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB309DE8-C472-44FB-9643-CFE6E3FAFF0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB309DE8-C472-44FB-9643-CFE6E3FAFF0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB309DE8-C472-44FB-9643-CFE6E3FAFF0B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E97765ED-9CE1-46E0-A5E7-0FD97A347B13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E97765ED-9CE1-46E0-A5E7-0FD97A347B13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E97765ED-9CE1-46E0-A5E7-0FD97A347B13}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -827,6 +841,14 @@ Global
 		{07C9225E-57C0-4A7F-9B2D-9979FAF88849}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07C9225E-57C0-4A7F-9B2D-9979FAF88849}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07C9225E-57C0-4A7F-9B2D-9979FAF88849}.Release|Any CPU.Build.0 = Release|Any CPU
+		{069E8539-5750-4485-BFB4-97D73697E840}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{069E8539-5750-4485-BFB4-97D73697E840}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{069E8539-5750-4485-BFB4-97D73697E840}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{069E8539-5750-4485-BFB4-97D73697E840}.Release|Any CPU.Build.0 = Release|Any CPU
+		{423CCEEE-7CE1-4D2E-91E2-0F2E3B316B6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{423CCEEE-7CE1-4D2E-91E2-0F2E3B316B6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{423CCEEE-7CE1-4D2E-91E2-0F2E3B316B6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{423CCEEE-7CE1-4D2E-91E2-0F2E3B316B6E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
