@@ -26,7 +26,9 @@ namespace OrchardCore.Contents.Filters
                 }
             }
 
-            if (contentItem == null || contentItem.ContentItemId == null)
+            // If input is a 'JObject' but which not represents a 'ContentItem',
+            // a 'ContentItem' is still created but with some null properties.
+            if (contentItem?.ContentItemId == null)
             {
                 return NilValue.Instance;
             }
