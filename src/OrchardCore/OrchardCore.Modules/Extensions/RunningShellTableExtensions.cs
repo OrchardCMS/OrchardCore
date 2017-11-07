@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Environment.Shell;
 
@@ -9,12 +10,12 @@ namespace OrchardCore.Modules
 
         public static ShellSettings Match(this IRunningShellTable table, HttpContext httpContext)
         {
-            var httpRequest = httpContext.Request;
-
-            if (httpRequest == null)
+            if (httpContext == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(httpContext));
             }
+
+            var httpRequest = httpContext.Request;
 
             // The Host property contains the value as set from the client. It is replaced automatically
             // to the value of X-Forwarded-Host when UseIISIntegration() is invoked.
