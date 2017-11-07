@@ -1,6 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,19 +27,30 @@ namespace OrchardCore.Media.Azure
         {
             services.Configure<MediaBlobStorageOptions>(_configuration.GetSection("Modules:OrchardCore.Media.Azure"));
 
-            services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
+            // Only replace default implementation if options are valid.
+            var connectionString = _configuration.GetValue<string>($"Modules:OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}");
+            var containerName = _configuration.GetValue<string>($"Modules:OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ContainerName)}");
+            if (MediaBlobStorageOptionsCheckFilter.CheckOptions(connectionString, containerName))
             {
-                var options = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
-                var clock = serviceProvider.GetRequiredService<IClock>();
+                services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
+                {
+                    var options = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
+                    var clock = serviceProvider.GetRequiredService<IClock>();
 
-                var fileStore = new BlobFileStore(options, clock);
+                    var fileStore = new BlobFileStore(options, clock);
 
-                var mediaBaseUri = fileStore.BaseUri;
-                if (!String.IsNullOrEmpty(options.PublicHostName))
-                    mediaBaseUri = new UriBuilder(mediaBaseUri) { Host = options.PublicHostName }.Uri;
+                    var mediaBaseUri = fileStore.BaseUri;
+                    if (!String.IsNullOrEmpty(options.PublicHostName))
+                        mediaBaseUri = new UriBuilder(mediaBaseUri) { Host = options.PublicHostName }.Uri;
 
-                return new MediaFileStore(fileStore, mediaBaseUri.ToString());
-            }));
+                    return new MediaFileStore(fileStore, mediaBaseUri.ToString());
+                }));
+            }
+
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(MediaBlobStorageOptionsCheckFilter));
+            });
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
