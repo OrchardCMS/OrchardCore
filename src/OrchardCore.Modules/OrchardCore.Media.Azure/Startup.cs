@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Media.Services;
@@ -17,10 +18,12 @@ namespace OrchardCore.Media.Azure
     public class Startup : StartupBase
     {
         private IConfiguration _configuration;
+        private ILogger<Startup> _logger;
 
-        public Startup(IHostingEnvironment env, IConfiguration configuration)
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             _configuration = configuration;
+            _logger = logger;
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -30,7 +33,7 @@ namespace OrchardCore.Media.Azure
             // Only replace default implementation if options are valid.
             var connectionString = _configuration.GetValue<string>($"Modules:OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}");
             var containerName = _configuration.GetValue<string>($"Modules:OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ContainerName)}");
-            if (MediaBlobStorageOptionsCheckFilter.CheckOptions(connectionString, containerName))
+            if (MediaBlobStorageOptionsCheckFilter.CheckOptions(connectionString, containerName, _logger))
             {
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
                 {
@@ -51,11 +54,6 @@ namespace OrchardCore.Media.Azure
             {
                 options.Filters.Add(typeof(MediaBlobStorageOptionsCheckFilter));
             });
-        }
-
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-
         }
     }
 }

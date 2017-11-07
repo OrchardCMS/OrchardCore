@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.FileProviders.Physical;
 
 namespace OrchardCore.FileStorage.FileSystem
 {
@@ -18,8 +19,8 @@ namespace OrchardCore.FileStorage.FileSystem
         public Task<IFileStoreEntry> GetFileInfoAsync(string path)
         {
             var physicalPath = GetPhysicalPath(path);
-
-            var fileInfo = new FileInfo(physicalPath);
+            
+            var fileInfo = new PhysicalFileInfo(new FileInfo(physicalPath));
 
             if (fileInfo.Exists)
                 return Task.FromResult<IFileStoreEntry>(new FileSystemStoreEntry(path, fileInfo));
@@ -31,7 +32,7 @@ namespace OrchardCore.FileStorage.FileSystem
         {
             var physicalPath = GetPhysicalPath(path);
 
-            var directoryInfo = new DirectoryInfo(physicalPath);
+            var directoryInfo = new PhysicalDirectoryInfo(new DirectoryInfo(physicalPath));
 
             if (directoryInfo.Exists)
                 return Task.FromResult<IFileStoreEntry>(new FileSystemStoreEntry(path, directoryInfo));
@@ -54,7 +55,7 @@ namespace OrchardCore.FileStorage.FileSystem
                     .GetDirectories(physicalPath)
                     .Select(f =>
                     {
-                        var fileSystemInfo = new DirectoryInfo(f);
+                        var fileSystemInfo = new PhysicalDirectoryInfo(new DirectoryInfo(f));
                         var fileRelativePath = f.Substring(_fileSystemPath.Length);
                         var filePath = this.NormalizePath(fileRelativePath);
                         return new FileSystemStoreEntry(filePath, fileSystemInfo);
@@ -66,7 +67,7 @@ namespace OrchardCore.FileStorage.FileSystem
                     .GetFiles(physicalPath)
                     .Select(f =>
                     {
-                        var fileSystemInfo = new FileInfo(f);
+                        var fileSystemInfo = new PhysicalFileInfo(new FileInfo(f));
                         var fileRelativePath = f.Substring(_fileSystemPath.Length);
                         var filePath = this.NormalizePath(fileRelativePath);
                         return new FileSystemStoreEntry(filePath, fileSystemInfo);

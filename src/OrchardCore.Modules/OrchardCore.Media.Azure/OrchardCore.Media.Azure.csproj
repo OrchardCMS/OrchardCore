@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="WindowsAzure.Storage" Version="8.5.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.FileStorage.AzureBlob\OrchardCore.FileStorage.AzureBlob.csproj" />
     <ProjectReference Include="..\OrchardCore.Admin\OrchardCore.Admin.csproj" />
     <ProjectReference Include="..\OrchardCore.Media\OrchardCore.Media.csproj" />
