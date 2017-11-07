@@ -242,13 +242,13 @@ Differentiators can be used to configure the placement information (c.f. [Placem
 
 ### Content Part differentiator
 
-If the shape type is the same as the content field name, the shape will be named `[PartName]-[FieldName]`, e.g. `BodyPart-Description`, `Services-Image`.
-If the shape type is different than the content field name, it will be `[PartName]-[FieldName]-[ShapeType]`, e.g. `BodyPart-Description-CustomFieldSummary`, `Services-Image-ImageFieldSummary`
+If the shape type is the same as the content part name, the shape will be named `[PartName]`, e.g. `BodyPart`, `Services`.
+If the shape type is different than the content part name, it will be `[PartName]-[ShapeType]`, e.g. `ListPart-ListPartFeed`
 
 ### Content Field differentiator
 
-If the shape type is the same as the content part name, the shape will be named `[PartName]`, e.g. `BodyPart`, `Services`.
-If the shape type is different than the content part name, it will be `[PartName]-[ShapeType]`, e.g. `ListPart-ListPartFeed`
+If the shape type is the same as the content field name, the shape will be named `[PartName]-[FieldName]`, e.g. `BodyPart-Description`, `Services-Image`.
+If the shape type is different than the content field name, it will be `[PartName]-[FieldName]-[ShapeType]`, e.g. `BodyPart-Description-CustomFieldSummary`, `Services-Image-ImageFieldSummary`
 
 #### Razor
 
