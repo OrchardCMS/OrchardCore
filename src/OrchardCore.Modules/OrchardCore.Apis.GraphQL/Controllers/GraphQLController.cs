@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Apis.GraphQL.Queries;
 using System.Linq;
+using System.Net;
 
 namespace OrchardCore.Apis.Controllers
 {
@@ -70,6 +71,10 @@ namespace OrchardCore.Apis.Controllers
                 _.FieldMiddleware.Use<InstrumentFieldsMiddleware>();
 
             });
+
+            Response.StatusCode = (int)(result.Errors?.Count > 0
+                ? HttpStatusCode.BadRequest
+                : HttpStatusCode.OK);
 
             return Json(result);
         }
