@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using GraphQL;
+using GraphQL.Http;
 using GraphQL.Instrumentation;
 using GraphQL.Types;
 using GraphQL.Validation.Complexity;

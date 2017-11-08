@@ -15,7 +15,8 @@ namespace OrchardCore.Queries.Apis.GraphQL
             services.AddGraphMutationType<CreateQueryMutation<SqlQuery>>();
             services.AddScoped<CreateQueryOutcomeType<SqlQuery>>();
 
-            services.AddGraphQueryType<QueryQuery>();
+            services.AddGraphQueryType<SqlQueryQuery>();
+            services.AddScoped<ContentItemType2>();
         }
     }
 }
