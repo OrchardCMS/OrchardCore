@@ -21,8 +21,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 "createSqlQuery(" +
                 @" Template: """ + template + @"""," +
                 @" Name: """ + name + @"""" +
-                " ) { source } }"),
-                new JProperty("variables", "")
+                " ) { source } }")
                 );
 
             var response = await _client.PostJsonAsync("graphql", requestJson.ToString());
@@ -36,8 +35,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         public async Task Delete(string name)
         {
             var requestJson = new JObject(
-                new JProperty("query", @"mutation DeleteQuery { deleteQuery( Name: """ + name + @""") { status } }"),
-                new JProperty("variables", "")
+                new JProperty("query", @"mutation DeleteQuery { deleteQuery( Name: """ + name + @""") { status } }")
                 );
 
             var response = await _client.PostJsonAsync("graphql", requestJson.ToString());

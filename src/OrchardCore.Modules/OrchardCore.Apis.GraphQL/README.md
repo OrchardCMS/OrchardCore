@@ -1,7 +1,5 @@
 # GraphQL API
 
-The JsonApi implrements the jsonapi.org specification.
-
 ## Query
 Every GraphQL schema has a root type for both queries and mutations. The query type defines GraphQL operations that retrieve data from the server.
 
@@ -22,7 +20,7 @@ The schema at this point doesnt know about contentparts. This query is for just 
 ### contentItems
 Similar to the previous query, this query will return a list of content items, rather than a singular one.
 
-This query will return all the `contentItemId` and `contentType` vaules of content with a content type of `BlogPost`.
+This query will return all the `contentItemId` and `contentType` values of content with a content type of `BlogPost`.
 
 ```graphql
 query {
@@ -36,7 +34,7 @@ query {
 ### Dynamic Querying
 Because Orchard has a very fluid content model, i.e. You can create content types on the fly, and these are not represented in code, content types are dynamically built.
 
-An example is, lets say a `Blog` content type exists within the content type system, you can query all blogs.
+An example is, lets say a `Blog` content type exists within the content type system, here you can query all blogs.
 
 ```graphql
 query {
@@ -47,7 +45,7 @@ query {
 }
 ```
 
-This query will return a list of blog's. These endpoints do not have a singular representation.
+This query will return a list of all blog's `contentItemId` and `contentType` properties. These endpoints do not have a singular representation.
 
 #### Query, returning content part details
 All content items contain content parts, and once you have a content item, you will more than likely want details of, lets say the title on the titlePart.
@@ -67,6 +65,26 @@ query {
 ```
 
 > Note: Only content parts that exist on content items will work
+
+### Named Queries
+Modules can define named queries. These queries are predefined by the modules themselves, and not specified in the schema.
+
+You can define a query using the interface `INamedQueryProvider`. This allows you to return a list of named queries.
+
+```c#
+public class NamedQueryProvider : INamedQueryProvider {
+  public IDictionary<string, string> Resolve() 
+  {
+    var queries = new Dictionary<string, string>();
+ 
+    queries["allblogs"] = @"query blog { contentItemId }";
+
+    return queries;
+  }
+}
+```
+
+You then pass up a `namedquery` parameter in the request to the endpoint.
 
 ## Mutations
 Every GraphQL schema has a root type for both queries and mutations. The mutation type defines GraphQL operations that change data on the server. It is analogous to performing HTTP verbs such as `POST`, `PATCH`, and `DELETE`.
@@ -133,7 +151,7 @@ For example, the Blog object has a field called contentItemId, which is a String
 Objects from the Orchard GraphQL query system are dynamically generated from the content type system.
 
 
-## 
+
 
 ## Resources
 

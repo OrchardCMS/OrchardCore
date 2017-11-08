@@ -51,7 +51,6 @@ namespace OrchardCore.Contents.Apis.GraphQL.Mutations
                 }
 
                 return contentItem;
-
             });
         }
     }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Http;
@@ -7,6 +8,8 @@ using GraphQL.Validation.Complexity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Apis.GraphQL.Queries;
+using System.Linq;
 
 namespace OrchardCore.Apis.Controllers
 {
@@ -15,15 +18,18 @@ namespace OrchardCore.Apis.Controllers
     {
         private readonly IDocumentExecuter _documentExecuter;
         private readonly ISchema _schema;
+        private readonly IEnumerable<INamedQueryProvider> _namedQueries;
         private readonly ILogger _logger;
 
         public GraphQLController(
             IDocumentExecuter documentExecuter,
             ISchema schema,
+            IEnumerable<INamedQueryProvider> namedQueries,
             ILogger<GraphQLController> logger)
         {
             _documentExecuter = documentExecuter;
             _schema = schema;
+            _namedQueries = namedQueries;
             _logger = logger;
         }
 
@@ -39,13 +45,17 @@ namespace OrchardCore.Apis.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> PostAsync([FromBody] GraphQLQuery query)
         {
-            var inputs = query.Variables.ToInputs();
+            var inputs = query.Variables?.ToInputs();
             var queryToExecute = query.Query;
 
-            //if (!string.IsNullOrWhiteSpace(query.NamedQuery))
-            //{
-            //    queryToExecute = _namedQueries[query.NamedQuery];
-            //}
+            if (!string.IsNullOrWhiteSpace(query.NamedQuery))
+            {
+                var queries = _namedQueries
+                    .SelectMany(dict => dict.Resolve())
+                    .ToDictionary(pair => pair.Key, pair => pair.Value);
+
+                queryToExecute = queries[query.NamedQuery];
+            }
 
             var result = await _documentExecuter.ExecuteAsync(_ =>
             {

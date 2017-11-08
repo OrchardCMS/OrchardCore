@@ -71,6 +71,22 @@ namespace OrchardCore.Apis.GraphQL.Client
             }
         }
 
+        public async Task<JObject> NamedQueryExecute(string name)
+        {
+            var requestJson = new JObject(
+                new JProperty("namedquery", name)
+                );
+
+            var response = await _client.PostJsonAsync("graphql", requestJson.ToString());
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(await response.Content.ReadAsStringAsync());
+            }
+
+            return JObject.Parse(await response.Content.ReadAsStringAsync());
+        }
+
         public QueriesResource Queries => new QueriesResource(_client);
     }
 }
