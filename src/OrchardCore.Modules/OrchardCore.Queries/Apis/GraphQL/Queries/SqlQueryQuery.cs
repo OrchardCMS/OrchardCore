@@ -1,54 +1,106 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Types;
-using OrchardCore.ContentManagement;
-using OrchardCore.Queries.Sql;
 
 namespace OrchardCore.Queries.Apis.GraphQL.Queries
 {
-    public class SqlQueryQuery : QueryFieldType
+    public class QueryTypeFieldTypeProvider : IDynamicQueryFieldTypeProvider
     {
-        public SqlQueryQuery(
-            IQueryManager queryManager) {
+        private readonly IQueryManager _queryManager;
+        private readonly IEnumerable<QueryFieldType> _queryFieldTypes;
+        private readonly IDependencyResolver _dependencyResolver;
 
-            var queries = queryManager.ListQueriesAsync();
+        public QueryTypeFieldTypeProvider(IQueryManager queryManager,
+            IEnumerable<QueryFieldType> queryFieldTypes,
+            IDependencyResolver dependencyResolver)
+        {
+            _queryManager = queryManager;
+            _queryFieldTypes = queryFieldTypes;
+            _dependencyResolver = dependencyResolver;
+        }
 
-            
+        public async Task<IEnumerable<FieldType>> GetFields()
+        {
+            var queries = await _queryManager.ListQueriesAsync();
 
-            Name = "Query";
+            var queryType = new QueriesQueryType();
 
-            Type = typeof(ListGraphType<ContentItemType2>);
+            foreach (var query in queries)
+            {
+                var name = query.Name;
+                var source = query.Source;
 
-            Arguments = new QueryArguments(
-                new QueryArgument<StringGraphType> { Name = "Name" },
-                new QueryArgument<StringGraphType> { Name = "Parameters" }
-                );
+                var graphType = new DynamicQueriesQuery(query, _dependencyResolver);
 
-            Resolver = new SlowFuncFieldResolver<object, Task<object>>(async (context) => {
-                var name = context.GetArgument<string>("Name");
+                var fieldType = new FieldType
+                {
+                    Arguments = new QueryArguments(
+                        new QueryArgument<StringGraphType> { Name = "Name" },
+                        new QueryArgument<StringGraphType> { Name = "Parameters" }
+                    ),
+                    
+                    Name = name,
+                    ResolvedType = graphType,
+                    Resolver = new SlowFuncFieldResolver<object, Task<object>>(async context => {
+                        var iname = context.GetArgument<string>("Name");
 
-                var query = (await queryManager.GetQueryAsync(name)) as SqlQuery;
+                        var iquery = await _queryManager.GetQueryAsync(iname);
 
-                var parameters = context.GetArgument<string>("Parameters");
+                        var parameters = context.GetArgument<string>("Parameters");
 
-                var queryParameters = parameters != null ?
-                    JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                    : new Dictionary<string, object>();
+                        var queryParameters = parameters != null ?
+                            JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                            : new Dictionary<string, object>();
 
-                var t = await queryManager.ExecuteQueryAsync(query, queryParameters);
-                return t;
-            });
+                        return await _queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    }),
+                    Type = graphType.GetType(),
+                };
+
+                queryType.AddField(fieldType);
+
+            }
+
+            return new FieldType[] { new QueriesQuery {
+                Name = "Query",
+                ResolvedType = queryType
+            } };
         }
     }
 
-    public class ContentItemType2 : AutoRegisteringObjectGraphType<ContentItem>
+    public class QueriesQueryType : ObjectGraphType
     {
-        public ContentItemType2()
+        public QueriesQueryType()
         {
-            Name = "ContentItem";
+            Name = "Query";
+        }
+    }
+
+    public class QueriesQuery : QueryFieldType { }
+
+    public class DynamicQueriesQuery : ObjectGraphType
+    {
+        public DynamicQueriesQuery(Query query,
+            IDependencyResolver dependencyResolver)
+        {
+            Name = query.Name;
+
+            var schema = Schema.For("Schema Here", sb => {
+                sb.DependencyResolver = dependencyResolver;
+            });
+            schema.Initialize();
+
+            
+
+            //schema.AllTypes
+
+
         }
     }
 }

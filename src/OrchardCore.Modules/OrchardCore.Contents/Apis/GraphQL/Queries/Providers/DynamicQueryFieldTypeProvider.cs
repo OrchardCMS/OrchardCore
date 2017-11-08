@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
             _session = session;
         }
 
-        public IEnumerable<FieldType> GetFields()
+        public Task<IEnumerable<FieldType>> GetFields()
         {
             var fieldTypes = new List<FieldType>();
 
@@ -112,7 +112,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
                 fieldTypes.Add(query);
             }
 
-            return fieldTypes;
+            return Task.FromResult<IEnumerable<FieldType>>(fieldTypes);
         }
     }
 }

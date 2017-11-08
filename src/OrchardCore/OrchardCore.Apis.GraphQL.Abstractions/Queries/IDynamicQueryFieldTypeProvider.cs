@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using GraphQL.Types;
 
 namespace OrchardCore.Apis.GraphQL.Queries
 {
     public interface IDynamicQueryFieldTypeProvider
     {
-        IEnumerable<FieldType> GetFields();
+        Task<IEnumerable<FieldType>> GetFields();
     }
 }
