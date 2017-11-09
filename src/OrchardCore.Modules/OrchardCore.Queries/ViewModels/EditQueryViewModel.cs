@@ -7,6 +7,7 @@ namespace OrchardCore.Queries.ViewModels
         public int Id { get; set; }
         public string Name { get; set; }
         public string Source { get; set; }
+        public string Schema { get; set; }
 
         [BindNever]
         public Query Query { get; set; }

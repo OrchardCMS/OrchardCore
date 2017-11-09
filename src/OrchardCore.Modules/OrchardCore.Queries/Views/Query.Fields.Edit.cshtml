@@ -6,3 +6,9 @@
     <span class="hint">@T["The technical name of the query."]</span>
     <input asp-for="Source" type="hidden" />
 </fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Schema">
+    <label asp-for="Schema">@T["Schema"] <span asp-validation-for="Schema"></span></label>
+    <input asp-for="Schema" class="form-control text-muted" autofocus />
+    <span class="hint">@T["The schema used runtime determination of the results."]</span>
+</fieldset>

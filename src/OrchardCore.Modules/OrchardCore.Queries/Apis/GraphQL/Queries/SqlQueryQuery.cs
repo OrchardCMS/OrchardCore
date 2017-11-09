@@ -96,7 +96,7 @@ namespace OrchardCore.Queries.Apis.GraphQL.Queries
             });
             schema.Initialize();
 
-            
+            schema.
 
             //schema.AllTypes
 

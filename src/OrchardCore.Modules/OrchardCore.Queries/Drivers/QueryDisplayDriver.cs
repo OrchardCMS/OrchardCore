@@ -24,6 +24,7 @@ namespace OrchardCore.Queries.Drivers
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
+                    model.Schema = query.Schema;
                     model.Query = query;
 
                     return Task.CompletedTask;
@@ -32,6 +33,7 @@ namespace OrchardCore.Queries.Drivers
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
+                    model.Schema = query.Schema;
                     model.Query = query;
 
                     return Task.CompletedTask;
@@ -46,12 +48,14 @@ namespace OrchardCore.Queries.Drivers
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
+                    model.Schema = query.Schema;
                     model.Query = query;
                 }).Location("Content:1"),
                 Shape<EditQueryViewModel>("Query_Fields_Buttons", model =>
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
+                    model.Schema = query.Schema;
                     model.Query = query;
                 }).Location("Actions:5")
             );
