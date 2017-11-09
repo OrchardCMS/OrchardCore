@@ -58,6 +58,7 @@ namespace OrchardCore.ContentTypes.Editors
             var typeContext = new BuildEditorContext(
                 contentTypeDefinitionShape,
                 groupId,
+                false,
                 "",
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
@@ -89,6 +90,7 @@ namespace OrchardCore.ContentTypes.Editors
                     typeBuilder,
                     contentTypeDefinitionShape,
                     groupId,
+                    false,
                     _shapeFactory,
                     layout,
                     updater
@@ -115,6 +117,7 @@ namespace OrchardCore.ContentTypes.Editors
             var partContext = new BuildEditorContext(
                 contentPartDefinitionShape,
                 groupId,
+                false,
                 "",
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
@@ -146,6 +149,7 @@ namespace OrchardCore.ContentTypes.Editors
                     partBuilder,
                     contentPartDefinitionShape,
                     groupId,
+                    false,
                     _shapeFactory,
                     layout,
                     updater
@@ -172,6 +176,7 @@ namespace OrchardCore.ContentTypes.Editors
             var partContext = new BuildEditorContext(
                 typePartDefinitionShape,
                 groupId,
+                false,
                 "",
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
@@ -207,6 +212,7 @@ namespace OrchardCore.ContentTypes.Editors
                         typePartBuilder,
                         typePartDefinitionShape,
                         groupId,
+                        false,
                         _shapeFactory,
                         layout,
                         updater
@@ -235,6 +241,7 @@ namespace OrchardCore.ContentTypes.Editors
             var fieldContext = new BuildEditorContext(
                 partFieldDefinitionShape,
                 groupId,
+                false,
                 "",
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
@@ -270,6 +277,7 @@ namespace OrchardCore.ContentTypes.Editors
                         partFieldBuilder,
                         partFieldDefinitionShape,
                         groupId,
+                        false,
                         _shapeFactory,
                         layout,
                         updater

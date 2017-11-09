@@ -58,7 +58,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = _contentManager.New(id);
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true);
 
             model.MenuContentItemId = menuContentItemId;
             model.MenuItemId = menuItemId;
@@ -95,7 +95,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = _contentManager.New(id);
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
 
             if (!ModelState.IsValid)
             {
@@ -160,7 +160,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = menuItem.ToObject<ContentItem>();
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
 
             model.MenuContentItemId = menuContentItemId;
             model.MenuItemId = menuItemId;
@@ -206,7 +206,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = menuItem.ToObject<ContentItem>();
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
 
             if (!ModelState.IsValid)
             {

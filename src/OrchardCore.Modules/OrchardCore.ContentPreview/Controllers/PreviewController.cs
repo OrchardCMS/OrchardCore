@@ -92,7 +92,8 @@ namespace OrchardCore.ContentPreview.Controllers
             contentItem.ModifiedUtc = _clock.UtcNow;
             contentItem.PublishedUtc = _clock.UtcNow;
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this);
+            // TODO: we should probably get this value from the main editor as it might impact validators
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
 
             if (!ModelState.IsValid)
             {
