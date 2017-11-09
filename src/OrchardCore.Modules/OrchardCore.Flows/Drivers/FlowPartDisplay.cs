@@ -45,7 +45,6 @@ namespace OrchardCore.Flows.Drivers
             {
                 m.FlowPart = flowPart;
                 m.Updater = context.Updater;
-                m.IsNew = context.IsNew;
             });
         }
 

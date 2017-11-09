@@ -18,8 +18,5 @@ namespace OrchardCore.Widgets.ViewModels
 
         [BindNever]
         public IUpdateModel Updater { get; set; }
-
-        [BindNever]
-        public bool IsNew { get; set; }
     }
 }
