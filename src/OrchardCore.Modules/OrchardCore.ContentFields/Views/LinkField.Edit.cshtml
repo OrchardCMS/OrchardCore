@@ -19,7 +19,7 @@
     <fieldset class="form-group col-md-6" asp-validation-class-for="Url">
         @if (string.IsNullOrEmpty(settings.UrlPlaceholder))
         {
-            <label asp-for="Url" class="@urlClass">@T["Url"] foo</label>
+            <label asp-for="Url" class="@urlClass">@T["Url"]</label>
         }
         <input asp-for="Url" class="form-control content-preview-text" placeholder="@settings.UrlPlaceholder" required="@isRequired" />
         @if (!string.IsNullOrWhiteSpace(settings.Hint))
