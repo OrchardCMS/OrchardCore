@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Flows.Models;
@@ -15,5 +15,8 @@ namespace OrchardCore.Flows.ViewModels
 
         [BindNever]
         public IUpdateModel Updater { get; set; }
+
+        [BindNever]
+        public bool IsNew { get; set; }
     }
 }

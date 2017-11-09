@@ -83,6 +83,7 @@ namespace OrchardCore.Widgets.Drivers
 
                 m.WidgetsListPart = widgetPart;
                 m.Updater = context.Updater;
+                m.IsNew = context.IsNew;
             });
         }
 

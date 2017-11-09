@@ -21,7 +21,7 @@
             var prefix = Guid.NewGuid().ToString("n");
             <div class="widget-template">
                 @{
-                    dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, "", prefix);
+                    dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, Model.IsNew, "", prefix);
 
                     widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
                     widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
@@ -77,7 +77,7 @@
 
             // Render a mock widget so that its resources are included in the page
             var contentItem = ContentManager.New(type.Name);
-            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, "", Guid.NewGuid().ToString("n")));
+            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, Model.IsNew, "", Guid.NewGuid().ToString("n")));
         }
     }
 

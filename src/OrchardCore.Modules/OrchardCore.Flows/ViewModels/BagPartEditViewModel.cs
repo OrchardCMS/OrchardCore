@@ -19,6 +19,9 @@ namespace OrchardCore.Flows.ViewModels
         public IUpdateModel Updater { get; set; }
 
         [BindNever]
+        public bool IsNew { get; set; }
+
+        [BindNever]
         public IEnumerable<ContentTypeDefinition> ContainedContentTypeDefinitions { get; set; }
     }
 }

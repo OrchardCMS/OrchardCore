@@ -49,6 +49,7 @@ namespace OrchardCore.Flows.Drivers
             {
                 m.BagPart = bagPart;
                 m.Updater = context.Updater;
+                m.IsNew = context.IsNew;
                 m.ContainedContentTypeDefinitions = GetContainedContentTypes(context.TypePartDefinition);
             });
         }
