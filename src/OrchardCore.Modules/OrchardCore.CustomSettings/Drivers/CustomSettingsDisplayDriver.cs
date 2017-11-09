@@ -49,20 +49,23 @@ namespace OrchardCore.Layers.Drivers
             }
 
             ContentItem contentItem;
+            bool isNew;
 
             if (!site.Properties.TryGetValue(contentTypeDefinition.Name, out property))
             {
                 contentItem = _contentManager.New(contentTypeDefinition.Name);
+                isNew = true;
             }
             else
             {
-                // create existing content item
+                // Create existing content item
                 contentItem = property.ToObject<ContentItem>();
+                isNew = false;
             }
 
             var shape = Shape<CustomSettingsEditViewModel>("CustomSettings", async ctx =>
             {
-                ctx.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, context.IsNew);
+                ctx.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
             }).Location("Content:3").OnGroup(contentTypeDefinition.Name);
 
             return Task.FromResult<IDisplayResult>(shape);
@@ -89,7 +92,7 @@ namespace OrchardCore.Layers.Drivers
             }
             else
             {
-                // create existing content item
+                // Create existing content item
                 contentItem = property.ToObject<ContentItem>();
                 isNew = false;
             }
