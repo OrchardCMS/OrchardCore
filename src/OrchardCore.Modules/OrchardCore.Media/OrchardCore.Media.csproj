@@ -5,7 +5,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="OrchardCore.ImageSharp.Web" Version="1.0.0-pullrequest0003-0004" />
+    <PackageReference Include="OrchardCore.ImageSharp.Web" Version="1.0.0-ci0027" />
     <!--<PackageReference Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0001" />-->
     <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="$(AspNetCoreVersion)" />
