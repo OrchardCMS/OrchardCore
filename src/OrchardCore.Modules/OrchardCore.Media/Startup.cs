@@ -35,6 +35,16 @@ namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {
+        /// <summary>
+        /// The url prefix used to route asset files
+        /// </summary>
+        private const string AssetsUrlPrefix = "/media";
+
+        /// <summary>
+        /// The path in the tenant's App_Data folder containing the assets
+        /// </summary>
+        private const string AssetsPath = "Media";
+
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
@@ -51,7 +61,7 @@ namespace OrchardCore.Media
                 var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
 
                 string mediaPath = GetMediaPath(env, shellOptions.Value, shellSettings);
-                return new MediaFileStore(new FileSystemStore(mediaPath, shellSettings.RequestUrlPrefix, "/media"));
+                return new MediaFileStore(new FileSystemStore(mediaPath, shellSettings.RequestUrlPrefix, AssetsUrlPrefix));
             });
 
             services.AddScoped<INavigationProvider, AdminMenu>();
@@ -78,45 +88,47 @@ namespace OrchardCore.Media
                             // This can be done with a custom IImageWebProcessor implementation that would 
                             // accept profile names.
 
-                            validation.Commands[FormatWebProcessor.Format] = "png";
                             validation.Commands.Remove(ResizeWebProcessor.Compand);
                             validation.Commands.Remove(ResizeWebProcessor.Sampler);
                             validation.Commands.Remove(ResizeWebProcessor.Xy);
                             validation.Commands.Remove(ResizeWebProcessor.Anchor);
                             validation.Commands.Remove(BackgroundColorWebProcessor.Color);
 
-                            if (validation.Commands.Count > 0 && !validation.Commands.ContainsKey(ResizeWebProcessor.Mode))
+                            if (validation.Commands.Count > 0)
                             {
-                                validation.Commands[ResizeWebProcessor.Mode] = "max";
-                            }
-
-                            if (validation.Commands.TryGetValue(ResizeWebProcessor.Width, out var width))
-                            {
-                                if (Int32.TryParse(width, out var parsedWidth))
+                                if (!validation.Commands.ContainsKey(ResizeWebProcessor.Mode))
                                 {
-                                    if (Array.BinarySearch<int>(Sizes, parsedWidth) == -1)
+                                    validation.Commands[ResizeWebProcessor.Mode] = "max";
+                                }
+
+                                if (validation.Commands.TryGetValue(ResizeWebProcessor.Width, out var width))
+                                {
+                                    if (Int32.TryParse(width, out var parsedWidth))
                                     {
-                                        validation.Commands.Clear();
+                                        if (Array.BinarySearch<int>(Sizes, parsedWidth) == -1)
+                                        {
+                                            validation.Commands.Clear();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        validation.Commands.Remove(ResizeWebProcessor.Width);
                                     }
                                 }
-                                else
-                                {
-                                    validation.Commands.Remove(ResizeWebProcessor.Width);
-                                }
-                            }
 
-                            if (validation.Commands.TryGetValue(ResizeWebProcessor.Height, out var height))
-                            {
-                                if (Int32.TryParse(height, out var parsedHeight))
+                                if (validation.Commands.TryGetValue(ResizeWebProcessor.Height, out var height))
                                 {
-                                    if (Array.BinarySearch<int>(Sizes, parsedHeight) == -1)
+                                    if (Int32.TryParse(height, out var parsedHeight))
                                     {
-                                        validation.Commands.Clear();
+                                        if (Array.BinarySearch<int>(Sizes, parsedHeight) == -1)
+                                        {
+                                            validation.Commands.Clear();
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    validation.Commands.Remove(ResizeWebProcessor.Height);
+                                    else
+                                    {
+                                        validation.Commands.Remove(ResizeWebProcessor.Height);
+                                    }
                                 }
                             }
                         };
@@ -125,6 +137,7 @@ namespace OrchardCore.Media
                     })
                     .SetUriParser<QueryCollectionUriParser>()
                     .SetCache<PhysicalFileSystemCache>()
+                    .SetAsyncKeyLock<AsyncKeyLock>()
                     .AddResolver<MediaFileSystemResolver>()
                     .AddProcessor<ResizeWebProcessor>();
 
@@ -155,14 +168,14 @@ namespace OrchardCore.Media
             app.UseStaticFiles(new StaticFileOptions
             {
                 // The tenant's prefix is already implied by the infrastructure
-                RequestPath = "/media",
+                RequestPath = AssetsUrlPrefix,
                 FileProvider = new PhysicalFileProvider(mediaPath)
             });
         }
 
         private string GetMediaPath(IHostingEnvironment env, ShellOptions shellOptions, ShellSettings shellSettings)
         {
-            return Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, "Media");
+            return Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
         }
     }
 }
