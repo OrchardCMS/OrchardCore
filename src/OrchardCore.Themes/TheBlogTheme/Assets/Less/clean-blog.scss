@@ -1,7 +1,8 @@
 @import "_bootstrap.scss";  
 @import "variables.scss";
 @import "mixins.scss";
-@import "flow.scss";  
+@import "flow.scss";
+@import "widgets.scss";  
 
 // Global Components
 
@@ -167,7 +168,8 @@ hr.small {
 
 .intro-header {
 	background-color: $gray-light; 
-	background: no-repeat center center; 
+	background-repeat: no-repeat;
+    background-position: center center; 
 	background-attachment: scroll;
 	@extend .background-cover;
 	// NOTE: Background images are set within the HTML using inline CSS!
