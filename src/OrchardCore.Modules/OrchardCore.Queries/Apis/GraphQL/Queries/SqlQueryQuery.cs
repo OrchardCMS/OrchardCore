@@ -91,16 +91,17 @@ namespace OrchardCore.Queries.Apis.GraphQL.Queries
         {
             Name = query.Name;
 
-            var schema = Schema.For("Schema Here", sb => {
-                sb.DependencyResolver = dependencyResolver;
-            });
-            schema.Initialize();
+            var schema = JObject.Parse(query.Schema);
 
-            schema.
+            foreach (var child in schema.Properties())
+            {
+                AddField(new FieldType
+                {
+                    Name = child.Name,
 
-            //schema.AllTypes
-
-
+                    Type = child..Name.Value..Type.GetGraphTypeFromType(child. ().GetType().IsNullable())
+                });
+            }
         }
     }
 }
