@@ -121,7 +121,7 @@ namespace OrchardCore.Users.Controllers
             {
                 Users = await Task.WhenAll(
                     results.Select(async x => 
-                        new UserEntry { Shape = await _userDisplayManager.BuildDisplayAsync(x, updater: this, groupId: "SummaryAdmin") })),
+                        new UserEntry { Shape = await _userDisplayManager.BuildDisplayAsync(x, updater: this, displayType: "SummaryAdmin") })),
                 Options = options,
                 Pager = pagerShape
             };
