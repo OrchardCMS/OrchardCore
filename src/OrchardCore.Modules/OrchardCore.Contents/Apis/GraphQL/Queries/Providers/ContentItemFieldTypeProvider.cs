@@ -12,7 +12,7 @@ using YesSql;
 
 namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
 {
-    public class DynamicQueryFieldTypeProvider : IDynamicQueryFieldTypeProvider
+    public class ContentItemFieldTypeProvider : IDynamicQueryFieldTypeProvider
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IContentManager _contentManager;
@@ -21,7 +21,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
         private readonly IEnumerable<IObjectGraphType> _objectGraphTypes;
         private readonly ISession _session;
 
-        public DynamicQueryFieldTypeProvider(
+        public ContentItemFieldTypeProvider(
          IServiceProvider serviceProvider,
          IContentManager contentManager,
          IContentDefinitionManager contentDefinitionManager,
@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
             _session = session;
         }
 
-        public Task<IEnumerable<FieldType>> GetFields()
+        public Task<IEnumerable<FieldType>> GetFields(ObjectGraphType state)
         {
             var fieldTypes = new List<FieldType>();
 
@@ -47,7 +47,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
             {
                 var typeType = new ContentItemType
                 {
-                    Name = typeDefinition.Name, // Blog
+                    Name = typeDefinition.Name // Blog
                 };
 
                 var queryArguments = new List<QueryArgument>();

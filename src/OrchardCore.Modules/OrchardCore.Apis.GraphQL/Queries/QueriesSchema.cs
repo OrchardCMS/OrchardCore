@@ -19,7 +19,7 @@ namespace OrchardCore.Apis.GraphQL.Queries
 
             foreach (var dynamicQueryFieldTypeProvider in dynamicQueryFieldTypeProviders)
             {
-                foreach (var queryField in dynamicQueryFieldTypeProvider.GetFields().GetAwaiter().GetResult())
+                foreach (var queryField in dynamicQueryFieldTypeProvider.GetFields(this).GetAwaiter().GetResult())
                 {
                     AddField(queryField);
                 }

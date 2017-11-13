@@ -10,9 +10,9 @@ using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
 using OrchardCore.Contents.Apis.GraphQL.Schema;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Setup.Apis.GraphQL
+namespace OrchardCore.Contents.Apis.GraphQL
 {
-    public class GraphQLStartup : StartupBase
+    public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -24,9 +24,9 @@ namespace OrchardCore.Setup.Apis.GraphQL
             services.AddGraphQueryType<ContentItemsQuery>();
             services.AddScoped<ContentItemType>();
 
-            services.AddScoped<IDynamicQueryFieldTypeProvider, DynamicQueryFieldTypeProvider>();
+            services.AddScoped<IDynamicQueryFieldTypeProvider, ContentItemFieldTypeProvider>();
 
-            services.AddScoped<IObjectGraphTypeProvider, ObjectGraphTypeProvider>();
+            services.AddScoped<IObjectGraphTypeProvider, ContentPartObjectGraphTypeProvider>();
         }
     }
 }

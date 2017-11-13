@@ -6,6 +6,6 @@ namespace OrchardCore.Apis.GraphQL.Queries
 {
     public interface IDynamicQueryFieldTypeProvider
     {
-        Task<IEnumerable<FieldType>> GetFields();
+        Task<IEnumerable<FieldType>> GetFields(ObjectGraphType state);
     }
 }

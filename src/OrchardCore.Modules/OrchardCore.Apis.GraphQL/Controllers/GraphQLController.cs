@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Apis.GraphQL.Queries;
 using System.Linq;
 using System.Net;
+using GraphQL.Utilities;
 
 namespace OrchardCore.Apis.Controllers
 {
@@ -32,6 +33,15 @@ namespace OrchardCore.Apis.Controllers
             _schema = schema;
             _namedQueries = namedQueries;
             _logger = logger;
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("schema")]
+        public IActionResult GetSchemaAsync()
+        {
+            var schema = new SchemaPrinter(_schema);
+            return Content(schema.Print());
         }
 
         [HttpGet]

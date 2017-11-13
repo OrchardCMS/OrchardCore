@@ -1,22 +1,23 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Types;
+using OrchardCore.Queries.Apis.GraphQL.Queries;
 
-namespace OrchardCore.Queries.Apis.GraphQL.Queries
+namespace OrchardCore.Queries.Sql.Apis.GraphQL.Queries
 {
-    public class QueryTypeFieldTypeProvider : IDynamicQueryFieldTypeProvider
+    public class SqlQueryFieldTypeProvider : IDynamicQueryFieldTypeProvider
     {
         private readonly IQueryManager _queryManager;
         private readonly IEnumerable<QueryFieldType> _queryFieldTypes;
         private readonly IDependencyResolver _dependencyResolver;
 
-        public QueryTypeFieldTypeProvider(IQueryManager queryManager,
+        public SqlQueryFieldTypeProvider(IQueryManager queryManager,
             IEnumerable<QueryFieldType> queryFieldTypes,
             IDependencyResolver dependencyResolver)
         {
@@ -25,18 +26,18 @@ namespace OrchardCore.Queries.Apis.GraphQL.Queries
             _dependencyResolver = dependencyResolver;
         }
 
-        public async Task<IEnumerable<FieldType>> GetFields()
+        public async Task<IEnumerable<FieldType>> GetFields(ObjectGraphType state)
         {
             var queries = await _queryManager.ListQueriesAsync();
 
-            var queryType = new QueriesQueryType();
+            var queryType = new ObjectGraphType { Name = "Query" };
 
-            foreach (var query in queries)
+            foreach (var query in queries.OfType<SqlQuery>())
             {
                 var name = query.Name;
                 var source = query.Source;
 
-                var graphType = new DynamicQueriesQuery(query, _dependencyResolver);
+                var graphType = new SqlQueryQuery(query, _dependencyResolver);
 
                 var fieldType = new FieldType
                 {
@@ -67,41 +68,11 @@ namespace OrchardCore.Queries.Apis.GraphQL.Queries
 
             }
 
-            return new FieldType[] { new QueriesQuery {
-                Name = "Query",
-                ResolvedType = queryType
+            return new FieldType[] { new QueriesQuery<SqlQueryQuery> {
+                Name = "SqlQuery",
+                ResolvedType = queryType,
+                Type = typeof(SqlQueryQuery)
             } };
-        }
-    }
-
-    public class QueriesQueryType : ObjectGraphType
-    {
-        public QueriesQueryType()
-        {
-            Name = "Query";
-        }
-    }
-
-    public class QueriesQuery : QueryFieldType { }
-
-    public class DynamicQueriesQuery : ObjectGraphType
-    {
-        public DynamicQueriesQuery(Query query,
-            IDependencyResolver dependencyResolver)
-        {
-            Name = query.Name;
-
-            var schema = JObject.Parse(query.Schema);
-
-            foreach (var child in schema.Properties())
-            {
-                AddField(new FieldType
-                {
-                    Name = child.Name,
-
-                    Type = child..Name.Value..Type.GetGraphTypeFromType(child. ().GetType().IsNullable())
-                });
-            }
         }
     }
 }

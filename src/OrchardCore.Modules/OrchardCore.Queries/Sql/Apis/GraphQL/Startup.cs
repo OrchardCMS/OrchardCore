@@ -5,21 +5,25 @@ using OrchardCore.Modules;
 using OrchardCore.Queries.Apis.GraphQL.Mutations;
 using OrchardCore.Queries.Apis.GraphQL.Mutations.Types;
 using OrchardCore.Queries.Apis.GraphQL.Queries;
-using OrchardCore.Queries.Sql;
+using OrchardCore.Queries.Sql.Apis.GraphQL.Queries;
 
-namespace OrchardCore.Queries.Apis.GraphQL
+namespace OrchardCore.Queries.Sql.Apis.GraphQL
 {
-    public class GraphQLStartup : StartupBase
+    /// <summary>
+    /// These services are registered on the tenant service collection
+    /// </summary>
+    [Feature("OrchardCore.Queries.Sql")]
+    public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDynamicQueryFieldTypeProvider, QueryTypeFieldTypeProvider>();
+            services.AddScoped<IDynamicQueryFieldTypeProvider, SqlQueryFieldTypeProvider>();
 
             services.AddGraphMutationType<CreateQueryMutation<SqlQuery>>();
             services.AddScoped<CreateQueryOutcomeType<SqlQuery>>();
 
-            //services.AddGraphQueryType<Query>();
-            services.AddScoped<QueryType>();
+            //services.AddGraphQueryType<QueriesQuery<SqlQueryQuery>>();
+            //services.AddScoped<SqlQueryQuery>();
         }
     }
 }

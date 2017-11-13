@@ -5,11 +5,11 @@ using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
 
 namespace OrchardCore.Contents.Apis.GraphQL.Schema
 {
-    public class ObjectGraphTypeProvider : IObjectGraphTypeProvider
+    public class ContentPartObjectGraphTypeProvider : IObjectGraphTypeProvider
     {
         private readonly IEnumerable<ContentPart> _contentParts;
 
-        public ObjectGraphTypeProvider(
+        public ContentPartObjectGraphTypeProvider(
             IEnumerable<ContentPart> contentParts)
         {
             _contentParts = contentParts;
