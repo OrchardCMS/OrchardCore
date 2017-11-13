@@ -9,9 +9,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.Contents.Apis.GraphQL.Queries;
-using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
 using OrchardCore.Lucene;
-using OrchardCore.Queries.Apis.GraphQL.Queries;
 
 namespace OrchardCore.Queries.Lucene.Apis.GraphQL.Queries
 {
@@ -45,38 +43,45 @@ namespace OrchardCore.Queries.Lucene.Apis.GraphQL.Queries
                 {
                     continue;
                 }
-
-                var queryvalue = JObject.Parse(query.Template)["query"]["term"]["Content.ContentItem.ContentType"].ToObject<string>();
-
-                var typetype = state.Fields.OfType<ContentItemsQuery>().First(x => x.Name == queryvalue);
-
-                var fieldType = new FieldType
+                else
                 {
-                    Arguments = new QueryArguments(
-                        new QueryArgument<StringGraphType> { Name = "Parameters" }
-                    ),
-                    
-                    Name = name,
-                    ResolvedType = typetype.ResolvedType,
-                    Resolver = new SlowFuncFieldResolver<object, Task<object>>(async context => {
-                        var iquery = await _queryManager.GetQueryAsync(context.FieldName);
-
-                        var parameters = context.GetArgument<string>("Parameters");
-
-                        var queryParameters = parameters != null ?
-                            JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                            : new Dictionary<string, object>();
-
-                        var p = await _queryManager.ExecuteQueryAsync(iquery, queryParameters);
-                        return p;
-                    }),
-                    Type = typetype.Type
-                };
-
-                fieldTypes.Add(fieldType);
+                    fieldTypes.Add(BuildContentTypeFieldType(state, query));
+                }
             }
 
             return fieldTypes;
+        }
+
+        private FieldType BuildContentTypeFieldType(ObjectGraphType state, LuceneQuery query) {
+
+            var queryvalue = JObject.Parse(query.Template)["query"]["term"]["Content.ContentItem.ContentType"].ToObject<string>();
+
+            var typetype = state.Fields.OfType<ContentItemsQuery>().First(x => x.Name == queryvalue);
+
+            var fieldType = new FieldType
+            {
+                Arguments = new QueryArguments(
+                    new QueryArgument<StringGraphType> { Name = "Parameters" }
+                ),
+
+                Name = query.Name,
+                ResolvedType = typetype.ResolvedType,
+                Resolver = new SlowFuncFieldResolver<object, Task<object>>(async context => {
+                    var iquery = await _queryManager.GetQueryAsync(context.FieldName);
+
+                    var parameters = context.GetArgument<string>("Parameters");
+
+                    var queryParameters = parameters != null ?
+                        JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                        : new Dictionary<string, object>();
+
+                    var p = await _queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    return p;
+                }),
+                Type = typetype.Type
+            };
+
+            return fieldType;
         }
     }
 }
