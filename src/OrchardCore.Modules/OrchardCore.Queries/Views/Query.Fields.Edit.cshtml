@@ -7,8 +7,8 @@
     <input asp-for="Source" type="hidden" />
 </fieldset>
 
-<fieldset class="form-group" asp-validation-class-for="Schema">
-    <label asp-for="Schema">@T["Schema"] <span asp-validation-for="Schema"></span></label>
-    <input asp-for="Schema" class="form-control text-muted" autofocus />
-    <span class="hint">@T["The schema used runtime determination of the results."]</span>
+<fieldset class="form-group">
+    <label asp-for="Schema">@T["Schema"]</label>
+    <textarea asp-for="Schema" rows="12" class="form-control"></textarea>
+    <span class="hint">@T["The schema the api will use to return results."]</span>
 </fieldset>

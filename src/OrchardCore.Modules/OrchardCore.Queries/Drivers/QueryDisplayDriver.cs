@@ -63,7 +63,7 @@ namespace OrchardCore.Queries.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(Query model, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, m => m.Name, m => m.Source);
+            await updater.TryUpdateModelAsync(model, Prefix, m => m.Name, m => m.Source, m => m.Schema);
 
             if (String.IsNullOrEmpty(model.Name))
             {
