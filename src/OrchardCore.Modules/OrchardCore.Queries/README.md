@@ -101,3 +101,10 @@ To access a named query, use the name as the input.
 The example above will iterate over all the results of the query name `RecentBlogPosts` and display the text representing
 the content item. Any available property on the results of the queries can be used. This example assumes the results
 will be content items.
+
+## GraphQl
+
+Specify a Schema
+```json
+{ "schema": { "Content.ContentItem.ContentItemId": "String" } }
+```

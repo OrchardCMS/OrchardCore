@@ -4,7 +4,6 @@ using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Modules;
 using OrchardCore.Queries.Apis.GraphQL.Mutations;
 using OrchardCore.Queries.Apis.GraphQL.Mutations.Types;
-using OrchardCore.Queries.Apis.GraphQL.Queries;
 using OrchardCore.Queries.Sql.Apis.GraphQL.Queries;
 
 namespace OrchardCore.Queries.Sql.Apis.GraphQL
@@ -21,9 +20,6 @@ namespace OrchardCore.Queries.Sql.Apis.GraphQL
 
             services.AddGraphMutationType<CreateQueryMutation<SqlQuery>>();
             services.AddScoped<CreateQueryOutcomeType<SqlQuery>>();
-
-            //services.AddGraphQueryType<QueriesQuery<SqlQueryQuery>>();
-            //services.AddScoped<SqlQueryQuery>();
         }
     }
 }

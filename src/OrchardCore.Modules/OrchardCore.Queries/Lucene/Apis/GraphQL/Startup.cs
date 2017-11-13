@@ -5,7 +5,6 @@ using OrchardCore.Lucene;
 using OrchardCore.Modules;
 using OrchardCore.Queries.Apis.GraphQL.Mutations;
 using OrchardCore.Queries.Apis.GraphQL.Mutations.Types;
-using OrchardCore.Queries.Apis.GraphQL.Queries;
 using OrchardCore.Queries.Lucene.Apis.GraphQL.Queries;
 
 namespace OrchardCore.Queries.Lucene.Apis.GraphQL
@@ -22,9 +21,6 @@ namespace OrchardCore.Queries.Lucene.Apis.GraphQL
 
             services.AddGraphMutationType<CreateQueryMutation<LuceneQuery>>();
             services.AddScoped<CreateQueryOutcomeType<LuceneQuery>>();
-
-            //services.AddGraphQueryType<QueriesQuery<LuceneQueryQuery>>();
-            //services.AddScoped<LuceneQueryQuery>();
         }
     }
 }
