@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JsonApiSerializer" Version="0.9.18" />
+    <PackageReference Include="JsonApiSerializer" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.0.0" />
     <PackageReference Include="YesSql.Abstractions" Version="2.0.0-beta-1070" />
   </ItemGroup>
