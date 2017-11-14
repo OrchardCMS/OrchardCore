@@ -60,7 +60,7 @@ namespace OrchardCore.Media
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
 
-                string mediaPath = GetMediaPath(env, shellOptions.Value, shellSettings);
+                string mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
                 return new MediaFileStore(new FileSystemStore(mediaPath, shellSettings.RequestUrlPrefix, AssetsUrlPrefix));
             });
 
@@ -153,9 +153,8 @@ namespace OrchardCore.Media
         {
             var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-            var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
 
-            string mediaPath = GetMediaPath(env, shellOptions.Value, shellSettings);
+            string mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
 
             if (!Directory.Exists(mediaPath))
             {
@@ -173,7 +172,7 @@ namespace OrchardCore.Media
             });
         }
 
-        private string GetMediaPath(IHostingEnvironment env, ShellOptions shellOptions, ShellSettings shellSettings)
+        private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings)
         {
             return Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
         }

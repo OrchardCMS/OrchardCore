@@ -1,7 +1,12 @@
-﻿Name: Tenants
+Name: Tenants
 AntiForgery: enabled
 Author: The Orchard Team
 Website: http://orchardproject.net
 Version: 2.0.x
 OrchardVersion: 2.0.x
 Category: Infrastructure
+Features:
+    OrchardCore.Tenants.FileProvider:
+        Name: Satic File Provider
+        Description: Provides a way to serve independent static files for each tenant.
+        Category: Infrastructure
