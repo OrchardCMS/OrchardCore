@@ -11,13 +11,13 @@ Orchard Core is a re-implementation of [Orchard CMS](https://github.com/OrchardC
 
 Stable (master): 
 
-[![Build Status](https://img.shields.io/travis/OrchardCMS/OrchardCore.svg?label=travis-ci&branch=master&style=flat-square)](https://travis-ci.org/OrchardCMS/OrchardCore/branches)
+[![Build Status](https://api.travis-ci.org/OrchardCMS/OrchardCore.svg?branch=master)](https://travis-ci.org/OrchardCMS/OrchardCore/branches)
 [![Build status](https://img.shields.io/appveyor/ci/alexbocharov/orchard2/master.svg?label=appveyor&style=flat-square)](https://ci.appveyor.com/project/alexbocharov/orchard2/branch/master)
 [![NuGet](https://img.shields.io/nuget/v/OrchardCore.Application.Cms.Targets.svg)](https://www.nuget.org/packages/OrchardCore.Application.Cms.Targets)
 
 Nightly (dev): 
 
-[![Build Status](https://img.shields.io/travis/OrchardCMS/OrchardCore.svg?label=travis-ci&branch=dev&style=flat-square)](https://travis-ci.org/OrchardCMS/OrchardCore/branches)
+[![Build Status](https://api.travis-ci.org/OrchardCMS/OrchardCore.svg?branch=dev)](https://travis-ci.org/OrchardCMS/OrchardCore/branches)
 [![Build status](https://img.shields.io/appveyor/ci/alexbocharov/orchard2/dev.svg?label=appveyor&style=flat-square)](https://ci.appveyor.com/project/alexbocharov/orchard2/branch/dev)
 [![MyGet](https://img.shields.io/myget/orchardcore-preview/vpre/OrchardCore.Application.Cms.Targets.svg)](https://myget.org/feed/orchardcore-preview/package/nuget/OrchardCore.Application.Cms.Targets)
 
