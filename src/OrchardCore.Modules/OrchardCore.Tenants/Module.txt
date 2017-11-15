@@ -10,6 +10,6 @@ Features:
         Description: Provides a way to manage tenants from the admin.
         Category: Infrastructure
     OrchardCore.Tenants.FileProvider:
-        Name: Satic File Provider
+        Name: Static File Provider
         Description: Provides a way to serve independent static files for each tenant.
         Category: Infrastructure
