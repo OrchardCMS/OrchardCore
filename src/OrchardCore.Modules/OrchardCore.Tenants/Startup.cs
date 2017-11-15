@@ -44,7 +44,8 @@ namespace OrchardCore.Tenants
 
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(contentRoot)
+                FileProvider = new PhysicalFileProvider(contentRoot),
+                ServeUnknownFileTypes = true
             });
         }
 
