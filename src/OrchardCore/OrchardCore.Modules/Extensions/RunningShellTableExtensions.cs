@@ -6,8 +6,6 @@ namespace OrchardCore.Modules
 {
     public static class RunningShellTableExtensions
     {
-        private const string XForwardedHost = "X-Forwarded-Host";
-
         public static ShellSettings Match(this IRunningShellTable table, HttpContext httpContext)
         {
             if (httpContext == null)
