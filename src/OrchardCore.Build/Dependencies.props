@@ -13,7 +13,7 @@
     <FluidCoreVersion>1.0.0-beta-9399</FluidCoreVersion>
     <YesSqlVersion>2.0.0-beta-1097</YesSqlVersion>
     <YesSqlProvidersVersion>1.0.0-beta-1097</YesSqlProvidersVersion>
-    <NewtonsoftJson>10.0.3</NewtonsoftJson>
+    <NewtonsoftJsonVersion>10.0.3</NewtonsoftJsonVersion>
   </PropertyGroup>
 
 </Project>

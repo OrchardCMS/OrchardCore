@@ -2,6 +2,7 @@
   <PropertyGroup>
     <LibuvPackageVersion>1.10.0</LibuvPackageVersion>
     <MicrosoftApplicationInsightsAspNetCorePackageVersion>2.1.1</MicrosoftApplicationInsightsAspNetCorePackageVersion>
+    <MicrosoftAspNetCorePackageVersion>2.0.1</MicrosoftAspNetCorePackageVersion>
     <MicrosoftAspNetCoreAllPackageVersion>2.0.3</MicrosoftAspNetCoreAllPackageVersion>
     <MicrosoftAspNetCoreAntiforgeryPackageVersion>2.0.1</MicrosoftAspNetCoreAntiforgeryPackageVersion>
     <MicrosoftAspNetCoreApplicationInsightsHostingStartupPackageVersion>2.0.1</MicrosoftAspNetCoreApplicationInsightsHostingStartupPackageVersion>
