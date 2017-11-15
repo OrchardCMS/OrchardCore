@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
@@ -29,7 +30,7 @@ namespace OrchardCore.Tenants
 
         // Run after other middlewares
         public override int Order => 10;
-
+        
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
@@ -45,6 +46,7 @@ namespace OrchardCore.Tenants
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(contentRoot),
+                DefaultContentType = "application/octet-stream",
                 ServeUnknownFileTypes = true
             });
         }
