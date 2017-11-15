@@ -58,7 +58,6 @@ namespace OrchardCore.Media
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-                var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
 
                 string mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
                 return new MediaFileStore(new FileSystemStore(mediaPath, shellSettings.RequestUrlPrefix, AssetsUrlPrefix));
