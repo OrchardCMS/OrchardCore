@@ -38,10 +38,9 @@ namespace OrchardCore.Queries.Lucene.Apis.GraphQL.Queries
             {
                 var name = query.Name;
                 var source = query.Source;
+                
+                var schema = JObject.Parse(query.Schema);
 
-                var schemaJson = JObject.Parse(query.Schema);
-
-                var schema = schemaJson["schema"];
                 var type = schema["type"].ToString();
 
                 if (query.ReturnContentItems &&
@@ -70,9 +69,9 @@ namespace OrchardCore.Queries.Lucene.Apis.GraphQL.Queries
 
             foreach (var child in properties.Children())
             {
-                var name = child["Name"].ToString();
+                var name = ((JProperty)child).Name;
                 var nameLower = name.Replace('.', '_');
-                var type = child["Type"].ToString();
+                var type = child["type"].ToString();
 
                 if (type == "String")
                 {

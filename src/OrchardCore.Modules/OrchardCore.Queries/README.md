@@ -102,7 +102,7 @@ The example above will iterate over all the results of the query name `RecentBlo
 the content item. Any available property on the results of the queries can be used. This example assumes the results
 will be content items.
 
-## GraphQl
+## GraphQL
 
 ### Schemas
 
@@ -112,20 +112,54 @@ The `Type` property tells the api engine what it is, in the instance below, a co
 
 When a Type of `ContentItem/*` is specified, the properties section is ignored, though this might change if a Type starts with comething other then `ContentItem/`
 
+Whilst we conform to the [Json Schema](http://json-schema.org/examples.html), we only use a subset as shown below.
+
 ```json
 {
-	"schema": {
-		"Type": "ContentItem/Blog",
-		"Properties": [
-            {
-                "Name": "Title",
-                "Type": "String"
-            },
-            {
-                "Name": "Position",
-                "Type": "Integer"
-            }
-		]
-	}
+    "type": "ContentItem/Blog",
+    "properties": {
+        "title": {
+            "type": "string"
+        },
+        "position": {
+            "type": "integer",
+        }
+    }
 }
 ```
+
+### Mutations
+
+#### Create Query
+
+All create queries will have the naming convention `CreateQUERYNAME` i.e. a SqlQuery will be `CreateSqlQuery`.
+
+```json
+{ 
+	mutation { 
+		CreateLuceneQuery { 
+			createLuceneQuery(
+				Name: ""
+				Index: ""
+				Template: ""
+				ReturnContentItems: true/false
+				Schema: ""
+			) 
+		}  
+	} 
+}
+```
+
+Returns a fully populate query object.
+
+#### Delete Query
+
+{ 
+	mutation { 
+		DeleteQuery { 
+			deleteQuery(
+				Name: ""
+			) 
+		}  
+	} 
+}
