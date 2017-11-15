@@ -104,7 +104,28 @@ will be content items.
 
 ## GraphQl
 
-Specify a Schema
+### Schemas
+
+Schemas help tell apis what they are serving up. There are two properties within a schema, both are mutually exclusive to one another.
+
+The `Type` property tells the api engine what it is, in the instance below, a content item. The second property, a `properties` array, tells which fields to serve up.
+
+When a Type of `ContentItem/*` is specified, the properties section is ignored, though this might change if a Type starts with comething other then `ContentItem/`
+
 ```json
-{ "schema": { "Content.ContentItem.ContentItemId": "String" } }
+{
+	"schema": {
+		"Type": "ContentItem/Blog",
+		"Properties": [
+            {
+                "Name": "Title",
+                "Type": "String"
+            },
+            {
+                "Name": "Position",
+                "Type": "Integer"
+            }
+		]
+	}
+}
 ```
