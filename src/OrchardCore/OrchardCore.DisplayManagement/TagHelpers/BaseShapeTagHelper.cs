@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.TagHelpers
 {
@@ -78,10 +79,12 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             }
 
             var shape = await _shapeFactory.CreateAsync(Type, Arguments.From(properties));
+            var metadata = shape.Metadata;
+
+            tagHelperContext.Items.Add(typeof(ShapeMetadata), metadata);
 
             if (!string.IsNullOrWhiteSpace(Cache))
             {
-                var metadata = shape.Metadata;
                 metadata.Cache(Cache);
 
                 if (Duration.HasValue)
@@ -107,6 +110,8 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                     metadata.Cache().AddDependency(dependency);
                 }
             }
+
+            await output.GetChildContentAsync();
 
             output.Content.SetHtmlContent(await display.ShapeExecuteAsync(shape));
 

@@ -64,6 +64,33 @@ be `Address.City`.
 
 ## Shapes
 
+### Tag Helpers
+
+#### Manipulating shape metadata
+
+It's possible to manipulate a shape's metadata by using the `metadata` tag helper as a child of the shape's tag helper. The metadata tag helper allows you to:
+
+- Change the display type
+- Add, remove, or clear alternates
+- Add, remove, or clear wrappers
+
+Metadata tag helper example:
+
+```
+<menu alias="alias:main-menu">
+    <metadata display-type="summary">
+        <clear-alternates />
+        <add-alternate name="Menu_Alternate1" />
+        <add-alternate name="Menu_Alternate2" />
+        <remove-alternate name="Menu_Alternate1" />
+        <clear-wrappers />
+        <add-wrapper name="Menu_Wrapper1" />
+        <add-wrapper name="Menu_Wrapper2" />
+        <remove-wrapper name="Menu_Wrapper2" />
+    </metadata>
+</menu>
+```
+
 ### Date Time shapes
 
 #### DateTime
