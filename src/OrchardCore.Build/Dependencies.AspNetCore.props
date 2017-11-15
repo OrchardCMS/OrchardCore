@@ -33,7 +33,7 @@
     <MicrosoftAspNetCoreDataProtectionRedisPackageVersion>0.3.1</MicrosoftAspNetCoreDataProtectionRedisPackageVersion>
     <MicrosoftAspNetCoreDataProtectionSystemWebPackageVersion>2.0.1</MicrosoftAspNetCoreDataProtectionSystemWebPackageVersion>
     <MicrosoftAspNetCoreDiagnosticsAbstractionsPackageVersion>2.0.1</MicrosoftAspNetCoreDiagnosticsAbstractionsPackageVersion>
-    <MicrosoftAspNetCoreDiagnosticsElmPackageVersion>0.3.1</MicrosoftAspNetCoreDiagnosticsElmPackageVersion>
+    <MicrosoftAspNetCoreDiagnosticsElmPackageVersion>0.2.2</MicrosoftAspNetCoreDiagnosticsElmPackageVersion>
     <MicrosoftAspNetCoreDiagnosticsEntityFrameworkCorePackageVersion>2.0.1</MicrosoftAspNetCoreDiagnosticsEntityFrameworkCorePackageVersion>
     <MicrosoftAspNetCoreDiagnosticsIdentityServicePackageVersion>2.0.1</MicrosoftAspNetCoreDiagnosticsIdentityServicePackageVersion>
     <MicrosoftAspNetCoreDiagnosticsPackageVersion>2.0.1</MicrosoftAspNetCoreDiagnosticsPackageVersion>
