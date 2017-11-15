@@ -39,61 +39,64 @@ namespace OrchardCore.Queries.Lucene.Apis.GraphQL.Queries
                 var name = query.Name;
                 var source = query.Source;
 
-                if (!query.ReturnContentItems)
+                var schemaJson = JObject.Parse(query.Schema);
+
+                var schema = schemaJson["schema"];
+                var type = schema["type"].ToString();
+
+                if (query.ReturnContentItems &&
+                    type.StartsWith("ContentItem/", System.StringComparison.OrdinalIgnoreCase))
                 {
-                    if (!string.IsNullOrWhiteSpace(query.Schema))
-                    {
-                        fieldTypes.Add(BuildSchemaBasedFieldType(state, query));
-                    }
+                    var contentType = type.Remove(0, 12);
+                    fieldTypes.Add(BuildContentTypeFieldType(state, contentType, query));
                 }
                 else
                 {
-                    fieldTypes.Add(BuildContentTypeFieldType(state, query));
+                    fieldTypes.Add(BuildSchemaBasedFieldType(state, query, schema));
                 }
             }
 
             return fieldTypes;
         }
 
-        private FieldType BuildSchemaBasedFieldType(ObjectGraphType state, LuceneQuery query)
+        private FieldType BuildSchemaBasedFieldType(ObjectGraphType state, LuceneQuery query, JToken schema)
         {
-            var schemaJson = JObject.Parse(query.Schema);
-
-            var schema = schemaJson["schema"];
-
             var typetype = new ObjectGraphType<JObject>
             {
                 Name = query.Name
             };
 
-            foreach (var child in schema.Children().OfType<JProperty>())
-            {
-                var name = child.Name.ToString().Replace('.', '_');
-                var value = child.Value.ToString();
+            var properties = schema["Properties"];
 
-                if (value == "String")
+            foreach (var child in properties.Children())
+            {
+                var name = child["Name"].ToString();
+                var nameLower = name.Replace('.', '_');
+                var type = child["Type"].ToString();
+
+                if (type == "String")
                 {
                     var field = typetype.Field(
                         typeof(StringGraphType),
-                        name,
+                        nameLower,
                         resolve: context =>
                         {
                             var source = context.Source;
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<string>();
                         });
-                    field.Metadata.Add("Name", child.Name.ToString());
+                    field.Metadata.Add("Name", name);
                 }
-                if (value == "Integer")
+                if (type == "Integer")
                 {
                     var field = typetype.Field(
                         typeof(IntGraphType),
-                        name,
+                        nameLower,
                         resolve: context =>
                         {
                             var source = context.Source;
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
                         });
-                    field.Metadata.Add("Name", child.Name.ToString());
+                    field.Metadata.Add("Name", name);
                 }
             }
 
@@ -123,11 +126,9 @@ namespace OrchardCore.Queries.Lucene.Apis.GraphQL.Queries
             return fieldType;
         }
 
-        private FieldType BuildContentTypeFieldType(ObjectGraphType state, LuceneQuery query)
+        private FieldType BuildContentTypeFieldType(ObjectGraphType state, string contentType, LuceneQuery query)
         {
-            var queryvalue = JObject.Parse(query.Template)["query"]["term"]["Content.ContentItem.ContentType"].ToObject<string>();
-
-            var typetype = state.Fields.OfType<ContentItemsQuery>().First(x => x.Name == queryvalue);
+            var typetype = state.Fields.OfType<ContentItemsQuery>().First(x => x.Name == contentType);
 
             var fieldType = new FieldType
             {
