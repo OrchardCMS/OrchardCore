@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   
   <!-- 
     This file is included in the Nuget packages as "build/$(PackageId).props" file.
@@ -7,5 +7,6 @@
   -->
   <ItemGroup>
     <PackageAssetFiles Include="$(MSBuildThisFileDirectory)..\..\assets\**\*" />
+    <ModulePackageNames Include="$(MSBuildThisFileName)" />
   </ItemGroup>
 </Project>
