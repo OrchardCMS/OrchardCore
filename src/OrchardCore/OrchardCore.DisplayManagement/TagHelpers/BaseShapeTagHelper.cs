@@ -12,7 +12,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 {
     public abstract class BaseShapeTagHelper : TagHelper
     {
-        private static readonly string[] InternalProperties = new[] { "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-duration" };
+        private static readonly string[] InternalProperties = new[] { "id", "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-duration" };
         private static readonly char[] Separators = new[] { ',', ' ' };
 
         protected IShapeFactory _shapeFactory;
@@ -79,12 +79,18 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             }
 
             var shape = await _shapeFactory.CreateAsync(Type, Arguments.From(properties));
-            var metadata = shape.Metadata;
 
-            tagHelperContext.Items.Add(typeof(ShapeMetadata), metadata);
+            if (output.Attributes.ContainsName("id"))
+            {
+                shape.Id = Convert.ToString(output.Attributes["id"].Value);
+            }
+            
+            tagHelperContext.Items.Add(typeof(IShape), shape);
 
             if (!string.IsNullOrWhiteSpace(Cache))
             {
+                var metadata = shape.Metadata;
+
                 metadata.Cache(Cache);
 
                 if (Duration.HasValue)

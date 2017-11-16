@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.TagHelpers
 {
@@ -12,11 +11,11 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            var metadata = (ShapeMetadata)context.Items[typeof(ShapeMetadata)];
-
-            if (metadata != null && output.Attributes.ContainsName("display-type"))
+            var shape = (IShape)context.Items[typeof(IShape)];
+            
+            if (shape != null && output.Attributes.ContainsName("display-type"))
             {
-                metadata.DisplayType = Convert.ToString(output.Attributes["display-type"].Value);
+                shape.Metadata.DisplayType = Convert.ToString(output.Attributes["display-type"].Value);
             }
 
             await output.GetChildContentAsync();
