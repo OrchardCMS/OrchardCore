@@ -6044,7 +6044,9 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
     display: none !important; } }
 
 .ta-wrapper .ta-navbar-top {
-  min-height: 55px; }
+  min-height: 55px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: #b0c4b1; }
 
 .ta-wrapper .ta-navbar-brand {
   margin-left: 4px; }
@@ -6100,7 +6102,8 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
     position: absolute;
     top: 0;
     left: 100%;
-    margin-left: -15px; }
+    margin-left: -15px;
+    cursor: pointer; }
   .ta-wrapper #ta-left-sidebar .icon {
     padding-right: 10px; }
   .ta-wrapper #ta-left-sidebar li label,
@@ -6108,7 +6111,6 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   .ta-wrapper #ta-left-sidebar li a:hover,
   .ta-wrapper #ta-left-sidebar li a:active,
   .ta-wrapper #ta-left-sidebar li a:visited {
-    color: #464a4c;
     text-decoration: none;
     padding-left: 12px; }
   .ta-wrapper #ta-left-sidebar li a:hover, .ta-wrapper #ta-left-sidebar li label:hover {
@@ -6117,6 +6119,9 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   .ta-wrapper #ta-left-sidebar li.active > a {
     background-color: #636c72;
     color: #f7f7f9 !important; }
+  .ta-wrapper #ta-left-sidebar li.dropdown.active {
+    background-color: #292b2c;
+    color: #fff; }
   .ta-wrapper #ta-left-sidebar li ul > li > a,
   .ta-wrapper #ta-left-sidebar li ul > li > label {
     background-color: #eceeef;
@@ -6131,7 +6136,7 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
 .ta-wrapper .ta-content {
   margin-left: 0;
   margin-top: 55px;
-  padding-top: 1em;
+  padding: 1em 15px;
   border-top: 1px solid rgba(0, 0, 0, 0.05); }
 
 @media (min-width: 576px) {
@@ -6191,7 +6196,7 @@ label .field-validation-error::before {
 
 .ta-left-sidebar-nano > .nano-pane {
   position: absolute;
-  width: 10px;
+  width: 5px;
   right: 0;
   top: 0;
   bottom: 0;
@@ -6206,8 +6211,7 @@ label .field-validation-error::before {
 .ta-left-sidebar-nano > .nano-pane > .nano-slider {
   background: #444;
   background: rgba(0, 0, 0, 0.5);
-  position: relative;
-  margin: 0 1px; }
+  position: relative; }
 
 .ta-left-sidebar-nano:hover > .nano-pane, .nano-pane.active, .nano-pane.flashed {
   visibility: visible\9;
@@ -6217,6 +6221,9 @@ label .field-validation-error::before {
 .ta-left-sidebar-nano .nano-content {
   /* preventing last bottom item is not visible when scrolling to bottom */
   padding-bottom: 100px; }
+
+.pointer, .ta-wrapper #ta-left-sidebar nav > ul li.dropdown label {
+  cursor: pointer; }
 
 /*!
  * Bootstrap v4.0.0-alpha.6 (https://getbootstrap.com)

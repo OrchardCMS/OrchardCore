@@ -187,3 +187,4 @@ nuget.exe
 node_modules/*
 
 wwwroot
+/package-lock.json
