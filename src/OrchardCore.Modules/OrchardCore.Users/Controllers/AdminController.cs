@@ -121,7 +121,7 @@ namespace OrchardCore.Users.Controllers
             {
                 Users = await Task.WhenAll(
                     results.Select(async x => 
-                        new UserEntry { Shape = await _userDisplayManager.BuildDisplayAsync(x, this, "SummaryAdmin") })),
+                        new UserEntry { Shape = await _userDisplayManager.BuildDisplayAsync(x, updater: this, displayType: "SummaryAdmin") })),
                 Options = options,
                 Pager = pagerShape
             };
@@ -136,7 +136,7 @@ namespace OrchardCore.Users.Controllers
                 return Unauthorized();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(new User(), this);
+            var shape = await _userDisplayManager.BuildEditorAsync(new User(), updater: this, isNew: true);
 
             return View(shape);
         }
@@ -150,7 +150,7 @@ namespace OrchardCore.Users.Controllers
                 return Unauthorized();
             }
             
-            var shape = await _userDisplayManager.UpdateEditorAsync(new User(), this);
+            var shape = await _userDisplayManager.UpdateEditorAsync(new User(), updater: this, isNew: true);
 
             if (!ModelState.IsValid)
             {
@@ -175,7 +175,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync((User) currentUser, this);
+            var shape = await _userDisplayManager.BuildEditorAsync((User) currentUser, updater: this, isNew: false);
 
             return View(shape);
         }
@@ -195,7 +195,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync((User) currentUser, this);
+            var shape = await _userDisplayManager.UpdateEditorAsync((User) currentUser, updater: this, isNew: false);
 
             if (!ModelState.IsValid)
             {

@@ -30,7 +30,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 var fieldName = _partFieldDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
 
-                if (partType == shapeType)
+                if (fieldType == shapeType)
                 {
                     // BodyPart-Description, Services-Description
                     result.Differentiator($"{partName}-{fieldName}");

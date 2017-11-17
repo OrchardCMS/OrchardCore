@@ -46,7 +46,7 @@ namespace OrchardCore.Widgets.Controllers
 
             contentItem.Weld(new WidgetMetadata());
 
-            dynamic editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, htmlFieldPrefix: prefix);
+            dynamic editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true, htmlFieldPrefix: prefix);
 
             editor.ZonesName = zonesName;
             editor.PrefixesName = prefixesName;

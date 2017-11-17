@@ -67,7 +67,7 @@ namespace OrchardCore.Flows.Drivers
             {
                 var contentItem = _contentManager.New(model.ContentTypes[i]);
 
-                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, htmlFieldPrefix: model.Prefixes[i]);
+                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
 
                 part.ContentItems.Add(contentItem);
             }

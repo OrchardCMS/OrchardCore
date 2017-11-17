@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Fluid.Core" Version="$(FluidCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(MicrosoftExtensionsDependencyInjectionAbstractionsPackageVersion)" />
   </ItemGroup>
 
 </Project>

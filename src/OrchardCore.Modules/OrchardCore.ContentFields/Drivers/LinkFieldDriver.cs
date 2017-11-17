@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -38,8 +37,8 @@ namespace OrchardCore.ContentFields.Fields
             return Shape<EditLinkFieldViewModel>("LinkField_Edit", model =>
             {
                 var settings = context.PartFieldDefinition.Settings.ToObject<LinkFieldSettings>();
-                model.Url = (field.IsNew()) ? settings.DefaultUrl : field.Url;
-                model.Text = (field.IsNew()) ? settings.DefaultText : field.Text;
+                model.Url = context.IsNew ? settings.DefaultUrl : field.Url;
+                model.Text = context.IsNew ? settings.DefaultText : field.Text;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;

@@ -11,7 +11,7 @@ namespace OrchardCore.ContentManagement.Display
     public interface IContentItemDisplayManager
     {
         Task<IShape> BuildDisplayAsync(ContentItem content, IUpdateModel updater, string displayType = "", string groupId = "");
-        Task<IShape> BuildEditorAsync(ContentItem content, IUpdateModel updater, string groupId = "", string htmlFieldPrefix = "");
-        Task<IShape> UpdateEditorAsync(ContentItem content, IUpdateModel updater, string groupId = "", string htmlFieldPrefix = "");
+        Task<IShape> BuildEditorAsync(ContentItem content, IUpdateModel updater, bool isNew, string groupId = "", string htmlFieldPrefix = "");
+        Task<IShape> UpdateEditorAsync(ContentItem content, IUpdateModel updater, bool isNew, string groupId = "", string htmlFieldPrefix = "");
     }
 }
