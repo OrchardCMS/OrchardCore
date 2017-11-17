@@ -47,11 +47,9 @@ namespace OrchardCore.Queries.Sql
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             var dialect = SqlDialectFactory.For(connection);
 
-            var results = new List<JObject>();
-
             if (!SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, out var rawQuery, out var rawParameters, out var messages))
             {
-                return results;
+                return new object[0];
             }
                         
             if (sqlQuery.ReturnDocuments)
@@ -64,12 +62,7 @@ namespace OrchardCore.Queries.Sql
                     documentIds = await connection.QueryAsync<int>(rawQuery, rawParameters);
                 }
 
-                var documents = await _session.GetAsync<object>(documentIds.ToArray());
-
-                foreach (var document in documents)
-                {
-                    results.Add(JObject.FromObject(document));
-                }
+                return await _session.GetAsync<object>(documentIds.ToArray());
             }
             else
             {
@@ -81,13 +74,15 @@ namespace OrchardCore.Queries.Sql
                     queryResults = await connection.QueryAsync(rawQuery, rawParameters);
                 }
 
+                var results = new List<JObject>();
+
                 foreach (var document in queryResults)
                 {
                     results.Add(JObject.FromObject(document));
                 }
-            }
 
-            return results.ToArray();
+                return results;
+            }
         }
     }
 }

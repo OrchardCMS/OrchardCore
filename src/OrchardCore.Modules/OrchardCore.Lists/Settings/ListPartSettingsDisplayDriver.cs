@@ -12,7 +12,7 @@ using OrchardCore.Lists.ViewModels;
 
 namespace OrchardCore.Lists.Settings
 {
-    public class ListPartSettingsDisplayDriver : ContentTypePartDisplayDriver
+    public class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 

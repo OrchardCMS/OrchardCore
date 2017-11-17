@@ -1,8 +1,8 @@
-﻿using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Navigation;
+using OrchardCore.Modules;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Templates.Recipes;
@@ -23,8 +23,9 @@ namespace OrchardCore.Templates
             services.AddRecipeExecutionStep<TemplateStep>();
 
             // Template shortcuts in settings
-            services.AddScoped<IContentPartDefinitionDisplayDriver, TemplateContentPartSettingsDriver>();
-            services.AddScoped<IContentTypeDefinitionDisplayDriver, TemplateContentTypeSettingsDriver>();
+            services.AddScoped<IContentPartDefinitionDisplayDriver, TemplateContentPartDefinitionDriver>();
+            services.AddScoped<IContentTypeDefinitionDisplayDriver, TemplateContentTypeDefinitionDriver>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, TemplateContentTypePartDefinitionDriver>();            
         }
     }
 }

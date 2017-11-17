@@ -26,7 +26,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
 
-            var name = arguments.At(0).ToStringValue();
+            var name = arguments["name"].Or(arguments.At(0)).ToStringValue();
             var required = arguments.HasNamed("required") ? Convert.ToBoolean(arguments["required"].ToStringValue()) : false;
             var zone = layout[name];
 

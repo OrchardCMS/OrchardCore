@@ -7,8 +7,8 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
@@ -38,6 +38,7 @@ namespace OrchardCore.Flows.Drivers
             {
                 m.BagPart = bagPart;
                 m.BuildPartDisplayContext = context;
+                m.Settings = context.TypePartDefinition.Settings.ToObject<BagPartSettings>();
             })
             .Location("Detail", "Content:5");
         }
@@ -66,7 +67,7 @@ namespace OrchardCore.Flows.Drivers
             {
                 var contentItem = _contentManager.New(model.ContentTypes[i]);
 
-                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, htmlFieldPrefix: model.Prefixes[i]);
+                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
 
                 part.ContentItems.Add(contentItem);
             }

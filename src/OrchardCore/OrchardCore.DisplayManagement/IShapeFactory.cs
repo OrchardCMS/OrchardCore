@@ -88,7 +88,7 @@ namespace OrchardCore.DisplayManagement
         /// </summary>
         /// <typeparam name="TModel">The type to instantiate.</typeparam>
         /// <param name="shapeType">The shape type to create.</param>
-        /// <param name="initialize">The initialization method.</param>
+        /// <param name="initializeAsync">The initialization method.</param>
         /// <returns></returns>
         public static Task<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, Func<TModel, Task> initializeAsync)
         {
@@ -99,7 +99,24 @@ namespace OrchardCore.DisplayManagement
                 return shape;
             });
         }
-        
+
+        /// <summary>
+        /// Creates a dynamic proxy instance for the <see cref="TModel"/> type and initializes it.
+        /// </summary>
+        /// <typeparam name="TModel">The type to instantiate.</typeparam>
+        /// <param name="shapeType">The shape type to create.</param>
+        /// <param name="initialize">The initialization method.</param>
+        /// <returns></returns>
+        public static Task<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, Action<TModel> initialize)
+        {
+            return factory.CreateAsync(shapeType, () =>
+            {
+                var shape = CreateShape(typeof(TModel));
+                initialize((TModel)shape);
+                return Task.FromResult(shape);
+            });
+        }
+
         public static Task<IShape> CreateAsync(this IShapeFactory factory, string shapeType, INamedEnumerable<object> parameters = null)
         {
             return factory.CreateAsync(shapeType, NewShape, null, createdContext => {

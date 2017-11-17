@@ -13,8 +13,9 @@ namespace OrchardCore.Queries
         /// <summary>
         /// Saves the specific <see cref="Query"/>.
         /// </summary>
+        /// <param name="name">The name of the query to update.</param>
         /// <param name="query">The <see cref="Query"/> instance to save.</param>
-        Task SaveQueryAsync(Query query);
+        Task SaveQueryAsync(string name, Query query);
 
         /// <summary>
         /// Deletes the specified <see cref="Query"/>.

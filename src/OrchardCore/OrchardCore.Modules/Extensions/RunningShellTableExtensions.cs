@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Environment.Shell;
 
@@ -8,24 +8,19 @@ namespace OrchardCore.Modules
     {
         public static ShellSettings Match(this IRunningShellTable table, HttpContext httpContext)
         {
-            // use Host header to prevent proxy alteration of the orignal request
-            try
+            if (httpContext == null)
             {
-                var httpRequest = httpContext.Request;
-                if (httpRequest == null)
-                {
-                    return null;
-                }
-
-                var host = httpRequest.Headers["Host"].ToString();
-
-                return table.Match(host ?? string.Empty, httpRequest.Path);
+                throw new ArgumentNullException(nameof(httpContext));
             }
-            catch (Exception)
-            {
-                // can happen on cloud service for an unknown reason
-                return null;
-            }
+
+            var httpRequest = httpContext.Request;
+
+            // The Host property contains the value as set from the client. It is replaced automatically
+            // to the value of X-Forwarded-Host when UseIISIntegration() is invoked.
+            // The same way .Scheme contains the protocol that the user set and not what a proxy
+            // could be using (see X-Forwarded-Proto).
+
+            return table.Match(httpRequest.Host.ToString(), httpRequest.Path);
         }
     }
 }

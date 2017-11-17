@@ -1,6 +1,6 @@
 # Queries (OrchardCore.Queries)
 
-The queries module provide a management UI and APIs for querying data.
+The queries module provides a management UI and APIs for querying data.
 
 ## Creating custom query sources
 

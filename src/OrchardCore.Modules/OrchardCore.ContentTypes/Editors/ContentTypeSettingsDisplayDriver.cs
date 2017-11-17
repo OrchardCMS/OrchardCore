@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Editors
 {
-    public class ContentTypeSettingsDisplayDriver : ContentTypeDisplayDriver
+    public class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
         {

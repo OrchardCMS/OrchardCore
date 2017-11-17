@@ -125,7 +125,7 @@ namespace OrchardCore.Queries.Controllers
 
             var model = new QueriesCreateViewModel
             {
-                Editor = await _displayManager.BuildEditorAsync(query, this),
+                Editor = await _displayManager.BuildEditorAsync(query, updater: this, isNew: true),
                 SourceName = id
             };
 
@@ -147,11 +147,11 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, this);
+            var editor = await _displayManager.UpdateEditorAsync(query, updater: this, isNew: true);
 
             if (ModelState.IsValid)
             {
-                await _queryManager.SaveQueryAsync(query);
+                await _queryManager.SaveQueryAsync(query.Name, query);
 
                 _notifier.Success(H["Query created successfully"]);
                 return RedirectToAction("Index");
@@ -181,7 +181,7 @@ namespace OrchardCore.Queries.Controllers
             {
                 SourceName = query.Source,
                 Name = query.Name,
-                Editor = await _displayManager.BuildEditorAsync(query, this)
+                Editor = await _displayManager.BuildEditorAsync(query, updater: this, isNew: false)
             };   
 
             return View(model);
@@ -202,11 +202,11 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, this);
+            var editor = await _displayManager.UpdateEditorAsync(query, updater: this, isNew: false);
 
             if (ModelState.IsValid)
             {
-                await _queryManager.SaveQueryAsync(query);
+                await _queryManager.SaveQueryAsync(model.Name, query);
 
                 _notifier.Success(H["Query updated successfully"]);
                 return RedirectToAction("Index");

@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Markdown.Settings
 {
-    public class MarkdownPartSettingsDisplayDriver : ContentTypePartDisplayDriver
+    public class MarkdownPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {

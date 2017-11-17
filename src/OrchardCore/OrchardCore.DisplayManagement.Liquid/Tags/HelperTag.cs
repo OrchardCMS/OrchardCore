@@ -67,7 +67,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
-            var helper = _helper ?? arguments.At(0).ToStringValue();
+            var helper = _helper ?? arguments["helper_name"].Or(arguments.At(0)).ToStringValue();
             var tagHelperSharedState = services.GetRequiredService<TagHelperSharedState>();
 
             if (tagHelperSharedState.TagHelperDescriptors == null)

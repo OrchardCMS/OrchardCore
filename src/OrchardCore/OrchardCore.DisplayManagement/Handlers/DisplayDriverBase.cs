@@ -1,26 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.DisplayManagement.Handlers
 {
     public class DisplayDriverBase
     {
-        protected virtual string Prefix { get; set; } = "";
-
-        /// <summary>
-        /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
-        /// </summary>
-        public ShapeResult Shape<TModel>(Func<TModel, Task> initializeAsync) where TModel : class
-        {
-            return new ShapeResult(
-                typeof(TModel).Name,
-                ctx => ctx.ShapeFactory.CreateAsync<TModel>(typeof(TModel).Name, 
-                shape => initializeAsync(shape))
-                ).Prefix(Prefix);
-        }
+        protected string Prefix { get; set; } = "";
 
         /// <summary>
         /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
@@ -33,12 +20,23 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// <summary>
         /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
         /// </summary>
+        public ShapeResult Shape<TModel>(Func<TModel, Task> initializeAsync) where TModel : class
+        {
+            return Shape<TModel>(
+                typeof(TModel).Name,
+                shape => initializeAsync(shape)
+                );
+        }
+
+        /// <summary>
+        /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
+        /// </summary>
         public ShapeResult Shape<TModel>(string shapeType, Func<TModel, Task> initializeAsync) where TModel : class
         {
-            return new ShapeResult(
+            return Shape(
                 shapeType,
-                ctx => ctx.ShapeFactory.CreateAsync(shapeType, initializeAsync))
-                .Prefix(Prefix);
+                ctx => ctx.ShapeFactory.CreateAsync(shapeType, initializeAsync)
+                );
         }
 
         /// <summary>
@@ -54,12 +52,13 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// </summary>
         public ShapeResult Shape(string shapeType, Func<dynamic, Task> initializeAsync)
         {
-            return new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, async () =>
-            {
-                var shape = new Shape();
-                await initializeAsync(shape);
-                return shape;
-            })).Prefix(Prefix);
+            return Shape(shapeType, 
+                async ctx =>
+                {
+                    dynamic shape = await ctx.ShapeFactory.CreateAsync(shapeType);
+                    await initializeAsync(shape);
+                    return shape;
+                });
         }
 
         /// <summary>
@@ -67,12 +66,13 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// </summary>
         public ShapeResult Shape(string shapeType, Action<dynamic> initialize)
         {
-            return new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () =>
-            {
-                var shape = new Shape();
-                initialize(shape);
-                return Task.FromResult<IShape>(shape);
-            })).Prefix(Prefix);
+            return Shape(shapeType,
+                async ctx =>
+                {
+                    dynamic shape = await ctx.ShapeFactory.CreateAsync(shapeType);
+                    initialize(shape);
+                    return shape;
+                });
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// </summary>
         public ShapeResult Shape(string shapeType)
         {
-            return new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType)).Prefix(Prefix);
+            return Shape(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType));
         }
         
         /// <summary>
@@ -89,24 +89,28 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// </summary>
         public ShapeResult Shape<TModel>(string shapeType, TModel model) where TModel : class
         {
-            return new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, model)).Prefix(Prefix);
+            return Shape(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, model));
         }
-
 
         /// <summary>
         /// If the shape needs to be rendered, it is created by the delegate.
         /// </summary>
         public ShapeResult Shape(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder)
         {
-            return new ShapeResult(shapeType, shapeBuilder).Prefix(Prefix);
+            return Shape(shapeType, shapeBuilder, null);
         }
 
         /// <summary>
         /// If the shape needs to be rendered, it is created by the delegate.
         /// </summary>
-        public ShapeResult Shape(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<dynamic, Task> initializeAsync)
+        /// <remarks>
+        /// This method is ultimately called by all drivers to create a shape. It's made virtual
+        /// so that any concrete driver can use it as a way to alter any returning shape from the drivers.
+        /// </remarks>
+        public virtual ShapeResult Shape(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
-            return new ShapeResult(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
+            return new ShapeResult(shapeType, shapeBuilder, initializeAsync)
+                .Prefix(Prefix);
         }
 
         public CombinedResult Combine(params IDisplayResult[] results)

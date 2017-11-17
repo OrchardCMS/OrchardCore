@@ -8,7 +8,10 @@
 @{
     var isRequired = settings.Required && String.IsNullOrWhiteSpace(settings.DefaultUrl);
     var isTextRequired = settings.LinkTextMode == LinkTextMode.Required && String.IsNullOrWhiteSpace(settings.DefaultText);
+    var urlClass = settings.Required ? "required" : null;
+    var textClass = settings.LinkTextMode == LinkTextMode.Required ? "required" : null;
 }
+
 <div class="row">
     <fieldset class="form-group col-md-12">
         <label asp-for="Url">@Model.PartFieldDefinition.DisplayName()</label>
@@ -16,7 +19,7 @@
     <fieldset class="form-group col-md-6" asp-validation-class-for="Url">
         @if (string.IsNullOrEmpty(settings.UrlPlaceholder))
         {
-            <label asp-for="Url" @if (settings.Required) { <text> class="required" </text>  }>@T["Url"]</label>
+            <label asp-for="Url" class="@urlClass">@T["Url"]</label>
         }
         <input asp-for="Url" class="form-control content-preview-text" placeholder="@settings.UrlPlaceholder" required="@isRequired" />
         @if (!string.IsNullOrWhiteSpace(settings.Hint))
@@ -29,7 +32,7 @@
         <fieldset class="form-group col-md-6" asp-validation-class-for="Text">
             @if (string.IsNullOrEmpty(settings.TextPlaceholder))
             {
-                <label asp-for="Text" @if (settings.LinkTextMode == LinkTextMode.Required) { <text> class="required" </text>  }>@T["Link text"]</label>
+                <label asp-for="Text" class="@textClass">@T["Link text"]</label>
             }
             <input asp-for="Text" type="text" class="form-control content-preview-text" placeholder="@settings.TextPlaceholder" required="@isTextRequired" />
             @if (!string.IsNullOrWhiteSpace(settings.HintLinkText))

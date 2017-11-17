@@ -11,7 +11,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Lists.Settings
 {
-    public class CommonPartSettingsDisplayDriver : ContentTypePartDisplayDriver
+    public class CommonPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
