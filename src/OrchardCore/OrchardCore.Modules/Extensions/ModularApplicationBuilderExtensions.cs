@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -55,7 +56,7 @@ namespace Microsoft.AspNetCore.Builder
 
                     var contentSubPath = Path.Combine(extension.SubPath, "Content");
 
-                    if (Directory.Exists(contentPath))
+                    if (env.ContentRootFileProvider.GetDirectoryContents(contentSubPath).Exists)
                     {
                         IFileProvider fileProvider;
                         if (env.IsDevelopment())
@@ -68,9 +69,9 @@ namespace Microsoft.AspNetCore.Builder
                             }
                             else
                             {
-                                fileProvider = new CompositeFileProvider(
+                            fileProvider = /*new CompositeFileProvider(
                                     new ModuleProjectContentFileProvider(env.ContentRootPath, contentSubPath),
-                                    new ModuleEmbeddedFileProvider(env));
+                                    */new ModuleEmbeddedFileProvider(env, contentSubPath); //);
                             }
 
                         }
@@ -82,7 +83,7 @@ namespace Microsoft.AspNetCore.Builder
                             }
                             else
                             {
-                                fileProvider = new ModuleEmbeddedFileProvider(env);
+                                fileProvider = new ModuleEmbeddedFileProvider(env, contentSubPath);
                             }
                         }
 

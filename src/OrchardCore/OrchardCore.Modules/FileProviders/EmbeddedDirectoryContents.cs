@@ -1,27 +1,28 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Modules.FileProviders
 {
-    internal class EnumerableDirectoryContents : IDirectoryContents
+    internal class EmbeddedDirectoryContents : IDirectoryContents
     {
-        private readonly IEnumerable<IFileInfo> _entries;
+        private readonly IList<IFileInfo> _entries;
 
-        public EnumerableDirectoryContents(IEnumerable<IFileInfo> entries)
+        public EmbeddedDirectoryContents(IEnumerable<IFileInfo> entries)
         {
             if (entries == null)
             {
                 throw new ArgumentNullException(nameof(entries));
             }
 
-            _entries = entries;
+            _entries = entries.ToList();
         }
 
         public bool Exists
         {
-            get { return true; }
+            get { return _entries.Any(); }
         }
 
         public IEnumerator<IFileInfo> GetEnumerator()
