@@ -8,7 +8,7 @@ using OrchardCore.Alias.Models;
 
 namespace OrchardCore.Alias.Settings
 {
-    public class AliasPartSettingsDisplayDriver : ContentTypePartDisplayDriver
+    public class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
@@ -23,8 +23,6 @@ namespace OrchardCore.Alias.Settings
 
                 model.Pattern = settings.Pattern;
                 model.AliasPartSettings = settings;
-
-                return Task.CompletedTask;
             }).Location("Content");
         }
 

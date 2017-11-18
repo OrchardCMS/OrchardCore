@@ -9,7 +9,7 @@ using OrchardCore.Indexing;
 
 namespace OrchardCore.Lucene.Settings
 {
-    public class ContentTypePartIndexSettingsDisplayDriver : ContentTypePartDisplayDriver
+    public class ContentTypePartIndexSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
@@ -30,8 +30,6 @@ namespace OrchardCore.Lucene.Settings
             return Shape<ContentIndexSettingsViewModel>("ContentIndexSettings_Edit", model =>
             {
                 model.ContentIndexSettings = contentTypePartDefinition.GetSettings<ContentIndexSettings>();
-
-                return Task.CompletedTask;
             }).Location("Content");
         }
 

@@ -28,12 +28,9 @@ namespace OrchardCore.Body.Drivers
 
         public override IDisplayResult Display(BodyPart bodyPart)
         {
-            return Combine(
-                Shape<BodyPartViewModel>("BodyPart", m => BuildViewModelAsync(m, bodyPart))
-                    .Location("Detail", "Content:5"),
-                Shape<BodyPartViewModel>("BodyPart_Summary", m => BuildViewModelAsync(m, bodyPart))
-                    .Location("Summary", "Content:10")
-            );
+            return Shape<BodyPartViewModel>("BodyPart", m => BuildViewModelAsync(m, bodyPart))
+                .Location("Detail", "Content:5")
+                .Location("Summary", "Content:10");
         }
 
         public override IDisplayResult Edit(BodyPart bodyPart)

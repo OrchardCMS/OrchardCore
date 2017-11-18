@@ -7,7 +7,7 @@ using OrchardCore.DisplayManagement.Views;
 namespace OrchardCore.ContentFields.Settings
 {
 
-    public class BooleanFieldSettingsDriver : ContentPartFieldDisplayDriver<BooleanField>
+    public class BooleanFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<BooleanField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {

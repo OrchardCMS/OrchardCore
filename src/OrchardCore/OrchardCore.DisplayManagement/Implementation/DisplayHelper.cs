@@ -63,10 +63,10 @@ namespace OrchardCore.DisplayManagement.Implementation
             return null;
         }
 
-        private Task<IHtmlContent> ShapeTypeExecuteAsync(string name, INamedEnumerable<object> parameters)
+        private async Task<IHtmlContent> ShapeTypeExecuteAsync(string name, INamedEnumerable<object> parameters)
         {
-            var shape = _shapeFactory.Create(name, parameters);
-            return ShapeExecuteAsync(shape);
+            var shape = await _shapeFactory.CreateAsync(name, parameters);
+            return await ShapeExecuteAsync(shape);
         }
         
         public Task<IHtmlContent> ShapeExecuteAsync(object shape)

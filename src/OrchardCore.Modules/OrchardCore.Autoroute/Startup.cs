@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
+using Fluid;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Autoroute.Drivers;
@@ -11,6 +11,7 @@ using OrchardCore.Autoroute.Model;
 using OrchardCore.Autoroute.Routing;
 using OrchardCore.Autoroute.Services;
 using OrchardCore.Autoroute.Settings;
+using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -18,14 +19,20 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
+using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
-using YesSql.Indexes;
 using YesSql;
+using YesSql.Indexes;
 
 namespace OrchardCore.Autoroute
 {
     public class Startup : StartupBase
     {
+        static Startup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<AutoroutePartViewModel>();
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             // Autoroute Part

@@ -333,10 +333,10 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         [Fact]
         public void CallbackAlterationsContributeToDescriptor()
         {
-            Action<ShapeCreatingContext> cb1 = x => { };
-            Action<ShapeCreatedContext> cb2 = x => { };
-            Action<ShapeDisplayContext> cb3 = x => { };
-            Action<ShapeDisplayContext> cb4 = x => { };
+            Func<ShapeCreatingContext, Task> cb1 = x => { return Task.CompletedTask; };
+            Func<ShapeCreatedContext, Task> cb2 = x => { return Task.CompletedTask; };
+            Func<ShapeDisplayContext, Task> cb3 = x => { return Task.CompletedTask; };
+            Func<ShapeDisplayContext, Task> cb4 = x => { return Task.CompletedTask; };
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
                 builder => builder.Describe("Foo").From(TestFeature())
@@ -349,10 +349,10 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
             var foo = manager.GetShapeTable(null).Descriptors["Foo"];
 
-            Assert.Same(cb1, foo.Creating.Single());
-            Assert.Same(cb2, foo.Created.Single());
-            Assert.Same(cb3, foo.Displaying.Single());
-            Assert.Same(cb4, foo.Displayed.Single());
+            Assert.Same(cb1, foo.CreatingAsync.Single());
+            Assert.Same(cb2, foo.CreatedAsync.Single());
+            Assert.Same(cb3, foo.DisplayingAsync.Single());
+            Assert.Same(cb4, foo.DisplayedAsync.Single());
         }
         [Fact]
         public void DefaultPlacementIsReturnedByDefault()

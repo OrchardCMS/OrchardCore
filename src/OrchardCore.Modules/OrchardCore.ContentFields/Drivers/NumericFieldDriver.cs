@@ -1,15 +1,14 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.ContentFields.Fields
 {
@@ -43,7 +42,7 @@ namespace OrchardCore.ContentFields.Fields
             return Shape<EditNumericFieldViewModel>("NumericField_Edit", model =>
             {
                 var settings = context.PartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
-                model.Value = (field.IsNew() && field.Value == null) ? settings.DefaultValue : Convert.ToString(field.Value, _cultureInfo);
+                model.Value = context.IsNew ? settings.DefaultValue : Convert.ToString(field.Value, _cultureInfo);
 
                 model.Field = field;
                 model.Part = context.ContentPart;

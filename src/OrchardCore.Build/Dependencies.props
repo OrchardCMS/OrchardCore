@@ -1,14 +1,19 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <Import Project="..\..\src\OrchardCore.Build\Dependencies.AspNetCore.props" />
+
   <PropertyGroup>
-    <AspNetCoreVersion>2.0.0</AspNetCoreVersion>
+    <!-- This value is deprecated and will be deleted in beta2-->
+    <AspNetCoreVersion>2.0.1</AspNetCoreVersion>
     <RuntimeFrameworkVersion Condition="'$(TargetFramework)'=='netcoreapp2.0'">2.0.0</RuntimeFrameworkVersion>
     <TestSdkVersion>15.5.0</TestSdkVersion>
     <XunitAnalyzers>0.7.0</XunitAnalyzers>
     <XunitVersion>2.3.1</XunitVersion>
     <XunitRunnerVisualStudioVersion>2.3.1</XunitRunnerVisualStudioVersion>
-    <YesSqlVersion>2.0.0-beta-1065</YesSqlVersion>
-    <YesSqlProvidersVersion>1.0.0-beta-1070</YesSqlProvidersVersion>
+    <FluidCoreVersion>1.0.0-beta-9399</FluidCoreVersion>
+    <YesSqlVersion>2.0.0-beta-1097</YesSqlVersion>
+    <YesSqlProvidersVersion>1.0.0-beta-1097</YesSqlProvidersVersion>
+    <NewtonsoftJsonVersion>10.0.3</NewtonsoftJsonVersion>
   </PropertyGroup>
 
 </Project>

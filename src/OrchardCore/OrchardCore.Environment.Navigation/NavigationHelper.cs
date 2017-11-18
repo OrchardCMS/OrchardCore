@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 
@@ -15,15 +16,15 @@ namespace OrchardCore.Environment.Navigation
         /// <param name="parentShape">The menu parent shape.</param>
         /// <param name="menu">The menu shape.</param>
         /// <param name="menuItems">The current level to populate.</param>
-        public static void PopulateMenu(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
+        public static async Task PopulateMenuAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
         {
             foreach (MenuItem menuItem in menuItems)
             {
-                dynamic menuItemShape = BuildMenuItemShape(shapeFactory, parentShape, menu, menuItem, viewContext);
+                dynamic menuItemShape = await BuildMenuItemShapeAsync(shapeFactory, parentShape, menu, menuItem, viewContext);
 
                 if (menuItem.Items != null && menuItem.Items.Any())
                 {
-                    PopulateMenu(shapeFactory, menuItemShape, menu, menuItem.Items, viewContext);
+                    await PopulateMenuAsync(shapeFactory, menuItemShape, menu, menuItem.Items, viewContext);
                 }
 
                 parentShape.Add(menuItemShape, menuItem.Position);
@@ -38,9 +39,9 @@ namespace OrchardCore.Environment.Navigation
         /// <param name="menu">The menu shape.</param>
         /// <param name="menuItem">The menu item to build the shape for.</param>
         /// <returns>The menu item shape.</returns>
-        public static dynamic BuildMenuItemShape(dynamic shapeFactory, dynamic parentShape, dynamic menu, MenuItem menuItem, ViewContext viewContext)
+        private static async Task<dynamic> BuildMenuItemShapeAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, MenuItem menuItem, ViewContext viewContext)
         {
-            var menuItemShape = shapeFactory.NavigationItem()
+            var menuItemShape = (await shapeFactory.NavigationItem())
                 .Text(menuItem.Text)
                 .Href(menuItem.Href)
                 .Url(menuItem.Url)
@@ -62,13 +63,13 @@ namespace OrchardCore.Environment.Navigation
             return menuItemShape;
         }
 
-        public static void ApplySelection(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
+        private static void ApplySelection(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
         {
             // compare route values (if any) first
             bool match = menuItem.RouteValues != null && RouteMatches(menuItem.RouteValues, viewContext.RouteData.Values);
 
             // if route match failed, try comparing URL strings, if
-            if (!match && menuItem.Href != null)
+            if (!match && !String.IsNullOrWhiteSpace(menuItem.Href) && menuItem.Href != "#")
             {
                 string url = menuItem.Href.Replace("~/", viewContext.HttpContext.Request.PathBase);
                 match = viewContext.HttpContext.Request.Path.Equals(url, StringComparison.OrdinalIgnoreCase);
@@ -93,7 +94,7 @@ namespace OrchardCore.Environment.Navigation
         /// <param name="itemValues">The menu item.</param>
         /// <param name="requestValues">The route data.</param>
         /// <returns>True if the menu item's action corresponds to the route data; false otherwise.</returns>
-        public static bool RouteMatches(RouteValueDictionary itemValues, RouteValueDictionary requestValues)
+        private static bool RouteMatches(RouteValueDictionary itemValues, RouteValueDictionary requestValues)
         {
             if (itemValues == null && requestValues == null)
             {

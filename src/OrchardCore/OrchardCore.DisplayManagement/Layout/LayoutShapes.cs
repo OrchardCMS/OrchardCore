@@ -1,4 +1,5 @@
-﻿using OrchardCore.DisplayManagement.Descriptors;
+using System.Threading.Tasks;
+using OrchardCore.DisplayManagement.Descriptors;
 
 namespace OrchardCore.DisplayManagement.Zones
 {
@@ -8,17 +9,19 @@ namespace OrchardCore.DisplayManagement.Zones
         {
             builder
                 .Describe("Layout")
-                .OnCreating(creating => creating.Create = () => new ZoneHolding(() => creating.New.Zone()))
-                .OnCreated(created => 
+                .OnCreating(creating =>
                 {
-                    var layout = created.Shape;
+                    creating.CreateAsync = () => Task.FromResult<IShape>(new ZoneHolding(() => creating.ShapeFactory.CreateAsync("Zone")));
+                })
+                .OnCreated(async created => 
+                {
+                    dynamic layout = created.Shape;
 
-                    layout.Head = created.New.DocumentZone(ZoneName: "Head");
-                    layout.Body = created.New.DocumentZone(ZoneName: "Body");
-                    layout.Tail = created.New.DocumentZone(ZoneName: "Tail");
+                    layout.Head = await created.ShapeFactory.CreateAsync("DocumentZone", new { ZoneName = "Head" });
+                    layout.Body = await created.ShapeFactory.CreateAsync("DocumentZone", new { ZoneName = "Body" });
+                    layout.Tail = await created.ShapeFactory.CreateAsync("DocumentZone", new { ZoneName = "Tail" });
 
-                    layout.Content = created.New.Zone();
-                    layout.Content.ZoneName = "Content";
+                    layout.Content = await created.ShapeFactory.CreateAsync("Zone", new { ZoneName = "Content" });
                 });
         }
    }

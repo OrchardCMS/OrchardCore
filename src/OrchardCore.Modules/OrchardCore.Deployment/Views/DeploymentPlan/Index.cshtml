@@ -1,4 +1,4 @@
-﻿@model DeploymentPlanIndexViewModel
+@model DeploymentPlanIndexViewModel
 
 <h1>@RenderTitleSegments(T["Deployment Plans"])</h1>
 
@@ -14,7 +14,8 @@
         </form>
 </nav>
 
-<form asp-action="Index"> @* the form is nessecary to generate and antiforgery token for the delete action *@
+<form asp-action="Index">
+    @* the form is necessary to generate and antiforgery token for the delete action *@
 
     @if (Model.DeploymentPlans.Any())
     {

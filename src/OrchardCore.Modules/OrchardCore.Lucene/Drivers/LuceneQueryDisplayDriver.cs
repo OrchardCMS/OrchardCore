@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -11,7 +12,7 @@ namespace OrchardCore.Lucene.Drivers
 {
     public class LuceneQueryDisplayDriver : DisplayDriver<Query, LuceneQuery>
     {
-        private IStringLocalizer _stringLocalizer;
+        private IStringLocalizer S;
         private LuceneIndexManager _luceneIndexManager;
 
         public LuceneQueryDisplayDriver(
@@ -19,24 +20,14 @@ namespace OrchardCore.Lucene.Drivers
             LuceneIndexManager luceneIndexManager)
         {
             _luceneIndexManager = luceneIndexManager;
-            _stringLocalizer = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public override IDisplayResult Display(LuceneQuery query, IUpdateModel updater)
         {
             return Combine(
-                Shape("LuceneQuery_SummaryAdmin", model =>
-                {
-                    model.Query = query;
-
-                    return Task.CompletedTask;
-                }).Location("Content:5"),
-                Shape("LuceneQuery_Buttons_SummaryAdmin", model =>
-                {
-                    model.Query = query;
-
-                    return Task.CompletedTask;
-                }).Location("Actions:2")
+                Shape("LuceneQuery_SummaryAdmin", model => { model.Query = query; }).Location("Content:5"),
+                Shape("LuceneQuery_Buttons_SummaryAdmin", model => { model.Query = query; }).Location("Actions:2")
             );
         }
 
@@ -67,7 +58,17 @@ namespace OrchardCore.Lucene.Drivers
                 model.ReturnContentItems = viewModel.ReturnContentItems;
             }
 
-            return Edit(model);
+            if (String.IsNullOrWhiteSpace(model.Template))
+            {
+                updater.ModelState.AddModelError(nameof(model.Template), S["The query field is required"]);
+            }
+
+            if (String.IsNullOrWhiteSpace(model.Index))
+            {
+                updater.ModelState.AddModelError(nameof(model.Index), S["The index field is required"]);
+            }
+
+            return Edit(model, updater);
         }
     }
 }

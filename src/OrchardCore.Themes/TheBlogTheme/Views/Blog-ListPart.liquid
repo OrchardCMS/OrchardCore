@@ -1,5 +1,5 @@
-﻿{% for item in Model.ContentItems %}
-    {% display item %}
+{% for item in Model.ContentItems %}
+    {% display item | build_display: "Summary" %}
 {% endfor %}
 
 {% assign previousText = "← Newer Posts" | t %}

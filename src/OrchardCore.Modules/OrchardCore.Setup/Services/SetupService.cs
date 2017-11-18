@@ -132,10 +132,11 @@ namespace OrchardCore.Setup.Services
             {
                 using (var scope = shellContext.EnterServiceScope())
                 {
-                    var store = scope.ServiceProvider.GetRequiredService<IStore>();
+                    IStore store;
 
                     try
                     {
+                        store = scope.ServiceProvider.GetRequiredService<IStore>();
                         await store.InitializeAsync();
                     }
                     catch(Exception e)

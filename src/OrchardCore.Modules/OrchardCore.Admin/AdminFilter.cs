@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,13 +21,18 @@ namespace OrchardCore.Admin
 
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             if (AdminAttribute.IsApplied(context.HttpContext) || IsNameAdmin(context))
             {
                 var authorized = await _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.AccessAdminPanel);
 
                 if (!authorized)
                 {
-                    context.Result = new UnauthorizedResult();
+                    context.Result = new ChallengeResult();
                     return;
                 }
             }

@@ -1,11 +1,11 @@
-﻿namespace OrchardCore.Environment.Shell
+namespace OrchardCore.Environment.Shell
 {
     public class ShellOptions
     {
         /// <summary>
         /// The root container
         /// </summary>
-        public string ShellsRootContainerName { get; set; }
+        public string ShellsApplicationDataPath { get; set; }
 
         /// <summary>
         /// The container for shells

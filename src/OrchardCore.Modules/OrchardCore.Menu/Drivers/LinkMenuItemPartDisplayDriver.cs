@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -26,13 +26,11 @@ namespace OrchardCore.Lists.Drivers
                 Shape("LinkMenuItemPart_Admin", shape =>
                 {
                     shape.MenuItemPart = part;
-                    return Task.CompletedTask;
                 })
                 .Location("Admin", "Content:10"),
                 Shape("LinkMenuItemPart_Thumbnail", shape =>
                 {
                     shape.MenuItemPart = part;
-                    return Task.CompletedTask;
                 })
                 .Location("Thumbnail", "Content:10")
             );
@@ -45,7 +43,6 @@ namespace OrchardCore.Lists.Drivers
                 model.Name = part.Name;
                 model.Url = part.Url;
                 model.MenuItemPart = part;
-                return Task.CompletedTask;
             });
         }
 

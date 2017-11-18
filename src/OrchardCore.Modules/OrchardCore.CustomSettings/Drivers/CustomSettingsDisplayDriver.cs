@@ -49,20 +49,23 @@ namespace OrchardCore.Layers.Drivers
             }
 
             ContentItem contentItem;
+            bool isNew;
 
             if (!site.Properties.TryGetValue(contentTypeDefinition.Name, out property))
             {
                 contentItem = _contentManager.New(contentTypeDefinition.Name);
+                isNew = true;
             }
             else
             {
-                // create existing content item
+                // Create existing content item
                 contentItem = property.ToObject<ContentItem>();
+                isNew = false;
             }
 
             var shape = Shape<CustomSettingsEditViewModel>("CustomSettings", async ctx =>
             {
-                ctx.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater);
+                ctx.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
             }).Location("Content:3").OnGroup(contentTypeDefinition.Name);
 
             return Task.FromResult<IDisplayResult>(shape);
@@ -80,18 +83,21 @@ namespace OrchardCore.Layers.Drivers
             }
 
             ContentItem contentItem;
+            bool isNew;
 
             if (!site.Properties.TryGetValue(contentTypeDefinition.Name, out property))
             {
                 contentItem = _contentManager.New(contentTypeDefinition.Name);
+                isNew = true;
             }
             else
             {
-                // create existing content item
+                // Create existing content item
                 contentItem = property.ToObject<ContentItem>();
+                isNew = false;
             }
 
-            await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater);
+            await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew);
 
             site.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem);
 

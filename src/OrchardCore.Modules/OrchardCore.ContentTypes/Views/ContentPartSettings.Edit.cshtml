@@ -1,10 +1,20 @@
-﻿@model ContentPartSettingsViewModel
+@using OrchardCore.ContentManagement.Metadata.Settings
+@model ContentPartSettingsViewModel
+
+<fieldset class="form-group">
+    <div class="row col-md ">
+        <label asp-for="DisplayName" >@T["Display Name"]</label>
+        <input asp-for="DisplayName" class="form-control" placeholder="@Model.ContentPartDefinition.DisplayName()" />
+        <span class="hint">@T["Name of the part as it will be displayed in screens. Leave empty to use defaults."]</span>
+    </div>
+</fieldset>
+
 <fieldset class="form-group">
     <div class="row col-lg ">
         <label asp-for="Description">@T["Description"]</label>
         @Html.ValidationMessageFor(m => m.Description)
         <input asp-for="Description" class="form-control" />
-        <span class="hint">@T["Optionally provide a description for this part"]</span>
+        <span class="hint">@T["Optionally provide a description for this part."]</span>
     </div>
 </fieldset>
 

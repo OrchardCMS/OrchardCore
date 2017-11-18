@@ -37,12 +37,12 @@
     </ItemGroup>
 
     <Message Text="Generating module project razor files mapping file"
-      Condition="'@(ModuleProjectRazorFilesMapping)' != ''" Importance="high" />
+      Condition="'@(ModuleProjectRazorFiles)' != ''" Importance="high" />
 
     <WriteLinesToFile
       File="obj\ModuleProjectRazorFiles.map"
       Lines="@(ModuleProjectRazorFilesMapping)"
-      Condition="'@(ModuleProjectRazorFilesMapping)' != ''"
+      Condition="'@(ModuleProjectRazorFiles)' != ''"
       Overwrite="true"
       Encoding="utf-8"
       ContinueOnError="true" />
@@ -57,12 +57,12 @@
     </ItemGroup>
 
     <Message Text="Generating module project content files mapping file"
-      Condition="'@(ModuleProjectContentFilesMapping)' != ''" Importance="high" />
+      Condition="'@(ModuleProjectContentFiles)' != ''" Importance="high" />
 
     <WriteLinesToFile
       File="obj\ModuleProjectContentFiles.map"
       Lines="@(ModuleProjectContentFilesMapping)"
-      Condition="'@(ModuleProjectContentFilesMapping)' != ''"
+      Condition="'@(ModuleProjectContentFiles)' != ''"
       Overwrite="true"
       Encoding="utf-8"
       ContinueOnError="true" />
@@ -77,12 +77,12 @@
     </ItemGroup>
 
     <Message Text="Generating module project liquid files mapping file"
-      Condition="'@(ModuleProjectLiquidFilesMapping)' != ''" Importance="high" />
+      Condition="'@(ModuleProjectLiquidFiles)' != ''" Importance="high" />
 
     <WriteLinesToFile
       File="obj\ModuleProjectLiquidFiles.map"
       Lines="@(ModuleProjectLiquidFilesMapping)"
-      Condition="'@(ModuleProjectLiquidFilesMapping)' != ''"
+      Condition="'@(ModuleProjectLiquidFiles)' != ''"
       Overwrite="true"
       Encoding="utf-8"
       ContinueOnError="true" />

@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddThemingHost();
             services.AddManifestDefinition("Theme.txt", "theme");
             services.AddExtensionLocation("Themes");
-            services.AddSitesFolder("App_Data", "Sites");
+            services.AddSitesFolder();
             services.AddCommands();
             services.AddAuthentication();
             services.AddModules(modules => 

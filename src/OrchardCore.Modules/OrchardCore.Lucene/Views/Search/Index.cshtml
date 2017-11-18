@@ -29,7 +29,7 @@ else
 }
 
 @{
-    var pager = New.Pager(Model.Pager).ShowNext(Model.HasMoreResults);
+    var pager = (await New.Pager(Model.Pager)).ShowNext(Model.HasMoreResults);
 }
 
 @await DisplayAsync(pager)

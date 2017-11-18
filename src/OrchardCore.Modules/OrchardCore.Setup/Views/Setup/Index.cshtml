@@ -114,30 +114,29 @@
     </div>
     @if (!Model.TablePrefixPreset || !Model.ConnectionStringPreset || !Model.DatabaseProviderPreset)
     {
-    <h6>
-        @T["Database"]
-        <span class="text-muted form-text small">@T["The database is used to store the site's configuration and its contents. You can specify a custom table prefix if you intend to reuse the same database for multiple sites."]</span>
-    </h6>
+        <h6>
+            @T["Database"]
+            <span class="text-muted form-text small">@T["The database is used to store the site's configuration and its contents. You can specify a custom table prefix if you intend to reuse the same database for multiple sites."]</span>
+        </h6>
     }
     <div class="row">
-        @if (Model.DatabaseProviderPreset)
-        {
-            <input asp-for="DatabaseProvider" type="hidden" />
-            <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
-        }
-        else
-        {
         <div class="form-group col-md-6">
             <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
-            <select asp-for="DatabaseProvider" class="form-control">
+            @if (Model.DatabaseProviderPreset)
+            {
+                <input asp-for="DatabaseProvider" readonly class="form-control form-control-static" />
+            }
+            else
+            {
+                <select asp-for="DatabaseProvider" class="form-control">
                 @foreach (var provider in Model.DatabaseProviders)
                 {
-                <option value="@provider.Value" data-connection-string="@provider.HasConnectionString">@provider.Name</option>
+                    <option value="@provider.Value" data-connection-string="@provider.HasConnectionString">@provider.Name</option>
                 }
-            </select>
+                </select>
+            }
             <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
         </div>
-        }
 
         @if (Model.TablePrefixPreset)
         {
@@ -145,28 +144,33 @@
         }
         else
         {
-        <div class="form-group col-md-6" asp-validation-class-for="TablePrefix">
-            <label asp-for="TablePrefix">@T["Table Prefix"]</label>
-            <input asp-for="TablePrefix" class="form-control" />
-            <span asp-validation-for="TablePrefix" class="text-danger"></span>
-        </div>
+            <div class="form-group col-md-6" asp-validation-class-for="TablePrefix">
+                <label asp-for="TablePrefix">@T["Table Prefix"]</label>
+                <input asp-for="TablePrefix" class="form-control" />
+                <span asp-validation-for="TablePrefix" class="text-danger"></span>
+            </div>
         }
     </div>
 
-    @if (Model.ConnectionStringPreset)
+    @if (Model.ConnectionStringPreset || (! string.IsNullOrEmpty(Model.DatabaseProvider) && !Model.DatabaseProviders.SingleOrDefault(dp => dp.Value == Model.DatabaseProvider).HasConnectionString))
     {
         <input asp-for="ConnectionString" type="hidden" />
     }
     else
     {
-    <fieldset class="row connectionString" asp-validation-class-for="ConnectionString">
-        <div class="form-group col-md-12">
-            <label asp-for="ConnectionString">@T["Connection string"]</label>
-            <input asp-for="ConnectionString" class="form-control" />
-            <span asp-validation-for="ConnectionString" class="text-danger"></span>
-            <span class="text-muted form-text small">@T["The connection string to your database instance. e.g., Data Source=<em>localhost</em>;Initial Catalog=<em>Orchard</em>;User Id=<em>userid</em>;Password=<em>password</em>"]</span>
-        </div>
-    </fieldset>
+        <fieldset class="row connectionString" asp-validation-class-for="ConnectionString">
+            <div class="form-group col-md-12">
+                <label asp-for="ConnectionString">@T["Connection string"]</label>
+
+                <div class="input-group mb-2 mb-sm-0">
+                    <input asp-for="ConnectionString" class="form-control pwd" type="password" />
+                    <div class="input-group-addon reveal" title="@T["Show/hide connection string"]"><i class="fa fa-eye-slash" aria-hidden="true"></i></div>
+                </div>
+
+                <span asp-validation-for="ConnectionString" class="text-danger"></span>
+                <span class="text-muted form-text small">@T["The connection string to your database instance. e.g., Data Source=<em>localhost</em>;Initial Catalog=<em>Orchard</em>;User Id=<em>userid</em>;Password=<em>password</em>"]</span>
+            </div>
+        </fieldset>
     }
     <h6>
         @T["Super User"]
@@ -180,7 +184,7 @@
         </div>
         <div class="form-group col-md-6" asp-validation-class-for="Email">
             <label for="Email">@T["Email"]</label>
-            <input asp-for="Email" class="form-control" type="email"/>
+            <input asp-for="Email" class="form-control" type="email" />
             <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
         </div>
     </div>
@@ -221,6 +225,15 @@
         $('#Password').popover({
             trigger: 'focus'
         })
+
+        $(".reveal").on('click',function() {
+            var $pwd = $(".pwd");
+            if ($pwd.attr('type') === 'password') {
+                $pwd.attr('type', 'text');
+            } else {
+                $pwd.attr('type', 'password');
+            }
+        });
     })
     //]]>
 </script>

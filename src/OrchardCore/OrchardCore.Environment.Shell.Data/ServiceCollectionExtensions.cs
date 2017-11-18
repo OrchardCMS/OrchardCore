@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Data.Descriptors;
 using OrchardCore.Environment.Shell.Descriptor;
 
@@ -12,16 +13,11 @@ namespace OrchardCore.Environment.Shell.Data
         /// <param name="services"></param>
         /// <param name="sitesPath"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSitesFolder(this IServiceCollection services, string rootPath, string sitesPath)
+        public static IServiceCollection AddSitesFolder(this IServiceCollection services)
         {
-            services.Configure<ShellOptions>(options =>
-            {
-                options.ShellsRootContainerName = rootPath;
-                options.ShellsContainerName = sitesPath;
-            });
-
             services.AddSingleton<IShellSettingsConfigurationProvider, ShellSettingsConfigurationProvider>();
             services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
+            services.AddTransient<IConfigureOptions<ShellOptions>, ShellOptionsSetup>();
 
             return services;
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -75,46 +75,91 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         public ShapeAlterationBuilder OnCreating(Action<ShapeCreatingContext> action)
         {
+            return OnCreating(ctx =>
+            {
+                action(ctx);
+                return Task.CompletedTask;
+            });
+        }
+
+        public ShapeAlterationBuilder OnCreating(Func<ShapeCreatingContext, Task> actionAsync)
+        {
             return Configure(descriptor =>
             {
-                var existing = descriptor.Creating ?? Enumerable.Empty<Action<ShapeCreatingContext>>();
-                descriptor.Creating = existing.Concat(new[] { action });
+                var existing = descriptor.CreatingAsync ?? Enumerable.Empty<Func<ShapeCreatingContext, Task>>();
+                descriptor.CreatingAsync = existing.Concat(new[] { actionAsync });
             });
         }
 
         public ShapeAlterationBuilder OnCreated(Action<ShapeCreatedContext> action)
         {
+            return OnCreated(ctx =>
+            {
+                action(ctx);
+                return Task.CompletedTask;
+            });
+        }
+
+        public ShapeAlterationBuilder OnCreated(Func<ShapeCreatedContext, Task> actionAsync)
+        {
             return Configure(descriptor =>
             {
-                var existing = descriptor.Created ?? Enumerable.Empty<Action<ShapeCreatedContext>>();
-                descriptor.Created = existing.Concat(new[] { action });
+                var existing = descriptor.CreatedAsync ?? Enumerable.Empty<Func<ShapeCreatedContext, Task>>();
+                descriptor.CreatedAsync = existing.Concat(new[] { actionAsync });
             });
         }
 
         public ShapeAlterationBuilder OnDisplaying(Action<ShapeDisplayContext> action)
         {
-            return Configure(descriptor =>
+            return OnDisplaying(ctx =>
             {
-                var existing = descriptor.Displaying ?? Enumerable.Empty<Action<ShapeDisplayContext>>();
-                descriptor.Displaying = existing.Concat(new[] { action });
+                action(ctx);
+                return Task.CompletedTask;
             });
         }
 
-        public ShapeAlterationBuilder OnProcessingAsync(Func<ShapeDisplayContext, Task> action)
+        public ShapeAlterationBuilder OnDisplaying(Func<ShapeDisplayContext, Task> actionAsync)
+        {
+            return Configure(descriptor =>
+            {
+                var existing = descriptor.DisplayingAsync ?? Enumerable.Empty<Func<ShapeDisplayContext, Task>>();
+                descriptor.DisplayingAsync = existing.Concat(new[] { actionAsync });
+            });
+        }
+
+        public ShapeAlterationBuilder OnProcessing(Action<ShapeDisplayContext> action)
+        {
+            return OnProcessing(ctx =>
+            {
+                action(ctx);
+                return Task.CompletedTask;
+            });
+        }
+
+        public ShapeAlterationBuilder OnProcessing(Func<ShapeDisplayContext, Task> actionAsync)
         {
             return Configure(descriptor =>
             {
                 var existing = descriptor.ProcessingAsync ?? Enumerable.Empty<Func<ShapeDisplayContext, Task>>();
-                descriptor.ProcessingAsync = existing.Concat(new[] { action });
+                descriptor.ProcessingAsync = existing.Concat(new[] { actionAsync });
             });
         }
 
         public ShapeAlterationBuilder OnDisplayed(Action<ShapeDisplayContext> action)
         {
+            return OnDisplayed(ctx =>
+            {
+                action(ctx);
+                return Task.CompletedTask;
+            });
+        }
+
+        public ShapeAlterationBuilder OnDisplayed(Func<ShapeDisplayContext, Task> actionAsync)
+        {
             return Configure(descriptor =>
             {
-                var existing = descriptor.Displayed ?? Enumerable.Empty<Action<ShapeDisplayContext>>();
-                descriptor.Displayed = existing.Concat(new[] { action });
+                var existing = descriptor.DisplayedAsync ?? Enumerable.Empty<Func<ShapeDisplayContext, Task>>();
+                descriptor.DisplayedAsync = existing.Concat(new[] { actionAsync });
             });
         }
 

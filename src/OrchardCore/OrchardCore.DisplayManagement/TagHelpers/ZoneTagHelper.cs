@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using OrchardCore.DisplayManagement.Layout;
@@ -32,7 +32,8 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             }
 
             var childContent = await output.GetChildContentAsync();
-            var zone = _layoutAccessor.GetLayout().Zones[Name];
+            dynamic layout = await _layoutAccessor.GetLayoutAsync();
+            var zone = layout.Zones[Name];
 
             zone.Add(childContent, Position);
 
