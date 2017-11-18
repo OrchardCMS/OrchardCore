@@ -1,8 +1,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- 
-    This file is packaged with "OrchardCore.AsModule.nupkg" in "./build" such that any Module that references
-    it will get its static assets copied to "$(ApplicationDirectory)\Packages".
+    This file is packaged with "OrchardCore.Module.Targets.nupkg" in "./build" such that any
+    Module that references it will embedd in its assembly all its static assets.
   -->
 
   <PropertyGroup>
@@ -12,27 +12,27 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageAssetFiles Include="**\*" Exclude="$(ExcludedFiles)" />
+    <ModuleAssetFiles Include="**\*" Exclude="$(ExcludedFiles)" />
   </ItemGroup>
 
-  <Target Name="EmbeddProjectAssetFiles" AfterTargets="AfterResolveReferences">
+  <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
     <Message Text="Generating manifest file: $(MSBuildProjectName)" Condition="!Exists('$(ModuleType).txt')" Importance="high" />
 
     <ItemGroup>
-      <ModuleAssetFiles Include="Modules\$(MSBuildProjectName)\%(PackageAssetFiles.RecursiveDir)%(Filename)%(Extension)" />
-      <ModuleAssetFiles Include="Modules\$(MSBuildProjectName)\$(ModuleType).txt" />
+      <ModuleAssets Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RecursiveDir)%(Filename)%(Extension)" />
+      <ModuleAssets Include="Modules\$(MSBuildProjectName)\$(ModuleType).txt" />
     </ItemGroup>
 
     <WriteLinesToFile
-      File="obj\ModuleAssetFiles.map"
-      Lines="$(MSBuildProjectDirectory);@(ModuleAssetFiles)"
-      Condition="'@(ModuleAssetFiles)' != ''"
+      File="obj\module.assets.map"
+      Lines="$(MSBuildProjectDirectory);@(ModuleAssets)"
+      Condition="'@(ModuleAssets)' != ''"
       Overwrite="true"
       Encoding="utf-8"
       ContinueOnError="true" />
 
     <WriteLinesToFile
-      File="obj\$(ModuleType).txt"
+      File="$(ModuleType).txt"
       Lines="$(ModuleManifest)"
       Condition="!Exists('$(ModuleType).txt')"
       Overwrite="true"
@@ -40,25 +40,15 @@
       ContinueOnError="true" />
 
     <ItemGroup>
-      <EmbeddedResource Include="@(PackageAssetFiles)">
+      <EmbeddedResource Include="@(ModuleAssetFiles)">
         <WithCulture>false</WithCulture>
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
-      <EmbeddedResource Include="obj\ModuleAssetFiles.map">
-        <Link>ModuleAssetFiles.map</Link>
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <EmbeddedResource Include="obj\module.assets.map">
+        <Link>module.assets.map</Link>
       </EmbeddedResource>
       <EmbeddedResource Include="obj\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')">
         <Link>$(ModuleType).txt</Link>
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
-    </ItemGroup>
-  </Target>
-
-  <Target Name="GetProjectAssetFiles" Returns="@(ProjectAssetFiles)">
-    <ItemGroup>
-      <ProjectAssetFiles Include="Modules\$(MSBuildProjectName)\%(PackageAssetFiles.RecursiveDir)%(Filename)%(Extension)" />
-      <ProjectAssetFiles Include="Modules\$(MSBuildProjectName)\$(ModuleType).txt" />
     </ItemGroup>
   </Target>
 
@@ -67,12 +57,6 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Package.Build.props" Pack="true">
       <PackagePath>build\$(TargetFramework)\$(PackageId).props</PackagePath>
-    </None>
-    <None Include="**\*" Exclude="$(ExcludedFiles)" Pack="true">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-    <None Include="obj\$(ModuleType).txt" Pack="true" Condition="!Exists('$(ModuleType).txt')">
-      <PackagePath>assets\$(PackageId)\$(ModuleType).txt</PackagePath>
     </None>
   </ItemGroup>
 

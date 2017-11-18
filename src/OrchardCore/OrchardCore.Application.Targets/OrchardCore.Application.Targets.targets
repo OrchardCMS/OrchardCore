@@ -1,51 +1,37 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!--
-    Defines msbuild tasks on a Bundle package to copy all modules assets (projects and packages) to the "Packages" folder.
+  <!-- 
+    This file is packaged with "OrchardCore.Application.Targets.nupkg" in "./build" such that any
+    Application that references it will embedd in its assembly a list of its referenced modules.
   -->
 
-  <Target Name="CopyPackageAssets" AfterTargets="AfterResolveReferences" Condition="'$(IgnorePackageAssets)' != 'true'">
+  <Target Name="EmbeddModuleNames" AfterTargets="AfterResolveReferences" Condition="'$(IgnorePackageAssets)' != 'true'">
 
-    <Message Text="Copying package assets" Importance="high" />
-
-    <ItemGroup>
+  <ItemGroup>
       <ModuleProjectReferences
         Include="@(_MSBuildProjectReferenceExistent)"
         Condition="Exists('%(RootDir)%(Directory)Module.txt') Or Exists('%(RootDir)%(Directory)obj\Module.txt') Or
                    Exists('%(RootDir)%(Directory)Theme.txt') Or Exists('%(RootDir)%(Directory)obj\Theme.txt')" />
     </ItemGroup>
 
-    <MSBuild
-      Targets="GetProjectAssetFiles"
-      BuildInParallel="$(BuildInParallel)"
-      Projects="@(ModuleProjectReferences)"
-      Condition="'@(ModuleProjectReferences)' != ''"
-      ContinueOnError="true">
-
-      <Output TaskParameter="TargetOutputs" ItemName="ProjectAssetFiles" />
-    </MSBuild>
-
     <ItemGroup>
       <ModuleProjectNames Include="%(ModuleProjectReferences.FileName)" />
-      <ModuleAssembliesNames Include="@(ModulePackageNames);@(ModuleProjectNames)" />
+      <ModuleNames Include="@(ModulePackageNames);@(ModuleProjectNames)" />
     </ItemGroup>
 
     <WriteLinesToFile
-      File="obj\ModuleAssembliesNames.map"
-      Lines="@(ModuleAssembliesNames)"
-      Condition="'@(ModuleAssembliesNames)' != ''"
+      File="obj\module.names.map"
+      Lines="@(ModuleNames)"
+      Condition="'@(ModuleNames)' != ''"
       Overwrite="true"
       Encoding="utf-8"
       ContinueOnError="true" />
 
     <ItemGroup>
-      <EmbeddedResource Include="obj\ModuleAssembliesNames.map">
-        <Link>ModuleAssembliesNames.map</Link>
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <EmbeddedResource Include="obj\module.names.map">
+        <Link>module.names.map</Link>
       </EmbeddedResource>
     </ItemGroup>
-
-    <!-- ======================================================================== -->
 
     <CreateItem Include="@(Content)" Condition="'%(Extension)'=='.cshtml'">
       <Output TaskParameter="Include" ItemName="MvcContentRazorFiles"/>
@@ -54,10 +40,6 @@
       <MvcRazorFilesToCompile Include="@(MvcContentRazorFiles);Modules\**\*.cshtml" />
     </ItemGroup>
   </Target>
-
-  <!--
-    Defines msbuild props and items on a Bundle package to publish all modules assets (projects and packages).
-  -->
 
   <PropertyGroup>
     <MvcRazorExcludeViewFilesFromPublish>false</MvcRazorExcludeViewFilesFromPublish>

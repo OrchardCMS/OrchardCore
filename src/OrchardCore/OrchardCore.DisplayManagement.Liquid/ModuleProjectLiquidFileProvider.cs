@@ -17,6 +17,9 @@ namespace OrchardCore.DisplayManagement.Liquid
     /// </summary>
     public class ModuleProjectLiquidFileProvider : IFileProvider
     {
+        private const string ModuleAssetsMap = "module.assets.map";
+        private const string ModulesNamesMap = "module.names.map";
+
         private static Dictionary<string, string> _paths;
         private static object _synLock = new object();
 
@@ -36,7 +39,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                         var mainAssembly = Assembly.Load(new AssemblyName(hostingEnvironment.ApplicationName));
                         var fileProvider = new EmbeddedFileProvider(mainAssembly);
 
-                        var fileInfo = fileProvider.GetFileInfo("ModuleAssembliesNames.map");
+                        var fileInfo = fileProvider.GetFileInfo(ModulesNamesMap);
                         var modules = fileInfo.ReadAllLines().ToList();
                         var paths = new List<string>();
 
@@ -51,10 +54,9 @@ namespace OrchardCore.DisplayManagement.Liquid
                             }
 
                             fileProvider = new EmbeddedFileProvider(Assembly.Load(module));
-                            fileInfo = fileProvider.GetFileInfo("ModuleAssetFiles.map");
+                            fileInfo = fileProvider.GetFileInfo(ModuleAssetsMap);
 
                             var assetPaths = fileInfo.ReadAllLines().Select(x => x.Replace('\\', '/'));
-
                             var projectFolder = assetPaths.FirstOrDefault();
 
                             if (Directory.Exists(projectFolder))

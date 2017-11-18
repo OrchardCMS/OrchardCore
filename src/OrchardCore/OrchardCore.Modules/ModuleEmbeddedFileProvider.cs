@@ -15,8 +15,8 @@ namespace OrchardCore.Modules
     public class ModuleEmbeddedFileProvider : IFileProvider
     {
         private const string RootFolder = "Modules";
-        private const string ModuleAssetFiles = "ModuleAssetFiles.map";
-        private const string ModulesFileName = "ModuleAssembliesNames.map";
+        private const string ModuleAssetsMap = "module.assets.map";
+        private const string ModulesNamesMap = "module.names.map";
 
         private static List<string> _paths;
         private static List<string> _modules;
@@ -44,7 +44,7 @@ namespace OrchardCore.Modules
 
                 var fileProvider = new EmbeddedFileProvider(Assembly.Load(new AssemblyName(_hostingEnvironment.ApplicationName)));
 
-                var fileInfo = fileProvider.GetFileInfo(ModulesFileName);
+                var fileInfo = fileProvider.GetFileInfo(ModulesNamesMap);
                 _modules = fileInfo.ReadAllLines().ToList();
 
                 var paths = new List<string>();
@@ -52,10 +52,9 @@ namespace OrchardCore.Modules
                 foreach (var module in _modules)
                 {
                     fileProvider = new EmbeddedFileProvider(Assembly.Load(module));
-                    fileInfo = fileProvider.GetFileInfo(ModuleAssetFiles);
+                    fileInfo = fileProvider.GetFileInfo(ModuleAssetsMap);
 
                     var assetPaths = fileInfo.ReadAllLines().Select(x => x.Replace('\\', '/')).ToList();
-
                     assetPaths.RemoveAt(0);
 
                     paths.AddRange(assetPaths);
@@ -102,7 +101,7 @@ namespace OrchardCore.Modules
                 var moduleId = index == -1 ? subPath : subPath.Substring(0, subPath.IndexOf("/"));
 
                 var fileProvider = new EmbeddedFileProvider(Assembly.Load(moduleId));
-                var fileInfo = fileProvider.GetFileInfo(ModuleAssetFiles);
+                var fileInfo = fileProvider.GetFileInfo(ModuleAssetsMap);
 
                 var paths = fileInfo.ReadAllLines().Select(x => x.Replace('\\', '/')).ToList();
 
