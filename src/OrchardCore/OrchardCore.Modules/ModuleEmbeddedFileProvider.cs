@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
@@ -16,7 +15,7 @@ namespace OrchardCore.Modules
     public class ModuleEmbeddedFileProvider : IFileProvider
     {
         private const string RootFolder = "Modules";
-        private const string MappingFileName = "ModuleAssetPaths.map";
+        private const string ModuleAssetFiles = "ModuleAssetFiles.map";
         private const string ModulesFileName = "ModuleAssembliesNames.map";
 
         private static List<string> _paths;
@@ -43,46 +42,26 @@ namespace OrchardCore.Modules
                     return;
                 }
 
+                var fileProvider = new EmbeddedFileProvider(Assembly.Load(new AssemblyName(_hostingEnvironment.ApplicationName)));
+
+                var fileInfo = fileProvider.GetFileInfo(ModulesFileName);
+                _modules = fileInfo.ReadAllLines().ToList();
+
                 var paths = new List<string>();
 
-                var fileProvider = new EmbeddedFileProvider(Assembly.Load(new AssemblyName(_hostingEnvironment.ApplicationName)));
-                var fileInfo = fileProvider.GetFileInfo(MappingFileName);
-
-                if (fileInfo?.Exists ?? false)
+                foreach (var module in _modules)
                 {
-                    using (var reader = fileInfo.CreateReadStream())
-                    {
-                        using (var sr = new StreamReader(reader))
-                        {
-                            string line;
-                            while ((line = sr.ReadLine()) != null)
-                            {
-                                paths.Add(line.Replace('\\', '/'));
-                            }
-                        }
-                    }
+                    fileProvider = new EmbeddedFileProvider(Assembly.Load(module));
+                    fileInfo = fileProvider.GetFileInfo(ModuleAssetFiles);
+
+                    var assetPaths = fileInfo.ReadAllLines().Select(x => x.Replace('\\', '/')).ToList();
+
+                    assetPaths.RemoveAt(0);
+
+                    paths.AddRange(assetPaths);
                 }
 
-                var modules = new List<string>();
-                fileInfo = fileProvider.GetFileInfo(ModulesFileName);
-
-                if (fileInfo?.Exists ?? false)
-                {
-                    using (var reader = fileInfo.CreateReadStream())
-                    {
-                        using (var sr = new StreamReader(reader))
-                        {
-                            string line;
-                            while ((line = sr.ReadLine()) != null)
-                            {
-                                modules.Add(line);
-                            }
-                        }
-                    }
-                }
-
-                _paths = paths;
-                _modules = modules;
+                _paths = paths.Select(x => x.Replace('\\', '/')).ToList();
             }
         }
 
@@ -90,7 +69,7 @@ namespace OrchardCore.Modules
         {
             if (subpath == null)
             {
-                return null;
+                return NotFoundDirectoryContents.Singleton;
             }
 
             var subPath = subpath.Replace('\\', '/').Trim('/');
@@ -118,22 +97,27 @@ namespace OrchardCore.Modules
             if (subPath.StartsWith(RootFolder))
             {
                 subPath = subPath.Substring(RootFolder.Length + 1);
-                //var moduleId = subPath.Substring(0, subPath.IndexOf("/"));
-                //var fileProvider = new EmbeddedFileProvider(Assembly.Load(moduleId));
-                //var paths = fileProvider.GetFileInfo(MappingFileName);
-            }
 
-            foreach (var path in _paths.Where(x => x.StartsWith(subPath)).ToList())
-            {
-                var trailingPath = path.Replace(subPath + '/', "");
+                var index = subPath.IndexOf("/");
+                var moduleId = index == -1 ? subPath : subPath.Substring(0, subPath.IndexOf("/"));
 
-                if (trailingPath.IndexOf('/') == -1)
+                var fileProvider = new EmbeddedFileProvider(Assembly.Load(moduleId));
+                var fileInfo = fileProvider.GetFileInfo(ModuleAssetFiles);
+
+                var paths = fileInfo.ReadAllLines().Select(x => x.Replace('\\', '/')).ToList();
+
+                foreach (var path in paths.Where(x => x.StartsWith(RootFolder + '/' + subPath)))
                 {
-                    entries.Add(GetFileInfo(path));
-                }
-                else
-                {
-                    folders.Add(trailingPath.Substring(0, trailingPath.IndexOf('/')));
+                    var trailingPath = path.Replace(RootFolder + '/' + subPath + '/', "");
+
+                    if (trailingPath.IndexOf('/') == -1)
+                    {
+                        entries.Add(GetFileInfo(path));
+                    }
+                    else
+                    {
+                        folders.Add(trailingPath.Substring(0, trailingPath.IndexOf('/')));
+                    }
                 }
             }
 
@@ -146,7 +130,7 @@ namespace OrchardCore.Modules
         {
             if (subpath == null)
             {
-                return null;
+                return new NotFoundFileInfo(subpath);
             }
 
             var subPath = subpath.Replace('\\', '/').Trim('/');
@@ -164,12 +148,12 @@ namespace OrchardCore.Modules
                 return fileProvider.GetFileInfo(subPath.Substring(moduleId.Length + 1));
             }
 
-            return null;
+            return new NotFoundFileInfo(subpath);
         }
 
         public IChangeToken Watch(string filter)
         {
-            return null;
+            return NullChangeToken.Singleton;
         }
     }
 }

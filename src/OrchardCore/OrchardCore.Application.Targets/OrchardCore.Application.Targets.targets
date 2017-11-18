@@ -15,8 +15,6 @@
                    Exists('%(RootDir)%(Directory)Theme.txt') Or Exists('%(RootDir)%(Directory)obj\Theme.txt')" />
     </ItemGroup>
 
-    <!-- ======================================================================== -->
-
     <MSBuild
       Targets="GetProjectAssetFiles"
       BuildInParallel="$(BuildInParallel)"
@@ -28,22 +26,9 @@
     </MSBuild>
 
     <ItemGroup>
-      <ModuleAssetPaths Include="Modules\%(PackageAssetFiles.RecursiveDir)%(Filename)%(Extension)" />
-      <ModuleAssetPaths Include="@(ProjectAssetFiles)" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ModuleProjectNames Include="%(ModuleProjectReferences.FileName)" />
       <ModuleAssembliesNames Include="@(ModulePackageNames);@(ModuleProjectNames)" />
     </ItemGroup>
-
-    <WriteLinesToFile
-      File="obj\ModuleAssetPaths.map"
-      Lines="@(ModuleAssetPaths)"
-      Condition="'@(ModuleAssetPaths)' != ''"
-      Overwrite="true"
-      Encoding="utf-8"
-      ContinueOnError="true" />
 
     <WriteLinesToFile
       File="obj\ModuleAssembliesNames.map"
@@ -54,10 +39,6 @@
       ContinueOnError="true" />
 
     <ItemGroup>
-      <EmbeddedResource Include="obj\ModuleAssetPaths.map">
-        <Link>ModuleAssetPaths.map</Link>
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </EmbeddedResource>
       <EmbeddedResource Include="obj\ModuleAssembliesNames.map">
         <Link>ModuleAssembliesNames.map</Link>
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -65,66 +46,6 @@
     </ItemGroup>
 
     <!-- ======================================================================== -->
-
-    <ItemGroup>
-      <ModuleProjectRazorFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml">
-        <ProjectName>%(Filename)</ProjectName>
-      </ModuleProjectRazorFiles>
-      <ModuleProjectRazorFilesMapping
-        Include="%(ModuleProjectRazorFiles.FullPath)|\Modules\%(ModuleProjectRazorFiles.ProjectName)\%(RecursiveDir)%(Filename)%(Extension)">
-      </ModuleProjectRazorFilesMapping>
-    </ItemGroup>
-
-    <Message Text="Generating module project razor files mapping file"
-      Condition="'@(ModuleProjectRazorFiles)' != ''" Importance="high" />
-
-    <WriteLinesToFile
-      File="obj\ModuleProjectRazorFiles.map"
-      Lines="@(ModuleProjectRazorFilesMapping)"
-      Condition="'@(ModuleProjectRazorFiles)' != ''"
-      Overwrite="true"
-      Encoding="utf-8"
-      ContinueOnError="true" />
-
-    <ItemGroup>
-      <ModuleProjectContentFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)Content\**\*">
-        <ProjectName>%(Filename)</ProjectName>
-      </ModuleProjectContentFiles>
-      <ModuleProjectContentFilesMapping
-        Include="%(ModuleProjectContentFiles.FullPath)|\Modules\%(ModuleProjectContentFiles.ProjectName)\Content\%(RecursiveDir)%(Filename)%(Extension)">
-      </ModuleProjectContentFilesMapping>
-    </ItemGroup>
-
-    <Message Text="Generating module project content files mapping file"
-      Condition="'@(ModuleProjectContentFiles)' != ''" Importance="high" />
-
-    <WriteLinesToFile
-      File="obj\ModuleProjectContentFiles.map"
-      Lines="@(ModuleProjectContentFilesMapping)"
-      Condition="'@(ModuleProjectContentFiles)' != ''"
-      Overwrite="true"
-      Encoding="utf-8"
-      ContinueOnError="true" />
-
-    <ItemGroup>
-      <ModuleProjectLiquidFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.liquid">
-        <ProjectName>%(Filename)</ProjectName>
-      </ModuleProjectLiquidFiles>
-      <ModuleProjectLiquidFilesMapping
-        Include="%(ModuleProjectLiquidFiles.FullPath)|\Modules\%(ModuleProjectLiquidFiles.ProjectName)\%(RecursiveDir)%(Filename)%(Extension)">
-      </ModuleProjectLiquidFilesMapping>
-    </ItemGroup>
-
-    <Message Text="Generating module project liquid files mapping file"
-      Condition="'@(ModuleProjectLiquidFiles)' != ''" Importance="high" />
-
-    <WriteLinesToFile
-      File="obj\ModuleProjectLiquidFiles.map"
-      Lines="@(ModuleProjectLiquidFilesMapping)"
-      Condition="'@(ModuleProjectLiquidFiles)' != ''"
-      Overwrite="true"
-      Encoding="utf-8"
-      ContinueOnError="true" />
 
     <CreateItem Include="@(Content)" Condition="'%(Extension)'=='.cshtml'">
       <Output TaskParameter="Include" ItemName="MvcContentRazorFiles"/>

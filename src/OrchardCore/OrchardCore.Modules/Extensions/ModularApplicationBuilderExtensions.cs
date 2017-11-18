@@ -64,14 +64,14 @@ namespace Microsoft.AspNetCore.Builder
                             if (contentPath != null)
                             {
                                 fileProvider = new CompositeFileProvider(
-                                    new ModuleProjectContentFileProvider(env.ContentRootPath, contentSubPath),
+                                    new ModuleProjectContentFileProvider(env, contentSubPath),
                                     new PhysicalFileProvider(contentPath));
                             }
                             else
                             {
-                            fileProvider = /*new CompositeFileProvider(
-                                    new ModuleProjectContentFileProvider(env.ContentRootPath, contentSubPath),
-                                    */new ModuleEmbeddedFileProvider(env, contentSubPath); //);
+                            fileProvider = new CompositeFileProvider(
+                                    new ModuleProjectContentFileProvider(env, contentSubPath),
+                                    new ModuleEmbeddedFileProvider(env, contentSubPath));
                             }
 
                         }

@@ -25,7 +25,7 @@
 
     <WriteLinesToFile
       File="obj\ModuleAssetFiles.map"
-      Lines="@(ModuleAssetFiles)"
+      Lines="$(MSBuildProjectDirectory);@(ModuleAssetFiles)"
       Condition="'@(ModuleAssetFiles)' != ''"
       Overwrite="true"
       Encoding="utf-8"
