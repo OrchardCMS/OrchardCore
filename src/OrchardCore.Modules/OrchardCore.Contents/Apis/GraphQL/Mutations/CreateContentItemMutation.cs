@@ -39,7 +39,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Mutations
 
                 var updateModel = apiUpdateModel.WithModel(contentParts);
 
-                await contentDisplay.UpdateEditorAsync(contentItem, updateModel);
+                await contentDisplay.UpdateEditorAsync(contentItem, updateModel, true);
 
                 if (contentItemFabrication.Published)
                 {
