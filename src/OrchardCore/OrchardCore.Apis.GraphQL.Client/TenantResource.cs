@@ -32,11 +32,10 @@ namespace OrchardCore.Apis.GraphQL.Client
                 @" Password: """ + password + @"""," +
                 @" PasswordConfirmation: """ + password + @"""," +
                 @" RecipeName: """ + recipeName + @"""" +
-                " ) { executionId } }"),
-                new JProperty("variables", "")
+                " ) { executionId } }")
                 );
 
-            var response = await _client.PostJsonAsync("graphql", requestJson.ToString());
+            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToString());
 
             response.EnsureSuccessStatusCode();
 

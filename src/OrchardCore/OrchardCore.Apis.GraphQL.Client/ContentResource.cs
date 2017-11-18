@@ -26,7 +26,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 new JProperty("variables", variables)
                 );
 
-            var response = await _client.PostJsonAsync("graphql", requestJson.ToString());
+            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToString());
 
             if (!response.IsSuccessStatusCode)
             {
@@ -59,11 +59,10 @@ namespace OrchardCore.Apis.GraphQL.Client
         public async Task Delete(string blogPostContentItemId)
         {
             var requestJson = new JObject(
-                new JProperty("query", @"mutation DeleteContentItem { deleteContentItem( ContentItemId: """+ blogPostContentItemId + @""") { status } }"),
-                new JProperty("variables", "")
+                new JProperty("query", @"mutation DeleteContentItem { deleteContentItem( ContentItemId: """+ blogPostContentItemId + @""") { status } }")
                 );
 
-            var response = await _client.PostJsonAsync("graphql", requestJson.ToString());
+            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToString());
 
             if (!response.IsSuccessStatusCode)
             {
@@ -77,7 +76,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 new JProperty("namedquery", name)
                 );
 
-            var response = await _client.PostJsonAsync("graphql", requestJson.ToString());
+            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToString());
 
             if (!response.IsSuccessStatusCode)
             {

@@ -36,6 +36,9 @@ namespace OrchardCore.Queries.Lucene.Apis.GraphQL.Queries
 
             foreach (var query in queries.OfType<LuceneQuery>())
             {
+                if (string.IsNullOrWhiteSpace(query.Schema))
+                    continue;
+
                 var name = query.Name;
                 var source = query.Source;
                 

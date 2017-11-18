@@ -24,7 +24,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 " ) { source } }")
                 );
 
-            var response = await _client.PostJsonAsync("graphql", requestJson.ToString());
+            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToString());
 
             if (!response.IsSuccessStatusCode)
             {
@@ -38,7 +38,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 new JProperty("query", @"mutation DeleteQuery { deleteQuery( Name: """ + name + @""") { status } }")
                 );
 
-            var response = await _client.PostJsonAsync("graphql", requestJson.ToString());
+            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToString());
 
             if (!response.IsSuccessStatusCode)
             {

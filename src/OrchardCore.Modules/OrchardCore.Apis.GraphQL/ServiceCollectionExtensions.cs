@@ -14,11 +14,7 @@ namespace OrchardCore.Apis.GraphQL
             services.AddScoped<IDependencyResolver, InternalDependencyResolver>();
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
-
-            //services.AddGraphQueryType<TitlePartType>();
-            //services.AddGraphQueryType<AutoRoutePartType>();
-            //services.AddGraphQueryType<BagPartType>();
-
+            
             services.AddGraphQLQueries();
             services.AddGraphQLMutations();
 

@@ -35,6 +35,9 @@ namespace OrchardCore.Queries.Sql.Apis.GraphQL.Queries
 
             foreach (var query in queries.OfType<SqlQuery>())
             {
+                if (string.IsNullOrWhiteSpace(query.Schema))
+                    continue;
+
                 var name = query.Name;
                 var source = query.Source;
 
