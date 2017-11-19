@@ -58,6 +58,9 @@
     <None Include="$(MSBuildThisFileDirectory)Package.Build.props" Pack="true">
       <PackagePath>build\$(TargetFramework)\$(PackageId).props</PackagePath>
     </None>
+    <None Include="**\*.cshtml" Pack="true">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,5 @@
+Name: The Default Theme
+AntiForgery: enabled
+Author: The Orchard Team
+Website: http://orchardproject.net
+Description: The default Theme
