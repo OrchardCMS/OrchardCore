@@ -21,4 +21,13 @@
     <ProjectReference Include="..\OrchardCore.Title\OrchardCore.Title.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Views\Admin\Index.cshtml">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
+    <None Update="Views\_ViewImports.cshtml">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
+  </ItemGroup>
+
 </Project>

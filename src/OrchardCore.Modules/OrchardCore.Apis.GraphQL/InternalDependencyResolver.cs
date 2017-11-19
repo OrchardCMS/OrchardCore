@@ -16,12 +16,19 @@ namespace OrchardCore.Apis.GraphQL
 
         public T Resolve<T>()
         {
-            return _serviceProvider.GetService<T>();
+            return (T)Resolve(typeof(T));
         }
 
         public object Resolve(Type type)
         {
-            return _serviceProvider.GetService(type);
+            var serviceType =  _serviceProvider.GetService(type);
+
+            if (serviceType == null)
+            {
+                return Activator.CreateInstance(type);
+            }
+
+            return serviceType;
         }
     }
 }
