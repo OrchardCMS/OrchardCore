@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Apis.GraphQL.Client
@@ -7,6 +8,7 @@ namespace OrchardCore.Apis.GraphQL.Client
     public class ContentTypeCreateResourceBuilder
     {
         private string _contentType;
+        private IDictionary<string, object> _values = new Dictionary<string, object>();
 
         private List<ContentPartBuilder> contentPartBuilders = new List<ContentPartBuilder>();
 
@@ -21,7 +23,14 @@ namespace OrchardCore.Apis.GraphQL.Client
             return builder;
         }
 
-        internal JObject Build()
+        public ContentTypeCreateResourceBuilder WithField(string key, object value)
+        {
+            _values.Add(key, value);
+
+            return this;
+        }
+
+        internal string Build()
         {
             var sb = new StringBuilder();
 
@@ -30,15 +39,28 @@ namespace OrchardCore.Apis.GraphQL.Client
                 sb.AppendLine(cpb.Build() + ",");
             }
 
-            return new JObject(
-                new JProperty(
-                    "contentItem",
-                    new JObject(
-                        new JProperty("contentType", _contentType),
-                        new JProperty("contentParts", "{" + sb.ToString() + "}")
-                    )
-                )
-            );
+            StringBuilder sbo = new StringBuilder();
+
+            sbo.AppendFormat(" ContentType: \"{0}\"", _contentType);
+
+            foreach (var value in _values)
+            {
+                if (value.Value is string)
+                {
+                    sbo.AppendFormat(" {0}: \"{1}\"", value.Key, value.Value);
+                }
+                else if (value.Value is bool)
+                {
+                    sbo.AppendFormat(" {0}: {1}", value.Key, ((bool)value.Value).ToString().ToLowerInvariant());
+                }
+                else {
+                    sbo.AppendFormat(" {0}: {1}", value.Key, value.Value);
+                }
+            }
+
+            sbo.AppendFormat(" ContentParts: {0}", JsonConvert.SerializeObject("{ " + sb.ToString() + " }"));
+
+            return sbo.ToString();
         }
     }
 }

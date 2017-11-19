@@ -23,12 +23,17 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
                 .Create("BlogPost", builder =>
                 {
                     builder
+                        .WithField("Published", true);
+                    builder
+                        .WithField("Latest", true);
+
+                    builder
                         .WithContentPart("TitlePart")
                         .AddField("Title", "Some sorta blogpost in a Query!");
 
                     builder
-                        .WithContentPart("ContainedPart")
-                        .AddField("ListContentItemId", _context.BlogContentItemId);
+                        .WithContentPart("ListPart")
+                        .AddField("ContainerId", _context.BlogContentItemId);
                 });
 
             var result = await _context

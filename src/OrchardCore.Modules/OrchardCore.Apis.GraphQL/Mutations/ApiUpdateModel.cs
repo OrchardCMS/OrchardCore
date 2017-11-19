@@ -35,36 +35,75 @@ namespace OrchardCore.Apis.GraphQL.Mutations
         {
             var modelMetadata = _metadataProvider.GetMetadataForType(model.GetType());
 
-            return Task.FromResult(false);
+            return TryUpdateModelAsync(model, null, m => null);
         }
 
-        public Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix) where TModel : class
+        public async Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix) where TModel : class
         {
             var modelMetadata = _metadataProvider.GetMetadataForType(model.GetType());
 
-            return Task.FromResult(false);
+            var modelState = new ModelStateDictionary();
+
+            //var name = model.GetType().Name;
+            var token = _model[prefix];
+
+            if (token == null)
+            {
+                return false;
+            }
+
+            foreach (var content in token.Children())
+            {
+                modelState
+                    .SetModelValue(
+                        content.Path.Replace(prefix + ".", ""), content.ToString(), content.ToString());
+                modelState
+                    .SetModelValue(
+                        content.Path, content.ToString(), content.ToString());
+
+                modelState.MarkFieldValid(content.Path.Replace(prefix + ".", ""));
+                modelState.MarkFieldValid(content.Path);
+            }
+
+            var actionContext = new Microsoft.AspNetCore.Mvc.ActionContext(
+                 _httpContextAccessor.HttpContext,
+                 new Microsoft.AspNetCore.Routing.RouteData(),
+                 new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor(),
+                 modelState
+                );
+
+            var updateModel = await ModelBindingHelper.TryUpdateModelAsync<TModel>(
+                model,
+                prefix,
+                actionContext,
+                _metadataProvider,
+                _modelBinderFactory,
+                new ApiValueProivder(_model),
+                _objectModelValidator);
+
+            return updateModel;
         }
 
-        public Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, params Expression<Func<TModel, object>>[] includeExpressions) where TModel : class
+        public async Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, params Expression<Func<TModel, object>>[] includeExpressions) where TModel : class
         {
-            var expression = ModelBindingHelper.GetPropertyFilterExpression(includeExpressions);
-            var propertyFilter = expression.Compile();
+            //var expression = ModelBindingHelper.GetPropertyFilterExpression(includeExpressions);
+            //var propertyFilter = expression.Compile();
 
             var modelMetadata = _metadataProvider.GetMetadataForType(model.GetType());
 
             var modelState = new ModelStateDictionary();
 
-            var name = model.GetType().Name;
-            var token = _model[name];
+            //var name = model.GetType().Name;
+            var token = _model[prefix];
 
             if (token == null)
             {
-                return Task.FromResult(false);
+                return false;
             }
 
             foreach (var content in token.Children()) {
 
-                modelState.SetModelValue(content.Path.Replace(name + ".", ""), content.ToString(), content.ToString());
+                modelState.SetModelValue(content.Path.Replace(prefix + ".", ""), content.ToString(), content.ToString());
                 modelState.SetModelValue(content.Path, content.ToString(), content.ToString());
             }
 
@@ -75,7 +114,7 @@ namespace OrchardCore.Apis.GraphQL.Mutations
                  modelState
                 );
 
-            var updateModel = ModelBindingHelper.TryUpdateModelAsync<TModel>(
+            var updateModel = await ModelBindingHelper.TryUpdateModelAsync<TModel>(
                 model,
                 prefix,
                 actionContext,
@@ -90,12 +129,12 @@ namespace OrchardCore.Apis.GraphQL.Mutations
 
         public bool TryValidateModel(object model)
         {
-            return false;
+            return true;
         }
 
         public bool TryValidateModel(object model, string prefix)
         {
-            return false;
+            return true;
         }
 
         public IApiUpdateModel WithModel(JObject jObject)

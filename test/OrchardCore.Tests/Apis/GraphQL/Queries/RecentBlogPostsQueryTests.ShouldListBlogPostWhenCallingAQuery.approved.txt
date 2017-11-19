@@ -3,12 +3,12 @@
     "recentBlogPosts": [
       {
         "titlePart": {
-          "Title": "Some sorta blogpost in a Query!"
+          "Title": "Man must explore, and this is exploration at its greatest"
         }
       },
       {
         "titlePart": {
-          "Title": "Man must explore, and this is exploration at its greatest"
+          "Title": "Some sorta blogpost in a Query!"
         }
       }
     ]

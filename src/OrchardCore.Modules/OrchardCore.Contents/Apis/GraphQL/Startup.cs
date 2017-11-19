@@ -3,7 +3,6 @@ using OrchardCore.Apis;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Contents.Apis.GraphQL.Mutations;
-using OrchardCore.Contents.Apis.GraphQL.Mutations.Types;
 using OrchardCore.Contents.Apis.GraphQL.Queries;
 using OrchardCore.Contents.Apis.GraphQL.Queries.Providers;
 using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
@@ -18,7 +17,6 @@ namespace OrchardCore.Contents.Apis.GraphQL
         {
             services.AddGraphMutationType<CreateContentItemMutation>();
             services.AddGraphMutationType<DeleteContentItemMutation>();
-            services.AddScoped<ContentItemInputType>();
 
             services.AddGraphQueryType<ContentItemQuery>();
             services.AddGraphQueryType<ContentItemsQuery>();
