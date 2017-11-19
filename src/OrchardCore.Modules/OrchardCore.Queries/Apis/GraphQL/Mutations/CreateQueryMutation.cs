@@ -26,7 +26,7 @@ namespace OrchardCore.Queries.Apis.GraphQL.Mutations
             Resolver = new SlowFuncFieldResolver<object, Task<object>>(async (context) => {
                 var query = context.MapArgumentsTo<TSourceType>();
 
-                await queryManager.SaveQueryAsync(query);
+                await queryManager.SaveQueryAsync(query.Name , query);
 
                 return query;
             });

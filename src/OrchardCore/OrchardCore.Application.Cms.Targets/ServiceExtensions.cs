@@ -3,6 +3,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Manifests;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Data;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -22,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSitesFolder();
             services.AddCommands();
             services.AddAuthentication();
-            services.AddModules(modules => 
+            services.AddModules(modules =>
             {
                 if (configuration != null)
                 {
@@ -51,7 +52,12 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddThemingHost();
             services.AddManifestDefinition("Theme.txt", "theme");
             services.AddExtensionLocation("Themes");
-            services.AddSitesFolder("App_Data", sitesDirectoryName);
+            services.AddSitesFolder();
+
+            services.Configure<ShellOptions>(options => {
+                options.ShellsContainerName = sitesDirectoryName;
+            });
+
             services.AddCommands();
             services.AddAuthentication();
             services.AddModules(modules =>
@@ -62,9 +68,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
 
                 modules.WithDefaultFeatures(
-                    "OrchardCore.Mvc", 
-                    "OrchardCore.Settings", 
-                    "OrchardCore.Setup", 
+                    "OrchardCore.Mvc",
+                    "OrchardCore.Settings",
+                    "OrchardCore.Setup",
                     "OrchardCore.Recipes",
                     "OrchardCore.Apis.GraphQL",
                     "OrchardCore.Commons");

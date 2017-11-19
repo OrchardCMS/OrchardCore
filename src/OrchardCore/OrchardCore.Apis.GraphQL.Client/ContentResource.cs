@@ -43,10 +43,12 @@ namespace OrchardCore.Apis.GraphQL.Client
             var contentTypeBuilder = new ContentTypeQueryResourceBuilder(contentType);
             builder(contentTypeBuilder);
 
-            var variables = "query { " + contentTypeBuilder.Build() + " }";
+            var requestJson = new JObject(
+                new JProperty("query", @"query { " + contentTypeBuilder.Build() + " }")
+                );
 
             var response = await _client
-                .GetAsync("graphql?query=" + HttpUtility.UrlEncode(variables));
+                .PostJsonAsync("api/graphql", requestJson.ToString());
 
             if (!response.IsSuccessStatusCode)
             {

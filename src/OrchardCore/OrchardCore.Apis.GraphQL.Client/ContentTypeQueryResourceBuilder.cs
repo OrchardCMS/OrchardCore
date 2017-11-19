@@ -88,7 +88,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             sb.Append(" }");
 
-            return sb.ToString();
+            return sb.ToString().Trim();
         }
     }
 }

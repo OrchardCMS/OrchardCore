@@ -21,7 +21,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             return builder;
         }
 
-        internal string Build()
+        internal JObject Build()
         {
             var sb = new StringBuilder();
 
@@ -30,7 +30,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 sb.AppendLine(cpb.Build() + ",");
             }
 
-            var variables = new JObject(
+            return new JObject(
                 new JProperty(
                     "contentItem",
                     new JObject(
@@ -39,8 +39,6 @@ namespace OrchardCore.Apis.GraphQL.Client
                     )
                 )
             );
-
-            return variables.ToString();
         }
     }
 }
