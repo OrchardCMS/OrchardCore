@@ -52,6 +52,14 @@
     </ItemGroup>
   </Target>
 
+  <Target Name="Test" BeforeTargets="CreateManifestResourceNames">
+    <ItemGroup>
+      <EmbeddedResource Update="@(ModuleAssetFiles)">
+        <Culture></Culture>
+      </EmbeddedResource>
+    </ItemGroup>
+  </Target>
+
   <!-- Adds a custom .props file to the generated module package -->
   
   <ItemGroup>
