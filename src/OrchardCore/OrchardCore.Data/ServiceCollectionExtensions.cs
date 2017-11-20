@@ -42,6 +42,9 @@ namespace OrchardCore.Data
                 
                 var storeConfiguration = new Configuration();
 
+                // Disabling query gating as it's failing to improve performance right now
+                storeConfiguration.DisableQueryGating();
+
                 switch (shellSettings.DatabaseProvider)
                 {
                     case "SqlConnection":

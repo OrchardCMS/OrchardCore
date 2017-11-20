@@ -58,7 +58,7 @@ namespace OrchardCore.ContentManagement.Display
 
         ILogger Logger { get; set; }
 
-        public async Task<dynamic> BuildDisplayAsync(ContentItem contentItem, IUpdateModel updater, string displayType, string groupId)
+        public async Task<IShape> BuildDisplayAsync(ContentItem contentItem, IUpdateModel updater, string displayType, string groupId)
         {
             if(contentItem == null)
             {
@@ -102,7 +102,7 @@ namespace OrchardCore.ContentManagement.Display
             return context.Shape;
         }
 
-        public async Task<dynamic> BuildEditorAsync(ContentItem contentItem, IUpdateModel updater, string groupId, string htmlFieldPrefix)
+        public async Task<IShape> BuildEditorAsync(ContentItem contentItem, IUpdateModel updater, bool isNew, string groupId, string htmlFieldPrefix)
         {
             if (contentItem == null)
             {
@@ -124,6 +124,7 @@ namespace OrchardCore.ContentManagement.Display
             var context = new BuildEditorContext(
                 itemShape,
                 groupId,
+                isNew,
                 htmlFieldPrefix,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
@@ -137,7 +138,7 @@ namespace OrchardCore.ContentManagement.Display
             return context.Shape;
         }
 
-        public async Task<dynamic> UpdateEditorAsync(ContentItem contentItem, IUpdateModel updater, string groupId, string htmlFieldPrefix)
+        public async Task<IShape> UpdateEditorAsync(ContentItem contentItem, IUpdateModel updater, bool isNew, string groupId, string htmlFieldPrefix)
         {
             if (contentItem == null)
             {
@@ -157,6 +158,7 @@ namespace OrchardCore.ContentManagement.Display
             var context = new UpdateEditorContext(
                 itemShape,
                 groupId,
+                isNew,
                 htmlFieldPrefix,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),

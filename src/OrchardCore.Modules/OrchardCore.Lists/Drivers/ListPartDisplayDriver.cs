@@ -3,19 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
+using OrchardCore.Lists.ViewModels;
 using OrchardCore.Navigation;
 using YesSql;
 
@@ -43,55 +41,18 @@ namespace OrchardCore.Lists.Drivers
 
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {
-            return Combine(
-                Shape("ListPart_DetailAdmin", async shape =>
-                {
-                    var pager = await GetPagerAsync(context.Updater, listPart);
+            return Shape<ListPartViewModel>("ListPart", async model =>
+            {
+                var pager = await GetPagerAsync(context.Updater, listPart);
 
-                    var contentItemDisplayManager = _serviceProvider.GetService<IContentItemDisplayManager>();
-                    var containedItems = await QueryListItemsAsync(listPart, pager, false);
-                    var containedItemsSummaries = new List<dynamic>();
-
-                    foreach (var contentItem in containedItems)
-                    {
-                        containedItemsSummaries.Add(await contentItemDisplayManager.BuildDisplayAsync(contentItem, context.Updater, "SummaryAdmin"));
-                    }
-
-                    shape.ContentItems = containedItemsSummaries;
-                    shape.ContentItem = listPart.ContentItem;
-                    shape.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
-                    shape.Pager = await context.New.PagerSlim(pager);
-                })
-                .Location("DetailAdmin", "Content:10"),
-
-                Shape("ListPart", async shape =>
-                {
-                    var pager = await GetPagerAsync(context.Updater, listPart);
-
-                    var contentItemDisplayManager = _serviceProvider.GetService<IContentItemDisplayManager>();
-                    var containedItems = await QueryListItemsAsync(listPart, pager, true);
-                    var containedItemsSummaries = new List<dynamic>();
-                    var listContentType = listPart.ContentItem.ContentType;
-
-                    foreach (var contentItem in containedItems)
-                    {
-                        var itemShape = await contentItemDisplayManager.BuildDisplayAsync(contentItem, context.Updater, "Summary") as IShape;
-                        itemShape.Metadata.Alternates.Add($"ListPart_Summary__{listContentType}");
-                        containedItemsSummaries.Add(itemShape);
-                    }
-
-                    shape.ContentItems = containedItemsSummaries;
-                    shape.ContentItem = listPart.ContentItem;
-                    shape.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
-                    shape.Pager = await context.New.PagerSlim(pager);
-                })
-                .Displaying(displaying =>
-                {
-                    var listContentType = listPart.ContentItem.ContentType;
-                    displaying.Shape.Metadata.Alternates.Add($"ListPart__{listContentType}");
-                })
-                .Location("Detail", "Content:10")
-            );
+                model.ListPart = listPart;
+                model.ContentItems = (await QueryListItemsAsync(listPart, pager, true)).ToArray();
+                model.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
+                model.Context = context;
+                model.Pager = await context.New.PagerSlim(pager);
+            })
+            .Location("Detail", "Content:10")
+            .Location("DetailAdmin", "Content:10");
         }
 
         private async Task<PagerSlim> GetPagerAsync(IUpdateModel updater, ListPart part)

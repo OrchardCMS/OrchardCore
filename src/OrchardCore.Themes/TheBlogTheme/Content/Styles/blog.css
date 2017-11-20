@@ -5855,6 +5855,9 @@ h6, .navbar-custom, .intro-header .site-heading .subheading,
 .widget-align-justify {
   text-align: justify; }
 
+.widget-image-widget img {
+  width: 100%; }
+
 body {
   font-size: 20px;
   color: #333333; }
@@ -5963,7 +5966,8 @@ hr.small {
 
 .intro-header {
   background-color: #777777;
-  background: no-repeat center center;
+  background-repeat: no-repeat;
+  background-position: center center;
   background-attachment: scroll;
   margin-bottom: 50px; }
   .intro-header .site-heading,

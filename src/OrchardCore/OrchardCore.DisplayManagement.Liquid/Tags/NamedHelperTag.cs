@@ -32,6 +32,14 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 if (DefaultArguments.TryGetValue(node.Term.Name, out var name))
                 {
+                    foreach (var argument in arguments)
+                    {
+                        if (argument.Name == name)
+                        {
+                            return arguments;
+                        }
+                    }
+
                     arguments[0] = new FilterArgument(name, DefaultFluidParser.BuildTermExpression(defaultArgument));
                 }
             }

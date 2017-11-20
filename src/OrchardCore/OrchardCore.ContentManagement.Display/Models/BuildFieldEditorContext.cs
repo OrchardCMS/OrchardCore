@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
 
 namespace OrchardCore.ContentManagement.Display.Models
@@ -6,7 +6,7 @@ namespace OrchardCore.ContentManagement.Display.Models
     public class BuildFieldEditorContext : BuildEditorContext
     {
         public BuildFieldEditorContext(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
-            : base(context.Shape, context.GroupId, "", context.ShapeFactory, context.Layout, context.Updater)
+            : base(context.Shape, context.GroupId, context.IsNew, "", context.ShapeFactory, context.Layout, context.Updater)
         {
             ContentPart = contentPart;
             TypePartDefinition = typePartDefinition;

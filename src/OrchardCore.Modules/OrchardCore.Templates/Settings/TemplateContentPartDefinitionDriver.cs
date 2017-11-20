@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -8,11 +7,11 @@ using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Settings
 {
-    public class TemplateContentPartSettingsDriver : ContentPartDisplayDriver
+    public class TemplateContentPartDefinitionDriver : ContentPartDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer<TemplateContentPartSettingsDriver> S;
+        private readonly IStringLocalizer<TemplateContentPartDefinitionDriver> S;
 
-        public TemplateContentPartSettingsDriver(IStringLocalizer<TemplateContentPartSettingsDriver> localizer)
+        public TemplateContentPartDefinitionDriver(IStringLocalizer<TemplateContentPartDefinitionDriver> localizer)
         {
             S = localizer;
         }

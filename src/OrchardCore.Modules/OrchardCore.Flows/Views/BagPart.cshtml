@@ -1,8 +1,4 @@
-@using OrchardCore.ContentManagement
-@using OrchardCore.DisplayManagement
-@using OrchardCore.Flows.Models
 @using OrchardCore.Flows.ViewModels
-@using OrchardCore.Mvc.Utilities
 
 @model BagPartViewModel
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
@@ -10,7 +6,7 @@
 <section class="flow">
     @foreach (var item in Model.BagPart.ContentItems)
     {
-        var itemContent = await ContentItemDisplayManager.BuildDisplayAsync(item, Model.BuildPartDisplayContext.Updater, "Summary", Model.BuildPartDisplayContext.GroupId);
+        var itemContent = await ContentItemDisplayManager.BuildDisplayAsync(item, Model.BuildPartDisplayContext.Updater, Model.Settings.DisplayType ?? "Summary", Model.BuildPartDisplayContext.GroupId);
 
         @await DisplayAsync(itemContent)
     }

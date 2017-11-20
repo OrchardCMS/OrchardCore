@@ -308,7 +308,7 @@ namespace OrchardCore.Contents.Controllers
                 return Unauthorized();
             }
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this);
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true);
 
             return View(model);
         }
@@ -361,7 +361,7 @@ namespace OrchardCore.Contents.Controllers
                 return Unauthorized();
             }
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
 
             if (!ModelState.IsValid)
             {
@@ -413,7 +413,7 @@ namespace OrchardCore.Contents.Controllers
                 return Unauthorized();
             }
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this);
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
 
             return View(model);
         }
@@ -487,7 +487,7 @@ namespace OrchardCore.Contents.Controllers
             //    previousRoute = contentItem.As<IAliasAspect>().Path;
             //}
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
             if (!ModelState.IsValid)
             {
                 _session.Cancel();

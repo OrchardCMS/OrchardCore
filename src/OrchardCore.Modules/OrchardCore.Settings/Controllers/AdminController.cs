@@ -45,7 +45,7 @@ namespace OrchardCore.Settings.Controllers
             var viewModel = new AdminIndexViewModel();
 
             viewModel.GroupId = groupId;
-            viewModel.Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, this, groupId);
+            viewModel.Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, this, false, groupId);
 
             return View(viewModel);
         }
@@ -69,7 +69,7 @@ namespace OrchardCore.Settings.Controllers
             var viewModel = new AdminIndexViewModel();
 
             viewModel.GroupId = groupId;
-            viewModel.Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, this, groupId);
+            viewModel.Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, this, false, groupId);
 
             if (ModelState.IsValid)
             {
