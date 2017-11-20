@@ -15,10 +15,10 @@ and optionally a version. The __OrchardCore.Resources__ modules provides some co
 | ---- | ---- | -------- | ------------ |
 | jQuery | Script | 1.12.4 | - |
 | jQuery | Script | 2.2.4 | - |
-| jQuery | Script | 3.1.1 | - |
-| Bootstrap | Script | 3.3.7, 4.0.0 (4.0.0-alpha.5) | jQuery |
-| Bootstrap | Style | 3.3.7, 4.0.0 (4.0.0-alpha.5) | - |
-| jquery-ui | Script | 1.12.1 | jQuery |
+| jQuery | Script | 3.2.1 | - |
+| Bootstrap | Script | 3.3.7, 4.0.0 (4.0.0-beta) | jQuery |
+| Bootstrap | Style | 3.3.7, 4.0.0 (4.0.0-beta) | - |
+| jQuery-ui | Script | 1.12.1 | jQuery |
 | font-awesome | Style | 4.7.0 | - |
 
 ## Usage
