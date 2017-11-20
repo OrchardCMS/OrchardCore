@@ -25,9 +25,11 @@ namespace OrchardCore.Autoroute.Routing
         public VirtualPathData GetVirtualPath(VirtualPathContext context)
         {
             string contentItemId = context.Values["contentItemId"]?.ToString();
-            
+
             if (string.IsNullOrEmpty(contentItemId))
+            {
                 return null;
+            }
 
             var displayRouteData = GetContentItemDisplayRoutes(context.HttpContext, contentItemId).Result;
             
@@ -82,7 +84,6 @@ namespace OrchardCore.Autoroute.Routing
             var displayRoutes = await GetContentItemDisplayRoutes(context.HttpContext, contentItemId);
             if (displayRoutes == null)
             {
-                FillDefaultRouteData(context, contentItemId);
                 return;
             }
             foreach (var key in _keys)
@@ -90,15 +91,6 @@ namespace OrchardCore.Autoroute.Routing
                 if (displayRoutes.ContainsKey(key))
                     context.RouteData.Values[key] = displayRoutes[key];
             }
-            context.RouteData.Routers.Add(_target);
-        }
-
-        private void FillDefaultRouteData(RouteContext context, string contentItemId)
-        {
-            context.RouteData.Values["area"] = "OrchardCore.Contents";
-            context.RouteData.Values["controller"] = "Item";
-            context.RouteData.Values["action"] = "Display";
-            context.RouteData.Values["contentItemId"] = contentItemId;
             context.RouteData.Routers.Add(_target);
         }
     }
