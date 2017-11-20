@@ -7,8 +7,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Routing" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 

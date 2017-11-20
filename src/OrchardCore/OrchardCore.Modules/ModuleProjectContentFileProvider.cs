@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
-using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Modules
 {
@@ -17,15 +15,12 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleProjectContentFileProvider : IFileProvider
     {
-        private const string ModuleAssetsMap = "module.assets.map";
-        private const string ModulesNamesMap = "module.names.map";
-
         private static Dictionary<string, string> _paths;
         private static object _synLock = new object();
 
         private string _contentPath;
 
-        public ModuleProjectContentFileProvider(IHostingEnvironment hostingEnvironment, string contentPath)
+        public ModuleProjectContentFileProvider(IHostingEnvironment environment, string contentPath)
         {
             _contentPath = '/' + contentPath.Replace('\\', '/').Trim('/');
 
@@ -38,42 +33,35 @@ namespace OrchardCore.Modules
             {
                 if (_paths == null)
                 {
-                    var mainAssembly = Assembly.Load(new AssemblyName(hostingEnvironment.ApplicationName));
-                    var fileProvider = new EmbeddedFileProvider(mainAssembly);
-
-                    var fileInfo = fileProvider.GetFileInfo(ModulesNamesMap);
-                    var modules = fileInfo.ReadAllLines().ToList();
                     var paths = new List<string>();
+                    var mainAssembly = environment.LoadApplicationAssembly();
 
-                    foreach (var module in modules)
+                    foreach (var moduleId in environment.GetModuleNames())
                     {
-                        var assembly = Assembly.Load(module);
+                        var assembly = environment.LoadModuleAssembly(moduleId);
 
-                        if (Path.GetDirectoryName(assembly.Location)
+                        if (assembly == null || Path.GetDirectoryName(assembly.Location)
                             != Path.GetDirectoryName(mainAssembly.Location))
                         {
                             continue;
                         }
 
-                        fileProvider = new EmbeddedFileProvider(Assembly.Load(module));
-                        fileInfo = fileProvider.GetFileInfo(ModuleAssetsMap);
-
-                        var assetPaths = fileInfo.ReadAllLines().Select(x => x.Replace('\\', '/'));
+                        var assetPaths = environment.GetModuleAssets(moduleId);
                         var projectFolder = assetPaths.FirstOrDefault();
 
                         if (Directory.Exists(projectFolder))
                         {
                             assetPaths = assetPaths.Skip(1).Where(x => x.StartsWith(
-                                "Modules/" + module + "/Content/")).ToList();
+                                "Modules/" + moduleId + "/Content/")).ToList();
 
                             paths.AddRange(assetPaths.Select(x => projectFolder + "/"
-                                + x.Substring(("Modules/" + module).Length) + "|/" + x));
+                                + x.Substring(("Modules/" + moduleId).Length) + "|/" + x));
                         }
                     }
 
                     _paths = new Dictionary<string, string>(paths
                         .Select(x => x.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
-                        .Where(x => x.Length == 2).ToDictionary(x => x[1].Replace('\\', '/'), x => x[0]));
+                        .Where(x => x.Length == 2).ToDictionary(x => x[1], x => x[0]));
                 }
             }
         }

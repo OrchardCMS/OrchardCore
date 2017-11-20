@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -61,19 +60,19 @@ namespace Microsoft.AspNetCore.Builder
                         IFileProvider fileProvider;
                         if (env.IsDevelopment())
                         {
+                            var fileProviders = new List<IFileProvider>();
+                            fileProviders.Add(new ModuleProjectContentFileProvider(env, contentSubPath));
+
                             if (contentPath != null)
                             {
-                                fileProvider = new CompositeFileProvider(
-                                    new ModuleProjectContentFileProvider(env, contentSubPath),
-                                    new PhysicalFileProvider(contentPath));
+                                fileProviders.Add(new PhysicalFileProvider(contentPath));
                             }
                             else
                             {
-                            fileProvider = new CompositeFileProvider(
-                                    new ModuleProjectContentFileProvider(env, contentSubPath),
-                                    new ModuleEmbeddedFileProvider(env, contentSubPath));
+                                fileProviders.Add(new ModuleEmbeddedFileProvider(env, contentSubPath));
                             }
 
+                            fileProvider = new CompositeFileProvider(fileProviders);
                         }
                         else
                         {
