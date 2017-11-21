@@ -40,9 +40,6 @@
       ContinueOnError="true" />
 
     <ItemGroup>
-      <EmbeddedResource Include="@(ModuleAssetFiles)">
-        <WithCulture>false</WithCulture>
-      </EmbeddedResource>
       <EmbeddedResource Include="obj\module.assets.map">
         <Link>module.assets.map</Link>
       </EmbeddedResource>
@@ -52,16 +49,13 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="Test" BeforeTargets="CreateManifestResourceNames">
-    <ItemGroup>
-      <EmbeddedResource Update="@(ModuleAssetFiles)">
-        <Culture></Culture>
-      </EmbeddedResource>
-    </ItemGroup>
-  </Target>
+  <ItemGroup>
+    <EmbeddedResource Include="@(ModuleAssetFiles)">
+    </EmbeddedResource>
+  </ItemGroup>
 
   <!-- Adds a custom .props file to the generated module package -->
-  
+
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Package.Build.props" Pack="true">
       <PackagePath>build\$(TargetFramework)\$(PackageId).props</PackagePath>

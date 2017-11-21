@@ -70,12 +70,12 @@ namespace OrchardCore.Recipes.Services
 
                     using (var stream = recipeFile.CreateReadStream())
                     {
-                        using (var file = new StreamReader(stream))
+                        using (var reader = new StreamReader(stream))
                         {
-                            using (var reader = new JsonTextReader(file))
+                            using (var jsonReader = new JsonTextReader(reader))
                             {
                                 var serializer = new JsonSerializer();
-                                var recipeDescriptor = serializer.Deserialize<RecipeDescriptor>(reader);
+                                var recipeDescriptor = serializer.Deserialize<RecipeDescriptor>(jsonReader);
                                 recipeDescriptor.RecipeFileInfo = recipeFile;
                                 return recipeDescriptor;
                             }
