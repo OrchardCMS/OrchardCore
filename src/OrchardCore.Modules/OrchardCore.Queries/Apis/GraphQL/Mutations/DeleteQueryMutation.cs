@@ -22,7 +22,7 @@ namespace OrchardCore.Queries.Apis.GraphQL.Mutations
                 new QueryArgument<StringGraphType> { Name = "Name" }
                 );
 
-            Type = typeof(DeletionStatus);
+            Type = typeof(DeletionStatusObjectGraphType);
 
             Resolver = new SlowFuncFieldResolver<object, Task<DeletionStatus>>(async (context) => {
                 var name = context.GetArgument<string>("Name");
@@ -37,5 +37,9 @@ namespace OrchardCore.Queries.Apis.GraphQL.Mutations
     public class DeletionStatus : GraphType
     {
         public string Status { get; set; }
+    }
+
+    public class DeletionStatusObjectGraphType : AutoRegisteringObjectGraphType<DeletionStatus>
+    {
     }
 }

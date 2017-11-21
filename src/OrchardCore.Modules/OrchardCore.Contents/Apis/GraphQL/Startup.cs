@@ -21,6 +21,7 @@ namespace OrchardCore.Contents.Apis.GraphQL
             services.AddGraphQueryType<ContentItemQuery>();
             services.AddGraphQueryType<ContentItemsQuery>();
             services.AddScoped<ContentItemType>();
+            services.AddScoped<DeletionStatusObjectGraphType>();
 
             services.AddScoped<IDynamicQueryFieldTypeProvider, ContentItemFieldTypeProvider>();
 

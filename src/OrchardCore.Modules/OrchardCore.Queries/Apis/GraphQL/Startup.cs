@@ -10,6 +10,7 @@ namespace OrchardCore.Queries.Apis.GraphQL
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddGraphMutationType<DeleteQueryMutation>();
+            services.AddScoped<DeletionStatusObjectGraphType>();
         }
     }
 }
