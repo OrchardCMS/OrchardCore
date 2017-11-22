@@ -26,16 +26,16 @@ app.UseModules();
 
 That's it. Erm, wait, what? Okay so right now you must be thinking, well what the hell does this do? Good question.
 
-AddModuleServices will add the container middleware to you application pipeline; this means, in short, that it will look in to a folder called `Modules` within your application, for all folders that contain the manifest file `Module.txt`. If you looked on the file system it would look like this:
+`AddModuleServices` will add the container middleware to you application pipeline; this means, in short, that it will look in to a folder called `Modules` within your application, for all folders that contain the manifest file `Module.txt`. If you looked on the file system it would look like this:
 
 ```
-MyNewWebApplicaion
+MyNewWebApplication
   \ Modules
     \ Module1
     \ Module2
 ```
 
-Once it has found that manifest file, and said file is valid, it will then look for all classes that inherit off of `StartupBase`, instantiate them and then call the methods on here. An example of one is:
+Once it has found that manifest file, and said file is valid, it will then look for all classes that inherit from `StartupBase`, instantiate them and then call the methods on here. An example of one is:
 
 ```c#
 public class Startup : StartupBase
