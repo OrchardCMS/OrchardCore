@@ -108,9 +108,5 @@ app.UseModules(modules => modules
 
 That's it, done. NancyFx is now part of your pipeline. What this means is that Nancy modules will be automatically discovered.
 
-<<<<<<< HEAD:src/OrchardCore/Microsoft.AspNetCore.Modules/README.md
-> Note. There is no need to register a Nancy Module within its own Startup class.
-=======
 !!! note 
     There is no need to register a Nancy Module within its own Startup class.
->>>>>>> ec4f306412e5713f308e7387e1ba0e9d57382028:src/OrchardCore/OrchardCore.Modules/README.md
