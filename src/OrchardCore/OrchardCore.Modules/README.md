@@ -1,6 +1,6 @@
 # Introduction
 
-The library Orchard Core Modules provides a mechanism to have a self contained modular system where you can opt in to a specific application framework and not have the design of you application be dictated to by such.
+The library Orchard Core Modules provides a mechanism to have a self-contained modular system where you can opt in to a specific application framework and not have the design of your application be dictated to by such.
 
 ## Getting started
 
@@ -10,7 +10,7 @@ Within this new application we are initially going to focus on `Startup.cs`.
 
 Okay so first, let's open up `Startup.cs`.
 
-Within the ConfigureServices method add these lines:
+Within the `ConfigureServices` method, add these lines:
 
 ```c#
 services.AddModuleServices(configure => configure
@@ -18,7 +18,7 @@ services.AddModuleServices(configure => configure
 );
 ```
 
-Next, at the end of the Configure method, add these lines:
+Next, at the end of the `Configure` method, add this line:
 
 ```c#
 app.UseModules();
