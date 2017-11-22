@@ -31,7 +31,7 @@ instead.
 
 A field should represent some specific physical data and logical data. The same field can be customized
 to be edited and rendered differently using both Editors and Formatters. Editors are shapes that can
-be used to edit a field differently, for instance th Wysiwyg Html editor is a custom editor for the Html
+be used to edit a field differently, for instance the WYSIWYG HTML editor is a custom editor for the HTML
 field. Formatters are alternate shapes that can be used to render a field on the front end, for instance
 a Link field could be rendered as a Youtube video player. 
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Provides he `Navigation`, `Pager` and `PagerSlim` shapes.
+Provides the `Navigation`, `Pager` and `PagerSlim` shapes.
 
 ## Theming
 
