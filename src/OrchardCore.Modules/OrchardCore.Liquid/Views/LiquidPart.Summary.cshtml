@@ -1,0 +1,4 @@
+@using OrchardCore.Mvc.Utilities;
+@model OrchardCore.Liquid.ViewModels.LiquidPartViewModel
+
+@Html.Raw(Model.Html.RemoveTags(true).Ellipsize(200))

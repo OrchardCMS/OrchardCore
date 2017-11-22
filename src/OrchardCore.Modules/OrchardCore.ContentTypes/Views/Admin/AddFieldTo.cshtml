@@ -1,0 +1,68 @@
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentManagement.Metadata.Settings;
+
+@model AddFieldViewModel
+
+<h1>@RenderTitleSegments(T["Add New Field To \"{0}\"", Model.Part.DisplayName()])</h1>
+
+<form asp-action="AddFieldTo">
+    @Html.ValidationSummary()
+    <fieldset class="form-group">
+        <div class="row col-md">
+            <label for="DisplayName">@T["Display Name"]</label>
+            <input asp-for="DisplayName" class="form-control" autofocus />
+            <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
+        </div>
+    </fieldset>
+
+    <fieldset class="form-group">
+        <div class="row col-sm">
+            <label for="Name">@T["Technical Name"]</label>
+            <input asp-for="Name" class="form-control" />
+            <span class="hint">@T["Technical name of the field."]</span>
+        </div>
+    </fieldset>
+
+    <fieldset class="form-group">
+        <label for="DisplayName">@T["Field Type"]</label>
+        @for (var i = 0; i < Model.Fields.Count; i++)
+        {
+            <div class="radio">
+                <label asp-for="Fields[i]">
+                    <input checked="@(i == 0)" type="radio" asp-for="FieldTypeName" id="@Html.IdFor(m => m.Fields[i])" value="@Model.Fields[i]" />
+                    @Model.Fields[i].CamelFriendly()
+                </label>
+            </div>
+        }
+    </fieldset>
+
+    <fieldset class="form-group">
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+    </fieldset>
+</form>
+
+<script at="Foot" type="text/javascript">
+//<![CDATA[
+    $(function(){
+        var $name = $("#@Html.IdFor(m => m.Name)");
+        var $displayName = $("#@Html.IdFor(m => m.DisplayName)");
+
+        var nameAltered;
+        $name.keypress(function() {
+            nameAltered = true;
+        });
+
+        var compute = function() {
+            // stop processing automatically if altered by the user
+            if(nameAltered) {
+                return true;
+            }
+
+            $name.val(getTechnicalName($displayName.val()));
+        };
+
+        $displayName.keyup(compute);
+        $displayName.blur(compute);
+    })
+//]]>
+</script>

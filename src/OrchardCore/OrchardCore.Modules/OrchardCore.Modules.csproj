@@ -1,22 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
-    <IgnorePackageAssets>true</IgnorePackageAssets>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
-  <!--
-    When a package is not directly referenced, e.g only through the reference of this bundle package,
-    the files in its build folder are not evaluated on building if this folder is marked as private.
-    This can be defined by using the 'PrivateAssets' attribute.
-    
-    Here, only project references are used but when packing the bundle they become package references,
-    and with the same 'PrivateAssets' attribute.
-  -->
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Modules.Abstractions\OrchardCore.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Environment.Extensions\OrchardCore.Environment.Extensions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Environment.Shell\OrchardCore.Environment.Shell.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.AsBundle\OrchardCore.AsBundle.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore\Microsoft.AspNetCore.Modules\Microsoft.AspNetCore.Modules.csproj" PrivateAssets="none" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(MicrosoftExtensionsHostingAbstractionsPackageVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="$(MicrosoftAspNetCoreHttpPackageVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="$(MicrosoftAspNetCoreStaticFilesPackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(MicrosoftExtensionsDependencyInjectionAbstractionsPackageVersion)" />    
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="$(MicrosoftExtensionsFileProvidersCompositePackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="$(MicrosoftExtensionsLocalizationPackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsLoggingPackageVersion)" />
   </ItemGroup>
 
 </Project>

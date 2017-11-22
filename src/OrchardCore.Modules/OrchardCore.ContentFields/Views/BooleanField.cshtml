@@ -1,0 +1,10 @@
+@model OrchardCore.ContentFields.ViewModels.DisplayBooleanFieldViewModel
+@using OrchardCore.Mvc.Utilities;
+
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+}
+
+<div class="field field-type-booleanfield field-name-@name">
+    @Model.Field.Value
+</div>

@@ -16,43 +16,28 @@
 			"args": [ "dotnet restore --no-cache" ]
 		},
 		{
-			"taskName": "Solution: Dotnet Build Debug",
-			"args": [ "dotnet build src/**/project.json -c Debug" ],
-			"problemMatcher": "$msCompile"
-		},
-		{
-			"taskName": "Solution: Dotnet Rebuild Debug",
-			"args": [ "dotnet build src/**/project.json --no-incremental -c Debug" ],
-			"problemMatcher": "$msCompile"
-		},
-		{
-			"taskName": "Solution: Dotnet Build Release",
-			"args": [ "dotnet build src/**/project.json -c Release" ],
-			"problemMatcher": "$msCompile"
-		},
-		{
 			"taskName": "Web App: Dotnet Build Debug",
-			"args": [ "dotnet build ${workspaceRoot}/src/Orchard.Cms.Web -c Debug" ],
+			"args": [ "dotnet build ${workspaceRoot}/src/OrchardCore.Cms.Web -c Debug" ],
 			"isBuildCommand": true,
 			"problemMatcher": "$msCompile"
 		},
 		{
 			"taskName": "Web App: Dotnet Rebuild Debug",
-			"args": [ "dotnet build ${workspaceRoot}/src/Orchard.Cms.Web --no-incremental -c Debug" ],
+			"args": [ "dotnet build ${workspaceRoot}/src/OrchardCore.Cms.Web --no-incremental -c Debug" ],
 			"problemMatcher": "$msCompile"
 		},
 		{
 			"taskName": "Web App: Dotnet Build Release",
-			"args": [ "dotnet build ${workspaceRoot}/src/Orchard.Cms.Web -c Release" ],
+			"args": [ "dotnet build ${workspaceRoot}/src/OrchardCore.Cms.Web -c Release" ],
 			"problemMatcher": "$msCompile"
 		},
 		{
 			"taskName": "Web App: Dotnet Run",
-			"args": [ "cd ${workspaceRoot}/src/orchard.Cms.Web & dotnet run" ]
+			"args": [ "cd ${workspaceRoot}/src/OrchardCore.Cms.Web & dotnet run" ]
 		},
 		{
 			"taskName": "Web App: Dotnet Publish",
-			"args": [ "dotnet publish ${workspaceRoot}/src/Orchard.Cms.Web --output ../publish" ]
+			"args": [ "dotnet publish ${workspaceRoot}/src/OrchardCore.Cms.Web --output ../publish" ]
 		},
 		{
 			"taskName": "Gulp Build",

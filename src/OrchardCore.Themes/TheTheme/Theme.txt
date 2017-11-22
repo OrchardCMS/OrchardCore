@@ -1,8 +1,5 @@
-﻿Name: The Theme
+Name: The Default Theme
 AntiForgery: enabled
 Author: The Orchard Team
 Website: http://orchardproject.net
-Version: 2.0.x
-OrchardVersion: 2.0.x
-Description: The Theme
-FeatureDescription: The Theme
+Description: The default Theme

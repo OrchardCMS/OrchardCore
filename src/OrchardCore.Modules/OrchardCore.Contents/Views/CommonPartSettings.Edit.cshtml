@@ -1,0 +1,17 @@
+@model OrchardCore.Contents.ViewModels.CommonPartSettingsViewModel
+
+<fieldset class="form-group">
+    <div class="form-check">
+        <label class="form-check-label">
+            <input asp-for="DisplayDateEditor" type="checkbox" class="form-check-input" checked="@Model.DisplayDateEditor" /> @T["Display date editor"]
+            <span class="hint">@T["Check to be able to edit the creation date of the content item."]</span>
+        </label>
+    </div>
+
+    <div class="form-check">
+        <label class="form-check-label">
+            <input asp-for="DisplayOwnerEditor" type="checkbox" class="form-check-input" checked="@Model.DisplayOwnerEditor" /> @T["Display owner editor"]
+            <span class="hint">@T["Check to be able to edit the owner of the content item. The <code>SiteOwner</code> permission will also be required."]</span>
+        </label>
+    </div>
+</fieldset>

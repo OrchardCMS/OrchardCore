@@ -1,0 +1,48 @@
+@model OrchardCore.Lists.ViewModels.ListPartViewModel
+@using OrchardCore.ContentManagement
+@using OrchardCore.ContentManagement.Metadata.Models;
+
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+@if (!Model.ContainedContentTypeDefinitions.Any())
+{
+    <p class="alert alert-warning">
+        <a asp-action="EditTypePart" asp-controller="Admin" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.ListPart.ContentItem.ContentType" asp-route-name="ListPart">@T["Please specify at least one contained content type."]</a>
+    </p>
+}
+else
+{
+    <p>
+        <div class="dropdown">
+            <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                @T["Create"]
+            </a>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
+                {
+                    <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId">@containedContentTypeDefinition.DisplayName</a>
+                }
+            </div>
+        </div>
+    </p>
+    @if (Model.ContentItems.Any())
+    {
+        <ul class="list-group">
+            @foreach (var contentItem in Model.ContentItems)
+            {
+                var contentItemSummary = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
+
+                <li class="list-group-item">
+                    @await DisplayAsync(contentItemSummary)
+                </li>
+            }
+        </ul>
+
+        @await DisplayAsync(Model.Pager)
+    }
+    else
+    {
+        <p class="alert alert-warning">@T["The list is empty."]</p>
+    }
+}

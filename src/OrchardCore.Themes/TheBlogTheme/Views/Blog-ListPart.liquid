@@ -1,0 +1,11 @@
+{% for item in Model.ContentItems %}
+    {% display item | build_display: "Summary" %}
+{% endfor %}
+
+{% assign previousText = "← Newer Posts" | t %}
+{% assign nextText = "Older Posts →" | t %}
+{% assign previousClass = "previous" | t %}
+{% assign nextClass = "next" | t %}
+
+{% display Model.Pager | set_properties: previous_text: previousText,
+    next_text: nextText, previous_class: previousClass, next_class: nextClass %}

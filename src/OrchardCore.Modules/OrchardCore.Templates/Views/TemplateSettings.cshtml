@@ -1,0 +1,16 @@
+@model OrchardCore.Templates.ViewModels.ContentSettingsViewModel
+
+<div class="form-group">
+    <div class="dropdown">
+        <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            @T["Edit templates"]
+        </button>
+
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            @foreach (var entry in Model.ContentSettingsEntries)
+            {
+                <a class="dropdown-item" href="@Url.Action("Edit", "Template", new { area = "OrchardCore.Templates", name = entry.Key } )">@entry.Description</a>
+            }
+        </div>
+    </div>
+</div>

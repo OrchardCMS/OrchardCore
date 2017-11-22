@@ -1,0 +1,70 @@
+﻿@model OrchardCore.Roles.ViewModels.RolesViewModel
+
+<h1>@RenderTitleSegments(T["Roles"])</h1>
+
+<nav class="admin-toolbar">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Role"]</a>
+        </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0" autocomplete="off">
+        <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+    </form>
+</nav>
+
+<form asp-action="Index">
+    <ul id="roles" class="list-group">
+        @for (var i = 0; i < Model.RoleEntries.Count; i++)
+        {
+            <li class="list-group-item" data-role="@Model.RoleEntries[i].Name">
+                <div class="properties">
+                    <div class="related">
+                        <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@Model.RoleEntries[i].Name">@T["Edit"]</a>
+                        <a class="delete btn btn-danger btn-sm" asp-route-id="@Model.RoleEntries[i].Name" role="button" asp-action="Delete" itemprop="UnsafeUrl RemoveUrl">@T["Delete"]</a>
+                    </div>
+                    @*<input asp-for="RoleEntries[i].Selected" type="checkbox">*@
+                    @Model.RoleEntries[i].Name
+                </div>
+            </li>
+        }
+    </ul>
+</form>
+
+<script at="Foot" type="text/javascript">
+//<![CDATA[
+    $(function () {
+        var searchBox = $('#search-box');
+
+        // On Enter, edit the role if there is a single one
+        searchBox.keypress(function (event) {
+            if (event.which == 13) {
+
+                // Edit the role if there is a single filtered element
+                var visible = $('#roles > li:visible');
+                if (visible.length == 1) {
+                    window.location = visible.find('.edit').attr('href');
+                }
+                return false;
+            }
+        });
+
+        // On each keypress filter the list of roles
+        searchBox.keyup(function (e) {
+            var search = $(this).val().toLowerCase();
+            if (e.keyCode == 27 || search == '') {
+                searchBox.val('');
+                $('#roles > li').toggle(true);
+            }
+            else {
+                // On ESC, clear the search box and display all roles
+                $('#roles > li').each(function () {
+                    var role = $(this).data('role').toLowerCase();
+                    var found = role.indexOf(search) > -1;
+                    $(this).toggle(found);
+                });
+            }
+        });
+    })
+//]]>
+</script>

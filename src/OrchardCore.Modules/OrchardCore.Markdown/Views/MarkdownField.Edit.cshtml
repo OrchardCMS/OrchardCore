@@ -1,0 +1,21 @@
+﻿@model OrchardCore.Markdown.ViewModels.EditMarkdownFieldViewModel
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Markdown.Settings;
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<MarkdownFieldSettings>();
+}
+
+@{
+    // Morph the current shape to the correct editor shape based on its Editor property
+    var shape = Model as OrchardCore.DisplayManagement.IShape;
+    shape.Metadata.Alternates.Clear();
+    shape.Metadata.Type = "MarkdownField_Editor";
+
+    if (!String.IsNullOrEmpty(settings.Editor))
+    {
+        shape.Metadata.Alternates.Add($"MarkdownField_Editor__{settings.Editor}");
+    }
+}
+
+@await DisplayAsync(Model)

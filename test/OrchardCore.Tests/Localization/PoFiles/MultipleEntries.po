@@ -1,0 +1,9 @@
+#. "File {0} does not exist"
+msgctxt "OrchardCore.FileSystems.Media.FileSystemStorageProvider"
+msgid "File {0} does not exist"
+msgstr "Soubor {0} neexistuje"
+
+#. "Directory {0} does not exist"
+msgctxt "OrchardCore.FileSystems.Media.Directory"
+msgid "Directory {0} does not exist"
+msgstr "Složka {0} neexistuje"
