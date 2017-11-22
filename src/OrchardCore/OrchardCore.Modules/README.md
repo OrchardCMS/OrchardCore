@@ -1,16 +1,16 @@
 # Introduction
 
-The library Orchard Core Modules provides a mechanism to have a self contained modular system where you can opt in to a specific application framework and not have the design of you application be dictated to by such.
+The library Orchard Core Modules provides a mechanism to have a self-contained modular system where you can opt in to a specific application framework and not have the design of your application be dictated to by such.
 
 ## Getting started
 
 First, create a brand new web application.
 
-Within this new application we are initially going to focus `Startup.cs`.
+Within this new application we are initially going to focus on `Startup.cs`.
 
 Okay so first, let's open up `Startup.cs`.
 
-Within the ConfigureServices method add these lines:
+Within the `ConfigureServices` method, add these lines:
 
 ```c#
 services.AddModuleServices(configure => configure
@@ -18,7 +18,7 @@ services.AddModuleServices(configure => configure
 );
 ```
 
-Next, at the end of the Configure method, add these lines:
+Next, at the end of the `Configure` method, add this line:
 
 ```c#
 app.UseModules();
@@ -26,16 +26,16 @@ app.UseModules();
 
 That's it. Erm, wait, what? Okay so right now you must be thinking, well what the hell does this do? Good question.
 
-AddModuleServices will add the container middleware to you application pipeline, this means in short that It will look in to a folder called Modules within you application for all folders that contain the mainfest file `Module.txt`. IF you looked on the file system it would look like this:
+`AddModuleServices` will add the container middleware to your application pipeline; this means, in short, that it will look for a folder called `Modules` within your application, for all folders that contain the manifest file `Module.txt`. If you looked on the file system it would look like this:
 
 ```
-MyNewWebApplicaion
+MyNewWebApplication
   \ Modules
     \ Module1
     \ Module2
 ```
 
-Once it has found that manifest file, and said file is valid, it will then look for all classes that inherit off of `StartupBase`, instantiate them and then call the methods on here. An example of one is:
+Once it has found that manifest file, and said file is valid, it will then look for all classes that inherit from `StartupBase`, instantiate them and then call the methods on here. An example of one is:
 
 ```c#
 public class Startup : StartupBase
@@ -47,7 +47,7 @@ public class Startup : StartupBase
 }
 ```
 
-By doing this you allow your modules to be self contained, completely decoupled from the Hosting application.
+By doing this you allow your modules to be self-contained, completely decoupled from the Hosting application.
 
 !!! note
     If you drop a new module in, then you will need to restart the application for it to be found.
