@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders.Embedded;
 using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Modules
@@ -81,7 +83,22 @@ namespace OrchardCore.Modules
                 return null;
             }
 
-            return GetFileInfo(moduleId, fileName);
+            var fileInfo = GetFileInfo(moduleId, fileName);
+
+            if (fileInfo is NotFoundFileInfo)
+            {
+                var nameId = "obj/hidden/" + fileName + ".hidden";
+                fileInfo = GetFileInfo(moduleId, nameId);
+
+                if (!(fileInfo is NotFoundFileInfo))
+                {
+                    return new EmbeddedResourceFileInfo(Load(moduleId),
+                        moduleId + '.' + nameId.Replace("\\", "/").Trim('/').Replace("/", "."),
+                        Path.GetFileName(fileName), DateTimeOffset.UtcNow);
+                }
+            }
+
+            return fileInfo;
         }
 
         private static IFileInfo GetFileInfo(string assemblyName, string fileName)

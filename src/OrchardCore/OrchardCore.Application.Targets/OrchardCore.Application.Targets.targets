@@ -2,7 +2,7 @@
 
   <!-- 
     This file is packaged with "OrchardCore.Application.Targets.nupkg" in "./build" such that any
-    Application that references it will embedd in its assembly a list of its referenced modules.
+    Application that references it will embedd in its assembly a list of the referenced modules.
   -->
 
   <Target Name="EmbeddModuleNames" AfterTargets="AfterResolveReferences" Condition="'$(IgnorePackageAssets)' != 'true'">

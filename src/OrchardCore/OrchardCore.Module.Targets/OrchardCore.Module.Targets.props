@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
-    <Message Text="Generating manifest file: $(MSBuildProjectName)" Condition="!Exists('$(ModuleType).txt')" Importance="high" />
 
     <ItemGroup>
       <ModuleAssets Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RecursiveDir)%(Filename)%(Extension)" />
@@ -31,8 +30,10 @@
       Encoding="utf-8"
       ContinueOnError="true" />
 
+    <Message Text="Generating manifest file: $(MSBuildProjectName)" Importance="high" Condition="!Exists('$(ModuleType).txt')" />
+
     <WriteLinesToFile
-      File="$(ModuleType).txt"
+      File="obj\$(ModuleType).txt"
       Lines="$(ModuleManifest)"
       Condition="!Exists('$(ModuleType).txt')"
       Overwrite="true"
@@ -40,6 +41,22 @@
       ContinueOnError="true" />
 
     <ItemGroup>
+      <ModuleAssetsWithCultureId Include="@(ModuleAssetFiles)" Condition="$([System.String]::new('%(FileName)').LastIndexOf('.')) != -1 and
+        $([MSBuild]::Subtract($([System.String]::new('%(FileName)').Length), $([System.String]::new('%(FileName)').LastIndexOf('.')))) == 3" />
+    </ItemGroup>
+
+    <Copy
+      SourceFiles="@(ModuleAssetsWithCultureId)"
+      DestinationFiles="obj\hidden\%(RecursiveDir)%(Filename)%(Extension).hidden"
+      ContinueOnError="true" />
+
+    <ItemGroup>
+      <ModuleAssetsWithHiddenCulture Include="obj\id\**\*.hidden" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="@(ModuleAssetsWithHiddenCulture)" />
+      <EmbeddedResource Include="@(ModuleAssetFiles)" Exclude="@(ModuleAssetsWithCultureId)" />
       <EmbeddedResource Include="obj\module.assets.map">
         <Link>module.assets.map</Link>
       </EmbeddedResource>
@@ -47,12 +64,13 @@
         <Link>$(ModuleType).txt</Link>
       </EmbeddedResource>
     </ItemGroup>
+
+    <Message Text="%(ModuleAssetsWithHiddenCulture.RecursiveDir)%(Filename)%(Extension)" Importance="high" />
   </Target>
 
-  <ItemGroup>
-    <EmbeddedResource Include="@(ModuleAssetFiles)">
-    </EmbeddedResource>
-  </ItemGroup>
+  <Target Name="CleanModuleAssetsWithHiddenCulture" AfterTargets="Build;Clean">
+    <RemoveDir Directories="obj\hidden" ContinueOnError="true" />
+  </Target>
 
   <!-- Adds a custom .props file to the generated module package -->
 
