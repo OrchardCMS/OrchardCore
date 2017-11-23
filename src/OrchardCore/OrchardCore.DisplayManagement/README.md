@@ -11,7 +11,7 @@ placement rules.
 
 In the following example, we describe the placement for the `TextField` and `Parts_Contents_Publish` shapes.
 
-```csharp
+```json
 {
   "TextField": [ ... ],
   "Parts_Contents_Publish" : [ ... ]
@@ -39,7 +39,7 @@ Placement information consists of:
 - `shape` (Optional): A substitution shape type.
 
 
-```json
+```json hl_lines="4 5"
 {
   "TextField": [ 
     {
@@ -76,7 +76,7 @@ It's possible to manipulate a shape's metadata by using the `metadata` tag helpe
 
 Metadata tag helper example:
 
-```
+```xml
 <menu alias="alias:main-menu">
     <metadata display-type="summary">
         <clear-alternates />
@@ -104,7 +104,7 @@ Renders a Date and Time value using the timezone of the request.
 
 Tag helper example:
 
-```csharp
+```html
 <datetime utc="@contentItem.CreatedUtc" />
 ```
 
@@ -119,7 +119,7 @@ Renders a relative textual representation of a Date and Time interval.
 
 Tag helper example:
 
-```csharp
+```html
 <timespan utc="@contentItem.CreatedUtc" />
 ```
 

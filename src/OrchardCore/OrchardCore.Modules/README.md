@@ -12,7 +12,7 @@ Okay so first, let's open up `Startup.cs`.
 
 Within the `ConfigureServices` method, add these lines:
 
-```c#
+```csharp
 services.AddModuleServices(configure => configure
     .AddConfiguration(Configuration)
 );
@@ -20,7 +20,7 @@ services.AddModuleServices(configure => configure
 
 Next, at the end of the `Configure` method, add this line:
 
-```c#
+```csharp
 app.UseModules();
 ```
 
@@ -37,7 +37,7 @@ MyNewWebApplication
 
 Once it has found that manifest file, and said file is valid, it will then look for all classes that inherit from `StartupBase`, instantiate them and then call the methods on here. An example of one is:
 
-```c#
+```csharp
 public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
@@ -57,7 +57,7 @@ By default module discovery is linked to the `Modules` folder. This however can 
 
 Within the `Startup.cs` file in your host, within the `ConfigureServices` method, add:
 
-```c#
+```csharp
 services.AddExtensionLocation("SomeOtherFolderToLookIn");
 ```
 
@@ -66,7 +66,7 @@ By default the module manifest file is `Module.txt`. This however can be extende
 
 Within the `Startup.cs` file in your host, within the `ConfigureServices` method, add:
 
-```c#
+```csharp
 services.AddManifestDefinition("ManifestMe.txt", "module");
 ```
 
@@ -80,7 +80,7 @@ Within your hosting application add a reference to `OrchardCore.Mvc.Core`.
 
 Next, within `Startup.cs` modify the method `AddModuleServices` to look like this:
 
-```c#
+```csharp
 services.AddModuleServices(configure => configure
     .AddMvcModules(services.BuildServiceProvider())
     .AddConfiguration(Configuration)
@@ -97,7 +97,7 @@ Within your hosting application add a reference to `OrchardCore.Nancy.Core`
 
 Next, within `Startup.cs` modify the method `Configure` to look like this:
 
-```c#
+```csharp
 app.UseModules(modules => modules
     .UseNancyModules()
 );
