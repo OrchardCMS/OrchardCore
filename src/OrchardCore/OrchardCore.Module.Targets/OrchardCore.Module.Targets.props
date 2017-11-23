@@ -15,7 +15,7 @@
     <ModuleAssetFiles Include="**\*" Exclude="$(ExcludedFiles)" />
   </ItemGroup>
 
-  <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
+  <Target Name="EmbeddModuleAssetsFiles" AfterTargets="AfterResolveReferences">
 
     <ItemGroup>
       <ModuleAssets Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RecursiveDir)%(Filename)%(Extension)" />
@@ -65,7 +65,6 @@
       </EmbeddedResource>
     </ItemGroup>
 
-    <Message Text="%(ModuleAssetsWithHiddenCulture.RecursiveDir)%(Filename)%(Extension)" Importance="high" />
   </Target>
 
   <Target Name="CleanModuleAssetsWithHiddenCulture" AfterTargets="Build;Clean">

@@ -67,7 +67,7 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="CleanModuleRazorFiles" AfterTargets="_MvcRazorPrecompile">
+  <Target Name="CleanModuleRazorFiles" AfterTargets="_MvcRazorPrecompile;Clean">
     <RemoveDir Directories="Modules" ContinueOnError="true" />
   </Target>
 
