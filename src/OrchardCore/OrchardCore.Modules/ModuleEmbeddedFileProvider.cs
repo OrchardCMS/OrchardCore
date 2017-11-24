@@ -13,14 +13,15 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleEmbeddedFileProvider : IFileProvider
     {
-        private const string RootFolder = "Modules";
+        private const string Root = "Modules";
+        private const string RootWithTrailingSlash = "Modules/";
         private IHostingEnvironment _environment;
-        private string _subPath;
+        private string _contentPathWithTrailingSlash;
 
-        public ModuleEmbeddedFileProvider(IHostingEnvironment hostingEnvironment, string subPath = null)
+        public ModuleEmbeddedFileProvider(IHostingEnvironment hostingEnvironment, string contentPath = null)
         {
             _environment = hostingEnvironment;
-            _subPath = subPath?.Replace('\\', '/').Trim('/') ?? "";
+            _contentPathWithTrailingSlash = contentPath != null ? NormalizePath(contentPath) + '/' : "/";
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
@@ -30,44 +31,45 @@ namespace OrchardCore.Modules
                 return NotFoundDirectoryContents.Singleton;
             }
 
-            var subPath = subpath.Replace('\\', '/').Trim('/');
+            var subPath = NormalizePath(subpath);
 
-            if (_subPath.Length > 0)
+            if (_contentPathWithTrailingSlash.Length > 1)
             {
-                subPath = _subPath + '/' + subPath;
+                subPath = _contentPathWithTrailingSlash + subPath;
             }
 
             var entries = new List<IFileInfo>();
 
             if (subPath == "")
             {
-                entries.Add(new EmbeddedDirectoryInfo(RootFolder));
+                entries.Add(new EmbeddedDirectoryInfo(Root));
             }
-            else if (subPath == RootFolder)
+            else if (subPath == Root)
             {
                 entries.AddRange(_environment.GetModuleNames().Select(x => new EmbeddedDirectoryInfo(x)));
             }
-            else if (subPath.StartsWith(RootFolder))
+            else if (subPath.StartsWith(RootWithTrailingSlash))
             {
-                subPath = subPath.Substring(RootFolder.Length + 1);
+                subPath = subPath.Substring(RootWithTrailingSlash.Length);
 
                 var index = subPath.IndexOf("/");
-                var moduleId = index == -1 ? subPath : subPath.Substring(0, subPath.IndexOf("/"));
+                var moduleId = index == -1 ? subPath : subPath.Substring(0, index);
 
                 var folders = new HashSet<string>();
                 var paths = _environment.GetModuleAssets(moduleId);
 
-                foreach (var path in paths.Where(x => x.StartsWith(RootFolder + '/' + subPath)))
+                foreach (var path in paths.Where(x => x.StartsWith(RootWithTrailingSlash + subPath)))
                 {
-                    var trailingPath = path.Replace(RootFolder + '/' + subPath + '/', "");
+                    var trailingPath = path.Substring(RootWithTrailingSlash.Length + subPath.Length + 1);
+                    index = trailingPath.IndexOf('/');
 
-                    if (trailingPath.IndexOf('/') == -1)
+                    if (index == -1)
                     {
                         entries.Add(GetFileInfo(path));
                     }
                     else
                     {
-                        folders.Add(trailingPath.Substring(0, trailingPath.IndexOf('/')));
+                        folders.Add(trailingPath.Substring(0, index));
                     }
                 }
 
@@ -84,16 +86,16 @@ namespace OrchardCore.Modules
                 return new NotFoundFileInfo(subpath);
             }
 
-            var subPath = subpath.Replace('\\', '/').Trim('/');
+            var subPath = NormalizePath(subpath);
 
-            if (_subPath.Length > 0)
+            if (_contentPathWithTrailingSlash.Length > 1)
             {
-                subPath = _subPath + '/' + subPath;
+                subPath = _contentPathWithTrailingSlash + subPath;
             }
 
-            if (subPath.StartsWith(RootFolder + '/'))
+            if (subPath.StartsWith(RootWithTrailingSlash))
             {
-                subPath = subPath.Substring(RootFolder.Length + 1);
+                subPath = subPath.Substring(RootWithTrailingSlash.Length);
                 var index = subPath.IndexOf("/");
 
                 if (index != -1)
@@ -115,6 +117,11 @@ namespace OrchardCore.Modules
         public IChangeToken Watch(string filter)
         {
             return NullChangeToken.Singleton;
+        }
+
+        private string NormalizePath(string path)
+        {
+            return path.Replace('\\', '/').Trim('/');
         }
     }
 }
