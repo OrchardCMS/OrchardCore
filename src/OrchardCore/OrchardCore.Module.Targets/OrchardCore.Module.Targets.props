@@ -40,6 +40,13 @@
       Encoding="utf-8"
       ContinueOnError="true" />
 
+    <!-- ============================================================
+
+      When a file has this pattern "*.??.*", the ".??." part is considered as a culture id.
+      Then it is not embedded in the assembly and a satellite assembly is outputed
+      So, here we embedd this file using a different file name
+    -->
+
     <ItemGroup>
       <ModuleAssetsWithCultureId Include="@(EmbeddedResource)" Condition="$([System.String]::new('%(FileName)').LastIndexOf('.')) != -1 and
         $([MSBuild]::Subtract($([System.String]::new('%(FileName)').Length), $([System.String]::new('%(FileName)').LastIndexOf('.')))) == 3" />
@@ -47,16 +54,21 @@
 
     <Copy
       SourceFiles="@(ModuleAssetsWithCultureId)"
-      DestinationFiles="obj\hidden\%(RecursiveDir)%(Filename)%(Extension).hidden"
+      DestinationFiles="obj\hidden\%(RecursiveDir)%(Filename)%(Extension).hidden.culture"
       ContinueOnError="true" />
 
     <ItemGroup>
-      <ModuleAssetsWithHiddenCulture Include="obj\hidden\**\*.hidden" />
+      <ModuleAssetsWithHiddenCulture Include="obj\hidden\**\*.hidden.culture" />
     </ItemGroup>
 
     <ItemGroup>
       <EmbeddedResource Remove="@(ModuleAssetsWithCultureId)" />
       <EmbeddedResource Include="@(ModuleAssetsWithHiddenCulture)" />
+    </ItemGroup>
+
+    <!-- ============================================================ -->
+
+    <ItemGroup>
       <EmbeddedResource Include="obj\module.assets.map">
         <Link>module.assets.map</Link>
       </EmbeddedResource>
