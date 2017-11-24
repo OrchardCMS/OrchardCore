@@ -57,12 +57,6 @@ namespace OrchardCore.Modules
                 var folders = new HashSet<string>();
                 var paths = _environment.GetModuleAssets(moduleId);
 
-                if (subpath.Contains("OrchardCore.Demo"))
-                {
-                    var test = new EmbeddedFileProvider(_environment.LoadModuleAssembly(moduleId))
-                        .GetDirectoryContents("").Select(x => x.Name).ToList();
-                }
-
                 foreach (var path in paths.Where(x => x.StartsWith(RootFolder + '/' + subPath)))
                 {
                     var trailingPath = path.Replace(RootFolder + '/' + subPath + '/', "");

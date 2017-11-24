@@ -87,7 +87,7 @@ namespace OrchardCore.Modules
 
             if (fileInfo is NotFoundFileInfo)
             {
-                var hiddenFileName = "obj/hidden/" + fileName + ".hidden.culture";
+                var hiddenFileName = "obj/hidden/" + fileName + ".hidden";
                 fileInfo = GetFileInfo(moduleId, hiddenFileName);
 
                 if (!(fileInfo is NotFoundFileInfo))

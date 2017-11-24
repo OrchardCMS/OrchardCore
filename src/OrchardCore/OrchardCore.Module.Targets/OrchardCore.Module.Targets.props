@@ -12,14 +12,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="**\*" Exclude="$(ExcludedFiles)" />
+    <ModuleAssetFiles Include="**\*" Exclude="$(ExcludedFiles)" />
+    <ModuleAssetsWithoutCultureId Include="@(ModuleAssetFiles)" Exclude="**\*.??.*" />
+    <EmbeddedResource Include="@(ModuleAssetsWithoutCultureId)" />
   </ItemGroup>
 
-  <Target Name="EmbeddModuleAssetsFiles" AfterTargets="AfterResolveReferences">
-
+  <Target Name="EmbeddModuleAssetFiles" AfterTargets="AfterResolveReferences">
     <ItemGroup>
-      <ModuleAssets Include="Modules\$(MSBuildProjectName)\%(EmbeddedResource.RecursiveDir)%(Filename)%(Extension)" />
-      <ModuleAssets Include="Modules\$(MSBuildProjectName)\$(ModuleType).txt" />
+      <ModuleAssets Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RecursiveDir)%(Filename)%(Extension)" />
+      <ModuleAssets Include="Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')" />
     </ItemGroup>
 
     <WriteLinesToFile
@@ -40,35 +41,17 @@
       Encoding="utf-8"
       ContinueOnError="true" />
 
-    <!-- ============================================================
-
-      When a file has this pattern "*.??.*", the ".??." part is considered as a culture id.
-      Then it is not embedded in the assembly and a satellite assembly is outputed
-      So, here we embedd this file using a different file name
-    -->
-
     <ItemGroup>
-      <ModuleAssetsWithCultureId Include="@(EmbeddedResource)" Condition="$([System.String]::new('%(FileName)').LastIndexOf('.')) != -1 and
-        $([MSBuild]::Subtract($([System.String]::new('%(FileName)').Length), $([System.String]::new('%(FileName)').LastIndexOf('.')))) == 3" />
+      <ModuleAssetsWithCultureId Include="@(ModuleAssetFiles)" Exclude="@(ModuleAssetsWithoutCultureId)"  />
     </ItemGroup>
 
     <Copy
       SourceFiles="@(ModuleAssetsWithCultureId)"
-      DestinationFiles="obj\hidden\%(RecursiveDir)%(Filename)%(Extension).hidden.culture"
+      DestinationFiles="obj\hidden\%(RecursiveDir)%(Filename)%(Extension).hidden"
       ContinueOnError="true" />
 
     <ItemGroup>
-      <ModuleAssetsWithHiddenCulture Include="obj\hidden\**\*.hidden.culture" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Remove="@(ModuleAssetsWithCultureId)" />
-      <EmbeddedResource Include="@(ModuleAssetsWithHiddenCulture)" />
-    </ItemGroup>
-
-    <!-- ============================================================ -->
-
-    <ItemGroup>
+      <EmbeddedResource Include="obj\hidden\**\*.hidden" />
       <EmbeddedResource Include="obj\module.assets.map">
         <Link>module.assets.map</Link>
       </EmbeddedResource>
@@ -78,7 +61,11 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="CleanModuleAssetsWithHiddenCulture" AfterTargets="Build;Clean">
+  <Target Name="CleanModuleAssetHiddenFilesAfterBuild" AfterTargets="Build;Clean;">
+    <RemoveDir Directories="obj\hidden" ContinueOnError="true" />
+  </Target>
+
+  <Target Name="CleanModuleAssetHiddenFilesAfterPack" AfterTargets="Pack">
     <RemoveDir Directories="obj\hidden" ContinueOnError="true" />
   </Target>
 
