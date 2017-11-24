@@ -12,13 +12,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ModuleAssetFiles Include="**\*" Exclude="$(ExcludedFiles)" />
+    <EmbeddedResource Include="**\*" Exclude="$(ExcludedFiles)" />
   </ItemGroup>
 
   <Target Name="EmbeddModuleAssetsFiles" AfterTargets="AfterResolveReferences">
 
     <ItemGroup>
-      <ModuleAssets Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RecursiveDir)%(Filename)%(Extension)" />
+      <ModuleAssets Include="Modules\$(MSBuildProjectName)\%(EmbeddedResource.RecursiveDir)%(Filename)%(Extension)" />
       <ModuleAssets Include="Modules\$(MSBuildProjectName)\$(ModuleType).txt" />
     </ItemGroup>
 
@@ -41,7 +41,7 @@
       ContinueOnError="true" />
 
     <ItemGroup>
-      <ModuleAssetsWithCultureId Include="@(ModuleAssetFiles)" Condition="$([System.String]::new('%(FileName)').LastIndexOf('.')) != -1 and
+      <ModuleAssetsWithCultureId Include="@(EmbeddedResource)" Condition="$([System.String]::new('%(FileName)').LastIndexOf('.')) != -1 and
         $([MSBuild]::Subtract($([System.String]::new('%(FileName)').Length), $([System.String]::new('%(FileName)').LastIndexOf('.')))) == 3" />
     </ItemGroup>
 
@@ -51,12 +51,12 @@
       ContinueOnError="true" />
 
     <ItemGroup>
-      <ModuleAssetsWithHiddenCulture Include="obj\id\**\*.hidden" />
+      <ModuleAssetsWithHiddenCulture Include="obj\hidden\**\*.hidden" />
     </ItemGroup>
 
     <ItemGroup>
+      <EmbeddedResource Remove="@(ModuleAssetsWithCultureId)" />
       <EmbeddedResource Include="@(ModuleAssetsWithHiddenCulture)" />
-      <EmbeddedResource Include="@(ModuleAssetFiles)" Exclude="@(ModuleAssetsWithCultureId)" />
       <EmbeddedResource Include="obj\module.assets.map">
         <Link>module.assets.map</Link>
       </EmbeddedResource>
@@ -64,7 +64,6 @@
         <Link>$(ModuleType).txt</Link>
       </EmbeddedResource>
     </ItemGroup>
-
   </Target>
 
   <Target Name="CleanModuleAssetsWithHiddenCulture" AfterTargets="Build;Clean">

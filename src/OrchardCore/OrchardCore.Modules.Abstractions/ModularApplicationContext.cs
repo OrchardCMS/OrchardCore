@@ -87,13 +87,13 @@ namespace OrchardCore.Modules
 
             if (fileInfo is NotFoundFileInfo)
             {
-                var nameId = "obj/hidden/" + fileName + ".hidden";
-                fileInfo = GetFileInfo(moduleId, nameId);
+                var hiddenFileName = "obj/hidden/" + fileName + ".hidden";
+                fileInfo = GetFileInfo(moduleId, hiddenFileName);
 
                 if (!(fileInfo is NotFoundFileInfo))
                 {
-                    return new EmbeddedResourceFileInfo(Load(moduleId),
-                        moduleId + '.' + nameId.Replace("\\", "/").Trim('/').Replace("/", "."),
+                    return new EmbeddedResourceFileInfo(Load(moduleId), moduleId + '.'
+                        + hiddenFileName.Replace('\\', '.').Replace('/', '.'),
                         Path.GetFileName(fileName), DateTimeOffset.UtcNow);
                 }
             }
