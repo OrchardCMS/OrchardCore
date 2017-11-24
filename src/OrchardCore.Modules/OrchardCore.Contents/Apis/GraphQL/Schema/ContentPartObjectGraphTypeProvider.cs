@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
@@ -19,7 +20,17 @@ namespace OrchardCore.Contents.Apis.GraphQL.Schema
         {
             foreach (var contentPart in _contentParts)
             {
-                schema.RegisterType(new ContentPartAutoRegisteringObjectGraphType(contentPart));
+                var input = new InputContentPartAutoRegisteringObjectGraphType(contentPart);
+                var filter = new FilterContentPartAutoRegisteringObjectGraphType(contentPart);
+
+                if (input.Fields.Any())
+                {
+                    schema.RegisterType(input);
+                }
+                if (filter.Fields.Any())
+                {
+                    schema.RegisterType(filter);
+                }
             }
         }
     }

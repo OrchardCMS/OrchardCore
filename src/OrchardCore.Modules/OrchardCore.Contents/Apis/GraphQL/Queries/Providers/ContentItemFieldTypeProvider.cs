@@ -61,14 +61,14 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
 
                     if (contentPart != null)
                     {
-                        var graphType = new ContentPartAutoRegisteringObjectGraphType(contentPart);
+                        var filterGraphType = new FilterContentPartAutoRegisteringObjectGraphType(contentPart);
 
                         // Add Field needs to be like Content Item and Content Items.... 
                         // so you can filter by blog...
                         var fieldType = new FieldType
                         {
                             Name = name,
-                            ResolvedType = graphType,
+                            ResolvedType = filterGraphType,
                             Resolver = new FuncFieldResolver<object>(context => {
                                 if (context.Source == null)
                                 {
@@ -79,16 +79,22 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
 
                                 return ((ContentItem)context.Source).Get(contentPartType, contentPartType.Name);
                             }),
-                            Type = graphType.GetType(),
+                            Type = filterGraphType.GetType()
                         };
 
-                        fieldType.Metadata.Add("contentPartType", contentPart.GetType());
+                        if (filterGraphType.Fields.Any())
+                        {
+                            fieldType.Metadata.Add("contentPartType", contentPart.GetType());
 
-                        typeType.AddField(fieldType);
+                            typeType.AddField(fieldType);
+                        }
 
                         // http://facebook.github.io/graphql/October2016/#sec-Input-Object-Values
-                        queryArguments.Add(new QueryArgument(graphType) { Name = name });
-
+                        var inputGraphType = new InputContentPartAutoRegisteringObjectGraphType(contentPart);
+                        if (inputGraphType.Fields.Any())
+                        {
+                            queryArguments.Add(new QueryArgument(inputGraphType.GetType()) { Name = name, ResolvedType = inputGraphType });
+                        }
                         /*
                             query {
                                 blog(autoroutePart: { alias: "/blah" } ) {
