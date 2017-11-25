@@ -8,6 +8,7 @@
   <PropertyGroup>
     <ModuleManifest>Name: $(MSBuildProjectName)</ModuleManifest>
     <ExcludedFiles>**\*.cs;*.csproj*;obj\**;bin\**;Assets.json;Assets\**;Properties\**;*.props;*.targets;.vs\**</ExcludedFiles>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
     <ModuleType Condition="'$(ModuleType)' == ''">Module</ModuleType>
   </PropertyGroup>
 
@@ -50,7 +51,13 @@
       DestinationFiles="obj\hidden\%(RecursiveDir)%(Filename)%(Extension).hidden"
       ContinueOnError="true" />
 
+    <RemoveDuplicates Inputs="@(EmbeddedResource)">
+      <Output TaskParameter="Filtered" ItemName="DeduplicatedEmbeddedResource"/>
+    </RemoveDuplicates>
+
     <ItemGroup>
+      <EmbeddedResource Remove="@(EmbeddedResource)" />
+      <EmbeddedResource Include="@(DeduplicatedEmbeddedResource)" />
       <EmbeddedResource Include="obj\hidden\**\*.hidden" />
       <EmbeddedResource Include="obj\module.assets.map">
         <Link>module.assets.map</Link>
