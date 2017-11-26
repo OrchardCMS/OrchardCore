@@ -24,9 +24,8 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries
             Type = typeof(ListGraphType<ContentItemType>);
 
             Arguments = new QueryArguments(
-                new QueryArgument<IntGraphType> { Name = "id", Description = "id of the content item" },
                 new QueryArgument<BooleanGraphType> { Name = "published", Description = "is the content item published", DefaultValue = true },
-                new QueryArgument<StringGraphType> { Name = "latest", Description = "is the content item the latest version", DefaultValue = true },
+                new QueryArgument<BooleanGraphType> { Name = "latest", Description = "is the content item the latest version", DefaultValue = true },
                 new QueryArgument<IntGraphType> { Name = "number", Description = "version number, 1,2,3 etc" },
                 new QueryArgument<StringGraphType> { Name = "contentType", Description = "type of content item" },
                 new QueryArgument<StringGraphType> { Name = "contentItemId", Description = "same as id" },
@@ -53,12 +52,6 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries
                     q.Published == isPublished &&
                     q.Latest == isLatest);
                 
-                if (context.HasPopulatedArgument("id"))
-                {
-                    var value = context.GetArgument<int>("id");
-                    query = query.Where(q => q.Id == value);
-                }
-
                 if (context.HasPopulatedArgument("number"))
                 {
                     var value = context.GetArgument<int>("number");
