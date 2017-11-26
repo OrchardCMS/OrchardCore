@@ -1,12 +1,13 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Apis.GraphQL.Arguments;
 using OrchardCore.Apis.GraphQL.Mutations;
 using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.Contents.Apis.GraphQL.Mutations.Types;
 using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
 using OrchardCore.Modules;
 
@@ -21,16 +22,17 @@ namespace OrchardCore.Contents.Apis.GraphQL.Mutations
         {
             Name = "CreateContentItem";
 
-            Arguments = new AutoRegisteringQueryArguments<ContentItem>
+            Arguments = new QueryArguments
             {
-                new QueryArgument<StringGraphType> { Name = "ContentParts" }
+                new QueryArgument<NonNullGraphType<CreateContentItemInputType>> { Name = "ContentItem" }
             };
 
             Type = typeof(ContentItemType);
 
             Resolver = new SlowFuncFieldResolver<object, Task<object>>(async (context) => {
-                var contentItemFabrication = context.MapArgumentsTo<ContentItem>();
-                var contentParts = JObject.Parse(context.GetArgument<string>("ContentParts"));
+                var contentItemFabrication = context.GetArgument<ContentItemInput>("ContentItem");
+                
+                var contentParts = JObject.FromObject(contentItemFabrication.ContentParts);
 
                 var contentItem = contentManager.New(contentItemFabrication.ContentType);
 
@@ -53,6 +55,23 @@ namespace OrchardCore.Contents.Apis.GraphQL.Mutations
 
                 return contentItem;
             });
+        }
+
+        private class ContentItemInput
+        {
+            public string ContentType { get; set; }
+            public string Author { get; set; }
+            public string Owner { get; set; }
+            public bool Published { get; set; }
+            public bool Latest { get; set; }
+
+            public IDictionary<string, object> ContentParts { get; set; } = new Dictionary<string, object>();
+        }
+
+        public class ContentPartInput
+        {
+            public string Name { get; set; }
+            public string Content { get; set; }
         }
     }
 }

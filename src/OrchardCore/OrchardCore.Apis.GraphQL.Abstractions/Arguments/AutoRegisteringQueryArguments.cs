@@ -7,8 +7,14 @@ namespace OrchardCore.Apis.GraphQL.Arguments
 {
     public class AutoRegisteringQueryArguments<TSourceType> : QueryArguments
     {
-        public AutoRegisteringQueryArguments(string[] propertiesToExclude = null)
+        public AutoRegisteringQueryArguments(
+            string[] requiredProperties = null,
+            string[] propertiesToExclude = null)
         {
+            if (requiredProperties == null)
+            {
+                requiredProperties = new string[0];
+            }
             if (propertiesToExclude == null)
             {
                 propertiesToExclude = new string[0];
@@ -24,7 +30,7 @@ namespace OrchardCore.Apis.GraphQL.Arguments
                     continue;
                 }
 
-                Add(new QueryArgument(propertyInfo.PropertyType.GetGraphTypeFromType(true)) { Name = propertyInfo.Name });
+                Add(new QueryArgument(propertyInfo.PropertyType.GetGraphTypeFromType(!requiredProperties.Contains(propertyInfo.Name))) { Name = propertyInfo.Name });
             }
         }
     }

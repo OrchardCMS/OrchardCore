@@ -3,6 +3,7 @@ using OrchardCore.Apis;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Contents.Apis.GraphQL.Mutations;
+using OrchardCore.Contents.Apis.GraphQL.Mutations.Types;
 using OrchardCore.Contents.Apis.GraphQL.Queries;
 using OrchardCore.Contents.Apis.GraphQL.Queries.Providers;
 using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
@@ -22,6 +23,8 @@ namespace OrchardCore.Contents.Apis.GraphQL
             services.AddGraphQueryType<ContentItemsQuery>();
             services.AddScoped<ContentItemType>();
             services.AddScoped<DeletionStatusObjectGraphType>();
+            services.AddScoped<CreateContentItemInputType>();
+            services.AddScoped<ContentPartsInputType>();
 
             services.AddScoped<IDynamicQueryFieldTypeProvider, ContentItemFieldTypeProvider>();
 

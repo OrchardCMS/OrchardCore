@@ -1,22 +1,21 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Contents.Apis.GraphQL.Queries.Types
 {
-    public class ContentPartAutoRegisteringObjectGraphType : ObjectGraphType
+    public class InputContentPartAutoRegisteringObjectGraphType : InputObjectGraphType
     {
-        public ContentPartAutoRegisteringObjectGraphType(ContentPart contentPart)
+        public InputContentPartAutoRegisteringObjectGraphType(ContentPart contentPart)
         {
             var type = contentPart.GetType();
 
-            Name = type.Name;
-
+            Name = type.Name + "Input";
+            
             var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                             .Where(p => p.PropertyType.GetTypeInfo().IsValueType || p.PropertyType == typeof(string))
                             .Where(p => !p.PropertyType.IsEnum);
@@ -28,7 +27,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Types
                 var field = new FieldType
                 {
                     Type = graphType,
-                    Name = propertyInfo.Name,
+                    Name = propertyInfo.Name.ToGraphQLStringFormat(),
                     ResolvedType = graphType.BuildNamedType(),
                     Resolver = new FuncFieldResolver<object, object>((context) =>
                     {
@@ -40,10 +39,6 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Types
 
                 AddField(field);
             }
-
-            IsTypeOf = obj => obj.GetType() == type;
-            
-            //Interface<ContentPartInterfaceType>();
         }
     }
 }

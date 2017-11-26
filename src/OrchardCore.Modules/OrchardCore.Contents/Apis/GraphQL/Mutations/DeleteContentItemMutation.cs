@@ -13,7 +13,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Mutations
             Name = "DeleteContentItem";
 
             Arguments = new QueryArguments(
-                new QueryArgument<StringGraphType> { Name = "ContentItemId" }
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ContentItemId" }
             );
 
             Type = typeof(DeletionStatusObjectGraphType);
@@ -23,7 +23,10 @@ namespace OrchardCore.Contents.Apis.GraphQL.Mutations
 
                 var contentItem = await contentManager.GetAsync(contentItemId);
 
-                await contentManager.RemoveAsync(contentItem);
+                if (contentItem != null)
+                {
+                    await contentManager.RemoveAsync(contentItem);
+                }
 
                 return new DeletionStatus { Status = "Ok" };
             });

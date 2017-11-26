@@ -61,7 +61,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
 
                     if (contentPart != null)
                     {
-                        var filterGraphType = new FilterContentPartAutoRegisteringObjectGraphType(contentPart);
+                        var filterGraphType = new ContentPartAutoRegisteringObjectGraphType(contentPart);
 
                         // Add Field needs to be like Content Item and Content Items.... 
                         // so you can filter by blog...

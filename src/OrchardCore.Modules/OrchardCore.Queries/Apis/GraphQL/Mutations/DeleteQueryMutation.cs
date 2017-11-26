@@ -19,7 +19,7 @@ namespace OrchardCore.Queries.Apis.GraphQL.Mutations
             Name = "DeleteQuery";
 
             Arguments = new QueryArguments(
-                new QueryArgument<StringGraphType> { Name = "Name" }
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "Name" }
                 );
 
             Type = typeof(DeletionStatusObjectGraphType);

@@ -9,21 +9,6 @@
        debug-src="/OrchardCore.Apis.GraphQL/Styles/graphiql.css">
 </style>
 
-<div id="graphiql">Loading ...</div>
+<h1>GraphQL Schema</h1>
 
-@*<script type="text/javascript" at="Foot">
-    import React from 'react';
-    import ReactDOM from 'react-dom';
-    import GraphiQL from 'graphiql';
-    import axios from 'axios';
-
-    function graphQLFetcher(graphQLParams) {
-      return axios({
-        method: 'POST',
-        url: window.location.origin + '/api/graphql',
-        data: graphQLParams
-      }).then(resp => resp.data);
-    }
-
-    ReactDOM.render(<GraphiQL fetcher={graphQLFetcher}/>, document.getElementById('graphiql'));
-</script>*@
+<div id="graphiql" style="height:800px;">Loading ...</div>

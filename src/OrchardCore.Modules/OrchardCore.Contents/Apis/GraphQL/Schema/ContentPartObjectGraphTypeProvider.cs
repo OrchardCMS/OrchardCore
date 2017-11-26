@@ -21,7 +21,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Schema
             foreach (var contentPart in _contentParts)
             {
                 var input = new InputContentPartAutoRegisteringObjectGraphType(contentPart);
-                var filter = new FilterContentPartAutoRegisteringObjectGraphType(contentPart);
+                var filter = new ContentPartAutoRegisteringObjectGraphType(contentPart);
 
                 if (input.Fields.Any())
                 {

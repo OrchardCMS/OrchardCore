@@ -19,7 +19,9 @@ namespace OrchardCore.Queries.Apis.GraphQL.Mutations
 
             Name = "Create" + typeof(TSourceType).Name;
 
-            Arguments = new AutoRegisteringQueryArguments<TSourceType>(new[] { "Source" });
+            Arguments = new AutoRegisteringQueryArguments<TSourceType>(
+                new[] { "Name" },
+                new[] { "Source" });
 
             Type = typeof(CreateQueryOutcomeType<TSourceType>);
 
