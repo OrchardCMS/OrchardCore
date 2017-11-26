@@ -5,7 +5,7 @@
     Application that references it will embedd in its assembly a list of the referenced modules.
   -->
 
-  <Target Name="EmbeddModuleNames" AfterTargets="AfterResolveReferences" Condition="'$(IgnorePackageAssets)' != 'true'">
+  <Target Name="EmbeddModuleNames" AfterTargets="AfterResolveReferences">
 
     <ItemGroup>
       <ModuleProjectReferences

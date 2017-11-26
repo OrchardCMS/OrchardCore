@@ -7,18 +7,23 @@
 
   <PropertyGroup>
     <ModuleManifest>Name: $(MSBuildProjectName)</ModuleManifest>
-    <ExcludedFiles>**\*.cs;*.csproj*;obj\**;bin\**;Assets.json;Assets\**;Properties\**;*.props;*.targets;.vs\**</ExcludedFiles>
+    <ModuleAssetExcludes>**\*.cs;*.csproj*;obj\**;bin\**;Assets.json;Assets\**;Properties\**;*.props;*.targets;**/.*/**</ModuleAssetExcludes>
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
     <ModuleType Condition="'$(ModuleType)' == ''">Module</ModuleType>
   </PropertyGroup>
 
   <ItemGroup>
-    <ModuleAssetFiles Include="**\*" Exclude="$(ExcludedFiles)" />
-    <ModuleAssetsWithoutCultureId Include="@(ModuleAssetFiles)" Exclude="**\*.??.*" />
-    <EmbeddedResource Include="@(ModuleAssetsWithoutCultureId)" />
+    <EmbeddedResource Include="**\*" Exclude="$(ModuleAssetExcludes)" />
   </ItemGroup>
 
-  <Target Name="EmbeddModuleAssetFiles" AfterTargets="AfterResolveReferences">
+  <ItemGroup>
+    <EmbeddedResource Remove="@(EmbeddedResource)" />
+    <ModuleAssetFiles Include="**\*" Exclude="$(ModuleAssetExcludes)" />
+    <ModuleAssetsWithNoCulture Include="@(ModuleAssetFiles)" Exclude="**\*.??.*" />
+    <EmbeddedResource Include="@(ModuleAssetsWithNoCulture)" />
+  </ItemGroup>
+
+  <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
     <ItemGroup>
       <ModuleAssets Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RecursiveDir)%(Filename)%(Extension)" />
       <ModuleAssets Include="Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')" />
@@ -43,22 +48,18 @@
       ContinueOnError="true" />
 
     <ItemGroup>
-      <ModuleAssetsWithCultureId Include="@(ModuleAssetFiles)" Exclude="@(ModuleAssetsWithoutCultureId)"  />
+      <ModuleAssetsWithCulture Include="@(ModuleAssetFiles)" Exclude="@(ModuleAssetsWithNoCulture)"  />
     </ItemGroup>
 
     <Copy
-      SourceFiles="@(ModuleAssetsWithCultureId)"
-      DestinationFiles="obj\hidden\%(RecursiveDir)%(Filename)%(Extension).hidden"
+      SourceFiles="@(ModuleAssetsWithCulture)"
+      DestinationFiles="obj\assets\%(RecursiveDir)%(Filename)%(Extension).assets"
       ContinueOnError="true" />
-
-    <RemoveDuplicates Inputs="@(EmbeddedResource)">
-      <Output TaskParameter="Filtered" ItemName="DeduplicatedEmbeddedResource"/>
-    </RemoveDuplicates>
 
     <ItemGroup>
       <EmbeddedResource Remove="@(EmbeddedResource)" />
-      <EmbeddedResource Include="@(DeduplicatedEmbeddedResource)" />
-      <EmbeddedResource Include="obj\hidden\**\*.hidden" />
+      <EmbeddedResource Include="@(ModuleAssetsWithNoCulture)" />
+      <EmbeddedResource Include="obj\assets\**\*.assets" />
       <EmbeddedResource Include="obj\module.assets.map">
         <Link>module.assets.map</Link>
       </EmbeddedResource>
@@ -68,12 +69,12 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="CleanModuleAssetHiddenFilesAfterBuild" AfterTargets="Build;Clean;">
-    <RemoveDir Directories="obj\hidden" ContinueOnError="true" />
+  <Target Name="CleanModuleAssetsAfterBuild" AfterTargets="Build;Clean;">
+    <RemoveDir Directories="obj\assets" ContinueOnError="true" />
   </Target>
 
-  <Target Name="CleanModuleAssetHiddenFilesAfterPack" AfterTargets="Pack">
-    <RemoveDir Directories="obj\hidden" ContinueOnError="true" />
+  <Target Name="CleanModuleAssetsAfterPack" AfterTargets="Pack">
+    <RemoveDir Directories="obj\assets" ContinueOnError="true" />
   </Target>
 
   <!-- Adds a custom .props file to the generated module package -->
