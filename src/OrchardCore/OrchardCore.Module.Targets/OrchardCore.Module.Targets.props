@@ -14,16 +14,12 @@
 
   <ItemGroup>
     <EmbeddedResource Include="**\*" Exclude="$(ModuleAssetExcludes)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="@(EmbeddedResource)" />
     <ModuleAssetFiles Include="**\*" Exclude="$(ModuleAssetExcludes)" />
     <ModuleAssetsWithNoCulture Include="@(ModuleAssetFiles)" Exclude="**\*.??.*" />
-    <EmbeddedResource Include="@(ModuleAssetsWithNoCulture)" />
   </ItemGroup>
 
   <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
+
     <ItemGroup>
       <ModuleAssets Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RecursiveDir)%(Filename)%(Extension)" />
       <ModuleAssets Include="Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')" />
@@ -54,6 +50,7 @@
     <Copy
       SourceFiles="@(ModuleAssetsWithCulture)"
       DestinationFiles="obj\assets\%(RecursiveDir)%(Filename)%(Extension).assets"
+      Condition="'@(ModuleAssetsWithCulture)' != ''"
       ContinueOnError="true" />
 
     <ItemGroup>
@@ -69,12 +66,29 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="CleanModuleAssetsAfterBuild" AfterTargets="Build;Clean;">
-    <RemoveDir Directories="obj\assets" ContinueOnError="true" />
+  <Target Name="RemoveModuleCultureAssembliesForPack" AfterTargets="_CalculateInputsOutputsForPack">
+    <ItemGroup>
+      <_BuildOutputInPackage Remove="@(_BuildOutputInPackage)"
+        Condition="'%(FileName)%(Extension)' == '$(MSBuildProjectName).resources.dll'" />
+    </ItemGroup>
   </Target>
 
-  <Target Name="CleanModuleAssetsAfterPack" AfterTargets="Pack">
-    <RemoveDir Directories="obj\assets" ContinueOnError="true" />
+  <Target Name="CleanModuleAssetsAfterBuild" AfterTargets="Build" Condition="Exists('obj\assets')">
+    <ItemGroup><ModuleAssetsToClean Include="obj\assets\**" /></ItemGroup>
+    <Delete Files="@(ModuleAssetsToClean)" ContinueOnError="true" />
+    <RemoveDir Directories="obj\assets\%(ModuleAssetsToClean.RecursiveDir);obj\assets" ContinueOnError="true" />
+  </Target>
+
+  <Target Name="CleanModuleAssetsAfterClean" AfterTargets="Clean" Condition="Exists('obj\assets')">
+    <ItemGroup><ModuleAssetsToClean Include="obj\assets\**" /></ItemGroup>
+    <Delete Files="@(ModuleAssetsToClean)" ContinueOnError="true" />
+    <RemoveDir Directories="obj\assets\%(ModuleAssetsToClean.RecursiveDir);obj\assets" ContinueOnError="true" />
+  </Target>
+
+  <Target Name="CleanModuleAssetsAfterPack" AfterTargets="Pack" Condition="Exists('obj\assets')">
+    <ItemGroup><ModuleAssetsToClean Include="obj\assets\**" /></ItemGroup>
+    <Delete Files="@(ModuleAssetsToClean)" ContinueOnError="true" />
+    <RemoveDir Directories="obj\assets\%(ModuleAssetsToClean.RecursiveDir);obj\assets" ContinueOnError="true" />
   </Target>
 
   <!-- Adds a custom .props file to the generated module package -->

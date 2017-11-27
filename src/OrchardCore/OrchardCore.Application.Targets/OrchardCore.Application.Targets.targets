@@ -53,11 +53,13 @@
     <Copy
       SourceFiles="@(ModulePackageRazorFiles)"
       DestinationFolder="Modules\%(RecursiveDir)"
+      Condition="'@(ModulePackageRazorFiles)' != ''"
       ContinueOnError="true" />
 
     <Copy
       SourceFiles="@(ModuleProjectRazorFiles)"
       DestinationFolder="Modules\%(ProjectName)\%(RecursiveDir)"
+      Condition="'@(ModuleProjectRazorFiles)' != ''"
       ContinueOnError="true" />
 
     <ItemGroup Condition="'@(MvcRazorFilesToCompile)' == ''">
@@ -67,8 +69,16 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="CleanModuleRazorFiles" AfterTargets="_MvcRazorPrecompile;Clean">
-    <RemoveDir Directories="Modules" ContinueOnError="true" />
+  <Target Name="CleanModuleRazorFilesAfterCompile" AfterTargets="_MvcRazorPrecompile" Condition="Exists('Modules')">
+    <ItemGroup><ModuleAssetsToClean Include="Modules\**" /></ItemGroup>
+    <Delete Files="@(ModuleAssetsToClean)" ContinueOnError="true" />
+    <RemoveDir Directories="Modules\%(ModuleAssetsToClean.RecursiveDir);Modules" ContinueOnError="true" />
+  </Target>
+
+  <Target Name="CleanModuleRazorFilesAfterClean" AfterTargets="Clean" Condition="Exists('Modules')">
+    <ItemGroup><ModuleAssetsToClean Include="Modules\**" /></ItemGroup>
+    <Delete Files="@(ModuleAssetsToClean)" ContinueOnError="true" />
+    <RemoveDir Directories="Modules\%(ModuleAssetsToClean.RecursiveDir);Modules" ContinueOnError="true" />
   </Target>
 
   <PropertyGroup>
