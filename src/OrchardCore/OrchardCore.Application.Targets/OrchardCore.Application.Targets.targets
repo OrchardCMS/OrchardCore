@@ -70,15 +70,15 @@
   </Target>
 
   <Target Name="CleanModuleRazorFilesAfterCompile" AfterTargets="_MvcRazorPrecompile" Condition="Exists('Modules')">
-    <ItemGroup><ModuleAssetsToClean Include="Modules\**" /></ItemGroup>
-    <Delete Files="@(ModuleAssetsToClean)" ContinueOnError="true" />
-    <RemoveDir Directories="Modules\%(ModuleAssetsToClean.RecursiveDir);Modules" ContinueOnError="true" />
+    <ItemGroup><ModuleRazorFilesToCleanAfterCompile Include="Modules\**" /></ItemGroup>
+    <Delete Files="@(ModuleRazorFilesToCleanAfterCompile)" ContinueOnError="true" />
+    <RemoveDir Directories="Modules\%(ModuleRazorFilesToCleanAfterCompile.RecursiveDir);Modules" ContinueOnError="true" />
   </Target>
 
   <Target Name="CleanModuleRazorFilesAfterBuild" AfterTargets="Build;Clean" Condition="Exists('Modules')">
-    <ItemGroup><ModuleAssetsToClean Include="Modules\**" /></ItemGroup>
-    <Delete Files="@(ModuleAssetsToClean)" ContinueOnError="true" />
-    <RemoveDir Directories="Modules\%(ModuleAssetsToClean.RecursiveDir);Modules" ContinueOnError="true" />
+    <ItemGroup><ModuleRazorFilesToCleanAfterBuild Include="Modules\**" /></ItemGroup>
+    <Delete Files="@(ModuleRazorFilesToCleanAfterBuild)" ContinueOnError="true" />
+    <RemoveDir Directories="Modules\%(ModuleRazorFilesToCleanAfterBuild.RecursiveDir);Modules" ContinueOnError="true" />
   </Target>
 
   <PropertyGroup>
