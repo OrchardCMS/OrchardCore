@@ -15,8 +15,21 @@
   <ItemGroup>
     <EmbeddedResource Include="**\*" Exclude="$(ModuleAssetExcludes)" />
     <ModuleAssetFiles Include="**\*" Exclude="$(ModuleAssetExcludes)" />
-    <ModuleAssetsWithNoCulture Include="@(ModuleAssetFiles)" Exclude="**\*.??.*" />
   </ItemGroup>
+
+  <Target Name="UpdateModuleManifestResourceNames" AfterTargets="CreateManifestResourceNames">
+    <ItemGroup>
+      <EmbeddedResource Update="@(EmbeddedResource)"  Condition="'%(EmbeddedResource.WithCulture)' == 'true'">
+        <ManifestResourceName>$([System.String]::new('$(MSBuildProjectName)\%(RelativeDir)%(FileName)%(Extension)').Replace('\', '.').Replace('/', '.'))</ManifestResourceName>
+      </EmbeddedResource>
+      <EmbeddedResource Update="@(EmbeddedResource)"  Condition="'%(EmbeddedResource.WithCulture)' == 'true'">
+        <LogicalName>%(ManifestResourceName)</LogicalName>
+        <Link>%(ManifestResourceName)</Link>
+        <WithCulture>false</WithCulture>
+        <Culture></Culture>
+      </EmbeddedResource>
+    </ItemGroup>
+  </Target>
 
   <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
 
@@ -44,19 +57,8 @@
       ContinueOnError="true" />
 
     <ItemGroup>
-      <ModuleAssetsWithCulture Include="@(ModuleAssetFiles)" Exclude="@(ModuleAssetsWithNoCulture)"  />
-    </ItemGroup>
-
-    <Copy
-      SourceFiles="@(ModuleAssetsWithCulture)"
-      DestinationFiles="obj\assets\%(RecursiveDir)%(Filename)%(Extension).assets"
-      Condition="'@(ModuleAssetsWithCulture)' != ''"
-      ContinueOnError="true" />
-
-    <ItemGroup>
       <EmbeddedResource Remove="@(EmbeddedResource)" />
-      <EmbeddedResource Include="@(ModuleAssetsWithNoCulture)" />
-      <EmbeddedResource Include="obj\assets\**\*.assets" />
+      <EmbeddedResource Include="@(ModuleAssetFiles)" />
       <EmbeddedResource Include="obj\module.assets.map">
         <Link>module.assets.map</Link>
       </EmbeddedResource>
@@ -64,31 +66,6 @@
         <Link>$(ModuleType).txt</Link>
       </EmbeddedResource>
     </ItemGroup>
-  </Target>
-
-  <Target Name="RemoveModuleCultureAssembliesForPack" AfterTargets="_CalculateInputsOutputsForPack">
-    <ItemGroup>
-      <_BuildOutputInPackage Remove="@(_BuildOutputInPackage)"
-        Condition="'%(FileName)%(Extension)' == '$(MSBuildProjectName).resources.dll'" />
-    </ItemGroup>
-  </Target>
-
-  <Target Name="CleanModuleAssetsAfterBuild" AfterTargets="Build" Condition="Exists('obj\assets')">
-    <ItemGroup><ModuleAssetsToClean Include="obj\assets\**" /></ItemGroup>
-    <Delete Files="@(ModuleAssetsToClean)" ContinueOnError="true" />
-    <RemoveDir Directories="obj\assets\%(ModuleAssetsToClean.RecursiveDir);obj\assets" ContinueOnError="true" />
-  </Target>
-
-  <Target Name="CleanModuleAssetsAfterClean" AfterTargets="Clean" Condition="Exists('obj\assets')">
-    <ItemGroup><ModuleAssetsToClean Include="obj\assets\**" /></ItemGroup>
-    <Delete Files="@(ModuleAssetsToClean)" ContinueOnError="true" />
-    <RemoveDir Directories="obj\assets\%(ModuleAssetsToClean.RecursiveDir);obj\assets" ContinueOnError="true" />
-  </Target>
-
-  <Target Name="CleanModuleAssetsAfterPack" AfterTargets="Pack" Condition="Exists('obj\assets')">
-    <ItemGroup><ModuleAssetsToClean Include="obj\assets\**" /></ItemGroup>
-    <Delete Files="@(ModuleAssetsToClean)" ContinueOnError="true" />
-    <RemoveDir Directories="obj\assets\%(ModuleAssetsToClean.RecursiveDir);obj\assets" ContinueOnError="true" />
   </Target>
 
   <!-- Adds a custom .props file to the generated module package -->

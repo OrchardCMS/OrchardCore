@@ -75,7 +75,7 @@
     <RemoveDir Directories="Modules\%(ModuleAssetsToClean.RecursiveDir);Modules" ContinueOnError="true" />
   </Target>
 
-  <Target Name="CleanModuleRazorFilesAfterClean" AfterTargets="Clean" Condition="Exists('Modules')">
+  <Target Name="CleanModuleRazorFilesAfterBuild" AfterTargets="Build;Clean" Condition="Exists('Modules')">
     <ItemGroup><ModuleAssetsToClean Include="Modules\**" /></ItemGroup>
     <Delete Files="@(ModuleAssetsToClean)" ContinueOnError="true" />
     <RemoveDir Directories="Modules\%(ModuleAssetsToClean.RecursiveDir);Modules" ContinueOnError="true" />

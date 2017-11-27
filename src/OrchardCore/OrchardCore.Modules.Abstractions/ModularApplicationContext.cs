@@ -83,22 +83,7 @@ namespace OrchardCore.Modules
                 return null;
             }
 
-            var fileInfo = GetFileInfo(moduleId, fileName);
-
-            if (fileInfo is NotFoundFileInfo)
-            {
-                var hiddenFileName = "obj/assets/" + fileName + ".assets";
-                fileInfo = GetFileInfo(moduleId, hiddenFileName);
-
-                if (!(fileInfo is NotFoundFileInfo))
-                {
-                    return new EmbeddedResourceFileInfo(Load(moduleId), moduleId + '.'
-                        + hiddenFileName.Replace('\\', '.').Replace('/', '.'),
-                        Path.GetFileName(fileName), DateTimeOffset.UtcNow);
-                }
-            }
-
-            return fileInfo;
+            return GetFileInfo(moduleId, fileName);
         }
 
         private static IFileInfo GetFileInfo(string assemblyName, string fileName)
