@@ -17,20 +17,6 @@
     <ModuleAssetFiles Include="**\*" Exclude="$(ModuleAssetExcludes)" />
   </ItemGroup>
 
-  <Target Name="UpdateModuleManifestResourceNames" AfterTargets="CreateManifestResourceNames">
-    <ItemGroup>
-      <EmbeddedResource Update="@(EmbeddedResource)"  Condition="'%(EmbeddedResource.WithCulture)' == 'true'">
-        <ManifestResourceName>$([System.String]::new('$(MSBuildProjectName)\%(RelativeDir)%(FileName)%(Extension)').Replace('\', '.').Replace('/', '.'))</ManifestResourceName>
-      </EmbeddedResource>
-      <EmbeddedResource Update="@(EmbeddedResource)"  Condition="'%(EmbeddedResource.WithCulture)' == 'true'">
-        <LogicalName>%(ManifestResourceName)</LogicalName>
-        <Link>%(ManifestResourceName)</Link>
-        <WithCulture>false</WithCulture>
-        <Culture></Culture>
-      </EmbeddedResource>
-    </ItemGroup>
-  </Target>
-
   <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
 
     <ItemGroup>
@@ -64,6 +50,20 @@
       </EmbeddedResource>
       <EmbeddedResource Include="obj\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')">
         <Link>$(ModuleType).txt</Link>
+      </EmbeddedResource>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="UpdateModuleManifestResourceNames" AfterTargets="CreateManifestResourceNames">
+    <ItemGroup>
+      <EmbeddedResource Update="@(EmbeddedResource)"  Condition="'%(EmbeddedResource.WithCulture)' == 'true'">
+        <ManifestResourceName>$([System.String]::new('$(MSBuildProjectName)\%(RelativeDir)%(FileName)%(Extension)').Replace('\', '.').Replace('/', '.'))</ManifestResourceName>
+      </EmbeddedResource>
+      <EmbeddedResource Update="@(EmbeddedResource)"  Condition="'%(EmbeddedResource.WithCulture)' == 'true'">
+        <LogicalName>%(ManifestResourceName)</LogicalName>
+        <Link>%(ManifestResourceName)</Link>
+        <WithCulture>false</WithCulture>
+        <Culture></Culture>
       </EmbeddedResource>
     </ItemGroup>
   </Target>
