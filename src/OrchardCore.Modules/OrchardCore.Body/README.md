@@ -49,7 +49,7 @@ Customizing the editor can mean to replace the predefined one with different exp
 new options for the user to choose from.
 
 To create a new custom editor, it is required to provide two shape templates, one to provide
-the name of the editor (optional if you want to override and existing one), and a shape to
+the name of the editor (optional if you want to override an existing one), and a shape to
 render the actual HTML for the editor.
 
 #### Declaration

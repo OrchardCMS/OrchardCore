@@ -17,6 +17,7 @@ extra_javascript:
 # Extensions
 markdown_extensions:
   - markdown.extensions.admonition
+  - markdown.extensions.codehilite
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
   - markdown.extensions.meta
