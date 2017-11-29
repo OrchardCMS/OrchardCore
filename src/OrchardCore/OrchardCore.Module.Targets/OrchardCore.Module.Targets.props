@@ -14,13 +14,16 @@
 
   <ItemGroup>
     <EmbeddedResource Include="**\*" Exclude="$(ModuleAssetExcludes)" />
-    <ModuleAssetFiles Include="**\*" Exclude="$(ModuleAssetExcludes)" />
   </ItemGroup>
 
-  <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
+  <Target Name="EmbeddModuleAssets" BeforeTargets="BeforeBuild">
+
+    <RemoveDuplicates Inputs="@(EmbeddedResource)">
+      <Output TaskParameter="Filtered" ItemName="ModuleAssetFiles"/>
+    </RemoveDuplicates>
 
     <ItemGroup>
-      <ModuleAssets Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RecursiveDir)%(Filename)%(Extension)" />
+      <ModuleAssets Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)" />
       <ModuleAssets Include="Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')" />
     </ItemGroup>
 
@@ -54,12 +57,12 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="UpdateModuleManifestResourceNames" AfterTargets="CreateManifestResourceNames">
+  <Target Name="UpdateModuleAssets" AfterTargets="CreateManifestResourceNames">
     <ItemGroup>
-      <EmbeddedResource Update="@(EmbeddedResource)"  Condition="'%(EmbeddedResource.WithCulture)' == 'true'">
+      <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.WithCulture)' == 'true'">
         <ManifestResourceName>$([System.String]::new('$(MSBuildProjectName)\%(RelativeDir)%(FileName)%(Extension)').Replace('\', '.').Replace('/', '.'))</ManifestResourceName>
       </EmbeddedResource>
-      <EmbeddedResource Update="@(EmbeddedResource)"  Condition="'%(EmbeddedResource.WithCulture)' == 'true'">
+      <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.WithCulture)' == 'true'">
         <LogicalName>%(ManifestResourceName)</LogicalName>
         <Link>%(ManifestResourceName)</Link>
         <WithCulture>false</WithCulture>

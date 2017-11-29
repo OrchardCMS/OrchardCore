@@ -69,27 +69,23 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="CleanModuleRazorFilesAfterCompile" AfterTargets="_MvcRazorPrecompile" Condition="Exists('Modules')">
+  <Target Name="CleanModuleAssetsAfterCompile" AfterTargets="_MvcRazorPrecompile" Condition="Exists('Modules')">
     <ItemGroup>
-      <ModuleRazorFilesToCleanAfterCompile Include="Modules\**" />
+      <ModuleAssetsAfterCompile Include="Modules\**" />
     </ItemGroup>
-    <Delete
-      Files="@(ModuleRazorFilesToCleanAfterCompile)"
-      ContinueOnError="true" />
+    <Delete Files="@(ModuleAssetsAfterCompile)" ContinueOnError="true" />
     <RemoveDir
-      Directories="Modules\%(ModuleRazorFilesToCleanAfterCompile.RecursiveDir);Modules"
+      Directories="Modules\%(ModuleAssetsAfterCompile.RecursiveDir);Modules"
       ContinueOnError="true" />
   </Target>
 
-  <Target Name="CleanModuleRazorFilesAfterBuild" AfterTargets="Build;Clean" Condition="Exists('Modules')">
+  <Target Name="CleanModuleAssetsBeforeBuild" BeforeTargets="BeforeBuild;BeforeClean" Condition="Exists('Modules')">
     <ItemGroup>
-      <ModuleRazorFilesToCleanAfterBuild Include="Modules\**" />
+      <ModuleAssetsBeforeBuild Include="Modules\**" />
     </ItemGroup>
-    <Delete
-      Files="@(ModuleRazorFilesToCleanAfterBuild)"
-      ContinueOnError="true" />
+    <Delete Files="@(ModuleAssetsBeforeBuild)" ContinueOnError="true" />
     <RemoveDir
-      Directories="Modules\%(ModuleRazorFilesToCleanAfterBuild.RecursiveDir);Modules"
+      Directories="Modules\%(ModuleAssetsBeforeBuild.RecursiveDir);Modules"
       ContinueOnError="true" />
   </Target>
 
