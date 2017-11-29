@@ -16,8 +16,7 @@ namespace OrchardCore.Localization
         private readonly IExtensionManager _extensionsManager;
         private readonly IFileProvider _fileProvider;
         private readonly string _resourcesContainer;
-        private readonly string _shellContainer;
-        private readonly string _shellName;
+        private readonly string _shellDataContainer;
 
         public ModularPoFileLocationProvider(
             IExtensionManager extensionsManager,
@@ -30,8 +29,7 @@ namespace OrchardCore.Localization
 
             _fileProvider = hostingEnvironment.ContentRootFileProvider;
             _resourcesContainer = localizationOptions.Value.ResourcesPath; // Localization
-            _shellContainer = shellOptions.Value.ShellsContainerName;
-            _shellName = shellSettings.Name;
+            _shellDataContainer = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, shellOptions.Value.ShellsContainerName, shellSettings.Name);
         }
 
         public IEnumerable<IFileInfo> GetLocations(string cultureName)
@@ -46,7 +44,7 @@ namespace OrchardCore.Localization
             yield return _fileProvider.GetFileInfo(Path.Combine(_resourcesContainer, cultureName, PoFileName));
 
             // Finally load tenant-specific .po file
-            yield return _fileProvider.GetFileInfo(Path.Combine(_shellContainer, _shellName, _resourcesContainer, cultureName, PoFileName));
+            yield return _fileProvider.GetFileInfo(Path.Combine(_shellDataContainer, _resourcesContainer, cultureName, PoFileName));
         }
     }
 }
