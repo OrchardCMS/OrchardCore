@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.FileProviders.Embedded;
 using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Modules
@@ -16,25 +14,14 @@ namespace OrchardCore.Modules
         private const string ModuleNamesMap = "module.names.map";
         private const string ModuleAssetsMap = "module.assets.map";
 
-        private static Lazy<IEnumerable<string>> _moduleNames;
-        private static ConcurrentDictionary<string, Lazy<IEnumerable<string>>> _moduleAssets = new ConcurrentDictionary<string, Lazy<IEnumerable<string>>>();
-        private static ConcurrentDictionary<string, Lazy<Assembly>> _assemblies = new ConcurrentDictionary<string, Lazy<Assembly>>();
-        private static ConcurrentDictionary<string, Lazy<IFileInfo>> _fileInfos = new ConcurrentDictionary<string, Lazy<IFileInfo>>();
-
-        private static Assembly Load(string assemblyName)
-        {
-            return _assemblies.GetOrAdd(assemblyName, (name) => new Lazy<Assembly>(() =>
-            {
-                return Assembly.Load(new AssemblyName(name));
-            })).Value;
-        }
+        private static ConcurrentDictionary<string, IEnumerable<string>> _maps = new ConcurrentDictionary<string, IEnumerable<string>>();
+        private static ConcurrentDictionary<string, Assembly> _assemblies = new ConcurrentDictionary<string, Assembly>();
+        private static ConcurrentDictionary<string, IFileProvider> _fileProviders = new ConcurrentDictionary<string, IFileProvider>();
+        private static ConcurrentDictionary<string, IFileInfo> _fileInfos = new ConcurrentDictionary<string, IFileInfo>();
 
         public static Assembly LoadApplicationAssembly(this IHostingEnvironment environment)
         {
-            return _assemblies.GetOrAdd(environment.ApplicationName, (key) => new Lazy<Assembly>(() =>
-            {
-                return Assembly.Load(new AssemblyName(key));
-            })).Value;
+            return Load(environment.ApplicationName);
         }
 
         public static Assembly LoadModuleAssembly(this IHostingEnvironment environment, string moduleId)
@@ -44,23 +31,17 @@ namespace OrchardCore.Modules
                 return null;
             }
 
-            return _assemblies.GetOrAdd(moduleId, (key) => new Lazy<Assembly>(() =>
-            {
-                return Assembly.Load(new AssemblyName(key));
-            })).Value;
+            return Load(moduleId);
         }
 
         public static IEnumerable<string> GetModuleNames(this IHostingEnvironment environment)
         {
-            if (_moduleNames == null)
+            if (!_maps.ContainsKey(environment.ApplicationName + ModuleNamesMap))
             {
-                _moduleNames = new Lazy<IEnumerable<string>>(() =>
-                {
-                    return GetFileInfo(environment.ApplicationName, ModuleNamesMap).ReadAllLines();
-                });
+                _maps[environment.ApplicationName + ModuleNamesMap] = GetFileInfo(environment.ApplicationName, ModuleNamesMap).ReadAllLines();
             }
 
-            return _moduleNames.Value;
+            return _maps[environment.ApplicationName + ModuleNamesMap];
         }
 
         public static IEnumerable<string> GetModuleAssets(this IHostingEnvironment environment, string moduleId)
@@ -70,10 +51,12 @@ namespace OrchardCore.Modules
                 return Enumerable.Empty<string>();
             }
 
-            return _moduleAssets.GetOrAdd(moduleId + ModuleAssetsMap, (key) => new Lazy<IEnumerable<string>>(() =>
+            if (!_maps.ContainsKey(moduleId + ModuleAssetsMap))
             {
-                return GetFileInfo(moduleId, ModuleAssetsMap).ReadAllLines().Select(x => x.Replace('\\', '/'));
-            })).Value;
+                _maps[moduleId + ModuleAssetsMap] = GetFileInfo(moduleId, ModuleAssetsMap).ReadAllLines().Select(x => x.Replace('\\', '/'));
+            }
+
+            return _maps[moduleId + ModuleAssetsMap];
         }
 
         public static IFileInfo GetModuleFileInfo(this IHostingEnvironment environment, string moduleId, string fileName)
@@ -86,14 +69,36 @@ namespace OrchardCore.Modules
             return GetFileInfo(moduleId, fileName);
         }
 
-        private static IFileInfo GetFileInfo(string assemblyName, string fileName)
+        private static Assembly Load(string assemblyName)
         {
-            return _fileInfos.GetOrAdd(assemblyName + fileName, (key) => new Lazy<IFileInfo>(() =>
+            if (!_assemblies.ContainsKey(assemblyName))
+            {
+                _assemblies[assemblyName] = Assembly.Load(new AssemblyName(assemblyName));
+            }
+
+            return _assemblies[assemblyName];
+        }
+
+        private static IFileProvider GetFileProvider(string assemblyName)
+        {
+            if (!_fileProviders.ContainsKey(assemblyName))
             {
                 var assembly = Load(assemblyName);
-                var fileProvider = new EmbeddedFileProvider(assembly);
-                return fileProvider.GetFileInfo(fileName);
-            })).Value;
+                _fileProviders[assemblyName] = new EmbeddedFileProvider(assembly);
+            }
+
+            return _fileProviders[assemblyName];
+        }
+
+        private static IFileInfo GetFileInfo(string assemblyName, string fileName)
+        {
+            if (!_fileInfos.ContainsKey(assemblyName + fileName))
+            {
+                var fileProvider = GetFileProvider(assemblyName);
+                _fileInfos[assemblyName + fileName] = fileProvider.GetFileInfo(fileName);
+            }
+
+            return _fileInfos[assemblyName + fileName];
         }
     }
 }
