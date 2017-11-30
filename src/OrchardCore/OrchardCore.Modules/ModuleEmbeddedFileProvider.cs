@@ -101,12 +101,17 @@ namespace OrchardCore.Modules
                 if (index != -1)
                 {
                     var moduleId = subPath.Substring(0, subPath.IndexOf("/"));
-                    var fileName = subPath.Substring(moduleId.Length + 1);
-                    var fileInfo = _environment.GetModuleFileInfo(moduleId, fileName);
+                    var paths = _environment.GetModuleAssets(moduleId);
 
-                    if (fileInfo != null)
+                    if (paths.Contains(RootWithTrailingSlash + subPath))
                     {
-                        return fileInfo;
+                        var fileName = subPath.Substring(moduleId.Length + 1);
+                        var fileInfo = _environment.GetModuleFileInfo(moduleId, fileName);
+
+                        if (fileInfo != null)
+                        {
+                            return fileInfo;
+                        }
                     }
                 }
             }

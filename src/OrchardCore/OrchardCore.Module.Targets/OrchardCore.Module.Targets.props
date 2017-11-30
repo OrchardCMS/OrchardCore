@@ -48,6 +48,9 @@
     <ItemGroup>
       <EmbeddedResource Remove="@(EmbeddedResource)" />
       <EmbeddedResource Include="@(ModuleAssetFiles)" />
+      <EmbeddedResource Update="@(EmbeddedResource)">
+        <LogicalName>$([System.String]::new('$(MSBuildProjectName)\%(RelativeDir)%(FileName)%(Extension)').Replace('\', '.').Replace('/', '.'))</LogicalName>
+      </EmbeddedResource>
       <EmbeddedResource Include="obj\module.assets.map">
         <Link>module.assets.map</Link>
       </EmbeddedResource>
@@ -60,11 +63,6 @@
   <Target Name="UpdateModuleAssets" AfterTargets="CreateManifestResourceNames">
     <ItemGroup>
       <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.WithCulture)' == 'true'">
-        <ManifestResourceName>$([System.String]::new('$(MSBuildProjectName)\%(RelativeDir)%(FileName)%(Extension)').Replace('\', '.').Replace('/', '.'))</ManifestResourceName>
-      </EmbeddedResource>
-      <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.WithCulture)' == 'true'">
-        <LogicalName>%(ManifestResourceName)</LogicalName>
-        <Link>%(ManifestResourceName)</Link>
         <WithCulture>false</WithCulture>
         <Culture></Culture>
       </EmbeddedResource>
