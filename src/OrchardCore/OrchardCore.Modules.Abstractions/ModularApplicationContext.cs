@@ -36,12 +36,14 @@ namespace OrchardCore.Modules
 
         public static IEnumerable<string> GetModuleNames(this IHostingEnvironment environment)
         {
-            if (!_maps.ContainsKey(environment.ApplicationName + ModuleNamesMap))
+            var key = environment.ApplicationName + ModuleNamesMap;
+
+            if (!_maps.ContainsKey(key))
             {
-                _maps[environment.ApplicationName + ModuleNamesMap] = GetFileInfo(environment.ApplicationName, ModuleNamesMap).ReadAllLines();
+                _maps[key] = GetFileInfo(environment.ApplicationName, ModuleNamesMap).ReadAllLines();
             }
 
-            return _maps[environment.ApplicationName + ModuleNamesMap];
+            return _maps[key];
         }
 
         public static IEnumerable<string> GetModuleAssets(this IHostingEnvironment environment, string moduleId)
@@ -51,12 +53,14 @@ namespace OrchardCore.Modules
                 return Enumerable.Empty<string>();
             }
 
-            if (!_maps.ContainsKey(moduleId + ModuleAssetsMap))
+            var key = moduleId + ModuleAssetsMap;
+
+            if (!_maps.ContainsKey(key))
             {
-                _maps[moduleId + ModuleAssetsMap] = GetFileInfo(moduleId, ModuleAssetsMap).ReadAllLines().Select(x => x.Replace('\\', '/'));
+                _maps[key] = GetFileInfo(moduleId, ModuleAssetsMap).ReadAllLines().Select(x => x.Replace('\\', '/'));
             }
 
-            return _maps[moduleId + ModuleAssetsMap];
+            return _maps[key];
         }
 
         public static IFileInfo GetModuleFileInfo(this IHostingEnvironment environment, string moduleId, string fileName)
@@ -92,13 +96,15 @@ namespace OrchardCore.Modules
 
         private static IFileInfo GetFileInfo(string assemblyName, string fileName)
         {
-            if (!_fileInfos.ContainsKey(assemblyName + fileName))
+            var key = assemblyName + fileName;
+
+            if (!_fileInfos.ContainsKey(key))
             {
                 var fileProvider = GetFileProvider(assemblyName);
-                _fileInfos[assemblyName + fileName] = fileProvider.GetFileInfo(fileName);
+                _fileInfos[key] = fileProvider.GetFileInfo(fileName);
             }
 
-            return _fileInfos[assemblyName + fileName];
+            return _fileInfos[key];
         }
     }
 }
