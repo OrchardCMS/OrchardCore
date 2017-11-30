@@ -21,7 +21,7 @@ namespace OrchardCore.Modules
         public ModuleEmbeddedFileProvider(IHostingEnvironment hostingEnvironment, string contentPath = null)
         {
             _environment = hostingEnvironment;
-            _contentPathWithTrailingSlash = contentPath != null ? NormalizePath(contentPath) + '/' : "/";
+            _contentPathWithTrailingSlash = contentPath != null ? NormalizePath(contentPath) + '/' : "";
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
@@ -31,45 +31,40 @@ namespace OrchardCore.Modules
                 return NotFoundDirectoryContents.Singleton;
             }
 
-            var subPath = NormalizePath(subpath);
-
-            if (_contentPathWithTrailingSlash.Length > 1)
-            {
-                subPath = _contentPathWithTrailingSlash + subPath;
-            }
+            var path = _contentPathWithTrailingSlash + NormalizePath(subpath);
 
             var entries = new List<IFileInfo>();
 
-            if (subPath == "")
+            if (path == "")
             {
                 entries.Add(new EmbeddedDirectoryInfo(Root));
             }
-            else if (subPath == Root)
+            else if (path == Root)
             {
                 entries.AddRange(_environment.GetModuleNames().Select(x => new EmbeddedDirectoryInfo(x)));
             }
-            else if (subPath.StartsWith(RootWithTrailingSlash))
+            else if (path.StartsWith(RootWithTrailingSlash))
             {
-                subPath = subPath.Substring(RootWithTrailingSlash.Length);
+                var underRootPath = path.Substring(RootWithTrailingSlash.Length);
 
-                var index = subPath.IndexOf("/");
-                var moduleId = index == -1 ? subPath : subPath.Substring(0, index);
+                var index = underRootPath.IndexOf("/");
+                var moduleId = index == -1 ? underRootPath : underRootPath.Substring(0, index);
 
                 var folders = new HashSet<string>();
-                var paths = _environment.GetModuleAssets(moduleId);
+                var assets = _environment.GetModuleAssets(moduleId);
 
-                foreach (var path in paths.Where(x => x.StartsWith(RootWithTrailingSlash + subPath)))
+                foreach (var asset in assets.Where(x => x.StartsWith(path)))
                 {
-                    var trailingPath = path.Substring(RootWithTrailingSlash.Length + subPath.Length + 1);
-                    index = trailingPath.IndexOf('/');
+                    var underDirectoryPath = asset.Substring(path.Length + 1);
+                    index = underDirectoryPath.IndexOf('/');
 
                     if (index == -1)
                     {
-                        entries.Add(GetFileInfo(path));
+                        entries.Add(GetFileInfo(asset));
                     }
                     else
                     {
-                        folders.Add(trailingPath.Substring(0, index));
+                        folders.Add(underDirectoryPath.Substring(0, index));
                     }
                 }
 
@@ -86,26 +81,21 @@ namespace OrchardCore.Modules
                 return new NotFoundFileInfo(subpath);
             }
 
-            var subPath = NormalizePath(subpath);
+            var path = _contentPathWithTrailingSlash + NormalizePath(subpath);
 
-            if (_contentPathWithTrailingSlash.Length > 1)
+            if (path.StartsWith(RootWithTrailingSlash))
             {
-                subPath = _contentPathWithTrailingSlash + subPath;
-            }
-
-            if (subPath.StartsWith(RootWithTrailingSlash))
-            {
-                subPath = subPath.Substring(RootWithTrailingSlash.Length);
-                var index = subPath.IndexOf("/");
+                var underRootPath = path.Substring(RootWithTrailingSlash.Length);
+                var index = underRootPath.IndexOf("/");
 
                 if (index != -1)
                 {
-                    var moduleId = subPath.Substring(0, subPath.IndexOf("/"));
-                    var paths = _environment.GetModuleAssets(moduleId);
+                    var moduleId = underRootPath.Substring(0, index);
+                    var assets = _environment.GetModuleAssets(moduleId);
 
-                    if (paths.Contains(RootWithTrailingSlash + subPath))
+                    if (assets.Contains(path))
                     {
-                        var fileName = subPath.Substring(moduleId.Length + 1);
+                        var fileName = underRootPath.Substring(moduleId.Length + 1);
                         var fileInfo = _environment.GetModuleFileInfo(moduleId, fileName);
 
                         if (fileInfo != null)
