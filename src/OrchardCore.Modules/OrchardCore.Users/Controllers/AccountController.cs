@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
@@ -78,8 +80,13 @@ namespace OrchardCore.Users.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register(string returnUrl = null)
+        public IActionResult Register([FromServices]IOptions<RegistrationSettings> regSettings, string returnUrl = null)
         {
+            if ( !regSettings.Value.UsersCanRegister )
+            {
+                return NotFound();
+            }
+        
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
@@ -87,8 +94,13 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Register([FromServices]IOptions<RegistrationSettings> regSettings, RegisterViewModel model, string returnUrl = null)
         {
+            if ( !regSettings.Value.UsersCanRegister )
+            {
+                return NotFound();
+            }
+
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
