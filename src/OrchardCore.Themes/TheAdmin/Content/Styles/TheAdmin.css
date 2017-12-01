@@ -6026,6 +6026,10 @@ label .field-validation-error::before {
 .ui-sortable {
   min-height: 1rem; }
 
+.related {
+  position: relative;
+  z-index: 10; }
+
 .ta-left-sidebar-nano {
   position: relative;
   width: 100%;

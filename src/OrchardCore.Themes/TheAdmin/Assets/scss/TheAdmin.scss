@@ -284,6 +284,8 @@ ul.pager li a {
 
 .related {
     @extend .float-right;
+    position: relative;
+    z-index: 10;
 }
 
 // Responsive sizes
@@ -371,4 +373,3 @@ ul.pager li a {
     /* preventing last bottom item is not visible when scrolling to bottom */
     padding-bottom: 100px;
 }
-
