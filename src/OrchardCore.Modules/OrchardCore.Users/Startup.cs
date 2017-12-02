@@ -155,8 +155,7 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
-
-            services.AddSingleton<IConfigureOptions<RegistrationSettings>, RegistrationSettingsConfiguration>();
+            
             services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
         }
     }

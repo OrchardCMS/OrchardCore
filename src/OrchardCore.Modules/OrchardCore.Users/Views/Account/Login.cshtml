@@ -1,10 +1,11 @@
-@using Microsoft.Extensions.Options
+@using OrchardCore.Entities
+@using OrchardCore.Settings
 @using OrchardCore.Users.Models
 @model OrchardCore.Users.ViewModels.LoginViewModel
-@inject IOptions<RegistrationSettings> _settings
+@inject ISiteService _settings
 
 @{
-    var userCanRegister = _settings.Value.UsersCanRegister;
+    var userCanRegister = (await _settings.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister;
 }
 
 <div class="row">
@@ -43,7 +44,7 @@
                         <button type="submit" class="btn btn-default">@T["Log in"]</button>
                     </div>
                 </div>
-                @if ( userCanRegister ) {
+                @if (userCanRegister) {
                     <p>
                         <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">@T["Register as a new user?"]</a>
                     </p>

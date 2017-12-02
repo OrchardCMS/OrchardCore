@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Newtonsoft.Json.Linq;
+using OrchardCore.Settings;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Models;
@@ -21,40 +23,53 @@ namespace OrchardCore.Tests.OrchardCore.Users
         public async Task UsersShouldNotBeAbleToRegisterIfNotAllowed()
         {
             var mockUserManager = MockUserManager<IUser>().Object;
+            var settings = new RegistrationSettings { UsersCanRegister = false };
+            var mockSiteService = Mock.Of<ISiteService>(ss =>
+                ss.GetSiteSettingsAsync() == Task.FromResult(
+                    Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { RegistrationSettings = settings }))
+                    )
+            );
+
             var controller = new AccountController(
                 Mock.Of<IUserService>(),
-                MockSignInManager( mockUserManager ).Object,
+                MockSignInManager(mockUserManager).Object,
                 mockUserManager,
-                Mock.Of<ILogger<AccountController>>() );
+                Mock.Of<ILogger<AccountController>>(),
+                mockSiteService);
 
-            var settings = Options.Create( new RegistrationSettings { UsersCanRegister = false } );
-
-            var result = controller.Register( settings );
-            Assert.IsType<NotFoundResult>( result );
+            var result = await controller.Register();
+            Assert.IsType<NotFoundResult>(result);
 
             // Post
-            result = await controller.Register( settings, new RegisterViewModel() );
-            Assert.IsType<NotFoundResult>( result );
+            result = await controller.Register(new RegisterViewModel());
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
         public async Task UsersShouldBeAbleToRegisterIfAllowed()
         {
             var mockUserManager = MockUserManager<IUser>().Object;
+            var settings = new RegistrationSettings { UsersCanRegister = true };
+            var mockSiteService = Mock.Of<ISiteService>(ss =>
+                ss.GetSiteSettingsAsync() == Task.FromResult(
+                    Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { RegistrationSettings = settings }))
+                    )
+            );
+
             var controller = new AccountController(
                 Mock.Of<IUserService>(),
                 MockSignInManager(mockUserManager).Object,
                 mockUserManager,
-                Mock.Of<ILogger<AccountController>>() );
+                Mock.Of<ILogger<AccountController>>(),
+                mockSiteService);
 
-            var settings = Options.Create( new RegistrationSettings { UsersCanRegister = true } );
 
-            var result = controller.Register( settings );
-            Assert.IsType<ViewResult>( result );
+            var result = await controller.Register();
+            Assert.IsType<ViewResult>(result);
 
             // Post
-            result = await controller.Register( settings, new RegisterViewModel() );
-            Assert.IsType<ViewResult>( result );
+            result = await controller.Register(new RegisterViewModel());
+            Assert.IsType<ViewResult>(result);
         }
 
 
@@ -68,7 +83,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<IUserClaimsPrincipalFactory<TUser>>(),
                 null,
                 null,
-                null )
+                null)
             { CallBase = true };
         }
 
@@ -78,9 +93,9 @@ namespace OrchardCore.Tests.OrchardCore.Users
             IList<IPasswordValidator<TUser>> PasswordValidators = new List<IPasswordValidator<TUser>>();
 
             var store = new Mock<IUserStore<TUser>>();
-            UserValidators.Add( new UserValidator<TUser>() );
-            PasswordValidators.Add( new PasswordValidator<TUser>() );
-            var mgr = new Mock<UserManager<TUser>>( store.Object,
+            UserValidators.Add(new UserValidator<TUser>());
+            PasswordValidators.Add(new PasswordValidator<TUser>());
+            var mgr = new Mock<UserManager<TUser>>(store.Object,
                 null,
                 null,
                 UserValidators,
@@ -88,7 +103,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 null,
                 null,
                 null,
-                null );
+                null);
             return mgr;
         }
 
