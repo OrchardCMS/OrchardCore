@@ -22,7 +22,7 @@ namespace OrchardCore.Modules
 
         public ModuleProjectContentFileProvider(IHostingEnvironment environment, string contentPath)
         {
-            _contentPath = '/' + contentPath.Replace('\\', '/').Trim('/');
+            _contentPath = NormalizePath(contentPath) + "/";
 
             if (_paths != null)
             {
@@ -33,7 +33,7 @@ namespace OrchardCore.Modules
             {
                 if (_paths == null)
                 {
-                    var paths = new List<string>();
+                    var paths = new List<KeyValuePair<string, string>>();
                     var mainAssembly = environment.LoadApplicationAssembly();
 
                     foreach (var moduleId in environment.GetModuleNames())
@@ -46,22 +46,11 @@ namespace OrchardCore.Modules
                             continue;
                         }
 
-                        var assetPaths = environment.GetModuleAssets(moduleId);
-                        var projectFolder = assetPaths.FirstOrDefault();
-
-                        if (Directory.Exists(projectFolder))
-                        {
-                            assetPaths = assetPaths.Skip(1).Where(x => x.StartsWith(
-                                "Modules/" + moduleId + "/Content/")).ToList();
-
-                            paths.AddRange(assetPaths.Select(x => projectFolder + "/"
-                                + x.Substring(("Modules/" + moduleId).Length) + "|/" + x));
-                        }
+                        paths.AddRange(environment.GetModuleAssetsMap(moduleId).Where(x => x.Key
+                            .StartsWith("Modules/" + moduleId + "/Content/", StringComparison.Ordinal)));
                     }
 
-                    _paths = new Dictionary<string, string>(paths
-                        .Select(x => x.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
-                        .Where(x => x.Length == 2).ToDictionary(x => x[1], x => x[0]));
+                    _paths = new Dictionary<string, string>(paths.ToDictionary(x => x.Key, x => x.Value));
                 }
             }
         }
@@ -78,7 +67,7 @@ namespace OrchardCore.Modules
                 return new NotFoundFileInfo(subpath);
             }
 
-            var path = _contentPath + subpath;
+            var path = _contentPath + NormalizePath(subpath);
 
             if (_paths.ContainsKey(path))
             {
@@ -91,6 +80,11 @@ namespace OrchardCore.Modules
         public IChangeToken Watch(string filter)
         {
             return NullChangeToken.Singleton;
+        }
+
+        private string NormalizePath(string path)
+        {
+            return path.Replace('\\', '/').Trim('/');
         }
     }
 }

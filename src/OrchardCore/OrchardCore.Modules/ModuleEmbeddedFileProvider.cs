@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
@@ -31,36 +32,36 @@ namespace OrchardCore.Modules
                 return NotFoundDirectoryContents.Singleton;
             }
 
-            var path = _contentPathWithTrailingSlash + NormalizePath(subpath);
+            var folder = _contentPathWithTrailingSlash + NormalizePath(subpath);
 
             var entries = new List<IFileInfo>();
 
-            if (path == "")
+            if (folder == "")
             {
                 entries.Add(new EmbeddedDirectoryInfo(Root));
             }
-            else if (path == Root)
+            else if (folder == Root)
             {
                 entries.AddRange(_environment.GetModuleNames().Select(x => new EmbeddedDirectoryInfo(x)));
             }
-            else if (path.StartsWith(RootWithTrailingSlash))
+            else if (folder.StartsWith(RootWithTrailingSlash, StringComparison.Ordinal))
             {
-                var underRootPath = path.Substring(RootWithTrailingSlash.Length);
+                var underRootPath = folder.Substring(RootWithTrailingSlash.Length);
 
-                var index = underRootPath.IndexOf("/");
+                var index = underRootPath.IndexOf('/');
                 var moduleId = index == -1 ? underRootPath : underRootPath.Substring(0, index);
 
                 var folders = new HashSet<string>();
                 var assets = _environment.GetModuleAssets(moduleId);
 
-                foreach (var asset in assets.Where(x => x.StartsWith(path)))
+                foreach (var path in assets.Where(x => x.StartsWith(folder, StringComparison.Ordinal)))
                 {
-                    var underDirectoryPath = asset.Substring(path.Length + 1);
+                    var underDirectoryPath = path.Substring(folder.Length + 1);
                     index = underDirectoryPath.IndexOf('/');
 
                     if (index == -1)
                     {
-                        entries.Add(GetFileInfo(asset));
+                        entries.Add(GetFileInfo(path));
                     }
                     else
                     {
@@ -83,10 +84,10 @@ namespace OrchardCore.Modules
 
             var path = _contentPathWithTrailingSlash + NormalizePath(subpath);
 
-            if (path.StartsWith(RootWithTrailingSlash))
+            if (path.StartsWith(RootWithTrailingSlash, StringComparison.Ordinal))
             {
                 var underRootPath = path.Substring(RootWithTrailingSlash.Length);
-                var index = underRootPath.IndexOf("/");
+                var index = underRootPath.IndexOf('/');
 
                 if (index != -1)
                 {

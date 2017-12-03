@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +13,7 @@ namespace OrchardCore.Modules
         private const string ModuleNamesMap = "module.names.map";
         private const string ModuleAssetsMap = "module.assets.map";
 
-        private static ConcurrentDictionary<string, IEnumerable<string>> _maps = new ConcurrentDictionary<string, IEnumerable<string>>();
+        private static ConcurrentDictionary<string, IEnumerable<KeyValuePair<string, string>>> _maps = new ConcurrentDictionary<string, IEnumerable<KeyValuePair<string, string>>>();
         private static ConcurrentDictionary<string, Assembly> _assemblies = new ConcurrentDictionary<string, Assembly>();
         private static ConcurrentDictionary<string, IFileProvider> _fileProviders = new ConcurrentDictionary<string, IFileProvider>();
         private static ConcurrentDictionary<string, IFileInfo> _fileInfos = new ConcurrentDictionary<string, IFileInfo>();
@@ -36,28 +35,50 @@ namespace OrchardCore.Modules
 
         public static IEnumerable<string> GetModuleNames(this IHostingEnvironment environment)
         {
+            return GetModuleNamesMap(environment).Select(x => x.Key);
+        }
+
+        public static IEnumerable<string> GetModuleAssets(this IHostingEnvironment environment, string moduleId)
+        {
+            return GetModuleAssetsMap(environment, moduleId).Select(x => x.Key);
+        }
+
+        private static IEnumerable<KeyValuePair<string, string>> GetModuleNamesMap(this IHostingEnvironment environment)
+        {
             var key = environment.ApplicationName + ModuleNamesMap;
 
             if (!_maps.ContainsKey(key))
             {
-                _maps[key] = GetFileInfo(environment.ApplicationName, ModuleNamesMap).ReadAllLines();
+                _maps[key] = GetFileInfo(environment.ApplicationName, ModuleNamesMap).ReadAllLines()
+                    .Select(x => new KeyValuePair<string, string>(x, x));
             }
 
             return _maps[key];
         }
 
-        public static IEnumerable<string> GetModuleAssets(this IHostingEnvironment environment, string moduleId)
+        public static IEnumerable<KeyValuePair<string, string>> GetModuleAssetsMap(this IHostingEnvironment environment, string moduleId)
         {
             if (!GetModuleNames(environment).Contains(moduleId))
             {
-                return Enumerable.Empty<string>();
+                return Enumerable.Empty<KeyValuePair<string, string>>();
             }
 
             var key = moduleId + ModuleAssetsMap;
 
             if (!_maps.ContainsKey(key))
             {
-                _maps[key] = GetFileInfo(moduleId, ModuleAssetsMap).ReadAllLines().Select(x => x.Replace('\\', '/'));
+                _maps[key] = GetFileInfo(moduleId, ModuleAssetsMap).ReadAllLines().Select(x =>
+                {
+                    var map = x.Replace('\\', '/');
+                    var index = map.IndexOf('|');
+
+                    if (index == -1)
+                    {
+                        return new KeyValuePair<string, string>(map, string.Empty);
+                    }
+
+                    return new KeyValuePair<string, string>(map.Substring(index + 1), map.Substring(0, index));
+                });
             }
 
             return _maps[key];

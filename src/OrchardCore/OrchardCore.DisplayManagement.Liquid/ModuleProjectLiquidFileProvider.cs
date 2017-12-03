@@ -32,7 +32,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 {
                     if (_paths == null)
                     {
-                        var paths = new List<string>();
+                        var paths = new List<KeyValuePair<string, string>>();
                         var mainAssembly = environment.LoadApplicationAssembly();
 
                         foreach (var moduleId in environment.GetModuleNames())
@@ -45,21 +45,11 @@ namespace OrchardCore.DisplayManagement.Liquid
                                 continue;
                             }
 
-                            var assetPaths = environment.GetModuleAssets(moduleId);
-                            var projectFolder = assetPaths.FirstOrDefault();
-
-                            if (Directory.Exists(projectFolder))
-                            {
-                                assetPaths = assetPaths.Skip(1).Where(x => x.EndsWith(".liquid")).ToList();
-
-                                paths.AddRange(assetPaths.Select(x => projectFolder + "/"
-                                    + x.Substring(("Modules/" + moduleId).Length) + "|/" + x));
-                            }
+                            paths.AddRange(environment.GetModuleAssetsMap(moduleId).Where(x => x.Key
+                                .EndsWith(".liquid", StringComparison.Ordinal)));
                         }
 
-                        _paths = new Dictionary<string, string>(paths
-                            .Select(x => x.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
-                            .Where(x => x.Length == 2).ToDictionary(x => x[1], x => x[0]));
+                        _paths = new Dictionary<string, string>(paths.ToDictionary(x => x.Key, x => x.Value));
                     }
                 }
             }
@@ -77,11 +67,11 @@ namespace OrchardCore.DisplayManagement.Liquid
                 return new NotFoundFileInfo(subpath);
             }
 
-            subpath = subpath.Replace("\\", "/");
+            var path = NormalizePath(subpath);
 
-            if (_paths.ContainsKey(subpath))
+            if (_paths.ContainsKey(path))
             {
-                return new PhysicalFileInfo(new FileInfo(_paths[subpath]));
+                return new PhysicalFileInfo(new FileInfo(_paths[path]));
             }
 
             return new NotFoundFileInfo(subpath);
@@ -94,14 +84,19 @@ namespace OrchardCore.DisplayManagement.Liquid
                 return NullChangeToken.Singleton;
             }
 
-            filter = filter.Replace("\\", "/");
+            var path = NormalizePath(filter);
 
-            if (_paths.ContainsKey(filter))
+            if (_paths.ContainsKey(path))
             {
-                return new PollingFileChangeToken(new FileInfo(_paths[filter]));
+                return new PollingFileChangeToken(new FileInfo(_paths[path]));
             }
 
             return NullChangeToken.Singleton;
+        }
+
+        private string NormalizePath(string path)
+        {
+            return path.Replace('\\', '/').Trim('/');
         }
     }
 }

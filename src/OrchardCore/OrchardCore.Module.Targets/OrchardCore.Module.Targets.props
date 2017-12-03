@@ -23,13 +23,18 @@
     </RemoveDuplicates>
 
     <ItemGroup>
-      <ModuleAssets Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)" />
+      <ModuleAssets Condition="'%(ModuleAssetFiles.Link)' == ''"
+        Include="%(ModuleAssetFiles.FullPath)|Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)" />
+
+      <ModuleAssets Condition="'%(ModuleAssetFiles.Link)' != ''"
+        Include="%(ModuleAssetFiles.FullPath)|Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.Link)" />
+
       <ModuleAssets Include="Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')" />
     </ItemGroup>
 
     <WriteLinesToFile
       File="obj\module.assets.map"
-      Lines="$(MSBuildProjectDirectory);@(ModuleAssets)"
+      Lines="@(ModuleAssets)"
       Condition="'@(ModuleAssets)' != ''"
       Overwrite="true"
       Encoding="utf-8"
@@ -48,7 +53,7 @@
     <ItemGroup>
       <EmbeddedResource Remove="@(EmbeddedResource)" />
       <EmbeddedResource Include="@(ModuleAssetFiles)" />
-      <EmbeddedResource Update="@(EmbeddedResource)">
+      <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' == ''">
         <LogicalName>$([System.String]::new('$(MSBuildProjectName)\%(RelativeDir)%(FileName)%(Extension)').Replace('\', '.').Replace('/', '.'))</LogicalName>
       </EmbeddedResource>
       <EmbeddedResource Include="obj\module.assets.map">

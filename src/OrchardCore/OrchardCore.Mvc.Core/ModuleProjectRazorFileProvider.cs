@@ -32,7 +32,7 @@ namespace OrchardCore.Mvc
             {
                 if (_paths == null)
                 {
-                    var paths = new List<string>();
+                    var paths = new List<KeyValuePair<string, string>>();
                     var mainAssembly = environment.LoadApplicationAssembly();
 
                     foreach (var moduleId in environment.GetModuleNames())
@@ -45,27 +45,17 @@ namespace OrchardCore.Mvc
                             continue;
                         }
 
-                        var assetPaths = environment.GetModuleAssets(moduleId);
-                        var projectFolder = assetPaths.FirstOrDefault();
-
-                        if (Directory.Exists(projectFolder))
-                        {
-                            assetPaths = assetPaths.Skip(1).Where(x => x.EndsWith(".cshtml")).ToList();
-
-                            paths.AddRange(assetPaths.Select(x => projectFolder + "/"
-                                + x.Substring(("Modules/" + moduleId).Length) + "|/" + x));
-                        }
+                        paths.AddRange(environment.GetModuleAssetsMap(moduleId).Where(x => x.Key
+                            .EndsWith(".cshtml", StringComparison.Ordinal)));
                     }
 
-                    var map = new Dictionary<string, string>(paths
-                        .Select(x => x.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
-                        .Where(x => x.Length == 2).ToDictionary(x => x[1], x => x[0]));
+                    var map = new Dictionary<string, string>(paths.ToDictionary(x => x.Key, x => x.Value));
 
                     var roots = new HashSet<string>();
 
-                    foreach (var path in map.Values.Where(p => p.Contains("/Pages/") && !p.StartsWith("/Pages/")))
+                    foreach (var path in map.Values.Where(p => p.Contains("/Pages/") && !p.StartsWith("/Pages/", StringComparison.Ordinal)))
                     {
-                        roots.Add(path.Substring(0, path.IndexOf("/Pages/")));
+                        roots.Add(path.Substring(0, path.IndexOf("/Pages/", StringComparison.Ordinal)));
                     }
 
                     if (roots.Count > 0)
@@ -85,9 +75,16 @@ namespace OrchardCore.Mvc
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (subpath != null && _paths.ContainsKey(subpath))
+            if (subpath == null)
             {
-                return new PhysicalFileInfo(new FileInfo(_paths[subpath]));
+                return new NotFoundFileInfo(subpath);
+            }
+
+            var path = NormalizePath(subpath);
+
+            if (_paths.ContainsKey(path))
+            {
+                return new PhysicalFileInfo(new FileInfo(_paths[path]));
             }
 
             return new NotFoundFileInfo(subpath);
@@ -95,18 +92,29 @@ namespace OrchardCore.Mvc
 
         public IChangeToken Watch(string filter)
         {
-            if (filter != null && _paths.ContainsKey(filter))
+            if (filter == null)
             {
-                return new PollingFileChangeToken(new FileInfo(_paths[filter]));
+                return NullChangeToken.Singleton;
             }
 
-            if (filter != null && _pagesFileProvider != null &&
-                filter.IndexOf("/Pages/**/*" + RazorViewEngine.ViewExtension) != -1)
+            var path = NormalizePath(filter);
+
+            if (_paths.ContainsKey(path))
             {
-                return _pagesFileProvider.Watch("/Pages/**/*" + RazorViewEngine.ViewExtension);
+                return new PollingFileChangeToken(new FileInfo(_paths[path]));
+            }
+
+            if (_pagesFileProvider != null && path.IndexOf("/Pages/**/*" + RazorViewEngine.ViewExtension, StringComparison.Ordinal) != -1)
+            {
+                return _pagesFileProvider.Watch("Pages/**/*" + RazorViewEngine.ViewExtension);
             }
 
             return NullChangeToken.Singleton;
+        }
+
+        private string NormalizePath(string path)
+        {
+            return path.Replace('\\', '/').Trim('/');
         }
     }
 }
