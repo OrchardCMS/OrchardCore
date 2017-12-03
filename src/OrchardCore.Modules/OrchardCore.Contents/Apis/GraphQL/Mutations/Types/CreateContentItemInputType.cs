@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
@@ -21,7 +20,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Mutations.Types
             Field(ci => ci.Published, true);
             Field(ci => ci.Latest, true);
 
-            Field<ContentPartsInputType>("ContentParts", resolve: x => { return null; });
+            Field<ContentPartsInputType>("ContentParts");
         }
     }
 

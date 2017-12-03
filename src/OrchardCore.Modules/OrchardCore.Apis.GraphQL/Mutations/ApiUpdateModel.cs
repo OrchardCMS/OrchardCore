@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -44,7 +46,7 @@ namespace OrchardCore.Apis.GraphQL.Mutations
             var modelState = new ModelStateDictionary();
 
             //var name = model.GetType().Name;
-            var token = _model[prefix];
+            var token = _model[prefix.ToGraphQLStringFormat()];
 
             if (token == null)
             {
@@ -93,17 +95,28 @@ namespace OrchardCore.Apis.GraphQL.Mutations
             var modelState = new ModelStateDictionary();
 
             //var name = model.GetType().Name;
-            var token = _model[prefix];
+            var token = _model[prefix.ToGraphQLStringFormat()];
 
             if (token == null)
             {
                 return false;
             }
 
-            foreach (var content in token.Children()) {
+            
 
-                modelState.SetModelValue(content.Path.Replace(prefix + ".", ""), content.ToString(), content.ToString());
-                modelState.SetModelValue(content.Path, content.ToString(), content.ToString());
+            foreach (var child in token.Children()) {
+
+                foreach (var content in child.Children())
+                {
+                    var property = modelMetadata.Properties.FirstOrDefault(x => string.Equals(
+                        (x.ContainerType.Name + "." + x.PropertyName), content.Path, StringComparison.InvariantCultureIgnoreCase));
+
+                    if (property != null)
+                    {
+                        modelState.SetModelValue((property.ContainerType.Name + "." + property.PropertyName),  content.ToString(), content.ToString());
+                        modelState.SetModelValue((property.PropertyName), content.ToString(), content.ToString());
+                    }
+                }
             }
 
             var actionContext = new Microsoft.AspNetCore.Mvc.ActionContext(
@@ -164,7 +177,7 @@ namespace OrchardCore.Apis.GraphQL.Mutations
                 throw new ArgumentNullException(nameof(key));
             }
 
-            var splitKey = key.Split('.');
+            var splitKey = key.Split('.').Select(x => x.ToGraphQLStringFormat());
             var path = string.Join(".", splitKey);
 
             var token = _values.SelectToken(path);
