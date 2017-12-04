@@ -24,10 +24,10 @@
 
     <ItemGroup>
       <ModuleAssets Condition="'%(ModuleAssetFiles.Link)' == ''"
-        Include="%(ModuleAssetFiles.FullPath)|Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)" />
+        Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)|%(ModuleAssetFiles.FullPath)" />
 
       <ModuleAssets Condition="'%(ModuleAssetFiles.Link)' != ''"
-        Include="%(ModuleAssetFiles.FullPath)|Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.Link)" />
+        Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.Link)|%(ModuleAssetFiles.FullPath)" />
 
       <ModuleAssets Include="Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')" />
     </ItemGroup>

@@ -77,7 +77,7 @@ namespace OrchardCore.Modules
                         return new KeyValuePair<string, string>(map, string.Empty);
                     }
 
-                    return new KeyValuePair<string, string>(map.Substring(index + 1), map.Substring(0, index));
+                    return new KeyValuePair<string, string>(map.Substring(0, index), map.Substring(index + 1));
                 });
             }
 

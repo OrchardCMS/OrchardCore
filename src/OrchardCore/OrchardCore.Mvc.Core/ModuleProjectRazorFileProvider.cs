@@ -18,7 +18,6 @@ namespace OrchardCore.Mvc
     public class ModuleProjectRazorFileProvider : IFileProvider
     {
         private static Dictionary<string, string> _paths;
-        private static CompositeFileProvider _pagesFileProvider;
         private static object _synLock = new object();
 
         public ModuleProjectRazorFileProvider(IHostingEnvironment environment)
@@ -49,21 +48,7 @@ namespace OrchardCore.Mvc
                             .EndsWith(".cshtml", StringComparison.Ordinal)));
                     }
 
-                    var map = new Dictionary<string, string>(paths.ToDictionary(x => x.Key, x => x.Value));
-
-                    var roots = new HashSet<string>();
-
-                    foreach (var path in map.Values.Where(p => p.Contains("/Pages/") && !p.StartsWith("/Pages/", StringComparison.Ordinal)))
-                    {
-                        roots.Add(path.Substring(0, path.IndexOf("/Pages/", StringComparison.Ordinal)));
-                    }
-
-                    if (roots.Count > 0)
-                    {
-                        _pagesFileProvider = new CompositeFileProvider(roots.Select(r => new PhysicalFileProvider(r)));
-                    }
-
-                    _paths = map;
+                    _paths = new Dictionary<string, string>(paths.ToDictionary(x => x.Key, x => x.Value));
                 }
             }
         }
@@ -102,11 +87,6 @@ namespace OrchardCore.Mvc
             if (_paths.ContainsKey(path))
             {
                 return new PollingFileChangeToken(new FileInfo(_paths[path]));
-            }
-
-            if (_pagesFileProvider != null && path.IndexOf("/Pages/**/*" + RazorViewEngine.ViewExtension, StringComparison.Ordinal) != -1)
-            {
-                return _pagesFileProvider.Watch("Pages/**/*" + RazorViewEngine.ViewExtension);
             }
 
             return NullChangeToken.Singleton;
