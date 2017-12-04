@@ -38,36 +38,36 @@ namespace OrchardCore.Contents.Apis.GraphQL.Mutations.Types
 
                 if (contentPart != null)
                 {
-                    var name = contentPart.GetType().Name; // About
-                    var partName = contentPartDefinition.Name; // BagPart
-
                     var filterGraphType = new InputContentPartAutoRegisteringObjectGraphType(contentPart);
-
-                    // Add Field needs to be like Content Item and Content Items.... 
-                    // so you can filter by blog...
-                    var fieldType = new FieldType
-                    {
-                        Name = name,
-                        ResolvedType = filterGraphType,
-                        Resolver = new FuncFieldResolver<object>(context =>
-                        {
-                            if (context.Source == null)
-                            {
-                                return null;
-                            }
-
-                            var contentPartType = (Type)context.FieldDefinition.Metadata["contentPartType"];
-
-                            return ((ContentItem)context.Source).Get(contentPartType, contentPartType.Name);
-                        }),
-                        Type = filterGraphType.GetType()
-                    };
 
                     if (filterGraphType.Fields.Any())
                     {
-                        fieldType.Metadata.Add("contentPartType", contentPart.GetType());
+                        var name = contentPart.GetType().Name; // About
+                        var partName = contentPartDefinition.Name; // BagPart
 
-                        AddField(fieldType);
+                        // Add Field needs to be like Content Item and Content Items.... 
+                        // so you can filter by blog...
+                        var field = new FieldType
+                        {
+                            Type = filterGraphType.GetType(),
+                            Name = name,
+                            Resolver = new FuncFieldResolver<object>(context =>
+                            {
+                                if (context.Source == null)
+                                {
+                                    return null;
+                                }
+
+                                var contentPartType = (Type)context.FieldDefinition.Metadata["contentPartType"];
+
+                                return ((ContentItem)context.Source).Get(contentPartType, contentPartType.Name);
+                            }),
+                            ResolvedType = filterGraphType,
+                        };
+
+                        field.Metadata.Add("contentPartType", contentPart.GetType());
+
+                        AddField(field);
                     }
                 }
             }

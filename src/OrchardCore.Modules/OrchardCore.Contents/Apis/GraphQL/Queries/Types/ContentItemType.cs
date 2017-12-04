@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -38,10 +39,11 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Types
                 return false;
             }
 
-            var field = Field(
-                filterGraphType.GetType(),
-                definition.Name,
-                resolve: new Func<ResolveFieldContext<ContentItem>, object>(context => {
+            var field = new FieldType
+            {
+                Type = filterGraphType.GetType(),
+                Name = definition.Name,
+                Resolver = new FuncFieldResolver<ContentItem, object> (context => {
                     var contentPartType = context
                     .FieldDefinition
                     .GetMetadata<Type>(ContentPartTypeIndexerName);
@@ -49,10 +51,13 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Types
                     return context
                         .Source
                         .Get(contentPartType, contentPartType.Name);
-                }));
+                }),
+                ResolvedType = filterGraphType
+            };
 
-            field.ResolvedType = filterGraphType;
             field.Metadata[ContentPartTypeIndexerName] = contentPart.GetType();
+
+            AddField(field);
 
             return true;
         }
