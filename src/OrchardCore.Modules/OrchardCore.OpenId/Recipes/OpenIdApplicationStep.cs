@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenIddict.Core;
@@ -42,11 +42,19 @@ namespace OrchardCore.OpenId.Recipes
             application.AllowImplicitFlow = model.AllowImplicitFlow;
             application.AllowPasswordFlow = model.AllowPasswordFlow;
             application.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
-            application.LogoutRedirectUri = model.LogoutRedirectUri;
-            application.RedirectUri = model.RedirectUri;
             application.SkipConsent = model.SkipConsent;
-            application.RoleNames = model.RoleNames;
+            application.RoleNames = new HashSet<string>(model.RoleNames);
             application.Type = model.Type;
+
+            if (!string.IsNullOrEmpty(model.LogoutRedirectUri))
+            {
+                application.PostLogoutRedirectUris = new HashSet<string> { model.LogoutRedirectUri };
+            }
+
+            if (!string.IsNullOrEmpty(model.RedirectUri))
+            {
+                application.RedirectUris = new HashSet<string> { model.RedirectUri };
+            }
 
             if (model.Type == ClientType.Confidential)
             {

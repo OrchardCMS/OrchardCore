@@ -1,9 +1,5 @@
-﻿using Newtonsoft.Json;
-using OpenIddict;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OrchardCore.OpenId.Models
 {
@@ -16,8 +12,9 @@ namespace OrchardCore.OpenId.Models
         public string ClientId { get; set; }
 
         /// <summary>
-        /// Gets or sets the hashed client secret
-        /// associated with the current application.
+        /// Gets or sets the client secret associated with the current application.
+        /// Note: depending on the application manager used to create this instance,
+        /// this property may be hashed or encrypted for security reasons.
         /// </summary>
         public string ClientSecret { get; set; }
 
@@ -34,16 +31,18 @@ namespace OrchardCore.OpenId.Models
         public int Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the logout callback URL
+        /// Gets or sets the logout callback URLs
         /// associated with the current application.
         /// </summary>
-        public string LogoutRedirectUri { get; set; }
+        public ISet<string> PostLogoutRedirectUris { get; set; }
+            = new HashSet<string>(StringComparer.Ordinal);
 
         /// <summary>
-        /// Gets or sets the callback URL
+        /// Gets or sets the callback URLs
         /// associated with the current application.
         /// </summary>
-        public string RedirectUri { get; set; }
+        public ISet<string> RedirectUris { get; set; }
+            = new HashSet<string>(StringComparer.Ordinal);
 
         /// <summary>
         /// Gets or sets the application type
@@ -60,7 +59,8 @@ namespace OrchardCore.OpenId.Models
         /// <summary>
         /// Gets or sets the RoleNames assined to the app.
         /// </summary>
-        public List<string> RoleNames { get; set; } = new List<string>();
+        public ISet<string> RoleNames { get; set; }
+            = new HashSet<string>(StringComparer.Ordinal);
 
         public bool AllowPasswordFlow { get; set; }
         public bool AllowClientCredentialsFlow { get; set; }

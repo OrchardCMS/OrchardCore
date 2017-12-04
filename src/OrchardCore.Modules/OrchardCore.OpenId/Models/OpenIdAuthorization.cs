@@ -1,24 +1,40 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OrchardCore.OpenId.Models
 {
     public class OpenIdAuthorization
     {
-        public virtual int Id { get; set; }
-
         /// <summary>
-        /// Gets or sets the space-delimited scopes
+        /// Gets or sets the identifier of the client application
         /// associated with the current authorization.
         /// </summary>
-        public string Scope { get; set; }
+        public int ApplicationId { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of tokens
+        /// Gets or sets the unique identifier
         /// associated with the current authorization.
         /// </summary>
-        public IList<OpenIdToken> Tokens { get; } = new List<OpenIdToken>();
+        public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the scopes associated with the current authorization.
+        /// </summary>
+        public ISet<string> Scopes { get; set; } = new HashSet<string>(StringComparer.Ordinal);
+
+        /// <summary>
+        /// Gets or sets the status of the current authorization.
+        /// </summary>
+        public string Status { get; set; }
+
+        /// <summary>
+        /// Gets or sets the subject associated with the current authorization.
+        /// </summary>
+        public string Subject { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the current authorization.
+        /// </summary>
+        public string Type { get; set; }
     }
 }

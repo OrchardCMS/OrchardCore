@@ -1,8 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace OrchardCore.OpenId.Models
 {
     public class OpenIdScope
@@ -18,5 +13,11 @@ namespace OrchardCore.OpenId.Models
         /// associated with the current scope.
         /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique name
+        /// associated with the current scope.
+        /// </summary>
+        public string Name { get; set; }
     }
 }
