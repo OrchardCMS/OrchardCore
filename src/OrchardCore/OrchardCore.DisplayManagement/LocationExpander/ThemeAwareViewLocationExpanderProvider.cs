@@ -75,7 +75,9 @@ namespace OrchardCore.DisplayManagement.LocationExpander
                         {
                             if (moduleId != theme.Id)
                             {
-                                var themeViewsPath = "/" + theme.Extension.SubPath + "/Views/" + moduleId;
+                                var themeViewsPath = '/' + theme.Extension.SubPath + "/Views";
+                                var themeViewsAreaPath = themeViewsPath + '/' + context.AreaName;
+                                yield return themeViewsAreaPath + "/Shared/{0}" + RazorViewEngine.ViewExtension;
                                 yield return themeViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension;
                             }
                         }
@@ -91,8 +93,10 @@ namespace OrchardCore.DisplayManagement.LocationExpander
                 {
                     if (context.AreaName != theme.Id)
                     {
-                        var themeViewsPath = '/' + theme.Extension.SubPath + "/Views/" + context.AreaName;
-                        result.Add(themeViewsPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
+                        var themeViewsPath = '/' + theme.Extension.SubPath + "/Views";
+                        var themeViewsAreaPath = themeViewsPath + '/' + context.AreaName;
+                        result.Add(themeViewsAreaPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
+                        result.Add(themeViewsAreaPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
                         result.Add(themeViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
                     }
                 }
