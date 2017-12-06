@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Navigation;
@@ -10,10 +10,5 @@ namespace OrchardCore.Contents.Services
     public interface IContentAdminFilter
     {
         Task FilterAsync(IQuery<ContentItem> query, ListContentsViewModel model, PagerParameters pagerParameters, IUpdateModel updateModel);
-    }
-
-    public interface IContentApiFilter
-    {
-        Task FilterAsync(IQuery<ContentItem> query, string parentContentItemId);
     }
 }

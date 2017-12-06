@@ -47,9 +47,6 @@ namespace OrchardCore.Lists
             services.AddScoped<IFeedQueryProvider, ListFeedQuery>();
             services.AddScoped<IContentPartDisplayDriver, ListPartFeedDisplayDriver>();
             services.AddScoped<IContentPartHandler, ListPartFeedHandler>();
-
-            //services.AddScoped<IApiPartDriver, ListPartApiPartDriver>();
-            //services.AddScoped<IContentApiFilter, ListPartContentApiFilter>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
