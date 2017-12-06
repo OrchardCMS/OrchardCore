@@ -17,8 +17,6 @@ namespace OrchardCore.RestApis.Filters
         private readonly ShellSettings _shellSettings;
         private readonly IApiContentManager _contentManager;
 
-        private string _tenantPath;
-
         private static string ContentType = "application/vnd.api+json";
 
         public JsonApiFilter(
@@ -27,8 +25,6 @@ namespace OrchardCore.RestApis.Filters
         {
             _shellSettings = shellSettings;
             _contentManager = contentManager;
-
-            _tenantPath = "/" + _shellSettings.RequestUrlPrefix;
         }
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
