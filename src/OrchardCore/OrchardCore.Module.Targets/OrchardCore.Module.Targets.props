@@ -74,6 +74,15 @@
     </ItemGroup>
   </Target>
 
+  <Target Name="GetModuleProjectLinkedRazorFiles" Returns="@(ModuleProjectLinkedRazorFiles)">
+    <ItemGroup>
+      <ModuleProjectLinkedRazorFiles Include="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' != ''">
+        <FromFullPath>%(EmbeddedResource.FullPath)</FromFullPath>
+        <ToRelativePath>$(MSBuildProjectName)\%(EmbeddedResource.Link)</ToRelativePath>
+      </ModuleProjectLinkedRazorFiles>
+    </ItemGroup>
+  </Target>
+
   <!-- Adds a custom .props file to the generated module package -->
 
   <ItemGroup>

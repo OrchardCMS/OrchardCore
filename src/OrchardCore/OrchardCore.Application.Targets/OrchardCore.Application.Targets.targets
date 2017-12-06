@@ -50,6 +50,16 @@
       </ModuleProjectRazorFiles>
     </ItemGroup>
 
+    <MSBuild
+      Targets="GetModuleProjectLinkedRazorFiles"
+      BuildInParallel="$(BuildInParallel)"
+      Projects="@(ModuleProjectReferences)"
+      Condition="'@(ModuleProjectReferences)' != ''"
+      ContinueOnError="true">
+
+      <Output ItemName="ModuleProjectLinkedRazorFiles" TaskParameter="TargetOutputs" />
+    </MSBuild>
+
     <Copy
       SourceFiles="@(ModulePackageRazorFiles)"
       DestinationFolder="Modules\%(RecursiveDir)"
@@ -60,6 +70,12 @@
       SourceFiles="@(ModuleProjectRazorFiles)"
       DestinationFolder="Modules\%(ProjectName)\%(RecursiveDir)"
       Condition="'@(ModuleProjectRazorFiles)' != ''"
+      ContinueOnError="true" />
+
+    <Copy
+      SourceFiles="%(ModuleProjectLinkedRazorFiles.FromFullPath)"
+      DestinationFiles="Modules\%(ModuleProjectLinkedRazorFiles.ToRelativePath)"
+      Condition="'@(ModuleProjectLinkedRazorFiles)' != ''"
       ContinueOnError="true" />
 
     <ItemGroup Condition="'@(MvcRazorFilesToCompile)' == ''">
@@ -73,20 +89,18 @@
     <ItemGroup>
       <ModuleAssetsAfterCompile Include="Modules\**" />
     </ItemGroup>
+
     <Delete Files="@(ModuleAssetsAfterCompile)" ContinueOnError="true" />
-    <RemoveDir
-      Directories="Modules\%(ModuleAssetsAfterCompile.RecursiveDir);Modules"
-      ContinueOnError="true" />
+    <RemoveDir Directories="Modules\%(ModuleAssetsAfterCompile.RecursiveDir);Modules" ContinueOnError="true" />
   </Target>
 
-  <Target Name="CleanModuleAssetsBeforeBuild" BeforeTargets="BeforeBuild;BeforeClean" Condition="Exists('Modules')">
+  <Target Name="CleanModuleAssetsBeforeBuild" BeforeTargets="BeforeBuild1;BeforeClean1" Condition="Exists('Modules')">
     <ItemGroup>
       <ModuleAssetsBeforeBuild Include="Modules\**" />
     </ItemGroup>
+
     <Delete Files="@(ModuleAssetsBeforeBuild)" ContinueOnError="true" />
-    <RemoveDir
-      Directories="Modules\%(ModuleAssetsBeforeBuild.RecursiveDir);Modules"
-      ContinueOnError="true" />
+    <RemoveDir Directories="Modules\%(ModuleAssetsBeforeBuild.RecursiveDir);Modules" ContinueOnError="true" />
   </Target>
 
   <PropertyGroup>
