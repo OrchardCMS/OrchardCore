@@ -43,7 +43,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Mutations.Types
                 if (contentPart != null)
                 {
                     var inputGraphType =
-                        typeof(InputObjectGraphType<>).MakeGenericType(new Type[] { contentPart.GetType() });
+                        typeof(InputObjectGraphType<>).MakeGenericType(contentPart.GetType());
 
                     var inputGraphTypeResolved = (IInputObjectGraphType)serviceProvider.GetService(inputGraphType);
 
@@ -53,8 +53,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Mutations.Types
 
                         Field(
                             inputGraphTypeResolved.GetType(),
-                            name
-                            );
+                            name);
                     }
                 }
             }

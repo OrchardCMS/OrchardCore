@@ -5,8 +5,6 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Types
 {
     public class ContentItemType : ObjectGraphType<ContentItem>
     {
-        //private readonly string ContentPartTypeIndexerName = "ContentPartType";
-
         public ContentItemType()
         {
             Name = "ContentItem";

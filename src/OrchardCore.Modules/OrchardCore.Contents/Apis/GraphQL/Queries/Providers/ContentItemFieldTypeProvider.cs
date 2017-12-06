@@ -7,9 +7,7 @@ using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
-using Microsoft.Extensions.DependencyInjection;
 using YesSql;
-using GraphQL.Resolvers;
 
 namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
 {
