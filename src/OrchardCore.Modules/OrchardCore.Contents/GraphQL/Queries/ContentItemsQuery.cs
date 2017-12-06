@@ -4,11 +4,14 @@ using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Microsoft.Extensions.Logging.Abstractions;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.GraphQL.Queries.Types;
+using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.Contents.GraphQL.Queries
@@ -17,6 +20,7 @@ namespace OrchardCore.Contents.GraphQL.Queries
     {
         public ContentItemsQuery(IContentManager contentManager,
             IEnumerable<ContentPart> contentParts,
+            IEnumerable<IGraphQLFilter<ContentItem>> graphQLFilters,
             ISession session)
         {
             Name = "ContentItems";
@@ -81,37 +85,21 @@ namespace OrchardCore.Contents.GraphQL.Queries
                     query = query.Where(q => q.ContentItemVersionId == value);
                 }
 
-                var contentItems = await query.ListAsync();
+                IQuery<ContentItem> contentItemsQuery = query;
 
-                foreach (var argument in context.Arguments)
+                foreach (var filter in graphQLFilters)
                 {
-                    if (argument.Value != null)
-                    {
-                        var nestedValues = argument.Value as IDictionary<string, object>;
-
-                        if (nestedValues != null)
-                        {
-                            var contentPart = contentParts.First(cp => cp.GetType().Name == argument.Key);
-                            var contentPartType = contentPart.GetType();
-
-                            foreach (var nestedValue in nestedValues)
-                            {
-                                contentItems = contentItems.Where(ci => {
-                                    var foundPart = ci
-                                        .Get(contentPartType, contentPartType.Name)
-                                        .AsDictionary()
-                                        .First(k => k.Key == nestedValue.Key);
-
-                                    return foundPart.Value.Equals(nestedValue.Value);
-                                });
-                            }
-                        }
-                    }
+                    contentItemsQuery = filter.PreQuery(contentItemsQuery, context);
                 }
 
-                var items = contentItems.ToList();
+                var contentItems = await contentItemsQuery.ListAsync();
 
-                return items;
+                foreach (var filter in graphQLFilters)
+                {
+                    contentItems = filter.PostQuery(contentItems, context);
+                }
+                
+                return contentItems.ToList();
             });
         }
     }

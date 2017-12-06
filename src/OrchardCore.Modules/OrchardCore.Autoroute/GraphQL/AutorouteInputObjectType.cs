@@ -9,8 +9,8 @@ namespace OrchardCore.Autoroute.GraphQL
         {
             Name = "AutoroutePartInput";
 
-            Field(x => x.Path, false);
-            Field(x => x.SetHomepage, false);
+            this.AddInputField("path", x => x.Path, true);
+            this.AddInputField("setHomepage", x => x.SetHomepage, true);
         }
     }
 }

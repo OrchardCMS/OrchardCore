@@ -9,8 +9,8 @@ namespace OrchardCore.Lists.GraphQL
         {
             Name = "ContainedPartInput";
 
-            Field("ParentContentItemId", x => x.ListContentItemId, false);
-            Field(x => x.Order, false);
+            this.AddInputField("listContentItemId", x => x.ListContentItemId, true);
+            this.AddInputField("order", x => x.Order, true);
         }
     }
 }

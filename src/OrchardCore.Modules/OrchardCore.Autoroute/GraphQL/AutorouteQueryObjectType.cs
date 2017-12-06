@@ -10,7 +10,6 @@ namespace OrchardCore.Autoroute.GraphQL
             Name = "AutoroutePart";
 
             Field(x => x.Path);
-            Field(x => x.SetHomepage);
         }
     }
 }

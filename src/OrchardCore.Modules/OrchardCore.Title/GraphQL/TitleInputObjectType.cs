@@ -9,7 +9,7 @@ namespace OrchardCore.Title.GraphQL
         {
             Name = "TitlePartInput";
 
-            Field(x => x.Title, false);
+            this.AddInputField("title", x => x.Title, true);
         }
     }
 }

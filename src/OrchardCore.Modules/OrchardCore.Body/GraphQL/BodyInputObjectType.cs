@@ -9,7 +9,7 @@ namespace OrchardCore.Body.GraphQL
         {
             Name = "BodyPartInput";
 
-            Field(x => x.Body, false);
+            this.AddInputField("body", x => x.Body, true);
         }
     }
 }

@@ -18,6 +18,7 @@ namespace OrchardCore.Contents.GraphQL.Queries.Providers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IEnumerable<ContentPart> _contentParts;
         private readonly IEnumerable<IInputObjectGraphType> _inputGraphTypes;
+        private readonly IEnumerable<IGraphQLFilter<ContentItem>> _graphQLFilters;
         private readonly ISession _session;
 
         public ContentItemFieldTypeProvider(
@@ -26,6 +27,7 @@ namespace OrchardCore.Contents.GraphQL.Queries.Providers
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<ContentPart> contentParts,
             IEnumerable<IInputObjectGraphType> inputGraphTypes,
+            IEnumerable<IGraphQLFilter<ContentItem>> graphQLFilters,
             ISession session)
         {
             _serviceProvider = serviceProvider;
@@ -33,6 +35,7 @@ namespace OrchardCore.Contents.GraphQL.Queries.Providers
             _contentDefinitionManager = contentDefinitionManager;
             _contentParts = contentParts;
             _inputGraphTypes = inputGraphTypes;
+            _graphQLFilters = graphQLFilters;
             _session = session;
         }
 
@@ -83,16 +86,15 @@ namespace OrchardCore.Contents.GraphQL.Queries.Providers
 
                         if (inputGraphTypeResolved != null)
                         {
-                            queryArguments.Add(new QueryArgument(inputGraphType)
+                            queryArguments.Add(new QueryArgument(inputGraphTypeResolved)
                             {
-                                Name = name,
-                                ResolvedType = inputGraphTypeResolved
+                                Name = partName
                             });
                         }
                     }
                 }
 
-                var query = new ContentItemsQuery(_contentManager, _contentParts, _session)
+                var query = new ContentItemsQuery(_contentManager, _contentParts, _graphQLFilters, _session)
                 {
                     Name = typeDefinition.Name,
                     ResolvedType = new ListGraphType(typeType)

@@ -2,6 +2,8 @@ using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using GraphQL.Types;
 using OrchardCore.Alias.Models;
+using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Alias.GraphQL
 {
@@ -15,6 +17,8 @@ namespace OrchardCore.Alias.GraphQL
 
             services.AddScoped<ObjectGraphType<AliasPart>, AliasQueryObjectType>();
             services.AddScoped<IObjectGraphType, AliasQueryObjectType>();
+
+            services.AddScoped<IGraphQLFilter<ContentItem>, AliasGraphQLFilter>();
         }
     }
 }
