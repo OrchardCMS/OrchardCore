@@ -11,16 +11,22 @@ namespace OrchardCore.Apis.GraphQL
     public class ContentSchema : Schema
     {
         public ContentSchema(IServiceProvider serviceProvider,
-            IEnumerable<IObjectGraphTypeProvider> objectGraphTypeProviders,
+            IEnumerable<IInputObjectGraphType> inputGraphTypes,
+            IEnumerable<IObjectGraphType> queryGraphTypes,
             IDependencyResolver dependencyResolver)
             : base(dependencyResolver)
         {
             Mutation = serviceProvider.GetService<MutationsSchema>();
             Query = serviceProvider.GetService<QueriesSchema>();
 
-            foreach (var objectGraphTypeProvider in objectGraphTypeProviders)
+            foreach (var type in inputGraphTypes)
             {
-                objectGraphTypeProvider.Register(this);
+                RegisterType(type);
+            }
+
+            foreach (var type in queryGraphTypes)
+            {
+                RegisterType(type);
             }
         }
     }

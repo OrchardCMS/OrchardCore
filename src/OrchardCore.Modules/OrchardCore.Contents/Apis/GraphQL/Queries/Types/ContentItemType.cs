@@ -1,15 +1,11 @@
-using System;
-using System.Linq;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.Contents.Apis.GraphQL.Queries.Types
 {
     public class ContentItemType : ObjectGraphType<ContentItem>
     {
-        private readonly string ContentPartTypeIndexerName = "ContentPartType";
+        //private readonly string ContentPartTypeIndexerName = "ContentPartType";
 
         public ContentItemType()
         {
@@ -28,38 +24,6 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Types
             Field(ci => ci.Author);
 
             // TODO: Return content parts?
-        }
-        
-        public bool TryAddContentPart(ContentTypePartDefinition definition, ContentPart contentPart)
-        {
-            var filterGraphType = new ContentPartAutoRegisteringObjectGraphType(contentPart);
-
-            if (!filterGraphType.Fields.Any())
-            {
-                return false;
-            }
-
-            var field = new FieldType
-            {
-                Type = filterGraphType.GetType(),
-                Name = definition.Name,
-                Resolver = new FuncFieldResolver<ContentItem, object> (context => {
-                    var contentPartType = context
-                    .FieldDefinition
-                    .GetMetadata<Type>(ContentPartTypeIndexerName);
-
-                    return context
-                        .Source
-                        .Get(contentPartType, contentPartType.Name);
-                }),
-                ResolvedType = filterGraphType
-            };
-
-            field.Metadata[ContentPartTypeIndexerName] = contentPart.GetType();
-
-            AddField(field);
-
-            return true;
         }
     }
 }

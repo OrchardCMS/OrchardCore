@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
+using Microsoft.Extensions.DependencyInjection;
 using YesSql;
+using GraphQL.Resolvers;
 
 namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
 {
@@ -18,22 +19,22 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IEnumerable<ContentPart> _contentParts;
-        private readonly IEnumerable<IObjectGraphType> _objectGraphTypes;
+        private readonly IEnumerable<IInputObjectGraphType> _inputGraphTypes;
         private readonly ISession _session;
 
         public ContentItemFieldTypeProvider(
-         IServiceProvider serviceProvider,
-         IContentManager contentManager,
-         IContentDefinitionManager contentDefinitionManager,
-         IEnumerable<ContentPart> contentParts,
-         IEnumerable<IObjectGraphType> objectGraphTypes,
-         ISession session)
+            IServiceProvider serviceProvider,
+            IContentManager contentManager,
+            IContentDefinitionManager contentDefinitionManager,
+            IEnumerable<ContentPart> contentParts,
+            IEnumerable<IInputObjectGraphType> inputGraphTypes,
+            ISession session)
         {
             _serviceProvider = serviceProvider;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _contentParts = contentParts;
-            _objectGraphTypes = objectGraphTypes;
+            _inputGraphTypes = inputGraphTypes;
             _session = session;
         }
 
@@ -41,9 +42,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
         {
             var fieldTypes = new List<FieldType>();
 
-            var typeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
-
-            foreach (var typeDefinition in typeDefinitions)
+            foreach (var typeDefinition in _contentDefinitionManager.ListTypeDefinitions())
             {
                 var typeType = new ContentItemType
                 {
@@ -61,18 +60,36 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
 
                     if (contentPart != null)
                     {
-                        typeType.TryAddContentPart(part, contentPart);
+                        var queryGraphType =
+                            typeof(ObjectGraphType<>).MakeGenericType(contentPart.GetType());
 
-                        // http://facebook.github.io/graphql/October2016/#sec-Input-Object-Values
-                        var inputGraphType = new InputContentPartAutoRegisteringObjectGraphType(contentPart);
-                        if (inputGraphType.Fields.Any())
+                        var inputGraphType =
+                            typeof(InputObjectGraphType<>).MakeGenericType(contentPart.GetType());
+
+                        var queryGraphTypeResolved = (IObjectGraphType)_serviceProvider.GetService(queryGraphType);
+
+                        if (queryGraphTypeResolved != null)
                         {
-                            queryArguments.Add(
-                                new QueryArgument(
-                                    inputGraphType.GetType()) {
-                                    Name = name,
-                                    ResolvedType = inputGraphType
+                            typeType.Field(
+                                queryGraphType,
+                                partName,
+                                resolve: context => {
+                                    var nameToResolve = context.ReturnType.Name;
+                                    var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
+
+                                    return context.Source.Get(typeToResolve, nameToResolve);
                                 });
+                        }
+
+                        var inputGraphTypeResolved = (IInputObjectGraphType)_serviceProvider.GetService(inputGraphType);
+
+                        if (inputGraphTypeResolved != null)
+                        {
+                            queryArguments.Add(new QueryArgument(inputGraphType)
+                            {
+                                Name = name,
+                                ResolvedType = inputGraphTypeResolved
+                            });
                         }
                     }
                 }

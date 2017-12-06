@@ -28,7 +28,7 @@ namespace OrchardCore.Contents.Apis.GraphQL.Queries
                 new QueryArgument<BooleanGraphType> { Name = "latest", Description = "is the content item the latest version", DefaultValue = true },
                 new QueryArgument<IntGraphType> { Name = "number", Description = "version number, 1,2,3 etc" },
                 new QueryArgument<StringGraphType> { Name = "contentType", Description = "type of content item" },
-                new QueryArgument<StringGraphType> { Name = "contentItemId", Description = "same as id" },
+                new QueryArgument<StringGraphType> { Name = "contentItemId", Description = "content item id" },
                 new QueryArgument<StringGraphType> { Name = "contentItemVersionId", Description = "the id of the version" }
             );
 

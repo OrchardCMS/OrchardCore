@@ -27,47 +27,34 @@ namespace OrchardCore.Contents.Apis.GraphQL.Mutations.Types
     public class ContentPartsInputType : InputObjectGraphType
     {
         public ContentPartsInputType(
+            IServiceProvider serviceProvider,
             IContentDefinitionManager contentDefinitionManager,
-            IEnumerable<ContentPart> _contentParts)
+            IEnumerable<ContentPart> _contentParts,
+            IEnumerable<IInputObjectGraphType> inputGraphTypes)
         {
             Name = "ContentPartsInput";
 
             foreach (var contentPartDefinition in contentDefinitionManager.ListPartDefinitions())
             {
-                var contentPart = _contentParts.FirstOrDefault(x => x.GetType().Name == contentPartDefinition.Name);
+                var partName = contentPartDefinition.Name; // BagPart
+
+                var contentPart = _contentParts.FirstOrDefault(x => x.GetType().Name == partName);
 
                 if (contentPart != null)
                 {
-                    var filterGraphType = new InputContentPartAutoRegisteringObjectGraphType(contentPart);
+                    var inputGraphType =
+                        typeof(InputObjectGraphType<>).MakeGenericType(new Type[] { contentPart.GetType() });
 
-                    if (filterGraphType.Fields.Any())
+                    var inputGraphTypeResolved = (IInputObjectGraphType)serviceProvider.GetService(inputGraphType);
+
+                    if (inputGraphTypeResolved != null)
                     {
                         var name = contentPart.GetType().Name; // About
-                        var partName = contentPartDefinition.Name; // BagPart
 
-                        // Add Field needs to be like Content Item and Content Items.... 
-                        // so you can filter by blog...
-                        var field = new FieldType
-                        {
-                            Type = filterGraphType.GetType(),
-                            Name = name,
-                            Resolver = new FuncFieldResolver<object>(context =>
-                            {
-                                if (context.Source == null)
-                                {
-                                    return null;
-                                }
-
-                                var contentPartType = (Type)context.FieldDefinition.Metadata["contentPartType"];
-
-                                return ((ContentItem)context.Source).Get(contentPartType, contentPartType.Name);
-                            }),
-                            ResolvedType = filterGraphType,
-                        };
-
-                        field.Metadata.Add("contentPartType", contentPart.GetType());
-
-                        AddField(field);
+                        Field(
+                            inputGraphTypeResolved.GetType(),
+                            name
+                            );
                     }
                 }
             }
