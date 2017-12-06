@@ -8,10 +8,10 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
+using OrchardCore.Contents.GraphQL.Queries.Types;
 using YesSql;
 
-namespace OrchardCore.Contents.Apis.GraphQL.Queries
+namespace OrchardCore.Contents.GraphQL.Queries
 {
     public class ContentItemsQuery : QueryFieldType
     {

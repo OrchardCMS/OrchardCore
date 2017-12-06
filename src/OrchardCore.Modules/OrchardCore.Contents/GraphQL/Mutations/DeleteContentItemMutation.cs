@@ -4,7 +4,7 @@ using GraphQL.Types;
 using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Contents.Apis.GraphQL.Mutations
+namespace OrchardCore.Contents.GraphQL.Mutations
 {
     public class DeleteContentItemMutation : MutationFieldType
     {

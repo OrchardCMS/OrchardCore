@@ -5,14 +5,14 @@ using OrchardCore.Lucene;
 using OrchardCore.Modules;
 using OrchardCore.Queries.Apis.GraphQL.Mutations;
 using OrchardCore.Queries.Apis.GraphQL.Mutations.Types;
-using OrchardCore.Queries.Lucene.Apis.GraphQL.Queries;
+using OrchardCore.Queries.Lucene.GraphQL.Queries;
 
-namespace OrchardCore.Queries.Lucene.Apis.GraphQL
+namespace OrchardCore.Queries.Lucene.GraphQL
 {
     /// <summary>
     /// These services are registered on the tenant service collection
     /// </summary>
-    [RequireFeatures("OrchardCore.Lucene")]
+    [RequireFeatures("OrchardCore.Lucene", "OrchardCore.Apis.GraphQL")]
     public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)

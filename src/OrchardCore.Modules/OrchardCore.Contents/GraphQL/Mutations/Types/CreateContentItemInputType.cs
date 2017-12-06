@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
 
-namespace OrchardCore.Contents.Apis.GraphQL.Mutations.Types
+namespace OrchardCore.Contents.GraphQL.Mutations.Types
 {
     public class CreateContentItemInputType : InputObjectGraphType<ContentItem>
     {

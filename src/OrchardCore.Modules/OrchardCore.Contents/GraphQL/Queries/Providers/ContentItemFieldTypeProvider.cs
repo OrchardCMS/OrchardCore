@@ -6,10 +6,10 @@ using GraphQL.Types;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
+using OrchardCore.Contents.GraphQL.Queries.Types;
 using YesSql;
 
-namespace OrchardCore.Contents.Apis.GraphQL.Queries.Providers
+namespace OrchardCore.Contents.GraphQL.Queries.Providers
 {
     public class ContentItemFieldTypeProvider : IDynamicQueryFieldTypeProvider
     {

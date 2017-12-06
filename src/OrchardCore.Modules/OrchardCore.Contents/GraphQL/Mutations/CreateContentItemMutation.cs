@@ -7,11 +7,11 @@ using OrchardCore.Apis.GraphQL.Mutations;
 using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.Contents.Apis.GraphQL.Mutations.Types;
-using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
+using OrchardCore.Contents.GraphQL.Mutations.Types;
+using OrchardCore.Contents.GraphQL.Queries.Types;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Contents.Apis.GraphQL.Mutations
+namespace OrchardCore.Contents.GraphQL.Mutations
 {
     public class CreateContentItemMutation : MutationFieldType
     {

@@ -3,9 +3,9 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using OrchardCore.ContentManagement;
 using OrchardCore.Apis.GraphQL.Types;
-using OrchardCore.Contents.Apis.GraphQL.Queries.Types;
+using OrchardCore.Contents.GraphQL.Queries.Types;
 
-namespace OrchardCore.Contents.Apis.GraphQL.Queries
+namespace OrchardCore.Contents.GraphQL.Queries
 {
     public class ContentItemQuery : QueryFieldType
     {

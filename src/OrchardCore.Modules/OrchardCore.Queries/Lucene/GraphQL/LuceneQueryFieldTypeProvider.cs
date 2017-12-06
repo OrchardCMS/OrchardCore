@@ -8,17 +8,18 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Types;
-using OrchardCore.Contents.Apis.GraphQL.Queries;
+using OrchardCore.Contents.GraphQL.Queries;
+using OrchardCore.Lucene;
 
-namespace OrchardCore.Queries.Sql.Apis.GraphQL.Queries
+namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 {
-    public class SqlQueryFieldTypeProvider : IDynamicQueryFieldTypeProvider
+    public class LuceneQueryFieldTypeProvider : IDynamicQueryFieldTypeProvider
     {
         private readonly IQueryManager _queryManager;
         private readonly IEnumerable<QueryFieldType> _queryFieldTypes;
         private readonly IDependencyResolver _dependencyResolver;
 
-        public SqlQueryFieldTypeProvider(IQueryManager queryManager,
+        public LuceneQueryFieldTypeProvider(IQueryManager queryManager,
             IEnumerable<QueryFieldType> queryFieldTypes,
             IDependencyResolver dependencyResolver)
         {
@@ -33,19 +34,20 @@ namespace OrchardCore.Queries.Sql.Apis.GraphQL.Queries
 
             var fieldTypes = new List<FieldType>();
 
-            foreach (var query in queries.OfType<SqlQuery>())
+            foreach (var query in queries.OfType<LuceneQuery>())
             {
                 if (string.IsNullOrWhiteSpace(query.Schema))
                     continue;
 
                 var name = query.Name;
                 var source = query.Source;
-
+                
                 var schema = JObject.Parse(query.Schema);
 
                 var type = schema["type"].ToString();
 
-                if (type.StartsWith("ContentItem/", System.StringComparison.OrdinalIgnoreCase))
+                if (query.ReturnContentItems &&
+                    type.StartsWith("ContentItem/", System.StringComparison.OrdinalIgnoreCase))
                 {
                     var contentType = type.Remove(0, 12);
                     fieldTypes.Add(BuildContentTypeFieldType(state, contentType, query));
@@ -59,7 +61,7 @@ namespace OrchardCore.Queries.Sql.Apis.GraphQL.Queries
             return fieldTypes;
         }
 
-        private FieldType BuildSchemaBasedFieldType(ObjectGraphType state, SqlQuery query, JToken schema)
+        private FieldType BuildSchemaBasedFieldType(ObjectGraphType state, LuceneQuery query, JToken schema)
         {
             var typetype = new ObjectGraphType<JObject>
             {
@@ -126,7 +128,7 @@ namespace OrchardCore.Queries.Sql.Apis.GraphQL.Queries
             return fieldType;
         }
 
-        private FieldType BuildContentTypeFieldType(ObjectGraphType state, string contentType, SqlQuery query)
+        private FieldType BuildContentTypeFieldType(ObjectGraphType state, string contentType, LuceneQuery query)
         {
             var typetype = state.Fields.OfType<ContentItemsQuery>().First(x => x.Name == contentType);
 
