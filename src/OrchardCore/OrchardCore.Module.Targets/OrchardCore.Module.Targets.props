@@ -23,13 +23,15 @@
     </RemoveDuplicates>
 
     <ItemGroup>
-      <ModuleAssets Condition="'%(ModuleAssetFiles.Link)' == ''"
-        Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)|%(ModuleAssetFiles.FullPath)" />
+      <ModuleAssets
+        Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)|%(ModuleAssetFiles.FullPath)"
+        Condition="'%(ModuleAssetFiles.Link)' == ''"/>
 
-      <ModuleAssets Condition="'%(ModuleAssetFiles.Link)' != ''"
-        Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.Link)|%(ModuleAssetFiles.FullPath)" />
+      <ModuleAssets
+        Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.Link)|%(ModuleAssetFiles.FullPath)"
+        Condition="'%(ModuleAssetFiles.Link)' != ''" />
 
-      <ModuleAssets Include="Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')" />
+    <ModuleAssets Include="Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists  ('$(ModuleType).txt')" />
     </ItemGroup>
 
     <WriteLinesToFile
@@ -74,12 +76,12 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="GetModuleProjectLinkedRazorFiles" Returns="@(ModuleProjectLinkedRazorFiles)">
+  <Target Name="GetModuleLinkedRazorFiles" Returns="@(ModuleLinkedRazorFiles)">
     <ItemGroup>
-      <ModuleProjectLinkedRazorFiles Include="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' != ''">
-        <FromFullPath>%(EmbeddedResource.FullPath)</FromFullPath>
+      <ModuleLinkedRazorFiles Include="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' != ''">
         <ToRelativePath>$(MSBuildProjectName)\%(EmbeddedResource.Link)</ToRelativePath>
-      </ModuleProjectLinkedRazorFiles>
+        <FromFullPath>%(EmbeddedResource.FullPath)</FromFullPath>
+      </ModuleLinkedRazorFiles>
     </ItemGroup>
   </Target>
 

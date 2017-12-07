@@ -51,13 +51,13 @@
     </ItemGroup>
 
     <MSBuild
-      Targets="GetModuleProjectLinkedRazorFiles"
+      Targets="GetModuleLinkedRazorFiles"
       BuildInParallel="$(BuildInParallel)"
       Projects="@(ModuleProjectReferences)"
       Condition="'@(ModuleProjectReferences)' != ''"
       ContinueOnError="true">
 
-      <Output ItemName="ModuleProjectLinkedRazorFiles" TaskParameter="TargetOutputs" />
+      <Output ItemName="ModuleLinkedRazorFiles" TaskParameter="TargetOutputs" />
     </MSBuild>
 
     <Copy
@@ -73,9 +73,9 @@
       ContinueOnError="true" />
 
     <Copy
-      SourceFiles="%(ModuleProjectLinkedRazorFiles.FromFullPath)"
-      DestinationFiles="Modules\%(ModuleProjectLinkedRazorFiles.ToRelativePath)"
-      Condition="'@(ModuleProjectLinkedRazorFiles)' != ''"
+      SourceFiles="%(ModuleLinkedRazorFiles.FromFullPath)"
+      DestinationFiles="Modules\%(ModuleLinkedRazorFiles.ToRelativePath)"
+      Condition="'@(ModuleLinkedRazorFiles)' != ''"
       ContinueOnError="true" />
 
     <ItemGroup Condition="'@(MvcRazorFilesToCompile)' == ''">
