@@ -11,12 +11,16 @@ namespace OrchardCore.Contents.JsonApi
     public class ContentJsonApiResultManager : IJsonApiResultManager
     {
         private readonly IEnumerable<IJsonApiResourceHandler<ContentItem>> _handlers;
+        private readonly IContentManager _contentManager;
 
         private readonly static JsonApiVersion Version = JsonApiVersion.Version11;
 
-        public ContentJsonApiResultManager(IEnumerable<IJsonApiResourceHandler<ContentItem>> handlers)
+        public ContentJsonApiResultManager(
+            IEnumerable<IJsonApiResourceHandler<ContentItem>> handlers,
+            IContentManager contentManager)
         {
             _handlers = handlers;
+            _contentManager = contentManager;
         }
 
         public Task<Document> Build(IUrlHelper urlHelper, object actionValue)
@@ -47,29 +51,29 @@ namespace OrchardCore.Contents.JsonApi
 
         public Task<Document> BuildDocumentCollection(IUrlHelper urlHelper, ContentItem[] contentItems)
         {
+            // TODO : Proper async await
+
             var resourceDocument = new ResourceCollectionDocument
             {
                 Links = new Links(), // TODO: Links for collections
-                Data = contentItems.Select(ci => BuildContentItemData(urlHelper, ci)).ToList(),
+                Data = contentItems.Select(ci => BuildContentItemData(urlHelper, ci).Result).ToList(),
                 JsonApiVersion = Version
             };
 
             return Task.FromResult<Document>(resourceDocument);
         }
 
-        public Task<Document> BuildDocument(IUrlHelper urlHelper, ContentItem contentItem)
+        public async Task<Document> BuildDocument(IUrlHelper urlHelper, ContentItem contentItem)
         {
-            var resourceDocument = new ResourceDocument
+            return new ResourceDocument
             {
-                Links = BuildContentItemLinks(urlHelper, contentItem),
-                Data = BuildContentItemData(urlHelper, contentItem),
+                Links = await BuildContentItemLinks(urlHelper, contentItem),
+                Data = await BuildContentItemData(urlHelper, contentItem),
                 JsonApiVersion = Version
             };
-
-            return Task.FromResult<Document>(resourceDocument);
         }
 
-        private Resource BuildContentItemData(IUrlHelper urlHelper, ContentItem contentItem)
+        private async Task<Resource> BuildContentItemData(IUrlHelper urlHelper, ContentItem contentItem)
         {
             return new Resource
             {
@@ -77,11 +81,11 @@ namespace OrchardCore.Contents.JsonApi
                 Id = contentItem.ContentItemId,
                 Attributes = BuildContentItemAttributes(urlHelper, contentItem),
                 Relationships = BuildContentItemRelationships(urlHelper, contentItem),
-                Links = BuildContentItemLinks(urlHelper, contentItem)
+                Links = await BuildContentItemLinks(urlHelper, contentItem)
             };
         }
 
-        private Links BuildContentItemLinks(IUrlHelper urlHelper, ContentItem contentItem)
+        private async Task<Links> BuildContentItemLinks(IUrlHelper urlHelper, ContentItem contentItem)
         {
             var links = new Links {
                     {
@@ -97,6 +101,49 @@ namespace OrchardCore.Contents.JsonApi
                             new { area = RouteHelpers.AreaName, contentItemVersionId = contentItem.ContentItemVersionId })
                     }
                 };
+
+            if (contentItem.Latest)
+            {
+                links.Add(
+                    LinkKeyworks.LatestVersion,
+                    urlHelper.RouteUrl(
+                        RouteHelpers.ApiRouteByIdName,
+                        new { area = RouteHelpers.AreaName, contentItemId = contentItem.ContentItemId })
+                    );
+            }
+            else {
+                var latestContentItem = await _contentManager.GetAsync(contentItem.ContentItemId, VersionOptions.Latest);
+
+                links.Add(
+                    LinkKeyworks.LatestVersion,
+                    urlHelper.RouteUrl(
+                        RouteHelpers.ApiRouteByVersionName,
+                        new { area = RouteHelpers.AreaName, contentItemVersionId = latestContentItem.ContentItemVersionId })
+                    );
+            }
+
+            if (contentItem.Published)
+            {
+                links.Add(
+                    LinkKeyworks.PublishedVersion,
+                    urlHelper.RouteUrl(
+                        RouteHelpers.ApiRouteByIdName,
+                        new { area = RouteHelpers.AreaName, contentItemId = contentItem.ContentItemId })
+                    );
+            }
+            else {
+                if (await _contentManager.HasPublishedVersionAsync(contentItem))
+                {
+                    var publishedContentItem = await _contentManager.GetAsync(contentItem.ContentItemId, VersionOptions.Published);
+
+                    links.Add(
+                        LinkKeyworks.PublishedVersion,
+                        urlHelper.RouteUrl(
+                            RouteHelpers.ApiRouteByVersionName,
+                            new { area = RouteHelpers.AreaName, contentItemVersionId = publishedContentItem.ContentItemVersionId })
+                        );
+                }
+            }
 
             // TODO: Need to add interface to allow parts to attach to it too
 
