@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OrchardCore.SecureSocketsLayer.ViewModels
+namespace OrchardCore.Https.ViewModels
 {
-    public class SslSettingsViewModel
+    public class HttpsSettingsViewModel
     {
         public bool IsHttpsRequest { get; set; }
         public bool RequireHttps { get; set; }

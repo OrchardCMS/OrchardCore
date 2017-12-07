@@ -2,7 +2,7 @@ using System;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Navigation;
 
-namespace OrchardCore.SecureSocketsLayer
+namespace OrchardCore.Https
 {
     public class AdminMenu : INavigationProvider
     {
@@ -23,8 +23,8 @@ namespace OrchardCore.SecureSocketsLayer
             builder
                 .Add(T["Design"], design => design
                     .Add(T["Settings"], settings => settings
-                        .Add(T["SSL"], "100", entry => entry
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "ssl" })
+                        .Add(T["HTTPS"], "100", entry => entry
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "Https" })
                             .LocalNav()
                         ))
                 );
