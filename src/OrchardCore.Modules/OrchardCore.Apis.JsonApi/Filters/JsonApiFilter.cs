@@ -1,30 +1,21 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using JsonApiSerializer;
-using JsonApiSerializer.JsonApi;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.ContentManagement;
-using OrchardCore.Environment.Shell;
 
-namespace OrchardCore.RestApis.Filters
+namespace OrchardCore.Apis.JsonApi
 {
     public class JsonApiFilter : IAsyncActionFilter
     {
-        private readonly ShellSettings _shellSettings;
-        private readonly IApiContentManager _contentManager;
+        private readonly IJsonApiResultManager _manager;
 
         private static string ContentType = "application/vnd.api+json";
 
         public JsonApiFilter(
-            ShellSettings shellSettings,
-            IApiContentManager contentManager)
+            IJsonApiResultManager manager)
         {
-            _shellSettings = shellSettings;
-            _contentManager = contentManager;
+            _manager = manager;
         }
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -56,53 +47,11 @@ namespace OrchardCore.RestApis.Filters
             actionExecutedContext.Result = await Build(urlHelper, result.Value);
         }
 
-        private Task<JsonResult> Build(IUrlHelper urlHelper, object actionValue)
+        private async Task<JsonResult> Build(IUrlHelper urlHelper, object actionValue)
         {
-            var contentItem = actionValue as ContentItem;
+            var result = await _manager.Build(urlHelper, actionValue);
 
-            if (contentItem != null)
-            {
-                return BuildContentItem(urlHelper, contentItem);
-            }
-
-            var contentItems = actionValue as IEnumerable<ContentItem>;
-
-            if (contentItem != null)
-            {
-                return BuildContentItems(urlHelper, contentItems.ToArray());
-            }
-
-            contentItems = actionValue as ContentItem[];
-
-            if (contentItems != null)
-            {
-                return BuildContentItems(urlHelper, contentItems.ToArray());
-            }
-
-            return null;
-        }
-
-        private async Task<JsonResult> BuildContentItem(IUrlHelper urlHelper, ContentItem contentItem)
-        {
-            DocumentRoot<ApiItem> document = new DocumentRoot<ApiItem>();
-            document.Data = await _contentManager.BuildAsync(contentItem, urlHelper, null);
-
-            return new JsonResult(document, new JsonApiSerializerSettings());
-        }
-
-        private async Task<JsonResult> BuildContentItems(IUrlHelper urlHelper, ContentItem[] contentItems)
-        {
-            var items = new List<ApiItem>();
-
-            foreach (var contentItem in contentItems)
-            {
-                items.Add(await _contentManager.BuildAsync(contentItem, urlHelper, null));
-            }
-
-            var document = new DocumentRoot<List<ApiItem>>();
-            document.Data = items;
-
-            return new JsonResult(document, new JsonApiSerializerSettings());
+            return new JsonResult(result);
         }
     }
 }

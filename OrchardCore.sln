@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2006
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules.Cms", "OrchardCore.Modules.Cms", "{90030E85-0C4F-456F-B879-443E8A3F220D}"
 EndProject
@@ -297,7 +297,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Apis.GraphQL.Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Apis.JsonApi.Client", "src\OrchardCore\OrchardCore.Apis.JsonApi.Client\OrchardCore.Apis.JsonApi.Client.csproj", "{E14243B5-AE3C-42BF-9838-664A6B4AA9A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Apis.GraphQL.Abstractions", "src\OrchardCore\OrchardCore.Apis.GraphQL.Abstractions\OrchardCore.Apis.GraphQL.Abstractions.csproj", "{2E36F29E-6703-4A13-B5E1-56E6CE861F5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Apis.GraphQL.Abstractions", "src\OrchardCore\OrchardCore.Apis.GraphQL.Abstractions\OrchardCore.Apis.GraphQL.Abstractions.csproj", "{2E36F29E-6703-4A13-B5E1-56E6CE861F5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Apis.JsonApi.Abstractions", "src\OrchardCore\OrchardCore.Apis.JsonApi.Abstractions\OrchardCore.Apis.JsonApi.Abstractions.csproj", "{74B6E688-93B8-40DD-AD38-B69F0C9A4805}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -837,6 +839,10 @@ Global
 		{2E36F29E-6703-4A13-B5E1-56E6CE861F5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E36F29E-6703-4A13-B5E1-56E6CE861F5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E36F29E-6703-4A13-B5E1-56E6CE861F5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74B6E688-93B8-40DD-AD38-B69F0C9A4805}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74B6E688-93B8-40DD-AD38-B69F0C9A4805}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74B6E688-93B8-40DD-AD38-B69F0C9A4805}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74B6E688-93B8-40DD-AD38-B69F0C9A4805}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -988,6 +994,7 @@ Global
 		{C1276F72-C345-458D-A780-AF83655BB8D4} = {156244E0-3BB3-4843-9D2D-1B5C1A47F236}
 		{E14243B5-AE3C-42BF-9838-664A6B4AA9A2} = {156244E0-3BB3-4843-9D2D-1B5C1A47F236}
 		{2E36F29E-6703-4A13-B5E1-56E6CE861F5D} = {156244E0-3BB3-4843-9D2D-1B5C1A47F236}
+		{74B6E688-93B8-40DD-AD38-B69F0C9A4805} = {156244E0-3BB3-4843-9D2D-1B5C1A47F236}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
