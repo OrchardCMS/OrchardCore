@@ -79,15 +79,15 @@ namespace OrchardCore.Contents.JsonApi
             {
                 Type = contentItem.ContentType,
                 Id = contentItem.ContentItemId,
-                Attributes = BuildContentItemAttributes(urlHelper, contentItem),
-                Relationships = BuildContentItemRelationships(urlHelper, contentItem),
+                Attributes = await BuildContentItemAttributes(urlHelper, contentItem),
+                Relationships = await BuildContentItemRelationships(urlHelper, contentItem),
                 Links = await BuildContentItemLinks(urlHelper, contentItem)
             };
         }
 
         private async Task<Links> BuildContentItemLinks(IUrlHelper urlHelper, ContentItem contentItem)
         {
-            var links = new Links {
+            var links = new Links { 
                     {
                         Keywords.Self,
                         urlHelper.RouteUrl(
@@ -149,25 +149,25 @@ namespace OrchardCore.Contents.JsonApi
 
             foreach (var handler in _handlers)
             {
-                handler.UpdateLinks(links, urlHelper, contentItem);
+                await handler.UpdateLinks(links, urlHelper, contentItem);
             }
 
             return links;
         }
 
-        private Relationships BuildContentItemRelationships(IUrlHelper urlHelper, ContentItem contentItem)
+        private async Task<Relationships> BuildContentItemRelationships(IUrlHelper urlHelper, ContentItem contentItem)
         {
             IDictionary<string, Relationship> relationships = new Dictionary<string, Relationship>();
 
             foreach (var handler in _handlers)
             {
-                handler.UpdateRelationships(relationships, urlHelper, contentItem);
+                await handler.UpdateRelationships(relationships, urlHelper, contentItem);
             }
 
             return new Relationships(relationships);
         }
 
-        private ApiObject BuildContentItemAttributes(IUrlHelper urlHelper, ContentItem contentItem)
+        private async Task<ApiObject> BuildContentItemAttributes(IUrlHelper urlHelper, ContentItem contentItem)
         {
             var properties = new List<ApiProperty> {
                 ApiProperty.Create("ContentItemVersionId", contentItem.ContentItemVersionId),
@@ -182,7 +182,7 @@ namespace OrchardCore.Contents.JsonApi
 
             foreach (var handler in _handlers)
             {
-                properties.AddRange(handler.BuildAttributes(urlHelper, contentItem));
+                properties.AddRange(await handler.BuildAttributes(urlHelper, contentItem));
             }
 
             return new ApiObject(properties);
