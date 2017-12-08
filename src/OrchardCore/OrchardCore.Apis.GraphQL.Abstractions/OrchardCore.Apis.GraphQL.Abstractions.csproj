@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="GraphQL" Version="2.0.0-alpha-817" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(MicrosoftExtensionsDependencyInjectionAbstractionsPackageVersion)" />
     <PackageReference Include="YesSql.Abstractions" Version="$(YesSqlVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\graphql-dotnet\src\GraphQL\GraphQL.csproj" />
     <ProjectReference Include="..\OrchardCore.Mvc.Abstractions\OrchardCore.Mvc.Abstractions.csproj" />
   </ItemGroup>
 

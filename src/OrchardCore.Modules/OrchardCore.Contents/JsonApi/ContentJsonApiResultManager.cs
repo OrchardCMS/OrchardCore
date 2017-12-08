@@ -49,18 +49,14 @@ namespace OrchardCore.Contents.JsonApi
             return Task.FromResult<Document>(null);
         }
 
-        public Task<Document> BuildDocumentCollection(IUrlHelper urlHelper, ContentItem[] contentItems)
+        public async Task<Document> BuildDocumentCollection(IUrlHelper urlHelper, ContentItem[] contentItems)
         {
-            // TODO : Proper async await
-
-            var resourceDocument = new ResourceCollectionDocument
+            return new ResourceCollectionDocument
             {
                 Links = new Links(), // TODO: Links for collections
-                Data = contentItems.Select(ci => BuildContentItemData(urlHelper, ci).Result).ToList(),
+                Data = (await Task.WhenAll(contentItems.Select(ci => BuildContentItemData(urlHelper, ci)))).ToList(),
                 JsonApiVersion = Version
             };
-
-            return Task.FromResult<Document>(resourceDocument);
         }
 
         public async Task<Document> BuildDocument(IUrlHelper urlHelper, ContentItem contentItem)
@@ -144,9 +140,7 @@ namespace OrchardCore.Contents.JsonApi
                         );
                 }
             }
-
-            // TODO: Need to add interface to allow parts to attach to it too
-
+            
             foreach (var handler in _handlers)
             {
                 await handler.UpdateLinks(links, urlHelper, contentItem);
@@ -157,7 +151,7 @@ namespace OrchardCore.Contents.JsonApi
 
         private async Task<Relationships> BuildContentItemRelationships(IUrlHelper urlHelper, ContentItem contentItem)
         {
-            IDictionary<string, Relationship> relationships = new Dictionary<string, Relationship>();
+            var relationships = new Dictionary<string, Relationship>();
 
             foreach (var handler in _handlers)
             {

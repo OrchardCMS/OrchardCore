@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.FunctionalTests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Tests.Apis
 {
@@ -18,7 +19,8 @@ namespace OrchardCore.Tests.Apis
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddBareOrchard(null, Path.Combine("sites", _configuration.SiteName));
+            services.AddOrchardCms();
+            services.Configure<ShellOptions>(options => options.ShellsContainerName = Path.Combine("sites", _configuration.SiteName));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

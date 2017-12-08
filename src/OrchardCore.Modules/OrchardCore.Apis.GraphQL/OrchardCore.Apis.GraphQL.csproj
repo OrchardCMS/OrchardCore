@@ -10,7 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\graphql-dotnet\src\GraphQL\GraphQL.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Apis.GraphQL.Abstractions\OrchardCore.Apis.GraphQL.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
   </ItemGroup>
