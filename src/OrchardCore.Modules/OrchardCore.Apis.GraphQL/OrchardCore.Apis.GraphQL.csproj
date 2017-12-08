@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageAssetFiles Remove="Module.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="$(MicrosoftAspNetCoreMvcViewFeaturesPackageVersion)" />
     <PackageReference Include="YesSql.Abstractions" Version="$(YesSqlVersion)" />
   </ItemGroup>
@@ -15,6 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Module.txt">
+      <PackagePath>assets\$(PackageId)\$(ModuleType).txt</PackagePath>
+    </None>
     <None Update="Views\Admin\Index.cshtml">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>

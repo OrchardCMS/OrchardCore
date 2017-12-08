@@ -12,12 +12,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageAssetFiles Remove="Module.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="$(MicrosoftAspNetCoreMvcViewFeaturesPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Apis.JsonApi.Abstractions\OrchardCore.Apis.JsonApi.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Module.txt">
+      <PackagePath>assets\$(PackageId)\$(ModuleType).txt</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

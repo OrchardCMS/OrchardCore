@@ -87,13 +87,13 @@ namespace OrchardCore.Contents.JsonApi
                     {
                         Keywords.Self,
                         urlHelper.RouteUrl(
-                            RouteHelpers.ApiRouteByIdName,
+                            RouteHelpers.ContentItems.ApiRouteByIdName,
                             new { area = RouteHelpers.AreaName, contentItemId = contentItem.ContentItemId })
                     },
                     {
                         Keywords.Version,
                         urlHelper.RouteUrl(
-                            RouteHelpers.ApiRouteByVersionName,
+                            RouteHelpers.ContentItems.ApiRouteByVersionName,
                             new { area = RouteHelpers.AreaName, contentItemVersionId = contentItem.ContentItemVersionId })
                     }
                 };
@@ -103,7 +103,7 @@ namespace OrchardCore.Contents.JsonApi
                 links.Add(
                     LinkKeyworks.LatestVersion,
                     urlHelper.RouteUrl(
-                        RouteHelpers.ApiRouteByIdName,
+                        RouteHelpers.ContentItems.ApiRouteByIdName,
                         new { area = RouteHelpers.AreaName, contentItemId = contentItem.ContentItemId })
                     );
             }
@@ -113,7 +113,7 @@ namespace OrchardCore.Contents.JsonApi
                 links.Add(
                     LinkKeyworks.LatestVersion,
                     urlHelper.RouteUrl(
-                        RouteHelpers.ApiRouteByVersionName,
+                        RouteHelpers.ContentItems.ApiRouteByVersionName,
                         new { area = RouteHelpers.AreaName, contentItemVersionId = latestContentItem.ContentItemVersionId })
                     );
             }
@@ -123,7 +123,7 @@ namespace OrchardCore.Contents.JsonApi
                 links.Add(
                     LinkKeyworks.PublishedVersion,
                     urlHelper.RouteUrl(
-                        RouteHelpers.ApiRouteByIdName,
+                        RouteHelpers.ContentItems.ApiRouteByIdName,
                         new { area = RouteHelpers.AreaName, contentItemId = contentItem.ContentItemId })
                     );
             }
@@ -135,7 +135,7 @@ namespace OrchardCore.Contents.JsonApi
                     links.Add(
                         LinkKeyworks.PublishedVersion,
                         urlHelper.RouteUrl(
-                            RouteHelpers.ApiRouteByVersionName,
+                            RouteHelpers.ContentItems.ApiRouteByVersionName,
                             new { area = RouteHelpers.AreaName, contentItemVersionId = publishedContentItem.ContentItemVersionId })
                         );
                 }
