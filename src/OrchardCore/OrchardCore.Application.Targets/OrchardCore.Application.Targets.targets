@@ -38,13 +38,6 @@
   <Target Name="CompileModuleRazorFiles" BeforeTargets="_ResolveInputArguments">
 
     <ItemGroup>
-      <ModuleProjectReferences
-        Include="@(_MSBuildProjectReferenceExistent)"
-        Condition="Exists('%(RootDir)%(Directory)Module.txt') Or Exists('%(RootDir)%(Directory)obj\Module.txt') Or
-                   Exists('%(RootDir)%(Directory)Theme.txt') Or Exists('%(RootDir)%(Directory)obj\Theme.txt')" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ModuleProjectRazorFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml">
         <ProjectName>%(Filename)</ProjectName>
       </ModuleProjectRazorFiles>
@@ -87,6 +80,7 @@
 
   <Target Name="CleanModuleAssetsAfterCompile" AfterTargets="_MvcRazorPrecompile" Condition="Exists('Modules')">
     <ItemGroup>
+      <MvcRazorFilesToCompile Remove="@(MvcModulesRazorFiles)" />
       <ModuleAssetsAfterCompile Include="Modules\**" />
     </ItemGroup>
 
@@ -94,7 +88,7 @@
     <RemoveDir Directories="Modules\%(ModuleAssetsAfterCompile.RecursiveDir);Modules" ContinueOnError="true" />
   </Target>
 
-  <Target Name="CleanModuleAssetsBeforeBuild" BeforeTargets="BeforeBuild1;BeforeClean1" Condition="Exists('Modules')">
+  <Target Name="CleanModuleAssetsBeforeBuild" BeforeTargets="BeforeBuild;BeforeClean" Condition="Exists('Modules')">
     <ItemGroup>
       <ModuleAssetsBeforeBuild Include="Modules\**" />
     </ItemGroup>
@@ -102,9 +96,5 @@
     <Delete Files="@(ModuleAssetsBeforeBuild)" ContinueOnError="true" />
     <RemoveDir Directories="Modules\%(ModuleAssetsBeforeBuild.RecursiveDir);Modules" ContinueOnError="true" />
   </Target>
-
-  <PropertyGroup>
-    <MvcRazorExcludeViewFilesFromPublish>false</MvcRazorExcludeViewFilesFromPublish>
-  </PropertyGroup>
 
 </Project>
