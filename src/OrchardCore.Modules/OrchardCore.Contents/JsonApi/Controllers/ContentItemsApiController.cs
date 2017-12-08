@@ -65,17 +65,17 @@ namespace OrchardCore.Content.JsonApi.Controllers
             return new ObjectResult(contentItem);
         }
 
-        [Route("contentitems/contenttype/{contentType}", Name = RouteHelpers.ContentItems.ApiRouteByVersionName)]
-        public async Task<IActionResult> GetByType(string contentType)
-        {
-            var contentItems = await _session
-                .Query<ContentItem, ContentItemIndex>(x => x.ContentType == contentType)
-                .ListAsync();
+        //[Route("contentitems/contenttype/{contentType}", Name = RouteHelpers.ContentItems.ApiR)]
+        //public async Task<IActionResult> GetByType(string contentType)
+        //{
+        //    var contentItems = await _session
+        //        .Query<ContentItem, ContentItemIndex>(x => x.ContentType == contentType)
+        //        .ListAsync();
 
-            var authorizedContentItems =
-                await contentItems.FilterByRole(_authorizationService, Permissions.ViewContent, User);
+        //    var authorizedContentItems =
+        //        await contentItems.FilterByRole(_authorizationService, Permissions.ViewContent, User);
 
-            return new ObjectResult(authorizedContentItems);
-        }
+        //    return new ObjectResult(authorizedContentItems);
+        //}
     }
 }

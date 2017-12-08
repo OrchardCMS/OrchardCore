@@ -17,23 +17,6 @@ namespace OrchardCore.Lists.JsonApi
             _contentManager = contentManager;
         }
 
-        //public override void UpdateLinks(Links links, IUrlHelper urlHelper, ContentItem item)
-        //{
-        //    var containedPart = item.As<ContainedPart>();
-
-        //    if (containedPart == null)
-        //    {
-        //        return;
-        //    }
-
-        //    links.Add(
-        //        "parent",
-        //        urlHelper.RouteUrl(
-        //            "Api.GetContents.ById",
-        //            new { area = "Orchard.Contents", contentItemId = containedPart.ListContentItemId })
-        //        );
-        //}
-
         public override Task<IEnumerable<ApiProperty>> BuildAttributes(IUrlHelper urlHelper, ContentItem item)
         {
             var containedPart = item.As<ContainedPart>();
