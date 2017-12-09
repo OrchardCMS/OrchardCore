@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Mutations;
 using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement;
@@ -17,6 +19,7 @@ namespace OrchardCore.Contents.GraphQL.Mutations
     {
         public CreateContentItemMutation(IContentManager contentManager,
             IContentItemDisplayManager contentDisplay,
+            IAuthorizationService authorizationService,
             IClock clock,
             IApiUpdateModel apiUpdateModel)
         {
@@ -36,6 +39,11 @@ namespace OrchardCore.Contents.GraphQL.Mutations
 
                 var contentItem = contentManager.New(contentItemFabrication.ContentType);
 
+                if (!await authorizationService.AuthorizeAsync((context.UserContext as GraphQLUserContext)?.User, Permissions.EditContent, contentItem))
+                {
+                    return null;
+                }
+
                 contentItem.Author = contentItemFabrication.Author;
                 contentItem.Owner = contentItemFabrication.Owner;
                 contentItem.CreatedUtc = clock.UtcNow;
@@ -46,6 +54,7 @@ namespace OrchardCore.Contents.GraphQL.Mutations
 
                 if (contentItemFabrication.Published)
                 {
+                    // TODO : Auth check for publish
                     await contentManager.PublishAsync(contentItem);
                 }
                 else

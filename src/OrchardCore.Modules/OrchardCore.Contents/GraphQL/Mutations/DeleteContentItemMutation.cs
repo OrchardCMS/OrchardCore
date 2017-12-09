@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Authorization;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement;
 
@@ -8,7 +10,8 @@ namespace OrchardCore.Contents.GraphQL.Mutations
 {
     public class DeleteContentItemMutation : MutationFieldType
     {
-        public DeleteContentItemMutation(IContentManager contentManager)
+        public DeleteContentItemMutation(IContentManager contentManager,
+            IAuthorizationService authorizationService)
         {
             Name = "DeleteContentItem";
 
@@ -22,6 +25,11 @@ namespace OrchardCore.Contents.GraphQL.Mutations
                 var contentItemId = context.GetArgument<string>("ContentItemId");
 
                 var contentItem = await contentManager.GetAsync(contentItemId);
+
+                if (!await authorizationService.AuthorizeAsync((context.UserContext as GraphQLUserContext)?.User, Permissions.DeleteContent, contentItem))
+                {
+                    return null;
+                }
 
                 if (contentItem != null)
                 {
