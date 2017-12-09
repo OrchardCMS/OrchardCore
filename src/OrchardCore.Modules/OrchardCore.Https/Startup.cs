@@ -1,4 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Rewrite;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -13,13 +16,24 @@ namespace OrchardCore.Https
 {
     public class Startup : StartupBase
     {
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var rewriteOptions = new RewriteOptions();
+
+            // Configure the rewrite options.
+            serviceProvider.GetService<IConfigureOptions<RewriteOptions>>().Configure(rewriteOptions);
+
+            app.UseRewriter(rewriteOptions);
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, HttpsSettingsDisplayDriver>();
             services.AddSingleton<IHttpsService, HttpsService>();
-
-            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<MvcOptions>, MvcOptionsHttpsConfiguration>());
+            services.AddSingleton(new RewriteOptions());
+            
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<RewriteOptions>, RewriteOptionsHttpsConfiguration>());
         }
     }
 }
