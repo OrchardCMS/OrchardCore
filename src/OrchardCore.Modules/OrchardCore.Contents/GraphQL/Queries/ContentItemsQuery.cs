@@ -1,17 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.GraphQL.Queries.Types;
-using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.Contents.GraphQL.Queries
@@ -21,6 +19,7 @@ namespace OrchardCore.Contents.GraphQL.Queries
         public ContentItemsQuery(IContentManager contentManager,
             IEnumerable<ContentPart> contentParts,
             IEnumerable<IGraphQLFilter<ContentItem>> graphQLFilters,
+            IAuthorizationService authorizationServices,
             ISession session)
         {
             Name = "ContentItems";
@@ -55,7 +54,7 @@ namespace OrchardCore.Contents.GraphQL.Queries
                 var query = session.Query<ContentItem, ContentItemIndex>().Where(q =>
                     q.Published == isPublished &&
                     q.Latest == isLatest);
-                
+
                 if (context.HasPopulatedArgument("number"))
                 {
                     var value = context.GetArgument<int>("number");
@@ -93,6 +92,12 @@ namespace OrchardCore.Contents.GraphQL.Queries
                 }
 
                 var contentItems = await contentItemsQuery.ListAsync();
+
+                contentItems = await contentItems.FilterByRole(
+                    authorizationServices,
+                    Permissions.ViewContent,
+                    (context.UserContext as GraphQLUserContext)?.User
+                    );
 
                 foreach (var filter in graphQLFilters)
                 {
