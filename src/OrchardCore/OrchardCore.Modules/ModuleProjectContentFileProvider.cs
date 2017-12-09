@@ -47,7 +47,7 @@ namespace OrchardCore.Modules
                         }
 
                         paths.AddRange(environment.GetModuleAssetsMap(moduleId).Where(x => x.Key
-                            .StartsWith("Modules/" + moduleId + "/Content/", StringComparison.Ordinal)));
+                            .StartsWith(".Modules/" + moduleId + "/Content/", StringComparison.Ordinal)));
                     }
 
                     _paths = new Dictionary<string, string>(paths.ToDictionary(x => x.Key, x => x.Value));

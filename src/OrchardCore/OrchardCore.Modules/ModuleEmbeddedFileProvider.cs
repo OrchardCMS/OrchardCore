@@ -14,8 +14,8 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleEmbeddedFileProvider : IFileProvider
     {
-        private const string Root = "Modules";
-        private const string RootWithTrailingSlash = "Modules/";
+        private const string Root = ".Modules";
+        private const string RootWithTrailingSlash = ".Modules/";
         private IHostingEnvironment _environment;
         private string _contentPathWithTrailingSlash;
 

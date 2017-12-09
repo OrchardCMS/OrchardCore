@@ -24,14 +24,14 @@
 
     <ItemGroup>
       <ModuleAssets
-        Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)|%(ModuleAssetFiles.FullPath)"
+        Include=".Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)|%(ModuleAssetFiles.FullPath)"
         Condition="'%(ModuleAssetFiles.Link)' == ''"/>
 
       <ModuleAssets
-        Include="Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.Link)|%(ModuleAssetFiles.FullPath)"
+        Include=".Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.Link)|%(ModuleAssetFiles.FullPath)"
         Condition="'%(ModuleAssetFiles.Link)' != ''" />
 
-    <ModuleAssets Include="Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists  ('$(ModuleType).txt')" />
+    <ModuleAssets Include=".Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists  ('$(ModuleType).txt')" />
     </ItemGroup>
 
     <WriteLinesToFile
