@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -19,6 +20,7 @@ namespace OrchardCore.Contents.GraphQL.Queries.Providers
         private readonly IEnumerable<ContentPart> _contentParts;
         private readonly IEnumerable<IInputObjectGraphType> _inputGraphTypes;
         private readonly IEnumerable<IGraphQLFilter<ContentItem>> _graphQLFilters;
+        private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
 
         public ContentItemFieldTypeProvider(
@@ -28,6 +30,7 @@ namespace OrchardCore.Contents.GraphQL.Queries.Providers
             IEnumerable<ContentPart> contentParts,
             IEnumerable<IInputObjectGraphType> inputGraphTypes,
             IEnumerable<IGraphQLFilter<ContentItem>> graphQLFilters,
+            IAuthorizationService authorizationService,
             ISession session)
         {
             _serviceProvider = serviceProvider;
@@ -36,6 +39,7 @@ namespace OrchardCore.Contents.GraphQL.Queries.Providers
             _contentParts = contentParts;
             _inputGraphTypes = inputGraphTypes;
             _graphQLFilters = graphQLFilters;
+            _authorizationService = authorizationService;
             _session = session;
         }
 
@@ -94,7 +98,12 @@ namespace OrchardCore.Contents.GraphQL.Queries.Providers
                     }
                 }
 
-                var query = new ContentItemsQuery(_contentManager, _contentParts, _graphQLFilters, _session)
+                var query = new ContentItemsQuery(
+                    _contentManager, 
+                    _contentParts,
+                    _graphQLFilters,
+                    _authorizationService,
+                    _session)
                 {
                     Name = typeDefinition.Name,
                     ResolvedType = new ListGraphType(typeType)
