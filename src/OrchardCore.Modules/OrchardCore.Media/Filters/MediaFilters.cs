@@ -18,7 +18,7 @@ namespace OrchardCore.Media.Filters
         public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var url = input.ToStringValue();
-            var imageUrl = _mediaFileStore.GetPublicUrl(url);
+            var imageUrl = _mediaFileStore.MapPathToPublicUrl(url);
 
             return Task.FromResult<FluidValue>(new StringValue(imageUrl ?? url));
         }
