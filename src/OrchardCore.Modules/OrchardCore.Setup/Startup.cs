@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
 using OrchardCore.Setup.Services;
 
 namespace OrchardCore.Setup
@@ -12,7 +12,7 @@ namespace OrchardCore.Setup
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ISetupService, SetupService>();
-		}
+        }
 
 		public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {

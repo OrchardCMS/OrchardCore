@@ -101,3 +101,65 @@ To access a named query, use the name as the input.
 The example above will iterate over all the results of the query name `RecentBlogPosts` and display the text representing
 the content item. Any available property on the results of the queries can be used. This example assumes the results
 will be content items.
+
+## GraphQL
+
+### Schemas
+
+Schemas help tell apis what they are serving up. There are two properties within a schema, both are mutually exclusive to one another.
+
+The `Type` property tells the api engine what it is, in the instance below, a content item. The second property, a `properties` array, tells which fields to serve up.
+
+When a Type of `ContentItem/*` is specified, the properties section is ignored, though this might change if a Type starts with comething other then `ContentItem/`
+
+Whilst we conform to the [Json Schema](http://json-schema.org/examples.html), we only use a subset as shown below.
+
+```json
+{
+    "type": "ContentItem/Blog",
+    "properties": {
+        "title": {
+            "type": "string"
+        },
+        "position": {
+            "type": "integer",
+        }
+    }
+}
+```
+
+### Mutations
+
+#### Create Query
+
+All create queries will have the naming convention `CreateQUERYNAME` i.e. a SqlQuery will be `CreateSqlQuery`.
+
+```json
+{ 
+	mutation { 
+		CreateLuceneQuery { 
+			createLuceneQuery(
+				Name: ""
+				Index: ""
+				Template: ""
+				ReturnContentItems: true/false
+				Schema: ""
+			) 
+		}  
+	} 
+}
+```
+
+Returns a fully populate query object.
+
+#### Delete Query
+
+{ 
+	mutation { 
+		DeleteQuery { 
+			deleteQuery(
+				Name: ""
+			) 
+		}  
+	} 
+}

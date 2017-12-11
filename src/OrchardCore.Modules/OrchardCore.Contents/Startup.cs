@@ -119,8 +119,6 @@ namespace OrchardCore.Contents
                 template: "Admin/Contents/ContentItems",
                 defaults: new { controller = "Admin", action = "List" }
             );
-
-
         }
     }
 }

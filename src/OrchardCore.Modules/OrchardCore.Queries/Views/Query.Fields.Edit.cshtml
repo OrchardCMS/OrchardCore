@@ -6,3 +6,9 @@
     <span class="hint">@T["The technical name of the query."]</span>
     <input asp-for="Source" type="hidden" />
 </fieldset>
+
+<fieldset class="form-group">
+    <label asp-for="Schema">@T["Schema"]</label>
+    <textarea asp-for="Schema" rows="12" class="form-control"></textarea>
+    <span class="hint">@T["The schema the api will use to return results."]</span>
+</fieldset>

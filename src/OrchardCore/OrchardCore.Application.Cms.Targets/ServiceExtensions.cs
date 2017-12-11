@@ -22,14 +22,19 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSitesFolder();
             services.AddCommands();
             services.AddAuthentication();
-            services.AddModules(modules => 
+            services.AddModules(modules =>
             {
                 if (configuration != null)
                 {
                     modules.WithConfiguration(configuration);
                 }
 
-                modules.WithDefaultFeatures("OrchardCore.Mvc", "OrchardCore.Settings", "OrchardCore.Setup", "OrchardCore.Recipes", "OrchardCore.Commons");
+                modules.WithDefaultFeatures(
+                    "OrchardCore.Mvc",
+                    "OrchardCore.Settings",
+                    "OrchardCore.Setup",
+                    "OrchardCore.Recipes",
+                    "OrchardCore.Commons");
             });
 
             return services;
