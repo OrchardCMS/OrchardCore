@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -14,8 +15,11 @@ namespace OrchardCore.Media.Drivers
 {
     public class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaField>
     {
-        public MediaFieldDisplayDriver(IStringLocalizer<MediaFieldDisplayDriver> localizer)
+        private readonly IMediaFileStore _mediaFileStore;
+
+        public MediaFieldDisplayDriver(IStringLocalizer<MediaFieldDisplayDriver> localizer, IMediaFileStore mediaFileStore)
         {
+            _mediaFileStore = mediaFileStore;
             S = localizer;
         }
 
@@ -25,6 +29,7 @@ namespace OrchardCore.Media.Drivers
         {
             return Shape<DisplayMediaFieldViewModel>("MediaField", model =>
             {
+                model.PublicUrls = (field.Paths ?? new string[0]).Select(p => _mediaFileStore.MapPathToPublicUrl(p)).ToArray();
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
