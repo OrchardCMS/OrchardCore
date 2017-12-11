@@ -15,7 +15,7 @@
     <YesSqlVersion>2.0.0-beta-1097</YesSqlVersion>
     <YesSqlProvidersVersion>1.0.0-beta-1097</YesSqlProvidersVersion>
     <NewtonsoftJsonVersion>10.0.3</NewtonsoftJsonVersion>
-	<OpenIddictVersion>2.0.0-rc2-0783</OpenIddictVersion>
+    <OpenIddictVersion>2.0.0-rc2-0783</OpenIddictVersion>
   </PropertyGroup>
 
 </Project>
