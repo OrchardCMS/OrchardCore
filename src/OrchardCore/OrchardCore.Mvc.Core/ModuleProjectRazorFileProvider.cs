@@ -43,11 +43,11 @@ namespace OrchardCore.Mvc
                             continue;
                         }
 
-                        assets.AddRange(module.Assets.Where(a => a.ModulePath
+                        assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath
                             .EndsWith(".cshtml", StringComparison.Ordinal)));
                     }
 
-                    _paths = assets.ToDictionary(a => a.ModulePath, a => a.ProjectPath);
+                    _paths = assets.ToDictionary(a => a.ModuleAssetPath, a => a.ProjectAssetPath);
                 }
             }
         }

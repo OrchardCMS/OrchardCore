@@ -70,8 +70,8 @@ namespace OrchardCore.Modules
 
     public class Module
     {
+        private const string ModulesRoot = ".Modules/";
         private const string ModuleAssetsMap = "module.assets.map";
-        private const string RootWithTrailingSlash = ".Modules/";
 
         private readonly IDictionary<string, IFileInfo> _fileInfos = new Dictionary<string, IFileInfo>();
         private readonly IFileProvider _fileProvider;
@@ -81,42 +81,41 @@ namespace OrchardCore.Modules
             if (!string.IsNullOrWhiteSpace(name))
             {
                 Name = name;
-                Path = RootWithTrailingSlash + Name;
+                ModuleRoot = ModulesRoot + Name + '/';
                 Assembly = Assembly.Load(new AssemblyName(name));
                 _fileProvider = new EmbeddedFileProvider(Assembly);
 
                 Assets = _fileProvider.GetFileInfo(ModuleAssetsMap).ReadAllLines().Select(a => new ModuleAsset(a));
-                AssetPaths = Assets.Select(a => a.ModulePath);
+                AssetPaths = Assets.Select(a => a.ModuleAssetPath);
             }
             else
             {
-                Name = Path = string.Empty;
+                Name = ModuleRoot = string.Empty;
                 Assets = Enumerable.Empty<ModuleAsset>();
                 AssetPaths = Enumerable.Empty<string>();
             }
         }
 
         public string Name { get; }
-        public string Path { get; }
+        public string ModuleRoot { get; }
         public Assembly Assembly { get; }
         public IEnumerable<ModuleAsset> Assets { get; }
         public IEnumerable<string> AssetPaths { get; }
 
-        public IFileInfo GetFileInfo(string subpath)
+        public IFileInfo GetFileInfo(string fileName)
         {
-            if (!_fileInfos.TryGetValue(subpath, out var fileInfo))
+            if (!_fileInfos.TryGetValue(fileName, out var fileInfo))
             {
-                if (!AssetPaths.Contains(subpath, StringComparer.Ordinal))
+                if (!AssetPaths.Contains(ModuleRoot + fileName, StringComparer.Ordinal))
                 {
-                    return new NotFoundFileInfo(subpath);
+                    return new NotFoundFileInfo(fileName);
                 }
 
                 lock (_fileInfos)
                 {
-                    if (!_fileInfos.TryGetValue(subpath, out fileInfo))
+                    if (!_fileInfos.TryGetValue(fileName, out fileInfo))
                     {
-                        var fileName = subpath.Substring(Path.Length + 1);
-                        _fileInfos[subpath] = fileInfo = _fileProvider.GetFileInfo(fileName);
+                        _fileInfos[fileName] = fileInfo = _fileProvider.GetFileInfo(fileName);
                     }
                 }
             }
@@ -134,17 +133,17 @@ namespace OrchardCore.Modules
 
             if (index == -1)
             {
-                ModulePath = asset;
-                ProjectPath = string.Empty;
+                ModuleAssetPath = asset;
+                ProjectAssetPath = string.Empty;
             }
             else
             {
-                ModulePath = asset.Substring(0, index);
-                ProjectPath = asset.Substring(index + 1);
+                ModuleAssetPath = asset.Substring(0, index);
+                ProjectAssetPath = asset.Substring(index + 1);
             }
         }
 
-        public string ModulePath { get;  }
-        public string ProjectPath { get; }
+        public string ModuleAssetPath { get;  }
+        public string ProjectAssetPath { get; }
     }
 }

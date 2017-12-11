@@ -46,11 +46,11 @@ namespace OrchardCore.Modules
                             continue;
                         }
 
-                        assets.AddRange(module.Assets.Where(a => a.ModulePath.StartsWith(
+                        assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath.StartsWith(
                             ".Modules/" + name + "/Content/", StringComparison.Ordinal)));
                     }
 
-                    _paths = assets.ToDictionary(a => a.ModulePath, a => a.ProjectPath);
+                    _paths = assets.ToDictionary(a => a.ModuleAssetPath, a => a.ProjectAssetPath);
                 }
             }
         }

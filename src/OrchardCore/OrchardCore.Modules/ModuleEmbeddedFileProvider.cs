@@ -14,15 +14,16 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleEmbeddedFileProvider : IFileProvider
     {
-        private const string Root = ".Modules";
-        private const string RootWithTrailingSlash = ".Modules/";
+        private const string ModulesRoot = ".Modules/";
+        private const string ModulesFolder = ".Modules";
+
         private IHostingEnvironment _environment;
-        private string _contentPathWithTrailingSlash;
+        private string _contentRoot;
 
         public ModuleEmbeddedFileProvider(IHostingEnvironment hostingEnvironment, string contentPath = null)
         {
             _environment = hostingEnvironment;
-            _contentPathWithTrailingSlash = contentPath != null ? NormalizePath(contentPath) + '/' : "";
+            _contentRoot = contentPath != null ? NormalizePath(contentPath) + '/' : "";
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
@@ -32,33 +33,33 @@ namespace OrchardCore.Modules
                 return NotFoundDirectoryContents.Singleton;
             }
 
-            var folder = _contentPathWithTrailingSlash + NormalizePath(subpath);
+            var folder = _contentRoot + NormalizePath(subpath);
 
             var entries = new List<IFileInfo>();
 
             if (folder == "")
             {
-                entries.Add(new EmbeddedDirectoryInfo(Root));
+                entries.Add(new EmbeddedDirectoryInfo(ModulesFolder));
             }
-            else if (folder == Root)
+            else if (folder == ModulesFolder)
             {
                 entries.AddRange(_environment.GetApplication().ModuleNames
                     .Select(n => new EmbeddedDirectoryInfo(n)));
             }
-            else if (folder.StartsWith(RootWithTrailingSlash, StringComparison.Ordinal))
+            else if (folder.StartsWith(ModulesRoot, StringComparison.Ordinal))
             {
-                var underRootPath = folder.Substring(RootWithTrailingSlash.Length);
+                var subPath = folder.Substring(ModulesRoot.Length);
 
-                var index = underRootPath.IndexOf('/');
-                var name = index == -1 ? underRootPath : underRootPath.Substring(0, index);
+                var index = subPath.IndexOf('/');
+                var name = index == -1 ? subPath : subPath.Substring(0, index);
 
                 var directories = new HashSet<string>();
                 var paths = _environment.GetModule(name).AssetPaths;
 
                 foreach (var path in paths.Where(p => p.StartsWith(folder, StringComparison.Ordinal)))
                 {
-                    var underDirectoryPath = path.Substring(folder.Length + 1);
-                    index = underDirectoryPath.IndexOf('/');
+                    subPath = path.Substring(folder.Length + 1);
+                    index = subPath.IndexOf('/');
 
                     if (index == -1)
                     {
@@ -66,11 +67,11 @@ namespace OrchardCore.Modules
                     }
                     else
                     {
-                        directories.Add(underDirectoryPath.Substring(0, index));
+                        directories.Add(subPath.Substring(0, index));
                     }
                 }
 
-                entries.AddRange(directories.Select(f => new EmbeddedDirectoryInfo(f)));
+                entries.AddRange(directories.Select(d => new EmbeddedDirectoryInfo(d)));
             }
 
             return new EmbeddedDirectoryContents(entries);
@@ -83,18 +84,19 @@ namespace OrchardCore.Modules
                 return new NotFoundFileInfo(subpath);
             }
 
-            var path = _contentPathWithTrailingSlash + NormalizePath(subpath);
+            var path = _contentRoot + NormalizePath(subpath);
 
-            if (path.StartsWith(RootWithTrailingSlash, StringComparison.Ordinal))
+            if (path.StartsWith(ModulesRoot, StringComparison.Ordinal))
             {
-                var underRootPath = path.Substring(RootWithTrailingSlash.Length);
-                var index = underRootPath.IndexOf('/');
+                var subPath = path.Substring(ModulesRoot.Length);
+                var index = subPath.IndexOf('/');
 
                 if (index != -1)
                 {
-                    var name = underRootPath.Substring(0, index);
+                    var name = subPath.Substring(0, index);
                     var module = _environment.GetModule(name);
-                    return module.GetFileInfo(path);
+                    var fileName = subPath.Substring(name.Length + 1);
+                    return module.GetFileInfo(fileName);
                 }
             }
 
