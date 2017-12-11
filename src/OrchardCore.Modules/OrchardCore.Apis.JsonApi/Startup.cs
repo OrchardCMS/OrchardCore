@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Apis.JsonApi
@@ -8,10 +10,8 @@ namespace OrchardCore.Apis.JsonApi
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<MvcOptions>((options) =>
-            {
-                options.Filters.Add(typeof(JsonApiFilter));
-            });
+            services.TryAddEnumerable(
+               ServiceDescriptor.Transient<IConfigureOptions<MvcOptions>, MvcJsonApiMvcOptionsSetup>());
         }
     }
 }

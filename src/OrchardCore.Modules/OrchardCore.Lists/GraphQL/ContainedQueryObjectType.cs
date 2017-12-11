@@ -9,7 +9,7 @@ namespace OrchardCore.Lists.GraphQL
         {
             Name = "ContainedPart";
 
-            Field("ParentContentItemId", x => x.ListContentItemId);
+            Field(x => x.ListContentItemId);
             Field(x => x.Order);
         }
     }

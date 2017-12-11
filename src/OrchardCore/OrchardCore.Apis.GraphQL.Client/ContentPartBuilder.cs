@@ -32,13 +32,13 @@ namespace OrchardCore.Apis.GraphQL.Client
 
         internal string Build() {
             var sb = new StringBuilder();
-            sb.AppendFormat("{0}: {{ ", _contentPartName);
+            sb.AppendFormat("{0}: {{ ", _contentPartName.ToGraphQLStringFormat());
 
 
             for (var i = 0; i < _keysWithValues.Count; i++)
             {
                 var item = _keysWithValues.ElementAt(i);
-                sb.AppendFormat("{0}: \"{1}\"", item.Key, item.Value);
+                sb.AppendFormat("{0}: \"{1}\"", item.Key.ToGraphQLStringFormat(), item.Value);
 
                 if (i < (_keysWithValues.Count - 1))
                 {

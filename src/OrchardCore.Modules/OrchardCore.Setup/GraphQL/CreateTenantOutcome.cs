@@ -1,4 +1,4 @@
-namespace OrchardCore.Setup.Apis.GraphQL
+namespace OrchardCore.Setup.GraphQL
 {
     public class CreateTenantOutcome
     {

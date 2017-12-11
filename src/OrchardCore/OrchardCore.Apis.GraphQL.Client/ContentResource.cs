@@ -22,7 +22,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             var variables = contentTypeBuilder.Build();
 
             var requestJson = new JObject(
-                new JProperty("query", "mutation CreateContentItem { createContentItem( " + variables + " ) { contentItemId } }"));
+                new JProperty("query", "mutation { createContentItem( ContentItem: { " + variables + " } ) { contentItemId } }"));
 
             var response = await _client.PostJsonAsync("api/graphql", requestJson.ToString());
 

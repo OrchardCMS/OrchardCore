@@ -33,6 +33,7 @@ namespace OrchardCore.Lists
         {
             services.AddSingleton<IIndexProvider, ContainedPartIndexProvider>();
             services.AddScoped<IContentDisplayDriver, ContainedPartDisplayDriver>();
+            services.AddSingleton<ContentPart, ContainedPart>();
             services.AddTransient<IContentAdminFilter, ListPartContentAdminFilter>();
 
             // List Part

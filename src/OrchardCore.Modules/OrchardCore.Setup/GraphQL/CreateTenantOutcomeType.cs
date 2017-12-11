@@ -1,6 +1,6 @@
 using GraphQL.Types;
 
-namespace OrchardCore.Setup.Apis.GraphQL
+namespace OrchardCore.Setup.GraphQL
 {
     public class CreateTenantOutcomeType : AutoRegisteringObjectGraphType<CreateTenantOutcome>
     {

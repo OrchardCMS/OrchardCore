@@ -78,7 +78,7 @@ namespace OrchardCore.Apis.GraphQL.Mutations
                 actionContext,
                 _metadataProvider,
                 _modelBinderFactory,
-                new ApiValueProivder(_model),
+                new ApiValueProvider(_model),
                 _objectModelValidator);
 
             return updateModel;
@@ -131,7 +131,7 @@ namespace OrchardCore.Apis.GraphQL.Mutations
                 actionContext,
                 _metadataProvider,
                 _modelBinderFactory,
-                new ApiValueProivder(_model),
+                new ApiValueProvider(_model),
                 _objectModelValidator,
                 includeExpressions);
 
@@ -155,11 +155,11 @@ namespace OrchardCore.Apis.GraphQL.Mutations
         }
     }
 
-    public class ApiValueProivder : IValueProvider
+    public class ApiValueProvider : IValueProvider
     {
         private readonly JObject _values;
 
-        public ApiValueProivder(JObject values)
+        public ApiValueProvider(JObject values)
         {
             _values = values;
         }

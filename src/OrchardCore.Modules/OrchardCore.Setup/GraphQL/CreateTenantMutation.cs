@@ -13,7 +13,7 @@ using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
 using OrchardCore.Setup.ViewModels;
 
-namespace OrchardCore.Setup.Apis.GraphQL
+namespace OrchardCore.Setup.GraphQL
 {
     public class CreateTenantMutation : MutationFieldType
     {

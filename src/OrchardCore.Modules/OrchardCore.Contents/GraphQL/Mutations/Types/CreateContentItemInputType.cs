@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using GraphQL.Types;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.Contents.GraphQL.Mutations.Types
 {
@@ -26,33 +24,24 @@ namespace OrchardCore.Contents.GraphQL.Mutations.Types
     {
         public ContentPartsInputType(
             IServiceProvider serviceProvider,
-            IContentDefinitionManager contentDefinitionManager,
-            IEnumerable<ContentPart> _contentParts,
-            IEnumerable<IInputObjectGraphType> inputGraphTypes)
+            IEnumerable<ContentPart> _contentParts)
         {
             Name = "ContentPartsInput";
 
-            foreach (var contentPartDefinition in contentDefinitionManager.ListPartDefinitions())
+            foreach (var contentPart in _contentParts)
             {
-                var partName = contentPartDefinition.Name; // BagPart
+                var inputGraphType =
+                    typeof(InputObjectGraphType<>).MakeGenericType(contentPart.GetType());
 
-                var contentPart = _contentParts.FirstOrDefault(x => x.GetType().Name == partName);
+                var inputGraphTypeResolved = (IInputObjectGraphType)serviceProvider.GetService(inputGraphType);
 
-                if (contentPart != null)
+                if (inputGraphTypeResolved != null)
                 {
-                    var inputGraphType =
-                        typeof(InputObjectGraphType<>).MakeGenericType(contentPart.GetType());
+                    var name = contentPart.GetType().Name; // About
 
-                    var inputGraphTypeResolved = (IInputObjectGraphType)serviceProvider.GetService(inputGraphType);
-
-                    if (inputGraphTypeResolved != null)
-                    {
-                        var name = contentPart.GetType().Name; // About
-
-                        Field(
-                            inputGraphTypeResolved.GetType(),
-                            name);
-                    }
+                    Field(
+                        inputGraphTypeResolved.GetType(),
+                        name);
                 }
             }
         }

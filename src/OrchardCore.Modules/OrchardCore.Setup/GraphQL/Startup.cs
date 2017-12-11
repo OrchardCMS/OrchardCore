@@ -2,9 +2,10 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Setup.Apis.GraphQL
+namespace OrchardCore.Setup.GraphQL
 {
-    public class GraphQLStartup : StartupBase
+    [RequireFeatures("OrchardCore.Apis.GraphQL")]
+    public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
