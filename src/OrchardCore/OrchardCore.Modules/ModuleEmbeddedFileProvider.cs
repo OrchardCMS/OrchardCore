@@ -42,19 +42,20 @@ namespace OrchardCore.Modules
             }
             else if (folder == Root)
             {
-                entries.AddRange(_environment.GetModuleNames().Select(x => new EmbeddedDirectoryInfo(x)));
+                entries.AddRange(_environment.GetApplication().ModuleNames
+                    .Select(n => new EmbeddedDirectoryInfo(n)));
             }
             else if (folder.StartsWith(RootWithTrailingSlash, StringComparison.Ordinal))
             {
                 var underRootPath = folder.Substring(RootWithTrailingSlash.Length);
 
                 var index = underRootPath.IndexOf('/');
-                var moduleId = index == -1 ? underRootPath : underRootPath.Substring(0, index);
+                var name = index == -1 ? underRootPath : underRootPath.Substring(0, index);
 
-                var folders = new HashSet<string>();
-                var assets = _environment.GetModuleAssets(moduleId);
+                var directories = new HashSet<string>();
+                var paths = _environment.GetModule(name).AssetPaths;
 
-                foreach (var path in assets.Where(x => x.StartsWith(folder, StringComparison.Ordinal)))
+                foreach (var path in paths.Where(p => p.StartsWith(folder, StringComparison.Ordinal)))
                 {
                     var underDirectoryPath = path.Substring(folder.Length + 1);
                     index = underDirectoryPath.IndexOf('/');
@@ -65,11 +66,11 @@ namespace OrchardCore.Modules
                     }
                     else
                     {
-                        folders.Add(underDirectoryPath.Substring(0, index));
+                        directories.Add(underDirectoryPath.Substring(0, index));
                     }
                 }
 
-                entries.AddRange(folders.Select(x => new EmbeddedDirectoryInfo(x)));
+                entries.AddRange(directories.Select(f => new EmbeddedDirectoryInfo(f)));
             }
 
             return new EmbeddedDirectoryContents(entries);
@@ -91,19 +92,9 @@ namespace OrchardCore.Modules
 
                 if (index != -1)
                 {
-                    var moduleId = underRootPath.Substring(0, index);
-                    var assets = _environment.GetModuleAssets(moduleId);
-
-                    if (assets.Contains(path))
-                    {
-                        var fileName = underRootPath.Substring(moduleId.Length + 1);
-                        var fileInfo = _environment.GetModuleFileInfo(moduleId, fileName);
-
-                        if (fileInfo != null)
-                        {
-                            return fileInfo;
-                        }
-                    }
+                    var name = underRootPath.Substring(0, index);
+                    var module = _environment.GetModule(name);
+                    return module.GetFileInfo(path);
                 }
             }
 

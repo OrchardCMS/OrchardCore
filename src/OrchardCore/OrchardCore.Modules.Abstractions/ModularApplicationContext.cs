@@ -1,4 +1,4 @@
-using System.Collections.Concurrent;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,122 +10,141 @@ namespace OrchardCore.Modules
 {
     public static class ModularApplicationContext
     {
-        private const string ModuleNamesMap = "module.names.map";
-        private const string ModuleAssetsMap = "module.assets.map";
+        private static Application _application;
+        private static readonly IDictionary<string, Module> _modules = new Dictionary<string, Module>();
+        private static readonly object _synLock = new object();
 
-        private static ConcurrentDictionary<string, IEnumerable<KeyValuePair<string, string>>> _maps = new ConcurrentDictionary<string, IEnumerable<KeyValuePair<string, string>>>();
-        private static ConcurrentDictionary<string, Assembly> _assemblies = new ConcurrentDictionary<string, Assembly>();
-        private static ConcurrentDictionary<string, IFileProvider> _fileProviders = new ConcurrentDictionary<string, IFileProvider>();
-        private static ConcurrentDictionary<string, IFileInfo> _fileInfos = new ConcurrentDictionary<string, IFileInfo>();
-
-        public static Assembly LoadApplicationAssembly(this IHostingEnvironment environment)
+        public static Application GetApplication(this IHostingEnvironment environment)
         {
-            return Load(environment.ApplicationName);
-        }
-
-        public static Assembly LoadModuleAssembly(this IHostingEnvironment environment, string moduleId)
-        {
-            if (!GetModuleNames(environment).Contains(moduleId))
+            if (_application == null)
             {
-                return null;
-            }
-
-            return Load(moduleId);
-        }
-
-        public static IEnumerable<string> GetModuleNames(this IHostingEnvironment environment)
-        {
-            return GetModuleNamesMap(environment).Select(x => x.Key);
-        }
-
-        public static IEnumerable<string> GetModuleAssets(this IHostingEnvironment environment, string moduleId)
-        {
-            return GetModuleAssetsMap(environment, moduleId).Select(x => x.Key);
-        }
-
-        private static IEnumerable<KeyValuePair<string, string>> GetModuleNamesMap(this IHostingEnvironment environment)
-        {
-            var key = environment.ApplicationName + ModuleNamesMap;
-
-            if (!_maps.ContainsKey(key))
-            {
-                _maps[key] = GetFileInfo(environment.ApplicationName, ModuleNamesMap).ReadAllLines()
-                    .Select(x => new KeyValuePair<string, string>(x, x));
-            }
-
-            return _maps[key];
-        }
-
-        public static IEnumerable<KeyValuePair<string, string>> GetModuleAssetsMap(this IHostingEnvironment environment, string moduleId)
-        {
-            if (!GetModuleNames(environment).Contains(moduleId))
-            {
-                return Enumerable.Empty<KeyValuePair<string, string>>();
-            }
-
-            var key = moduleId + ModuleAssetsMap;
-
-            if (!_maps.ContainsKey(key))
-            {
-                _maps[key] = GetFileInfo(moduleId, ModuleAssetsMap).ReadAllLines().Select(x =>
+                lock (_synLock)
                 {
-                    var map = x.Replace('\\', '/');
-                    var index = map.IndexOf('|');
-
-                    if (index == -1)
+                    if (_application == null)
                     {
-                        return new KeyValuePair<string, string>(map, string.Empty);
+                        _application = new Application(environment.ApplicationName);
                     }
-
-                    return new KeyValuePair<string, string>(map.Substring(0, index), map.Substring(index + 1));
-                });
+                }
             }
 
-            return _maps[key];
+            return _application;
         }
 
-        public static IFileInfo GetModuleFileInfo(this IHostingEnvironment environment, string moduleId, string fileName)
+        public static Module GetModule(this IHostingEnvironment environment, string name)
         {
-            if (!GetModuleNames(environment).Contains(moduleId))
+            if (!_modules.TryGetValue(name, out var module))
             {
-                return null;
+                if (!GetApplication(environment).ModuleNames.Contains(name, StringComparer.Ordinal))
+                {
+                    return new Module(string.Empty);
+                }
+
+                lock (_synLock)
+                {
+                    if (!_modules.TryGetValue(name, out module))
+                    {
+                        _modules[name] = module = new Module(name);
+                    }
+                }
             }
 
-            return GetFileInfo(moduleId, fileName);
+            return module;
         }
+    }
 
-        private static Assembly Load(string assemblyName)
+    public class Application
+    {
+        private const string ModuleNamesMap = "module.names.map";
+
+        public Application(string application)
         {
-            if (!_assemblies.ContainsKey(assemblyName))
-            {
-                _assemblies[assemblyName] = Assembly.Load(new AssemblyName(assemblyName));
-            }
-
-            return _assemblies[assemblyName];
+            Name = application;
+            Assembly = Assembly.Load(new AssemblyName(application));
+            ModuleNames = new EmbeddedFileProvider(Assembly).GetFileInfo(ModuleNamesMap).ReadAllLines();
         }
 
-        private static IFileProvider GetFileProvider(string assemblyName)
+        public string Name { get; }
+        public Assembly Assembly { get; }
+        public IEnumerable<string> ModuleNames { get; }
+    }
+
+    public class Module
+    {
+        private const string ModuleAssetsMap = "module.assets.map";
+        private const string RootWithTrailingSlash = ".Modules/";
+
+        private readonly IDictionary<string, IFileInfo> _fileInfos = new Dictionary<string, IFileInfo>();
+        private readonly IFileProvider _fileProvider;
+
+        public Module(string name)
         {
-            if (!_fileProviders.ContainsKey(assemblyName))
+            if (!string.IsNullOrWhiteSpace(name))
             {
-                var assembly = Load(assemblyName);
-                _fileProviders[assemblyName] = new EmbeddedFileProvider(assembly);
-            }
+                Name = name;
+                Path = RootWithTrailingSlash + Name;
+                Assembly = Assembly.Load(new AssemblyName(name));
+                _fileProvider = new EmbeddedFileProvider(Assembly);
 
-            return _fileProviders[assemblyName];
+                Assets = _fileProvider.GetFileInfo(ModuleAssetsMap).ReadAllLines().Select(a => new ModuleAsset(a));
+                AssetPaths = Assets.Select(a => a.ModulePath);
+            }
+            else
+            {
+                Name = Path = string.Empty;
+                Assets = Enumerable.Empty<ModuleAsset>();
+                AssetPaths = Enumerable.Empty<string>();
+            }
         }
 
-        private static IFileInfo GetFileInfo(string assemblyName, string fileName)
+        public string Name { get; }
+        public string Path { get; }
+        public Assembly Assembly { get; }
+        public IEnumerable<ModuleAsset> Assets { get; }
+        public IEnumerable<string> AssetPaths { get; }
+
+        public IFileInfo GetFileInfo(string subpath)
         {
-            var key = assemblyName + fileName;
-
-            if (!_fileInfos.ContainsKey(key))
+            if (!_fileInfos.TryGetValue(subpath, out var fileInfo))
             {
-                var fileProvider = GetFileProvider(assemblyName);
-                _fileInfos[key] = fileProvider.GetFileInfo(fileName);
+                if (!AssetPaths.Contains(subpath, StringComparer.Ordinal))
+                {
+                    return new NotFoundFileInfo(subpath);
+                }
+
+                lock (_fileInfos)
+                {
+                    if (!_fileInfos.TryGetValue(subpath, out fileInfo))
+                    {
+                        var fileName = subpath.Substring(Path.Length + 1);
+                        _fileInfos[subpath] = fileInfo = _fileProvider.GetFileInfo(fileName);
+                    }
+                }
             }
 
-            return _fileInfos[key];
+            return fileInfo;
         }
+    }
+
+    public class ModuleAsset
+    {
+        public ModuleAsset(string asset)
+        {
+            asset = asset.Replace('\\', '/');
+            var index = asset.IndexOf('|');
+
+            if (index == -1)
+            {
+                ModulePath = asset;
+                ProjectPath = string.Empty;
+            }
+            else
+            {
+                ModulePath = asset.Substring(0, index);
+                ProjectPath = asset.Substring(index + 1);
+            }
+        }
+
+        public string ModulePath { get;  }
+        public string ProjectPath { get; }
     }
 }

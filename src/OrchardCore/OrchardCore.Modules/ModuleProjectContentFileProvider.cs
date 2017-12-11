@@ -33,24 +33,24 @@ namespace OrchardCore.Modules
             {
                 if (_paths == null)
                 {
-                    var paths = new List<KeyValuePair<string, string>>();
-                    var mainAssembly = environment.LoadApplicationAssembly();
+                    var assets = new List<ModuleAsset>();
+                    var application = environment.GetApplication();
 
-                    foreach (var moduleId in environment.GetModuleNames())
+                    foreach (var name in application.ModuleNames)
                     {
-                        var assembly = environment.LoadModuleAssembly(moduleId);
+                        var module = environment.GetModule(name);
 
-                        if (assembly == null || Path.GetDirectoryName(assembly.Location)
-                            != Path.GetDirectoryName(mainAssembly.Location))
+                        if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
+                            != Path.GetDirectoryName(application.Assembly.Location))
                         {
                             continue;
                         }
 
-                        paths.AddRange(environment.GetModuleAssetsMap(moduleId).Where(x => x.Key
-                            .StartsWith(".Modules/" + moduleId + "/Content/", StringComparison.Ordinal)));
+                        assets.AddRange(module.Assets.Where(a => a.ModulePath.StartsWith(
+                            ".Modules/" + name + "/Content/", StringComparison.Ordinal)));
                     }
 
-                    _paths = new Dictionary<string, string>(paths.ToDictionary(x => x.Key, x => x.Value));
+                    _paths = assets.ToDictionary(a => a.ModulePath, a => a.ProjectPath);
                 }
             }
         }
