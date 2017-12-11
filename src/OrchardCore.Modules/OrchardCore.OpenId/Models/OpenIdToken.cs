@@ -41,7 +41,7 @@ namespace OrchardCore.OpenId.Models
         /// Note: this property is only used for reference tokens
         /// and may be encrypted for security reasons.
         /// </summary>
-        public virtual string Payload { get; set; }
+        public string Payload { get; set; }
 
         /// <summary>
         /// Gets or sets the reference identifier associated
@@ -49,7 +49,7 @@ namespace OrchardCore.OpenId.Models
         /// Note: this property is only used for reference tokens
         /// and may be hashed or encrypted for security reasons.
         /// </summary>
-        public virtual string ReferenceId { get; set; }
+        public string ReferenceId { get; set; }
 
         /// <summary>
         /// Gets or sets the status of the current token.

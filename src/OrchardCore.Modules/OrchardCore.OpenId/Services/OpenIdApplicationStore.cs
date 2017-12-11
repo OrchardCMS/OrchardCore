@@ -12,7 +12,7 @@ using YesSql;
 
 namespace OrchardCore.OpenId.Services
 {
-    public class OpenIdApplicationStore : IOpenIddictApplicationStore<OpenIdApplication>, IOpenIdApplicationRoleStore<OpenIdApplication>
+    public class OpenIdApplicationStore : IOpenIddictApplicationStore<OpenIdApplication>
     {
         private readonly ISession _session;
 
@@ -432,8 +432,7 @@ namespace OrchardCore.OpenId.Services
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetClientSecretAsync(OpenIdApplication application,
-            string secret, CancellationToken cancellationToken)
+        public virtual Task SetClientSecretAsync(OpenIdApplication application, string secret, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -454,8 +453,7 @@ namespace OrchardCore.OpenId.Services
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetClientTypeAsync(OpenIdApplication application,
-            string type, CancellationToken cancellationToken)
+        public virtual Task SetClientTypeAsync(OpenIdApplication application, string type, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -481,8 +479,7 @@ namespace OrchardCore.OpenId.Services
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetDisplayNameAsync(OpenIdApplication application,
-            string name, CancellationToken cancellationToken)
+        public virtual Task SetDisplayNameAsync(OpenIdApplication application, string name, CancellationToken cancellationToken)
         {
             if (application == null)
             {
