@@ -5,7 +5,7 @@ namespace OrchardCore.OpenId.Indexes
 {
     public class OpenIdAuthorizationIndex : MapIndex
     {
-        public int ApplicationId { get; set; }
+        public int? ApplicationId { get; set; }
         public string Status { get; set; }
         public string Subject { get; set; }
     }

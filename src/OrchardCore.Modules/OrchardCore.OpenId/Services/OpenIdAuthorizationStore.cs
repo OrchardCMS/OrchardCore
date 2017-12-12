@@ -167,7 +167,7 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentNullException(nameof(authorization));
             }
 
-            return Task.FromResult(authorization.ApplicationId.ToString(CultureInfo.InvariantCulture));
+            return Task.FromResult(authorization.ApplicationId?.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -371,7 +371,14 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentNullException(nameof(authorization));
             }
 
-            authorization.ApplicationId = int.Parse(identifier, CultureInfo.InvariantCulture);
+            if (string.IsNullOrEmpty(identifier))
+            {
+                authorization.ApplicationId = null;
+            }
+            else
+            {
+                authorization.ApplicationId = int.Parse(identifier, CultureInfo.InvariantCulture);
+            }
 
             return Task.CompletedTask;
         }

@@ -9,7 +9,7 @@ namespace OrchardCore.OpenId.Models
         /// Gets or sets the identifier of the client application
         /// associated with the current authorization.
         /// </summary>
-        public int ApplicationId { get; set; }
+        public int? ApplicationId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier

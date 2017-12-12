@@ -10,13 +10,13 @@ namespace OrchardCore.OpenId.Models
         /// Gets or sets the identifier of the application
         /// associated with the current token.
         /// </summary>
-        public int ApplicationId { get; set; }
+        public int? ApplicationId { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier of the authorization
         /// associated with the current token.
         /// </summary>
-        public int AuthorizationId { get; set; }
+        public int? AuthorizationId { get; set; }
 
         /// <summary>
         /// Gets or sets the date on which the token

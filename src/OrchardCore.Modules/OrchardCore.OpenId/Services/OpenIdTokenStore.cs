@@ -244,7 +244,7 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return Task.FromResult(token.ApplicationId.ToString(CultureInfo.InvariantCulture));
+            return Task.FromResult(token.ApplicationId?.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -263,7 +263,7 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return Task.FromResult(token.AuthorizationId.ToString(CultureInfo.InvariantCulture));
+            return Task.FromResult(token.AuthorizationId?.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -521,7 +521,14 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentNullException(nameof(token));
             }
 
-            token.ApplicationId = int.Parse(identifier, CultureInfo.InvariantCulture);
+            if (string.IsNullOrEmpty(identifier))
+            {
+                token.ApplicationId = null;
+            }
+            else
+            {
+                token.ApplicationId = int.Parse(identifier, CultureInfo.InvariantCulture);
+            }
 
             return Task.CompletedTask;
         }
@@ -542,7 +549,14 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentNullException(nameof(token));
             }
 
-            token.AuthorizationId = int.Parse(identifier, CultureInfo.InvariantCulture);
+            if (string.IsNullOrEmpty(identifier))
+            {
+                token.AuthorizationId = null;
+            }
+            else
+            {
+                token.AuthorizationId = int.Parse(identifier, CultureInfo.InvariantCulture);
+            }
 
             return Task.CompletedTask;
         }

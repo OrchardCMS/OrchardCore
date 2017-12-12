@@ -6,8 +6,8 @@ namespace OrchardCore.OpenId.Indexes
 {
     public class OpenIdTokenIndex : MapIndex
     {
-        public int ApplicationId { get; set; }
-        public int AuthorizationId { get; set; }
+        public int? ApplicationId { get; set; }
+        public int? AuthorizationId { get; set; }
         public DateTimeOffset? ExpirationDate { get; set; }
         public string ReferenceId { get; set; }
         public string Status { get; set; }
