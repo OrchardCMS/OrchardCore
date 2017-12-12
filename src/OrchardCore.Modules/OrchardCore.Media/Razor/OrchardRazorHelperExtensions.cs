@@ -1,8 +1,7 @@
-using System;
-using OrchardCore.DisplayManagement.Razor;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Media;
 
-namespace OrchardCore.Media.Razor
+namespace OrchardCore.DisplayManagement.Razor
 {
     public static class OrchardRazorHelperExtensions
     {
