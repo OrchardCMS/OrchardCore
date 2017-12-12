@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using GraphQL.Types;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -24,14 +25,14 @@ namespace OrchardCore.Contents.GraphQL.Mutations.Types
     {
         public ContentPartsInputType(
             IServiceProvider serviceProvider,
-            IContentDefinitionManager contentDefinitionManager,
+            IEnumerable<ContentPart> contentParts,
             ITypeActivatorFactory<ContentPart> typeActivator)
         {
             Name = "ContentPartsInput";
 
-            foreach (var definition in contentDefinitionManager.ListPartDefinitions())
+            foreach (var part in contentParts)
             {
-                var partName = definition.Name;
+                var partName = part.GetType().Name;
                 var activator = typeActivator.GetTypeActivator(partName);
 
                 var inputGraphType =

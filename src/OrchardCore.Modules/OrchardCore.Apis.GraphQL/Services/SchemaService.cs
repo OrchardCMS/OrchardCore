@@ -2,30 +2,29 @@ using System;
 using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.Apis.GraphQL.Services
 {
     public class SchemaService : ISchemaService
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IGraphQLSchemaHashService _hashService;
         private readonly IServiceProvider _serviceProvider;
-        private int _lastHash;
+        private int? _lastHash;
         private ISchema _schema;
 
         public SchemaService(
-            IContentDefinitionManager contentDefinitionManager,
+            IGraphQLSchemaHashService hashService,
             IServiceProvider serviceProvider)
         {
-            _contentDefinitionManager = contentDefinitionManager;
+            _hashService = hashService;
             _serviceProvider = serviceProvider;
         }
 
         public async Task<ISchema> GetSchema()
         {
-            var hash = await _contentDefinitionManager.GetTypesHashAsync();
+            var hash = await _hashService.GetHash();
 
-            if (_lastHash == hash)
+            if (_lastHash != hash)
             {
                 _schema = _serviceProvider.GetService<ISchema>();
                 _lastHash = hash;

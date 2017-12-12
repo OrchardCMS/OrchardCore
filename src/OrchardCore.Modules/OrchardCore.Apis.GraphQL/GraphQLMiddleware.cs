@@ -21,26 +21,20 @@ namespace OrchardCore.Apis.GraphQL
         private readonly GraphQLSettings _settings;
         private readonly IDocumentExecuter _executer;
         private readonly IDocumentWriter _writer;
-        private readonly ISchemaService _schemaService;
-        private readonly IAuthorizationService _authorizationService;
 
         public GraphQLMiddleware(
             RequestDelegate next,
             GraphQLSettings settings,
             IDocumentExecuter executer,
-            IDocumentWriter writer,
-            ISchemaService schemaService,
-            IAuthorizationService authorizationService)
+            IDocumentWriter writer)
         {
             _next = next;
             _settings = settings;
             _executer = executer;
             _writer = writer;
-            _schemaService = schemaService;
-            _authorizationService = authorizationService;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, ISchemaService schemaService)
         {
             if (!IsGraphQLRequest(context))
             {
@@ -48,14 +42,15 @@ namespace OrchardCore.Apis.GraphQL
             }
             else
             {
-                var authorized = await _authorizationService.AuthorizeAsync(
+                var authorized = await authorizationService.AuthorizeAsync(
                     context.User, Permissions.ExecuteGraphQL);
 
                 if (authorized)
                 {
-                    await ExecuteAsync(context);
+                    await ExecuteAsync(context, schemaService);
                 }
-                else {
+                else
+                {
                     context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 }
             }
@@ -67,9 +62,9 @@ namespace OrchardCore.Apis.GraphQL
                 && string.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase);
         }
 
-        private async Task ExecuteAsync(HttpContext context)
+        private async Task ExecuteAsync(HttpContext context, ISchemaService schemaService)
         {
-            var schema = await _schemaService.GetSchema();
+            var schema = await schemaService.GetSchema();
 
             string body;
             using (var streamReader = new StreamReader(context.Request.Body))

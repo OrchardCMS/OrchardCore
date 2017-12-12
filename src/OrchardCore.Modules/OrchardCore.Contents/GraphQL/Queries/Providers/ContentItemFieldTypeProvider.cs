@@ -81,7 +81,7 @@ namespace OrchardCore.Contents.GraphQL.Queries.Providers
                             });
                     }
 
-                    var inputGraphTypeResolved = (IQueryArgumentObjectGraphType)_serviceProvider.GetService(inputGraphType);
+                    var inputGraphTypeResolved = _serviceProvider.GetService(inputGraphType) as IQueryArgumentObjectGraphType;
 
                     if (inputGraphTypeResolved != null)
                     {

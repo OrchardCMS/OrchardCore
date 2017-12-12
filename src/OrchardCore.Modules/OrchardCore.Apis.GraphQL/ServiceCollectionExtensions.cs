@@ -12,7 +12,7 @@ namespace OrchardCore.Apis.GraphQL
     {
         public static IServiceCollection AddGraphQL(this IServiceCollection services)
         {
-            services.AddSingleton<IDependencyResolver, InternalDependencyResolver>();
+            services.AddScoped<IDependencyResolver, InternalDependencyResolver>();
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
             
@@ -22,7 +22,7 @@ namespace OrchardCore.Apis.GraphQL
             // Schema
             services.AddScoped<ISchema, ContentSchema>();
 
-            services.AddSingleton<ISchemaService, SchemaService>();
+            services.AddScoped<ISchemaService, SchemaService>();
 
             return services;
         }

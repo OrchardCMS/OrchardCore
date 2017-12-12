@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Contents.GraphQL.Mutations;
 using OrchardCore.Contents.GraphQL.Mutations.Types;
@@ -26,6 +27,8 @@ namespace OrchardCore.Contents.GraphQL
             services.AddScoped<ContentPartsInputType>();
 
             services.AddScoped<IDynamicQueryFieldTypeProvider, ContentItemFieldTypeProvider>();
+
+            services.AddSingleton<IGraphQLSchemaHashService, GraphQLSchemaHashService>();
         }
     }
 }
