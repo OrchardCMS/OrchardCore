@@ -3,9 +3,9 @@ using GraphQL.Resolvers;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL.Arguments;
 using OrchardCore.Apis.GraphQL.Types;
-using OrchardCore.Queries.Apis.GraphQL.Mutations.Types;
+using OrchardCore.Queries.GraphQL.Mutations.Types;
 
-namespace OrchardCore.Queries.Apis.GraphQL.Mutations
+namespace OrchardCore.Queries.GraphQL.Mutations
 {
     public class CreateQueryMutation<TSourceType> : MutationFieldType where TSourceType : Query, new()
     {

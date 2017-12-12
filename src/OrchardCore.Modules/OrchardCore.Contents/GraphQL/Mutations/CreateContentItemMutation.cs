@@ -39,11 +39,6 @@ namespace OrchardCore.Contents.GraphQL.Mutations
 
                 var contentItem = contentManager.New(contentItemFabrication.ContentType);
 
-                if (!await authorizationService.AuthorizeAsync((context.UserContext as GraphQLUserContext)?.User, Permissions.EditContent, contentItem))
-                {
-                    return null;
-                }
-
                 contentItem.Author = contentItemFabrication.Author;
                 contentItem.Owner = contentItemFabrication.Owner;
                 contentItem.CreatedUtc = clock.UtcNow;

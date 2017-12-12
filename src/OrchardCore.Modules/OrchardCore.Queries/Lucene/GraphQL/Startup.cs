@@ -3,8 +3,8 @@ using OrchardCore.Apis;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Lucene;
 using OrchardCore.Modules;
-using OrchardCore.Queries.Apis.GraphQL.Mutations;
-using OrchardCore.Queries.Apis.GraphQL.Mutations.Types;
+using OrchardCore.Queries.GraphQL.Mutations;
+using OrchardCore.Queries.GraphQL.Mutations.Types;
 using OrchardCore.Queries.Lucene.GraphQL.Queries;
 
 namespace OrchardCore.Queries.Lucene.GraphQL

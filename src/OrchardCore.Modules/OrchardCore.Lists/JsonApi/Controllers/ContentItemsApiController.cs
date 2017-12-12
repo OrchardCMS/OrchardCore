@@ -36,10 +36,10 @@ namespace OrchardCore.Lists.JsonApi.Controllers
                 .With<ContentItemIndex>(cii => cii.ContentType == contentType)
                 .ListAsync();
 
-            var authorizedContentItems =
-                await contentItems.FilterByRole(_authorizationService, Permissions.ViewContent, User);
+            //var authorizedContentItems =
+            //    await contentItems.FilterByRole(_authorizationService, Permissions.ViewContent, User);
 
-            return new ObjectResult(authorizedContentItems);
+            return new ObjectResult(contentItems);
         }
     }
 }

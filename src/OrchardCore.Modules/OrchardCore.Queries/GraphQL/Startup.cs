@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
 using OrchardCore.Modules;
-using OrchardCore.Queries.Apis.GraphQL.Mutations;
+using OrchardCore.Queries.GraphQL.Mutations;
 
-namespace OrchardCore.Queries.Apis.GraphQL
+namespace OrchardCore.Queries.GraphQL
 {
     public class Startup : StartupBase
     {

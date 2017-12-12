@@ -4,7 +4,7 @@ using GraphQL.Types;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL.Types;
 
-namespace OrchardCore.Queries.Apis.GraphQL.Mutations
+namespace OrchardCore.Queries.GraphQL.Mutations
 {
     public class DeleteQueryMutation : MutationFieldType
     {

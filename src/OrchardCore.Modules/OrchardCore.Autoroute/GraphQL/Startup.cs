@@ -1,9 +1,8 @@
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using GraphQL.Types;
+using OrchardCore.Apis;
 using OrchardCore.Autoroute.Model;
-using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Autoroute.GraphQL
 {
@@ -12,13 +11,10 @@ namespace OrchardCore.Autoroute.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<InputObjectGraphType<AutoroutePart>, AutorouteInputObjectType>();
-            services.AddScoped<IInputObjectGraphType, AutorouteInputObjectType>();
-
-            services.AddScoped<ObjectGraphType<AutoroutePart>, AutorouteQueryObjectType>();
-            services.AddScoped<IObjectGraphType, AutorouteQueryObjectType>();
-
-            services.AddScoped<IGraphQLFilter<ContentItem>, AutorouteGraphQLFilter>();
+            services.AddGraphQLInputType<AutoroutePart, AutorouteInputObjectType>();
+            services.AddGraphQLQueryType<AutoroutePart, AutorouteQueryObjectType>();
+            services.AddGraphQLQueryArgumentInputType<AutorouteInputObjectType>();
+            services.AddGraphQLFilterType<ContentItem, AutorouteGraphQLFilter>();
         }
     }
 }

@@ -1,6 +1,6 @@
 using OrchardCore.Apis.GraphQL.Types;
 
-namespace OrchardCore.Queries.Apis.GraphQL.Queries
+namespace OrchardCore.Queries.GraphQL.Queries
 {
     public class QueriesQuery<T> : QueryFieldType
     {

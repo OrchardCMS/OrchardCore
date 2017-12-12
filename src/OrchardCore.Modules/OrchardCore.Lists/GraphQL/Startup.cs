@@ -1,6 +1,5 @@
-using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.Apis;
 using OrchardCore.ContentManagement;
 using OrchardCore.Lists.Models;
 using OrchardCore.Modules;
@@ -12,13 +11,10 @@ namespace OrchardCore.Lists.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<InputObjectGraphType<ContainedPart>, ContainedInputObjectType>();
-            services.AddScoped<IInputObjectGraphType, ContainedInputObjectType>();
-
-            services.AddScoped<ObjectGraphType<ContainedPart>, ContainedQueryObjectType>();
-            services.AddScoped<IObjectGraphType, ContainedQueryObjectType>();
-
-            services.AddScoped<IGraphQLFilter<ContentItem>, ContainedGraphQLFilter>();
+            services.AddGraphQLInputType<ContainedPart, ContainedInputObjectType>();
+            services.AddGraphQLQueryType<ContainedPart, ContainedQueryObjectType>();
+            services.AddGraphQLQueryArgumentInputType<ContainedInputObjectType>();
+            services.AddGraphQLFilterType<ContentItem, ContainedGraphQLFilter>();
         }
     }
 }

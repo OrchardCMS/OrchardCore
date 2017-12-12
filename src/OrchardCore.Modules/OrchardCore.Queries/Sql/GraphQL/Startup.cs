@@ -2,8 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Modules;
-using OrchardCore.Queries.Apis.GraphQL.Mutations;
-using OrchardCore.Queries.Apis.GraphQL.Mutations.Types;
+using OrchardCore.Queries.GraphQL.Mutations;
+using OrchardCore.Queries.GraphQL.Mutations.Types;
 using OrchardCore.Queries.Sql.GraphQL.Queries;
 
 namespace OrchardCore.Queries.Sql.GraphQL

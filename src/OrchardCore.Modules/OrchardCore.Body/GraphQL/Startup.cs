@@ -1,9 +1,7 @@
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using GraphQL.Types;
+using OrchardCore.Apis;
 using OrchardCore.Body.Model;
-using OrchardCore.Apis.GraphQL.Queries;
-using OrchardCore.ContentManagement;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Body.GraphQL
 {
@@ -12,13 +10,8 @@ namespace OrchardCore.Body.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<InputObjectGraphType<BodyPart>, BodyInputObjectType>();
-            services.AddScoped<IInputObjectGraphType, BodyInputObjectType>();
-
-            services.AddScoped<ObjectGraphType<BodyPart>, BodyQueryObjectType>();
-            services.AddScoped<IObjectGraphType, BodyQueryObjectType>();
-
-            services.AddScoped<IGraphQLFilter<ContentItem>, BodyGraphQLFilter>();
+            services.AddGraphQLInputType<BodyPart, BodyInputObjectType>();
+            services.AddGraphQLQueryType<BodyPart, BodyQueryObjectType>();
         }
     }
 }

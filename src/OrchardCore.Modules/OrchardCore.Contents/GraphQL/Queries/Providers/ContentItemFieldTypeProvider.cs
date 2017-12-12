@@ -17,29 +17,26 @@ namespace OrchardCore.Contents.GraphQL.Queries.Providers
         private readonly IServiceProvider _serviceProvider;
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IEnumerable<ContentPart> _contentParts;
+        private readonly ITypeActivatorFactory<ContentPart> _typeActivator;
         private readonly IEnumerable<IInputObjectGraphType> _inputGraphTypes;
         private readonly IEnumerable<IGraphQLFilter<ContentItem>> _graphQLFilters;
-        private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
 
         public ContentItemFieldTypeProvider(
             IServiceProvider serviceProvider,
             IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
-            IEnumerable<ContentPart> contentParts,
+            ITypeActivatorFactory<ContentPart> typeActivator,
             IEnumerable<IInputObjectGraphType> inputGraphTypes,
             IEnumerable<IGraphQLFilter<ContentItem>> graphQLFilters,
-            IAuthorizationService authorizationService,
             ISession session)
         {
             _serviceProvider = serviceProvider;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
-            _contentParts = contentParts;
+            _typeActivator = typeActivator;
             _inputGraphTypes = inputGraphTypes;
             _graphQLFilters = graphQLFilters;
-            _authorizationService = authorizationService;
             _session = session;
         }
 
@@ -58,51 +55,46 @@ namespace OrchardCore.Contents.GraphQL.Queries.Providers
 
                 foreach (var part in typeDefinition.Parts)
                 {
-                    var name = part.Name; // About
                     var partName = part.PartDefinition.Name; // BagPart
-                    
-                    var contentPart = _contentParts.FirstOrDefault(x => x.GetType().Name == partName);
 
-                    if (contentPart != null)
+                    var activator = _typeActivator.GetTypeActivator(partName);
+
+                    var queryGraphType =
+                        typeof(ObjectGraphType<>).MakeGenericType(activator.Type);
+
+                    var inputGraphType =
+                        typeof(InputObjectGraphType<>).MakeGenericType(activator.Type);
+
+                    var queryGraphTypeResolved = (IObjectGraphType)_serviceProvider.GetService(queryGraphType);
+
+                    if (queryGraphTypeResolved != null)
                     {
-                        var queryGraphType =
-                            typeof(ObjectGraphType<>).MakeGenericType(contentPart.GetType());
-
-                        var inputGraphType =
-                            typeof(InputObjectGraphType<>).MakeGenericType(contentPart.GetType());
-
-                        var queryGraphTypeResolved = (IObjectGraphType)_serviceProvider.GetService(queryGraphType);
-
-                        if (queryGraphTypeResolved != null)
-                        {
-                            typeType.Field(
-                                queryGraphType,
-                                partName,
-                                resolve: context => {
-                                    var nameToResolve = context.ReturnType.Name;
-                                    var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
-
-                                    return context.Source.Get(typeToResolve, nameToResolve);
-                                });
-                        }
-
-                        var inputGraphTypeResolved = (IInputObjectGraphType)_serviceProvider.GetService(inputGraphType);
-
-                        if (inputGraphTypeResolved != null)
-                        {
-                            queryArguments.Add(new QueryArgument(inputGraphTypeResolved)
+                        typeType.Field(
+                            queryGraphType,
+                            partName,
+                            resolve: context =>
                             {
-                                Name = partName
+                                var nameToResolve = context.ReturnType.Name;
+                                var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
+
+                                return context.Source.Get(typeToResolve, nameToResolve);
                             });
-                        }
+                    }
+
+                    var inputGraphTypeResolved = (IQueryArgumentObjectGraphType)_serviceProvider.GetService(inputGraphType);
+
+                    if (inputGraphTypeResolved != null)
+                    {
+                        queryArguments.Add(new QueryArgument(inputGraphTypeResolved)
+                        {
+                            Name = partName
+                        });
                     }
                 }
 
                 var query = new ContentItemsQuery(
                     _contentManager, 
-                    _contentParts,
                     _graphQLFilters,
-                    _authorizationService,
                     _session)
                 {
                     Name = typeDefinition.Name,

@@ -1,9 +1,10 @@
 using GraphQL.Types;
+using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Lists.Models;
 
 namespace OrchardCore.Lists.GraphQL
 {
-    public class ContainedInputObjectType : InputObjectGraphType<ContainedPart>
+    public class ContainedInputObjectType : InputObjectGraphType<ContainedPart>, IQueryArgumentObjectGraphType
     {
         public ContainedInputObjectType()
         {

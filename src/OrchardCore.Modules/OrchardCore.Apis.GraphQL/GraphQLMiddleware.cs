@@ -2,14 +2,16 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Http;
-using GraphQL.Types;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.Apis.GraphQL.Services;
 
 namespace OrchardCore.Apis.GraphQL
 {
@@ -19,27 +21,44 @@ namespace OrchardCore.Apis.GraphQL
         private readonly GraphQLSettings _settings;
         private readonly IDocumentExecuter _executer;
         private readonly IDocumentWriter _writer;
+        private readonly ISchemaService _schemaService;
+        private readonly IAuthorizationService _authorizationService;
 
         public GraphQLMiddleware(
             RequestDelegate next,
             GraphQLSettings settings,
             IDocumentExecuter executer,
-            IDocumentWriter writer)
+            IDocumentWriter writer,
+            ISchemaService schemaService,
+            IAuthorizationService authorizationService)
         {
             _next = next;
             _settings = settings;
             _executer = executer;
             _writer = writer;
+            _schemaService = schemaService;
+            _authorizationService = authorizationService;
         }
 
-        public Task Invoke(HttpContext context, ISchema schema)
+        public async Task Invoke(HttpContext context)
         {
             if (!IsGraphQLRequest(context))
             {
-                return _next(context);
+                await _next(context);
             }
+            else
+            {
+                var authorized = await _authorizationService.AuthorizeAsync(
+                    context.User, Permissions.ExecuteGraphQL);
 
-            return ExecuteAsync(context, schema);
+                if (authorized)
+                {
+                    await ExecuteAsync(context);
+                }
+                else {
+                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                }
+            }
         }
 
         private bool IsGraphQLRequest(HttpContext context)
@@ -48,8 +67,10 @@ namespace OrchardCore.Apis.GraphQL
                 && string.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase);
         }
 
-        private async Task ExecuteAsync(HttpContext context, ISchema schema)
+        private async Task ExecuteAsync(HttpContext context)
         {
+            var schema = await _schemaService.GetSchema();
+
             string body;
             using (var streamReader = new StreamReader(context.Request.Body))
             {

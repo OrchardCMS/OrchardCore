@@ -4,6 +4,7 @@ using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Mutations;
 using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.Apis.GraphQL.Services;
 
 namespace OrchardCore.Apis.GraphQL
 {
@@ -11,7 +12,7 @@ namespace OrchardCore.Apis.GraphQL
     {
         public static IServiceCollection AddGraphQL(this IServiceCollection services)
         {
-            services.AddScoped<IDependencyResolver, InternalDependencyResolver>();
+            services.AddSingleton<IDependencyResolver, InternalDependencyResolver>();
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
             
@@ -20,7 +21,9 @@ namespace OrchardCore.Apis.GraphQL
 
             // Schema
             services.AddScoped<ISchema, ContentSchema>();
-        
+
+            services.AddSingleton<ISchemaService, SchemaService>();
+
             return services;
         }
     }

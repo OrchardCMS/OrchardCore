@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Types;
@@ -17,9 +16,7 @@ namespace OrchardCore.Contents.GraphQL.Queries
     public class ContentItemsQuery : QueryFieldType
     {
         public ContentItemsQuery(IContentManager contentManager,
-            IEnumerable<ContentPart> contentParts,
             IEnumerable<IGraphQLFilter<ContentItem>> graphQLFilters,
-            IAuthorizationService authorizationServices,
             ISession session)
         {
             Name = "ContentItems";
@@ -92,12 +89,6 @@ namespace OrchardCore.Contents.GraphQL.Queries
                 }
 
                 var contentItems = await contentItemsQuery.ListAsync();
-
-                contentItems = await contentItems.FilterByRole(
-                    authorizationServices,
-                    Permissions.ViewContent,
-                    (context.UserContext as GraphQLUserContext)?.User
-                    );
 
                 foreach (var filter in graphQLFilters)
                 {
