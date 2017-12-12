@@ -30,7 +30,7 @@ namespace OrchardCore.Mvc
             {
                 if (_paths == null)
                 {
-                    var assets = new List<ModuleAsset>();
+                    var assets = new List<Asset>();
                     var application = environment.GetApplication();
 
                     foreach (var name in application.ModuleNames)

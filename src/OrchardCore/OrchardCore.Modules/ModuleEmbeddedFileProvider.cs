@@ -14,9 +14,6 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleEmbeddedFileProvider : IFileProvider
     {
-        private const string ModulesRoot = ".Modules/";
-        private const string ModulesFolder = ".Modules";
-
         private IHostingEnvironment _environment;
         private string _contentRoot;
 
@@ -39,39 +36,38 @@ namespace OrchardCore.Modules
 
             if (folder == "")
             {
-                entries.Add(new EmbeddedDirectoryInfo(ModulesFolder));
+                entries.Add(new EmbeddedDirectoryInfo(Application.ModulesPath));
             }
-            else if (folder == ModulesFolder)
+            else if (folder == Application.ModulesPath)
             {
                 entries.AddRange(_environment.GetApplication().ModuleNames
                     .Select(n => new EmbeddedDirectoryInfo(n)));
             }
-            else if (folder.StartsWith(ModulesRoot, StringComparison.Ordinal))
+            else if (folder.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
-                var subPath = folder.Substring(ModulesRoot.Length);
+                var path = folder.Substring(Application.ModulesRoot.Length);
+                var index = path.IndexOf('/');
 
-                var index = subPath.IndexOf('/');
-                var name = index == -1 ? subPath : subPath.Substring(0, index);
+                var name = index == -1 ? path : path.Substring(0, index);
+                var assetPaths = _environment.GetModule(name).AssetPaths;
+                var folders = new HashSet<string>();
 
-                var directories = new HashSet<string>();
-                var paths = _environment.GetModule(name).AssetPaths;
-
-                foreach (var path in paths.Where(p => p.StartsWith(folder, StringComparison.Ordinal)))
+                foreach (var assetPath in assetPaths.Where(a => a.StartsWith(folder, StringComparison.Ordinal)))
                 {
-                    subPath = path.Substring(folder.Length + 1);
-                    index = subPath.IndexOf('/');
+                    path = assetPath.Substring(folder.Length + 1);
+                    index = path.IndexOf('/');
 
                     if (index == -1)
                     {
-                        entries.Add(GetFileInfo(path));
+                        entries.Add(GetFileInfo(assetPath));
                     }
                     else
                     {
-                        directories.Add(subPath.Substring(0, index));
+                        folders.Add(path.Substring(0, index));
                     }
                 }
 
-                entries.AddRange(directories.Select(d => new EmbeddedDirectoryInfo(d)));
+                entries.AddRange(folders.Select(f => new EmbeddedDirectoryInfo(f)));
             }
 
             return new EmbeddedDirectoryContents(entries);
@@ -86,17 +82,17 @@ namespace OrchardCore.Modules
 
             var path = _contentRoot + NormalizePath(subpath);
 
-            if (path.StartsWith(ModulesRoot, StringComparison.Ordinal))
+            if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
-                var subPath = path.Substring(ModulesRoot.Length);
-                var index = subPath.IndexOf('/');
+                path = path.Substring(Application.ModulesRoot.Length);
+                var index = path.IndexOf('/');
 
                 if (index != -1)
                 {
-                    var name = subPath.Substring(0, index);
+                    var name = path.Substring(0, index);
                     var module = _environment.GetModule(name);
-                    var fileName = subPath.Substring(name.Length + 1);
-                    return module.GetFileInfo(fileName);
+                    path = path.Substring(name.Length + 1);
+                    return module.GetFileInfo(path);
                 }
             }
 

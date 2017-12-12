@@ -18,11 +18,11 @@ namespace OrchardCore.Modules
         private static Dictionary<string, string> _paths;
         private static object _synLock = new object();
 
-        private string _contentPath;
+        private string _contentRoot;
 
         public ModuleProjectContentFileProvider(IHostingEnvironment environment, string contentPath)
         {
-            _contentPath = NormalizePath(contentPath) + "/";
+            _contentRoot = NormalizePath(contentPath) + "/";
 
             if (_paths != null)
             {
@@ -33,7 +33,7 @@ namespace OrchardCore.Modules
             {
                 if (_paths == null)
                 {
-                    var assets = new List<ModuleAsset>();
+                    var assets = new List<Asset>();
                     var application = environment.GetApplication();
 
                     foreach (var name in application.ModuleNames)
@@ -46,8 +46,10 @@ namespace OrchardCore.Modules
                             continue;
                         }
 
-                        assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath.StartsWith(
-                            ".Modules/" + name + "/Content/", StringComparison.Ordinal)));
+                        var contentRoot = Application.ModulesRoot + name + '/' + Module.ContentRoot;
+
+                        assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath
+                            .StartsWith(contentRoot, StringComparison.Ordinal)));
                     }
 
                     _paths = assets.ToDictionary(a => a.ModuleAssetPath, a => a.ProjectAssetPath);
@@ -67,7 +69,7 @@ namespace OrchardCore.Modules
                 return new NotFoundFileInfo(subpath);
             }
 
-            var path = _contentPath + NormalizePath(subpath);
+            var path = _contentRoot + NormalizePath(subpath);
 
             if (_paths.ContainsKey(path))
             {

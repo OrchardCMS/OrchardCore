@@ -54,6 +54,8 @@ namespace OrchardCore.Modules
 
     public class Application
     {
+        public const string ModulesPath = ".Modules";
+        public static string ModulesRoot = ModulesPath + "/";
         private const string ModuleNamesMap = "module.names.map";
 
         public Application(string application)
@@ -70,7 +72,8 @@ namespace OrchardCore.Modules
 
     public class Module
     {
-        private const string ModulesRoot = ".Modules/";
+        public const string ContentPath = "Content";
+        public static string ContentRoot = ContentPath + "/";
         private const string ModuleAssetsMap = "module.assets.map";
 
         private readonly IDictionary<string, IFileInfo> _fileInfos = new Dictionary<string, IFileInfo>();
@@ -81,41 +84,40 @@ namespace OrchardCore.Modules
             if (!string.IsNullOrWhiteSpace(name))
             {
                 Name = name;
-                ModuleRoot = ModulesRoot + Name + '/';
+                Root = Application.ModulesRoot + Name + '/';
                 Assembly = Assembly.Load(new AssemblyName(name));
                 _fileProvider = new EmbeddedFileProvider(Assembly);
-
-                Assets = _fileProvider.GetFileInfo(ModuleAssetsMap).ReadAllLines().Select(a => new ModuleAsset(a));
+                Assets = _fileProvider.GetFileInfo(ModuleAssetsMap).ReadAllLines().Select(a => new Asset(a));
                 AssetPaths = Assets.Select(a => a.ModuleAssetPath);
             }
             else
             {
-                Name = ModuleRoot = string.Empty;
-                Assets = Enumerable.Empty<ModuleAsset>();
+                Name = Root = string.Empty;
+                Assets = Enumerable.Empty<Asset>();
                 AssetPaths = Enumerable.Empty<string>();
             }
         }
 
         public string Name { get; }
-        public string ModuleRoot { get; }
+        public string Root { get; }
         public Assembly Assembly { get; }
-        public IEnumerable<ModuleAsset> Assets { get; }
+        public IEnumerable<Asset> Assets { get; }
         public IEnumerable<string> AssetPaths { get; }
 
-        public IFileInfo GetFileInfo(string fileName)
+        public IFileInfo GetFileInfo(string subpath)
         {
-            if (!_fileInfos.TryGetValue(fileName, out var fileInfo))
+            if (!_fileInfos.TryGetValue(subpath, out var fileInfo))
             {
-                if (!AssetPaths.Contains(ModuleRoot + fileName, StringComparer.Ordinal))
+                if (!AssetPaths.Contains(Root + subpath, StringComparer.Ordinal))
                 {
-                    return new NotFoundFileInfo(fileName);
+                    return new NotFoundFileInfo(subpath);
                 }
 
                 lock (_fileInfos)
                 {
-                    if (!_fileInfos.TryGetValue(fileName, out fileInfo))
+                    if (!_fileInfos.TryGetValue(subpath, out fileInfo))
                     {
-                        _fileInfos[fileName] = fileInfo = _fileProvider.GetFileInfo(fileName);
+                        _fileInfos[subpath] = fileInfo = _fileProvider.GetFileInfo(subpath);
                     }
                 }
             }
@@ -124,9 +126,9 @@ namespace OrchardCore.Modules
         }
     }
 
-    public class ModuleAsset
+    public class Asset
     {
-        public ModuleAsset(string asset)
+        public Asset(string asset)
         {
             asset = asset.Replace('\\', '/');
             var index = asset.IndexOf('|');
