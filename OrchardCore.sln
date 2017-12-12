@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules.Cms", "OrchardCore.Modules.Cms", "{90030E85-0C4F-456F-B879-443E8A3F220D}"
 EndProject
@@ -303,7 +303,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PCCOM.Distrib.Modules", "PC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PCCOM.Distrib.WebAPI.Targets", "src\OrchardCore.DistribWebAPI\Targets\PCCOM.Distrib.WebAPITargets\PCCOM.Distrib.WebAPI.Targets.csproj", "{0BC87CE4-D58C-44E3-94DE-B0DE9C86D336}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PCCom.Distrib.WebAPI.ManufacturingPlanner", "src\OrchardCore.DistribWebAPI\Modules\PCCom.Distrib.WebAPI.ManufacturingPlanner\PCCom.Distrib.WebAPI.ManufacturingPlanner.csproj", "{A4903CA9-7F6C-421F-B395-52C94DE32AB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PCCOM.Distrib.WebAPI.ManufacturingPlanner", "src\OrchardCore.DistribWebAPI\Modules\PCCOM.Distrib.WebAPI.ManufacturingPlanner\PCCOM.Distrib.WebAPI.ManufacturingPlanner.csproj", "{A4903CA9-7F6C-421F-B395-52C94DE32AB3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
