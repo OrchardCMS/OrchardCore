@@ -16,7 +16,7 @@ namespace OrchardCore.Https.Services
 
         public async Task<HttpsSettings> GetSettingsAsync()
         {
-            var siteSettings = await _siteService.GetSiteSettingsAsync().ConfigureAwait(false);
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
             var sslSettings = siteSettings.As<HttpsSettings>();
             return sslSettings ?? new HttpsSettings();
         }
