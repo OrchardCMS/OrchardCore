@@ -30,7 +30,7 @@ namespace OrchardCore.Localization
 
             _root = hostingEnvironment.ContentRootPath;
             _resourcesContainer = localizationOptions.Value.ResourcesPath; // Localization
-            _applicationDataContainer = Path.Combine(shellOptions.Value.ShellsApplicationDataPath);
+            _applicationDataContainer = shellOptions.Value.ShellsApplicationDataPath;
             _shellDataContainer = Path.Combine(_applicationDataContainer, shellOptions.Value.ShellsContainerName, shellSettings.Name);
         }
 
