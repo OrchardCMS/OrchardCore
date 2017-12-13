@@ -11,6 +11,7 @@ namespace OrchardCore.Localization
     public class ModularPoFileLocationProvider : ILocalizationFileLocationProvider
     {
         private const string PoFileName = "OrchardCore.po";
+        private const string ExtensionDataFolder = "App_Data";
 
         private readonly IExtensionManager _extensionsManager;
         private readonly string _root;
@@ -38,10 +39,10 @@ namespace OrchardCore.Localization
             // Load .po files in each extension folder first, based on the extensions order
             foreach (var extension in _extensionsManager.GetExtensions())
             {
-                yield return Path.Combine(_root, extension.SubPath, "App_Data", _resourcesContainer, cultureName, PoFileName);
+                yield return Path.Combine(_root, extension.SubPath, ExtensionDataFolder, _resourcesContainer, cultureName, PoFileName);
             }
 
-            // Then load global .po file for the applications
+            // Then load global .po file for the application
             yield return Path.Combine(_applicationDataContainer, _resourcesContainer, cultureName, PoFileName);
 
             // Finally load tenant-specific .po file
