@@ -8,6 +8,7 @@ namespace OrchardCore.OpenId.Indexes
         public int? ApplicationId { get; set; }
         public string Status { get; set; }
         public string Subject { get; set; }
+        public string Type { get; set; }
     }
 
     public class OpenIdAuthorizationIndexProvider : IndexProvider<OpenIdAuthorization>
@@ -19,7 +20,8 @@ namespace OrchardCore.OpenId.Indexes
                 {
                     ApplicationId = application.ApplicationId,
                     Status = application.Status,
-                    Subject = application.Subject
+                    Subject = application.Subject,
+                    Type = application.Type
                 });
         }
     }

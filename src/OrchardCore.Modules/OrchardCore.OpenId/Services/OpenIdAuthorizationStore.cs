@@ -9,6 +9,7 @@ using OpenIddict.Core;
 using OrchardCore.OpenId.Indexes;
 using OrchardCore.OpenId.Models;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.OpenId.Services
 {
@@ -348,10 +349,23 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns all the elements returned when executing the specified query.
         /// </returns>
-        public virtual Task<ImmutableArray<OpenIdAuthorization>> ListInvalidAsync(int? count, int? offset, CancellationToken cancellationToken)
+        public virtual async Task<ImmutableArray<OpenIdAuthorization>> ListInvalidAsync(int? count, int? offset, CancellationToken cancellationToken)
         {
-            // TODO Sébastien Ros.
-            throw new NotImplementedException();
+            IQuery< OpenIdAuthorization> query = _session.Query<OpenIdAuthorization, OpenIdAuthorizationIndex>(authorization => authorization.Status != OpenIddictConstants.Statuses.Valid ||
+                          (authorization.Type == OpenIddictConstants.AuthorizationTypes.AdHoc &&
+                          !authorization.ApplicationId.IsInIndex<OpenIdTokenIndex>(tokenIndex => tokenIndex.ApplicationId, token => token.Status == OpenIddictConstants.Statuses.Valid)));
+
+            if (offset.HasValue)
+            {
+                query = query.Skip(offset.Value);
+            }
+
+            if (count.HasValue)
+            {
+                query = query.Take(count.Value);
+            }
+
+            return ImmutableArray.CreateRange(await query.ListAsync());
         }
 
         /// <summary>
