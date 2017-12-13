@@ -51,7 +51,7 @@ namespace OrchardCore.Modules
                 var name = index == -1 ? path : path.Substring(0, index);
                 var assetPaths = _environment.GetModule(name).AssetPaths;
 
-                var folders = new HashSet<string>();
+                var folders = new HashSet<string>(StringComparer.Ordinal);
 
                 foreach (var assetPath in assetPaths.Where(a => a.StartsWith(folder, StringComparison.Ordinal)))
                 {
