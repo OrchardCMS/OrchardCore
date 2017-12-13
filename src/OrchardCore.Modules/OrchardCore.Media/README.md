@@ -4,6 +4,12 @@ The Media modules provides a UI to upload and organize binary files that can be 
 
 The media processing liquid filters can also create custom sized images.
 
+## Razor Helpers
+
+To obtain the correct URL for an asset, use the `AssetUrl` helper extension method on the view's base `OrchardCore` property, e.g.:
+
+`<img src="@OrchardCore.AssetUrl(Model.Field.Paths[0])" alt="..." />`
+
 ## HTML filters
 
 The following filters allow for media manipulation:
