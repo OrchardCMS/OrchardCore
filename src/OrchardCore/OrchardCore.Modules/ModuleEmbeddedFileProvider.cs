@@ -50,6 +50,7 @@ namespace OrchardCore.Modules
 
                 var name = index == -1 ? path : path.Substring(0, index);
                 var assetPaths = _environment.GetModule(name).AssetPaths;
+
                 var folders = new HashSet<string>();
 
                 foreach (var assetPath in assetPaths.Where(a => a.StartsWith(folder, StringComparison.Ordinal)))
@@ -89,10 +90,8 @@ namespace OrchardCore.Modules
 
                 if (index != -1)
                 {
-                    var name = path.Substring(0, index);
-                    var module = _environment.GetModule(name);
-                    path = path.Substring(name.Length + 1);
-                    return module.GetFileInfo(path);
+                    return _environment.GetModule(path.Substring(0, index))
+                        .GetFileInfo(path.Substring(index + 1));
                 }
             }
 

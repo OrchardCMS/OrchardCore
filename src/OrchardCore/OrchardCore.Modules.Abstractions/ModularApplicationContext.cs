@@ -34,7 +34,7 @@ namespace OrchardCore.Modules
         {
             if (!_modules.TryGetValue(name, out var module))
             {
-                if (!GetApplication(environment).ModuleNames.Contains(name, StringComparer.Ordinal))
+                if (!environment.GetApplication().ModuleNames.Contains(name, StringComparer.Ordinal))
                 {
                     return new Module(string.Empty);
                 }
