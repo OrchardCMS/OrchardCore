@@ -155,7 +155,7 @@ namespace OrchardCore.OpenId.Services
         /// whose result returns the instantiated scope, that can be persisted in the database.
         /// </returns>
         public virtual Task<OpenIdScope> InstantiateAsync(CancellationToken cancellationToken)
-            => Task.FromResult(new OpenIdScope());
+            => Task.FromResult(new OpenIdScope { ScopeId = Guid.NewGuid().ToString("n") });
 
         /// <summary>
         /// Executes the specified query and returns all the corresponding elements.

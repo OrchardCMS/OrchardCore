@@ -303,7 +303,7 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentNullException(nameof(application));
             }
 
-            return Task.FromResult(application.Id.ToString(CultureInfo.InvariantCulture));
+            return Task.FromResult(application.ApplicationId);
         }
 
         /// <summary>
@@ -353,7 +353,7 @@ namespace OrchardCore.OpenId.Services
         /// returns the instantiated application, that can be persisted in the database.
         /// </returns>
         public virtual Task<OpenIdApplication> InstantiateAsync(CancellationToken cancellationToken)
-            => Task.FromResult(new OpenIdApplication());
+            => Task.FromResult(new OpenIdApplication { ApplicationId = Guid.NewGuid().ToString("n") });
 
         /// <summary>
         /// Executes the specified query and returns all the corresponding elements.

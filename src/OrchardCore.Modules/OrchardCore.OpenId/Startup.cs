@@ -45,15 +45,13 @@ namespace OrchardCore.OpenId
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddSingleton<IIndexProvider, OpenIdApplicationIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdTokenIndexProvider>();
+            services.AddSingleton<IIndexProvider, OpenIdAuthorizationIndexProvider>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<IDisplayDriver<ISite>, OpenIdSiteSettingsDisplayDriver>();
             services.AddSingleton<IOpenIdService, OpenIdService>();
             services.AddRecipeExecutionStep<OpenIdSettingsStep>();
             services.AddRecipeExecutionStep<OpenIdApplicationStep>();
-
-            services.AddScoped<OpenIdApplicationIndexProvider>();
-            services.AddScoped<OpenIdTokenIndexProvider>();
 
             services.AddScoped<OpenIdApplicationStore>();
 

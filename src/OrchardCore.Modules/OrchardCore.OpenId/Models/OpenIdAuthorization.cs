@@ -6,13 +6,19 @@ namespace OrchardCore.OpenId.Models
     public class OpenIdAuthorization
     {
         /// <summary>
+        /// Gets or sets the unique identifier
+        /// associated with the current application.
+        /// </summary>
+        public string AuthorizationId { get; set; }
+
+        /// <summary>
         /// Gets or sets the identifier of the client application
         /// associated with the current authorization.
         /// </summary>
-        public int? ApplicationId { get; set; }
+        public string ApplicationId { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique identifier
+        /// Gets or sets the physical identifier
         /// associated with the current authorization.
         /// </summary>
         public int Id { get; set; }

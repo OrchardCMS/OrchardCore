@@ -118,16 +118,11 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentException("The client cannot be null or empty.", nameof(client));
             }
 
-            if (!int.TryParse(client, out var value))
-            {
-                throw new ArgumentException("The client must be an integer.", nameof(client));
-            }
-
             cancellationToken.ThrowIfCancellationRequested();
 
             return ImmutableArray.CreateRange(
                 await _session.Query<OpenIdAuthorization, OpenIdAuthorizationIndex>(
-                    index => index.ApplicationId == value &&
+                    index => index.ApplicationId == client &&
                              index.Subject == subject).ListAsync());
         }
 
@@ -204,7 +199,7 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentNullException(nameof(authorization));
             }
 
-            return Task.FromResult(authorization.Id.ToString(CultureInfo.InvariantCulture));
+            return Task.FromResult(authorization.AuthorizationId);
         }
 
         /// <summary>
@@ -292,7 +287,7 @@ namespace OrchardCore.OpenId.Services
         /// returns the instantiated authorization, that can be persisted in the database.
         /// </returns>
         public virtual Task<OpenIdAuthorization> InstantiateAsync(CancellationToken cancellationToken)
-            => Task.FromResult(new OpenIdAuthorization());
+            => Task.FromResult(new OpenIdAuthorization { AuthorizationId = Guid.NewGuid().ToString("n") });
 
         /// <summary>
         /// Executes the specified query and returns all the corresponding elements.
@@ -391,7 +386,7 @@ namespace OrchardCore.OpenId.Services
             }
             else
             {
-                authorization.ApplicationId = int.Parse(identifier, CultureInfo.InvariantCulture);
+                authorization.ApplicationId = identifier;
             }
 
             return Task.CompletedTask;

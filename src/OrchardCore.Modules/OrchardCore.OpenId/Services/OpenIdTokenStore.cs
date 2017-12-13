@@ -107,16 +107,11 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
 
-            if (!int.TryParse(identifier, out var value))
-            {
-                throw new ArgumentException("The identifier must be a valid integer.", nameof(identifier));
-            }
-
             cancellationToken.ThrowIfCancellationRequested();
 
             return ImmutableArray.CreateRange(
                 await _session.Query<OpenIdToken, OpenIdTokenIndex>(
-                    index => index.ApplicationId == value).ListAsync());
+                    index => index.ApplicationId == identifier).ListAsync());
         }
 
         /// <summary>
@@ -135,16 +130,11 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
 
-            if (!int.TryParse(identifier, out var value))
-            {
-                throw new ArgumentException("The identifier must be a valid integer.", nameof(identifier));
-            }
-
             cancellationToken.ThrowIfCancellationRequested();
 
             return ImmutableArray.CreateRange(
                 await _session.Query<OpenIdToken, OpenIdTokenIndex>(
-                    index => index.AuthorizationId == value).ListAsync());
+                    index => index.AuthorizationId == identifier).ListAsync());
         }
 
         /// <summary>
@@ -320,7 +310,7 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return Task.FromResult(token.Id.ToString(CultureInfo.InvariantCulture));
+            return Task.FromResult(token.TokenId);
         }
 
         /// <summary>
@@ -429,7 +419,7 @@ namespace OrchardCore.OpenId.Services
         /// whose result returns the instantiated token, that can be persisted in the database.
         /// </returns>
         public virtual Task<OpenIdToken> InstantiateAsync(CancellationToken cancellationToken)
-            => Task.FromResult(new OpenIdToken());
+            => Task.FromResult(new OpenIdToken { TokenId = Guid.NewGuid().ToString("n") } );
 
         /// <summary>
         /// Executes the specified query and returns all the corresponding elements.
@@ -527,7 +517,7 @@ namespace OrchardCore.OpenId.Services
             }
             else
             {
-                token.ApplicationId = int.Parse(identifier, CultureInfo.InvariantCulture);
+                token.ApplicationId = identifier;
             }
 
             return Task.CompletedTask;
@@ -555,7 +545,7 @@ namespace OrchardCore.OpenId.Services
             }
             else
             {
-                token.AuthorizationId = int.Parse(identifier, CultureInfo.InvariantCulture);
+                token.AuthorizationId = identifier;
             }
 
             return Task.CompletedTask;

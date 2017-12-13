@@ -6,6 +6,7 @@ namespace OrchardCore.OpenId.Indexes
 {
     public class OpenIdApplicationIndex : MapIndex
     {
+        public string ApplicationId { get; set; }
         public string ClientId { get; set; }
     }
 
@@ -34,6 +35,7 @@ namespace OrchardCore.OpenId.Indexes
             context.For<OpenIdApplicationIndex>()
                 .Map(application => new OpenIdApplicationIndex
                 {
+                    ApplicationId = application.ApplicationId,
                     ClientId = application.ClientId
                 });
 

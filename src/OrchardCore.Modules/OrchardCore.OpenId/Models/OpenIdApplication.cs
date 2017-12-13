@@ -6,6 +6,12 @@ namespace OrchardCore.OpenId.Models
     public class OpenIdApplication
     {
         /// <summary>
+        /// Gets or sets the unique identifier
+        /// associated with the current application.
+        /// </summary>
+        public string ApplicationId { get; set; }
+
+        /// <summary>
         /// Gets or sets the client identifier
         /// associated with the current application.
         /// </summary>
@@ -25,7 +31,7 @@ namespace OrchardCore.OpenId.Models
         public string DisplayName { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique identifier
+        /// Gets or sets the physical identifier
         /// associated with the current application.
         /// </summary>
         public int Id { get; set; }

@@ -301,9 +301,10 @@ namespace OrchardCore.OpenId.Controllers
             {
                 roleNames = new HashSet<string>(model.RoleEntries.Where(r => r.Selected).Select(r => r.Name));
             }
-            
+
             var application = new OpenIdApplication
             {
+                ApplicationId = Guid.NewGuid().ToString("n"),
                 DisplayName = model.DisplayName,
                 ClientId = model.ClientId,
                 Type = model.Type,

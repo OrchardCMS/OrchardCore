@@ -5,7 +5,8 @@ namespace OrchardCore.OpenId.Indexes
 {
     public class OpenIdAuthorizationIndex : MapIndex
     {
-        public int? ApplicationId { get; set; }
+        public string AuthorizationId { get; set; }
+        public string ApplicationId { get; set; }
         public string Status { get; set; }
         public string Subject { get; set; }
         public string Type { get; set; }
@@ -16,12 +17,13 @@ namespace OrchardCore.OpenId.Indexes
         public override void Describe(DescribeContext<OpenIdAuthorization> context)
         {
             context.For<OpenIdAuthorizationIndex>()
-                .Map(application => new OpenIdAuthorizationIndex
+                .Map(authorization => new OpenIdAuthorizationIndex
                 {
-                    ApplicationId = application.ApplicationId,
-                    Status = application.Status,
-                    Subject = application.Subject,
-                    Type = application.Type
+                    AuthorizationId = authorization.AuthorizationId,
+                    ApplicationId = authorization.ApplicationId,
+                    Status = authorization.Status,
+                    Subject = authorization.Subject,
+                    Type = authorization.Type
                 });
         }
     }

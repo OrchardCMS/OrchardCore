@@ -7,16 +7,22 @@ namespace OrchardCore.OpenId.Models
     /// </summary>
     public class OpenIdToken
     {
+        /// <summary>
+        /// Gets or sets the unique identifier
+        /// associated with the current token.
+        /// </summary>
+        public string TokenId { get; set; }
+
         /// Gets or sets the identifier of the application
         /// associated with the current token.
         /// </summary>
-        public int? ApplicationId { get; set; }
+        public string ApplicationId { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier of the authorization
         /// associated with the current token.
         /// </summary>
-        public int? AuthorizationId { get; set; }
+        public string AuthorizationId { get; set; }
 
         /// <summary>
         /// Gets or sets the date on which the token
@@ -31,7 +37,7 @@ namespace OrchardCore.OpenId.Models
         public DateTimeOffset? ExpirationDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique identifier
+        /// Gets or sets the physical identifier
         /// associated with the current token.
         /// </summary>
         public int Id { get; set; }
