@@ -1,23 +1,29 @@
+using System.Collections.Generic;
 using System.IO;
 
 namespace OrchardCore.Localization.PortableObject
 {
     public class PoFilesTranslationsProvider : ITranslationProvider
     {
-        private readonly ILocalizationFileLocationProvider _poFilesLocationProvider;
+        private readonly IEnumerable<ILocalizationFileLocationProvider> _poFilesLocationProviders;
         private readonly PoParser _parser;
 
-        public PoFilesTranslationsProvider(ILocalizationFileLocationProvider poFileLocationProvider)
+        public PoFilesTranslationsProvider(IEnumerable<ILocalizationFileLocationProvider> poFileLocationProviders)
         {
-            _poFilesLocationProvider = poFileLocationProvider;
+            _poFilesLocationProviders = poFileLocationProviders;
             _parser = new PoParser();
         }
 
         public void LoadTranslations(string cultureName, CultureDictionary dictionary)
         {
-            foreach (var location in _poFilesLocationProvider.GetLocations(cultureName))
+            var test = new List<string>();
+            foreach (var provider in _poFilesLocationProviders)
             {
-                LoadFileToDictionary(location, dictionary);
+                foreach (var location in provider.GetLocations(cultureName))
+                {
+                    test.Add(location);
+                    LoadFileToDictionary(location, dictionary);
+                }
             }
         }
 

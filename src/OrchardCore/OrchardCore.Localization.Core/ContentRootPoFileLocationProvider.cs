@@ -8,6 +8,8 @@ namespace OrchardCore.Localization.PortableObject
 {
     public class ContentRootPoFileLocationProvider : ILocalizationFileLocationProvider
     {
+        private const string ContentRoot = "wwwroot";
+
         private readonly string _root;
         private readonly string _resourcesContainer;
 
@@ -19,7 +21,7 @@ namespace OrchardCore.Localization.PortableObject
 
         public IEnumerable<string> GetLocations(string cultureName)
         {
-            yield return Path.Combine(_root, _resourcesContainer, cultureName + ".po");
+            yield return Path.Combine(_root, ContentRoot, _resourcesContainer, cultureName + ".po");
         }
     }
 }
