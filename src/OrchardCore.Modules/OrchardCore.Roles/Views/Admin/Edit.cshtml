@@ -1,0 +1,90 @@
+﻿@model EditRoleViewModel
+@using OrchardCore.Roles.ViewModels;
+
+<h1>@RenderTitleSegments(T["Edit Role {0}", Model.Name])</h1>
+
+<nav class="admin-toolbar">
+    <ul class="navbar-nav mr-auto"></ul>
+        <form class="form-inline my-2 my-lg-0">
+            <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+        </form>
+</nav>
+
+<form asp-action="Edit" method="post">
+    <fieldset>
+        @foreach (var category in Model.RoleCategoryPermissions.Keys)
+        {
+            <fieldset class="permissions-list">
+                <legend>@category</legend>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="col-10">@T["Permission"]</th>
+                            <th class="col-1">@T["Allow"]</th>
+                            <th class="col-1">@T["Effective"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var permission in Model.RoleCategoryPermissions[category])
+                        {
+                            <tr data-text="@permission.Description">
+                                <td class="col-10">@permission.Description</td>
+                                <td class="col-1">
+                                    <input type="checkbox" value="true" name="Checkbox.@permission.Name" checked="@(Model.Role.RoleClaims.Any(x => x.ClaimValue == permission.Name))" />
+                                </td>
+                                <td class="col-1">
+                                    <input type="checkbox" disabled="disabled" name="Effective.@permission.Name" checked="@(Model.EffectivePermissions.Contains(permission.Name))" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </fieldset>
+        }
+    </fieldset>
+
+    <fieldset>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+        </div>
+    </fieldset>
+</form>
+
+<script at="Foot" type="text/javascript">
+//<![CDATA[
+    $(function () {
+        var searchBox = $('#search-box');
+
+        // On each keypress filter the list of roles
+        searchBox.keyup(function (e) {
+            var search = $(this).val().toLowerCase();
+
+            // On ESC, clear the search box and display all roles
+            if (e.keyCode == 27 || search == '') {
+                searchBox.val('');
+                $('.permissions-list').toggle(true);
+                $('.permissions-list > table > tbody > tr').toggle(true);
+            }
+            else {
+                $('.permissions-list > table > tbody > tr').each(function () {
+                    var text = $(this).data('text').toLowerCase();
+                    var found = text.indexOf(search) > -1;
+                    $(this).toggle(found);
+
+                    if (found) {
+                        $(this).parents('.permissions-list').toggle(true);
+                    }
+                });
+
+                // Hide any section without visible permission
+                $('.permissions-list').each(function () {
+                    var list = $(this);
+                    var hasVisiblePermissions = list.find('table > tbody > tr:visible').length > 0;
+                    list.toggle(hasVisiblePermissions);
+                });
+            }
+        });
+    })
+//]]>
+</script>

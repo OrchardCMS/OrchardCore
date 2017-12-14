@@ -1,0 +1,15 @@
+@model CreatePartViewModel
+
+<h1>@RenderTitleSegments(T["New Content Part"])</h1>
+
+<form asp-action="CreatePart">
+    @Html.ValidationSummary()
+    <fieldset class="form-group">
+        <label for="Name">@T["Name"]</label>
+        <input asp-for="Name" class="form-control" autofocus="autofocus"/>
+        <span class="hint">@T["Use no spaces or special characters. For example, \"MyCustomPart\""]</span>
+    </fieldset>
+    <fieldset class="form-group">
+        <button class="btn btn-primary" type="submit">@T["Create"]</button>
+    </fieldset>
+</form>
