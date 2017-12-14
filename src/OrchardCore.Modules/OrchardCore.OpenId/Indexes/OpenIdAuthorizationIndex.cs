@@ -19,8 +19,8 @@ namespace OrchardCore.OpenId.Indexes
             context.For<OpenIdAuthorizationIndex>()
                 .Map(authorization => new OpenIdAuthorizationIndex
                 {
-                    AuthorizationId = authorization.AuthorizationId,
                     ApplicationId = authorization.ApplicationId,
+                    AuthorizationId = authorization.AuthorizationId,
                     Status = authorization.Status,
                     Subject = authorization.Subject,
                     Type = authorization.Type

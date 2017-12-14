@@ -346,9 +346,12 @@ namespace OrchardCore.OpenId.Services
         /// </returns>
         public virtual async Task<ImmutableArray<OpenIdAuthorization>> ListInvalidAsync(int? count, int? offset, CancellationToken cancellationToken)
         {
-            IQuery<OpenIdAuthorization> query = _session.Query<OpenIdAuthorization, OpenIdAuthorizationIndex>(authorization => authorization.Status != OpenIddictConstants.Statuses.Valid ||
-                          (authorization.Type == OpenIddictConstants.AuthorizationTypes.AdHoc &&
-                          authorization.ApplicationId.IsNotIn<OpenIdTokenIndex>(tokenIndex => tokenIndex.ApplicationId, token => token.Status == OpenIddictConstants.Statuses.Valid)));
+            IQuery<OpenIdAuthorization> query = _session.Query<OpenIdAuthorization, OpenIdAuthorizationIndex>(
+                authorization => authorization.Status != OpenIddictConstants.Statuses.Valid ||
+               (authorization.Type == OpenIddictConstants.AuthorizationTypes.AdHoc &&
+                authorization.AuthorizationId.IsNotIn<OpenIdTokenIndex>(
+                    token => token.AuthorizationId,
+                    token => token.Status == OpenIddictConstants.Statuses.Valid)));
 
             if (offset.HasValue)
             {

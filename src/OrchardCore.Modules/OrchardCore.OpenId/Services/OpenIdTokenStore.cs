@@ -496,7 +496,7 @@ namespace OrchardCore.OpenId.Services
         }
 
         /// <summary>
-        /// Sets the authorization identifier associated with a token.
+        /// Sets the application identifier associated with a token.
         /// </summary>
         /// <param name="token">The token.</param>
         /// <param name="identifier">The unique identifier associated with the token.</param>
@@ -504,7 +504,7 @@ namespace OrchardCore.OpenId.Services
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetAuthorizationIdAsync(OpenIdToken token, string identifier, CancellationToken cancellationToken)
+        public virtual Task SetApplicationIdAsync(OpenIdToken token, string identifier, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -524,7 +524,7 @@ namespace OrchardCore.OpenId.Services
         }
 
         /// <summary>
-        /// Sets the application identifier associated with a token.
+        /// Sets the authorization identifier associated with a token.
         /// </summary>
         /// <param name="token">The token.</param>
         /// <param name="identifier">The unique identifier associated with the token.</param>
@@ -532,7 +532,7 @@ namespace OrchardCore.OpenId.Services
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetApplicationIdAsync(OpenIdToken token, string identifier, CancellationToken cancellationToken)
+        public virtual Task SetAuthorizationIdAsync(OpenIdToken token, string identifier, CancellationToken cancellationToken)
         {
             if (token == null)
             {
