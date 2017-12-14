@@ -16,12 +16,10 @@ namespace OrchardCore.Localization.PortableObject
 
         public void LoadTranslations(string cultureName, CultureDictionary dictionary)
         {
-            var test = new List<string>();
             foreach (var provider in _poFilesLocationProviders)
             {
                 foreach (var location in provider.GetLocations(cultureName))
                 {
-                    test.Add(location);
                     LoadFileToDictionary(location, dictionary);
                 }
             }
