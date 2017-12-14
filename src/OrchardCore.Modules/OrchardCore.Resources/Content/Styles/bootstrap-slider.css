@@ -1,5 +1,5 @@
 /*! =======================================================
-                      VERSION  9.7.2              
+                      VERSION  10.0.0              
 ========================================================= */
 /*! =========================================================
  * bootstrap-slider.js
@@ -70,11 +70,12 @@
 .slider.slider-horizontal .slider-handle.triangle {
   position: relative;
   top: 50%;
+  -ms-transform: translateY(-50%);
   transform: translateY(-50%);
   border-width: 0 10px 10px 10px;
   width: 0;
   height: 0;
-  border-bottom-color: #0480be;
+  border-bottom-color: #2e6da4;
   margin-top: 0;
 }
 .slider.slider-horizontal .slider-tick-container {
@@ -93,6 +94,10 @@
   display: inline-block;
   text-align: center;
 }
+.slider.slider-horizontal .tooltip {
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
+}
 .slider.slider-horizontal.slider-rtl .slider-track {
   left: initial;
   right: 0;
@@ -105,6 +110,10 @@
 .slider.slider-horizontal.slider-rtl .slider-tick-container {
   left: initial;
   right: 0;
+}
+.slider.slider-horizontal.slider-rtl .tooltip {
+  -ms-transform: translateX(50%);
+  transform: translateX(50%);
 }
 .slider.slider-vertical {
   height: 210px;
@@ -137,8 +146,8 @@
   border-width: 10px 0 10px 10px;
   width: 1px;
   height: 1px;
-  border-left-color: #0480be;
-  border-right-color: #0480be;
+  border-left-color: #2e6da4;
+  border-right-color: #2e6da4;
   margin-left: 0;
   margin-right: 0;
 }
@@ -147,6 +156,10 @@
 }
 .slider.slider-vertical .slider-tick-label-container .slider-tick-label {
   padding-left: 4px;
+}
+.slider.slider-vertical .tooltip {
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
 }
 .slider.slider-vertical.slider-rtl .slider-track {
   left: initial;
@@ -219,11 +232,11 @@
   border-radius: 4px;
 }
 .slider-selection.tick-slider-selection {
-  background-image: -webkit-linear-gradient(top, #89cdef 0%, #81bfde 100%);
-  background-image: -o-linear-gradient(top, #89cdef 0%, #81bfde 100%);
-  background-image: linear-gradient(to bottom, #89cdef 0%, #81bfde 100%);
+  background-image: -webkit-linear-gradient(top, #8ac1ef 0%, #82b3de 100%);
+  background-image: -o-linear-gradient(top, #8ac1ef 0%, #82b3de 100%);
+  background-image: linear-gradient(to bottom, #8ac1ef 0%, #82b3de 100%);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff89cdef', endColorstr='#ff81bfde', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ac1ef', endColorstr='#ff82b3de', GradientType=0);
 }
 .slider-track-low,
 .slider-track-high {
@@ -240,11 +253,11 @@
   width: 20px;
   height: 20px;
   background-color: #337ab7;
-  background-image: -webkit-linear-gradient(top, #149bdf 0%, #0480be 100%);
-  background-image: -o-linear-gradient(top, #149bdf 0%, #0480be 100%);
-  background-image: linear-gradient(to bottom, #149bdf 0%, #0480be 100%);
+  background-image: -webkit-linear-gradient(top, #337ab7 0%, #2e6da4 100%);
+  background-image: -o-linear-gradient(top, #337ab7 0%, #2e6da4 100%);
+  background-image: linear-gradient(to bottom, #337ab7 0%, #2e6da4 100%);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff149bdf', endColorstr='#ff0480be', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff337ab7', endColorstr='#ff2e6da4', GradientType=0);
   filter: none;
   -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
@@ -299,10 +312,10 @@
   color: #726204;
 }
 .slider-tick.in-selection {
-  background-image: -webkit-linear-gradient(top, #89cdef 0%, #81bfde 100%);
-  background-image: -o-linear-gradient(top, #89cdef 0%, #81bfde 100%);
-  background-image: linear-gradient(to bottom, #89cdef 0%, #81bfde 100%);
+  background-image: -webkit-linear-gradient(top, #8ac1ef 0%, #82b3de 100%);
+  background-image: -o-linear-gradient(top, #8ac1ef 0%, #82b3de 100%);
+  background-image: linear-gradient(to bottom, #8ac1ef 0%, #82b3de 100%);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff89cdef', endColorstr='#ff81bfde', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ac1ef', endColorstr='#ff82b3de', GradientType=0);
   opacity: 1;
 }

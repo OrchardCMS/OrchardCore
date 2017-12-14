@@ -39,7 +39,7 @@ Placement information consists of:
 - `shape` (Optional): A substitution shape type.
 
 
-```json hl_lines="4 5"
+```json
 {
   "TextField": [ 
     {

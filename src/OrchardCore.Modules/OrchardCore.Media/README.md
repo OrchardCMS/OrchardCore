@@ -91,6 +91,13 @@ Resizes the image until the shortest side reaches the set given dimension. Upsca
 Stretches the resized image to fit the bounds of its container.
 
 
+## Razor Helpers
+
+To obtain the correct URL for an asset, use the `AssetUrl` helper extension method on the view's base `OrchardCore` property, e.g.:
+
+`<img src="@OrchardCore.AssetUrl(Model.Field.Paths[0])" alt="..." />`
+
+
 ## CREDITS
 
 ### ImageSharp

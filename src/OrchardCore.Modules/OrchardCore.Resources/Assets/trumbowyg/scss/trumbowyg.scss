@@ -93,7 +93,6 @@ $slow-transition-duration: 300ms !default;
     display: block;
     overflow: auto;
     border: none;
-    white-space: normal;
     font-size: 14px;
     font-family: "Inconsolata", "Consolas", "Courier", "Courier New", sans-serif;
     line-height: 18px;
@@ -164,13 +163,14 @@ $slow-transition-duration: 300ms !default;
             color: transparent;
         }
 
-        &:not(:empty) + .trumbowyg-button-group::before {
+        & + .trumbowyg-button-group::before {
             content: " ";
             display: inline-block;
             width: 1px;
             background: darken($light-color, 7%);
             margin: 0 5px;
             height: 35px;
+            vertical-align: top;
         }
     }
 
@@ -185,11 +185,13 @@ $slow-transition-duration: 300ms !default;
         border: none;
         cursor: pointer;
         background: none;
+        vertical-align: middle;
         transition: background-color $transition-duration, opacity $transition-duration;
 
         &.trumbowyg-textual-button {
             width: auto;
             line-height: 35px;
+            user-select: none;
         }
     }
 
@@ -253,7 +255,7 @@ $slow-transition-duration: 300ms !default;
     background: #FFF;
     margin-left: -1px;
     box-shadow: rgba(0, 0, 0, .1) 0 2px 3px;
-    z-index: 11;
+    z-index: 12;
 
     button {
         display: block;
@@ -523,7 +525,6 @@ body.trumbowyg-body-fullscreen {
         font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
         font-size: 14px !important;
         line-height: 1.45em !important;
-        white-space: normal !important;
         color: #333;
 
         a {
