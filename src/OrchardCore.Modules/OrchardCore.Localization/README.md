@@ -10,6 +10,7 @@ PO files are found with the following steps:
 - For each module and theme all files matching `[ModuleLocation]/App_Data/Localization/[CultureName]/OrchardCore.po`
 - Then all files matching `/App_Data/Localization/[CultureName]/OrchardCore.po`
 - For each tenant all files matching `/App_Data/Sites/[TenantName]/Localization/[CultureName]/OrchardCore.po`
+- Then all files matching `/wwwroot/Localization/[CultureName].po`
 
 ## File format
 

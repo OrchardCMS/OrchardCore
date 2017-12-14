@@ -34,6 +34,8 @@ namespace OrchardCore.Localization
             _shellDataContainer = Path.Combine(_applicationDataContainer, shellOptions.Value.ShellsContainerName, shellSettings.Name);
         }
 
+        public int Order => 0;
+
         public IEnumerable<string> GetLocations(string cultureName)
         {
             // Load .po files in each extension folder first, based on the extensions order

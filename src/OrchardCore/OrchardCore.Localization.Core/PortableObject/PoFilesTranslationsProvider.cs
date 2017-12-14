@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace OrchardCore.Localization.PortableObject
 {
@@ -16,7 +17,7 @@ namespace OrchardCore.Localization.PortableObject
 
         public void LoadTranslations(string cultureName, CultureDictionary dictionary)
         {
-            foreach (var provider in _poFilesLocationProviders)
+            foreach (var provider in _poFilesLocationProviders.OrderBy(p => p.Order))
             {
                 foreach (var location in provider.GetLocations(cultureName))
                 {
