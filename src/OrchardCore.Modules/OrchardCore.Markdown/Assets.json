@@ -1,0 +1,8 @@
+[
+    {
+        "inputs": [
+            "Assets/simplemde.media.js"
+        ],
+        "output": "Content/Scripts/simplemde.media.js"
+    }
+]

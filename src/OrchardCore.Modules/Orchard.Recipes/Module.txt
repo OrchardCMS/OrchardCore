@@ -1,9 +1,0 @@
-﻿Name: Recipes
-Author: The Orchard Team
-Website: http://orchardproject.net
-Version: 2.0.x
-OrchardVersion: 2.0.x
-Description: Provides Orchard Recipes.
-FeatureDescription: Implementation of Orchard recipes.
-Dependencies: Orchard.Modules, Orchard.Scripting
-Category: Infrastructure

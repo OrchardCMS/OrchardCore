@@ -1,0 +1,12 @@
+@using OrchardCore.ContentManagement.Metadata.Settings
+@model EditPartViewModel
+<div class="properties">
+    <div class="related">
+        <a class="btn btn-primary btn-sm" asp-route-action="EditPart" asp-route-id="@Model.Name">@T["Edit"]</a>
+    </div>
+    <div>@Model.PartDefinition.DisplayName()</div>
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <span class="hint">@Model.Description</span>
+    }
+</div>

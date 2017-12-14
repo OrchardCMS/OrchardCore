@@ -1,0 +1,35 @@
+@model SearchIndexViewModel
+@inject IContentItemDisplayManager DisplayManager
+
+<div class="form-group">
+    <form action="@Url.Action("Index", "Search", new { area = "OrchardCore.Lucene", id = Model.IndexName })" method="get">
+        <div class="input-group">
+            <input name="q" type="text" class="form-control col-md-6" value="@Model.Query" autofocus />
+            <span class="input-group-btn">
+                <button type="submit" class="btn btn-primary">@T["Search"]</button>
+            </span>
+        </div>
+    </form>
+</div>
+
+@if (Model.ContentItems.Any())
+{
+    <ul class="list-group">
+        @foreach (var contentItem in Model.ContentItems)
+        {
+            <li class="list-group-item">
+                @await DisplayAsync(await DisplayManager.BuildDisplayAsync(contentItem, null, "Summary"))
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p class="alert alert-warning">@T["There are no such results."]</p>
+}
+
+@{
+    var pager = (await New.Pager(Model.Pager)).ShowNext(Model.HasMoreResults);
+}
+
+@await DisplayAsync(pager)

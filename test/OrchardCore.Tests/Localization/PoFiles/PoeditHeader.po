@@ -1,0 +1,19 @@
+# Translation of kstars.po into Spanish.
+# This file is distributed under the same license as the kdeedu package.
+# Pablo de Vicente <pablo@foo.com>, 2005, 2006, 2007, 2008.
+# Eloy Cuadra <eloy@bar.net>, 2007, 2008.
+msgid ""
+msgstr ""
+"Project-Id-Version: kstars\n"
+"Report-Msgid-Bugs-To: http://bugs.kde.org\n"
+"POT-Creation-Date: 2008-09-01 09:37+0200\n"
+"PO-Revision-Date: 2008-07-22 18:13+0200\n"
+"Last-Translator: Eloy Cuadra <eloy@bar.net>\n"
+"Language-Team: Spanish <kde-l10n-es@kde.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+msgid "Unknown system error"
+msgstr "Error desconegut del sistema"
