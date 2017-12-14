@@ -1,0 +1,44 @@
+@model OrchardCore.Lucene.Settings.ContentIndexSettingsViewModel
+
+<fieldset class="form-group">
+    <div class="form-check">
+        <label class="form-check-label">
+            <input asp-for="ContentIndexSettings.Included" data-toggle="collapse" data-target="#index-settings" type="checkbox" class="form-check-input" checked="@Model.ContentIndexSettings.Included" /> @T["Include this element index"]
+            <span class="hint">@T["Check to include the value of this element in the index."]</span>
+        </label>
+    </div>
+    <div id="index-settings" class="collapse">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="ContentIndexSettings.Stored" type="checkbox" class="form-check-input" checked="@Model.ContentIndexSettings.Stored" /> @T["Stored"]
+                <span class="hint">@T["Check to be able to retrieve the value from the index."]</span>
+            </label>
+        </div>
+
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="ContentIndexSettings.Analyzed" type="checkbox" class="form-check-input" checked="@Model.ContentIndexSettings.Analyzed" /> @T["Analyzed"]
+                <span class="hint">@T["Check to analyze the value as readable text."]</span>
+            </label>
+        </div>
+
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="ContentIndexSettings.Sanitized" type="checkbox" class="form-check-input" checked="@Model.ContentIndexSettings.Sanitized" /> @T["Sanitized"]
+                <span class="hint">@T["Check to remove any extraneous characters from the text (e.g., HTML)."]</span>
+            </label>
+        </div>
+
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="ContentIndexSettings.Tokenized" type="checkbox" data-toggle="collapse" data-target="#index-template" class="form-check-input" checked="@Model.ContentIndexSettings.Tokenized" /> @T["Tokenized"]
+                <span class="hint">@T["Check to be able alter the indexed value using tokens."]</span>
+            </label>
+        </div>
+
+        <div id="index-template" class="collapse">
+            <input asp-for="ContentIndexSettings.Template" type="text" class="form-control" />
+            <span class="hint">@T["Use tokens to customize the value. Use the <code>content</code> helper to reference the current element."]</span>
+        </div>
+    </div>
+</fieldset>

@@ -1,0 +1,24 @@
+@model dynamic
+@addTagHelper "*, OrchardCore.Resources"
+@addTagHelper "*, OrchardCore.Demo"
+
+@Model.Line
+
+@*
+    The way it is done from a View is to use a DisplayHelper which is created for
+    each view. It return an IHtmlString
+*@
+@await DisplayAsync(Model)
+
+@*
+    We can still call the DisplHelper with methods
+*@
+@await New.Bar()
+
+@*
+    Or attribute shapes
+*@
+@await New.Baz(text: "Foo")
+
+<shape type="Baz" text="Hello" count="3"/>
+<baz text="Bertrand" count="4"/>

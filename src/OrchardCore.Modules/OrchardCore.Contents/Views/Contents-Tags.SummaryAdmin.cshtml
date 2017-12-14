@@ -1,0 +1,21 @@
+﻿@using OrchardCore.ContentManagement
+@inject IContentManager ContentManager
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
+    var hasDraft = contentItem.HasDraft();
+}
+@if (hasPublished)
+{
+    <span class="badge badge-success" title="@T["Published"]">
+        <i class="fa fa-check" aria-hidden="true"></i> @T["Published"]
+    </span>
+}
+
+@if (hasDraft)
+{
+    <span class="badge badge-primary" title="@T["Draft"]">
+        <i class="fa fa-pencil" aria-hidden="true"></i> @T["Draft"]
+    </span>
+}

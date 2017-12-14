@@ -1,0 +1,45 @@
+@model EditUserViewModel
+    
+<input asp-for="Id" type="hidden"/>
+
+<div class="form-group" asp-validation-class-for="UserName">
+    <label asp-for="UserName">@T["User name"]</label>
+    <span asp-validation-for="UserName" class="text-danger">@T["The user name is required."]</span>
+    <input asp-for="UserName" class="form-control" autofocus />
+</div>
+
+<div class="form-group" asp-validation-class-for="Email">
+    <label for="Email">@T["Email"]</label>
+    <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
+    <input asp-for="Email" class="form-control" type="email" />
+</div>
+
+@if (Model.DisplayPasswordFields)
+{
+    <div class="form-group" asp-validation-class-for="Password">
+        <label asp-for="Password">@T["Password"]</label>
+        <span asp-validation-for="Password" class="text-danger"></span>
+        <input asp-for="Password" type="password" class="form-control" />
+    </div>
+
+    <div class="form-group" asp-validation-class-for="PasswordConfirmation">
+        <label asp-for="PasswordConfirmation">@T["Password Confirmation"]</label>
+        <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
+        <input asp-for="PasswordConfirmation" type="password" class="form-control" />
+    </div>
+}
+
+<h6>@T["Roles"]</h6>
+<div class="form-group">
+    @for (var i = 0; i < Model.Roles.Length; i++)
+    {
+        <div class="form-check">
+            <label class="form-check-label" asp-for="Roles[i].IsSelected">
+
+                <input class="form-check-input" type="checkbox" asp-for="Roles[i].IsSelected" />
+                <input type="hidden" asp-for="Roles[i].Role" />
+                @Model.Roles[i].Role
+            </label>
+        </div>
+    }
+</div>
