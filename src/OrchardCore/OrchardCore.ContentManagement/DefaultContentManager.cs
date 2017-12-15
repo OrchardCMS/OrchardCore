@@ -289,7 +289,11 @@ namespace OrchardCore.ContentManagement
                         x.Latest)
                     .FirstOrDefaultAsync();
 
-                _session.Save(latestVersion);
+
+                if (latestVersion != null)
+                {
+                    _session.Save(latestVersion);
+                }
             }
 
             if (latestVersion != null)
