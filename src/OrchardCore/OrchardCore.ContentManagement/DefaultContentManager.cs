@@ -146,7 +146,7 @@ namespace OrchardCore.ContentManagement
                     // Save the previous version
                     _session.Save(contentItem);
 
-                    contentItem = await BuildNewVersionAsync(contentItem);
+                    contentItem = BuildNewVersion(contentItem);
                 }
 
                 // Save the new version
@@ -271,35 +271,18 @@ namespace OrchardCore.ContentManagement
             ReversedHandlers.Invoke(handler => handler.Unpublished(context), _logger);
         }
 
-        protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
+        protected ContentItem BuildNewVersion(ContentItem existingContentItem)
         {
+            // This method needs to be called using the latest and published version
+            if (!existingContentItem.Latest || !existingContentItem.Published)
+            {
+                throw new InvalidOperationException("Not the latest and published version.");
+            }
+
+            existingContentItem.Latest = false;
             var buildingContentItem = New(existingContentItem.ContentType);
 
-            ContentItem latestVersion;
-
-            if (existingContentItem.Latest)
-            {
-                latestVersion = existingContentItem;
-            }
-            else
-            {
-                latestVersion = await _session
-                    .Query<ContentItem, ContentItemIndex>(x =>
-                        x.ContentItemId == existingContentItem.ContentItemId &&
-                        x.Latest)
-                    .FirstOrDefaultAsync();
-            }
-
-            if (latestVersion != null)
-            {
-                latestVersion.Latest = false;
-                buildingContentItem.Number = latestVersion.Number + 1;
-            }
-            else
-            {
-                buildingContentItem.Number = 1;
-            }
-
+            buildingContentItem.Number = existingContentItem.Number + 1;
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
             buildingContentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem);
             buildingContentItem.Latest = true;
@@ -416,6 +399,7 @@ namespace OrchardCore.ContentManagement
             if (publishedItem != null)
             {
                 publishedItem.Latest = true;
+                publishedItem.Number = contentItem.Number + 1;
                 _session.Save(publishedItem);
             }
         }
