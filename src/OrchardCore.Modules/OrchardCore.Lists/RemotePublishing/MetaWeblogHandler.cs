@@ -285,7 +285,7 @@ namespace OrchardCore.Lists.RemotePublishing
                 driver.EditPost(content, contentItem);
             }
 
-            _contentManager.Create(contentItem, VersionOptions.Draft, true);
+            _contentManager.Create(contentItem, VersionOptions.Draft);
 
             // try to get the UTC timezone by default
             var publishedUtc = content.Optional<DateTime?>("date_created_gmt");
