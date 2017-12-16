@@ -38,7 +38,8 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             if (_orchardHelper == null)
             {
-                _orchardHelper = new OrchardRazorHelper(Context);
+                EnsureDisplayHelper();
+                _orchardHelper = new OrchardRazorHelper(Context, _displayHelper);
             }
         }
 
