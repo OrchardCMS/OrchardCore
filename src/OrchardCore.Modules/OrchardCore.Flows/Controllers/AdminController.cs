@@ -49,7 +49,7 @@ namespace OrchardCore.Flows.Controllers
                 contentItem.Weld(new FlowMetadata());
             }
 
-            var editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, htmlFieldPrefix: prefix);
+            dynamic editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true, htmlFieldPrefix: prefix);
 
             editor.PrefixesName = prefixesName;
             editor.ContentTypesName = contentTypesName;

@@ -12,6 +12,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Layers.Handlers;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Scripting;
 
@@ -24,6 +25,7 @@ namespace OrchardCore.Layers.Services
         private readonly IUpdateModelAccessor _modelUpdaterAccessor;
         private readonly IScriptingManager _scriptingManager;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
 		private readonly ILayerService _layerService;
 		private readonly IShapeFactory _shapeFactory;
@@ -45,6 +47,7 @@ namespace OrchardCore.Layers.Services
             _modelUpdaterAccessor = modelUpdaterAccessor;
             _scriptingManager = scriptingManager;
             _serviceProvider = serviceProvider;
+            _memoryCache = memoryCache;
             _signal = signal;
 			_shapeFactory = shapeFactory;
         }
@@ -55,10 +58,15 @@ namespace OrchardCore.Layers.Services
 			if ((context.Result is ViewResult || context.Result is PageResult) &&
                 !AdminAttribute.IsApplied(context.HttpContext))
 			{
-				var widgets = await _layerService.GetLayerWidgetsAsync(x => x.Published);
+				var widgets = await _memoryCache.GetOrCreateAsync("OrchardCore.Layers.LayerFilter:AllWidgets", entry =>
+                {
+                    entry.AddExpirationToken(_signal.GetToken(LayerMetadataHandler.LayerChangeToken));
+                    return _layerService.GetLayerWidgetsAsync(x => x.Published);
+                });
+
 				var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
 
-				var layout = _layoutAccessor.GetLayout();
+				dynamic layout = await _layoutAccessor.GetLayoutAsync();
 				var updater = _modelUpdaterAccessor.ModelUpdater;
 
 				var engine = _scriptingManager.GetScriptingEngine("js");
@@ -100,7 +108,7 @@ namespace OrchardCore.Layers.Services
 					widgetContent.Classes.Add("widget");
 					widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
 
-					var wrapper = _shapeFactory.Create("Widget_Wrapper", new { Widget = widget.ContentItem, Content = widgetContent });
+					var wrapper = await _shapeFactory.CreateAsync("Widget_Wrapper", new { Widget = widget.ContentItem, Content = widgetContent });
 					wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
 
 					var contentZone = layout.Zones[widget.Zone];

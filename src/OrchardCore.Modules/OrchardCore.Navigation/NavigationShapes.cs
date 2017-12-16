@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -24,7 +24,7 @@ namespace OrchardCore.Navigation
                     menu.Classes.Add("menu");
                     menu.Metadata.Alternates.Add("Navigation__" + EncodeAlternateElement(menuName));
                 })
-                .OnProcessingAsync(context =>
+                .OnProcessing(context =>
                 {
                     dynamic menu = context.Shape;
                     string menuName = menu.MenuName;
@@ -66,9 +66,7 @@ namespace OrchardCore.Navigation
                     }
 
                     // TODO: Flag Selected menu item
-                    NavigationHelper.PopulateMenu(shapeFactory, menu, menu, menuItems, context.DisplayContext.ViewContext);
-
-                    return Task.CompletedTask;
+                    return NavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, context.DisplayContext.ViewContext);
                 });
 
             builder.Describe("NavigationItem")

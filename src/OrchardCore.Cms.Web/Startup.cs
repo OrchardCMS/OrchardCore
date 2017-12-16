@@ -26,7 +26,7 @@ namespace OrchardCore.Cms.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOrchardCms();
+            services.AddOrchardCms(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

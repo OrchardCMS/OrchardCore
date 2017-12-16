@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -11,12 +11,13 @@ namespace OrchardCore.Title.Drivers
     {
         public override IDisplayResult Display(TitlePart titlePart)
         {
-            return Combine(
-                Shape("TitlePart", titlePart)
-                    .Location("Detail", "Header:5"),
-                Shape("TitlePart_Summary", titlePart)
-                    .Location("Summary", "Header:5")
-            );
+            return Shape<TitlePartViewModel>("TitlePart", model =>
+            {
+                model.Title = titlePart.Title;
+                model.TitlePart = titlePart;
+            })
+            .Location("Detail", "Header:5")
+            .Location("Summary", "Header:5");
         }
 
         public override IDisplayResult Edit(TitlePart titlePart)

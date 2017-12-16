@@ -15,6 +15,7 @@ namespace OrchardCore.DisplayManagement.Razor
     {
         private dynamic _displayHelper;
         private IShapeFactory _shapeFactory;
+        private OrchardRazorHelper _orchardHelper;
 
         private void EnsureDisplayHelper()
         {
@@ -33,15 +34,23 @@ namespace OrchardCore.DisplayManagement.Razor
             }
         }
 
+        private void EnsureOrchardHelper()
+        {
+            if (_orchardHelper == null)
+            {
+                _orchardHelper = new OrchardRazorHelper(Context);
+            }
+        }
+
         /// <summary>
         /// Gets a dynamic shape factory to create new shapes.
         /// </summary>
         /// <example>
         /// Usage:
         /// <code>
-        /// New.MyShape()
-        /// New.MyShape(A: 1, B: "Some text")
-        /// New.MyShape().A(1).B("Some text")
+        /// await New.MyShape()
+        /// await New.MyShape(A: 1, B: "Some text")
+        /// (await New.MyShape()).A(1).B("Some text")
         /// </code>
         /// </example>
         public dynamic New
@@ -74,6 +83,15 @@ namespace OrchardCore.DisplayManagement.Razor
             return (Task<IHtmlContent>)_displayHelper(shape);
         }
 
+        public OrchardRazorHelper OrchardCore
+        {
+            get
+            {
+                EnsureOrchardHelper();
+                return _orchardHelper;
+            }
+        }
+
         private dynamic _themeLayout;
         public dynamic ThemeLayout
         {
@@ -88,7 +106,7 @@ namespace OrchardCore.DisplayManagement.Razor
                         throw new InvalidOperationException("Could not find a valid layout accessor");
                     }
 
-                    _themeLayout = layoutAccessor.GetLayout();
+                    _themeLayout = layoutAccessor.GetLayoutAsync().GetAwaiter().GetResult();
                 }
 
                 return _themeLayout;

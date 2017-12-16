@@ -1,4 +1,4 @@
-﻿@model OrchardCore.ContentFields.Settings.NumericFieldSettings
+@model OrchardCore.ContentFields.Settings.NumericFieldSettings
 @using System.Globalization
 
 @inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
@@ -29,7 +29,7 @@
         <select asp-for="Editor" class="form-control">
             @foreach (var editorShape in editorShapes)
             {
-                dynamic shape = Factory.Create(editorShape);
+                dynamic shape = await Factory.CreateAsync(editorShape);
                 shape.Editor = Model.Editor;
                 @await DisplayAsync(shape)
             }

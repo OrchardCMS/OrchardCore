@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
@@ -76,8 +77,16 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                 {
                     var placement = new PlacementInfo();
                     placement.Location = filter.Location;
-                    placement.Alternates = filter.Alternates;
-                    placement.Wrappers = filter.Wrappers;
+                    if (filter.Alternates?.Length > 0)
+                    {
+                        placement.Alternates = new AlternatesCollection(filter.Alternates);
+                    }
+
+                    if (filter.Wrappers?.Length > 0)
+                    {
+                        placement.Wrappers = new AlternatesCollection(filter.Wrappers);
+                    }
+
                     placement.ShapeType = filter.ShapeType;
 
                     builder.Describe(shapeType)

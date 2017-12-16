@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,14 +12,12 @@ using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Lucene.Net.Util;
-using Microsoft.AspNetCore.Hosting;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
+using OrchardCore.Modules;
 using Directory = System.IO.Directory;
-using LuceneNetCodecs = Lucene.Net.Codecs;
 
 namespace OrchardCore.Lucene
 {
@@ -30,7 +28,6 @@ namespace OrchardCore.Lucene
     public class LuceneIndexManager : IDisposable
     {
         private readonly IClock _clock;
-        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ILogger<LuceneIndexManager> _logger;
         private readonly string _rootPath;
         private readonly DirectoryInfo _rootDirectory;
@@ -43,18 +40,15 @@ namespace OrchardCore.Lucene
 
         public LuceneIndexManager(
             IClock clock,
-            IHostingEnvironment hostingEnvironment,
             IOptions<ShellOptions> shellOptions,
             ShellSettings shellSettings,
             ILogger<LuceneIndexManager> logger
             )
         {
             _clock = clock;
-            _hostingEnvironment = hostingEnvironment;
             _logger = logger;
             _rootPath = Path.Combine(
-                _hostingEnvironment.ContentRootPath,
-                shellOptions.Value.ShellsRootContainerName,
+                shellOptions.Value.ShellsApplicationDataPath,
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name, "Lucene");
 

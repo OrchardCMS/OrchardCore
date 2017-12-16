@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -11,11 +11,9 @@ namespace OrchardCore.Lists.Feeds
     {
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {
-            return Shape("ListPart_Feed", shape =>
+            return Shape("ListPartFeed", shape =>
             {
                 shape.ContentItem = listPart.ContentItem;
-
-                return Task.CompletedTask;
             })
             .Location("Detail", "Content");
         }

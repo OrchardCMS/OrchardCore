@@ -15,7 +15,6 @@ namespace OrchardCore.Lists.RemotePublishing
             return Shape("ListPart_RemotePublishing", shape =>
             {
                 shape.ContentItem = listPart.ContentItem;
-                return Task.CompletedTask;
             }).Location("Content");
         }
     }

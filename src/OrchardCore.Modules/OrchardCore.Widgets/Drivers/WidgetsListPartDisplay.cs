@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -109,7 +109,7 @@ namespace OrchardCore.Widgets.Drivers
 
                 contentItem.Weld(new WidgetMetadata());
 
-                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, htmlFieldPrefix: prefix);
+                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: prefix);
 
                 if (!part.Widgets.ContainsKey(zone))
                 {

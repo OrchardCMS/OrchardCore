@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -6,12 +6,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.TagHelpers
 {
     public abstract class BaseShapeTagHelper : TagHelper
     {
-        private static readonly string[] InternalProperties = new[] { "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-duration" };
+        private static readonly string[] InternalProperties = new[] { "id", "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-duration" };
         private static readonly char[] Separators = new[] { ',', ' ' };
 
         protected IShapeFactory _shapeFactory;
@@ -77,11 +78,19 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 }
             }
 
-            var shape = _shapeFactory.Create(Type, Arguments.From(properties));
+            var shape = await _shapeFactory.CreateAsync(Type, Arguments.From(properties));
+
+            if (output.Attributes.ContainsName("id"))
+            {
+                shape.Id = Convert.ToString(output.Attributes["id"].Value);
+            }
+            
+            tagHelperContext.Items.Add(typeof(IShape), shape);
 
             if (!string.IsNullOrWhiteSpace(Cache))
             {
                 var metadata = shape.Metadata;
+
                 metadata.Cache(Cache);
 
                 if (Duration.HasValue)
@@ -107,6 +116,8 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                     metadata.Cache().AddDependency(dependency);
                 }
             }
+
+            await output.GetChildContentAsync();
 
             output.Content.SetHtmlContent(await display.ShapeExecuteAsync(shape));
 

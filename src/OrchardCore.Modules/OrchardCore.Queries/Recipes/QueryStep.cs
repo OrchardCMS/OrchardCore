@@ -48,7 +48,7 @@ namespace OrchardCore.Queries.Recipes
                 }
 
                 var query = token.ToObject(sample.GetType()) as Query;
-                await _queryManager.SaveQueryAsync(query);
+                await _queryManager.SaveQueryAsync(query.Name, query);
             }
         }
     }

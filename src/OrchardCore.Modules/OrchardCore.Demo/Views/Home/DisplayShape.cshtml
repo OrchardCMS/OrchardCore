@@ -1,4 +1,4 @@
-﻿@model dynamic
+@model dynamic
 @addTagHelper "*, OrchardCore.Resources"
 @addTagHelper "*, OrchardCore.Demo"
 
@@ -13,12 +13,12 @@
 @*
     We can still call the DisplHelper with methods
 *@
-@New.Bar()
+@await New.Bar()
 
 @*
     Or attribute shapes
 *@
-@New.Baz(text: "Foo")
+@await New.Baz(text: "Foo")
 
 <shape type="Baz" text="Hello" count="3"/>
 <baz text="Bertrand" count="4"/>

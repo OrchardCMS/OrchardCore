@@ -11,7 +11,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Lists.Settings
 {
-    public class CommonPartSettingsDisplayDriver : ContentTypePartDisplayDriver
+    public class CommonPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -38,7 +38,6 @@ namespace OrchardCore.Lists.Settings
                 model.DisplayDateEditor = settings.DisplayDateEditor;
                 model.DisplayOwnerEditor = settings.DisplayOwnerEditor;
 
-                return Task.CompletedTask;
             }).Location("Content");
         }
 

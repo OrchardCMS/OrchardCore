@@ -19,14 +19,14 @@ namespace OrchardCore.Media
 
         public async Task<IContent> ImportMediaAsync(string path, string mimeType, string contentType)
         {
-            var file = await _mediaFileStore.GetFileAsync(path);
+            var file = await _mediaFileStore.GetFileInfoAsync(path);
 
             if (file == null)
             {
                 return null;
             }
 
-            using (var stream = file.CreateReadStream())
+            using (var stream = await _mediaFileStore.GetFileStreamAsync(path))
             {
                 var mediaFactory = GetMediaFactory(stream, file.Name, mimeType, contentType);
 

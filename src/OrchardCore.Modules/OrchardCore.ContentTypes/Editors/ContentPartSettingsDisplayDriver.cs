@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Editors
 {
-    public class ContentPartSettingsDisplayDriver : ContentPartDisplayDriver
+    public class ContentPartSettingsDisplayDriver : ContentPartDefinitionDisplayDriver
     {
 
         public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition)
@@ -20,8 +20,6 @@ namespace OrchardCore.ContentTypes.Editors
                 model.Description = settings.Description;
                 model.DisplayName = settings.DisplayName;
                 model.ContentPartDefinition = contentPartDefinition;
-
-                return Task.CompletedTask;
             }).Location("Content");
         }
 

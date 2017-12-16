@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -58,7 +58,7 @@ namespace OrchardCore.ContentManagement.Display
 
         ILogger Logger { get; set; }
 
-        public async Task<dynamic> BuildDisplayAsync(ContentItem contentItem, IUpdateModel updater, string displayType, string groupId)
+        public async Task<IShape> BuildDisplayAsync(ContentItem contentItem, IUpdateModel updater, string displayType, string groupId)
         {
             if(contentItem == null)
             {
@@ -77,7 +77,7 @@ namespace OrchardCore.ContentManagement.Display
                 actualShapeType = actualShapeType + "_" + actualDisplayType;
             }
 
-            dynamic itemShape = CreateContentShape(actualShapeType);
+            dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
             itemShape.ContentItem = contentItem;
 
             ShapeMetadata metadata = itemShape.Metadata;
@@ -91,7 +91,7 @@ namespace OrchardCore.ContentManagement.Display
                 actualDisplayType,
                 groupId,
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 
@@ -102,7 +102,7 @@ namespace OrchardCore.ContentManagement.Display
             return context.Shape;
         }
 
-        public async Task<dynamic> BuildEditorAsync(ContentItem contentItem, IUpdateModel updater, string groupId, string htmlFieldPrefix)
+        public async Task<IShape> BuildEditorAsync(ContentItem contentItem, IUpdateModel updater, bool isNew, string groupId, string htmlFieldPrefix)
         {
             if (contentItem == null)
             {
@@ -115,7 +115,7 @@ namespace OrchardCore.ContentManagement.Display
 
             var actualShapeType = (stereotype ?? "Content") + "_Edit";
 
-            dynamic itemShape = CreateContentShape(actualShapeType);
+            dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
             itemShape.ContentItem = contentItem;
 
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
@@ -124,9 +124,10 @@ namespace OrchardCore.ContentManagement.Display
             var context = new BuildEditorContext(
                 itemShape,
                 groupId,
+                isNew,
                 htmlFieldPrefix,
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 
@@ -137,7 +138,7 @@ namespace OrchardCore.ContentManagement.Display
             return context.Shape;
         }
 
-        public async Task<dynamic> UpdateEditorAsync(ContentItem contentItem, IUpdateModel updater, string groupId, string htmlFieldPrefix)
+        public async Task<IShape> UpdateEditorAsync(ContentItem contentItem, IUpdateModel updater, bool isNew, string groupId, string htmlFieldPrefix)
         {
             if (contentItem == null)
             {
@@ -148,7 +149,7 @@ namespace OrchardCore.ContentManagement.Display
             var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
             var actualShapeType = (stereotype ?? "Content") + "_Edit";
 
-            dynamic itemShape = CreateContentShape(actualShapeType);
+            dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
             itemShape.ContentItem = contentItem;
 
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
@@ -157,9 +158,10 @@ namespace OrchardCore.ContentManagement.Display
             var context = new UpdateEditorContext(
                 itemShape,
                 groupId,
+                isNew,
                 htmlFieldPrefix,
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 

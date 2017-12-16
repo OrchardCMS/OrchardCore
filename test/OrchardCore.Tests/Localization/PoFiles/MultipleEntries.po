@@ -1,4 +1,4 @@
-﻿#. "File {0} does not exist"
+#. "File {0} does not exist"
 msgctxt "OrchardCore.FileSystems.Media.FileSystemStorageProvider"
 msgid "File {0} does not exist"
 msgstr "Soubor {0} neexistuje"

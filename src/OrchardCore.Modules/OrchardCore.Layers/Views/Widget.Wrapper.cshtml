@@ -3,13 +3,14 @@
 
 @{ 
     ContentItem widget = Model.Widget;
-    bool rendertitle = widget.Content.LayerMetadata.RenderTitle;
+    var layerMetadata = widget.As<LayerMetadata>();
+    bool rendertitle = layerMetadata.RenderTitle;
 }
 
 <div class="widget-container">
     @if (rendertitle)
     {
-        var widgetTitle = Factory.Create("Widget_Title", new { Widget = widget });
+        var widgetTitle = await Factory.CreateAsync("Widget_Title", new { Widget = widget });
         widgetTitle.Metadata.Alternates.Add("Widget_Title__" + widget.ContentType);
 
         @await DisplayAsync(widgetTitle)

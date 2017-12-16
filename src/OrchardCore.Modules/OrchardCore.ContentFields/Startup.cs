@@ -1,18 +1,28 @@
-using OrchardCore.Modules;
+using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Indexing;
 using OrchardCore.ContentFields.Settings;
+using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Indexing;
+using OrchardCore.Modules;
 
 namespace OrchardCore.ContentFields
 {
     public class Startup : StartupBase
     {
+        static Startup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayBooleanFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayHtmlFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayLinkFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayNumericFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTextFieldViewModel>();
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             // Boolean Field

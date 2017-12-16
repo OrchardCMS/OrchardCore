@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Descriptors
 {
@@ -9,8 +10,8 @@ namespace OrchardCore.DisplayManagement.Descriptors
         public string Location { get; set; }
         public string Source { get; set; }
         public string ShapeType { get; set; }
-        public IEnumerable<string> Alternates { get; set; }
-        public IEnumerable<string> Wrappers { get; set; }
+        public AlternatesCollection Alternates { get; set; }
+        public AlternatesCollection Wrappers { get; set; }
 
         public bool IsLayoutZone()
         {
@@ -33,7 +34,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 location = location.Substring(1);
             }
 
-            var firstDelimiter = Location.IndexOfAny(Delimiters);
+            var firstDelimiter = location.IndexOfAny(Delimiters);
             if (firstDelimiter == -1)
             {
                 zones = location;

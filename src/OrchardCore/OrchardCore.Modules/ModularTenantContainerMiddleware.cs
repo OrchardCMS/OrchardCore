@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,42 +41,61 @@ namespace OrchardCore.Modules
                 var shellContext = _orchardHost.GetOrCreateShellContext(shellSetting);
 
                 var existingRequestServices = httpContext.RequestServices;
-                try
+                using (var scope = shellContext.EnterServiceScope())
                 {
-                    using (var scope = shellContext.EnterServiceScope())
+                    if (!shellContext.IsActivated)
                     {
-                        if (!shellContext.IsActivated)
+                        lock (shellContext)
                         {
-                            lock (shellContext)
+                            // The tenant gets activated here
+                            if (!shellContext.IsActivated)
                             {
-                                // The tenant gets activated here
-                                if (!shellContext.IsActivated)
+                                var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+
+                                foreach (var tenantEvent in tenantEvents)
                                 {
-                                    var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+                                    tenantEvent.ActivatingAsync().Wait();
+                                }
 
-                                    foreach (var tenantEvent in tenantEvents)
-                                    {
-                                        tenantEvent.ActivatingAsync().Wait();
-                                    }
+                                httpContext.Items["BuildPipeline"] = true;
+                                shellContext.IsActivated = true;
 
-                                    httpContext.Items["BuildPipeline"] = true;
-                                    shellContext.IsActivated = true;
-
-                                    foreach (var tenantEvent in tenantEvents)
-                                    {
-                                        tenantEvent.ActivatedAsync().Wait();
-                                    }
+                                foreach (var tenantEvent in tenantEvents.Reverse())
+                                {
+                                    tenantEvent.ActivatedAsync().Wait();
                                 }
                             }
                         }
+                    }
 
-                        shellContext.RequestStarted();
+                    shellContext.RequestStarted();
+
+                    try
+                    {
                         await _next.Invoke(httpContext);
                     }
-                }
-                finally
-                {
-                    shellContext.RequestEnded();
+                    finally
+                    {
+                        shellContext.RequestEnded();
+
+                        // Call all terminating events before releasing the shell context
+                        if (shellContext.CanTerminate)
+                        {
+                            var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+
+                            foreach (var tenantEvent in tenantEvents)
+                            {
+                                await tenantEvent.TerminatingAsync();
+                            }
+
+                            foreach (var tenantEvent in tenantEvents.Reverse())
+                            {
+                                await tenantEvent.TerminatedAsync();
+                            }
+
+                            shellContext.Dispose();
+                        }
+                    }
                 }
             }
         }

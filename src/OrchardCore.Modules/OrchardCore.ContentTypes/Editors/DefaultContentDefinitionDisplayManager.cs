@@ -52,15 +52,16 @@ namespace OrchardCore.ContentTypes.Editors
                 throw new ArgumentNullException(nameof(contentTypeDefinition));
             }
 
-            dynamic contentTypeDefinitionShape = CreateContentShape("ContentTypeDefinition_Edit");
+            dynamic contentTypeDefinitionShape = await CreateContentShapeAsync("ContentTypeDefinition_Edit");
             contentTypeDefinitionShape.ContentTypeDefinition = contentTypeDefinition;
 
             var typeContext = new BuildEditorContext(
                 contentTypeDefinitionShape,
                 groupId,
+                false,
                 "",
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 
@@ -71,15 +72,17 @@ namespace OrchardCore.ContentTypes.Editors
             return contentTypeDefinitionShape;
         }
 
-        public Task<dynamic> UpdateTypeEditorAsync(ContentTypeDefinition contentTypeDefinition, IUpdateModel updater, string groupId)
+        public async Task<dynamic> UpdateTypeEditorAsync(ContentTypeDefinition contentTypeDefinition, IUpdateModel updater, string groupId)
         {
             if (contentTypeDefinition == null)
             {
                 throw new ArgumentNullException(nameof(contentTypeDefinition));
             }
 
-            dynamic contentTypeDefinitionShape = CreateContentShape("ContentTypeDefinition_Edit");
+            dynamic contentTypeDefinitionShape = await CreateContentShapeAsync("ContentTypeDefinition_Edit");
             contentTypeDefinitionShape.ContentTypeDefinition = contentTypeDefinition;
+
+            var layout = await _layoutAccessor.GetLayoutAsync();
 
             _contentDefinitionManager.AlterTypeDefinition(contentTypeDefinition.Name, typeBuilder =>
             {
@@ -87,8 +90,9 @@ namespace OrchardCore.ContentTypes.Editors
                     typeBuilder,
                     contentTypeDefinitionShape,
                     groupId,
+                    false,
                     _shapeFactory,
-                    _layoutAccessor.GetLayout(),
+                    layout,
                     updater
                 );
 
@@ -108,14 +112,15 @@ namespace OrchardCore.ContentTypes.Editors
                 throw new ArgumentNullException(nameof(contentPartDefinition));
             }
 
-            var contentPartDefinitionShape = CreateContentShape("ContentPartDefinition_Edit");
+            var contentPartDefinitionShape = await CreateContentShapeAsync("ContentPartDefinition_Edit");
 
             var partContext = new BuildEditorContext(
                 contentPartDefinitionShape,
                 groupId,
+                false,
                 "",
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 
@@ -133,9 +138,10 @@ namespace OrchardCore.ContentTypes.Editors
                 throw new ArgumentNullException(nameof(contentPartDefinition));
             }
 
-            var contentPartDefinitionShape = CreateContentShape("ContentPartDefinition_Edit");
+            var contentPartDefinitionShape = await CreateContentShapeAsync("ContentPartDefinition_Edit");
 
             UpdatePartEditorContext partContext = null;
+            var layout = await _layoutAccessor.GetLayoutAsync();
 
             _contentDefinitionManager.AlterPartDefinition(contentPartDefinition.Name, partBuilder =>
             {
@@ -143,8 +149,9 @@ namespace OrchardCore.ContentTypes.Editors
                     partBuilder,
                     contentPartDefinitionShape,
                     groupId,
+                    false,
                     _shapeFactory,
-                    _layoutAccessor.GetLayout(),
+                    layout,
                     updater
                 );
             });
@@ -163,15 +170,16 @@ namespace OrchardCore.ContentTypes.Editors
                 throw new ArgumentNullException(nameof(contentTypePartDefinition));
             }
 
-            dynamic typePartDefinitionShape = CreateContentShape("ContentTypePartDefinition_Edit");
+            dynamic typePartDefinitionShape = await CreateContentShapeAsync("ContentTypePartDefinition_Edit");
             typePartDefinitionShape.ContentPart = contentTypePartDefinition;
 
             var partContext = new BuildEditorContext(
                 typePartDefinitionShape,
                 groupId,
+                false,
                 "",
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 
@@ -183,14 +191,15 @@ namespace OrchardCore.ContentTypes.Editors
             return typePartDefinitionShape;
         }
 
-        public Task<dynamic> UpdateTypePartEditorAsync(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater, string groupId = "")
+        public async Task<dynamic> UpdateTypePartEditorAsync(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater, string groupId = "")
         {
             if (contentTypePartDefinition == null)
             {
                 throw new ArgumentNullException(nameof(contentTypePartDefinition));
             }
 
-            dynamic typePartDefinitionShape = CreateContentShape("ContentTypePartDefinition_Edit");
+            dynamic typePartDefinitionShape = await CreateContentShapeAsync("ContentTypePartDefinition_Edit");
+            var layout = await _layoutAccessor.GetLayoutAsync();
 
             _contentDefinitionManager.AlterTypeDefinition(contentTypePartDefinition.ContentTypeDefinition.Name, typeBuilder =>
             {
@@ -203,8 +212,9 @@ namespace OrchardCore.ContentTypes.Editors
                         typePartBuilder,
                         typePartDefinitionShape,
                         groupId,
+                        false,
                         _shapeFactory,
-                        _layoutAccessor.GetLayout(),
+                        layout,
                         updater
                     );
 
@@ -225,15 +235,16 @@ namespace OrchardCore.ContentTypes.Editors
                 throw new ArgumentNullException(nameof(contentPartFieldDefinition));
             }
 
-            dynamic partFieldDefinitionShape = CreateContentShape("ContentPartFieldDefinition_Edit");
+            dynamic partFieldDefinitionShape = await CreateContentShapeAsync("ContentPartFieldDefinition_Edit");
             partFieldDefinitionShape.ContentField = contentPartFieldDefinition;
 
             var fieldContext = new BuildEditorContext(
                 partFieldDefinitionShape,
                 groupId,
+                false,
                 "",
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 
@@ -244,7 +255,7 @@ namespace OrchardCore.ContentTypes.Editors
             return partFieldDefinitionShape;
         }
 
-        public Task<dynamic> UpdatePartFieldEditorAsync(ContentPartFieldDefinition contentPartFieldDefinition, IUpdateModel updater, string groupId = "")
+        public async Task<dynamic> UpdatePartFieldEditorAsync(ContentPartFieldDefinition contentPartFieldDefinition, IUpdateModel updater, string groupId = "")
         {
             if (contentPartFieldDefinition == null)
             {
@@ -252,7 +263,9 @@ namespace OrchardCore.ContentTypes.Editors
             }
 
             var contentPartDefinition = contentPartFieldDefinition.PartDefinition;
-            dynamic partFieldDefinitionShape = CreateContentShape("ContentPartFieldDefinition_Edit");
+            dynamic partFieldDefinitionShape = await CreateContentShapeAsync("ContentPartFieldDefinition_Edit");
+
+            var layout = await _layoutAccessor.GetLayoutAsync();
 
             _contentDefinitionManager.AlterPartDefinition(contentPartDefinition.Name, partBuilder =>
             {
@@ -264,8 +277,9 @@ namespace OrchardCore.ContentTypes.Editors
                         partFieldBuilder,
                         partFieldDefinitionShape,
                         groupId,
+                        false,
                         _shapeFactory,
-                        _layoutAccessor.GetLayout(),
+                        layout,
                         updater
                     );
 

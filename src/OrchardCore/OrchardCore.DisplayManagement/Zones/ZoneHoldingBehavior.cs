@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Zones
@@ -20,9 +21,9 @@ namespace OrchardCore.DisplayManagement.Zones
     /// </summary>
     public class ZoneHolding : Shape
     {
-        private readonly Func<dynamic> _zoneFactory;
+        private readonly Func<Task<IShape>> _zoneFactory;
 
-        public ZoneHolding(Func<dynamic> zoneFactory)
+        public ZoneHolding(Func<Task<IShape>> zoneFactory)
         {
             _zoneFactory = zoneFactory;
         }
@@ -63,10 +64,10 @@ namespace OrchardCore.DisplayManagement.Zones
     /// </remarks>
     public class Zones : Composite
     {
-        private readonly Func<dynamic> _zoneFactory;
+        private readonly Func<Task<IShape>> _zoneFactory;
         private readonly object _parent;
 
-        public Zones(Func<dynamic> zoneFactory, object parent)
+        public Zones(Func<Task<IShape>> zoneFactory, object parent)
         {
             _zoneFactory = zoneFactory;
             _parent = parent;
@@ -133,11 +134,11 @@ namespace OrchardCore.DisplayManagement.Zones
     public class ZoneOnDemand : Shape
     {
 
-        private readonly Func<dynamic> _zoneFactory;
+        private readonly Func<Task<IShape>> _zoneFactory;
         private readonly object _parent;
         private readonly string _potentialZoneName;
 
-        public ZoneOnDemand(Func<dynamic> zoneFactory, object parent, string potentialZoneName)
+        public ZoneOnDemand(Func<Task<IShape>> zoneFactory, object parent, string potentialZoneName)
         {
             _zoneFactory = zoneFactory;
             _parent = parent;
@@ -241,7 +242,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
             dynamic parent = _parent;
 
-            dynamic zone = _zoneFactory();
+            dynamic zone = _zoneFactory().GetAwaiter().GetResult();
             zone.Parent = _parent;
             zone.ZoneName = _potentialZoneName;
             parent[_potentialZoneName] = zone;

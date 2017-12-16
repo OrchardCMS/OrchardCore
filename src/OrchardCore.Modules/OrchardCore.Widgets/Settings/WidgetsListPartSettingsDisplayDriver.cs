@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Widgets.Settings
 {
-    public class WidgetsListPartSettingsDisplayDriver : ContentTypePartDisplayDriver
+    public class WidgetsListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
@@ -23,8 +23,6 @@ namespace OrchardCore.Widgets.Settings
 
                 model.Zones = String.Join(", ", settings.Zones);
                 model.WidgetsListPartSettings = settings;
-
-                return Task.CompletedTask;
             }).Location("Content");
         }
 
