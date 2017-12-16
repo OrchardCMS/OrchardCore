@@ -67,7 +67,7 @@ namespace OrchardCore.Demo.Controllers
             // "Alter" syntax
             contentItem.Alter<TestContentPartA>(x => x.Line = text);
 
-            _contentManager.Create(contentItem);
+            _contentManager.Create(contentItem, true);
 
             _logger.LogInformation("This is some log");
 

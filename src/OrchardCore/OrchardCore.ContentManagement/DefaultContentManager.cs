@@ -313,14 +313,14 @@ namespace OrchardCore.ContentManagement
             return context.BuildingContentItem;
         }
 
-        public void Create(ContentItem contentItem)
+        public void Create(ContentItem contentItem, bool isNew)
         {
-            Create(contentItem, VersionOptions.Published);
+            Create(contentItem, VersionOptions.Published, isNew);
         }
 
-        public void Create(ContentItem contentItem, VersionOptions options)
+        public void Create(ContentItem contentItem, VersionOptions options, bool isNew)
         {
-            if (contentItem.Id == 0)
+            if (isNew)
             {
                 contentItem.Latest = true;
                 contentItem.Published = true;

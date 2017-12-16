@@ -369,7 +369,7 @@ namespace OrchardCore.Contents.Controllers
                 return View(model);
             }
 
-            _contentManager.Create(contentItem, VersionOptions.Draft);
+            _contentManager.Create(contentItem, VersionOptions.Draft, true);
 
             await conditionallyPublish(contentItem);
 

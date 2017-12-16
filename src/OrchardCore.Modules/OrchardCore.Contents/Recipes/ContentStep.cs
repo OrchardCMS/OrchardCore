@@ -40,7 +40,7 @@ namespace OrchardCore.Contents.Recipes
                 {
                     // Initializes the Id as it could be interpreted as an updated object when added back to YesSql
                     contentItem.Id = 0;
-                    _contentManager.Create(contentItem);
+                    _contentManager.Create(contentItem, false);
                 }
                 else
                 {
