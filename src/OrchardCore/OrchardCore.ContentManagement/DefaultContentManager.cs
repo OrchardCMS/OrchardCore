@@ -298,11 +298,6 @@ namespace OrchardCore.ContentManagement
             if (latestVersion != null)
             {
                 latestVersion.Latest = false;
-                buildingContentItem.Number = latestVersion.Number + 1;
-            }
-            else
-            {
-                buildingContentItem.Number = 1;
             }
 
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
@@ -325,9 +320,8 @@ namespace OrchardCore.ContentManagement
 
         public void Create(ContentItem contentItem, VersionOptions options)
         {
-            if (contentItem.Number == 0)
+            if (contentItem.Id == 0)
             {
-                contentItem.Number = 1;
                 contentItem.Latest = true;
                 contentItem.Published = true;
             }
@@ -421,7 +415,6 @@ namespace OrchardCore.ContentManagement
             if (publishedItem != null)
             {
                 publishedItem.Latest = true;
-                publishedItem.Number = contentItem.Number + 1;
                 _session.Save(publishedItem);
             }
         }

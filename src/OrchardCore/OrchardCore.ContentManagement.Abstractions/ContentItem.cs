@@ -35,11 +35,6 @@ namespace OrchardCore.ContentManagement
         public string ContentType { get; set; }
 
         /// <summary>
-        /// The number of the version.
-        /// </summary>
-        public int Number { get; set; }
-
-        /// <summary>
         /// Whether the version is published or not.
         /// </summary>
         public bool Published { get; set; }
