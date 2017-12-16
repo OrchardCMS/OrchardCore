@@ -123,7 +123,7 @@ namespace OrchardCore.Workflows.Controllers
             routeData.Values.Add("Options.Search", options.Search);
             routeData.Values.Add("Options.Order", options.Order);
 
-            var pagerShape = New.Pager(pager).TotalItemCount(count).RouteData(routeData);
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
 
             var model = new AdminIndexViewModel
             {
@@ -285,9 +285,9 @@ namespace OrchardCore.Workflows.Controllers
             var viewModel = new WorkflowEditViewModel
             {
                 WorkflowDefinitionViewModel = workflowDefinitionViewModel,
-                WorkflowEditor = New.WorkflowEditor(
+                WorkflowEditor = await New.WorkflowEditor(
                     WorkflowDefinition: workflowDefinition,
-                    ActivityToolbox: New.ActivityToolbox(
+                    ActivityToolbox: await New.ActivityToolbox(
                         Activities: _activitiesManager.GetActivities().ToList()
                     )
                 )
@@ -478,7 +478,7 @@ namespace OrchardCore.Workflows.Controllers
                 return NotFound();
             }
 
-            dynamic shape = New.Activity(activity);
+            dynamic shape = await New.Activity(activity);
 
             if (model.State != null)
             {
@@ -490,7 +490,7 @@ namespace OrchardCore.Workflows.Controllers
                 //shape.State(FormParametersHelper.FromJsonString("{}"));
             }
 
-            var viewModel = New.ViewModel(Name: model.Name, EditorShape: shape);
+            var viewModel = await New.ViewModel(Name: model.Name, EditorShape: shape);
 
             return View("RenderActivity", viewModel);
         }
@@ -509,7 +509,7 @@ namespace OrchardCore.Workflows.Controllers
                 return NotFound();
             }
 
-            dynamic shape = New.Activity(activity);
+            dynamic shape = await New.Activity(activity);
 
             if (model.State != null)
             {
@@ -524,7 +524,7 @@ namespace OrchardCore.Workflows.Controllers
             shape.Name = model.Name;
 
             // Form is bound on client side.
-            var viewModel = New.ViewModel(LocalId: localId, ClientId: clientId, EditorShape: shape);
+            var viewModel = await New.ViewModel(LocalId: localId, ClientId: clientId, EditorShape: shape);
 
             return View(viewModel);
         }
@@ -554,7 +554,7 @@ namespace OrchardCore.Workflows.Controllers
 
                 // build the form, and let external components alter it
 
-                var viewModel = New.ViewModel(Id: id, LocalId: localId, Form: null);
+                var viewModel = await New.ViewModel(Id: id, LocalId: localId, Form: null);
 
                 return View(viewModel);
             }
