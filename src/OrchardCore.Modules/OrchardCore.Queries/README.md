@@ -92,7 +92,7 @@ To access a named query, use the name as the input.
 
 
 ```
-{% assign recentBlogPosts = "RecentBlogPosts" | query }
+{% assign recentBlogPosts = "RecentBlogPosts" | query %}
 {% for item in recentBlogPosts %}
 {{ item | display_text }}
 {% endfor %}
