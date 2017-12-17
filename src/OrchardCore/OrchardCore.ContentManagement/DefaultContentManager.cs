@@ -325,7 +325,7 @@ namespace OrchardCore.ContentManagement
                 contentItem.Published = true;
                 contentItem.Latest = true;
             }
-            
+
             // Draft flag on create is required for explicitly-published content items
             if (options.IsDraft)
             {
