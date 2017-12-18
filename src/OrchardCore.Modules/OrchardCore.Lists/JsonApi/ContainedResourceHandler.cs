@@ -30,8 +30,8 @@ namespace OrchardCore.Lists.JsonApi
                 ApiProperty.Create(
                    typeof(ContainedPart).Name,
                     new ApiObject(
-                        ApiProperty.Create("ListContentItemId", containedPart.ListContentItemId),
-                        ApiProperty.Create("Order", containedPart.Order)
+                        ApiProperty.Create(nameof(containedPart.ListContentItemId), containedPart.ListContentItemId),
+                        ApiProperty.Create(nameof(containedPart.Order), containedPart.Order)
                     )
                 )
             };
