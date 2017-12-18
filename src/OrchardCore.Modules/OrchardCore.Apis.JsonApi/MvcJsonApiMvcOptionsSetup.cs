@@ -1,6 +1,8 @@
 using System;
 using System.Buffers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
@@ -14,12 +16,16 @@ namespace OrchardCore.Apis.JsonApi
         private readonly JsonSerializerSettings _jsonSerializerSettings;
         private readonly ArrayPool<char> _charPool;
         private readonly ObjectPoolProvider _objectPoolProvider;
+        private readonly IUrlHelperFactory _factory;
+        private readonly IActionContextAccessor _actionContextAccessor;
 
         public MvcJsonApiMvcOptionsSetup(
             ILoggerFactory loggerFactory,
             IOptions<MvcJsonOptions> jsonOptions,
             ArrayPool<char> charPool,
-            ObjectPoolProvider objectPoolProvider)
+            ObjectPoolProvider objectPoolProvider,
+            IUrlHelperFactory factory,
+            IActionContextAccessor actionContextAccessor)
         {
             if (loggerFactory == null)
             {
@@ -45,11 +51,17 @@ namespace OrchardCore.Apis.JsonApi
             _jsonSerializerSettings = jsonOptions.Value.SerializerSettings;
             _charPool = charPool;
             _objectPoolProvider = objectPoolProvider;
+            _factory = factory;
+            _actionContextAccessor = actionContextAccessor;
         }
 
         public void Configure(MvcOptions options)
         {
-            options.OutputFormatters.Insert(0, new JsonApiOutputFormatter(_jsonSerializerSettings, _charPool));
+            options.OutputFormatters.Insert(0, new JsonApiOutputFormatter(
+                _factory,
+                _actionContextAccessor,
+                _jsonSerializerSettings, 
+                _charPool));
 
             var jsonInputLogger = _loggerFactory.CreateLogger<JsonApiInputFormatter>();
             options.InputFormatters.Insert(0, new JsonApiInputFormatter(

@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Mvc.LocationExpander;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace OrchardCore.Mvc
 {
@@ -35,6 +36,7 @@ namespace OrchardCore.Mvc
         public static IServiceCollection AddMvcModules(this IServiceCollection services,
             IServiceProvider applicationServices)
         {
+            services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.TryAddSingleton(new ApplicationPartManager());
 
             var builder = services.AddMvcCore(options =>

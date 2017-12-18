@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Apis.JsonApi
 {

@@ -3,8 +3,13 @@ using System.Buffers;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using JsonApiFramework.JsonApi;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Formatters.Json.Internal;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace OrchardCore.Apis.JsonApi
@@ -20,6 +25,9 @@ namespace OrchardCore.Apis.JsonApi
         // the serializer and invalidate it when the settings change.
         private JsonSerializer _serializer;
 
+        private readonly IUrlHelperFactory _urlHelperFactory;
+        private readonly IActionContextAccessor _actionContextAccessor;
+
         /// <summary>
         /// Initializes a new <see cref="JsonOutputFormatter"/> instance.
         /// </summary>
@@ -29,7 +37,11 @@ namespace OrchardCore.Apis.JsonApi
         /// <see cref="JsonSerializerSettingsProvider.CreateSerializerSettings"/> initially returned.
         /// </param>
         /// <param name="charPool">The <see cref="ArrayPool{Char}"/>.</param>
-        public JsonApiOutputFormatter(JsonSerializerSettings serializerSettings, ArrayPool<char> charPool)
+        public JsonApiOutputFormatter(
+            IUrlHelperFactory urlHelperFactory,
+            IActionContextAccessor actionContextAccessor,
+            JsonSerializerSettings serializerSettings, 
+            ArrayPool<char> charPool)
         {
             if (serializerSettings == null)
             {
@@ -42,6 +54,8 @@ namespace OrchardCore.Apis.JsonApi
             }
 
             SerializerSettings = serializerSettings;
+            _urlHelperFactory = urlHelperFactory;
+            _actionContextAccessor = actionContextAccessor;
             _charPool = new JsonArrayPool<char>(charPool);
 
             SupportedEncodings.Add(Encoding.UTF8);
@@ -64,17 +78,20 @@ namespace OrchardCore.Apis.JsonApi
         /// </summary>
         /// <param name="writer">The <see cref="TextWriter"/> used to write the <paramref name="value"/></param>
         /// <param name="value">The value to write as JSON.</param>
-        public void WriteObject(TextWriter writer, object value)
+        public async Task WriteObject(TextWriter writer, IJsonApiResultManager manager, object value)
         {
             if (writer == null)
             {
                 throw new ArgumentNullException(nameof(writer));
             }
 
+            var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
+            var document = await manager.Build(urlHelper, value);
+
             using (var jsonWriter = CreateJsonWriter(writer))
             {
                 var jsonSerializer = CreateJsonSerializer();
-                jsonSerializer.Serialize(jsonWriter, value);
+                jsonSerializer.Serialize(jsonWriter, document);
             }
         }
 
@@ -128,9 +145,10 @@ namespace OrchardCore.Apis.JsonApi
             }
 
             var response = context.HttpContext.Response;
+            var manager = context.HttpContext.RequestServices.GetService<IJsonApiResultManager>();
             using (var writer = context.WriterFactory(response.Body, selectedEncoding))
             {
-                WriteObject(writer, context.Object);
+                await WriteObject(writer, manager, context.Object);
 
                 // Perf: call FlushAsync to call WriteAsync on the stream with any content left in the TextWriter's
                 // buffers. This is better than just letting dispose handle it (which would result in a synchronous

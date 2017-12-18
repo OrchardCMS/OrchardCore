@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
-using OrchardCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
