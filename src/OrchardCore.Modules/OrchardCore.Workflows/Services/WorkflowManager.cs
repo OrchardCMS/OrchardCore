@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
 using YesSql;
-using ActivityRecord = OrchardCore.Workflows.Models.Activity;
 
 namespace OrchardCore.Workflows.Services
 {
@@ -46,7 +44,7 @@ namespace OrchardCore.Workflows.Services
             // Look for workflow definitions with a corresponding starting activity.
             var workflowsToStart =
                 (await _session
-                    .Query<WorkflowDefinition, WorkflowDefinitionByStartActivityIndex>(index =>
+                    .Query<WorkflowDefinitionRecord, WorkflowDefinitionByStartActivityIndex>(index =>
                         index.HasStart &&
                         index.StartActivityName == name &&
                         index.IsEnabled)
@@ -69,12 +67,12 @@ namespace OrchardCore.Workflows.Services
 
             // Resume halted workflows.
             var awaitingWorkflowInstanceIds = awaitingWorkflowInstanceIndexes.Select(x => x.WorkflowInstanceId).ToArray();
-            var awaitingWorkflowInstances = (await _session.GetAsync<WorkflowInstance>(awaitingWorkflowInstanceIds)).ToDictionary(x => x.Id);
+            var awaitingWorkflowInstances = (await _session.GetAsync<WorkflowInstanceRecord>(awaitingWorkflowInstanceIds)).ToDictionary(x => x.Id);
 
             foreach (var awaitingWorkflowInstanceIndex in awaitingWorkflowInstanceIndexes)
             {
                 var workflowInstance = awaitingWorkflowInstances[awaitingWorkflowInstanceIndex.WorkflowInstanceId];
-                var workflowDefinition = await _session.GetAsync<WorkflowDefinition>(workflowInstance.DefinitionId);
+                var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(workflowInstance.DefinitionId);
                 var activityRecord = workflowDefinition.Activities.SingleOrDefault(x => x.Id == awaitingWorkflowInstanceIndex.ActivityId);
 
                 var workflowContext = new WorkflowContext
@@ -105,9 +103,9 @@ namespace OrchardCore.Workflows.Services
             // Start new workflows.
             foreach (var workflowToStart in workflowsToStart)
             {
-                var workflowDefinition = (await _session.GetAsync<WorkflowDefinition>(workflowToStart.Id));
+                var workflowDefinition = (await _session.GetAsync<WorkflowDefinitionRecord>(workflowToStart.Id));
                 var startActivity = workflowDefinition.Activities.FirstOrDefault(x => x.IsStart);
-                var workflowInstance = new WorkflowInstance
+                var workflowInstance = new WorkflowInstanceRecord
                 {
                     DefinitionId = workflowToStart.Id
                 };
@@ -178,7 +176,7 @@ namespace OrchardCore.Workflows.Services
 
                 foreach (var blocking in blockedOn)
                 {
-                    var awaitingActivity = new AwaitingActivity
+                    var awaitingActivity = new AwaitingActivityRecord
                     {
                         ActivityId = blocking.Id,
                         IsStart = blocking.IsStart,
@@ -189,7 +187,7 @@ namespace OrchardCore.Workflows.Services
             }
         }
 
-        private async Task ResumeWorkflow(WorkflowInstance workflowInstance, ActivityRecord blockingActivity, WorkflowContext workflowContext)
+        private async Task ResumeWorkflow(WorkflowInstanceRecord workflowInstance, ActivityRecord blockingActivity, WorkflowContext workflowContext)
         {
             // Signal every activity that the workflow is about to be resumed.
             var cancellationToken = new CancellationToken();
@@ -222,7 +220,7 @@ namespace OrchardCore.Workflows.Services
                 // Add the new ones.
                 foreach (var blocking in blockedOn)
                 {
-                    workflowInstance.AwaitingActivities.Add(AwaitingActivity.FromActivity(blocking));
+                    workflowInstance.AwaitingActivities.Add(AwaitingActivityRecord.FromActivity(blocking));
                 }
             }
         }
@@ -273,7 +271,7 @@ namespace OrchardCore.Workflows.Services
 
                 foreach (var outcome in outcomes)
                 {
-                    var definition = await _session.GetAsync<WorkflowDefinition>(workflowContext.WorkflowDefinition.Id);
+                    var definition = await _session.GetAsync<WorkflowDefinitionRecord>(workflowContext.WorkflowDefinition.Id);
 
                     // Look for next activity in the graph.
                     var transition = definition.Transitions.FirstOrDefault(x => x.SourceActivityId == activity.Id && x.SourceEndpoint == outcome.Value);

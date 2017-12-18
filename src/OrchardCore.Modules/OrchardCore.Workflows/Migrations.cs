@@ -19,7 +19,7 @@ namespace OrchardCore.Workflows
             );
 
             SchemaBuilder.CreateMapIndexTable(nameof(WorkflowInstanceByAwaitingActivitiesIndex), table => table
-                .Column<int>("ActivityId")
+                .Column<string>("ActivityId")
                 .Column<string>("ActivityName")
                 .Column<bool>("ActivityIsStart")
                 .Column<int>("WorkflowInstanceId")

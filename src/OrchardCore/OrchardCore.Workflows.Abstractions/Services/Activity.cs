@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Workflows.Models;
 
@@ -57,12 +58,13 @@ namespace OrchardCore.Workflows.Services
 
         protected virtual T GetProperty<T>([CallerMemberName]string name = null)
         {
-            return this.As<T>(name);
+            var item = Properties[name];
+            return item != null ? item.ToObject<T>() : default(T);
         }
 
         protected virtual void SetProperty<T>(T value, [CallerMemberName]string name = null)
         {
-            this.Put(name, value);
+            Properties[name] = JToken.FromObject(value);
         }
     }
 }

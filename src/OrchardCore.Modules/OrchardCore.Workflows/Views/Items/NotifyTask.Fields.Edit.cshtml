@@ -1,0 +1,8 @@
+@using OrchardCore.Workflows.ViewModels;
+@model NotifyTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="Message">
+    <label asp-for="Message">@T["Message"] <span asp-validation-for="Message"></span></label>
+    <input asp-for="Message" class="form-control content-preview-text" autofocus="autofocus" />
+    <span class="hint">@T["The message to show."]</span>
+</fieldset>

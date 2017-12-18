@@ -1,0 +1,42 @@
+@model WorkflowEditViewModel
+@using OrchardCore.Workflows.ViewModels;
+
+<h1>@RenderTitleSegments(T["Workflow {0}", Model.WorkflowDefinitionViewModel.Name])</h1>
+
+<nav class="admin-toolbar">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalActivities">
+                @T["Add Activity"]
+            </button>
+        </li>
+    </ul>
+</nav>
+
+@await DisplayAsync(Model.WorkflowEditor)
+
+<!-- Modal -->
+<div class="modal fade" id="modalActivities" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@T["Available Activities"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card-columns">
+                    @foreach (var activity in Model.ActivityThumbnails)
+                    {
+                        @await DisplayAsync(activity)
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>

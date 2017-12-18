@@ -1,5 +1,0 @@
-@model WorkflowEditViewModel
-@using OrchardCore.Workflows.ViewModels;
-
-<h1>@RenderTitleSegments(T["Edit Workflow {0}", Model.WorkflowDefinitionViewModel.Name])</h1>
-@await DisplayAsync(Model.WorkflowEditor)

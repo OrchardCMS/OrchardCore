@@ -17,9 +17,9 @@ namespace OrchardCore.Workflows.Indexes
         public string StartActivityName { get; set; }
     }
 
-    public class WorkflowDefinitionIndexProvider : IndexProvider<WorkflowDefinition>
+    public class WorkflowDefinitionIndexProvider : IndexProvider<WorkflowDefinitionRecord>
     {
-        public override void Describe(DescribeContext<WorkflowDefinition> context)
+        public override void Describe(DescribeContext<WorkflowDefinitionRecord> context)
         {
             context.For<WorkflowDefinitionByNameIndex>()
                 .Map(workflowDefinition => new WorkflowDefinitionByNameIndex

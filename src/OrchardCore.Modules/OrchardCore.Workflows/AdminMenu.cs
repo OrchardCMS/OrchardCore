@@ -24,7 +24,7 @@ namespace OrchardCore.Workflows
                 .AddClass("workflows").Id("workflows")
                 .LinkToFirstChild(true)
                     .Add(T["Definitions"], "1", contentItems => contentItems
-                        .Action("Index", "Admin", new { area = "OrchardCore.Workflows" })
+                        .Action("Index", "WorkflowDefinition", new { area = "OrchardCore.Workflows" })
                         .Permission(Permissions.ManageWorkflows)
                         .LocalNav()
                     ));

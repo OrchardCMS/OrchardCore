@@ -9,15 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\Scripts\workflow-editor.ts" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Assets\Scripts\workflow-models.ts" />
     <Content Include="Assets\Scripts\workflow-editor.ts" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Navigation\OrchardCore.Environment.Navigation.csproj" />

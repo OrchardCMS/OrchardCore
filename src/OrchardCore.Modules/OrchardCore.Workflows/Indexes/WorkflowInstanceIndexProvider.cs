@@ -12,9 +12,9 @@ namespace OrchardCore.Workflows.Indexes
         public int WorkflowInstanceId { get; set; }
     }
 
-    public class WorkflowInstanceIndexProvider : IndexProvider<WorkflowInstance>
+    public class WorkflowInstanceIndexProvider : IndexProvider<WorkflowInstanceRecord>
     {
-        public override void Describe(DescribeContext<WorkflowInstance> context)
+        public override void Describe(DescribeContext<WorkflowInstanceRecord> context)
         {
             context.For<WorkflowInstanceByAwaitingActivitiesIndex>()
                 .Map(workflowInstance =>
