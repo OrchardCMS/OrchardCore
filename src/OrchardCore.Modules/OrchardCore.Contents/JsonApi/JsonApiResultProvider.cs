@@ -9,14 +9,14 @@ using OrchardCore.Contents.Helpers;
 
 namespace OrchardCore.Contents.JsonApi
 {
-    public class ContentJsonApiResultManager : IJsonApiResultManager
+    public class ContentJsonApiResultProvider : JsonApiResultProvider
     {
         private readonly IEnumerable<IJsonApiResourceHandler<ContentItem>> _handlers;
         private readonly IContentManager _contentManager;
 
         private readonly static JsonApiVersion Version = JsonApiVersion.Version11;
 
-        public ContentJsonApiResultManager(
+        public ContentJsonApiResultProvider(
             IEnumerable<IJsonApiResourceHandler<ContentItem>> handlers,
             IContentManager contentManager)
         {
@@ -24,7 +24,7 @@ namespace OrchardCore.Contents.JsonApi
             _contentManager = contentManager;
         }
 
-        public Task<Document> Build(IUrlHelper urlHelper, object actionValue)
+        public override Task<Document> Build(IUrlHelper urlHelper, object actionValue)
         {
             var contentItem = actionValue as ContentItem;
 

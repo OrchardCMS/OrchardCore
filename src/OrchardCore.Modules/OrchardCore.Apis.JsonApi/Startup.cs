@@ -10,6 +10,8 @@ namespace OrchardCore.Apis.JsonApi
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IJsonApiResultManager, JsonApiResultManager>();
+
             services.TryAddEnumerable(
                ServiceDescriptor.Transient<IConfigureOptions<MvcOptions>, MvcJsonApiMvcOptionsSetup>());
         }

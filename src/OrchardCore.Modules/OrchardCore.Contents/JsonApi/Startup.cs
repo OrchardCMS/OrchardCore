@@ -9,7 +9,7 @@ namespace OrchardCore.Contents.JsonApi
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IJsonApiResultManager, ContentJsonApiResultManager>();
+            services.AddScoped<IJsonApiResultProvider, ContentJsonApiResultProvider>();
         }
     }
 }

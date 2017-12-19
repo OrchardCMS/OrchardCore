@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using JsonApiFramework.JsonApi;
 using Microsoft.AspNetCore.Mvc;
@@ -7,11 +6,11 @@ using OrchardCore.Apis.JsonApi;
 
 namespace OrchardCore.Setup.JsonApi
 {
-    public class SetupApiResultManager : IJsonApiResultManager
+    public class SetupJsonApiResultProvider : JsonApiResultProvider
     {
         private readonly static JsonApiVersion Version = JsonApiVersion.Version11;
 
-        public Task<Document> Build(IUrlHelper urlHelper, object actionValue)
+        public override Task<Document> Build(IUrlHelper urlHelper, object actionValue)
         {
             var viewResult = actionValue as ViewResult;
 

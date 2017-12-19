@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
             foreach (var query in queries.OfType<LuceneQuery>())
             {
-                if (string.IsNullOrWhiteSpace(query.Schema))
+                if (String.IsNullOrWhiteSpace(query.Schema))
                     continue;
 
                 var name = query.Name;
@@ -119,8 +120,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
 
-                    var p = await _queryManager.ExecuteQueryAsync(iquery, queryParameters);
-                    return p;
+                    return await _queryManager.ExecuteQueryAsync(iquery, queryParameters);
                 }),
                 Type = typeof(ListGraphType<ObjectGraphType<JObject>>)
             };
@@ -149,8 +149,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
 
-                    var p = await _queryManager.ExecuteQueryAsync(iquery, queryParameters);
-                    return p;
+                    return await _queryManager.ExecuteQueryAsync(iquery, queryParameters);
                 }),
                 Type = typetype.Type
             };
