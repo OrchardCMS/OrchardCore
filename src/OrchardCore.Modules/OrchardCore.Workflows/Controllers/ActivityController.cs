@@ -21,7 +21,7 @@ namespace OrchardCore.Workflows.Controllers
     {
         private readonly ISiteService _siteService;
         private readonly ISession _session;
-        private readonly IActivitiesManager _activitiesManager;
+        private readonly IActivityLibrary _activityLibrary;
         private readonly IAuthorizationService _authorizationService;
         private IDisplayManager<IActivity> _activityDisplayManager;
         private readonly INotifier _notifier;
@@ -34,7 +34,7 @@ namespace OrchardCore.Workflows.Controllers
         (
             ISiteService siteService,
             ISession session,
-            IActivitiesManager activitiesManager,
+            IActivityLibrary activityLibrary,
             IAuthorizationService authorizationService,
             IDisplayManager<IActivity> activityDisplayManager,
             IShapeFactory shapeFactory,
@@ -45,7 +45,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             _siteService = siteService;
             _session = session;
-            _activitiesManager = activitiesManager;
+            _activityLibrary = activityLibrary;
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
@@ -63,7 +63,7 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(workflowDefinitionId);
-            var activity = _activitiesManager.GetActivityByName(activityName);
+            var activity = _activityLibrary.CreateActivity(activityName);
             var activityEditor = await _activityDisplayManager.BuildEditorAsync(activity, this, isNew: true);
 
             activityEditor.Metadata.Type = "Activity_Edit";
@@ -88,7 +88,7 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(workflowDefinitionId);
-            var activity = _activitiesManager.GetActivityByName(activityName);
+            var activity = _activityLibrary.CreateActivity(activityName);
             var activityEditor = await _activityDisplayManager.UpdateEditorAsync(activity, this, isNew: true);
 
             if (!ModelState.IsValid)

@@ -2,7 +2,7 @@
     <div class="workflow-editor-canvas-container">
         <div asp-validation-summary="ModelOnly"></div>
         <form asp-action="Edit" method="post">
-            <div class="workflow-editor-canvas">
+            <div class="workflow-editor-canvas" data-workflow-definition="@Model.WorkflowDefinitionData">
             </div>
             <fieldset>
                 <div class="form-group">

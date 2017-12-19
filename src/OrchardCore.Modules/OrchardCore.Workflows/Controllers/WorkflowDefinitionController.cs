@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -22,9 +23,6 @@ using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;
 using YesSql;
-using ActivityRecord = OrchardCore.Workflows.Models.ActivityRecord;
-using Activity = OrchardCore.Workflows.Services.Activity;
-using ISession = YesSql.ISession;
 
 namespace OrchardCore.Workflows.Controllers
 {
@@ -33,7 +31,7 @@ namespace OrchardCore.Workflows.Controllers
     {
         private readonly ISiteService _siteService;
         private readonly ISession _session;
-        private readonly IActivitiesManager _activitiesManager;
+        private readonly IActivityLibrary _activityLibrary;
         private readonly IAuthorizationService _authorizationService;
         private IDisplayManager<IActivity> _activityDisplayManager;
         private readonly INotifier _notifier;
@@ -46,7 +44,7 @@ namespace OrchardCore.Workflows.Controllers
         (
             ISiteService siteService,
             ISession session,
-            IActivitiesManager activitiesManager,
+            IActivityLibrary activityLibrary,
             IAuthorizationService authorizationService,
             IDisplayManager<IActivity> activityDisplayManager,
             IShapeFactory shapeFactory,
@@ -57,7 +55,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             _siteService = siteService;
             _session = session;
-            _activitiesManager = activitiesManager;
+            _activityLibrary = activityLibrary;
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
@@ -271,9 +269,9 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(id);
-            var workflowDefinitionViewModel = CreateWorkflowDefinitionViewModel(workflowDefinition);
-            var activities = _activitiesManager.GetActivities().ToList();
+            var workflowDefinitionRecord = await _session.GetAsync<WorkflowDefinitionRecord>(id);
+            var workflowDefinitionViewModel = CreateWorkflowDefinitionViewModel(workflowDefinitionRecord);
+            var activities = _activityLibrary.CreateActivities();
             var activityThumbnailDisplayTasks = activities.Select(async x =>
             {
                 dynamic thumbnailShape = await _activityDisplayManager.BuildDisplayAsync(x, this, "Thumbnail");
@@ -285,13 +283,34 @@ namespace OrchardCore.Workflows.Controllers
 
             await Task.WhenAll(activityThumbnailDisplayTasks);
             var activityThumbnails = activityThumbnailDisplayTasks.Select(x => x.Result).ToList();
-
+            var workflowContext = new WorkflowContext(workflowDefinitionRecord, new WorkflowInstanceRecord { DefinitionId = workflowDefinitionRecord.Id }, activities);
+            var activitiesDataQuery =
+                from activityDefinition in workflowDefinitionRecord.Activities
+                let activity = workflowContext.GetActivityByName(activityDefinition.Name)
+                let activityContext = new ActivityContext { Record = activityDefinition }
+                select new
+                {
+                    Id = activityDefinition.Id,
+                    X = activityDefinition.X,
+                    Y = activityDefinition.Y,
+                    Name = activityDefinition.Name,
+                    IsStart = activityDefinition.IsStart,
+                    Outcomes = activity.GetPossibleOutcomes(workflowContext, activityContext).ToArray()
+                };
+            var workflowDefinitionData = new
+            {
+                Id = workflowDefinitionRecord.Id,
+                Name = workflowDefinitionRecord.Name,
+                IsEnabled = workflowDefinitionRecord.IsEnabled,
+                Activities = activitiesDataQuery.ToArray()
+            };
             var viewModel = new WorkflowEditViewModel
             {
                 ActivityThumbnails = activityThumbnails,
                 WorkflowDefinitionViewModel = workflowDefinitionViewModel,
                 WorkflowEditor = await New.WorkflowEditor(
-                    WorkflowDefinition: workflowDefinition
+                    WorkflowDefinition: workflowDefinitionRecord,
+                    WorkflowDefinitionData: JsonConvert.SerializeObject(workflowDefinitionData, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })
                 )
             };
 
@@ -473,7 +492,7 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var activity = (Activity)_activitiesManager.GetActivityByName(model.Name);
+            var activity = (Activity)_activityLibrary.GetActivityByName(model.Name);
 
             if (activity == null)
             {
@@ -504,7 +523,7 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var activity = _activitiesManager.GetActivityByName(model.Name);
+            var activity = _activityLibrary.CreateActivity(model.Name);
 
             if (activity == null)
             {
@@ -540,7 +559,7 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var activity = _activitiesManager.GetActivityByName(name);
+            var activity = _activityLibrary.CreateActivity(name);
 
             if (activity == null)
             {

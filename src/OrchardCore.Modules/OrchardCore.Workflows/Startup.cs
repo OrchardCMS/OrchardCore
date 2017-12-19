@@ -17,7 +17,7 @@ namespace OrchardCore.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IActivitiesManager, ActivitiesManager>();
+            services.AddScoped<IActivityLibrary, ActivityLibrary>();
             services.AddScoped<IWorkflowManager, WorkflowManager>();
             services.AddScoped<IDisplayManager<IActivity>, DisplayManager<IActivity>>();
             services.AddScoped<IDataMigration, Migrations>();

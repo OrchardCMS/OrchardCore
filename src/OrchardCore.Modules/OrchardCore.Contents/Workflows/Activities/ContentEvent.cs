@@ -24,7 +24,7 @@ namespace OrchardCore.Contents.Workflows.Activities
         {
             try
             {
-                var contentTypesState = activityContext.Activity.As<string>("ContentTypes");
+                var contentTypesState = this.As<string>("ContentTypes");
 
                 // "" means 'any'.
                 if (string.IsNullOrEmpty(contentTypesState))

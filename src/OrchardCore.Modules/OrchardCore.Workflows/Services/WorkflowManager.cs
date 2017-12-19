@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
@@ -14,18 +13,18 @@ namespace OrchardCore.Workflows.Services
 {
     public class WorkflowManager : IWorkflowManager
     {
-        private readonly IActivitiesManager _activitiesManager;
+        private readonly IActivityLibrary _activityLibrary;
         private readonly ISession _session;
         private readonly ILogger _logger;
 
         public WorkflowManager
         (
-            IActivitiesManager activitiesManager,
+            IActivityLibrary activityLibrary,
             ISession session,
             ILogger<WorkflowManager> logger
         )
         {
-            _activitiesManager = activitiesManager;
+            _activityLibrary = activityLibrary;
             _session = session;
             _logger = logger;
         }
@@ -33,7 +32,7 @@ namespace OrchardCore.Workflows.Services
         public async Task TriggerEvent(string name, IEntity target, Func<Dictionary<string, object>> contextFunc)
         {
             var context = contextFunc();
-            var activity = _activitiesManager.GetActivityByName(name);
+            var activity = _activityLibrary.GetActivityByName(name);
 
             if (activity == null)
             {
@@ -73,15 +72,10 @@ namespace OrchardCore.Workflows.Services
             {
                 var workflowInstance = awaitingWorkflowInstances[awaitingWorkflowInstanceIndex.WorkflowInstanceId];
                 var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(workflowInstance.DefinitionId);
+                var activities = _activityLibrary.CreateActivities().ToList();
                 var activityRecord = workflowDefinition.Activities.SingleOrDefault(x => x.Id == awaitingWorkflowInstanceIndex.ActivityId);
-
-                var workflowContext = new WorkflowContext
-                {
-                    WorkflowInstance = workflowInstance,
-                    WorkflowDefinition = workflowDefinition
-                };
-
-                var activityContext = CreateActivityContext(activityRecord);
+                var workflowContext = new WorkflowContext(workflowDefinition, workflowInstance, activities);
+                var activityContext = CreateActivityContext(workflowContext, activityRecord);
 
                 // Check the CanExecute condition.
                 try
@@ -104,17 +98,11 @@ namespace OrchardCore.Workflows.Services
             foreach (var workflowToStart in workflowsToStart)
             {
                 var workflowDefinition = (await _session.GetAsync<WorkflowDefinitionRecord>(workflowToStart.Id));
+                var activities = _activityLibrary.CreateActivities().ToList();
                 var startActivity = workflowDefinition.Activities.FirstOrDefault(x => x.IsStart);
-                var workflowInstance = new WorkflowInstanceRecord
-                {
-                    DefinitionId = workflowToStart.Id
-                };
-                var workflowContext = new WorkflowContext
-                {
-                    WorkflowDefinition = workflowDefinition,
-                    WorkflowInstance = workflowInstance,
-                };
-                var activityContext = CreateActivityContext(startActivity);
+                var workflowInstance = new WorkflowInstanceRecord { DefinitionId = workflowToStart.Id };
+                var workflowContext = new WorkflowContext(workflowDefinition, workflowInstance, activities);
+                var activityContext = CreateActivityContext(workflowContext, startActivity);
 
                 // Check the condition.
                 try
@@ -134,9 +122,9 @@ namespace OrchardCore.Workflows.Services
             }
         }
 
-        private ActivityContext CreateActivityContext(ActivityRecord activityRecord)
+        private ActivityContext CreateActivityContext(WorkflowContext workflowContext, ActivityRecord activityRecord)
         {
-            var activity = _activitiesManager.GetActivityByName(activityRecord.Name);
+            var activity = workflowContext.GetActivityByName(activityRecord.Name);
             var entity = activity as Entity;
 
             entity.Properties = activityRecord.Properties;
@@ -151,7 +139,7 @@ namespace OrchardCore.Workflows.Services
         {
             // Signal every activity that the workflow is about to start.
             var cancellationToken = new CancellationToken();
-            InvokeActivities(a => a.OnWorkflowStarting(workflowContext, cancellationToken));
+            InvokeActivities(workflowContext, a => a.OnWorkflowStarting(workflowContext, cancellationToken));
 
             if (cancellationToken.IsCancellationRequested)
             {
@@ -160,7 +148,7 @@ namespace OrchardCore.Workflows.Services
             }
 
             // Signal every activity that the workflow is has started.
-            InvokeActivities(a => a.OnWorkflowStarted(workflowContext));
+            InvokeActivities(workflowContext, a => a.OnWorkflowStarted(workflowContext));
 
             var blockedOn = (await ExecuteWorkflow(workflowContext, activity)).ToList();
 
@@ -191,7 +179,7 @@ namespace OrchardCore.Workflows.Services
         {
             // Signal every activity that the workflow is about to be resumed.
             var cancellationToken = new CancellationToken();
-            InvokeActivities(a => a.OnWorkflowResuming(workflowContext, cancellationToken));
+            InvokeActivities(workflowContext, a => a.OnWorkflowResuming(workflowContext, cancellationToken));
 
             if (cancellationToken.IsCancellationRequested)
             {
@@ -200,7 +188,7 @@ namespace OrchardCore.Workflows.Services
             }
 
             // Signal every activity that the workflow is resumed.
-            InvokeActivities(activity => activity.OnWorkflowResumed(workflowContext));
+            InvokeActivities(workflowContext, activity => activity.OnWorkflowResumed(workflowContext));
 
             // Remove the awaiting activity.
             var awaitingActivity = workflowInstance.AwaitingActivities.FirstOrDefault(x => x.ActivityId == blockingActivity.Id);
@@ -238,7 +226,7 @@ namespace OrchardCore.Workflows.Services
             {
                 activity = scheduled.Pop();
 
-                var activityContext = CreateActivityContext(activity);
+                var activityContext = CreateActivityContext(workflowContext, activity);
 
                 // While there is an activity to process.
                 if (!firstPass)
@@ -256,7 +244,7 @@ namespace OrchardCore.Workflows.Services
 
                 // Signal every activity that the activity is about to be executed.
                 var cancellationToken = new CancellationToken();
-                InvokeActivities(a => a.OnActivityExecuting(workflowContext, activityContext, cancellationToken));
+                InvokeActivities(workflowContext, a => a.OnActivityExecuting(workflowContext, activityContext, cancellationToken));
 
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -267,7 +255,7 @@ namespace OrchardCore.Workflows.Services
                 var outcomes = (await activityContext.Activity.ExecuteAsync(workflowContext, activityContext)).ToList();
 
                 // Signal every activity that the activity is executed.
-                InvokeActivities(a => a.OnActivityExecuted(workflowContext, activityContext));
+                InvokeActivities(workflowContext, a => a.OnActivityExecuted(workflowContext, activityContext));
 
                 foreach (var outcome in outcomes)
                 {
@@ -291,17 +279,12 @@ namespace OrchardCore.Workflows.Services
         /// <summary>
         /// Executes a specific action on all the activities of a workflow, using a specific context
         /// </summary>
-        private void InvokeActivities(Action<IActivity> action)
+        private void InvokeActivities(WorkflowContext workflowContext, Action<IActivity> action)
         {
-            foreach (var activity in _activitiesManager.GetActivities())
+            foreach (var activity in workflowContext.Activities)
             {
                 action(activity);
             }
-        }
-
-        private dynamic DeserializeState(string state)
-        {
-            return JObject.Parse(state);
         }
     }
 }
