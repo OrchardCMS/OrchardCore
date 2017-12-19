@@ -59,7 +59,7 @@ namespace OrchardCore.Apis.GraphQL
         private bool IsGraphQLRequest(HttpContext context)
         {
             return context.Request.Path.StartsWithSegments(_settings.Path)
-                && string.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase);
+                && String.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase);
         }
 
         private async Task ExecuteAsync(HttpContext context, ISchemaService schemaService)
@@ -75,7 +75,7 @@ namespace OrchardCore.Apis.GraphQL
             var request = JsonConvert.DeserializeObject<GraphQLRequest>(body);
 
             var queryToExecute = request.Query;
-            if (!string.IsNullOrWhiteSpace(request.NamedQuery))
+            if (!String.IsNullOrWhiteSpace(request.NamedQuery))
             {
                 var namedQueries = context.RequestServices.GetServices<INamedQueryProvider>();
 

@@ -5,6 +5,7 @@ using JsonApiFramework.JsonApi;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Apis.JsonApi;
 using OrchardCore.ContentManagement;
+using OrchardCore.Contents.Helpers;
 
 namespace OrchardCore.Contents.JsonApi
 {
@@ -34,7 +35,7 @@ namespace OrchardCore.Contents.JsonApi
 
             var contentItems = actionValue as IEnumerable<ContentItem>;
 
-            if (contentItem != null)
+            if (contentItems != null)
             {
                 return BuildDocumentCollection(urlHelper, contentItems.ToArray());
             }
@@ -51,9 +52,19 @@ namespace OrchardCore.Contents.JsonApi
 
         public async Task<Document> BuildDocumentCollection(IUrlHelper urlHelper, ContentItem[] contentItems)
         {
+            var first = contentItems.First();
+            var last = contentItems.Last();
+
             return new ResourceCollectionDocument
             {
-                Links = new Links(), // TODO: Links for collections
+                Links = new Links {
+                    {
+                        Keywords.Self,
+                        urlHelper.RouteUrl(
+                            RouteHelpers.ContentItems.ApiRouteByTypeName,
+                            new { area = RouteHelpers.AreaName, contentType = first.ContentType })
+                    }
+                }, // TODO: Links for collections
                 Data = (await Task.WhenAll(contentItems.Select(ci => BuildContentItemData(urlHelper, ci)))).ToList(),
                 JsonApiVersion = Version
             };
@@ -95,7 +106,13 @@ namespace OrchardCore.Contents.JsonApi
                         urlHelper.RouteUrl(
                             RouteHelpers.ContentItems.ApiRouteByVersionName,
                             new { area = RouteHelpers.AreaName, contentItemVersionId = contentItem.ContentItemVersionId })
-                    }
+                    },
+                    {
+                        Keywords.Type,
+                        urlHelper.RouteUrl(
+                            RouteHelpers.ContentItems.ApiRouteByTypeName,
+                            new { area = RouteHelpers.AreaName, contentType = contentItem.ContentType })
+                    },
                 };
 
             if (contentItem.Latest)

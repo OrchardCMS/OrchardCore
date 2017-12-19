@@ -1,4 +1,4 @@
-namespace OrchardCore.Contents.JsonApi
+namespace OrchardCore.Contents.Helpers
 {
     internal static class RouteHelpers
     {
@@ -8,17 +8,11 @@ namespace OrchardCore.Contents.JsonApi
         {
             public const string ApiRouteByIdName = "Api.GetContents.ById";
             public const string ApiRouteByVersionName = "Api.GetContents.ByVersion";
+            public const string ApiRouteByTypeName = "Api.GetContents.ByType";
         }
 
         public class ContentTypes {
             public const string ApiRouteByNameName = "Api.GetContentType.ByName";
         }
-        
-    }
-
-    internal static class LinkKeyworks
-    {
-        public const string LatestVersion = "latest-version";
-        public const string PublishedVersion = "published-version";
     }
 }

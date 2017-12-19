@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents
@@ -20,6 +20,7 @@ namespace OrchardCore.Contents
         public static readonly Permission PreviewContent = new Permission("PreviewContent", "Preview content", new[] { EditContent, PublishContent });
         public static readonly Permission PreviewOwnContent = new Permission("PreviewOwnContent", "Preview own content", new[] { PreviewContent });
 
+        public static readonly Permission ApiViewContent = new Permission("ApiViewContent", "Access view content endpoints");
 
         //public static readonly Permission MetaListContent = new Permission { ImpliedBy = new[] { EditOwnContent, PublishOwnContent, DeleteOwnContent } };
 
@@ -35,7 +36,8 @@ namespace OrchardCore.Contents
                 ViewContent,
                 ViewOwnContent,
                 PreviewOwnContent,
-                PreviewContent
+                PreviewContent,
+                ApiViewContent
             };
         }
 
@@ -44,7 +46,7 @@ namespace OrchardCore.Contents
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] {PublishContent,EditContent,DeleteContent,PreviewContent}
+                    Permissions = new[] {PublishContent,EditContent,DeleteContent,PreviewContent,ApiViewContent}
                 },
                 new PermissionStereotype {
                     Name = "Editor",
