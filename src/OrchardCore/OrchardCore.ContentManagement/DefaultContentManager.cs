@@ -319,7 +319,7 @@ namespace OrchardCore.ContentManagement
 
         public void Create(ContentItem contentItem, VersionOptions options)
         {
-            if (String.IsNullOrWhiteSpace(contentItem.ContentItemVersionId))
+            if (String.IsNullOrEmpty(contentItem.ContentItemVersionId))
             {
                 contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
                 contentItem.Published = true;
