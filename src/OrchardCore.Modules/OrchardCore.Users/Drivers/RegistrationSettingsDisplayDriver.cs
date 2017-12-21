@@ -13,19 +13,19 @@ namespace OrchardCore.Users.Drivers
 
         public override IDisplayResult Edit(RegistrationSettings section)
         {
-            return Shape<RegistrationSettings>( "RegistrationSettings_Edit", model => {
+            return Shape<RegistrationSettings>("RegistrationSettings_Edit", model => {
                 model.UsersCanRegister = section.UsersCanRegister;
 
-            } ).Location( "Content:5" ).OnGroup( GroupId );
+            }).Location("Content:5").OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(RegistrationSettings section, IUpdateModel updater, string groupId)
         {
-            if ( groupId == GroupId )
+            if (groupId == GroupId)
             {
-                await updater.TryUpdateModelAsync( section, Prefix );
+                await updater.TryUpdateModelAsync(section, Prefix);
             }
-            return Edit( section );
+            return Edit(section);
         }
     }
 }
