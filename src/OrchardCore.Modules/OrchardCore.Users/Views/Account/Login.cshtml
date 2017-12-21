@@ -5,7 +5,7 @@
 @inject ISiteService _settings
 
 @{
-    var userCanRegister = (await _settings.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister;
+    var userCanRegister = (await _settings.GetSiteSettingsAsync()).As<RegistrationSettings>()?.UsersCanRegister ?? false;
 }
 
 <div class="row">

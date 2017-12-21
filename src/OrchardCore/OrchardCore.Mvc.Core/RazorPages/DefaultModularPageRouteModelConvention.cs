@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace OrchardCore.Mvc.RazorPages
@@ -12,9 +13,9 @@ namespace OrchardCore.Mvc.RazorPages
 
                 if (template.Contains("/Pages/") && !template.StartsWith("/Pages/"))
                 {
-                    var pageIndex = template.LastIndexOf("/Pages/");
+                    var pageIndex = template.LastIndexOf("/Pages/", StringComparison.Ordinal);
                     var moduleFolder = template.Substring(0, pageIndex);
-                    var moduleId = moduleFolder.Substring(moduleFolder.LastIndexOf("/") + 1);
+                    var moduleId = moduleFolder.Substring(moduleFolder.LastIndexOf('/') + 1);
 
                     template = moduleId + template.Replace("/Pages/", "/").Substring(pageIndex);
                     selector.AttributeRouteModel.Name = template.Replace('/', '.');

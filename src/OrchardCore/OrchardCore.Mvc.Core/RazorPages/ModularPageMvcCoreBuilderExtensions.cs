@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -22,9 +21,6 @@ namespace OrchardCore.Mvc.RazorPages
 
             builder.Services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IPageApplicationModelProvider, ModularPageApplicationModelProvider>());
-
-            builder.Services.Replace(
-                ServiceDescriptor.Singleton<IActionDescriptorChangeProvider, ModularPageActionDescriptorChangeProvider>());
 
             return builder;
         }
