@@ -89,7 +89,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 {
                     var descriptors = tagHelperSharedState.TagHelperDescriptors
                         .Where(d => d.TagMatchingRules.Any(rule => ((rule.TagName == "*") ||
-                            rule.TagName == helper) && rule.Attributes.All(attr => arguments.Names.Any(name =>
+                            rule.TagName == helper) && (!rule.Attributes.Any() ||
+                            rule.Attributes.All(attr => arguments.Names.Any(name =>
                             {
                                 if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
                                 {
@@ -110,7 +111,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                                 }
 
                                 return false;
-                            }))));
+                            })))));
 
                     _descriptor = descriptors.FirstOrDefault();
 
