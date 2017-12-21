@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.ContentManagement.Metadata.Settings
+namespace OrchardCore.ContentManagement.Metadata.Settings
 {
     public class ContentTypeSettings
     {
@@ -14,6 +14,10 @@
         /// Used to determine if this content type supports draft versions
         /// </summary>
         public bool Draftable { get; set; }
+        /// <summary>
+        /// Used to determine if this content type supports versioning
+        /// </summary>
+        public bool Versionable { get; set; }
         /// <summary>
         /// Defines the stereotype of the type
         /// </summary>

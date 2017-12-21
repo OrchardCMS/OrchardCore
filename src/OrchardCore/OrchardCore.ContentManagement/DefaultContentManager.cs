@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Builders;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Modules;
 using YesSql;
@@ -146,7 +147,17 @@ namespace OrchardCore.ContentManagement
                     // Save the previous version
                     _session.Save(contentItem);
 
-                    contentItem = await BuildNewVersionAsync(contentItem);
+                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+                    // Check if not versionable, meaning we use only one version
+                    if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true))
+                    {
+                        contentItem.Published = false;
+                    }
+                    else
+                    {
+                        contentItem = await BuildNewVersionAsync(contentItem);
+                    }
                 }
 
                 // Save the new version
