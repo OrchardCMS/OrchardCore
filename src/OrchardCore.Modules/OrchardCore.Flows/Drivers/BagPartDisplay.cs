@@ -34,13 +34,15 @@ namespace OrchardCore.Flows.Drivers
 
         public override IDisplayResult Display(BagPart bagPart, BuildPartDisplayContext context)
         {
-            return Shape<BagPartViewModel>("BagPart", m =>
+            var hasItems = bagPart.ContentItems.Any();
+
+            return Shape<BagPartViewModel>(hasItems ? "BagPart" : "BagPart_Edit", m =>
             {
                 m.BagPart = bagPart;
                 m.BuildPartDisplayContext = context;
                 m.Settings = context.TypePartDefinition.Settings.ToObject<BagPartSettings>();
             })
-            .Location("Detail", "Content:5");
+            .Location("Detail", hasItems ? "Content:5" : "-");
         }
 
         public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)

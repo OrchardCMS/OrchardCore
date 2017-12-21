@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -31,12 +32,14 @@ namespace OrchardCore.Flows.Drivers
 
         public override IDisplayResult Display(FlowPart flowPart, BuildPartDisplayContext context)
         {
-            return Shape<FlowPartViewModel>("FlowPart", m =>
+            var hasItems = flowPart.Widgets.Any();
+
+            return Shape<FlowPartViewModel>(hasItems ? "FlowPart" : "FlowPart_NoItems", m =>
             {
                 m.FlowPart = flowPart;
                 m.BuildPartDisplayContext = context;
             })
-            .Location("Detail", "Content:5");
+            .Location("Detail", hasItems ? "Content:5" : "-");
         }
 
         public override IDisplayResult Edit(FlowPart flowPart, BuildPartEditorContext context)
