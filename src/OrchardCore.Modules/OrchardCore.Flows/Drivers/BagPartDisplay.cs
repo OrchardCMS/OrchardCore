@@ -36,7 +36,7 @@ namespace OrchardCore.Flows.Drivers
         {
             var hasItems = bagPart.ContentItems.Any();
 
-            return Shape<BagPartViewModel>(hasItems ? "BagPart" : "BagPart_Edit", m =>
+            return Shape<BagPartViewModel>(hasItems ? "BagPart" : "BagPart_NoItems", m =>
             {
                 m.BagPart = bagPart;
                 m.BuildPartDisplayContext = context;
