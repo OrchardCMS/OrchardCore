@@ -11,10 +11,6 @@
     <ModuleType Condition="'$(ModuleType)' == ''">Module</ModuleType>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageAssetFiles Include="**\*" Exclude="$(ExcludedFiles)" />
-  </ItemGroup>
-
   <Target Name="CheckManifestFile" AfterTargets="Build">
     <Message Text="Generating manifest file: $(MSBuildProjectName)" Importance="high" Condition="!Exists('$(ModuleType).txt')" />
     <WriteLinesToFile
@@ -32,6 +28,7 @@
 
   <Target Name="CopyPackageAssetFiles" Condition="'$(ApplicationDirectory)' != '' And Exists('$(ApplicationDirectory)')">
     <ItemGroup>
+      <PackageAssetFiles Include="**\*" Exclude="$(ExcludedFiles)" />
       <ApplicationAssetFiles Include="$(ApplicationDirectory)\Packages\$(MSBuildProjectName)\**\*" />
     </ItemGroup>
     <Delete
