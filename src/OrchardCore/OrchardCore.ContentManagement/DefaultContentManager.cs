@@ -63,7 +63,6 @@ namespace OrchardCore.ContentManagement
             var context2 = new ActivatedContentContext(context.Builder.Build());
 
             context2.ContentItem.ContentItemId = _idGenerator.GenerateUniqueId(context2.ContentItem);
-            context2.ContentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(context2.ContentItem);
 
             ReversedHandlers.Invoke(handler => handler.Activated(context2), _logger);
 
@@ -299,16 +298,16 @@ namespace OrchardCore.ContentManagement
                         x.ContentItemId == existingContentItem.ContentItemId &&
                         x.Latest)
                     .FirstOrDefaultAsync();
+
+                if (latestVersion != null)
+                {
+                    _session.Save(latestVersion);
+                }
             }
 
             if (latestVersion != null)
             {
                 latestVersion.Latest = false;
-                buildingContentItem.Number = latestVersion.Number + 1;
-            }
-            else
-            {
-                buildingContentItem.Number = 1;
             }
 
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
@@ -331,18 +330,13 @@ namespace OrchardCore.ContentManagement
 
         public void Create(ContentItem contentItem, VersionOptions options)
         {
-            if (contentItem.Number == 0)
-            {
-                contentItem.Number = 1;
-                contentItem.Latest = true;
-                contentItem.Published = true;
-            }
-
             if (String.IsNullOrEmpty(contentItem.ContentItemVersionId))
             {
                 contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
+                contentItem.Published = true;
+                contentItem.Latest = true;
             }
-            
+
             // Draft flag on create is required for explicitly-published content items
             if (options.IsDraft)
             {

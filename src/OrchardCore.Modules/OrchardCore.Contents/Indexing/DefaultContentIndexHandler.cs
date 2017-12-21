@@ -64,13 +64,6 @@ namespace OrchardCore.Contents.Indexing
                     DocumentIndexOptions.Store));
 
             context.DocumentIndex.Entries.Add(
-                "Content.ContentItem.Number",
-                new DocumentIndex.DocumentIndexEntry(
-                    context.ContentItem.Number,
-                    DocumentIndex.Types.Integer,
-                    DocumentIndexOptions.Store));
-
-            context.DocumentIndex.Entries.Add(
                 "Content.ContentItem.Published",
                 new DocumentIndex.DocumentIndexEntry(
                     context.ContentItem.Published,
