@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Entities;
+using OrchardCore.Settings;
+using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
@@ -16,17 +19,20 @@ namespace OrchardCore.Users.Controllers
         private readonly SignInManager<IUser> _signInManager;
         private readonly UserManager<IUser> _userManager;
         private readonly ILogger _logger;
+        private readonly ISiteService _siteService;
 
         public AccountController(
             IUserService userService,
             SignInManager<IUser> signInManager,
             UserManager<IUser> userManager,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+            ISiteService siteService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _userService = userService;
             _logger = logger;
+            _siteService = siteService;
         }
 
         [HttpGet]
@@ -78,8 +84,13 @@ namespace OrchardCore.Users.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register(string returnUrl = null)
+        public async Task<IActionResult> Register(string returnUrl = null)
         {
+            if (!(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister)
+            {
+                return NotFound();
+            }
+
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
@@ -89,6 +100,11 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
+            if (!(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister)
+            {
+                return NotFound();
+            }
+
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {

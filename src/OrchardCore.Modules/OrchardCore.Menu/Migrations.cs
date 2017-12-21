@@ -1,5 +1,5 @@
-﻿using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 
 namespace OrchardCore.Menu
@@ -17,6 +17,7 @@ namespace OrchardCore.Menu
         {
             _contentDefinitionManager.AlterTypeDefinition("Menu", menu => menu
                 .Draftable()
+                .Versionable()
                 .Creatable()
                 .Listable()
                 .WithPart("TitlePart", part => part.WithPosition("1"))
