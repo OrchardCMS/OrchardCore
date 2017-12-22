@@ -6,23 +6,23 @@ A good example of this would be a page with a FAQ section in it. A FAQ content t
 
 ### Empty Flows and Bags
 
-Flows and Bags that do not contain any content items will be hidden by default. This can be overridden in the `placement.json` file. One thing to note is that the shape names for empty Flows and Bags are different to those that are used when the Flows and Bags contain content items. For empty Flows, the shape name name is `FlowPart_NoItems`; for empty Bags, it's `BagPart_NoItems`.
+Flows and Bags that do not contain any content items will be displayed with a different shape name. For empty Flows, the shape name name is `FlowPart_Empty`; for empty Bags, it's `BagPart_Empty`. 
 
-For example, to display a shape when a Flow part has no items, you can add this to your placement file:
+This allows you to conditionally show or hide empty Flows or Bags. For example- to hide a Flow part that has no items, you can add this to your placement file:
 
 ```
-  "FlowPart_NoItems": [
+  "FlowPart_Empty": [
     {
-      "place": "Content:5"
+      "place": "-"
     }
   ]
 ```
+
 And if you'd like to use the same template for Flow parts that have items and Flow parts that have no items, you could add this:
 
 ```
-  "FlowPart_NoItems": [
+  "FlowPart_Empty": [
     {
-      "place": "Content:5",
       "shape": "FlowPart" 
     }
   ]

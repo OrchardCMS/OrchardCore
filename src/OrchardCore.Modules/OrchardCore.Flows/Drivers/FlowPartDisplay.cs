@@ -6,7 +6,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
@@ -15,17 +14,14 @@ namespace OrchardCore.Flows.Drivers
 {
     public class FlowPartDisplay : ContentPartDisplayDriver<FlowPart>
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly IServiceProvider _serviceProvider;
 
         public FlowPartDisplay(
             IContentManager contentManager,
-            IContentDefinitionManager contentDefinitionManager,
             IServiceProvider serviceProvider
             )
         {
-            _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
             _serviceProvider = serviceProvider;
         }
@@ -34,12 +30,12 @@ namespace OrchardCore.Flows.Drivers
         {
             var hasItems = flowPart.Widgets.Any();
 
-            return Shape<FlowPartViewModel>(hasItems ? "FlowPart" : "FlowPart_NoItems", m =>
+            return Shape<FlowPartViewModel>(hasItems ? "FlowPart" : "FlowPart_Empty", m =>
             {
                 m.FlowPart = flowPart;
                 m.BuildPartDisplayContext = context;
             })
-            .Location("Detail", hasItems ? "Content:5" : "-");
+            .Location("Detail", "Content:5");
         }
 
         public override IDisplayResult Edit(FlowPart flowPart, BuildPartEditorContext context)
