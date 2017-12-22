@@ -54,8 +54,8 @@ namespace OrchardCore.Media.Filters
                 url += "?";
             }
 
-            var width = arguments["width"];
-            var height = arguments["height"];
+            var width = arguments["width"].Or(arguments.At(0));
+            var height = arguments["height"].Or(arguments.At(1));
             var mode = arguments["mode"];
 
             if (!width.IsNil())
