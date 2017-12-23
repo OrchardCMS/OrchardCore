@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -41,15 +42,15 @@ namespace OrchardCore.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public override IEnumerable<LocalizedString> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            yield return S["Done"];
+            return Outcomes(S["Done"]);
         }
 
-        public override IEnumerable<LocalizedString> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override IEnumerable<string> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             _notifier.Add(NotificationType, H[Message]);
-            yield return S["Done"];
+            yield return "Done";
         }
     }
 }

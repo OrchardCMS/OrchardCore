@@ -1,4 +1,4 @@
-﻿<h1>@RenderTitleSegments(T["Edit Activity"])</h1>
+<h1>@RenderTitleSegments(T["Edit Activity"])</h1>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="EditActivity" method="post">
@@ -6,13 +6,13 @@
     @* Render the dynamic form *@
     @if (Model.EditorShape != null)
     {
-    <fieldset>        
-        @{
-            Model.EditorShape.Metadata.Alternates.Clear();
-            Model.EditorShape.Metadata.Alternates.Add($"Activity_Edit__{Model.EditorShape.Name}");
-        }
-        @await DisplayAsync(Model.EditorShape)
-    </fieldset>
+        <fieldset>
+            @{
+                Model.EditorShape.Metadata.Alternates.Clear();
+                Model.EditorShape.Metadata.Alternates.Add($"Activity_Edit__{Model.EditorShape.Name}");
+            }
+            @await DisplayAsync(Model.EditorShape)
+        </fieldset>
     }
 
     @Html.Hidden("Name")

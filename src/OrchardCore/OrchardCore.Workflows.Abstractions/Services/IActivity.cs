@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Entities;
+using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
@@ -16,7 +17,7 @@ namespace OrchardCore.Workflows.Services
         /// <summary>
         /// List of possible outcomes when the activity is executed.
         /// </summary>
-        IEnumerable<LocalizedString> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext);
+        IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext);
 
         /// <summary>
         /// Whether the activity can transition to the next outcome. Can prevent the activity from being transitioned
@@ -28,7 +29,7 @@ namespace OrchardCore.Workflows.Services
         /// Executes the current activity.
         /// </summary>
         /// <returns>The names of the resulting outcomes.</returns>
-        Task<IEnumerable<LocalizedString>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext);
+        Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext);
 
         /// <summary>
         /// Called on each activity when a workflow is about to start.

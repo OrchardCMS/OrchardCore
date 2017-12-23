@@ -194,13 +194,13 @@ namespace OrchardCore.Workflows.Controllers
             {
                 var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(id.Value);
 
-                return View(new WorkflowDefinitionViewModel { Name = workflowDefinition.Name, Id = workflowDefinition.Id });
+                return View(new WorkflowDefinitionPropertiesViewModel { Name = workflowDefinition.Name, Id = workflowDefinition.Id });
             }
         }
 
 
         [HttpPost, ActionName(nameof(EditProperties))]
-        public async Task<IActionResult> EditPropertiesPost(WorkflowDefinitionViewModel viewModel, int? id)
+        public async Task<IActionResult> EditPropertiesPost(WorkflowDefinitionPropertiesViewModel viewModel, int? id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -270,7 +270,6 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var workflowDefinitionRecord = await _session.GetAsync<WorkflowDefinitionRecord>(id);
-            var workflowDefinitionViewModel = CreateWorkflowDefinitionViewModel(workflowDefinitionRecord);
             var activities = _activityLibrary.CreateActivities();
             var activityThumbnailDisplayTasks = activities.Select(async x =>
             {
@@ -302,12 +301,13 @@ namespace OrchardCore.Workflows.Controllers
                 Id = workflowDefinitionRecord.Id,
                 Name = workflowDefinitionRecord.Name,
                 IsEnabled = workflowDefinitionRecord.IsEnabled,
-                Activities = activitiesDataQuery.ToArray()
+                Activities = activitiesDataQuery.ToArray(),
+                Transitions = workflowDefinitionRecord.Transitions
             };
-            var viewModel = new WorkflowEditViewModel
+            var viewModel = new WorkflowDefinitionViewModel
             {
+                WorkflowDefinition = workflowDefinitionRecord,
                 ActivityThumbnails = activityThumbnails,
-                WorkflowDefinitionViewModel = workflowDefinitionViewModel,
                 WorkflowEditor = await New.WorkflowEditor(
                     WorkflowDefinition: workflowDefinitionRecord,
                     WorkflowDefinitionData: JsonConvert.SerializeObject(workflowDefinitionData, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })
@@ -315,6 +315,21 @@ namespace OrchardCore.Workflows.Controllers
             };
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(WorkflowDefinitionUpdateModel model)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+            {
+                return Unauthorized();
+            }
+
+            var workflowDefinitionRecord = await _session.GetAsync<WorkflowDefinitionRecord>(model.Id);
+            dynamic state = JObject.Parse(model.State);
+
+            _notifier.Success(H["Workflow Definition has been saved."]);
+            return RedirectToAction(nameof(Edit), new { id = model.Id });
         }
 
         [HttpDelete]
@@ -334,46 +349,6 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             return RedirectToAction("Index");
-        }
-
-        private WorkflowDefinitionViewModel CreateWorkflowDefinitionViewModel(WorkflowDefinitionRecord workflowDefinition)
-        {
-            if (workflowDefinition == null)
-            {
-                throw new ArgumentNullException(nameof(workflowDefinition));
-            }
-
-            var workflowDefinitionModel = new WorkflowDefinitionViewModel
-            {
-                Id = workflowDefinition.Id,
-                Name = workflowDefinition.Name
-            };
-
-            dynamic workflow = new JObject();
-            workflow.Activities = new JArray(workflowDefinition.Activities.Select(x =>
-            {
-                dynamic activity = new JObject();
-                activity.Name = x.Name;
-                activity.Id = x.Id;
-                activity.ClientId = x.ClientId;
-                activity.Left = x.X;
-                activity.Top = x.Y;
-                activity.Start = x.IsStart;
-
-                return activity;
-            }));
-
-            workflow.Connections = new JArray(workflowDefinition.Transitions.Select(x =>
-            {
-                dynamic connection = new JObject();
-                connection.Id = x.Id;
-                connection.SourceId = x.SourceActivityId;
-                connection.TargetId = x.DestinationActivityId;
-                connection.SourceEndpoint = x.SourceEndpoint;
-                return connection;
-            }));
-
-            return workflowDefinitionModel;
         }
 
         [HttpPost, ActionName(nameof(Edit))]

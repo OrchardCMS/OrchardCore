@@ -2,13 +2,13 @@ namespace Workflows {
 
     export interface Workflow {
         activities: Array<Activity>;
-        connections: Array<Connection>;
+        transitions: Array<Connection>;
     }
 
     export interface Activity {
         id: number;
-        left: number;
-        top: number;
+        x: number;
+        y: number;
         outcomes: Array<Outcome>;
     }
 
@@ -17,9 +17,9 @@ namespace Workflows {
         displayName: string;
     }
 
-    export interface Connection {
-        outcomeName: string;
-        sourceId: number;
-        targetId: number;
+    export interface Transition {
+        sourceActivityId: number;
+        destinationActivityId: number;
+        sourceOutcomeName: string;
     }
 }

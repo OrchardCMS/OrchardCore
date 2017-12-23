@@ -3,10 +3,10 @@
 ///<reference path="./workflow-models.ts" />
 
 class WorkflowEditor {
-    constructor(container: HTMLElement, workflowDefinitionData: Workflows.Workflow) {
-        jsPlumb.ready(function () {
-            var plumber = jsPlumb.getInstance({
+    constructor(private container: HTMLElement, workflowDefinitionData: Workflows.Workflow) {
 
+        jsPlumb.ready(() => {
+            var plumber = jsPlumb.getInstance({
                 DragOptions: { cursor: 'pointer', zIndex: 2000 },
                 ConnectionOverlays: [
                     ["Arrow", {
@@ -24,7 +24,7 @@ class WorkflowEditor {
                 Container: container
             });
 
-            var getSourceEndpointOptions = function (overlayLabel: string): Endpoint {
+            var getSourceEndpointOptions = function (outcome: Workflows.Outcome): EndpointOptions {
                 // The definition of source endpoints.
                 return {
                     endpoint: "Dot",
@@ -58,84 +58,35 @@ class WorkflowEditor {
                     overlays: [
                         ["Label", {
                             location: [0.5, 1.5],
-                            label: overlayLabel,
+                            //label: outcome.displayName,
                             cssClass: "endpointSourceLabel",
-                            visible: overlayLabel != null
+                            visible: true
                         }]
-                    ]
+                    ],
+                    parameters: {
+                        outcome: outcome
+                    }
                 };
-            };
-
-            var init = function (connection: Connection) {
-                connection.getOverlay("label").setLabel(connection.sourceId.substring(15) + "-" + connection.targetId.substring(15));
             };
 
             // Suspend drawing and initialize.
             plumber.batch(function () {
                 // Listen for new connections; initialise them the same way we initialise the connections at startup.
                 plumber.bind("connection", function (connInfo, originalEvent) {
-                    init(connInfo.connection);
+                    const connection: Connection = connInfo.connection;
+                    const outcome: Workflows.Outcome = connection.getParameters().outcome;
+
+                    const label: any = connection.getOverlay("label");
+                    label.setLabel(outcome.displayName);
                 });
 
                 // Initialize activities, endpoints and connectors from model.
                 var test = workflowDefinitionData;
-                var workflowModel: Workflows.Workflow = {
-                    activities: [{
-                        id: 1,
-                        left: 50,
-                        top: 50,
-                        outcomes: [{
-                            name: "Done",
-                            displayName: "Gereed"
-                        }]
-                    }, {
-                        id: 2,
-                        left: 500,
-                        top: 150,
-                        outcomes: [{
-                            name: "True",
-                            displayName: "True"
-                        }, {
-                            name: "False",
-                            displayName: "False"
-                        }]
-                    }, {
-                        id: 3,
-                        left: 50,
-                        top: 250,
-                        outcomes: [{
-                            name: "Done",
-                            displayName: "Done"
-                        }]
-                    }, {
-                        id: 4,
-                        left: 350,
-                        top: 250,
-                        outcomes: [{
-                            name: "Done",
-                            displayName: "Done"
-                        }]
-                    }
-                    ],
-                    connections: [{
-                        outcomeName: "Done",
-                        sourceId: 1,
-                        targetId: 2
-                    }, {
-                        outcomeName: "True",
-                        sourceId: 2,
-                        targetId: 3
-                    }, {
-                        outcomeName: "False",
-                        sourceId: 2,
-                        targetId: 4
-                    }
-                    ]
-                };
+                var workflowModel: Workflows.Workflow = workflowDefinitionData;
 
                 for (let activityModel of workflowModel.activities) {
                     // Generate activity HTML element.
-                    let activityNode = $(`<div class="activity" style="left:${activityModel.left}px; top:${activityModel.top}px;"></div>`);
+                    let activityNode = $(`<div class="activity" style="left:${activityModel.x}px; top:${activityModel.y}px;"></div>`);
                     let activityElement = activityNode[0];
 
                     // Add activity HTML element to the canvas.
@@ -154,13 +105,15 @@ class WorkflowEditor {
                     // Add source endpoints.
                     let hasMultipleOutcomes = activityModel.outcomes.length > 1;
                     for (let outcome of activityModel.outcomes) {
-                        let sourceEndpointOptions = getSourceEndpointOptions(hasMultipleOutcomes ? outcome.displayName : null);
-                        plumber.addEndpoint(activityElement, sourceEndpointOptions);
+                        let sourceEndpointOptions = getSourceEndpointOptions(outcome);
+                        var endpoint = plumber.addEndpoint(activityElement, sourceEndpointOptions);
                     }
+
+                    $(activityElement).data("activity-model", activityModel);
                 }
 
                 plumber.bind("click", function (conn, originalEvent) {
-                    plumber.deleteConnection(conn);
+                    //plumber.deleteConnection(conn);
                 });
 
                 plumber.bind("connectionDrag", function (connection) {
@@ -181,13 +134,49 @@ class WorkflowEditor {
     }
 
     private jsPlumbInstance: jsPlumbInstance;
+
+    public serialize = function (): string {
+        const allActivities = $(this.container).find(".activity");
+        const workflow: any = {
+            activities: [],
+            connections: []
+        };
+
+        for (var i = 0; i < allActivities.length; i++) {
+            var activity = $(allActivities[i]);
+            var activityModel: Workflows.Activity = activity.data("activity-model");
+            var activityPosition = activity.position();
+
+            workflow.activities.push({
+                id: activityModel.id,
+                x: activityPosition.left,
+                y: activityPosition.top
+            });
+        }
+
+        const allConnections = this.jsPlumbInstance.getConnections();
+        for (var i = 0; i < allConnections.length; i++) {
+            var connection = allConnections[i];
+            var sourceEndpoint: Endpoint = connection.endpoints[0];
+            var sourceOutcomeName = sourceEndpoint.getParameters().outcome.name;
+            var sourceActivity: Workflows.Activity = $(connection.source).data("activity-model");
+            var destinationActivity: Workflows.Activity = $(connection.target).data("activity-model");
+
+            workflow.connections.push({
+                sourceActivityId: sourceActivity.id,
+                destinationActivityId: destinationActivity.id,
+                sourceOutcomeName: sourceOutcomeName
+            });
+        }
+        return JSON.stringify(workflow);
+    }
 }
 
 $.fn.workflowEditor = function (this: JQuery): JQuery {
     this.each((index, element) => {
         var $element = $(element);
-        var workflowDefinitionData = $element.data("workflow-definition");
-        debugger;
+        var workflowDefinitionData: Workflows.Workflow = $element.data("workflow-definition");
+
         $element.data("workflowEditor", new WorkflowEditor(element, workflowDefinitionData));
     });
 
@@ -195,5 +184,10 @@ $.fn.workflowEditor = function (this: JQuery): JQuery {
 };
 
 $(document).ready(function () {
-    $('.workflow-editor-canvas').workflowEditor();
+    const workflowEditor: WorkflowEditor = $(".workflow-editor-canvas").workflowEditor().data("workflowEditor");
+
+    $("#workflowEditorForm").on("submit", (s, e) => {
+        const state = workflowEditor.serialize();
+        $("#workflowStateInput").val(state);
+    });
 });

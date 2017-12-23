@@ -262,7 +262,7 @@ namespace OrchardCore.Workflows.Services
                     var definition = await _session.GetAsync<WorkflowDefinitionRecord>(workflowContext.WorkflowDefinition.Id);
 
                     // Look for next activity in the graph.
-                    var transition = definition.Transitions.FirstOrDefault(x => x.SourceActivityId == activity.Id && x.SourceEndpoint == outcome.Value);
+                    var transition = definition.Transitions.FirstOrDefault(x => x.SourceActivityId == activity.Id && x.SourceOutcomeName == outcome);
 
                     if (transition != null)
                     {

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
+using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Contents.Workflows.Activities
@@ -19,16 +20,16 @@ namespace OrchardCore.Contents.Workflows.Activities
         public override LocalizedString Category => S["Content Items"];
         public override LocalizedString Description => S["Publish the content item."];
 
-        public override IEnumerable<LocalizedString> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            yield return S["Published"];
+            return Outcomes(S["Published"]);
         }
 
-        public override async Task<IEnumerable<LocalizedString>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             var content = GetContent(workflowContext);
             await _contentManager.PublishAsync(content.ContentItem);
-            return new[] { S["Published"] };
+            return new[] { "Published" };
         }
     }
 }

@@ -1,7 +1,7 @@
-@model WorkflowEditViewModel
+@model WorkflowDefinitionViewModel
 @using OrchardCore.Workflows.ViewModels;
 
-<h1>@RenderTitleSegments(T["Workflow {0}", Model.WorkflowDefinitionViewModel.Name])</h1>
+<h1>@RenderTitleSegments(T["Workflow {0}", Model.WorkflowDefinition.Name])</h1>
 
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto">
@@ -14,7 +14,19 @@
     </ul>
 </nav>
 
-@await DisplayAsync(Model.WorkflowEditor)
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="Edit" method="post" id="workflowEditorForm">
+    <fieldset class="form-group">
+        @await DisplayAsync(Model.WorkflowEditor)
+        <input asp-for="State" id="workflowStateInput" />
+    </fieldset>
+    <fieldset class="form-group">
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+        </div>
+    </fieldset>
+</form>
 
 <!-- Modal -->
 <div class="modal fade" id="modalActivities" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
