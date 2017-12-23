@@ -179,5 +179,34 @@ namespace OrchardCore.Users.Controllers
                 return Redirect("~/");
             }
         }
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = _userService.GetForgotPasswordUserAsync(model.UserIdentifier);
+                if (user != null)
+                {
+                    await Task.Yield();
+                    // send email with callback link
+                }
+            }
+
+            // returns to confirmation page anyway: we don't want to let scrapers know if a username or an email exist
+            return RedirectToLocal(Url.Action("ForgotPasswordConfirmation"));
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword()
+        {
+            return View();
+        }
     }
 }

@@ -95,6 +95,42 @@ namespace OrchardCore.Users.Services
             return _userManager.GetUserAsync(principal);
         }
 
+        public async Task<IUser> GetForgotPasswordUserAsync(string userIdentifier)
+        {
+            if (string.IsNullOrWhiteSpace(userIdentifier))
+            {
+                return await Task.FromResult<IUser>(null);
+            }
+
+            var iUser = await FindByUsernameOrEmailAsync(userIdentifier);
+            if (iUser == null)
+            {
+                return await Task.FromResult<IUser>(null);
+            }
+
+            var user = (User)(iUser);
+            user.ResetCode = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            return user;
+        }
+
+        /// <summary>
+        /// Gets the user, if any, associated with the normalized value of the specified identifier, which can refer both to username or email
+        /// </summary>
+        /// <param name="userIdentification">The username or email address to refer to</param>
+        private async Task<IUser> FindByUsernameOrEmailAsync(string userIdentifier)
+        {
+            userIdentifier = userIdentifier.Normalize();
+
+            var user = await _userManager.FindByNameAsync(userIdentifier);
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(userIdentifier);
+            }
+
+            return await Task.FromResult(user);
+        }
+
         private void ProcessValidationErrors(IEnumerable<IdentityError> errors, User user, Action<string, string> reportError)
         {
             foreach (var error in errors)
