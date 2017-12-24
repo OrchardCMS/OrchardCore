@@ -12,18 +12,17 @@
         -moz-border-radius: 0.5em;
         border-radius: 0.5em;
         opacity: 0.8;
-        width: 80px;
-        height: 80px;
-        line-height: 80px;
+        min-width: 80px;
+        min-height: 80px;
         cursor: move;
-        text-align: center;
+        text-align: left;
         z-index: 20;
         position: absolute;
         background-color: #eeeeef;
         color: black;
         font-family: helvetica, sans-serif;
-        padding: 0.5em;
-        font-size: 0.9em;
+        padding: 1em;
+        font-size: 0.7em;
         -webkit-transition: -webkit-box-shadow 0.15s ease-in;
         -moz-transition: -moz-box-shadow 0.15s ease-in;
         -o-transition: -o-box-shadow 0.15s ease-in;
@@ -39,6 +38,16 @@
 
         &.jtk-connected {
             border: 1px solid green;
+        }
+
+        header {
+            h4 {
+                font-size: 1.4em;
+
+                .fa {
+                    margin-right: 0.5em;
+                }
+            }
         }
     }
 
@@ -76,24 +85,4 @@
     path, .jtk-endpoint {
         cursor: pointer;
     }
-}
-
-#flowchartWindow1 {
-    top: 34em;
-    left: 5em;
-}
-
-#flowchartWindow2 {
-    top: 7em;
-    left: 36em;
-}
-
-#flowchartWindow3 {
-    top: 27em;
-    left: 48em;
-}
-
-#flowchartWindow4 {
-    top: 23em;
-    left: 22em;
 }

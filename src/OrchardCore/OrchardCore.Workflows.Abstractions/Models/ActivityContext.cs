@@ -4,7 +4,7 @@ namespace OrchardCore.Workflows.Models
 {
     public class ActivityContext
     {
-        public ActivityRecord Record { get; set; }
+        public ActivityRecord ActivityRecord { get; set; }
         public IActivity Activity { get; set; }
     }
 }

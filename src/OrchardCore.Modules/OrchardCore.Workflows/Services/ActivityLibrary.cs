@@ -28,21 +28,22 @@ namespace OrchardCore.Workflows.Services
             return ActivityDictionary.ContainsKey(name) ? ActivityDictionary[name] : null;
         }
 
-        public IActivity CreateActivity(string name)
+        public IActivity InstantiateActivity(string name)
         {
             var activityType = GetActivityByName(name).GetType();
-            return CreateActivity(activityType);
+            return InstantiateActivity(activityType);
         }
 
-        public IEnumerable<IActivity> CreateActivities()
+        public IEnumerable<IActivity> InstantiateActivities(IEnumerable<string> activityNames)
         {
-            foreach (var activitySample in ActivityDictionary.Values)
+            var activityNameList = activityNames.ToList();
+            foreach (var activitySample in ActivityDictionary.Values.Where(x => activityNameList.Contains(x.Name)))
             {
-                yield return CreateActivity(activitySample.GetType());
+                yield return InstantiateActivity(activitySample.GetType());
             }
         }
 
-        private IActivity CreateActivity(Type activityType)
+        private IActivity InstantiateActivity(Type activityType)
         {
             return _serviceProvider.CreateInstance<IActivity>(activityType);
         }

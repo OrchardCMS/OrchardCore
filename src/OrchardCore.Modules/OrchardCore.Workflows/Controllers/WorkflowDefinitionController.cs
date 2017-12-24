@@ -32,8 +32,9 @@ namespace OrchardCore.Workflows.Controllers
         private readonly ISiteService _siteService;
         private readonly ISession _session;
         private readonly IActivityLibrary _activityLibrary;
+        private readonly IWorkflowManager _workflowManager;
         private readonly IAuthorizationService _authorizationService;
-        private IDisplayManager<IActivity> _activityDisplayManager;
+        private readonly IDisplayManager<IActivity> _activityDisplayManager;
         private readonly INotifier _notifier;
 
         private dynamic New { get; }
@@ -45,6 +46,7 @@ namespace OrchardCore.Workflows.Controllers
             ISiteService siteService,
             ISession session,
             IActivityLibrary activityLibrary,
+            IWorkflowManager workflowManager,
             IAuthorizationService authorizationService,
             IDisplayManager<IActivity> activityDisplayManager,
             IShapeFactory shapeFactory,
@@ -56,6 +58,7 @@ namespace OrchardCore.Workflows.Controllers
             _siteService = siteService;
             _session = session;
             _activityLibrary = activityLibrary;
+            _workflowManager = workflowManager;
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
@@ -270,32 +273,24 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var workflowDefinitionRecord = await _session.GetAsync<WorkflowDefinitionRecord>(id);
-            var activities = _activityLibrary.CreateActivities();
-            var activityThumbnailDisplayTasks = activities.Select(async x =>
-            {
-                dynamic thumbnailShape = await _activityDisplayManager.BuildDisplayAsync(x, this, "Thumbnail");
-                thumbnailShape.Metadata.Type = "Activity_Thumbnail";
-                thumbnailShape.Activity = x;
-                thumbnailShape.WorkflowDefinitionId = id;
-                return thumbnailShape;
-            });
+            var workflowContext = _workflowManager.CreateWorkflowContext(workflowDefinitionRecord, new WorkflowInstanceRecord { DefinitionId = workflowDefinitionRecord.Id });
+            var activityContexts = workflowDefinitionRecord.Activities.Select(x => _workflowManager.CreateActivityContext(x)).ToList();
+            var activityThumbnailDisplayTasks = activityContexts.Select(x => BuildActivityDisplay(x, id, "Thumbnail"));
+            var activityDesignDisplayTasks = activityContexts.Select(x => BuildActivityDisplay(x, id, "Design"));
 
-            await Task.WhenAll(activityThumbnailDisplayTasks);
-            var activityThumbnails = activityThumbnailDisplayTasks.Select(x => x.Result).ToList();
-            var workflowContext = new WorkflowContext(workflowDefinitionRecord, new WorkflowInstanceRecord { DefinitionId = workflowDefinitionRecord.Id }, activities);
-            var activitiesDataQuery =
-                from activityDefinition in workflowDefinitionRecord.Activities
-                let activity = workflowContext.GetActivityByName(activityDefinition.Name)
-                let activityContext = new ActivityContext { Record = activityDefinition }
-                select new
-                {
-                    Id = activityDefinition.Id,
-                    X = activityDefinition.X,
-                    Y = activityDefinition.Y,
-                    Name = activityDefinition.Name,
-                    IsStart = activityDefinition.IsStart,
-                    Outcomes = activity.GetPossibleOutcomes(workflowContext, activityContext).ToArray()
-                };
+            await Task.WhenAll(activityThumbnailDisplayTasks.Concat(activityDesignDisplayTasks));
+
+            var activityThumbnailShapes = activityThumbnailDisplayTasks.Select(x => x.Result).ToList();
+            var activityDesignShapes = activityDesignDisplayTasks.Select(x => x.Result).ToList();
+            var activitiesDataQuery = activityContexts.Select(x => new
+            {
+                Id = x.ActivityRecord.Id,
+                X = x.ActivityRecord.X,
+                Y = x.ActivityRecord.Y,
+                Name = x.ActivityRecord.Name,
+                IsStart = x.ActivityRecord.IsStart,
+                Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray()
+            });
             var workflowDefinitionData = new
             {
                 Id = workflowDefinitionRecord.Id,
@@ -307,13 +302,10 @@ namespace OrchardCore.Workflows.Controllers
             var viewModel = new WorkflowDefinitionViewModel
             {
                 WorkflowDefinition = workflowDefinitionRecord,
-                ActivityThumbnails = activityThumbnails,
-                WorkflowEditor = await New.WorkflowEditor(
-                    WorkflowDefinition: workflowDefinitionRecord,
-                    WorkflowDefinitionData: JsonConvert.SerializeObject(workflowDefinitionData, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })
-                )
+                WorkflowDefinitionJson = JsonConvert.SerializeObject(workflowDefinitionData, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }),
+                ActivityThumbnailShapes = activityThumbnailShapes,
+                ActivityDesignShapes = activityDesignShapes,
             };
-
             return View(viewModel);
         }
 
@@ -326,8 +318,29 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var workflowDefinitionRecord = await _session.GetAsync<WorkflowDefinitionRecord>(model.Id);
+            var activityDictionary = workflowDefinitionRecord.Activities.ToDictionary(x => x.Id);
             dynamic state = JObject.Parse(model.State);
 
+            foreach (var activityState in state.activities)
+            {
+                var activity = activityDictionary[(int)activityState.id];
+                activity.X = activityState.x;
+                activity.Y = activityState.y;
+            }
+
+            workflowDefinitionRecord.Transitions.Clear();
+            foreach (var transitionState in state.transitions)
+            {
+                workflowDefinitionRecord.Transitions.Add(new TransitionRecord
+                {
+                    SourceActivityId = transitionState.sourceActivityId,
+                    DestinationActivityId = transitionState.destinationActivityId,
+                    SourceOutcomeName = transitionState.sourceOutcomeName
+                });
+            }
+
+            _session.Save(workflowDefinitionRecord);
+            await _session.CommitAsync();
             _notifier.Success(H["Workflow Definition has been saved."]);
             return RedirectToAction(nameof(Edit), new { id = model.Id });
         }
@@ -351,247 +364,14 @@ namespace OrchardCore.Workflows.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpPost, ActionName(nameof(Edit))]
-        [FormValueRequired("submit.Save")]
-        public async Task<IActionResult> EditPost(int id, string localId, string data, bool clearWorkflows)
+        private async Task<dynamic> BuildActivityDisplay(ActivityContext activityContext, int workflowDefinitionId, string displayType)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
-            {
-                return Unauthorized();
-            }
-
-            var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(id);
-
-            if (workflowDefinition == null)
-            {
-                return NotFound();
-            }
-
-            workflowDefinition.IsEnabled = true;
-
-            var activitiesIndex = new Dictionary<string, ActivityRecord>();
-
-            workflowDefinition.Activities.Clear();
-
-            //foreach (var activity in state.Activities)
-            //{
-            //    Activity internalActivity;
-
-            //    workflowDefinition.Activities.Add(internalActivity = new Activity
-            //    {
-            //        Name = activity.Name,
-            //        X = activity.Left,
-            //        Y = activity.Top,
-            //        Start = activity.Start,
-            //        State = FormParametersHelper.ToJsonString(activity.State)
-            //    });
-
-            //    activitiesIndex.Add((string)activity.ClientId, internalActivity);
-            //}
-
-            workflowDefinition.Transitions.Clear();
-
-            //foreach (var connection in state.Connections)
-            //{
-            //    workflowDefinition.Transitions.Add(new Transition
-            //    {
-            //        SourceActivityId = (string)connection.SourceId,
-            //        DestinationActivityId = (string)connection.TargetId,
-            //        SourceEndpoint = connection.SourceEndpoint
-            //    });
-            //}
-
-            _session.Save(workflowDefinition);
-
-            //var workflows = await _session
-            //        .Query<Workflow, WorkflowWorkflowDefinitionIndex>(query => query.DefinitionId == workflowDefinition.Id)
-            //        .ListAsync();
-
-            //if (clearWorkflows)
-            //{
-            //    foreach (var workflow in workflows)
-            //        _session.Delete(workflow);
-            //}
-            //else
-            //{
-            //    foreach (var workflow in workflows)
-            //    {
-            //        // Update any awaiting activity records with the new activity record.
-            //        foreach (var awaitingActivity in workflow.AwaitingActivities)
-            //        {
-            //            var clientId = awaitingActivity.ClientId;
-            //            if (activitiesIndex.ContainsKey(clientId))
-            //            {
-            //                awaitingActivity = activitiesIndex[clientId];
-            //            }
-            //            else
-            //            {
-            //                workflow.AwaitingActivities.Remove(awaitingActivityRecord);
-            //            }
-            //        }
-            //        // Remove any workflows with no awaiting activities.
-            //        if (workflow.AwaitingActivities.Count == 0)
-            //        {
-            //            _session.Delete(workflow);
-            //        }
-            //        else
-            //        {
-            //            _session.Save(workflow);
-            //        }
-            //    }
-            //}
-
-            _notifier.Success(H["Workflow saved successfully."]);
-
-            // Don't pass the localId to force the activities to refresh and use the deterministic clientId.
-            return RedirectToAction("Edit", new { id });
-        }
-
-        [HttpPost, ActionName("Edit")]
-        [FormValueRequired("submit.Cancel")]
-        public async Task<IActionResult> EditPostCancel()
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
-            {
-                return Unauthorized();
-            }
-
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> RenderActivity(ActivityViewModel model)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
-            {
-                return Unauthorized();
-            }
-
-            var activity = (Activity)_activityLibrary.GetActivityByName(model.Name);
-
-            if (activity == null)
-            {
-                return NotFound();
-            }
-
-            dynamic shape = await _activityDisplayManager.BuildDisplayAsync(activity, this, "Design");
-
-            if (model.State != null)
-            {
-                //var state = FormParametersHelper.ToDynamic(FormParametersHelper.ToString(model.State));
-                //shape.State(state);
-            }
-            else
-            {
-                //shape.State(FormParametersHelper.FromJsonString("{}"));
-            }
-
-            var viewModel = await New.ViewModel(Name: model.Name, EditorShape: shape);
-
-            return View("RenderActivity", viewModel);
-        }
-
-        public async Task<IActionResult> EditActivity(string localId, string clientId, ActivityViewModel model)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
-            {
-                return Unauthorized();
-            }
-
-            var activity = _activityLibrary.CreateActivity(model.Name);
-
-            if (activity == null)
-            {
-                return NotFound();
-            }
-
-            dynamic shape = await New.Activity(activity);
-
-            if (model.State != null)
-            {
-                //var state = FormParametersHelper.ToDynamic(FormParametersHelper.ToString(model.State));
-                //shape.State(state);
-            }
-            else
-            {
-                //shape.State(FormParametersHelper.FromJsonString("{}"));
-            }
-
-            shape.Name = model.Name;
-
-            // Form is bound on client side.
-            var viewModel = await New.ViewModel(LocalId: localId, ClientId: clientId, EditorShape: shape);
-
-            return View(viewModel);
-        }
-
-        [HttpPost, ActionName(nameof(EditActivity))]
-        [FormValueRequired("_submit.Save")]
-        public async Task<IActionResult> EditActivityPost(int id, string localId, string name, string clientId)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
-            {
-                return Unauthorized();
-            }
-
-            var activity = _activityLibrary.CreateActivity(name);
-
-            if (activity == null)
-            {
-                return NotFound();
-            }
-
-            //// validating form values
-            //_formManager.Validate(new ValidatingContext { FormName = activity.Form, ModelState = ModelState, ValueProvider = ValueProvider });
-
-            // stay on the page if there are validation errors
-            if (!ModelState.IsValid)
-            {
-
-                // build the form, and let external components alter it
-
-                var viewModel = await New.ViewModel(Id: id, LocalId: localId, Form: null);
-
-                return View(viewModel);
-            }
-
-            var model = new UpdatedActivityModel
-            {
-                ClientId = clientId,
-                //Data = FormParametersHelper.ToJsonString(Request.Form)
-            };
-
-            TempData["UpdatedViewModel"] = JsonConvert.SerializeObject(model);
-
-            return RedirectToAction("Edit", new
-            {
-                id,
-                localId
-            });
-        }
-
-        [HttpPost, ActionName("EditActivity")]
-        [FormValueRequired("_submit.Cancel")]
-        public async Task<IActionResult> EditActivityPostCancel(int id, string localId, string name, string clientId)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
-            {
-                return Unauthorized();
-            }
-
-            return RedirectToAction("Edit", new { id, localId });
-        }
-
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return Redirect("~/");
-            }
+            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, this, displayType);
+            activityShape.Metadata.Type = $"Activity_{displayType}";
+            activityShape.Activity = activityContext.Activity;
+            activityShape.ActivityRecord = activityContext.ActivityRecord;
+            activityShape.WorkflowDefinitionId = workflowDefinitionId;
+            return activityShape;
         }
     }
 }

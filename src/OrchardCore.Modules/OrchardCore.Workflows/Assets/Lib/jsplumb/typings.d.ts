@@ -36,6 +36,7 @@ interface jsPlumbInstance {
     registerConnectionType(name: string, type: ConnectionType): jsPlumbInstance;
     batch(func: Function): jsPlumbInstance;
     getSelector(sel: string): any;
+    getEndpoint(uuid: string): Endpoint;
 
     SVG: string;
     CANVAS: string;
@@ -101,8 +102,8 @@ interface ConnectParams {
     anchor?: string;
     anchors?: any[];
     label?: string;
-    uuids: Array<string>;
-    editable: boolean;
+    uuids?: Array<string>;
+    editable?: boolean;
 }
 
 interface DragOptions {
@@ -143,6 +144,7 @@ interface EndpointOptions {
     connectorHoverStyle?: PaintStyle;
     dragOptions?: DragOptions;
     overlays: Array<any>;
+    uuid: string;
     parameters: any;
 }
 

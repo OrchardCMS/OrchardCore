@@ -24,7 +24,7 @@ class WorkflowEditor {
                 Container: container
             });
 
-            var getSourceEndpointOptions = function (outcome: Workflows.Outcome): EndpointOptions {
+            var getSourceEndpointOptions = function (activity: Workflows.Activity, outcome: Workflows.Outcome): EndpointOptions {
                 // The definition of source endpoints.
                 return {
                     endpoint: "Dot",
@@ -63,37 +63,33 @@ class WorkflowEditor {
                             visible: true
                         }]
                     ],
+                    uuid: `${activity.id}-${outcome.name}`,
                     parameters: {
                         outcome: outcome
                     }
                 };
             };
 
+            // Listen for new connections.
+            plumber.bind("connection", function (connInfo, originalEvent) {
+                const connection: Connection = connInfo.connection;
+                const outcome: Workflows.Outcome = connection.getParameters().outcome;
+
+                const label: any = connection.getOverlay("label");
+                label.setLabel(outcome.displayName);
+            });
+
             // Suspend drawing and initialize.
             plumber.batch(function () {
-                // Listen for new connections; initialise them the same way we initialise the connections at startup.
-                plumber.bind("connection", function (connInfo, originalEvent) {
-                    const connection: Connection = connInfo.connection;
-                    const outcome: Workflows.Outcome = connection.getParameters().outcome;
-
-                    const label: any = connection.getOverlay("label");
-                    label.setLabel(outcome.displayName);
-                });
-
-                // Initialize activities, endpoints and connectors from model.
-                var test = workflowDefinitionData;
                 var workflowModel: Workflows.Workflow = workflowDefinitionData;
+                var workflowId = workflowModel.id;
 
-                for (let activityModel of workflowModel.activities) {
-                    // Generate activity HTML element.
-                    let activityNode = $(`<div class="activity" style="left:${activityModel.x}px; top:${activityModel.y}px;"></div>`);
-                    let activityElement = activityNode[0];
-
-                    // Add activity HTML element to the canvas.
-                    $(container).append(activityNode);
+                $(container).find(".activity").each((index, activityElement) => {
+                    const activityElementQuery = $(activityElement);
+                    const activityId = activityElementQuery.data("activity-id");
 
                     // Make the activity draggable.
-                    plumber.draggable(activityElement, { grid: [20, 20] });
+                    plumber.draggable(activityElement, { grid: [10, 10] });
 
                     // Configure the activity as a target.
                     plumber.makeTarget(activityElement, {
@@ -103,13 +99,25 @@ class WorkflowEditor {
                     });
 
                     // Add source endpoints.
-                    let hasMultipleOutcomes = activityModel.outcomes.length > 1;
-                    for (let outcome of activityModel.outcomes) {
-                        let sourceEndpointOptions = getSourceEndpointOptions(outcome);
-                        var endpoint = plumber.addEndpoint(activityElement, sourceEndpointOptions);
-                    }
+                    const activity = $.grep(workflowModel.activities, (x: Workflows.Activity) => x.id == activityId)[0];
+                    const hasMultipleOutcomes = activity.outcomes.length > 1;
 
-                    $(activityElement).data("activity-model", activityModel);
+                    for (let outcome of activity.outcomes) {
+                        const sourceEndpointOptions = getSourceEndpointOptions(activity, outcome);
+                        plumber.addEndpoint(activityElement, sourceEndpointOptions);
+                    }
+                });
+
+                // Connect activities.
+                for (let transitionModel of workflowModel.transitions) {
+                    const sourceEndpointUuid: string = `${transitionModel.sourceActivityId}-${transitionModel.sourceOutcomeName}`;
+                    const sourceEndpoint: Endpoint = plumber.getEndpoint(sourceEndpointUuid);
+                    const destinationElementId: string = `activity-${workflowId}-${transitionModel.destinationActivityId}`;
+
+                    plumber.connect({
+                        source: sourceEndpoint,
+                        target: destinationElementId
+                    });
                 }
 
                 plumber.bind("click", function (conn, originalEvent) {
@@ -136,35 +144,37 @@ class WorkflowEditor {
     private jsPlumbInstance: jsPlumbInstance;
 
     public serialize = function (): string {
-        const allActivities = $(this.container).find(".activity");
+        const allActivityElements = $(this.container).find(".activity");
         const workflow: any = {
             activities: [],
-            connections: []
+            transitions: []
         };
 
-        for (var i = 0; i < allActivities.length; i++) {
-            var activity = $(allActivities[i]);
-            var activityModel: Workflows.Activity = activity.data("activity-model");
-            var activityPosition = activity.position();
+        // Collect activity positions.
+        for (var i = 0; i < allActivityElements.length; i++) {
+            var activityElementQuery = $(allActivityElements[i]);
+            var activityId: number = activityElementQuery.data("activity-id");
+            var activityPosition = activityElementQuery.position();
 
             workflow.activities.push({
-                id: activityModel.id,
+                id: activityId,
                 x: activityPosition.left,
                 y: activityPosition.top
             });
         }
 
+        // Collect activity connections.
         const allConnections = this.jsPlumbInstance.getConnections();
         for (var i = 0; i < allConnections.length; i++) {
             var connection = allConnections[i];
             var sourceEndpoint: Endpoint = connection.endpoints[0];
             var sourceOutcomeName = sourceEndpoint.getParameters().outcome.name;
-            var sourceActivity: Workflows.Activity = $(connection.source).data("activity-model");
-            var destinationActivity: Workflows.Activity = $(connection.target).data("activity-model");
+            var sourceActivityId: number = $(connection.source).data("activity-id");
+            var destinationActivityId: number = $(connection.target).data("activity-id");
 
-            workflow.connections.push({
-                sourceActivityId: sourceActivity.id,
-                destinationActivityId: destinationActivity.id,
+            workflow.transitions.push({
+                sourceActivityId: sourceActivityId,
+                destinationActivityId: destinationActivityId,
                 sourceOutcomeName: sourceOutcomeName
             });
         }

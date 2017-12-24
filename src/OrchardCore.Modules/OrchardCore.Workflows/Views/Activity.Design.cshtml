@@ -1,12 +1,7 @@
-﻿@using Orchard.Mvc.Utilities
-
+@using OrchardCore.Workflows.Models
 @{
-    string name = Model.Name;
-    string isEventClass = Model.IsEvent ? "event" : null;
-    string canStartClass = Model.CanStartWorkflow ? "canStart" : null;
+    var activityRecord = (ActivityRecord)Model.ActivityRecord;
 }
-
-<div class="@isEventClass @canStartClass activity-@name.HtmlClassify()" title="@Model.Description">
-    <div>@name.CamelFriendly()</div>
+<div class="activity" style="left:@(activityRecord.X)px; top:@(activityRecord.Y)px;" id="@($"activity-{Model.WorkflowDefinitionId}-{activityRecord.Id}")" data-activity-id="@activityRecord.Id">
+    @await DisplayAsync(Model.Content)
 </div>
-

@@ -17,11 +17,11 @@ namespace OrchardCore.Workflows.Services
         /// <summary>
         /// Returns a new instance of the activity with the specified name.
         /// </summary>
-        IActivity CreateActivity(string name);
+        IActivity InstantiateActivity(string name);
 
         /// <summary>
-        /// Returns a new copy of all available <see cref="IActivity"/> implementations.
+        /// Returns new instances the specified activities.
         /// </summary>
-        IEnumerable<IActivity> CreateActivities();
+        IEnumerable<IActivity> InstantiateActivities(IEnumerable<string> activityNames);
     }
 }

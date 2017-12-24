@@ -11,7 +11,10 @@ namespace OrchardCore.Workflows.Drivers
     {
         public override IDisplayResult Display(NotifyTask activity)
         {
-            return Shape("NotifyTask_Fields_Thumbnail").Location("Thumbnail", "Content");
+            return Combine(
+                Shape("NotifyTask_Fields_Thumbnail", activity).Location("Thumbnail", "Content"),
+                Shape("NotifyTask_Fields_Design", activity).Location("Design", "Content")
+            );
         }
 
         public override IDisplayResult Edit(NotifyTask activity)

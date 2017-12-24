@@ -1,6 +1,10 @@
 <div class="workflow-editor-container">
     <div class="workflow-editor-canvas-container">
         <div class="workflow-editor-canvas" data-workflow-definition="@Model.WorkflowDefinitionData" data-workflow-definition-state-input-name="">
+            @foreach (var activityModel in Model.WorkflowDefinition.Activities)
+            {
+                <div class="activity" style="left:@(activityModel.X)px; top:@(activityModel.Y)px;" id="@($"activity-{Model.WorkflowDefinition.Id}-{activityModel.Id}")" data-activity-id="@activityModel.Id"></div>
+            }
         </div>
     </div>
 </div>

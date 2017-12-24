@@ -2,11 +2,24 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Entities;
+using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
 {
     public interface IWorkflowManager
     {
+        /// <summary>
+        /// Creates a new <see cref="WorkflowContext"/>.
+        /// </summary>
+        WorkflowContext CreateWorkflowContext(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord);
+
+        /// <summary>
+        /// Creates a new <see cref="ActivityContext"/>.
+        /// </summary>
+        /// <param name="activityRecord"></param>
+        /// <returns></returns>
+        ActivityContext CreateActivityContext(ActivityRecord activityRecord);
+
         /// <summary>
         /// Triggers a specific <see cref="IEvent"/>, and provides context if the event is
         /// actually executed.

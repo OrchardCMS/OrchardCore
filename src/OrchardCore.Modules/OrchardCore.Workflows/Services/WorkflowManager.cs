@@ -29,6 +29,25 @@ namespace OrchardCore.Workflows.Services
             _logger = logger;
         }
 
+        public WorkflowContext CreateWorkflowContext(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord)
+        {
+            var activities = _activityLibrary.ListActivities();
+            return new WorkflowContext(workflowDefinitionRecord, new WorkflowInstanceRecord { DefinitionId = workflowDefinitionRecord.Id }, activities);
+        }
+
+        public ActivityContext CreateActivityContext(ActivityRecord activityRecord)
+        {
+            var activity = _activityLibrary.InstantiateActivity(activityRecord.Name);
+            var entity = activity as Entity;
+
+            entity.Properties = activityRecord.Properties;
+            return new ActivityContext
+            {
+                ActivityRecord = activityRecord,
+                Activity = activity
+            };
+        }
+
         public async Task TriggerEvent(string name, IEntity target, Func<Dictionary<string, object>> contextFunc)
         {
             var context = contextFunc();
@@ -72,10 +91,9 @@ namespace OrchardCore.Workflows.Services
             {
                 var workflowInstance = awaitingWorkflowInstances[awaitingWorkflowInstanceIndex.WorkflowInstanceId];
                 var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(workflowInstance.DefinitionId);
-                var activities = _activityLibrary.CreateActivities().ToList();
                 var activityRecord = workflowDefinition.Activities.SingleOrDefault(x => x.Id == awaitingWorkflowInstanceIndex.ActivityId);
-                var workflowContext = new WorkflowContext(workflowDefinition, workflowInstance, activities);
-                var activityContext = CreateActivityContext(workflowContext, activityRecord);
+                var workflowContext = CreateWorkflowContext(workflowDefinition, workflowInstance);
+                var activityContext = CreateActivityContext(activityRecord);
 
                 // Check the CanExecute condition.
                 try
@@ -98,11 +116,10 @@ namespace OrchardCore.Workflows.Services
             foreach (var workflowToStart in workflowsToStart)
             {
                 var workflowDefinition = (await _session.GetAsync<WorkflowDefinitionRecord>(workflowToStart.Id));
-                var activities = _activityLibrary.CreateActivities().ToList();
                 var startActivity = workflowDefinition.Activities.FirstOrDefault(x => x.IsStart);
                 var workflowInstance = new WorkflowInstanceRecord { DefinitionId = workflowToStart.Id };
-                var workflowContext = new WorkflowContext(workflowDefinition, workflowInstance, activities);
-                var activityContext = CreateActivityContext(workflowContext, startActivity);
+                var workflowContext = CreateWorkflowContext(workflowDefinition, workflowInstance);
+                var activityContext = CreateActivityContext(startActivity);
 
                 // Check the condition.
                 try
@@ -120,19 +137,6 @@ namespace OrchardCore.Workflows.Services
 
                 await StartWorkflow(workflowContext, startActivity);
             }
-        }
-
-        private ActivityContext CreateActivityContext(WorkflowContext workflowContext, ActivityRecord activityRecord)
-        {
-            var activity = workflowContext.GetActivityByName(activityRecord.Name);
-            var entity = activity as Entity;
-
-            entity.Properties = activityRecord.Properties;
-            return new ActivityContext
-            {
-                Record = activityRecord,
-                Activity = activity
-            };
         }
 
         private async Task StartWorkflow(WorkflowContext workflowContext, ActivityRecord activity)
@@ -226,7 +230,7 @@ namespace OrchardCore.Workflows.Services
             {
                 activity = scheduled.Pop();
 
-                var activityContext = CreateActivityContext(workflowContext, activity);
+                var activityContext = CreateActivityContext(activity);
 
                 // While there is an activity to process.
                 if (!firstPass)
