@@ -21,11 +21,12 @@ namespace OrchardCore.Media.Controllers
         public AdminController(
             IMediaFileStore mediaFileStore,
             IAuthorizationService authorizationService,
+            IContentTypeProvider contentTypeProvider,
             ILogger<AdminController> logger)
         {
             _mediaFileStore = mediaFileStore;
             _authorizationService = authorizationService;
-            _contentTypeProvider = new FileExtensionContentTypeProvider();
+            _contentTypeProvider = contentTypeProvider;
             _logger = logger;
         }
 
