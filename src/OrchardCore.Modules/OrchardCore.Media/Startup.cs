@@ -153,7 +153,7 @@ namespace OrchardCore.Media
             services.AddRecipeExecutionStep<MediaStep>();
 
             // MIME types
-            services.AddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
+            services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
