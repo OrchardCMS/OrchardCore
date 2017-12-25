@@ -275,8 +275,8 @@ namespace OrchardCore.Workflows.Controllers
             var workflowDefinitionRecord = await _session.GetAsync<WorkflowDefinitionRecord>(id);
             var workflowContext = _workflowManager.CreateWorkflowContext(workflowDefinitionRecord, new WorkflowInstanceRecord { DefinitionId = workflowDefinitionRecord.Id });
             var activityContexts = workflowDefinitionRecord.Activities.Select(x => _workflowManager.CreateActivityContext(x)).ToList();
-            var activityThumbnailDisplayTasks = activityContexts.Select(x => BuildActivityDisplay(x, id, "Thumbnail"));
-            var activityDesignDisplayTasks = activityContexts.Select(x => BuildActivityDisplay(x, id, "Design"));
+            var activityThumbnailDisplayTasks = activityContexts.Select((x, i) => BuildActivityDisplay(x, i, id, "Thumbnail"));
+            var activityDesignDisplayTasks = activityContexts.Select((x, i) => BuildActivityDisplay(x, i, id, "Design"));
 
             await Task.WhenAll(activityThumbnailDisplayTasks.Concat(activityDesignDisplayTasks));
 
@@ -364,13 +364,14 @@ namespace OrchardCore.Workflows.Controllers
             return RedirectToAction("Index");
         }
 
-        private async Task<dynamic> BuildActivityDisplay(ActivityContext activityContext, int workflowDefinitionId, string displayType)
+        private async Task<dynamic> BuildActivityDisplay(ActivityContext activityContext, int index, int workflowDefinitionId, string displayType)
         {
             dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, this, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}";
             activityShape.Activity = activityContext.Activity;
             activityShape.ActivityRecord = activityContext.ActivityRecord;
             activityShape.WorkflowDefinitionId = workflowDefinitionId;
+            activityShape.Index = index;
             return activityShape;
         }
     }

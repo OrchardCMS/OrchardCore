@@ -22,8 +22,9 @@ namespace OrchardCore.Workflows.Controllers
         private readonly ISiteService _siteService;
         private readonly ISession _session;
         private readonly IActivityLibrary _activityLibrary;
+        private readonly IWorkflowManager _workflowManager;
         private readonly IAuthorizationService _authorizationService;
-        private IDisplayManager<IActivity> _activityDisplayManager;
+        private readonly IDisplayManager<IActivity> _activityDisplayManager;
         private readonly INotifier _notifier;
 
         private dynamic New { get; }
@@ -35,6 +36,7 @@ namespace OrchardCore.Workflows.Controllers
             ISiteService siteService,
             ISession session,
             IActivityLibrary activityLibrary,
+            IWorkflowManager workflowManager,
             IAuthorizationService authorizationService,
             IDisplayManager<IActivity> activityDisplayManager,
             IShapeFactory shapeFactory,
@@ -46,6 +48,7 @@ namespace OrchardCore.Workflows.Controllers
             _siteService = siteService;
             _session = session;
             _activityLibrary = activityLibrary;
+            _workflowManager = workflowManager;
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
@@ -111,6 +114,61 @@ namespace OrchardCore.Workflows.Controllers
             _notifier.Success(H["Activity added successfully"]);
 
             return RedirectToAction("Edit", "WorkflowDefinition", new { id = workflowDefinitionId });
+        }
+
+        public async Task<IActionResult> Edit(int workflowDefinitionId, int activityId)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+            {
+                return Unauthorized();
+            }
+
+            var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(workflowDefinitionId);
+            var activityRecord = workflowDefinition.Activities.Single(x => x.Id == activityId);
+            var activityContext = _workflowManager.CreateActivityContext(activityRecord);
+            var activityEditor = await _activityDisplayManager.BuildEditorAsync(activityContext.Activity, this, isNew: false);
+
+            activityEditor.Metadata.Type = "Activity_Edit";
+
+            var viewModel = new ActivityEditViewModel
+            {
+                Activity = activityContext.Activity,
+                ActivityId = activityId,
+                ActivityEditor = activityEditor,
+                WorkflowDefinitionId = workflowDefinitionId
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(ActivityEditViewModel model)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+            {
+                return Unauthorized();
+            }
+
+            var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(model.WorkflowDefinitionId);
+            var activityRecord = workflowDefinition.Activities.Single(x => x.Id == model.ActivityId.Value);
+            var activityContext = _workflowManager.CreateActivityContext(activityRecord);
+            var activityEditor = await _activityDisplayManager.UpdateEditorAsync(activityContext.Activity, this, isNew: false);
+
+            if (!ModelState.IsValid)
+            {
+                activityEditor.Metadata.Type = "Activity_Edit";
+                model.Activity = activityContext.Activity;
+                model.ActivityEditor = activityEditor;
+                model.WorkflowDefinitionId = model.WorkflowDefinitionId;
+                return View(model);
+            }
+
+            activityRecord.Properties = activityContext.Activity.Properties;
+
+            _session.Save(workflowDefinition);
+            _notifier.Success(H["Activity updated successfully"]);
+
+            return RedirectToAction("Edit", "WorkflowDefinition", new { id = model.WorkflowDefinitionId });
         }
     }
 }

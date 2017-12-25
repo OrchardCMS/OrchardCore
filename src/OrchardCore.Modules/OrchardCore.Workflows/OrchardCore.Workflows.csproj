@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageAssetFiles Remove="Views\Items\NotifyTask.Fields.Design.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Assets\Scripts\workflow-models.ts" />
     <Content Include="Assets\Scripts\workflow-editor.ts" />
   </ItemGroup>
@@ -54,9 +50,6 @@
       <Pack>true</Pack>
     </None>
     <None Update="Styles\workflows-activity.css">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-    <None Update="Views\Items\NotifyTask.Fields.Design.cshtml">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
   </ItemGroup>

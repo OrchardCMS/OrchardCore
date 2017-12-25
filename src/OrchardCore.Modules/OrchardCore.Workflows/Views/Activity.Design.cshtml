@@ -2,6 +2,12 @@
 @{
     var activityRecord = (ActivityRecord)Model.ActivityRecord;
 }
-<div class="activity" style="left:@(activityRecord.X)px; top:@(activityRecord.Y)px;" id="@($"activity-{Model.WorkflowDefinitionId}-{activityRecord.Id}")" data-activity-id="@activityRecord.Id">
+<div class="activity" style="left:@(activityRecord.X)px; top:@(activityRecord.Y)px;" id="@($"activity-{Model.WorkflowDefinitionId}-{activityRecord.Id}")" tabindex="@Model.Index" data-activity-id="@activityRecord.Id" data-placement="bottom">
     @await DisplayAsync(Model.Content)
+
+    <div class="activity-commands">
+        <a class="btn btn-outline-secondary activity-start-action" href="#"><i class="fa fa-power-off"></i></a>
+        <a class="btn btn-primary activity-edit-action" asp-action="Edit" asp-controller="Activity" asp-route-workflowdefinitionid="@Model.WorkflowDefinitionId" asp-route-activityid="@activityRecord.Id"><i class="fa fa-pencil"></i></a>
+        <a class="btn btn-danger activity-delete-action" href="#"><i class="fa fa-trash"></i></a>
+    </div>
 </div>
