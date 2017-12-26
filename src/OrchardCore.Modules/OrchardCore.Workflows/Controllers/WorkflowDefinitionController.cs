@@ -342,7 +342,7 @@ namespace OrchardCore.Workflows.Controllers
             return RedirectToAction(nameof(Edit), new { id = model.Id });
         }
 
-        [HttpDelete]
+        [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
