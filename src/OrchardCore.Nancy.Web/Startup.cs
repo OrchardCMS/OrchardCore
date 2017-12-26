@@ -1,4 +1,3 @@
-using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -30,8 +29,6 @@ namespace OrchardCore.Nancy.Web
             services.AddModules(configure => configure
                 .WithConfiguration(Configuration)
             );
-
-            services.AddSingleton(JavaScriptEncoder.Default);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
