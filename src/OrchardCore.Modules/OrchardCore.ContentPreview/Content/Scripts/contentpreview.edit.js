@@ -68,4 +68,9 @@ $(function () {
         // to pre-render the view even if no contentpreview:render is already sent
         sendFormData();
     });    
+
+    $(window).on('unload', function () {
+        // this will raise an event in the preview window to notify that the live preview is no longer active.
+        localStorage.setItem('contentpreview:not-connected:' + previewId, '');
+    });
 });
