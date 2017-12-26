@@ -202,8 +202,8 @@ namespace OrchardCore.Workflows.Controllers
         }
 
 
-        [HttpPost, ActionName(nameof(EditProperties))]
-        public async Task<IActionResult> EditPropertiesPost(WorkflowDefinitionPropertiesViewModel viewModel, int? id)
+        [HttpPost]
+        public async Task<IActionResult> EditProperties(WorkflowDefinitionPropertiesViewModel viewModel, int? id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -246,25 +246,6 @@ namespace OrchardCore.Workflows.Controllers
             }
         }
 
-        public async Task<JsonResult> State(int? id)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
-            {
-                throw new AuthenticationException("");
-            }
-
-            var workflowDefinition = id.HasValue ? await _session.GetAsync<WorkflowDefinitionRecord>(id.Value) : null;
-            var isRunning = false;
-
-            if (workflowDefinition != null)
-            {
-                isRunning = await _session
-                    .Query<WorkflowInstanceRecord, WorkflowInstanceByAwaitingActivitiesIndex>(query => query.Id == workflowDefinition.Id)
-                    .CountAsync() > 0;
-            }
-            return Json(new { isRunning = isRunning });
-        }
-
         public async Task<IActionResult> Edit(int id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
@@ -272,10 +253,11 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
+            var availableActivities = _activityLibrary.ListActivities();
             var workflowDefinitionRecord = await _session.GetAsync<WorkflowDefinitionRecord>(id);
             var workflowContext = _workflowManager.CreateWorkflowContext(workflowDefinitionRecord, new WorkflowInstanceRecord { DefinitionId = workflowDefinitionRecord.Id });
             var activityContexts = workflowDefinitionRecord.Activities.Select(x => _workflowManager.CreateActivityContext(x)).ToList();
-            var activityThumbnailDisplayTasks = activityContexts.Select((x, i) => BuildActivityDisplay(x, i, id, "Thumbnail"));
+            var activityThumbnailDisplayTasks = availableActivities.Select((x, i) => BuildActivityDisplay(x, i, id, "Thumbnail"));
             var activityDesignDisplayTasks = activityContexts.Select((x, i) => BuildActivityDisplay(x, i, id, "Design"));
 
             await Task.WhenAll(activityThumbnailDisplayTasks.Concat(activityDesignDisplayTasks));
@@ -318,14 +300,29 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var workflowDefinitionRecord = await _session.GetAsync<WorkflowDefinitionRecord>(model.Id);
-            var activityDictionary = workflowDefinitionRecord.Activities.ToDictionary(x => x.Id);
             dynamic state = JObject.Parse(model.State);
+            var currentActivities = workflowDefinitionRecord.Activities.ToDictionary(x => x.Id);
+            var postedActivities = ((IEnumerable<dynamic>)state.activities).ToDictionary(x => (int)x.id);
+            var removedActivityIdsQuery =
+                from activityId in currentActivities.Keys
+                where !postedActivities.ContainsKey(activityId)
+                select activityId;
+            var removedActivityIds = removedActivityIdsQuery.ToList();
+
+            // Remove any orphans (activities deleted on the client).
+            foreach (var activityId in removedActivityIds)
+            {
+                var activityToRemove = currentActivities[activityId];
+                workflowDefinitionRecord.Activities.Remove(activityToRemove);
+                currentActivities.Remove(activityId);
+            }
 
             foreach (var activityState in state.activities)
             {
-                var activity = activityDictionary[(int)activityState.id];
+                var activity = currentActivities[(int)activityState.id];
                 activity.X = activityState.x;
                 activity.Y = activityState.y;
+                activity.IsStart = activityState.isStart;
             }
 
             workflowDefinitionRecord.Transitions.Clear();
@@ -362,6 +359,35 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        public async Task<JsonResult> State(int? id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+            {
+                throw new AuthenticationException("");
+            }
+
+            var workflowDefinition = id.HasValue ? await _session.GetAsync<WorkflowDefinitionRecord>(id.Value) : null;
+            var isRunning = false;
+
+            if (workflowDefinition != null)
+            {
+                isRunning = await _session
+                    .Query<WorkflowInstanceRecord, WorkflowInstanceByAwaitingActivitiesIndex>(query => query.Id == workflowDefinition.Id)
+                    .CountAsync() > 0;
+            }
+            return Json(new { isRunning = isRunning });
+        }
+
+        private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, int workflowDefinitionId, string displayType)
+        {
+            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activity, this, displayType);
+            activityShape.Metadata.Type = $"Activity_{displayType}";
+            activityShape.Activity = activity;
+            activityShape.WorkflowDefinitionId = workflowDefinitionId;
+            activityShape.Index = index;
+            return activityShape;
         }
 
         private async Task<dynamic> BuildActivityDisplay(ActivityContext activityContext, int index, int workflowDefinitionId, string displayType)

@@ -6017,6 +6017,9 @@ label .field-validation-error::before {
 .field-validation-valid {
   display: none; }
 
+select[multiple] {
+  min-height: 300px; }
+
 .admin-toolbar {
   margin-bottom: 1em; }
 

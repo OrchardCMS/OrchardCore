@@ -28,6 +28,7 @@ interface jsPlumbInstance {
     deleteEndpoint(uuid: string, doNotRepaintAfterwards?: boolean): jsPlumbInstance;
     deleteEndpoint(endpoint: Endpoint, doNotRepaintAfterwards?: boolean): jsPlumbInstance;
     deleteConnection(connection: Connection): jsPlumbInstance;
+    remove(element: any): jsPlumbInstance;
     repaint(el: string): jsPlumbInstance;
     repaint(el: Element): jsPlumbInstance;
     getInstance(): jsPlumbInstance;

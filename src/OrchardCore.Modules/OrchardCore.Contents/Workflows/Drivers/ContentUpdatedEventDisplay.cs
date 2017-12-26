@@ -1,14 +1,13 @@
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.Workflows.Activities;
-using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Workflows.Abstractions.Display;
+using OrchardCore.Contents.Workflows.ViewModels;
 
 namespace OrchardCore.Contents.Workflows.Drivers
 {
-    public class ContentUpdatedEventDisplay : ActivityDisplayDriver<ContentUpdatedEvent>
+    public class ContentUpdatedEventDisplay : ContentEventDisplayDriver<ContentUpdatedEvent, ContentUpdatedEventViewModel>
     {
-        public override IDisplayResult Display(ContentUpdatedEvent model)
+        public ContentUpdatedEventDisplay(IContentDefinitionManager contentDefinitionManager) : base(contentDefinitionManager)
         {
-            return Shape("ContentUpdatedEvent_Fields_Thumbnail").Location("Thumbnail", "Content");
         }
     }
 }

@@ -1,7 +1,7 @@
 @model WorkflowDefinitionViewModel
 @using OrchardCore.Workflows.ViewModels;
 
-<h1>@RenderTitleSegments(T["Workflow {0}", Model.WorkflowDefinition.Name])</h1>
+<h1>@RenderTitleSegments(Model.WorkflowDefinition.Name)</h1>
 
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto">
@@ -19,7 +19,7 @@
     <fieldset class="form-group">
         <div class="workflow-editor-container">
             <div class="workflow-editor-canvas-container">
-                <div class="workflow-editor-canvas" data-workflow-definition="@Model.WorkflowDefinitionJson" data-workflow-definition-state-input-name="">
+                <div class="workflow-editor-canvas" data-workflow-definition="@Model.WorkflowDefinitionJson" data-workflow-delete-activity-prompt="@T["Are you sure you want to delete this activity?"]">
                     @foreach (var activityShape in Model.ActivityDesignShapes)
                     {
                         @await DisplayAsync(activityShape)

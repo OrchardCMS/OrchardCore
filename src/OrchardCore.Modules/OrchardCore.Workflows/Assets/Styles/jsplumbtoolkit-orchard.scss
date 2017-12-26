@@ -7,9 +7,9 @@
         display: block;
         border: 1px solid #346789;
         box-shadow: 2px 2px 19px #aaa;
-        -o-box-shadow: 2px 2px 19px #aaa;
-        -webkit-box-shadow: 2px 2px 19px #aaa;
-        -moz-box-shadow: 2px 2px 19px #aaa;
+        -o-box-shadow: 2px 2px 9px #aaa;
+        -webkit-box-shadow: 2px 2px 9px #aaa;
+        -moz-box-shadow: 2px 2px 9px #aaa;
         -moz-border-radius: 0.5em;
         border-radius: 0.5em;
         opacity: 0.8;
@@ -35,6 +35,11 @@
             -webkit-box-shadow: 2px 2px 19px #444;
             -moz-box-shadow: 2px 2px 19px #444;
             opacity: 0.6;
+        }
+
+        &.activity-start {
+            background-color: #7ab02c;
+            color: #ffffff;
         }
 
         &.jtk-connected {

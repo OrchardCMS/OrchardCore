@@ -6,7 +6,7 @@ class WorkflowEditor {
     private isPopoverVisible: boolean;
     private isDragging: boolean;
 
-    constructor(private container: HTMLElement, workflowDefinitionData: Workflows.Workflow) {
+    constructor(private container: HTMLElement, workflowDefinitionData: Workflows.Workflow, deleteActivityPrompt: string) {
 
         jsPlumb.ready(() => {
             var plumber = jsPlumb.getInstance({
@@ -148,6 +148,33 @@ class WorkflowEditor {
                 content: function () {
                     const activityElement = $(this);
                     const content: JQuery = activityElement.find('.activity-commands').clone().show();
+                    const startButton = content.find('.activity-start-action');
+                    const isStart = activityElement.data('activity-start') === true;
+
+                    startButton.attr('aria-pressed', activityElement.data('activity-start'));
+                    startButton.toggleClass('active', isStart);
+
+                    content.on('click', '.activity-start-action', e => {
+                        e.preventDefault();
+                        const button = $(e.currentTarget);
+
+                        button.button('toggle');
+
+                        const isStart = button.is('.active');
+                        activityElement.data('activity-start', isStart);
+                        activityElement.toggleClass('activity-start', isStart);
+                    });
+
+                    content.on('click', '.activity-delete-action', e => {
+                        e.preventDefault();
+                        if (!confirm(deleteActivityPrompt)) {
+                            return;
+                        }
+
+                        plumber.remove(activityElement);
+                        activityElement.popover('dispose');
+                    });
+
                     return content.get(0);
                 }
             });
@@ -203,10 +230,12 @@ class WorkflowEditor {
         for (var i = 0; i < allActivityElements.length; i++) {
             var activityElementQuery = $(allActivityElements[i]);
             var activityId: number = activityElementQuery.data('activity-id');
+            var activityIsStart = activityElementQuery.data('activity-start');
             var activityPosition = activityElementQuery.position();
 
             workflow.activities.push({
                 id: activityId,
+                isStart: activityIsStart,
                 x: activityPosition.left,
                 y: activityPosition.top
             });
@@ -235,8 +264,9 @@ $.fn.workflowEditor = function (this: JQuery): JQuery {
     this.each((index, element) => {
         var $element = $(element);
         var workflowDefinitionData: Workflows.Workflow = $element.data('workflow-definition');
+        var deleteActivityPrompt: string = $element.data('workflow-delete-activity-prompt');
 
-        $element.data('workflowEditor', new WorkflowEditor(element, workflowDefinitionData));
+        $element.data('workflowEditor', new WorkflowEditor(element, workflowDefinitionData, deleteActivityPrompt));
     });
 
     return this;

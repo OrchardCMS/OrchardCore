@@ -1,14 +1,13 @@
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.Workflows.Activities;
-using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Workflows.Abstractions.Display;
+using OrchardCore.Contents.Workflows.ViewModels;
 
 namespace OrchardCore.Contents.Workflows.Drivers
 {
-    public class ContentDeletedEventDisplay : ActivityDisplayDriver<ContentDeletedEvent>
+    public class ContentDeletedEventDisplay : ContentEventDisplayDriver<ContentDeletedEvent, ContentDeletedEventViewModel>
     {
-        public override IDisplayResult Display(ContentDeletedEvent model)
+        public ContentDeletedEventDisplay(IContentDefinitionManager contentDefinitionManager) : base(contentDefinitionManager)
         {
-            return Shape("ContentDeletedEvent_Fields_Thumbnail").Location("Thumbnail", "Content");
         }
     }
 }

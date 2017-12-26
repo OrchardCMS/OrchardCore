@@ -21,6 +21,12 @@ namespace OrchardCore.Contents.Workflows.Activities
         public override bool CanStartWorkflow => true;
         public override LocalizedString Category => S["Content Items"];
 
+        public IList<string> ContentTypeFilter
+        {
+            get => GetProperty<IList<string>>(defaultValue: () => new List<string>());
+            set => SetProperty(value);
+        }
+
         public override bool CanExecute(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             try

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -68,10 +69,10 @@ namespace OrchardCore.Workflows.Services
             return names.Select(x => new Outcome(x));
         }
 
-        protected virtual T GetProperty<T>([CallerMemberName]string name = null)
+        protected virtual T GetProperty<T>([CallerMemberName]string name = null, Func<T> defaultValue = null)
         {
             var item = Properties[name];
-            return item != null ? item.ToObject<T>() : default(T);
+            return item != null ? item.ToObject<T>() : defaultValue != null ? defaultValue() : default(T);
         }
 
         protected virtual void SetProperty<T>(T value, [CallerMemberName]string name = null)

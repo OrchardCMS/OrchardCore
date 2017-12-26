@@ -1,0 +1,8 @@
+@using OrchardCore.Contents.Workflows.ViewModels
+@model ContentUpdatedEventViewModel
+
+<fieldset class="form-group" asp-validation-class-for="SelectedContentTypeNames">
+    <label asp-for="SelectedContentTypeNames">@T["Content Types"] <span asp-validation-for="SelectedContentTypeNames"></span></label>
+    <select asp-for="SelectedContentTypeNames" class="form-control" asp-items="Model.AvailableContentTypes"></select>
+    <span class="hint">@T["Select any content types to filter on."]</span>
+</fieldset>
