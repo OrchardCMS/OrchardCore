@@ -1,0 +1,8 @@
+@using OrchardCore.Contents.Workflows.ViewModels
+@model DeleteContentTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="ContentParameterName">
+    <label asp-for="ContentParameterName">@T["Parameter"] <span asp-validation-for="ContentParameterName"></span></label>
+    <select asp-for="ContentParameterName" class="form-control" asp-items="Model.AvailableParameters"></select>
+    <span class="hint">@T["Select the workflow parameter containing the content item to be deleted."]</span>
+</fieldset>

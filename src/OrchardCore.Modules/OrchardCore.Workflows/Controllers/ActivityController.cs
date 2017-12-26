@@ -138,7 +138,9 @@ namespace OrchardCore.Workflows.Controllers
                 WorkflowDefinitionId = workflowDefinitionId
             };
 
-            return View(viewModel);
+            // To prevent a duplicate resource name from being generated (conflicting with Activity.Edit.cshtml),
+            // we need to use a different view name.
+            return View("Update", viewModel);
         }
 
         [HttpPost]
@@ -160,7 +162,10 @@ namespace OrchardCore.Workflows.Controllers
                 model.Activity = activityContext.Activity;
                 model.ActivityEditor = activityEditor;
                 model.WorkflowDefinitionId = model.WorkflowDefinitionId;
-                return View(model);
+
+                // To prevent a duplicate resource name from being generated (conflicting with Activity.Edit.cshtml),
+                // we need to use a different view name.
+                return View("Update", model);
             }
 
             activityRecord.Properties = activityContext.Activity.Properties;

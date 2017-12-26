@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 
 namespace OrchardCore.Workflows.Abstractions.Converters
 {
+    // TODO: Should this be moved to a more central library?
     /// <summary>
     /// Serializes the <see cref="LocalizedString"/> to a simple string using the translated text.
     /// </summary>

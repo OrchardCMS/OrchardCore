@@ -17,7 +17,6 @@ namespace OrchardCore.Workflows.Services
         /// Creates a new <see cref="ActivityContext"/>.
         /// </summary>
         /// <param name="activityRecord"></param>
-        /// <returns></returns>
         ActivityContext CreateActivityContext(ActivityRecord activityRecord);
 
         /// <summary>
