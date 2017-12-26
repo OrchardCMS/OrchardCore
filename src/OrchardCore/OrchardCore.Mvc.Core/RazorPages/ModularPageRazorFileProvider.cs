@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.FileProviders;
@@ -15,22 +16,24 @@ namespace OrchardCore.Mvc.RazorPages
         public ModularPageRazorFileProvider(IFileProvider fileProvider, IOptions<ExtensionExpanderOptions> optionsAccessor)
         {
             _fileProvider = fileProvider;
-            _paths = optionsAccessor.Value.Options.Select(o => '/' + o.SearchPath);
+            _paths = optionsAccessor.Value.Options.Select(o => o.SearchPath);
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
-            if (subpath == "/")
+            var folder = NormalizePath(subpath);
+
+            if (folder == "")
             {
                 return _fileProvider.GetDirectoryContents(subpath);
             }
 
             foreach (var path in _paths)
             {
-                if (subpath.StartsWith(path))
+                if (folder.StartsWith(path, StringComparison.Ordinal))
                 {
-                    if (subpath.Length == path.Length || subpath.Contains("/Pages") ||
-                        subpath.Substring(path.Length + 1).IndexOf('/') == -1)
+                    if (folder.Length == path.Length || folder.Contains("/Pages") ||
+                        folder.Substring(path.Length + 1).IndexOf('/') == -1)
                     {
                         return _fileProvider.GetDirectoryContents(subpath);
                     }
@@ -50,6 +53,11 @@ namespace OrchardCore.Mvc.RazorPages
         public IChangeToken Watch(string filter)
         {
             return _fileProvider.Watch(filter);
+        }
+
+        private string NormalizePath(string path)
+        {
+            return path.Replace('\\', '/').Trim('/');
         }
     }
 }

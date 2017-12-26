@@ -1,4 +1,4 @@
-﻿using OrchardCore.ResourceManagement;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Resources
 {
@@ -22,24 +22,32 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("jQuery")
-                .SetCdn("https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js")
-                .SetVersion("3.1.1")
+                .SetCdn("https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
+                .SetVersion("3.2.1")
                 ;
 
             manifest
                 .DefineScript("jQuery.slim")
-                .SetCdn("https://code.jquery.com/jquery-3.1.1.slim.min.js", "https://code.jquery.com/jquery-3.1.1.slim.js")
-                .SetCdnIntegrity("sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n")
-                .SetVersion("3.1.1")
+                .SetCdn("https://code.jquery.com/jquery-3.2.1.slim.min.js", "https://code.jquery.com/jquery-3.2.1.slim.js")
+                .SetCdnIntegrity("sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN")
+                .SetVersion("3.2.1")
                 ;
 
             manifest
-                .DefineScript("jquery-ui")
+                .DefineScript("jQuery-ui")
                 .SetDependencies("jQuery")
                 .SetUrl("/OrchardCore.Resources/Scripts/jquery-ui.min.js", "/OrchardCore.Resources/Scripts/jquery-ui.js")
                 .SetCdn("https://code.jquery.com/ui/1.12.1/jquery-ui.min.js", "https://code.jquery.com/ui/1.12.1/jquery-ui.js")
+                .SetVersion("1.12.1")
                 ;
-            
+
+            manifest
+                .DefineStyle("jQuery-ui")
+                .SetUrl("/OrchardCore.Resources/Styles/jquery-ui.min.css", "/OrchardCore.Resources/Styles/jquery-ui.css")
+                .SetCdn("https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css", "https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css")
+                .SetVersion("1.12.1")
+                ;
+
             manifest
                 .DefineScript("bootstrap")
                 .SetDependencies("jQuery")
@@ -63,25 +71,27 @@ namespace OrchardCore.Resources
                 ;
 
             manifest
-                .DefineScript("tether")
-                .SetUrl("/OrchardCore.Resources/Scripts/tether.min.js", "/OrchardCore.Resources/Scripts/tether.js")
-                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js", "https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.js")
-                .SetVersion("1.4.0")
+                .DefineScript("popper")
+                .SetUrl("/OrchardCore.Resources/Scripts/popper.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js", "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.js")
+                .SetCdnIntegrity("sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh")
+                .SetVersion("1.12.3")
                 ;
 
             manifest
                 .DefineScript("bootstrap")
-                .SetDependencies("jQuery", "tether")
+                .SetDependencies("jQuery", "popper")
                 .SetUrl("/OrchardCore.Resources/Scripts/bootstrap.min.js", "/OrchardCore.Resources/Scripts/bootstrap.js")
-                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js")
-                .SetCdnIntegrity("sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn")
+                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js")
+                .SetCdnIntegrity("sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ")
                 .SetVersion("4.0.0")
                 ;
 
             manifest
                 .DefineStyle("bootstrap")
-                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css")
-                .SetCdnIntegrity("sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ")
+                .SetUrl("/OrchardCore.Resources/Styles/bootstrap.min.css", "/OrchardCore.Resources/Styles/bootstrap.css")
+                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css")
+                .SetCdnIntegrity("sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb")
                 .SetVersion("4.0.0")
                 ;
 

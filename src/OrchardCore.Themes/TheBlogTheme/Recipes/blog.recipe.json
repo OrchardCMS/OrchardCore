@@ -95,6 +95,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "False",
             "Stereotype": null
@@ -159,6 +160,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "False",
             "Stereotype": null
@@ -220,6 +222,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "True",
             "Stereotype": null
@@ -284,6 +287,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": null
@@ -355,6 +359,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -382,6 +387,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -402,6 +408,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -422,6 +429,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -442,6 +450,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "False",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "False",
             "Stereotype": null
@@ -469,6 +478,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -489,6 +499,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -509,6 +520,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": null
@@ -693,7 +705,6 @@
           "ContentType": "Menu",
           "ContentItemId": "[js: uuid()]",
           "Latest": true,
-          "Number": 1,
           "Published": true,
           "MenuPart": {},
           "TitlePart": { "Title": "Main Menu" },
@@ -723,7 +734,6 @@
           "ContentType": "Blog",
           "ContentItemId": "[js: variables('blogContentItemId')]",
           "Latest": true,
-          "Number": 1,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
           "Author": "[js: parameters('AdminUsername')]",
@@ -742,7 +752,6 @@
           "ContentType": "BlogPost",
           "ContentItemId": "[js: uuid()]",
           "Latest": true,
-          "Number": 1,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
           "Author": "[js: parameters('AdminUsername')]",

@@ -18,7 +18,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         public string Name { get; set; }
 
         [HtmlAttributeName(SrcAttributeName)]
-        public string Src { get; set; }
+        public string Source { get; set; }
 
         public string CdnSrc { get; set; }
         public string DebugSrc { get; set; }
@@ -45,24 +45,24 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         {
             output.SuppressOutput();
 
-            if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
+            if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Source))
             {
                 RequireSettings setting;
 
                 if (String.IsNullOrEmpty(DependsOn))
                 {
                     // Include custom script url
-                    setting = _resourceManager.Include("script", Src, DebugSrc);
+                    setting = _resourceManager.Include("script", Source, DebugSrc);
                 }
                 else
                 {
                     // Anonymous declaration with dependencies, then display
 
                     // Using the source as the name to prevent duplicate references to the same file
-                    var name = Src.ToLowerInvariant();
+                    var name = Source.ToLowerInvariant();
 
                     var definition = _resourceManager.InlineManifest.DefineScript(name);
-                    definition.SetUrl(Src, DebugSrc);
+                    definition.SetUrl(Source, DebugSrc);
 
                     if (!String.IsNullOrEmpty(Version))
                     {
@@ -114,7 +114,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.SetAttribute(attribute.Name, attribute.Value.ToString());
                 }
             }
-            else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
+            else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Source))
             {
                 // Resource required
 
@@ -144,12 +144,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseVersion(Version);
                 }
             }
-            else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
+            else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Source))
             {
                 // Inline declaration
 
                 var definition = _resourceManager.InlineManifest.DefineScript(Name);
-                definition.SetUrl(Src, DebugSrc);
+                definition.SetUrl(Source, DebugSrc);
 
                 if (!String.IsNullOrEmpty(Version))
                 {
@@ -201,7 +201,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     }
                 }
             }
-            else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
+            else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Source))
             {
                 // Custom script content
 

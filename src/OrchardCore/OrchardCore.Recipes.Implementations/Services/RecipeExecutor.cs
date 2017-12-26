@@ -66,64 +66,67 @@ namespace OrchardCore.Recipes.Services
 
                 await _recipeStore.CreateAsync(result);
 
-                using (StreamReader file = File.OpenText(recipeDescriptor.RecipeFileInfo.PhysicalPath))
+                using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
                 {
-                    using (var reader = new JsonTextReader(file))
+                    using (var file = new StreamReader(stream))
                     {
-                        // Go to Steps, then iterate.
-                        while (reader.Read())
+                        using (var reader = new JsonTextReader(file))
                         {
-                            if (reader.Path == "variables")
+                            // Go to Steps, then iterate.
+                            while (reader.Read())
                             {
-                                reader.Read();
-
-                                var variables = JObject.Load(reader);
-                                _variablesMethodProvider = new VariablesMethodProvider(variables);
-                            }
-
-                            if (reader.Path == "steps" && reader.TokenType == JsonToken.StartArray)
-                            {
-                                while (reader.Read() && reader.Depth > 1)
+                                if (reader.Path == "variables")
                                 {
-                                    if (reader.Depth == 2)
+                                    reader.Read();
+
+                                    var variables = JObject.Load(reader);
+                                    _variablesMethodProvider = new VariablesMethodProvider(variables);
+                                }
+
+                                if (reader.Path == "steps" && reader.TokenType == JsonToken.StartArray)
+                                {
+                                    while (reader.Read() && reader.Depth > 1)
                                     {
-                                        var child = JObject.Load(reader);
-
-                                        var recipeStep = new RecipeExecutionContext
+                                        if (reader.Depth == 2)
                                         {
-                                            Name = child.Value<string>("name"),
-                                            Step = child,
-                                            ExecutionId = executionId,
-                                            Environment = environment
-                                        };
+                                            var child = JObject.Load(reader);
 
-                                        var stepResult = new RecipeStepResult { StepName = recipeStep.Name };
-                                        result.Steps.Add(stepResult);
-                                        await _recipeStore.UpdateAsync(result);
+                                            var recipeStep = new RecipeExecutionContext
+                                            {
+                                                Name = child.Value<string>("name"),
+                                                Step = child,
+                                                ExecutionId = executionId,
+                                                Environment = environment
+                                            };
 
-                                        ExceptionDispatchInfo capturedException = null;
-                                        try
-                                        {
-                                            await ExecuteStepAsync(recipeStep);
-                                            stepResult.IsSuccessful = true;
-                                        }
-                                        catch(Exception e)
-                                        {
-                                            stepResult.IsSuccessful = false;
-                                            stepResult.ErrorMessage = e.ToString();
+                                            var stepResult = new RecipeStepResult { StepName = recipeStep.Name };
+                                            result.Steps.Add(stepResult);
+                                            await _recipeStore.UpdateAsync(result);
 
-                                            // Because we can't do some async processing the in catch or finally
-                                            // blocks, we store the exception to throw it later.
+                                            ExceptionDispatchInfo capturedException = null;
+                                            try
+                                            {
+                                                await ExecuteStepAsync(recipeStep);
+                                                stepResult.IsSuccessful = true;
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                stepResult.IsSuccessful = false;
+                                                stepResult.ErrorMessage = e.ToString();
 
-                                            capturedException = ExceptionDispatchInfo.Capture(e);
-                                        }
+                                                // Because we can't do some async processing the in catch or finally
+                                                // blocks, we store the exception to throw it later.
 
-                                        stepResult.IsCompleted = true;
-                                        await _recipeStore.UpdateAsync(result);
+                                                capturedException = ExceptionDispatchInfo.Capture(e);
+                                            }
 
-                                        if (stepResult.IsSuccessful == false)
-                                        {
-                                            capturedException.Throw();
+                                            stepResult.IsCompleted = true;
+                                            await _recipeStore.UpdateAsync(result);
+
+                                            if (stepResult.IsSuccessful == false)
+                                            {
+                                                capturedException.Throw();
+                                            }
                                         }
                                     }
                                 }

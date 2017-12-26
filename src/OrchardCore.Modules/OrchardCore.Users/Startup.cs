@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
@@ -18,6 +19,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Drivers;
@@ -153,6 +155,8 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
+            
+            services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
         }
     }
 }

@@ -16,8 +16,7 @@ $link-padding-left: 16px !default;
 .ta-wrapper {
 
     .ta-navbar-top {
-        @extend .bg-faded;
-        @extend .navbar, .navbar-toggleable-md, .navbar-light, .fixed-top;
+        @extend .navbar, .navbar-expand-md, .navbar-light, .bg-light, .fixed-top;
         min-height: $top-nav-height;
     }
 
@@ -27,21 +26,21 @@ $link-padding-left: 16px !default;
     }
     // Menu toggling button
     #navbar-toggler {
-        @extend .navbar-toggler, .navbar-toggler-right, .hidden-sm-up;
+        @extend .navbar-toggler;
     }
     // Icons in the main nav bar
-    #navbar-content {
+    /*#navbar-content {
         @extend .hidden-xs-down;
-    }
+    }*/
     // The menu is hidden for sm
     #ta-left-sidebar {
-        @extend .bg-faded;
+        @extend .bg-light;
         width: $left-navigation-width;
         height: 100%;
         z-index: 1;
         position: fixed;
         top: $top-nav-height;
-        color: $gray-dark;
+        color: $gray-800;
         border-right: $border-content;
         // Remove padding/margin from all uls
         ul {
@@ -108,7 +107,7 @@ $link-padding-left: 16px !default;
             position: absolute;
             top: 0;
             left: 100%;
-            margin-left: -15px;
+            margin-left: -25px;
         }
 
         .icon {
@@ -120,32 +119,32 @@ $link-padding-left: 16px !default;
         li a:hover,
         li a:active,
         li a:visited {
-            color: $gray;
+            color: $gray-700;
             text-decoration: none;
             padding-left: $link-padding-left - 4px;
         }
         // Hovering the navigation items
         li a:hover, li label:hover {
-            background-color: $gray;
-            color: $gray-lightest;
+            background-color: $gray-700;
+            color: $gray-100;
         }
         // Current page
         li.active > a {
-            background-color: $gray-light;
-            //border-left: 4px solid $gray-dark;
-            color: $gray-lightest !important;
+            background-color: $gray-600;
+            //border-left: 4px solid $gray-800;
+            color: $gray-100 !important;
         }
 
         li ul > li > a,
         li ul > li > label {
-            background-color: $gray-lighter;
-            color: $gray !important;
+            background-color: $gray-200;
+            color: $gray-700 !important;
             padding-left: 2 * $link-padding-left !important;
         }
 
         li ul > li > a:hover,
         li ul > li > label:hover {
-            color: $gray-lightest !important;
+            color: $gray-100 !important;
         }
 
         li ul > li ul > li > a {
@@ -154,7 +153,8 @@ $link-padding-left: 16px !default;
     }
 
     .ta-content {
-        @extend .container-fluid;
+        padding-right: ($grid-gutter-width / 2);
+        padding-left: ($grid-gutter-width / 2);
         margin-left: 0;
         margin-top: $top-nav-height;
         padding-top: 1em;
@@ -200,11 +200,11 @@ $link-padding-left: 16px !default;
 }
 
 .input-validation-error {
-    @extend .form-control-danger;
+    @extend .text-danger;
 }
 
 .has-validation-error {
-    @extend .has-danger;
+    @extend .text-danger;
 }
 
 // When the validation message in inside the label, add a separator
@@ -224,7 +224,7 @@ label .field-validation-error::before {
 // ------------------------------
 
 .admin-toolbar {
-    @extend .navbar, .navbar-toggleable-md, .navbar-light, .bg-faded;
+    @extend .navbar, .navbar-expand-md, .navbar-light, .bg-light;
     margin-bottom: 1em;
 }
 

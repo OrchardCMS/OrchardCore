@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Builders;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Modules;
 using YesSql;
@@ -62,7 +63,6 @@ namespace OrchardCore.ContentManagement
             var context2 = new ActivatedContentContext(context.Builder.Build());
 
             context2.ContentItem.ContentItemId = _idGenerator.GenerateUniqueId(context2.ContentItem);
-            context2.ContentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(context2.ContentItem);
 
             ReversedHandlers.Invoke(handler => handler.Activated(context2), _logger);
 
@@ -133,16 +133,42 @@ namespace OrchardCore.ContentManagement
 
             if (contentItem == null)
             {
-                if (!options.IsDraftRequired)
-                {
-                    return null;
-                }
+                return null;
             }
 
-            // Return item if obtained earlier in session
-            // If IsPublished is required then the test has already been checked before
-            ContentItem recalled = null;
-            if (!_contentManagerSession.RecallVersionId(contentItem.Id, out recalled))
+            contentItem = Load(contentItem);
+
+            if (options.IsDraftRequired)
+            {
+                // When draft is required and latest is published a new version is added
+                if (contentItem.Published)
+                {
+                    // Save the previous version
+                    _session.Save(contentItem);
+
+                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+                    // Check if not versionable, meaning we use only one version
+                    if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true))
+                    {
+                        contentItem.Published = false;
+                    }
+                    else
+                    {
+                        contentItem = await BuildNewVersionAsync(contentItem);
+                    }
+                }
+
+                // Save the new version
+                _session.Save(contentItem);
+            }
+
+            return contentItem;
+        }
+
+        private ContentItem Load(ContentItem contentItem)
+        {
+            if (!_contentManagerSession.RecallVersionId(contentItem.Id, out var loaded))
             {
                 // store in session prior to loading to avoid some problems with simple circular dependencies
                 _contentManagerSession.Store(contentItem);
@@ -154,29 +180,10 @@ namespace OrchardCore.ContentManagement
                 Handlers.Invoke(handler => handler.Loading(context), _logger);
                 ReversedHandlers.Invoke(handler => handler.Loaded(context), _logger);
 
-                contentItem = context.ContentItem;
-            }
-            else
-            {
-                contentItem = recalled;
+                loaded = context.ContentItem;
             }
 
-            if (options.IsDraftRequired)
-            {
-                // When draft is required and latest is published a new version is added
-                if (contentItem.Published)
-                {
-                    // Save the previous version
-                    _session.Save(contentItem);
-
-                    contentItem = await BuildNewVersionAsync(contentItem);
-                }
-
-                // Save the new version
-                _session.Save(contentItem);
-            }
-
-            return contentItem;
+            return loaded;
         }
 
         public async Task<ContentItem> GetVersionAsync(string contentItemVersionId)
@@ -190,22 +197,7 @@ namespace OrchardCore.ContentManagement
                 return null;
             }
 
-            if (!_contentManagerSession.RecallVersionId(contentItem.Id, out contentItem))
-            {
-                // store in session prior to loading to avoid some problems with simple circular dependencies
-                _contentManagerSession.Store(contentItem);
-
-                // create a context with a new instance to load
-                var context = new LoadContentContext(contentItem);
-
-                // invoke handlers to acquire state, or at least establish lazy loading callbacks
-                Handlers.Invoke(handler => handler.Loading(context), _logger);
-                ReversedHandlers.Invoke(handler => handler.Loaded(context), _logger);
-
-                contentItem = context.ContentItem;
-            }
-
-            return contentItem;
+            return Load(contentItem);
         }
 
         public async Task PublishAsync(ContentItem contentItem)
@@ -306,16 +298,16 @@ namespace OrchardCore.ContentManagement
                         x.ContentItemId == existingContentItem.ContentItemId &&
                         x.Latest)
                     .FirstOrDefaultAsync();
+
+                if (latestVersion != null)
+                {
+                    _session.Save(latestVersion);
+                }
             }
 
             if (latestVersion != null)
             {
                 latestVersion.Latest = false;
-                buildingContentItem.Number = latestVersion.Number + 1;
-            }
-            else
-            {
-                buildingContentItem.Number = 1;
             }
 
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
@@ -338,18 +330,13 @@ namespace OrchardCore.ContentManagement
 
         public void Create(ContentItem contentItem, VersionOptions options)
         {
-            if (contentItem.Number == 0)
-            {
-                contentItem.Number = 1;
-                contentItem.Latest = true;
-                contentItem.Published = true;
-            }
-
             if (String.IsNullOrEmpty(contentItem.ContentItemVersionId))
             {
                 contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
+                contentItem.Published = true;
+                contentItem.Latest = true;
             }
-            
+
             // Draft flag on create is required for explicitly-published content items
             if (options.IsDraft)
             {

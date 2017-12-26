@@ -92,7 +92,7 @@ To access a named query, use the name as the input.
 
 
 ```
-{% assign recentBlogPosts = "RecentBlogPosts" | query }
+{% assign recentBlogPosts = "RecentBlogPosts" | query %}
 {% for item in recentBlogPosts %}
 {{ item | display_text }}
 {% endfor %}
@@ -101,3 +101,18 @@ To access a named query, use the name as the input.
 The example above will iterate over all the results of the query name `RecentBlogPosts` and display the text representing
 the content item. Any available property on the results of the queries can be used. This example assumes the results
 will be content items.
+
+# Razor Helpers
+
+The `QueryAsync` and `ContentQueryAsync` OrchardRazorHelper extension methods (in the `OrchardCore.Queries` and `OrchardCore.ContentManagement` namespaces respectively) allow you to run queries directly from razor pages.
+
+You can use the `DisplayAsync` extension method (also in `OrchardCore.ContentManagement`) to display the content items returned from `ContentQueryAsync`.
+
+For example, to run a query called LatestBlogPosts, and display the results:
+
+```
+@foreach (var contentItem in await OrchardCore.ContentQueryAsync("AllContent"))
+{
+    @await OrchardCore.DisplayAsync(contentItem)
+}
+```

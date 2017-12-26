@@ -16,6 +16,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
+using OrchardCore.FileStorage;
 using OrchardCore.XmlRpc;
 using OrchardCore.XmlRpc.Models;
 using OrchardCore.Lists.Indexes;
@@ -155,7 +156,7 @@ namespace OrchardCore.Lists.RemotePublishing
                 context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
             }
         }
-
+        
         private async Task<XRpcStruct> MetaWeblogNewMediaObjectAsync(string userName, string password, XRpcStruct file)
         {
             var user = await ValidateUserAsync(userName, password);
@@ -165,9 +166,9 @@ namespace OrchardCore.Lists.RemotePublishing
 
             string directoryName = Path.GetDirectoryName(name);            
             string filePath = _mediaFileStore.Combine(directoryName, Path.GetFileName(name));
-            bool saved = await _mediaFileStore.TrySaveStreamAsync(filePath, new MemoryStream(bits));
+            await _mediaFileStore.CreateFileFromStream(filePath, new MemoryStream(bits));
              
-            string publicUrl = _mediaFileStore.GetPublicUrl(filePath);
+            string publicUrl = _mediaFileStore.MapPathToPublicUrl(filePath);
 
             return new XRpcStruct() // Some clients require all optional attributes to be declared Wordpress responds in this way as well.
                 .Set("file", publicUrl)
