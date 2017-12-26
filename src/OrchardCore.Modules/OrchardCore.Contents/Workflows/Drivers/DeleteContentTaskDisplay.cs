@@ -10,11 +10,11 @@ namespace OrchardCore.Contents.Workflows.Drivers
 {
     public class DeleteContentTaskDisplay : ActivityDisplayDriver<DeleteContentTask>
     {
-        public override IDisplayResult Display(DeleteContentTask model)
+        public override IDisplayResult Display(DeleteContentTask activity)
         {
             return Combine(
-                Shape("DeleteContentTask_Fields_Thumbnail").Location("Thumbnail", "Content"),
-                Shape("DeleteContentTask_Fields_Design").Location("Design", "Content")
+                Shape("DeleteContentTask_Fields_Thumbnail", activity).Location("Thumbnail", "Content"),
+                Shape("DeleteContentTask_Fields_Design", activity).Location("Design", "Content")
             );
         }
 
@@ -22,8 +22,8 @@ namespace OrchardCore.Contents.Workflows.Drivers
         {
             return Shape<DeleteContentTaskViewModel>("DeleteContentTask_Fields_Edit", model =>
             {
-                model.AvailableParameters = new[] { new SelectListItem { Value = "Content" } };
-            });
+                model.AvailableParameters = new[] { new SelectListItem { Text = "Content" } };
+            }).Location("Content");
         }
 
         public async override Task<IDisplayResult> UpdateAsync(DeleteContentTask activity, IUpdateModel updater)
