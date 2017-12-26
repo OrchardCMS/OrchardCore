@@ -1,8 +1,8 @@
 using System;
-using OrchardCore.OpenId.Models;
+using OrchardCore.OpenId.YesSql.Models;
 using YesSql.Indexes;
 
-namespace OrchardCore.OpenId.Indexes
+namespace OrchardCore.OpenId.YesSql.Indexes
 {
     public class OpenIdTokenIndex : MapIndex
     {

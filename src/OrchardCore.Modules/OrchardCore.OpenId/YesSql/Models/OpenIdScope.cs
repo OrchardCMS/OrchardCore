@@ -1,8 +1,9 @@
-namespace OrchardCore.OpenId.Models
-{
-    public class OpenIdScope
-    {
+using OrchardCore.OpenId.Abstractions.Models;
 
+namespace OrchardCore.OpenId.YesSql.Models
+{
+    public class OpenIdScope : IOpenIdScope
+    {
         /// <summary>
         /// Gets or sets the unique identifier
         /// associated with the current scope.

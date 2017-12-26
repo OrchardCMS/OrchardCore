@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using OrchardCore.OpenId.Abstractions.Models;
+using OrchardCore.OpenId.Models;
 
-namespace OrchardCore.OpenId.Models
+namespace OrchardCore.OpenId.YesSql.Models
 {
-    public class OpenIdApplication
+    public class OpenIdApplication : IOpenIdApplication
     {
         /// <summary>
         /// Gets or sets the unique identifier
@@ -74,11 +76,5 @@ namespace OrchardCore.OpenId.Models
         public bool AllowRefreshTokenFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
         public bool AllowHybridFlow { get; set; }
-    }
-
-    public enum ClientType
-    {
-        Confidential,
-        Public
     }
 }

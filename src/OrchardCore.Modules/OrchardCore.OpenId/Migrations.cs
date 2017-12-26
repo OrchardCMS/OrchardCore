@@ -1,6 +1,6 @@
 using System;
 using OrchardCore.Data.Migration;
-using OrchardCore.OpenId.Indexes;
+using OrchardCore.OpenId.YesSql.Indexes;
 
 namespace OrchardCore.OpenId
 {

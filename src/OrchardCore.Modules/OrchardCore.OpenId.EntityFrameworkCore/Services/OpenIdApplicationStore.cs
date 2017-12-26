@@ -1,24 +1,25 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AspNet.Security.OpenIdConnect.Primitives;
+using Microsoft.EntityFrameworkCore;
 using OpenIddict.Core;
-using OrchardCore.OpenId.Indexes;
-using OrchardCore.OpenId.Models;
-using YesSql;
+using OpenIddict.EntityFrameworkCore;
+using OrchardCore.OpenId.Abstractions.Models;
+using OrchardCore.OpenId.Abstractions.Stores;
+using OrchardCore.OpenId.EntityFrameworkCore.Models;
 
-namespace OrchardCore.OpenId.Services
+namespace OrchardCore.OpenId.EntityFrameworkCore.Services
 {
-    public class OpenIdApplicationStore : IOpenIddictApplicationStore<OpenIdApplication>
+    public class OpenIdApplicationStore<TContext, TKey> : OpenIddictApplicationStore<OpenIdApplication<TKey>, OpenIdAuthorization<TKey>, OpenIdToken<TKey>, TContext, TKey>, IOpenIdApplicationStore
+        where TContext : DbContext
+        where TKey : IEquatable<TKey>
     {
-        private readonly ISession _session;
-
-        public OpenIdApplicationStore(ISession session)
+        public OpenIdApplicationStore(TContext context)
+            : base(context)
         {
-            _session = session;
         }
 
         /// <summary>
@@ -29,12 +30,8 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the number of applications in the database.
         /// </returns>
-        public virtual async Task<long> CountAsync(CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            return await _session.Query<OpenIdApplication>().CountAsync();
-        }
+        Task<long> IOpenIddictApplicationStore<IOpenIdApplication>.CountAsync(CancellationToken cancellationToken)
+            => CountAsync(cancellationToken);
 
         /// <summary>
         /// Determines the number of applications that match the specified query.
@@ -46,8 +43,8 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the number of applications that match the specified query.
         /// </returns>
-        public virtual Task<long> CountAsync<TResult>(Func<IQueryable<OpenIdApplication>, IQueryable<TResult>> query, CancellationToken cancellationToken)
-            => throw new NotSupportedException();
+        Task<long> IOpenIddictApplicationStore<IOpenIdApplication>.CountAsync<TResult>(Func<IQueryable<IOpenIdApplication>, IQueryable<TResult>> query, CancellationToken cancellationToken)
+            => CountAsync(query, cancellationToken);
 
         /// <summary>
         /// Creates a new application.
@@ -57,20 +54,8 @@ namespace OrchardCore.OpenId.Services
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose result returns the application.
         /// </returns>
-        public virtual async Task<OpenIdApplication> CreateAsync(OpenIdApplication application, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            _session.Save(application);
-            await _session.CommitAsync();
-
-            return application;
-        }
+        async Task<IOpenIdApplication> IOpenIddictApplicationStore<IOpenIdApplication>.CreateAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => await CreateAsync((OpenIdApplication<TKey>) application, cancellationToken);
 
         /// <summary>
         /// Removes an existing application.
@@ -80,19 +65,8 @@ namespace OrchardCore.OpenId.Services
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task DeleteAsync(OpenIdApplication application, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            _session.Delete(application);
-
-            return _session.CommitAsync();
-        }
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.DeleteAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => DeleteAsync((OpenIdApplication<TKey>) application, cancellationToken);
 
         /// <summary>
         /// Retrieves an application using its unique identifier.
@@ -103,17 +77,8 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the client application corresponding to the identifier.
         /// </returns>
-        public virtual Task<OpenIdApplication> FindByIdAsync(string identifier, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrEmpty(identifier))
-            {
-                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            return _session.GetAsync<OpenIdApplication>(int.Parse(identifier, CultureInfo.InvariantCulture));
-        }
+        async Task<IOpenIdApplication> IOpenIddictApplicationStore<IOpenIdApplication>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
+            => await FindByIdAsync(identifier, cancellationToken);
 
         /// <summary>
         /// Retrieves an application using its client identifier.
@@ -124,17 +89,8 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the client application corresponding to the identifier.
         /// </returns>
-        public virtual Task<OpenIdApplication> FindByClientIdAsync(string identifier, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrEmpty(identifier))
-            {
-                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            return _session.Query<OpenIdApplication, OpenIdApplicationIndex>(index => index.ClientId == identifier).FirstOrDefaultAsync();
-        }
+        async Task<IOpenIdApplication> IOpenIddictApplicationStore<IOpenIdApplication>.FindByClientIdAsync(string identifier, CancellationToken cancellationToken)
+            => await FindByClientIdAsync(identifier, cancellationToken);
 
         /// <summary>
         /// Retrieves all the applications associated with the specified post_logout_redirect_uri.
@@ -145,19 +101,8 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose result
         /// returns the client applications corresponding to the specified post_logout_redirect_uri.
         /// </returns>
-        public virtual async Task<ImmutableArray<OpenIdApplication>> FindByPostLogoutRedirectUriAsync(string address, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrEmpty(address))
-            {
-                throw new ArgumentException("The address cannot be null or empty.", nameof(address));
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            return ImmutableArray.CreateRange(
-                await _session.Query<OpenIdApplication, OpenIdApplicationByPostLogoutRedirectUriIndex>(
-                    index => index.PostLogoutRedirectUri == address).ListAsync());
-        }
+        async Task<ImmutableArray<IOpenIdApplication>> IOpenIddictApplicationStore<IOpenIdApplication>.FindByPostLogoutRedirectUriAsync(string address, CancellationToken cancellationToken)
+            => (await FindByPostLogoutRedirectUriAsync(address, cancellationToken)).CastArray<IOpenIdApplication>();
 
         /// <summary>
         /// Retrieves all the applications associated with the specified redirect_uri.
@@ -168,19 +113,8 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose result
         /// returns the client applications corresponding to the specified redirect_uri.
         /// </returns>
-        public virtual async Task<ImmutableArray<OpenIdApplication>> FindByRedirectUriAsync(string address, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrEmpty(address))
-            {
-                throw new ArgumentException("The address cannot be null or empty.", nameof(address));
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            return ImmutableArray.CreateRange(
-                await _session.Query<OpenIdApplication, OpenIdApplicationByRedirectUriIndex>(
-                    index => index.RedirectUri == address).ListAsync());
-        }
+        async Task<ImmutableArray<IOpenIdApplication>> IOpenIddictApplicationStore<IOpenIdApplication>.FindByRedirectUriAsync(string address, CancellationToken cancellationToken)
+            => (await FindByRedirectUriAsync(address, cancellationToken)).CastArray<IOpenIdApplication>();
 
         /// <summary>
         /// Executes the specified query and returns the first element.
@@ -194,10 +128,10 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the first element returned when executing the query.
         /// </returns>
-        public virtual Task<TResult> GetAsync<TState, TResult>(
-            Func<IQueryable<OpenIdApplication>, TState, IQueryable<TResult>> query,
+        Task<TResult> IOpenIddictApplicationStore<IOpenIdApplication>.GetAsync<TState, TResult>(
+            Func<IQueryable<IOpenIdApplication>, TState, IQueryable<TResult>> query,
             TState state, CancellationToken cancellationToken)
-            => throw new NotSupportedException();
+            => GetAsync(query, state, cancellationToken);
 
         /// <summary>
         /// Retrieves the client identifier associated with an application.
@@ -208,15 +142,8 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the client identifier associated with the application.
         /// </returns>
-        public virtual Task<string> GetClientIdAsync(OpenIdApplication application, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            return Task.FromResult(application.ClientId);
-        }
+        Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetClientIdAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetClientIdAsync((OpenIdApplication<TKey>) application, cancellationToken);
 
         /// <summary>
         /// Retrieves the client secret associated with an application.
@@ -229,15 +156,8 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the client secret associated with the application.
         /// </returns>
-        public virtual Task<string> GetClientSecretAsync(OpenIdApplication application, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            return Task.FromResult(application.ClientSecret);
-        }
+        Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetClientSecretAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetClientSecretAsync((OpenIdApplication<TKey>) application, cancellationToken);
 
         /// <summary>
         /// Retrieves the client type associated with an application.
@@ -248,25 +168,8 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the client type of the application (by default, "public").
         /// </returns>
-        public virtual Task<string> GetClientTypeAsync(OpenIdApplication application, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            // Optimization: avoid double-allocating strings for well-known values.
-            switch (application.Type)
-            {
-                case ClientType.Confidential:
-                    return Task.FromResult(OpenIddictConstants.ClientTypes.Confidential);
-
-                case ClientType.Public:
-                    return Task.FromResult(OpenIddictConstants.ClientTypes.Public);
-            }
-
-            return Task.FromResult(application.Type.ToString().ToLowerInvariant());
-        }
+        Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetClientTypeAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetClientTypeAsync((OpenIdApplication<TKey>) application, cancellationToken);
 
         /// <summary>
         /// Retrieves the display name associated with an application.
@@ -277,15 +180,8 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the display name associated with the application.
         /// </returns>
-        public virtual Task<string> GetDisplayNameAsync(OpenIdApplication application, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            return Task.FromResult(application.DisplayName);
-        }
+        Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetDisplayNameAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetDisplayNameAsync((OpenIdApplication<TKey>) application, cancellationToken);
 
         /// <summary>
         /// Retrieves the unique identifier associated with an application.
@@ -296,15 +192,8 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the unique identifier associated with the application.
         /// </returns>
-        public virtual Task<string> GetIdAsync(OpenIdApplication application, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            return Task.FromResult(application.ApplicationId);
-        }
+        Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetIdAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetIdAsync((OpenIdApplication<TKey>) application, cancellationToken);
 
         /// <summary>
         /// Retrieves the logout callback addresses associated with an application.
@@ -315,15 +204,8 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose
         /// result returns all the post_logout_redirect_uri associated with the application.
         /// </returns>
-        public virtual Task<ImmutableArray<string>> GetPostLogoutRedirectUrisAsync(OpenIdApplication application, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            return Task.FromResult(ImmutableArray.CreateRange(application.PostLogoutRedirectUris));
-        }
+        Task<ImmutableArray<string>> IOpenIddictApplicationStore<IOpenIdApplication>.GetPostLogoutRedirectUrisAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetPostLogoutRedirectUrisAsync((OpenIdApplication<TKey>) application, cancellationToken);
 
         /// <summary>
         /// Retrieves the callback addresses associated with an application.
@@ -334,15 +216,8 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns all the redirect_uri associated with the application.
         /// </returns>
-        public virtual Task<ImmutableArray<string>> GetRedirectUrisAsync(OpenIdApplication application, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            return Task.FromResult(ImmutableArray.CreateRange(application.RedirectUris));
-        }
+        Task<ImmutableArray<string>> IOpenIddictApplicationStore<IOpenIdApplication>.GetRedirectUrisAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetRedirectUrisAsync((OpenIdApplication<TKey>) application, cancellationToken);
 
         /// <summary>
         /// Instantiates a new application.
@@ -352,8 +227,8 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose result
         /// returns the instantiated application, that can be persisted in the database.
         /// </returns>
-        public virtual Task<OpenIdApplication> InstantiateAsync(CancellationToken cancellationToken)
-            => Task.FromResult(new OpenIdApplication { ApplicationId = Guid.NewGuid().ToString("n") });
+        async Task<IOpenIdApplication> IOpenIddictApplicationStore<IOpenIdApplication>.InstantiateAsync(CancellationToken cancellationToken)
+            => await InstantiateAsync(cancellationToken);
 
         /// <summary>
         /// Executes the specified query and returns all the corresponding elements.
@@ -365,22 +240,8 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns all the elements returned when executing the specified query.
         /// </returns>
-        public virtual async Task<ImmutableArray<OpenIdApplication>> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
-        {
-            var query = _session.Query<OpenIdApplication>();
-
-            if (offset.HasValue)
-            {
-                query = query.Skip(offset.Value);
-            }
-
-            if (count.HasValue)
-            {
-                query = query.Take(count.Value);
-            }
-
-            return ImmutableArray.CreateRange(await query.ListAsync());
-        }
+        async Task<ImmutableArray<IOpenIdApplication>> IOpenIddictApplicationStore<IOpenIdApplication>.ListAsync(int? count, int? offset, CancellationToken cancellationToken)
+            => (await ListAsync(count, offset, cancellationToken)).CastArray<IOpenIdApplication>();
 
         /// <summary>
         /// Executes the specified query and returns all the corresponding elements.
@@ -394,10 +255,10 @@ namespace OrchardCore.OpenId.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns all the elements returned when executing the specified query.
         /// </returns>
-        public virtual Task<ImmutableArray<TResult>> ListAsync<TState, TResult>(
-            Func<IQueryable<OpenIdApplication>, TState, IQueryable<TResult>> query,
+        Task<ImmutableArray<TResult>> IOpenIddictApplicationStore<IOpenIdApplication>.ListAsync<TState, TResult>(
+            Func<IQueryable<IOpenIdApplication>, TState, IQueryable<TResult>> query,
             TState state, CancellationToken cancellationToken)
-            => throw new NotSupportedException();
+            => ListAsync(query, state, cancellationToken);
 
         /// <summary>
         /// Sets the client identifier associated with an application.
@@ -408,18 +269,9 @@ namespace OrchardCore.OpenId.Services
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetClientIdAsync(OpenIdApplication application,
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetClientIdAsync(IOpenIdApplication application,
             string identifier, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            application.ClientId = identifier;
-
-            return Task.CompletedTask;
-        }
+            => SetClientIdAsync((OpenIdApplication<TKey>) application, identifier, cancellationToken);
 
         /// <summary>
         /// Sets the client secret associated with an application.
@@ -432,17 +284,8 @@ namespace OrchardCore.OpenId.Services
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetClientSecretAsync(OpenIdApplication application, string secret, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            application.ClientSecret = secret;
-
-            return Task.CompletedTask;
-        }
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetClientSecretAsync(IOpenIdApplication application, string secret, CancellationToken cancellationToken)
+            => SetClientSecretAsync((OpenIdApplication<TKey>) application, secret, cancellationToken);
 
         /// <summary>
         /// Sets the client type associated with an application.
@@ -453,22 +296,8 @@ namespace OrchardCore.OpenId.Services
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetClientTypeAsync(OpenIdApplication application, string type, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            if (!Enum.TryParse(type, out ClientType value))
-            {
-                throw new ArgumentException("The specified client type is not valid.");
-            }
-
-            application.Type = value;
-
-            return Task.CompletedTask;
-        }
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetClientTypeAsync(IOpenIdApplication application, string type, CancellationToken cancellationToken)
+            => SetClientTypeAsync((OpenIdApplication<TKey>) application, type, cancellationToken);
 
         /// <summary>
         /// Sets the display name associated with an application.
@@ -479,17 +308,8 @@ namespace OrchardCore.OpenId.Services
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetDisplayNameAsync(OpenIdApplication application, string name, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            application.DisplayName = name;
-
-            return Task.CompletedTask;
-        }
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetDisplayNameAsync(IOpenIdApplication application, string name, CancellationToken cancellationToken)
+            => SetDisplayNameAsync((OpenIdApplication<TKey>) application, name, cancellationToken);
 
         /// <summary>
         /// Sets the logout callback addresses associated with an application.
@@ -500,18 +320,9 @@ namespace OrchardCore.OpenId.Services
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetPostLogoutRedirectUrisAsync(OpenIdApplication application,
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetPostLogoutRedirectUrisAsync(IOpenIdApplication application,
             ImmutableArray<string> addresses, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            application.PostLogoutRedirectUris = new HashSet<string>(addresses);
-
-            return Task.CompletedTask;
-        }
+            => SetPostLogoutRedirectUrisAsync((OpenIdApplication<TKey>) application, addresses, cancellationToken);
 
         /// <summary>
         /// Sets the callback addresses associated with an application.
@@ -522,18 +333,9 @@ namespace OrchardCore.OpenId.Services
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetRedirectUrisAsync(OpenIdApplication application,
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetRedirectUrisAsync(IOpenIdApplication application,
             ImmutableArray<string> addresses, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            application.RedirectUris = new HashSet<string>(addresses);
-
-            return Task.CompletedTask;
-        }
+            => SetRedirectUrisAsync((OpenIdApplication<TKey>) application, addresses, cancellationToken);
 
         /// <summary>
         /// Updates an existing application.
@@ -543,75 +345,96 @@ namespace OrchardCore.OpenId.Services
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task UpdateAsync(OpenIdApplication application, CancellationToken cancellationToken)
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.UpdateAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => UpdateAsync((OpenIdApplication<TKey>) application, cancellationToken);
+
+        // TODO: remove these methods once per-application grant type limitation is added to OpenIddict.
+        public virtual Task<ImmutableArray<string>> GetGrantTypesAsync(IOpenIdApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
             {
                 throw new ArgumentNullException(nameof(application));
             }
 
-            cancellationToken.ThrowIfCancellationRequested();
+            var builder = ImmutableArray.CreateBuilder<string>();
 
-            _session.Save(application);
+            var entity = (OpenIdApplication<TKey>) application;
+            if (entity.AllowAuthorizationCodeFlow)
+            {
+                builder.Add(OpenIdConnectConstants.GrantTypes.AuthorizationCode);
+            }
 
-            return _session.CommitAsync();
+            if (entity.AllowClientCredentialsFlow)
+            {
+                builder.Add(OpenIdConnectConstants.GrantTypes.ClientCredentials);
+            }
+
+            if (entity.AllowImplicitFlow)
+            {
+                builder.Add(OpenIdConnectConstants.GrantTypes.Implicit);
+            }
+
+            if (entity.AllowPasswordFlow)
+            {
+                builder.Add(OpenIdConnectConstants.GrantTypes.Password);
+            }
+
+            if (entity.AllowRefreshTokenFlow)
+            {
+                builder.Add(OpenIdConnectConstants.GrantTypes.RefreshToken);
+            }
+
+            return Task.FromResult(builder.ToImmutable());
         }
 
-        public Task AddToRoleAsync(OpenIdApplication application, string roleName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetGrantTypesAsync(IOpenIdApplication application, ImmutableArray<string> types, CancellationToken cancellationToken)
         {
             if (application == null)
             {
                 throw new ArgumentNullException(nameof(application));
             }
 
-            application.RoleNames.Add(roleName);
-            _session.Save(application);
+            var entity = (OpenIdApplication<TKey>) application;
+
+            entity.AllowAuthorizationCodeFlow = types.Contains(OpenIdConnectConstants.GrantTypes.AuthorizationCode);
+            entity.AllowClientCredentialsFlow = types.Contains(OpenIdConnectConstants.GrantTypes.ClientCredentials);
+            entity.AllowImplicitFlow = types.Contains(OpenIdConnectConstants.GrantTypes.Implicit);
+            entity.AllowPasswordFlow = types.Contains(OpenIdConnectConstants.GrantTypes.Password);
+            entity.AllowRefreshTokenFlow = types.Contains(OpenIdConnectConstants.GrantTypes.RefreshToken);
 
             return Task.CompletedTask;
         }
 
-        public Task RemoveFromRoleAsync(OpenIdApplication application, string roleName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<bool> IsConsentRequiredAsync(IOpenIdApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
             {
                 throw new ArgumentNullException(nameof(application));
             }
 
-            application.RoleNames.Remove(roleName);
-            _session.Save(application);
+            return Task.FromResult(!((OpenIdApplication<TKey>) application).SkipConsent);
+        }
+
+        public virtual Task SetConsentRequiredAsync(IOpenIdApplication application, bool value, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            ((OpenIdApplication<TKey>) application).SkipConsent = !value;
 
             return Task.CompletedTask;
         }
 
-        public Task<IList<string>> GetRolesAsync(OpenIdApplication application, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+        // TODO: implement these methods.
+        public virtual Task<ImmutableArray<string>> GetRolesAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => Task.FromResult(ImmutableArray.Create<string>());
 
-            return Task.FromResult<IList<string>>(application.RoleNames.ToList());
-        }
+        public virtual Task<ImmutableArray<IOpenIdApplication>> ListInRoleAsync(string role, CancellationToken cancellationToken)
+            => Task.FromResult(ImmutableArray.Create<IOpenIdApplication>());
 
-        public Task<bool> IsInRoleAsync(OpenIdApplication application, string roleName, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            return Task.FromResult(application.RoleNames.Contains(roleName, StringComparer.OrdinalIgnoreCase));
-        }
-
-        public async Task<IList<OpenIdApplication>> GetAppsInRoleAsync(string roleName, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (string.IsNullOrWhiteSpace(roleName))
-            {
-                throw new ArgumentNullException(nameof(roleName));
-            }
-
-            var apps = await _session.Query<OpenIdApplication, OpenIdApplicationByRoleNameIndex>(x => x.RoleName == roleName).ListAsync();
-            return apps == null ? new List<OpenIdApplication>() : apps.ToList();
-        }
+        public virtual Task SetRolesAsync(IOpenIdApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken)
+            => Task.CompletedTask;
     }
 }
