@@ -47,24 +47,24 @@ namespace OrchardCore.Modules
             {
                 var path = folder.Substring(Application.ModulesRoot.Length);
                 var index = path.IndexOf('/');
-
                 var name = index == -1 ? path : path.Substring(0, index);
                 var assetPaths = _environment.GetModule(name).AssetPaths;
-
                 var folders = new HashSet<string>(StringComparer.Ordinal);
+                var folderSlash = folder + '/';
 
-                foreach (var assetPath in assetPaths.Where(a => a.StartsWith(folder, StringComparison.Ordinal)))
+                foreach (var assetPath in assetPaths.Where(a => a.StartsWith(folderSlash, StringComparison.Ordinal)))
                 {
-                    path = assetPath.Substring(folder.Length + 1);
-                    index = path.IndexOf('/');
+                    var folderPath = assetPath.Substring(folderSlash.Length);
+                    var pathIndex = folderPath.IndexOf('/');
+                    var isFilePath = pathIndex == -1;
 
-                    if (index == -1)
+                    if (isFilePath)
                     {
                         entries.Add(GetFileInfo(assetPath));
                     }
                     else
                     {
-                        folders.Add(path.Substring(0, index));
+                        folders.Add(folderPath.Substring(0, pathIndex));
                     }
                 }
 
