@@ -47,7 +47,7 @@ namespace OrchardCore.Media.Processing
         {
             // Path has already been correctly parsed before here.
 
-            var filePath = _mediaStore.MapPublicUrlToPath(context.Request.Path);
+            var filePath = _mediaStore.MapPublicUrlToPath(context.Request.Path.Value);
             var file = await _mediaStore.GetFileInfoAsync(filePath);
 
             // Check to see if the file exists.

@@ -59,31 +59,26 @@ namespace OrchardCore.Recipes.Services
 
             var recipeDescriptors = new List<RecipeDescriptor>();
 
-            var matcher = new Matcher(System.StringComparison.OrdinalIgnoreCase);
-            matcher.AddInclude("*.recipe.json");
+            var recipeFiles = hostingEnvironment.ContentRootFileProvider.GetDirectoryContents(path)
+                .Where(x => !x.IsDirectory && x.Name.EndsWith(".recipe.json"));
 
-            var matches = matcher
-                .Execute(new DirectoryInfoWrapper(new DirectoryInfo(recipeContainerFileInfo.PhysicalPath)))
-                .Files;
-
-            if (matches.Any())
+            if (recipeFiles.Any())
             {
-                var result = matches
-                    .Select(match => hostingEnvironment
-                        .ContentRootFileProvider
-                        .GetFileInfo(Path.Combine(path, match.Path))).ToArray();
-
-                recipeDescriptors.AddRange(result.Select(recipeFile =>
+                recipeDescriptors.AddRange(recipeFiles.Select(recipeFile =>
                 {
                     // TODO: Try to optimize by only reading the required metadata instead of the whole file
-                    using (StreamReader file = File.OpenText(recipeFile.PhysicalPath))
+
+                    using (var stream = recipeFile.CreateReadStream())
                     {
-                        using (var reader = new JsonTextReader(file))
+                        using (var reader = new StreamReader(stream))
                         {
-                            var serializer = new JsonSerializer();
-                            var recipeDescriptor = serializer.Deserialize<RecipeDescriptor>(reader);
-                            recipeDescriptor.RecipeFileInfo = recipeFile;
-                            return recipeDescriptor;
+                            using (var jsonReader = new JsonTextReader(reader))
+                            {
+                                var serializer = new JsonSerializer();
+                                var recipeDescriptor = serializer.Deserialize<RecipeDescriptor>(jsonReader);
+                                recipeDescriptor.RecipeFileInfo = recipeFile;
+                                return recipeDescriptor;
+                            }
                         }
                     }
                 }));

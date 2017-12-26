@@ -25,7 +25,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
                 if (_hostingEnvironment.IsDevelopment())
                 {
-                    options.FileProviders.Insert(0, new ModuleProjectLiquidFileProvider(_hostingEnvironment.ContentRootPath));
+                    options.FileProviders.Insert(0, new ModuleProjectLiquidFileProvider(_hostingEnvironment));
                 }
             }
         }

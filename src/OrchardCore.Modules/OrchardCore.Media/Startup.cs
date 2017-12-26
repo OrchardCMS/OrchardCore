@@ -2,9 +2,10 @@ using System;
 using System.IO;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
@@ -13,6 +14,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
+using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Drivers;
 using OrchardCore.Media.Fields;
@@ -25,7 +27,6 @@ using OrchardCore.Media.Settings;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Recipes;
-using OrchardCore.FileStorage.FileSystem;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
@@ -151,6 +152,9 @@ namespace OrchardCore.Media
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
 
             services.AddRecipeExecutionStep<MediaStep>();
+
+            // MIME types
+            services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
