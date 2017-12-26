@@ -6,7 +6,7 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Contents.GraphQL.Mutations
+namespace OrchardCore.ContentManagement.GraphQL.Mutations
 {
     public class DeleteContentItemMutation : MutationFieldType
     {
@@ -26,10 +26,10 @@ namespace OrchardCore.Contents.GraphQL.Mutations
 
                 var contentItem = await contentManager.GetAsync(contentItemId);
 
-                if (!await authorizationService.AuthorizeAsync((context.UserContext as GraphQLUserContext)?.User, Permissions.DeleteContent, contentItem))
-                {
-                    return null;
-                }
+                //if (!await authorizationService.AuthorizeAsync((context.UserContext as GraphQLUserContext)?.User, Permissions.DeleteContent, contentItem))
+                //{
+                //    return null;
+                //}
 
                 if (contentItem != null)
                 {

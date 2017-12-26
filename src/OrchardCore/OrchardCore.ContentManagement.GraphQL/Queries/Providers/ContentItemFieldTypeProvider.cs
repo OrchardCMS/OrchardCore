@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Apis.GraphQL.Queries;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Contents.GraphQL.Queries.Types;
+using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using YesSql;
 
-namespace OrchardCore.Contents.GraphQL.Queries.Providers
+namespace OrchardCore.ContentManagement.GraphQL.Queries.Providers
 {
     public class ContentItemFieldTypeProvider : IDynamicQueryFieldTypeProvider
     {

@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.Metadata;
 
-namespace OrchardCore.Contents.GraphQL
+namespace OrchardCore.ContentManagement.GraphQL
 {
     public class GraphQLSchemaHashService : IGraphQLSchemaHashService
     {

@@ -4,10 +4,9 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Types;
-using OrchardCore.ContentManagement;
-using OrchardCore.Contents.GraphQL.Queries.Types;
+using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-namespace OrchardCore.Contents.GraphQL.Queries
+namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
     public class ContentItemQuery : QueryFieldType
     {
@@ -25,10 +24,10 @@ namespace OrchardCore.Contents.GraphQL.Queries
             Resolver = new SlowFuncFieldResolver<object, Task<ContentItem>>(async (context) => {
                 var contentItem = await contentManager.GetAsync(context.GetArgument<string>("contentItemId"));
 
-                if (!await authorizationService.AuthorizeAsync((context.UserContext as GraphQLUserContext)?.User, Permissions.ViewContent, contentItem))
-                {
-                    return null;
-                }
+                //if (!await authorizationService.AuthorizeAsync((context.UserContext as GraphQLUserContext)?.User, Permissions.ViewContent, contentItem))
+                //{
+                //    return null;
+                //}
 
                 return contentItem;
             });

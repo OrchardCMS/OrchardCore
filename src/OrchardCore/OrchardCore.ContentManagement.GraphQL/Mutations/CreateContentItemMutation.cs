@@ -4,16 +4,14 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Mutations;
 using OrchardCore.Apis.GraphQL.Types;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.Contents.GraphQL.Mutations.Types;
-using OrchardCore.Contents.GraphQL.Queries.Types;
+using OrchardCore.ContentManagement.GraphQL.Mutations.Types;
+using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Contents.GraphQL.Mutations
+namespace OrchardCore.ContentManagement.GraphQL.Mutations
 {
     public class CreateContentItemMutation : MutationFieldType
     {

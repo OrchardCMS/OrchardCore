@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Types;
-using OrchardCore.Contents.GraphQL.Queries;
+using OrchardCore.ContentManagement.GraphQL.Queries;
 
 namespace OrchardCore.Queries.Sql.GraphQL.Queries
 {

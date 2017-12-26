@@ -4,7 +4,7 @@ using GraphQL.Types;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 
-namespace OrchardCore.Contents.GraphQL.Mutations.Types
+namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
 {
     public class CreateContentItemInputType : InputObjectGraphType<ContentItem>
     {

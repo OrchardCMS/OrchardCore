@@ -28,44 +28,53 @@ namespace OrchardCore.Queries.JsonApi
             var context = _context.ActionContext;
             if (context.RouteData.DataTokens["area"].ToString() == RouteHelpers.AreaName)
             {
-                var name = context.RouteData.Values["name"].ToString();
-                var parameters = context.RouteData.Values["parameters"].ToString();
+                var queryName = context.RouteData.Values["name"].ToString();
+                var queryParameters = context.RouteData.Values["parameters"].ToString();
 
                 // Get the Schema.
-                var query = await _queryManager.GetQueryAsync(name);
+                var query = await _queryManager.GetQueryAsync(queryName);
 
                 if (String.IsNullOrEmpty(query.Schema))
                 {
                     return null;
                 }
 
+                var resourceCollection = new ResourceCollectionDocument {
+                    JsonApiVersion = Version
+                };
+
                 var schema = JObject.Parse(query.Schema);
 
-                //var type = schema["type"].ToString();
-
-                //if (type.StartsWith("ContentItem/", System.StringComparison.OrdinalIgnoreCase))
-                //{
-                //    var contentType = type.Remove(0, 12);
-                //    fieldTypes.Add(BuildContentTypeFieldType(state, contentType, query));
-                //}
-                //else
-                //{
-                //    fieldTypes.Add(BuildSchemaBasedFieldType(state, query, schema));
-                //}
-
-                var value = actionValue as JObject;
-
-                if (value != null)
-                {
-
-                }
+                var properties = schema["Properties"];
 
                 var values = actionValue as IList<JObject>;
 
                 if (values != null)
                 {
+                    foreach (var value in values)
+                    {
+                        var apiProperties = new List<ApiProperty>();
 
+                        foreach (var child in properties.Children())
+                        {
+                            var name = ((JProperty)child).Name;
+                            var nameLower = name.Replace('.', '_');
+                            var type = child["type"].ToString();
+
+                            apiProperties.Add(
+                                ApiProperty.Create(name, Type.GetType(type))
+                                );
+                        }
+
+                        var resource = new Resource {
+                            Attributes = new ApiObject(apiProperties)
+                        };
+
+                        resourceCollection.AddResource(resource);
+                    }
                 }
+
+                return resourceCollection;
             }
 
             throw new NotImplementedException();
