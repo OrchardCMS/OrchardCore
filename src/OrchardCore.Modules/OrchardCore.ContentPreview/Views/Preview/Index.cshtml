@@ -25,6 +25,7 @@
         <span aria-hidden="true">&times;</span>
     </button>
     <p>@T["Preview Error"] </p>
+    <ul></ul>
 </div>
 
 
@@ -100,7 +101,7 @@
                     })
                     .fail(function (data) {
                         if (data.responseJSON && data.responseJSON.errors) {
-                            var ul = $('<ul/>').appendTo('#serverErrorWarning');
+                            var ul = $('#serverErrorWarning ul').empty();
                             data.responseJSON.errors.forEach(function (error) {
                                 console.error(error);
                                 $('<li/>').text(error).appendTo(ul);
