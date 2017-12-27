@@ -20,6 +20,13 @@
     <span>@T["Preview Not Connected"] </span>
 </div>
 
+<div id="serverErrorWarning" class="alert alert-warning alert-dismissible fade show" role="alert" style="position:fixed; top:10px;right:40px; display:none; z-index:999999;">
+    <button type="button" class="close" aria-label="Close" style="position: relative; padding: 0 0 0 1rem; margin-top: -0.2rem;">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <p>@T["Preview Error"] </p>
+</div>
+
 
 <div id="renderPreviewUrl" style="display:none" data-value="@Url.Action("Render", "Preview", new { area = "OrchardCore.ContentPreview" })"></div>
 
@@ -89,12 +96,16 @@
                         iframe.contentWindow.document.body.innerHTML = '';
                         iframe.contentWindow.document.write(data);
                         $(iframe.contentWindow).scrollTop(scrollTop);
+                        $(serverErrorWarning).hide();
                     })
                     .fail(function (data) {
                         if (data.responseJSON && data.responseJSON.errors) {
+                            var ul = $('<ul/>').appendTo('#serverErrorWarning');
                             data.responseJSON.errors.forEach(function (error) {
                                 console.error(error);
+                                $('<li/>').text(error).appendTo(ul);
                             });
+                            $(serverErrorWarning).show();
                         }
                     })
                     .always(function () {
