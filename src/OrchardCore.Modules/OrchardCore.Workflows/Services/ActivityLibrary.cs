@@ -10,9 +10,9 @@ namespace OrchardCore.Workflows.Services
         private readonly Lazy<IDictionary<string, IActivity>> _activityDictionary;
         private readonly IServiceProvider _serviceProvider;
 
-        public ActivityLibrary(IEnumerable<IActivity> activityLibrary, IServiceProvider serviceProvider)
+        public ActivityLibrary(Func<IEnumerable<IActivity>> activityLibrary, IServiceProvider serviceProvider)
         {
-            _activityDictionary = new Lazy<IDictionary<string, IActivity>>(() => activityLibrary.OrderBy(x => x.Name).ToDictionary(x => x.Name));
+            _activityDictionary = new Lazy<IDictionary<string, IActivity>>(() => activityLibrary().OrderBy(x => x.Name).ToDictionary(x => x.Name));
             _serviceProvider = serviceProvider;
         }
 

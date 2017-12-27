@@ -23,48 +23,6 @@ namespace OrchardCore.Tests.Workflows
         public async Task CanExecuteSimpleWorkflow()
         {
             var localizer = new Mock<IStringLocalizer>();
-            var scriptingManager = new Mock<IScriptingManager>();
-            var stringBuilder = new StringBuilder();
-            var output = new StringWriter(stringBuilder);
-            var addTask = new AddTask(localizer.Object);
-            var writeLineTask = new WriteLineTask(localizer.Object, output);
-            var workflowDefinition = new WorkflowDefinitionRecord
-            {
-                Id = 1,
-                Activities = new List<ActivityRecord>
-                {
-                    new ActivityRecord { Id = 1, IsStart = true, Name = addTask.Name, Properties = JObject.FromObject( new
-                    {
-                        A = new WorkflowExpression<double>{ Expression = "js: WorkflowContext.Parameters.Get(\"A\")" },
-                        B = new WorkflowExpression<double>{ Expression = "js: WorkflowContext.Parameters.Get(\"B\")" },
-                    }) },
-                    new ActivityRecord { Id = 2, Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>{ Expression = "js: WorkflowContext.Stack.Pop().ToString()" } }) }
-                },
-                Transitions = new List<TransitionRecord>
-                {
-                    new TransitionRecord{ SourceActivityId = 1, SourceOutcomeName = "Done", DestinationActivityId = 2 }
-                }
-            };
-            var workflowManager = CreateWorkflowManager(new IActivity[] { addTask, writeLineTask }, workflowDefinition, scriptingManager.Object);
-
-            var a = 10d;
-            var b = 22d;
-            var expectedResult = a + b;
-
-            scriptingManager.Setup(x => x.Evaluate("js: WorkflowContext.Parameters.Get(\"A\")")).Returns(a);
-            scriptingManager.Setup(x => x.Evaluate("js: WorkflowContext.Parameters.Get(\"B\")")).Returns(b);
-            scriptingManager.Setup(x => x.Evaluate("js: WorkflowContext.Stack.Pop().ToString()")).Returns(expectedResult.ToString());
-
-            var workflowContext = await workflowManager.StartWorkflowAsync(workflowDefinition, new { A = a, B = b });
-            var actualResult = (double)workflowContext.Stack.Peek();
-
-            Assert.Equal(expectedResult, actualResult);
-        }
-
-        [Fact]
-        public async Task CanExecuteJavaScriptWorkflow()
-        {
-            var localizer = new Mock<IStringLocalizer>();
             var serviceCollection = new ServiceCollection();
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
@@ -85,7 +43,7 @@ namespace OrchardCore.Tests.Workflows
                         A = new WorkflowExpression<double>{ Expression = "js: workflow().Input[\"A\"]" },
                         B = new WorkflowExpression<double>{ Expression = "js: input(\"B\")" },
                     }) },
-                    new ActivityRecord { Id = 2, Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>{ Expression = "js: pop().toString()" } }) }
+                    new ActivityRecord { Id = 2, Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>{ Expression = "js: result().toString()" } }) }
                 },
                 Transitions = new List<TransitionRecord>
                 {

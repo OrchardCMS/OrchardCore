@@ -24,8 +24,8 @@ namespace OrchardCore.Workflows.Services
         /// actually executed.
         /// </summary>
         /// <param name="name">The type of the event to trigger, e.g. ContentPublishedEvent.</param>
-        /// <param name="inputProvider">An object containing context for the event.</param>
-        Task TriggerEventAsync(string name, Func<IDictionary<string, object>> inputProvider);
+        /// <param name="input">An object containing context for the event.</param>
+        Task TriggerEventAsync(string name, IDictionary<string, object> input);
 
         /// <summary>
         /// Starts a new workflow using the specified workflow definition.
@@ -44,6 +44,11 @@ namespace OrchardCore.Workflows.Services
 
     public static class WorkflowManagerExtensions
     {
+        public static Task TriggerEventAsync(this IWorkflowManager workflowManager, string name, object input = null)
+        {
+            return workflowManager.TriggerEventAsync(name, new RouteValueDictionary(input));
+        }
+
         public static Task<WorkflowContext> StartWorkflowAsync(this IWorkflowManager workflowManager, WorkflowDefinitionRecord workflowDefinition, object input = null, string startActivityName = null)
         {
             return workflowManager.StartWorkflowAsync(workflowDefinition, new RouteValueDictionary(input), startActivityName);

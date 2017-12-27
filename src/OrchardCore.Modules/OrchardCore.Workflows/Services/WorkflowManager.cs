@@ -55,9 +55,8 @@ namespace OrchardCore.Workflows.Services
             };
         }
 
-        public async Task TriggerEventAsync(string name, Func<IDictionary<string, object>> inputProvider)
+        public async Task TriggerEventAsync(string name, IDictionary<string, object> input)
         {
-            var input = inputProvider();
             var activity = _activityLibrary.GetActivityByName(name);
 
             if (activity == null)
@@ -82,6 +81,14 @@ namespace OrchardCore.Workflows.Services
             // Resume pending workflows.
             foreach (var workflowInstance in awaitingWorkflowInstances)
             {
+                // Merge additional input, if any.
+                if (input.Any())
+                {
+                    var workflowState = workflowInstance.State.ToObject<WorkflowState>();
+                    workflowState.Input.Merge(input);
+                    workflowInstance.State = JObject.FromObject(workflowState);
+                }
+
                 await ResumeWorkflowAsync(workflowInstance);
             }
 

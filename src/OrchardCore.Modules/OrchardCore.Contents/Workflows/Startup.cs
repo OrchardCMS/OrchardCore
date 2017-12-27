@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.Drivers;
+using OrchardCore.Contents.Workflows.Handlers;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Services;
@@ -27,6 +29,8 @@ namespace OrchardCore.Contents.Workflows
             services.AddScoped<IDisplayDriver<IActivity>, ContentVersionedEventDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, DeleteContentTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, PublishContentTaskDisplay>();
+
+            services.AddScoped<IContentHandler, ContentsHandler>();
         }
     }
 }
