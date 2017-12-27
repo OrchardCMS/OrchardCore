@@ -123,6 +123,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddLocalization();
             services.AddHostingShellServices();
             services.AddExtensionManagerHost();
+            services.AddWebEncoders();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IClock, Clock>();
