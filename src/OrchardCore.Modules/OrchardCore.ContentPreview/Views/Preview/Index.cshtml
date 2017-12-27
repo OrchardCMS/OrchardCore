@@ -92,7 +92,7 @@
                     })
                     .fail(function (data) {
                         if (data.responseJSON && data.responseJSON.errors) {
-                            responseJSON.errors.forEach(function (error) {
+                            data.responseJSON.errors.forEach(function (error) {
                                 console.error(error);
                             });
                         }
