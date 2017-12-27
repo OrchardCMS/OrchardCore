@@ -120,7 +120,7 @@ namespace OrchardCore.ContentManagement
             {
                 // If the published version is requested and is already loaded, we can
                 // return it right away
-                if(_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
+                if (_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
                 {
                     return contentItem;
                 }
@@ -235,7 +235,7 @@ namespace OrchardCore.ContentManagement
 
             _session.Save(contentItem);
 
-            ReversedHandlers.Invoke(handler => handler.Published(context), _logger);
+            ReversedHandlers.Invoke(async handler => await handler.PublishedAsync(context), _logger);
         }
 
         public async Task UnpublishAsync(ContentItem contentItem)
@@ -275,7 +275,7 @@ namespace OrchardCore.ContentManagement
             Handlers.Invoke(handler => handler.Unpublishing(context), _logger);
 
             publishedItem.Published = false;
-            
+
             _session.Save(publishedItem);
 
             ReversedHandlers.Invoke(handler => handler.Unpublished(context), _logger);
@@ -362,7 +362,7 @@ namespace OrchardCore.ContentManagement
                 Handlers.Invoke(handler => handler.Publishing(publishContext), _logger);
 
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
-                ReversedHandlers.Invoke(handler => handler.Published(publishContext), _logger);
+                ReversedHandlers.Invoke(async handler => await handler.PublishedAsync(publishContext), _logger);
             }
         }
 

@@ -23,7 +23,7 @@ namespace OrchardCore.Workflows.Services
         /// Whether the activity can transition to the next outcome. Can prevent the activity from being transitioned
         /// because a condition is not valid.
         /// </summary>
-        bool CanExecute(WorkflowContext workflowContext, ActivityContext activityContext);
+        Task<bool> CanExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext);
 
         /// <summary>
         /// Executes the current activity.

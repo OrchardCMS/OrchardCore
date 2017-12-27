@@ -1,4 +1,6 @@
-﻿namespace OrchardCore.ContentManagement.Handlers
+using System.Threading.Tasks;
+
+namespace OrchardCore.ContentManagement.Handlers
 {
     public abstract class ContentHandlerBase : IContentHandler
     {
@@ -15,6 +17,11 @@
         public virtual void Versioning(VersionContentContext context) { }
         public virtual void Versioned(VersionContentContext context) { }
         public virtual void Publishing(PublishContentContext context) { }
+        public virtual Task PublishedAsync(PublishContentContext context)
+        {
+            Published(context);
+            return Task.CompletedTask;
+        }
         public virtual void Published(PublishContentContext context) { }
         public virtual void Unpublishing(PublishContentContext context) { }
         public virtual void Unpublished(PublishContentContext context) { }

@@ -21,7 +21,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
         {
             return Shape<DeleteContentTaskViewModel>("DeleteContentTask_Fields_Edit", model =>
             {
-                model.Expression = activity.Expression;
+                model.Expression = activity.ContentExpression.Expression;
             }).Location("Content");
         }
 
@@ -30,7 +30,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
             var viewModel = new DeleteContentTaskViewModel();
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.Expression))
             {
-                activity.Expression = viewModel.Expression;
+                activity.ContentExpression.Expression = viewModel.Expression;
             }
             return Edit(activity);
         }

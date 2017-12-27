@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
-using OrchardCore.Entities;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
@@ -24,10 +23,9 @@ namespace OrchardCore.Workflows.Services
         /// Triggers a specific <see cref="IEvent"/>, and provides context if the event is
         /// actually executed.
         /// </summary>
-        /// <param name="name">The type of the event to trigger, e.g. Publish.</param>
-        /// <param name="target">The target entity the event is related to.</param>
-        /// <param name="context">An object containing context for the event.</param>
-        Task TriggerEventAsync(string name, IEntity target, Func<Dictionary<string, object>> context);
+        /// <param name="name">The type of the event to trigger, e.g. ContentPublishedEvent.</param>
+        /// <param name="inputProvider">An object containing context for the event.</param>
+        Task TriggerEventAsync(string name, Func<IDictionary<string, object>> inputProvider);
 
         /// <summary>
         /// Starts a new workflow using the specified workflow definition.

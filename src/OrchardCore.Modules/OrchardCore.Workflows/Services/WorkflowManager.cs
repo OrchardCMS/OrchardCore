@@ -55,7 +55,7 @@ namespace OrchardCore.Workflows.Services
             };
         }
 
-        public async Task TriggerEventAsync(string name, IEntity target, Func<Dictionary<string, object>> inputProvider)
+        public async Task TriggerEventAsync(string name, Func<IDictionary<string, object>> inputProvider)
         {
             var input = inputProvider();
             var activity = _activityLibrary.GetActivityByName(name);
@@ -219,7 +219,7 @@ namespace OrchardCore.Workflows.Services
                 var activityContext = workflowContext.GetActivity(activity.Id);
 
                 // Check if the current activity can execute.
-                if (!activityContext.Activity.CanExecute(workflowContext, activityContext))
+                if (!await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
                 {
                     // No, so break out and return.
                     break;

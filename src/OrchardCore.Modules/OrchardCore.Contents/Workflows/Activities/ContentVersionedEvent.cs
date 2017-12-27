@@ -1,10 +1,11 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Contents.Workflows.Activities
 {
     public class ContentVersionedEvent : ContentEvent
     {
-        public ContentVersionedEvent(IStringLocalizer<ContentVersionedEvent> s) : base(s)
+        public ContentVersionedEvent(IContentManager contentManager, IStringLocalizer<ContentCreatedEvent> s) : base(contentManager, s)
         {
         }
 

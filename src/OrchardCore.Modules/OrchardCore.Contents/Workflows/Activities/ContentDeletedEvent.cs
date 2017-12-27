@@ -1,10 +1,11 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Contents.Workflows.Activities
 {
     public class ContentDeletedEvent : ContentEvent
     {
-        public ContentDeletedEvent(IStringLocalizer<ContentDeletedEvent> s) : base(s)
+        public ContentDeletedEvent(IContentManager contentManager, IStringLocalizer<ContentCreatedEvent> s) : base(contentManager, s)
         {
         }
 

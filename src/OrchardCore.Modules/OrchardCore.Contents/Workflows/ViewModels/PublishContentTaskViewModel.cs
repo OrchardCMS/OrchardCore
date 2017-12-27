@@ -1,9 +1,9 @@
 namespace OrchardCore.Contents.Workflows.ViewModels
 {
-    public class DeleteContentTaskViewModel
+    public class PublishContentTaskViewModel
     {
         /// <summary>
-        /// The expression resulting into a content item or content item ID to delete.
+        /// The expression resulting into a content item or content item ID to publish.
         /// </summary>
         public string Expression { get; set; }
     }

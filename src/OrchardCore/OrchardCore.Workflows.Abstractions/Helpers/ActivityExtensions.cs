@@ -2,7 +2,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Helpers
 {
-    public static class IActivityExtensions
+    public static class ActivityExtensions
     {
         public static bool IsEvent(this IActivity activity)
         {

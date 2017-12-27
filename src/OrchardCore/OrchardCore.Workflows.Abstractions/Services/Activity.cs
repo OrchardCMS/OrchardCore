@@ -20,6 +20,11 @@ namespace OrchardCore.Workflows.Services
 
         public abstract IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext);
 
+        public virtual Task<bool> CanExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        {
+            return Task.FromResult(CanExecute(workflowContext, activityContext));
+        }
+
         public virtual bool CanExecute(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             return true;

@@ -9,25 +9,13 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class DeleteContentTask : ContentTask
     {
-        private readonly IContentManager _contentManager;
-
-        public DeleteContentTask(IContentManager contentManager, IStringLocalizer<DeleteContentTask> s) : base(s)
+        public DeleteContentTask(IContentManager contentManager, IStringLocalizer<DeleteContentTask> s) : base(contentManager, s)
         {
-            _contentManager = contentManager;
         }
 
         public override string Name => nameof(DeleteContentTask);
         public override LocalizedString Category => S["Content Items"];
         public override LocalizedString Description => S["Delete a content item."];
-
-        /// <summary>
-        /// The expression resulting into one or more content item IDs to delete.
-        /// </summary>
-        public string Expression
-        {
-            get => GetProperty(defaultValue: () => "${content}");
-            set => SetProperty(value);
-        }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)
         {
@@ -36,8 +24,8 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            var content = GetContent(workflowContext);
-            await _contentManager.RemoveAsync(content.ContentItem);
+            var content = await GetContentAsync(workflowContext);
+            await ContentManager.RemoveAsync(content.ContentItem);
             return new[] { "Deleted" };
         }
     }
