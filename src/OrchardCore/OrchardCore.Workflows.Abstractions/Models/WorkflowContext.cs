@@ -6,19 +6,15 @@ using OrchardCore.Scripting;
 
 namespace OrchardCore.Workflows.Models
 {
-    public class WorkflowContext
+    public abstract class WorkflowContext
     {
-        private readonly IScriptingManager _scriptingManager;
-
-        public WorkflowContext
+        protected WorkflowContext
         (
             WorkflowDefinitionRecord workflowDefinitionRecord,
             WorkflowInstanceRecord workflowInstanceRecord,
-            IEnumerable<ActivityContext> activities,
-            IScriptingManager scriptingManager
+            IEnumerable<ActivityContext> activities
         )
         {
-            _scriptingManager = scriptingManager;
 
             WorkflowDefinition = workflowDefinitionRecord;
             WorkflowInstance = workflowInstanceRecord;
@@ -40,10 +36,7 @@ namespace OrchardCore.Workflows.Models
             return Activities.Single(x => x.ActivityRecord.Id == activityId);
         }
 
-        public T Evaluate<T>(WorkflowExpression<T> expression)
-        {
-            return (T)_scriptingManager.Evaluate(expression.Expression);
-        }
+        public abstract T Evaluate<T>(WorkflowExpression<T> expression);
 
         public IEnumerable<TransitionRecord> GetInboundTransitions(ActivityRecord activityRecord)
         {

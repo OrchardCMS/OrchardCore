@@ -39,7 +39,7 @@ namespace OrchardCore.Workflows.Services
         public WorkflowContext CreateWorkflowContext(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord)
         {
             var activityQuery = workflowDefinitionRecord.Activities.Select(CreateActivityContext);
-            return new WorkflowContext(workflowDefinitionRecord, new WorkflowInstanceRecord { DefinitionId = workflowDefinitionRecord.Id }, activityQuery, _scriptingManager);
+            return new WorkflowContextImpl(workflowDefinitionRecord, workflowInstanceRecord, activityQuery, _scriptingManager);
         }
 
         public ActivityContext CreateActivityContext(ActivityRecord activityRecord)

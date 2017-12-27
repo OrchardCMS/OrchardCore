@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,7 +10,7 @@ namespace OrchardCore.Scripting
         private readonly IServiceProvider _serviceProvider;
 
         public DefaultScriptingManager(
-            IEnumerable<IScriptingEngine> engines, 
+            IEnumerable<IScriptingEngine> engines,
             IEnumerable<IGlobalMethodProvider> globalMethodProviders,
             IServiceProvider serviceProvider)
         {
@@ -31,7 +31,7 @@ namespace OrchardCore.Scripting
             }
 
             var prefix = directive.Substring(0, directiveIndex);
-            var script = directive.Substring(directiveIndex+1);
+            var script = directive.Substring(directiveIndex + 1);
 
             var engine = GetScriptingEngine(prefix);
             if (engine == null)
@@ -45,7 +45,7 @@ namespace OrchardCore.Scripting
 
         public IScriptingEngine GetScriptingEngine(string prefix)
         {
-            return _engines.FirstOrDefault(x => x.Prefix == prefix);    
+            return _engines.FirstOrDefault(x => x.Prefix == prefix);
         }
     }
 }

@@ -59,6 +59,8 @@
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Localization.Core\OrchardCore.Localization.Core.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Parser.Yaml\OrchardCore.Parser.Yaml.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Recipes.Implementations\OrchardCore.Recipes.Implementations.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Scripting.Core\OrchardCore.Scripting.Core.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Scripting.JavaScript\OrchardCore.Scripting.JavaScript.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
   </ItemGroup>
 
