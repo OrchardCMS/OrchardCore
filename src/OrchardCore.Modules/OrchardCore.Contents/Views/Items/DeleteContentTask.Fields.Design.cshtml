@@ -1,0 +1,8 @@
+@using OrchardCore.Contents.Workflows.Activities
+@{
+    var activity = (DeleteContentTask)Model.Activity;
+}
+<header>
+    <h4><i class="fa fa-trash"></i>@T["Delete Content"]</h4>
+</header>
+<span>@T["Delete the content item stored in '{0}'", activity.ContentParameterName]</span>

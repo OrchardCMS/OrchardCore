@@ -1,0 +1,39 @@
+[
+  {
+    "inputs": [
+      "Assets/Lib/jsplumb/jsplumbtoolkit-defaults.css"
+    ],
+    "output": "Content/Styles/jsplumbtoolkit-defaults.css"
+  },
+  {
+    "inputs": [
+      "Assets/Lib/jsplumb/jsplumb.js"
+    ],
+    "output": "Content/Scripts/jsplumb.js"
+  },
+  {
+    "inputs": [
+      "Assets/Styles/workflow-editor.scss",
+      "Assets/Styles/workflow-editor-activity-toolbox.scss",
+      "Assets/Styles/jsplumbtoolkit-orchard.scss"
+    ],
+    "output": "Content/Styles/orchard.workflows-workflow-editor.css"
+  },
+  {
+    "inputs": [
+      "Assets/Styles/admin-menu.scss"
+    ],
+    "output": "Content/Styles/menu.workflows-admin.css"
+  },
+  {
+    "inputs": [ "Assets/Scripts/workflow-editor.ts" ],
+    "output": "Content/Scripts/orchard.workflows-workflow-editor.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "Assets/Images/*"
+    ],
+    "output": "Content/Styles/Images/@"
+  }
+]

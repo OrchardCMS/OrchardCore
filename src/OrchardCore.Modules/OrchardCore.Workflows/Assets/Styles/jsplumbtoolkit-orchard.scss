@@ -1,0 +1,106 @@
+.workflow-editor-canvas {
+    overflow: hidden !important;
+    position: relative;
+    touch-action: none;
+
+    .activity {
+        display: block;
+        border: 1px solid #346789;
+        box-shadow: 2px 2px 19px #aaa;
+        -o-box-shadow: 2px 2px 9px #aaa;
+        -webkit-box-shadow: 2px 2px 9px #aaa;
+        -moz-box-shadow: 2px 2px 9px #aaa;
+        -moz-border-radius: 0.5em;
+        border-radius: 0.5em;
+        opacity: 0.8;
+        min-width: 80px;
+        min-height: 80px;
+        cursor: move;
+        text-align: left;
+        z-index: 20;
+        position: absolute;
+        background-color: #eeeeef;
+        color: black;
+        font-family: helvetica, sans-serif;
+        padding: 1em;
+        font-size: 0.7em;
+        -webkit-transition: -webkit-box-shadow 0.15s ease-in;
+        -moz-transition: -moz-box-shadow 0.15s ease-in;
+        -o-transition: -o-box-shadow 0.15s ease-in;
+        transition: box-shadow 0.15s ease-in;
+
+        &:hover {
+            box-shadow: 2px 2px 19px #444;
+            -o-box-shadow: 2px 2px 19px #444;
+            -webkit-box-shadow: 2px 2px 19px #444;
+            -moz-box-shadow: 2px 2px 19px #444;
+            opacity: 0.6;
+        }
+
+        &.activity-start {
+            background-color: #7ab02c;
+            color: #ffffff;
+        }
+
+        &.jtk-connected {
+            border: 1px solid green;
+        }
+
+        header {
+            h4 {
+                font-size: 1.4em;
+
+                .fa {
+                    margin-right: 0.5em;
+                }
+            }
+        }
+
+        .activity-commands {
+            display: none;
+        }
+    }
+
+    .jtk-connector {
+        z-index: 4;
+    }
+
+    .jtk-endpoint, .endpointTargetLabel, .endpointSourceLabel {
+        z-index: 21;
+        cursor: pointer;
+    }
+
+    .endpointTargetLabel, .endpointSourceLabel {
+        font-size: 8px;
+    }
+
+    .jtk-overlay {
+        background-color: transparent;
+    }
+
+    .connection-label {
+        background-color: white;
+        padding: 0.4em;
+        border: 1px solid #999999;
+        font: 12px sans-serif;
+        color: #444;
+        z-index: 21;
+        cursor: default;
+    }
+
+    .jtk-drag {
+    }
+
+    .jtk-drag-select {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    path, .jtk-endpoint {
+        cursor: pointer;
+    }
+}

@@ -220,6 +220,10 @@ label .field-validation-error::before {
     display: none;
 }
 
+select[multiple] {
+    min-height: 300px;
+}
+
 // Toolbar
 // ------------------------------
 
@@ -371,4 +375,3 @@ ul.pager li a {
     /* preventing last bottom item is not visible when scrolling to bottom */
     padding-bottom: 100px;
 }
-

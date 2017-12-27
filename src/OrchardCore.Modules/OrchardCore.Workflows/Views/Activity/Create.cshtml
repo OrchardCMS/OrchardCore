@@ -1,0 +1,18 @@
+@model OrchardCore.Workflows.ViewModels.ActivityEditViewModel
+
+<h1>@RenderTitleSegments(T["Add {0}", Model.Activity.Name.CamelFriendly()])</h1>
+
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="Create" asp-route-workflowdefinitionid="@Model.WorkflowDefinitionId" asp-route-activityname="@Model.Activity.Name" method="post" enctype="multipart/form-data">
+    @await DisplayAsync(Model.ActivityEditor)
+
+    <fieldset>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary"
+               asp-route-action="Edit"
+               asp-route-controller="WorkflowDefinition"
+               asp-route-id="@Model.WorkflowDefinitionId">@T["Cancel"]</a>
+        </div>
+    </fieldset>
+</form>

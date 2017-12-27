@@ -60,7 +60,7 @@ namespace OrchardCore.ContentManagement.Display
 
         public async Task<IShape> BuildDisplayAsync(ContentItem contentItem, IUpdateModel updater, string displayType, string groupId)
         {
-            if(contentItem == null)
+            if (contentItem == null)
             {
                 throw new ArgumentNullException(nameof(contentItem));
             }
@@ -169,11 +169,11 @@ namespace OrchardCore.ContentManagement.Display
 
             var updateContentContext = new UpdateContentContext(contentItem, updater);
 
-            _contentHandlers.Invoke(handler => handler.Updating(updateContentContext), Logger);
+            _contentHandlers.Invoke(handler => handler.UpdatingAsync(updateContentContext), Logger);
 
             await _handlers.InvokeAsync(handler => handler.UpdateEditorAsync(contentItem, context), Logger);
 
-            _contentHandlers.Reverse().Invoke(handler => handler.Updated(updateContentContext), Logger);
+            _contentHandlers.Reverse().Invoke(handler => handler.UpdatedAsync(updateContentContext), Logger);
 
             return context.Shape;
         }
