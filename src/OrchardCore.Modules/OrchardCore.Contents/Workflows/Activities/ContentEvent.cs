@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Localization;
@@ -67,7 +68,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         protected IContent GetContent(WorkflowContext workflowContext)
         {
-            return workflowContext.WorkflowInstance.State.As<IContent>();
+            throw new NotImplementedException();
         }
     }
 }

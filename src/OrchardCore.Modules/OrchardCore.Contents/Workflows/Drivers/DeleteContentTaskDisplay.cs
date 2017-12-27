@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -22,16 +21,16 @@ namespace OrchardCore.Contents.Workflows.Drivers
         {
             return Shape<DeleteContentTaskViewModel>("DeleteContentTask_Fields_Edit", model =>
             {
-                model.AvailableParameters = new[] { new SelectListItem { Text = "Content" } };
+                model.Expression = activity.Expression;
             }).Location("Content");
         }
 
         public async override Task<IDisplayResult> UpdateAsync(DeleteContentTask activity, IUpdateModel updater)
         {
             var viewModel = new DeleteContentTaskViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.ContentParameterName))
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.Expression))
             {
-                activity.ContentParameterName = viewModel.ContentParameterName;
+                activity.Expression = viewModel.Expression;
             }
             return Edit(activity);
         }

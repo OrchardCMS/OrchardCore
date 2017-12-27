@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 
 namespace OrchardCore.Workflows.Models
@@ -18,7 +19,7 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// Serialized state of the workflow.
         /// </summary>
-        public IEntity State { get; set; } = new Entity();
+        public JObject State { get; set; } = new JObject();
 
         /// <summary>
         /// List of activities the current workflow instance is waiting on 

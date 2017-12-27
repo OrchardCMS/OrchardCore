@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using OrchardCore.Entities;
 using OrchardCore.Workflows.Models;
 
@@ -26,6 +27,28 @@ namespace OrchardCore.Workflows.Services
         /// <param name="name">The type of the event to trigger, e.g. Publish.</param>
         /// <param name="target">The target entity the event is related to.</param>
         /// <param name="context">An object containing context for the event.</param>
-        Task TriggerEvent(string name, IEntity target, Func<Dictionary<string, object>> context);
+        Task TriggerEventAsync(string name, IEntity target, Func<Dictionary<string, object>> context);
+
+        /// <summary>
+        /// Starts a new workflow using the specified workflow definition.
+        /// </summary>
+        /// <param name="workflowDefinition">The workflow definition to start.</param>
+        /// <param name="input">Optional. Specify any inputs to be used by the workflow.</param>
+        /// <param name="startActivityName">Optional. If a workflow definition contains multiple start activities, you can specify which one to use. If none specified, the first one will be used.</param>
+        /// <returns>Returns the created workflow context. Can be used for further inspection of the workflow state.</returns>
+        Task<WorkflowContext> StartWorkflowAsync(WorkflowDefinitionRecord workflowDefinition, IDictionary<string, object> input = null, string startActivityName = null);
+
+        /// <summary>
+        /// Executes the specified workflow starting at the specified activity.
+        /// </summary>
+        Task<IEnumerable<ActivityRecord>> ExecuteWorkflowAsync(WorkflowContext workflowContext, ActivityRecord activity);
+    }
+
+    public static class WorkflowManagerExtensions
+    {
+        public static Task<WorkflowContext> StartWorkflowAsync(this IWorkflowManager workflowManager, WorkflowDefinitionRecord workflowDefinition, object input = null, string startActivityName = null)
+        {
+            return workflowManager.StartWorkflowAsync(workflowDefinition, new RouteValueDictionary(input), startActivityName);
+        }
     }
 }

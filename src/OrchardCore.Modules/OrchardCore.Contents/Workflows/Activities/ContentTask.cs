@@ -1,7 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
-using OrchardCore.Entities;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         protected IContent GetContent(WorkflowContext workflowContext)
         {
-            return workflowContext.WorkflowInstance.State.As<IContent>();
+            throw new NotImplementedException();
         }
     }
 }

@@ -20,9 +20,12 @@ namespace OrchardCore.Contents.Workflows.Activities
         public override LocalizedString Category => S["Content Items"];
         public override LocalizedString Description => S["Delete a content item."];
 
-        public string ContentParameterName
+        /// <summary>
+        /// The expression resulting into one or more content item IDs to delete.
+        /// </summary>
+        public string Expression
         {
-            get => GetProperty<string>();
+            get => GetProperty(defaultValue: () => "${content}");
             set => SetProperty(value);
         }
 
