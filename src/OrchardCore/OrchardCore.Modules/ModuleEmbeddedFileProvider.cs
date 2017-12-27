@@ -90,8 +90,10 @@ namespace OrchardCore.Modules
 
                 if (index != -1)
                 {
-                    return _environment.GetModule(path.Substring(0, index))
-                        .GetFileInfo(path.Substring(index + 1));
+                    var moduleName = path.Substring(0, index);
+                    var fileSubPath = path.Substring(index + 1);
+
+                    return _environment.GetModule(moduleName).GetFileInfo(fileSubPath);
                 }
             }
 

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders.Embedded;
 using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Modules
@@ -77,7 +79,6 @@ namespace OrchardCore.Modules
         private const string ModuleAssetsMap = "module.assets.map";
 
         private readonly IDictionary<string, IFileInfo> _fileInfos = new Dictionary<string, IFileInfo>();
-        private readonly IFileProvider _fileProvider;
 
         public Module(string name)
         {
@@ -86,8 +87,7 @@ namespace OrchardCore.Modules
                 Name = name;
                 Root = Application.ModulesRoot + Name + '/';
                 Assembly = Assembly.Load(new AssemblyName(name));
-                _fileProvider = new EmbeddedFileProvider(Assembly);
-                Assets = _fileProvider.GetFileInfo(ModuleAssetsMap).ReadAllLines().Select(a => new Asset(a));
+                Assets = new EmbeddedFileProvider(Assembly).GetFileInfo(ModuleAssetsMap).ReadAllLines().Select(a => new Asset(a));
                 AssetPaths = Assets.Select(a => a.ModuleAssetPath);
             }
             else
@@ -117,7 +117,16 @@ namespace OrchardCore.Modules
                 {
                     if (!_fileInfos.TryGetValue(subpath, out fileInfo))
                     {
-                        _fileInfos[subpath] = fileInfo = _fileProvider.GetFileInfo(subpath);
+                        var resourcePath = Name + '.' + subpath.Replace('/', '>');
+                        var fileName = Path.GetFileName(subpath);
+
+                        if (Assembly.GetManifestResourceInfo(resourcePath) == null)
+                        {
+                            return new NotFoundFileInfo(fileName);
+                        }
+
+                        _fileInfos[subpath] = fileInfo = new EmbeddedResourceFileInfo(
+                            Assembly, resourcePath, fileName, DateTimeOffset.UtcNow);
                     }
                 }
             }
