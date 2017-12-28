@@ -55,20 +55,9 @@ namespace OrchardCore.Contents.Workflows.Activities
                 ? workflowContext.Evaluate(ContentExpression)
                 : workflowContext.Input.GetValue("Content");
 
-            var contentItem = contentValue as IContent;
+            var contentId = contentValue as string;
 
-            if (contentItem == null)
-            {
-                // Perhaps the expression returned a content ID?
-                var contentId = contentValue as string;
-
-                if (contentId != null)
-                {
-                    contentItem = await ContentManager.GetAsync(contentId);
-                }
-            }
-
-            return contentItem;
+            return contentId != null ? await ContentManager.GetAsync(contentId, VersionOptions.Latest) : null;
         }
     }
 }
