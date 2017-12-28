@@ -224,7 +224,8 @@ namespace OrchardCore.Workflows.Controllers
             {
                 var workflowDefinition = new WorkflowDefinitionRecord
                 {
-                    Name = viewModel.Name?.Trim()
+                    Name = viewModel.Name?.Trim(),
+                    IsEnabled = true
                 };
 
                 _session.Save(workflowDefinition);

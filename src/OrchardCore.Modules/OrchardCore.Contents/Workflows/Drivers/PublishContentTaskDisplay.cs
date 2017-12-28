@@ -27,7 +27,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
 
         public async override Task<IDisplayResult> UpdateAsync(PublishContentTask activity, IUpdateModel updater)
         {
-            var viewModel = new DeleteContentTaskViewModel();
+            var viewModel = new PublishContentTaskViewModel();
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.Expression))
             {
                 activity.ContentExpression.Expression = viewModel.Expression;

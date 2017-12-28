@@ -10,9 +10,17 @@ namespace OrchardCore.Workflows.Services
         private readonly Lazy<IDictionary<string, IActivity>> _activityDictionary;
         private readonly IServiceProvider _serviceProvider;
 
-        public ActivityLibrary(Func<IEnumerable<IActivity>> activityLibrary, IServiceProvider serviceProvider)
+        // TODO: Use Func<T> once we add support for it using DryIoc or Autofac.
+        // Alternatively, we could implement a custom class similar to Lazy<T> or Work<T> that simply resolves the requested type.
+        //public ActivityLibrary(Func<IEnumerable<IActivity>> activities, IServiceProvider serviceProvider)
+        //{
+        //    _activityDictionary = new Lazy<IDictionary<string, IActivity>>(() => activityLibrary().OrderBy(x => x.Name).ToDictionary(x => x.Name));
+        //    _serviceProvider = serviceProvider;
+        //}
+
+        public ActivityLibrary(Resolver<IEnumerable<IActivity>> activities, IServiceProvider serviceProvider)
         {
-            _activityDictionary = new Lazy<IDictionary<string, IActivity>>(() => activityLibrary().OrderBy(x => x.Name).ToDictionary(x => x.Name));
+            _activityDictionary = new Lazy<IDictionary<string, IActivity>>(() => activities.Resolve().OrderBy(x => x.Name).ToDictionary(x => x.Name));
             _serviceProvider = serviceProvider;
         }
 

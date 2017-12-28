@@ -10,5 +10,10 @@ namespace OrchardCore.Workflows.Models
         /// The expression.
         /// </summary>
         public string Expression { get; set; }
+
+        public override string ToString()
+        {
+            return Expression;
+        }
     }
 }

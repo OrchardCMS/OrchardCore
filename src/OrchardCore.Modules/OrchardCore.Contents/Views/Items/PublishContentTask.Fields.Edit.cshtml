@@ -1,8 +1,8 @@
 @using OrchardCore.Contents.Workflows.ViewModels
-@model DeleteContentTaskViewModel
+@model PublishContentTaskViewModel
 
 <fieldset class="form-group" asp-validation-class-for="Expression">
     <label asp-for="Expression">@T["Expression"] <span asp-validation-for="Expression"></span></label>
     <input asp-for="Expression" class="form-control" type="text" />
-    <span class="hint">@T["Enter an expression that yields one or more content item IDs to be deleted. E.g. 42, js: input(\"Content\"). If no expression is specified, the \"Content\" input will be used."]</span>
+    <span class="hint">@T["Enter an expression that yields one or more content item IDs to be published. E.g. 42, js: input(\"Content\"). If no expression is specified, the \"Content\" input will be used."]</span>
 </fieldset>

@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
@@ -17,6 +18,7 @@ namespace OrchardCore.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped(typeof(Resolver<>));
             services.AddScoped<IActivityLibrary, ActivityLibrary>();
             services.AddScoped<IWorkflowDefinitionRepository, WorkflowDefinitionRepository>();
             services.AddScoped<IWorkflowInstanceRepository, WorkflowInstanceRepository>();

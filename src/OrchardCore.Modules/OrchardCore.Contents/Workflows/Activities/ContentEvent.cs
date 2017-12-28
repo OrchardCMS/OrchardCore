@@ -42,30 +42,17 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override async Task<bool> CanExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            try
-            {
-                var contentTypesState = this.As<string>("ContentTypes");
+            var content = await GetContentAsync(workflowContext);
 
-                // "" means 'any'.
-                if (string.IsNullOrEmpty(contentTypesState))
-                {
-                    return true;
-                }
-
-                var contentTypes = contentTypesState.Split(',');
-                var content = await GetContentAsync(workflowContext);
-
-                if (content == null)
-                {
-                    return false;
-                }
-
-                return contentTypes.Any(contentType => content.ContentItem.ContentType == contentType);
-            }
-            catch
+            if (content == null)
             {
                 return false;
             }
+
+            var contentTypes = ContentTypeFilter.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+
+            // "" means 'any'.
+            return !contentTypes.Any() || contentTypes.Any(contentType => content.ContentItem.ContentType == contentType);
         }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)

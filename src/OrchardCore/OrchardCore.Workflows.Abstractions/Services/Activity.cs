@@ -74,7 +74,7 @@ namespace OrchardCore.Workflows.Services
             return names.Select(x => new Outcome(x));
         }
 
-        protected virtual T GetProperty<T>([CallerMemberName]string name = null, Func<T> defaultValue = null)
+        protected virtual T GetProperty<T>(Func<T> defaultValue = null, [CallerMemberName]string name = null)
         {
             var item = Properties[name];
             return item != null ? item.ToObject<T>() : defaultValue != null ? defaultValue() : default(T);

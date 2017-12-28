@@ -27,7 +27,7 @@ namespace OrchardCore.Contents.Workflows.Activities
         /// </summary>
         public WorkflowExpression<object> ContentExpression
         {
-            get => GetProperty<WorkflowExpression<object>>();
+            get => GetProperty(defaultValue: () => new WorkflowExpression<object>());
             set => SetProperty(value);
         }
 
