@@ -8,5 +8,6 @@ namespace OrchardCore.Workflows.ViewModels
         public IActivity Activity { get; set; }
         public int? ActivityId { get; set; }
         public int WorkflowDefinitionId { get; set; }
+        public string ReturnUrl { get; set; }
     }
 }

@@ -6,10 +6,19 @@ namespace OrchardCore.Workflows.Models
     /// <typeparam name="T">The type of result produced by the expression.</typeparam>
     public class WorkflowExpression<T>
     {
+        public WorkflowExpression()
+        {
+        }
+
+        public WorkflowExpression(string expression)
+        {
+            Expression = expression;
+        }
+
         /// <summary>
         /// The expression.
         /// </summary>
-        public string Expression { get; set; }
+        public string Expression { get; set; } // Needs a setter for deserialization purposes.
 
         public override string ToString()
         {

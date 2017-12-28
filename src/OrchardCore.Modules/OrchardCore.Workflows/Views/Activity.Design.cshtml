@@ -16,7 +16,7 @@
         {
             <a class="btn btn-outline-secondary activity-start-action" href="#" data-toggle="button"><i class="fa fa-power-off"></i></a>
         }
-        <a class="btn btn-primary activity-edit-action" asp-action="Edit" asp-controller="Activity" asp-route-workflowdefinitionid="@Model.WorkflowDefinitionId" asp-route-activityid="@activityRecord.Id"><i class="fa fa-pencil"></i></a>
+        <a class="btn btn-primary activity-edit-action" asp-action="Edit" asp-controller="Activity" asp-route-workflowdefinitionid="@Model.WorkflowDefinitionId" asp-route-activityid="@activityRecord.Id" asp-route-returnurl="@Model.ReturnUrl" data-persist-workflow="true"><i class="fa fa-pencil"></i></a>
         <a class="btn btn-danger activity-delete-action" href="#"><i class="fa fa-trash"></i></a>
     </div>
 </div>

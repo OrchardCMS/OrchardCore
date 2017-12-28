@@ -23,12 +23,7 @@ namespace OrchardCore.Tests.Workflows
         public async Task CanExecuteSimpleWorkflow()
         {
             var localizer = new Mock<IStringLocalizer>();
-            var serviceCollection = new ServiceCollection();
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var javaScriptEngine = new JavaScriptEngine(memoryCache, new Mock<IStringLocalizer<JavaScriptEngine>>().Object);
-            var globalMethodProviders = new IGlobalMethodProvider[0];
-            var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders, serviceProvider);
+
             var stringBuilder = new StringBuilder();
             var output = new StringWriter(stringBuilder);
             var addTask = new AddTask(localizer.Object);
@@ -40,18 +35,18 @@ namespace OrchardCore.Tests.Workflows
                 {
                     new ActivityRecord { Id = 1, IsStart = true, Name = addTask.Name, Properties = JObject.FromObject( new
                     {
-                        A = new WorkflowExpression<double>{ Expression = "js: workflow().Input[\"A\"]" },
-                        B = new WorkflowExpression<double>{ Expression = "js: input(\"B\")" },
+                        A = new WorkflowExpression<double>("js: workflow().Input[\"A\"]"),
+                        B = new WorkflowExpression<double>("js: input(\"B\")"),
                     }) },
-                    new ActivityRecord { Id = 2, Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>{ Expression = "js: result().toString()" } }) }
+                    new ActivityRecord { Id = 2, Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>("js: result().toString()") }) }
                 },
                 Transitions = new List<TransitionRecord>
                 {
                     new TransitionRecord{ SourceActivityId = 1, SourceOutcomeName = "Done", DestinationActivityId = 2 }
                 }
             };
-            var workflowManager = CreateWorkflowManager(new IActivity[] { addTask, writeLineTask }, workflowDefinition, scriptingManager);
 
+            var workflowManager = CreateWorkflowManager(new IActivity[] { addTask, writeLineTask }, workflowDefinition);
             var a = 10d;
             var b = 22d;
             var expectedResult = (a + b).ToString() + "\r\n";
@@ -62,8 +57,14 @@ namespace OrchardCore.Tests.Workflows
             Assert.Equal(expectedResult, actualResult);
         }
 
-        private WorkflowManager CreateWorkflowManager(IEnumerable<IActivity> activities, WorkflowDefinitionRecord workflowDefinition, IScriptingManager scriptingManager)
+        private WorkflowManager CreateWorkflowManager(IEnumerable<IActivity> activities, WorkflowDefinitionRecord workflowDefinition)
         {
+            var serviceCollection = new ServiceCollection();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var memoryCache = new MemoryCache(new MemoryCacheOptions());
+            var javaScriptEngine = new JavaScriptEngine(memoryCache, new Mock<IStringLocalizer<JavaScriptEngine>>().Object);
+            var globalMethodProviders = new IGlobalMethodProvider[0];
+            var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders, serviceProvider);
             var activityLibrary = new Mock<IActivityLibrary>();
             var workflowDefinitionRepository = new Mock<IWorkflowDefinitionRepository>();
             var workflowInstanceRepository = new Mock<IWorkflowInstanceRepository>();

@@ -5,6 +5,6 @@
         @await DisplayAsync(Model.Content)
     </div>
     <div class="card-footer text-muted text-xs-right">
-        <a class="btn btn-primary btn-sm" asp-route-action="Create" asp-route-controller="Activity" asp-route-activityname="@Model.Activity.Name" asp-route-workflowdefinitionid="@Model.WorkflowDefinitionId">@T["Add"]</a>
+        <a class="btn btn-primary btn-sm" asp-route-action="Create" asp-route-controller="Activity" asp-route-activityname="@Model.Activity.Name" asp-route-workflowdefinitionid="@Model.WorkflowDefinitionId" asp-route-returnurl="@Model.ReturnUrl" data-persist-workflow="true">@T["Add"]</a>
     </div>
 </div>

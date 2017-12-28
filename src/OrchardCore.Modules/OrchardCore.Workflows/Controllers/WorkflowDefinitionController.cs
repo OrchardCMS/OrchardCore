@@ -247,19 +247,20 @@ namespace OrchardCore.Workflows.Controllers
             }
         }
 
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id, string localId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
                 return Unauthorized();
             }
 
+            var newLocalId = string.IsNullOrWhiteSpace(localId) ? Guid.NewGuid().ToString() : localId;
             var availableActivities = _activityLibrary.ListActivities();
             var workflowDefinitionRecord = await _session.GetAsync<WorkflowDefinitionRecord>(id);
             var workflowContext = _workflowManager.CreateWorkflowContext(workflowDefinitionRecord, new WorkflowInstanceRecord { DefinitionId = workflowDefinitionRecord.Id });
             var activityContexts = workflowDefinitionRecord.Activities.Select(x => _workflowManager.CreateActivityContext(x)).ToList();
-            var activityThumbnailDisplayTasks = availableActivities.Select((x, i) => BuildActivityDisplay(x, i, id, "Thumbnail"));
-            var activityDesignDisplayTasks = activityContexts.Select((x, i) => BuildActivityDisplay(x, i, id, "Design"));
+            var activityThumbnailDisplayTasks = availableActivities.Select((x, i) => BuildActivityDisplay(x, i, id, newLocalId, "Thumbnail"));
+            var activityDesignDisplayTasks = activityContexts.Select((x, i) => BuildActivityDisplay(x, i, id, newLocalId, "Design"));
 
             await Task.WhenAll(activityThumbnailDisplayTasks.Concat(activityDesignDisplayTasks));
 
@@ -288,6 +289,8 @@ namespace OrchardCore.Workflows.Controllers
                 WorkflowDefinitionJson = JsonConvert.SerializeObject(workflowDefinitionData, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }),
                 ActivityThumbnailShapes = activityThumbnailShapes,
                 ActivityDesignShapes = activityDesignShapes,
+                LocalId = newLocalId,
+                LoadLocalState = !string.IsNullOrWhiteSpace(localId)
             };
             return View(viewModel);
         }
@@ -381,17 +384,18 @@ namespace OrchardCore.Workflows.Controllers
             return Json(new { isRunning = isRunning });
         }
 
-        private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, int workflowDefinitionId, string displayType)
+        private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, int workflowDefinitionId, string localId, string displayType)
         {
             dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activity, this, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}";
             activityShape.Activity = activity;
             activityShape.WorkflowDefinitionId = workflowDefinitionId;
             activityShape.Index = index;
+            activityShape.ReturnUrl = Url.Action(nameof(Edit), new { id = workflowDefinitionId, localId = localId });
             return activityShape;
         }
 
-        private async Task<dynamic> BuildActivityDisplay(ActivityContext activityContext, int index, int workflowDefinitionId, string displayType)
+        private async Task<dynamic> BuildActivityDisplay(ActivityContext activityContext, int index, int workflowDefinitionId, string localId, string displayType)
         {
             dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, this, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}";
@@ -399,6 +403,7 @@ namespace OrchardCore.Workflows.Controllers
             activityShape.ActivityRecord = activityContext.ActivityRecord;
             activityShape.WorkflowDefinitionId = workflowDefinitionId;
             activityShape.Index = index;
+            activityShape.ReturnUrl = Url.Action(nameof(Edit), new { id = workflowDefinitionId, localId = localId });
             return activityShape;
         }
     }

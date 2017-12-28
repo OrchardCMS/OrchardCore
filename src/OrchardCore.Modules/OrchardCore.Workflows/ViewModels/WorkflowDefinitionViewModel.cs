@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using OrchardCore.Workflows.Models;
 
@@ -11,5 +12,7 @@ namespace OrchardCore.Workflows.ViewModels
         public IList<dynamic> ActivityDesignShapes { get; set; }
         public string WorkflowDefinitionJson { get; set; }
         public string State { get; set; }
+        public string LocalId { get; set; }
+        public bool LoadLocalState { get; set; }
     }
 }

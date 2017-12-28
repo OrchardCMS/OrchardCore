@@ -58,7 +58,7 @@ namespace OrchardCore.Workflows.Controllers
             H = h;
         }
 
-        public async Task<IActionResult> Create(string activityName, int workflowDefinitionId)
+        public async Task<IActionResult> Create(string activityName, int workflowDefinitionId, string returnUrl)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -76,21 +76,22 @@ namespace OrchardCore.Workflows.Controllers
                 Activity = activity,
                 ActivityId = null,
                 ActivityEditor = activityEditor,
-                WorkflowDefinitionId = workflowDefinitionId
+                WorkflowDefinitionId = workflowDefinitionId,
+                ReturnUrl = returnUrl
             };
 
             return View(viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(string activityName, int workflowDefinitionId, ActivityEditViewModel model)
+        public async Task<IActionResult> Create(string activityName, ActivityEditViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
                 return Unauthorized();
             }
 
-            var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(workflowDefinitionId);
+            var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(model.WorkflowDefinitionId);
             var activity = _activityLibrary.InstantiateActivity(activityName);
             var activityEditor = await _activityDisplayManager.UpdateEditorAsync(activity, this, isNew: true);
 
@@ -99,7 +100,6 @@ namespace OrchardCore.Workflows.Controllers
                 activityEditor.Metadata.Type = "Activity_Edit";
                 model.Activity = activity;
                 model.ActivityEditor = activityEditor;
-                model.WorkflowDefinitionId = workflowDefinitionId;
                 return View(model);
             }
 
@@ -113,10 +113,10 @@ namespace OrchardCore.Workflows.Controllers
             _session.Save(workflowDefinition);
             _notifier.Success(H["Activity added successfully"]);
 
-            return RedirectToAction("Edit", "WorkflowDefinition", new { id = workflowDefinitionId });
+            return Url.IsLocalUrl(model.ReturnUrl) ? (IActionResult)Redirect(model.ReturnUrl) : RedirectToAction("Edit", "WorkflowDefinition", new { id = model.WorkflowDefinitionId });
         }
 
-        public async Task<IActionResult> Edit(int workflowDefinitionId, int activityId)
+        public async Task<IActionResult> Edit(int workflowDefinitionId, int activityId, string returnUrl)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -135,7 +135,8 @@ namespace OrchardCore.Workflows.Controllers
                 Activity = activityContext.Activity,
                 ActivityId = activityId,
                 ActivityEditor = activityEditor,
-                WorkflowDefinitionId = workflowDefinitionId
+                WorkflowDefinitionId = workflowDefinitionId,
+                ReturnUrl = returnUrl
             };
 
             return View(viewModel);
@@ -159,7 +160,6 @@ namespace OrchardCore.Workflows.Controllers
                 activityEditor.Metadata.Type = "Activity_Edit";
                 model.Activity = activityContext.Activity;
                 model.ActivityEditor = activityEditor;
-                model.WorkflowDefinitionId = model.WorkflowDefinitionId;
 
                 return View(model);
             }
@@ -169,7 +169,7 @@ namespace OrchardCore.Workflows.Controllers
             _session.Save(workflowDefinition);
             _notifier.Success(H["Activity updated successfully"]);
 
-            return RedirectToAction("Edit", "WorkflowDefinition", new { id = model.WorkflowDefinitionId });
+            return Url.IsLocalUrl(model.ReturnUrl) ? (IActionResult)Redirect(model.ReturnUrl) : RedirectToAction("Edit", "WorkflowDefinition", new { id = model.WorkflowDefinitionId });
         }
     }
 }

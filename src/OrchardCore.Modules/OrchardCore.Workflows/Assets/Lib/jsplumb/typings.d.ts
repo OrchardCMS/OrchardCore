@@ -6,7 +6,7 @@ interface jsPlumbInstance {
     bind(event: string, callback: (connection: any, e: any) => void): void;
     unbind(event?: string): void;
     ready(callback: () => void): void;
-    importDefaults(defaults: Defaults): void;
+    importDefaults(defaults: any): void;
     Defaults: Defaults;
     restoreDefaults(): void;
     addClass(el: any, clazz: string): void;
@@ -45,9 +45,11 @@ interface jsPlumbInstance {
 }
 
 interface Defaults {
+    Anchor?: string;
     Endpoint?: any[];
     PaintStyle?: PaintStyle;
     HoverPaintStyle?: PaintStyle;
+    EndpointStyles?: EndpointOptions;
     ConnectionsDetachable?: boolean;
     ReattachConnections?: boolean;
     ConnectionOverlays?: any[][];
@@ -144,9 +146,10 @@ interface EndpointOptions {
     hoverPaintStyle?: PaintStyle;
     connectorHoverStyle?: PaintStyle;
     dragOptions?: DragOptions;
-    overlays: Array<any>;
-    uuid: string;
-    parameters: any;
+    overlays?: Array<any>;
+    connectorOverlays?: Array<any>;
+    uuid?: string;
+    parameters?: any;
 }
 
 interface DropOptions {

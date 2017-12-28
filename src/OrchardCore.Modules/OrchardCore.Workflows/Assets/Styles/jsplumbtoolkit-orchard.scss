@@ -79,13 +79,19 @@
     }
 
     .connection-label {
+        z-index: 31;
+        border: 1px solid red;
+        padding: 0 0.5em;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
+        border-radius: 2px;
         background-color: white;
-        padding: 0.4em;
-        border: 1px solid #999999;
-        font: 12px sans-serif;
-        color: #444;
-        z-index: 21;
-        cursor: default;
+    }
+
+    .connection-label-source {
+        z-index: 31;
+        padding: 0 0.5em;
+        background-color: gray;
     }
 
     .jtk-drag {

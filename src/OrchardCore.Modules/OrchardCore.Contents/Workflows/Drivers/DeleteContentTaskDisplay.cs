@@ -4,6 +4,7 @@ using OrchardCore.Contents.Workflows.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Abstractions.Display;
+using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Contents.Workflows.Drivers
 {
@@ -30,7 +31,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
             var viewModel = new DeleteContentTaskViewModel();
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.Expression))
             {
-                activity.ContentExpression.Expression = viewModel.Expression;
+                activity.ContentExpression = new WorkflowExpression<object>(viewModel.Expression);
             }
             return Edit(activity);
         }

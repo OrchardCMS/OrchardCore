@@ -10,6 +10,7 @@ namespace Workflows {
         id: number;
         x: number;
         y: number;
+        isStart: boolean;
         outcomes: Array<Outcome>;
     }
 
