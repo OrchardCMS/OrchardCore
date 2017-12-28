@@ -35,7 +35,7 @@
     </ItemGroup>
 
     <WriteLinesToFile
-      File="obj\module.assets.map"
+      File="$(IntermediateOutputPath)module.assets.map"
       Lines="@(ModuleAssets)"
       Condition="'@(ModuleAssets)' != ''"
       Overwrite="true"
@@ -62,7 +62,7 @@
       <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' == ''">
         <LogicalName>$([System.String]::new('$(MSBuildProjectName)\%(RelativeDir)%(FileName)%(Extension)').Replace('\', '.').Replace('/', '.'))</LogicalName>
       </EmbeddedResource>
-      <EmbeddedResource Include="obj\module.assets.map">
+      <EmbeddedResource Include="$(IntermediateOutputPath)module.assets.map">
         <Link>module.assets.map</Link>
       </EmbeddedResource>
       <EmbeddedResource Include="obj\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')">

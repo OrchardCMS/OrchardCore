@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <WriteLinesToFile
-      File="obj\module.names.map"
+      File="$(IntermediateOutputPath)module.names.map"
       Lines="@(ModuleNames)"
       Condition="'@(ModuleNames)' != ''"
       Overwrite="true"
@@ -28,7 +28,7 @@
       ContinueOnError="true" />
 
     <ItemGroup>
-      <EmbeddedResource Include="obj\module.names.map">
+      <EmbeddedResource Include="$(IntermediateOutputPath)module.names.map">
         <Link>module.names.map</Link>
       </EmbeddedResource>
     </ItemGroup>
