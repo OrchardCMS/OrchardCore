@@ -9,6 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Views\Items\BranchTask.Fields.Design.cshtml" />
+    <None Remove="Views\Items\BranchTask.Fields.Edit.cshtml" />
+    <None Remove="Views\Items\BranchTask.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\EvaluateExpressionTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\EvaluateExpressionTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\EvaluateExpressionTask.Fields.Thumbnail.cshtml" />

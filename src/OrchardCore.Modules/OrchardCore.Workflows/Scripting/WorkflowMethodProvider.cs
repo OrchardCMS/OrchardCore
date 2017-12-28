@@ -9,6 +9,8 @@ namespace OrchardCore.Workflows.Scripting
     {
         private readonly GlobalMethod _workflowMethod;
         private readonly GlobalMethod _inputMethod;
+        private readonly GlobalMethod _outputMethod;
+        private readonly GlobalMethod _variableMethod;
         private readonly GlobalMethod _resultMethod;
 
         public WorkflowMethodProvider(WorkflowContext workflowContext)
@@ -25,6 +27,18 @@ namespace OrchardCore.Workflows.Scripting
                 Method = serviceProvider => (Func<string, object>)(name => workflowContext.Input[name])
             };
 
+            _outputMethod = new GlobalMethod
+            {
+                Name = "output",
+                Method = serviceProvider => (Action<string, object>)((name, value) => workflowContext.Output[name] = value)
+            };
+
+            _variableMethod = new GlobalMethod
+            {
+                Name = "variable",
+                Method = serviceProvider => (Func<string, object>)((name) => workflowContext.Variables[name])
+            };
+
             _resultMethod = new GlobalMethod
             {
                 Name = "result",
@@ -34,7 +48,7 @@ namespace OrchardCore.Workflows.Scripting
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new[] { _workflowMethod, _inputMethod, _resultMethod };
+            return new[] { _workflowMethod, _inputMethod, _outputMethod, _variableMethod, _resultMethod };
         }
     }
 }
