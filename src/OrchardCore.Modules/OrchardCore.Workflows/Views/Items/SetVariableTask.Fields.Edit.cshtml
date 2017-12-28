@@ -1,0 +1,14 @@
+@using OrchardCore.Workflows.ViewModels;
+@model SetVariableTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="VariableName">
+    <label asp-for="VariableName">@T["Name"] <span asp-validation-for="VariableName"></span></label>
+    <input asp-for="VariableName" class="form-control" autofocus="autofocus" />
+    <span class="hint">@T["The variable to set."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="VariableValueExpression">
+    <label asp-for="VariableValueExpression">@T["Expression"] <span asp-validation-for="VariableValueExpression"></span></label>
+    <input asp-for="VariableValueExpression" class="form-control workflow-expression" autofocus="autofocus" />
+    <span class="hint">@T["The expression to evaluate. The result will be assigned to the specified variable."]</span>
+</fieldset>

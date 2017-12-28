@@ -18,7 +18,8 @@ namespace OrchardCore.Workflows.Activities
         (
             INotifier notifier,
             IStringLocalizer<NotifyTask> s,
-            IHtmlLocalizer<NotifyTask> h)
+            IHtmlLocalizer<NotifyTask> h
+        )
         {
             _notifier = notifier;
 

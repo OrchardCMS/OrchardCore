@@ -32,7 +32,10 @@ namespace OrchardCore.Workflows
             services.AddSingleton<IIndexProvider, WorkflowInstanceIndexProvider>();
 
             services.AddScoped<IActivity, NotifyTask>();
+            services.AddScoped<IActivity, SetVariableTask>();
+
             services.AddScoped<IDisplayDriver<IActivity>, NotifyTaskDisplay>();
+            services.AddScoped<IDisplayDriver<IActivity>, SetVariableTaskDisplay>();
         }
     }
 }
