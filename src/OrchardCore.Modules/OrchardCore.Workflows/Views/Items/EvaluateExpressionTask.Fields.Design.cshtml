@@ -1,0 +1,8 @@
+@using OrchardCore.Workflows.Activities
+@{
+    var activity = (EvaluateExpressionTask)Model.Activity;
+}
+<header>
+    <h4><i class="fa fa-code"></i>@T["Evaluate"]</h4>
+</header>
+<span>@T["Evaluate <em>{0}</em>", activity.Expression]</span>

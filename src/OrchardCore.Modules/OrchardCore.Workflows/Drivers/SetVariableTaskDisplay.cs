@@ -23,7 +23,7 @@ namespace OrchardCore.Workflows.Drivers
             return Shape<SetVariableTaskViewModel>("SetVariableTask_Fields_Edit", model =>
             {
                 model.VariableName = activity.VariableName;
-                model.VariableValueExpression = activity.VariableValueExpression.Expression;
+                model.Expression = activity.Expression.Expression;
             }).Location("Content");
         }
 
@@ -33,7 +33,7 @@ namespace OrchardCore.Workflows.Drivers
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
             {
                 activity.VariableName = viewModel.VariableName.Trim();
-                activity.VariableValueExpression = new WorkflowExpression<object>(viewModel.VariableValueExpression);
+                activity.Expression = new WorkflowExpression<object>(viewModel.Expression);
             }
             return Edit(activity);
         }

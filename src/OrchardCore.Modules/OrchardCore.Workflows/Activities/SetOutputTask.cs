@@ -6,20 +6,20 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class SetVariableTask : Activity
+    public class SetOutputTask : Activity
     {
-        public SetVariableTask(IStringLocalizer<NotifyTask> localizer)
+        public SetOutputTask(IStringLocalizer<SetOutputTask> localizer)
         {
             T = localizer;
         }
 
         private IStringLocalizer T { get; }
 
-        public override string Name => nameof(SetVariableTask);
+        public override string Name => nameof(SetOutputTask);
         public override LocalizedString Category => T["Primitives"];
-        public override LocalizedString Description => T["Assigns a value to a variable on the workflow."];
+        public override LocalizedString Description => T["Evaluates an expression and stores the result into the workflow's output."];
 
-        public string VariableName
+        public string OutputName
         {
             get => GetProperty<string>();
             set => SetProperty(value);
@@ -39,7 +39,7 @@ namespace OrchardCore.Workflows.Activities
         public override IEnumerable<string> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             var value = workflowContext.Evaluate(Expression);
-            workflowContext.Variables[VariableName] = value;
+            workflowContext.Output[OutputName] = value;
 
             yield return "Done";
         }

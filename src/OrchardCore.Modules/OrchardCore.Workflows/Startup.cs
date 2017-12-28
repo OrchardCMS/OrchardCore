@@ -33,9 +33,13 @@ namespace OrchardCore.Workflows
 
             services.AddScoped<IActivity, NotifyTask>();
             services.AddScoped<IActivity, SetVariableTask>();
+            services.AddScoped<IActivity, SetOutputTask>();
+            services.AddScoped<IActivity, EvaluateExpressionTask>();
 
             services.AddScoped<IDisplayDriver<IActivity>, NotifyTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, SetVariableTaskDisplay>();
+            services.AddScoped<IDisplayDriver<IActivity>, SetOutputTaskDisplay>();
+            services.AddScoped<IDisplayDriver<IActivity>, EvaluateExpressionTaskDisplay>();
         }
     }
 }

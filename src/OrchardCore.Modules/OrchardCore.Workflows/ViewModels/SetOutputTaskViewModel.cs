@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Workflows.ViewModels
 {
-    public class SetVariableTaskViewModel
+    public class SetOutputTaskViewModel
     {
         [Required]
-        public string VariableName { get; set; }
+        public string OutputName { get; set; }
 
         public string Expression { get; set; }
     }
