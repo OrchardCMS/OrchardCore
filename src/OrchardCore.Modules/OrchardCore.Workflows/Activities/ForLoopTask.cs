@@ -45,10 +45,10 @@ namespace OrchardCore.Workflows.Activities
         public override IEnumerable<string> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             var count = workflowContext.Evaluate(CountExpression);
-            var index = Index;
 
-            if (index < count)
+            if (Index < count)
             {
+                workflowContext.Stack.Push(Index);
                 Index++;
                 yield return "Iterate";
             }
