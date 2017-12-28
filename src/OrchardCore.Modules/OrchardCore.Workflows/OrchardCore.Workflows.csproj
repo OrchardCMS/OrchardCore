@@ -15,6 +15,9 @@
     <None Remove="Views\Items\EvaluateExpressionTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\EvaluateExpressionTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\EvaluateExpressionTask.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\Items\ForLoopTask.Fields.Design.cshtml" />
+    <None Remove="Views\Items\ForLoopTask.Fields.Edit.cshtml" />
+    <None Remove="Views\Items\ForLoopTask.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\SetOutputTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\SetOutputTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\SetOutputTask.Fields.Thumbnail.cshtml" />
