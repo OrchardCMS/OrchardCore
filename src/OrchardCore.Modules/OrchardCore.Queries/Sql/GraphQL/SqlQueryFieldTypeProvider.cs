@@ -13,7 +13,7 @@ using OrchardCore.ContentManagement.GraphQL.Queries;
 
 namespace OrchardCore.Queries.Sql.GraphQL.Queries
 {
-    public class SqlQueryFieldTypeProvider : IDynamicQueryFieldTypeProvider
+    public class SqlQueryFieldTypeProvider : IQueryFieldTypeProvider
     {
         private readonly IQueryManager _queryManager;
         private readonly IEnumerable<QueryFieldType> _queryFieldTypes;

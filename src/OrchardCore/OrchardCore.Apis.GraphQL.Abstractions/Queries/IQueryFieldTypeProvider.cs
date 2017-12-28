@@ -4,7 +4,7 @@ using GraphQL.Types;
 
 namespace OrchardCore.Apis.GraphQL.Queries
 {
-    public interface IDynamicQueryFieldTypeProvider
+    public interface IQueryFieldTypeProvider
     {
         Task<IEnumerable<FieldType>> GetFields(ObjectGraphType state);
     }

@@ -10,7 +10,7 @@ using YesSql;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Providers
 {
-    public class ContentItemFieldTypeProvider : IDynamicQueryFieldTypeProvider
+    public class ContentItemFieldTypeProvider : IQueryFieldTypeProvider
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IContentManager _contentManager;

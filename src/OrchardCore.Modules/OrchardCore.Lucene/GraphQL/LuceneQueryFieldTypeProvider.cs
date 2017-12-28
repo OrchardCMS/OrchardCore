@@ -14,7 +14,7 @@ using OrchardCore.Lucene;
 
 namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 {
-    public class LuceneQueryFieldTypeProvider : IDynamicQueryFieldTypeProvider
+    public class LuceneQueryFieldTypeProvider : IQueryFieldTypeProvider
     {
         private readonly IQueryManager _queryManager;
         private readonly IEnumerable<QueryFieldType> _queryFieldTypes;

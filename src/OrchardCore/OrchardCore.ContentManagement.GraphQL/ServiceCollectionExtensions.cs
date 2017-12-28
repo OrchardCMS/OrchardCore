@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement.GraphQL.Mutations.Types;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Queries.Providers;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentManagement.GraphQL
 {
@@ -24,9 +25,11 @@ namespace OrchardCore.ContentManagement.GraphQL
             services.AddScoped<CreateContentItemInputType>();
             services.AddScoped<ContentPartsInputType>();
 
-            services.AddScoped<IDynamicQueryFieldTypeProvider, ContentItemFieldTypeProvider>();
+            services.AddScoped<IQueryFieldTypeProvider, ContentItemFieldTypeProvider>();
 
             services.AddSingleton<IGraphQLSchemaHashService, GraphQLSchemaHashService>();
+
+            services.AddScoped<IPermissionProvider, Permissions>();
 
             return services;
         }

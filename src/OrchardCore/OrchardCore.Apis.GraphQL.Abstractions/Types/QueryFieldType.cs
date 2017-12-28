@@ -2,7 +2,7 @@ using GraphQL.Types;
 
 namespace OrchardCore.Apis.GraphQL.Types
 {
-    public class QueryFieldType : FieldType
+    public abstract class QueryFieldType : FieldType
     {
     }
 }

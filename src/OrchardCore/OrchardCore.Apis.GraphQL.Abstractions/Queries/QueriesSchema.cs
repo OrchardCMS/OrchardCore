@@ -8,7 +8,7 @@ namespace OrchardCore.Apis.GraphQL.Queries
     {
         public QueriesSchema(
             IEnumerable<QueryFieldType> queryFields,
-            IEnumerable<IDynamicQueryFieldTypeProvider> dynamicQueryFieldTypeProviders)
+            IEnumerable<IQueryFieldTypeProvider> queryFieldTypeProviders)
         {
             Name = "Query";
 
@@ -17,9 +17,9 @@ namespace OrchardCore.Apis.GraphQL.Queries
                 AddField(queryField);
             }
 
-            foreach (var dynamicQueryFieldTypeProvider in dynamicQueryFieldTypeProviders)
+            foreach (var provider in queryFieldTypeProviders)
             {
-                foreach (var queryField in dynamicQueryFieldTypeProvider.GetFields(this).GetAwaiter().GetResult())
+                foreach (var queryField in provider.GetFields(this).GetAwaiter().GetResult())
                 {
                     AddField(queryField);
                 }
