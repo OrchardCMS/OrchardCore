@@ -98,6 +98,7 @@ class WorkflowEditor {
 
             // Suspend drawing and initialize.
             plumber.batch(() => {
+                var serverWorkflowDefinition: Workflows.Workflow = this.workflowDefinition;
                 var workflowId: number = this.workflowDefinition.id;
 
                 if (loadLocalState) {
@@ -111,10 +112,20 @@ class WorkflowEditor {
                 activityElements.each((index, activityElement) => {
                     const $activityElement = $(activityElement);
                     const activityId = $activityElement.data('activity-id');
-                    const activity = this.getActivity(activityId);
+                    let activity = this.getActivity(activityId);
 
                     // Update the activity's visual state.
                     if (loadLocalState) {
+                        debugger;
+                        if (activity == null) {
+                            // This is a newly added activity not yet added to local state.
+                            activity = this.getActivity(activityId, serverWorkflowDefinition.activities);
+                            this.workflowDefinition.activities.push(activity);
+
+                            activity.x = 50;
+                            activity.y = 50;
+                        }
+
                         $activityElement
                             .css({ left: activity.x, top: activity.y })
                             .toggleClass('activity-start', activity.isStart)
@@ -134,7 +145,7 @@ class WorkflowEditor {
                     // Add source endpoints.
                     for (let outcome of activity.outcomes) {
                         const sourceEndpointOptions = getSourceEndpointOptions(activity, outcome);
-                        plumber.addEndpoint(activityElement, { connectorOverlays: [['Label', { label: outcome.displayName, cssClass: 'connection-label-source' }]] }, sourceEndpointOptions);
+                        plumber.addEndpoint(activityElement, { connectorOverlays: [['Label', { label: outcome.displayName, cssClass: 'connection-label' }]] }, sourceEndpointOptions);
                     }
                 });
 
@@ -192,7 +203,7 @@ class WorkflowEditor {
 
                     $content.on('click', '.activity-delete-action', e => {
                         e.preventDefault();
-                        if (!confirm(this.deleteActivityPrompt)) {
+                        if (!confirm(self.deleteActivityPrompt)) {
                             return;
                         }
 
@@ -201,7 +212,7 @@ class WorkflowEditor {
                     });
 
                     $content.on('click', '[data-persist-workflow]', e => {
-                        this.saveLocalState();
+                        self.saveLocalState();
                     });
 
                     return $content.get(0);
@@ -254,8 +265,11 @@ class WorkflowEditor {
 
     private jsPlumbInstance: jsPlumbInstance;
 
-    private getActivity = function (id: number): Workflows.Activity {
-        return $.grep(this.workflowDefinition.activities, (x: Workflows.Activity) => x.id === id)[0];
+    private getActivity = function (id: number, activities: Array<Workflows.Activity> = null): Workflows.Activity {
+        if (!activities) {
+            activities = this.workflowDefinition.activities;
+        }
+        return $.grep(activities, (x: Workflows.Activity) => x.id === id)[0];
     }
 
     private getState = function (): Workflows.Workflow {

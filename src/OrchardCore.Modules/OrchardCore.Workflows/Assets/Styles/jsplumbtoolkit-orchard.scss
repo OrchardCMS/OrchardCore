@@ -80,18 +80,12 @@
 
     .connection-label {
         z-index: 31;
-        border: 1px solid red;
+        border: 1px solid #cccccc;
         padding: 0 0.5em;
         -moz-border-radius: 2px;
         -webkit-border-radius: 2px;
         border-radius: 2px;
         background-color: white;
-    }
-
-    .connection-label-source {
-        z-index: 31;
-        padding: 0 0.5em;
-        background-color: gray;
     }
 
     .jtk-drag {
