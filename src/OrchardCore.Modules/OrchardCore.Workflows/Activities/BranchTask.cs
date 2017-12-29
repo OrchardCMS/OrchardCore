@@ -7,9 +7,9 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class BranchTask : Activity
+    public class BranchTask : TaskActivity
     {
-        public BranchTask(IStringLocalizer<EvaluateExpressionTask> localizer)
+        public BranchTask(IStringLocalizer<BranchTask> localizer)
         {
             T = localizer;
         }

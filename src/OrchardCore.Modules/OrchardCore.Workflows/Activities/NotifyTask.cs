@@ -8,7 +8,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class NotifyTask : Activity
+    public class NotifyTask : TaskActivity
     {
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;

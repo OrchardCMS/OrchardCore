@@ -6,34 +6,25 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class ForLoopTask : TaskActivity
+    public class WhileLoopTask : TaskActivity
     {
-        public ForLoopTask(IStringLocalizer<ForLoopTask> localizer)
+        public WhileLoopTask(IStringLocalizer<WhileLoopTask> localizer)
         {
             T = localizer;
         }
 
         private IStringLocalizer T { get; }
 
-        public override string Name => nameof(ForLoopTask);
+        public override string Name => nameof(WhileLoopTask);
         public override LocalizedString Category => T["Control Flow"];
-        public override LocalizedString Description => T["Iterates over a branch of execution for N times."];
+        public override LocalizedString Description => T["Iterates over a branch of execution while the specified condition is true."];
 
         /// <summary>
         /// An expression evaluating to the number of times to loop.
         /// </summary>
-        public WorkflowExpression<int> CountExpression
+        public WorkflowExpression<bool> ConditionExpression
         {
-            get => GetProperty(() => new WorkflowExpression<int>());
-            set => SetProperty(value);
-        }
-
-        /// <summary>
-        /// The current number of iterations executed.
-        /// </summary>
-        public int Index
-        {
-            get => GetProperty(() => 0);
+            get => GetProperty(() => new WorkflowExpression<bool>());
             set => SetProperty(value);
         }
 
@@ -44,12 +35,10 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<string> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            var count = workflowContext.Evaluate(CountExpression);
+            var loop = workflowContext.Evaluate(ConditionExpression);
 
-            if (Index < count)
+            if (loop)
             {
-                workflowContext.Stack.Push(Index);
-                Index++;
                 yield return "Iterate";
             }
             else

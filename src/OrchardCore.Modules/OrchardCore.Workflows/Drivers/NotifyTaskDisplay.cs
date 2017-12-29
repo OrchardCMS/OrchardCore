@@ -1,35 +1,21 @@
-using System.Threading.Tasks;
-using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Abstractions.Display;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class NotifyTaskDisplay : ActivityDisplayDriver<NotifyTask>
+    public class NotifyTaskDisplay : ActivityDisplayDriver<NotifyTask, NotifyTaskViewModel>
     {
-        public override IDisplayResult Display(NotifyTask activity)
+        protected override void Map(NotifyTask source, NotifyTaskViewModel target)
         {
-            return Combine(
-                Shape("NotifyTask_Fields_Thumbnail", activity).Location("Thumbnail", "Content"),
-                Shape("NotifyTask_Fields_Design", activity).Location("Design", "Content")
-            );
+            target.NotificationType = source.NotificationType;
+            target.Message = source.Message;
         }
 
-        public override IDisplayResult Edit(NotifyTask activity)
+        protected override void Map(NotifyTaskViewModel source, NotifyTask target)
         {
-            return Shape<NotifyTaskViewModel>("NotifyTask_Fields_Edit", model =>
-            {
-                model.NotificationType = activity.NotificationType;
-                model.Message = activity.Message;
-            }).Location("Content");
-        }
-
-        public async override Task<IDisplayResult> UpdateAsync(NotifyTask model, IUpdateModel updater)
-        {
-            await updater.TryUpdateModelAsync(model, Prefix, x => x.NotificationType, x => x.Message);
-            return Edit(model);
+            target.NotificationType = source.NotificationType;
+            target.Message = source.Message;
         }
     }
 }

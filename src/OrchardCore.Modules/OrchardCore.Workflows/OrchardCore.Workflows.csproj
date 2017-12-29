@@ -24,6 +24,9 @@
     <None Remove="Views\Items\SetVariableTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\SetVariableTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\SetVariableTask.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\Items\WhileLoopTask.Fields.Design.cshtml" />
+    <None Remove="Views\Items\WhileLoopTask.Fields.Edit.cshtml" />
+    <None Remove="Views\Items\WhileLoopTask.Fields.Thumbnail.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

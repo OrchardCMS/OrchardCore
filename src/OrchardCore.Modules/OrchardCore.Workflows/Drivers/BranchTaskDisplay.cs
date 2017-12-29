@@ -1,39 +1,20 @@
 using System;
-using System.Threading.Tasks;
-using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Abstractions.Display;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class BranchTaskDisplay : ActivityDisplayDriver<BranchTask>
+    public class BranchTaskDisplay : ActivityDisplayDriver<BranchTask, BranchTaskViewModel>
     {
-        public override IDisplayResult Display(BranchTask activity)
+        protected override void Map(BranchTask source, BranchTaskViewModel target)
         {
-            return Combine(
-                Shape("BranchTask_Fields_Thumbnail", activity).Location("Thumbnail", "Content"),
-                Shape("BranchTask_Fields_Design", activity).Location("Design", "Content")
-            );
+            target.Branches = string.Join(", ", source.Branches);
         }
 
-        public override IDisplayResult Edit(BranchTask activity)
+        protected override void Map(BranchTaskViewModel source, BranchTask target)
         {
-            return Shape<BranchTaskViewModel>("BranchTask_Fields_Edit", model =>
-            {
-                model.Branches = string.Join(", ", activity.Branches);
-            }).Location("Content");
-        }
-
-        public async override Task<IDisplayResult> UpdateAsync(BranchTask activity, IUpdateModel updater)
-        {
-            var viewModel = new BranchTaskViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                activity.Branches = viewModel.Branches.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            }
-            return Edit(activity);
+            target.Branches = source.Branches.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }

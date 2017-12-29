@@ -6,9 +6,9 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class SetVariableTask : Activity
+    public class SetVariableTask : TaskActivity
     {
-        public SetVariableTask(IStringLocalizer<NotifyTask> localizer)
+        public SetVariableTask(IStringLocalizer<SetVariableTask> localizer)
         {
             T = localizer;
         }

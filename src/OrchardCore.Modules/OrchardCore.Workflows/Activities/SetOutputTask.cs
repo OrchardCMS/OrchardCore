@@ -6,7 +6,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class SetOutputTask : Activity
+    public class SetOutputTask : TaskActivity
     {
         public SetOutputTask(IStringLocalizer<SetOutputTask> localizer)
         {
