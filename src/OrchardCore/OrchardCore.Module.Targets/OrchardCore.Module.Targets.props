@@ -34,6 +34,8 @@
       <ModuleAssets Include=".Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')" />
     </ItemGroup>
 
+    <MakeDir Directories="$(IntermediateOutputPath)" ContinueOnError="True"/>
+
     <WriteLinesToFile
       File="$(IntermediateOutputPath)module.assets.map"
       Lines="@(ModuleAssets)"
