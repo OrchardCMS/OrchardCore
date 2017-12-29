@@ -441,5 +441,35 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         /// </returns>
         Task IOpenIddictTokenStore<IOpenIdToken>.UpdateAsync(IOpenIdToken token, CancellationToken cancellationToken)
             => UpdateAsync((OpenIdToken<TKey>) token, cancellationToken);
+
+        /// <summary>
+        /// Retrieves a token using its physical identifier.
+        /// </summary>
+        /// <param name="identifier">The physical identifier associated with the token.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the token corresponding to the physical identifier.
+        /// </returns>
+        public virtual async Task<IOpenIdToken> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+            // Note: unlike the YesSql-specific models, the default OpenIddict models used by
+            // the Entity Framework Core stores don't have distinct physical/logical identifiers.
+            // To ensure this method can be safely used, the base FindByIdAsync() method is called.
+            => await FindByIdAsync(identifier, cancellationToken);
+
+        /// <summary>
+        /// Retrieves the physical identifier associated with a token.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the physical identifier associated with the token.
+        /// </returns>
+        public virtual Task<string> GetPhysicalIdAsync(IOpenIdToken token, CancellationToken cancellationToken)
+            // Note: unlike the YesSql-specific models, the default OpenIddict models used by
+            // the Entity Framework Core stores don't have distinct physical/logical identifiers.
+            // To ensure this method can be safely used, the base GetIdAsync() method is called.
+            => GetIdAsync((OpenIdToken<TKey>) token, cancellationToken);
     }
 }

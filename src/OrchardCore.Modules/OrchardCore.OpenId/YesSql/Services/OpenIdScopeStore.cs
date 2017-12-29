@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OrchardCore.OpenId.Abstractions.Models;
 using OrchardCore.OpenId.Abstractions.Stores;
+using OrchardCore.OpenId.YesSql.Indexes;
 using OrchardCore.OpenId.YesSql.Models;
 using YesSql;
 
@@ -93,6 +95,48 @@ namespace OrchardCore.OpenId.YesSql.Services
         }
 
         /// <summary>
+        /// Retrieves an authorization using its unique identifier.
+        /// </summary>
+        /// <param name="identifier">The unique identifier associated with the authorization.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the authorization corresponding to the identifier.
+        /// </returns>
+        public virtual async Task<IOpenIdScope> FindByIdAsync(string identifier, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(identifier))
+            {
+                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return await _session.Query<OpenIdScope, OpenIdScopeIndex>(index => index.ScopeId == identifier).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Retrieves a scope using its physical identifier.
+        /// </summary>
+        /// <param name="identifier">The physical identifier associated with the scope.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the scope corresponding to the identifier.
+        /// </returns>
+        public virtual async Task<IOpenIdScope> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(identifier))
+            {
+                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return await _session.GetAsync<OpenIdScope>(int.Parse(identifier, CultureInfo.InvariantCulture));
+        }
+
+        /// <summary>
         /// Executes the specified query and returns the first element.
         /// </summary>
         /// <typeparam name="TState">The state type.</typeparam>
@@ -126,6 +170,44 @@ namespace OrchardCore.OpenId.YesSql.Services
             }
 
             return Task.FromResult(((OpenIdScope) scope).Description);
+        }
+
+        /// <summary>
+        /// Retrieves the unique identifier associated with a scope.
+        /// </summary>
+        /// <param name="scope">The scope.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the unique identifier associated with the scope.
+        /// </returns>
+        public virtual Task<string> GetIdAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+        {
+            if (scope == null)
+            {
+                throw new ArgumentNullException(nameof(scope));
+            }
+
+            return Task.FromResult(((OpenIdScope) scope).ScopeId);
+        }
+
+        /// <summary>
+        /// Retrieves the physical identifier associated with a scope.
+        /// </summary>
+        /// <param name="scope">The scope.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the physical identifier associated with the scope.
+        /// </returns>
+        public virtual Task<string> GetPhysicalIdAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+        {
+            if (scope == null)
+            {
+                throw new ArgumentNullException(nameof(scope));
+            }
+
+            return Task.FromResult(((OpenIdScope) scope).Id.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>

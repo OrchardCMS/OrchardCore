@@ -116,7 +116,7 @@ namespace OrchardCore.OpenId.YesSql.Services
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.GetAsync<OpenIdApplication>(int.Parse(identifier, CultureInfo.InvariantCulture));
+            return await _session.Query<OpenIdApplication, OpenIdApplicationIndex>(index => index.ApplicationId == identifier).FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -138,6 +138,27 @@ namespace OrchardCore.OpenId.YesSql.Services
             cancellationToken.ThrowIfCancellationRequested();
 
             return await _session.Query<OpenIdApplication, OpenIdApplicationIndex>(index => index.ClientId == identifier).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Retrieves an application using its physical identifier.
+        /// </summary>
+        /// <param name="identifier">The unique identifier associated with the application.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the client application corresponding to the identifier.
+        /// </returns>
+        public virtual async Task<IOpenIdApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(identifier))
+            {
+                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return await _session.GetAsync<OpenIdApplication>(int.Parse(identifier, CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -308,6 +329,25 @@ namespace OrchardCore.OpenId.YesSql.Services
             }
 
             return Task.FromResult(((OpenIdApplication) application).ApplicationId);
+        }
+
+        /// <summary>
+        /// Retrieves the physical identifier associated with an application.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the physical identifier associated with the application.
+        /// </returns>
+        public virtual Task<string> GetPhysicalIdAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            return Task.FromResult(((OpenIdApplication) application).Id.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>

@@ -92,6 +92,25 @@ namespace OrchardCore.OpenId.Services.Managers
             return await CreateAsync(application, cancellationToken);
         }
 
+        /// <summary>
+        /// Retrieves an application using its physical identifier.
+        /// </summary>
+        /// <param name="identifier">The unique identifier associated with the application.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the client application corresponding to the identifier.
+        /// </returns>
+        public virtual Task<IOpenIdApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(identifier))
+            {
+                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
+            }
+
+            return Store.FindByPhysicalIdAsync(identifier, cancellationToken);
+        }
+
         public virtual new async Task<ClientType> GetClientTypeAsync(IOpenIdApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
@@ -116,6 +135,25 @@ namespace OrchardCore.OpenId.Services.Managers
             }
 
             return Store.GetGrantTypesAsync(application, cancellationToken);
+        }
+
+        /// <summary>
+        /// Retrieves the physical identifier associated with an application.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the physical identifier associated with the application.
+        /// </returns>
+        public virtual Task<string> GetPhysicalIdAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            return Store.GetPhysicalIdAsync(application, cancellationToken);
         }
 
         public virtual async Task<bool> IsGrantTypeAllowedAsync(IOpenIdApplication application, string type, CancellationToken cancellationToken)

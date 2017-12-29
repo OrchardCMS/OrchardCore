@@ -69,6 +69,21 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             => DeleteAsync((OpenIdScope<TKey>) scope, cancellationToken);
 
         /// <summary>
+        /// Retrieves a scope using its unique identifier.
+        /// </summary>
+        /// <param name="identifier">The unique identifier associated with the scope.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the scope corresponding to the identifier.
+        /// </returns>
+        async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
+            // Note: unlike the YesSql-specific models, the default OpenIddict models used by
+            // the Entity Framework Core stores don't have distinct physical/logical identifiers.
+            // To ensure this method can be safely used, the base FindByIdAsync() method is called.
+            => await FindByIdAsync(identifier, cancellationToken);
+
+        /// <summary>
         /// Executes the specified query and returns the first element.
         /// </summary>
         /// <typeparam name="TState">The state type.</typeparam>
@@ -96,6 +111,18 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         /// </returns>
         Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetDescriptionAsync(IOpenIdScope scope, CancellationToken cancellationToken)
             => GetDescriptionAsync((OpenIdScope<TKey>) scope, cancellationToken);
+
+        /// <summary>
+        /// Retrieves the unique identifier associated with a scope.
+        /// </summary>
+        /// <param name="scope">The scope.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the unique identifier associated with the scope.
+        /// </returns>
+        Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetIdAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+            => GetIdAsync((OpenIdScope<TKey>) scope, cancellationToken);
 
         /// <summary>
         /// Retrieves the name associated with a scope.
@@ -184,5 +211,35 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         /// </returns>
         Task IOpenIddictScopeStore<IOpenIdScope>.UpdateAsync(IOpenIdScope scope, CancellationToken cancellationToken)
             => UpdateAsync((OpenIdScope<TKey>) scope, cancellationToken);
+
+        /// <summary>
+        /// Retrieves a scope using its physical identifier.
+        /// </summary>
+        /// <param name="identifier">The physical identifier associated with the scope.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the scope corresponding to the identifier.
+        /// </returns>
+        public virtual async Task<IOpenIdScope> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+            // Note: unlike the YesSql-specific models, the default OpenIddict models used by
+            // the Entity Framework Core stores don't have distinct physical/logical identifiers.
+            // To ensure this method can be safely used, the base FindByIdAsync() method is called.
+            => await FindByIdAsync(identifier, cancellationToken);
+
+        /// <summary>
+        /// Retrieves the physical identifier associated with a scope.
+        /// </summary>
+        /// <param name="scope">The scope.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the physical identifier associated with the scope.
+        /// </returns>
+        public virtual Task<string> GetPhysicalIdAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+            // Note: unlike the YesSql-specific models, the default OpenIddict models used by
+            // the Entity Framework Core stores don't have distinct physical/logical identifiers.
+            // To ensure this method can be safely used, the base GetIdAsync() method is called.
+            => GetIdAsync((OpenIdScope<TKey>) scope, cancellationToken);
     }
 }

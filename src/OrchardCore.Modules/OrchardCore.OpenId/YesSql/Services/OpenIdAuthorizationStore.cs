@@ -146,6 +146,27 @@ namespace OrchardCore.OpenId.YesSql.Services
 
             cancellationToken.ThrowIfCancellationRequested();
 
+            return await _session.Query<OpenIdAuthorization, OpenIdAuthorizationIndex>(index => index.AuthorizationId == identifier).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Retrieves an authorization using its physical identifier.
+        /// </summary>
+        /// <param name="identifier">The physical identifier associated with the authorization.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the authorization corresponding to the identifier.
+        /// </returns>
+        public virtual async Task<IOpenIdAuthorization> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(identifier))
+            {
+                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
             return await _session.GetAsync<OpenIdAuthorization>(int.Parse(identifier, CultureInfo.InvariantCulture));
         }
 
@@ -202,6 +223,25 @@ namespace OrchardCore.OpenId.YesSql.Services
             }
 
             return Task.FromResult(((OpenIdAuthorization) authorization).AuthorizationId);
+        }
+
+        /// <summary>
+        /// Retrieves the physical identifier associated with an authorization.
+        /// </summary>
+        /// <param name="authorization">The authorization.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the physical identifier associated with the authorization.
+        /// </returns>
+        public virtual Task<string> GetPhysicalIdAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
+        {
+            if (authorization == null)
+            {
+                throw new ArgumentNullException(nameof(authorization));
+            }
+
+            return Task.FromResult(((OpenIdAuthorization) authorization).Id.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>

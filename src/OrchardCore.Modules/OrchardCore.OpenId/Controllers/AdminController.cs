@@ -93,8 +93,8 @@ namespace OrchardCore.OpenId.Controllers
             {
                 model.Applications.Add(new OpenIdApplicationEntry
                 {
-                    ApplicationId = await _applicationManager.GetIdAsync(application, HttpContext.RequestAborted),
-                    DisplayName = await _applicationManager.GetDisplayNameAsync(application, HttpContext.RequestAborted)
+                    DisplayName = await _applicationManager.GetDisplayNameAsync(application, HttpContext.RequestAborted),
+                    Id = await _applicationManager.GetPhysicalIdAsync(application, HttpContext.RequestAborted)
                 });
             }
 
@@ -114,7 +114,7 @@ namespace OrchardCore.OpenId.Controllers
                 _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
             }
 
-            var application = await _applicationManager.FindByIdAsync(id, HttpContext.RequestAborted);
+            var application = await _applicationManager.FindByPhysicalIdAsync(id, HttpContext.RequestAborted);
             if (application == null)
             {
                 return NotFound();
@@ -129,7 +129,7 @@ namespace OrchardCore.OpenId.Controllers
                 AllowRefreshTokenFlow = await _applicationManager.IsRefreshTokenFlowAllowedAsync(application, HttpContext.RequestAborted),
                 ClientId = await _applicationManager.GetClientIdAsync(application, HttpContext.RequestAborted),
                 DisplayName = await _applicationManager.GetDisplayNameAsync(application, HttpContext.RequestAborted),
-                Id = await _applicationManager.GetIdAsync(application, HttpContext.RequestAborted),
+                Id = await _applicationManager.GetPhysicalIdAsync(application, HttpContext.RequestAborted),
                 LogoutRedirectUri = (await _applicationManager.GetPostLogoutRedirectUrisAsync(application, HttpContext.RequestAborted)).FirstOrDefault(),
                 RedirectUri = (await _applicationManager.GetRedirectUrisAsync(application, HttpContext.RequestAborted)).FirstOrDefault(),
                 SkipConsent = await _applicationManager.IsConsentRequiredAsync(application, HttpContext.RequestAborted),
@@ -172,7 +172,7 @@ namespace OrchardCore.OpenId.Controllers
 
             if (ModelState.IsValid)
             {
-                application = await _applicationManager.FindByIdAsync(model.Id, HttpContext.RequestAborted);
+                application = await _applicationManager.FindByPhysicalIdAsync(model.Id, HttpContext.RequestAborted);
                 if (application == null)
                 {
                     return NotFound();
@@ -324,7 +324,7 @@ namespace OrchardCore.OpenId.Controllers
                 return Unauthorized();
             }
 
-            var application = await _applicationManager.FindByIdAsync(id, HttpContext.RequestAborted);
+            var application = await _applicationManager.FindByPhysicalIdAsync(id, HttpContext.RequestAborted);
             if (application == null)
             {
                 return NotFound();

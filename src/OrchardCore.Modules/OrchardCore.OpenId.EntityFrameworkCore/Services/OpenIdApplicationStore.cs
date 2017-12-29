@@ -348,6 +348,36 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         Task IOpenIddictApplicationStore<IOpenIdApplication>.UpdateAsync(IOpenIdApplication application, CancellationToken cancellationToken)
             => UpdateAsync((OpenIdApplication<TKey>) application, cancellationToken);
 
+        /// <summary>
+        /// Retrieves an application using its physical identifier.
+        /// </summary>
+        /// <param name="identifier">The unique identifier associated with the application.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the client application corresponding to the identifier.
+        /// </returns>
+        public virtual async Task<IOpenIdApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+            // Note: unlike the YesSql-specific models, the default OpenIddict models used by
+            // the Entity Framework Core stores don't have distinct physical/logical identifiers.
+            // To ensure this method can be safely used, the base FindByIdAsync() method is called.
+            => await FindByIdAsync(identifier, cancellationToken);
+
+        /// <summary>
+        /// Retrieves the physical identifier associated with an application.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the physical identifier associated with the application.
+        /// </returns>
+        public virtual Task<string> GetPhysicalIdAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            // Note: unlike the YesSql-specific models, the default OpenIddict models used by
+            // the Entity Framework Core stores don't have distinct physical/logical identifiers.
+            // To ensure this method can be safely used, the base GetIdAsync() method is called.
+            => GetIdAsync((OpenIdApplication<TKey>) application, cancellationToken);
+
         // TODO: remove these methods once per-application grant type limitation is added to OpenIddict.
         public virtual Task<ImmutableArray<string>> GetGrantTypesAsync(IOpenIdApplication application, CancellationToken cancellationToken)
         {

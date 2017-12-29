@@ -179,6 +179,27 @@ namespace OrchardCore.OpenId.YesSql.Services
 
             cancellationToken.ThrowIfCancellationRequested();
 
+            return await _session.Query<OpenIdToken, OpenIdTokenIndex>(index => index.TokenId == identifier).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Retrieves a token using its physical identifier.
+        /// </summary>
+        /// <param name="identifier">The physical identifier associated with the token.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the token corresponding to the physical identifier.
+        /// </returns>
+        public virtual async Task<IOpenIdToken> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(identifier))
+            {
+                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
             return await _session.GetAsync<OpenIdToken>(int.Parse(identifier, CultureInfo.InvariantCulture));
         }
 
@@ -332,6 +353,25 @@ namespace OrchardCore.OpenId.YesSql.Services
             }
 
             return Task.FromResult(((OpenIdToken) token).Payload);
+        }
+
+        /// <summary>
+        /// Retrieves the physical identifier associated with a token.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the physical identifier associated with the token.
+        /// </returns>
+        public virtual Task<string> GetPhysicalIdAsync(IOpenIdToken token, CancellationToken cancellationToken)
+        {
+            if (token == null)
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
+            return Task.FromResult(((OpenIdToken) token).Id.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>

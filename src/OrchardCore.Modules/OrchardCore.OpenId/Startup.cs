@@ -56,8 +56,9 @@ namespace OrchardCore.OpenId
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddSingleton<IIndexProvider, OpenIdApplicationIndexProvider>();
-            services.AddSingleton<IIndexProvider, OpenIdTokenIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdAuthorizationIndexProvider>();
+            services.AddSingleton<IIndexProvider, OpenIdScopeIndexProvider>();
+            services.AddSingleton<IIndexProvider, OpenIdTokenIndexProvider>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<IDisplayDriver<ISite>, OpenIdSiteSettingsDisplayDriver>();

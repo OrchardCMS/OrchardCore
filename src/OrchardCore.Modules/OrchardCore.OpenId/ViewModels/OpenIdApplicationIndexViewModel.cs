@@ -10,8 +10,8 @@ namespace OrchardCore.OpenId.ViewModels
 
     public class OpenIdApplicationEntry
     {
-        public string ApplicationId { get; set; }
         public string DisplayName { get; set; }
+        public string Id { get; set; }
         public bool IsChecked { get; set; }
     }
 }
