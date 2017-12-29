@@ -47,15 +47,15 @@
     <Message Text="Generating manifest file: $(MSBuildProjectName)" Importance="high" Condition="!Exists('$(ModuleType).txt')" />
 
     <WriteLinesToFile
-      File="$(IntermediateOutputPath)$(ModuleType).txt"
+      File="obj\$(ModuleType).txt"
       Lines="$(ModuleManifest)"
       Condition="!Exists('$(ModuleType).txt')"
       Overwrite="true"
       Encoding="utf-8"
       ContinueOnError="true" />
     <Delete
-      Files="$(IntermediateOutputPath)$(ModuleType).txt"
-      Condition="Exists('$(IntermediateOutputPath)$(ModuleType).txt') and Exists('$(ModuleType).txt')"
+      Files="obj\$(ModuleType).txt"
+      Condition="Exists('obj\$(ModuleType).txt') and Exists('$(ModuleType).txt')"
       ContinueOnError="true" />
 
     <ItemGroup>
@@ -67,7 +67,7 @@
       <EmbeddedResource Include="$(IntermediateOutputPath)module.assets.map">
         <Link>module.assets.map</Link>
       </EmbeddedResource>
-      <EmbeddedResource Include="$(IntermediateOutputPath)$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')">
+      <EmbeddedResource Include="obj\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')">
         <Link>$(ModuleType).txt</Link>
       </EmbeddedResource>
     </ItemGroup>
@@ -81,8 +81,6 @@
       </EmbeddedResource>
     </ItemGroup>
   </Target>
-
-  <Target Name="GetModuleProjectReference" Returns="$(MSBuildProjectFullPath)" />
 
   <Target Name="GetModuleLinkedRazorFiles" Returns="@(ModuleLinkedRazorFiles)">
     <ItemGroup>
