@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -31,7 +30,6 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IShapeFactory _shapeFactory;
         private readonly IRoleProvider _roleProvider;
         private readonly OpenIddictApplicationManager<OpenIdApplication> _applicationManager;
-        private readonly OpenIdApplicationStore _applicationStore;
         private readonly INotifier _notifier;
         private readonly IOpenIdService _openIdService;
         private readonly IEnumerable<IPasswordValidator<IUser>> _passwordValidators;
@@ -45,7 +43,6 @@ namespace OrchardCore.OpenId.Controllers
             IAuthorizationService authorizationService,
             IRoleProvider roleProvider,
             OpenIddictApplicationManager<OpenIdApplication> applicationManager,
-            OpenIdApplicationStore applicationStore,
             IEnumerable<IPasswordValidator<IUser>> passwordValidators,
             UserManager<IUser> userManager,
             IOptions<IdentityOptions> identityOptions,
@@ -60,7 +57,6 @@ namespace OrchardCore.OpenId.Controllers
             _authorizationService = authorizationService;
             _applicationManager = applicationManager;
             _roleProvider = roleProvider;
-            _applicationStore = applicationStore;
             _notifier = notifier;
             _openIdService = openIdService;
             _passwordValidators = passwordValidators;
@@ -84,9 +80,12 @@ namespace OrchardCore.OpenId.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            var results = await _applicationStore.GetAppsAsync(pager.GetStartIndex(), pager.PageSize);
+            var results = await _applicationManager.ListAsync(pager.PageSize, pager.GetStartIndex(), HttpContext.RequestAborted);
 
-            var pagerShape = await _shapeFactory.CreateAsync("Pager", new { TotalItemCount = await _applicationStore.GetCount() });
+            var pagerShape = await _shapeFactory.CreateAsync("Pager", new
+            {
+                TotalItemCount = await _applicationManager.CountAsync(HttpContext.RequestAborted)
+            });
 
             var model = new OpenIdApplicationsIndexViewModel
             {
@@ -122,8 +121,8 @@ namespace OrchardCore.OpenId.Controllers
             {
                 Id = id,
                 DisplayName = application.DisplayName,
-                RedirectUri = application.RedirectUri,
-                LogoutRedirectUri = application.LogoutRedirectUri,
+                RedirectUri = application.RedirectUris.FirstOrDefault(),
+                LogoutRedirectUri = application.PostLogoutRedirectUris.FirstOrDefault(),
                 ClientId = application.ClientId,
                 Type = application.Type,
                 SkipConsent = application.SkipConsent,
@@ -162,7 +161,7 @@ namespace OrchardCore.OpenId.Controllers
                 var user = await _userManager.FindByNameAsync(User.Identity.Name);
                 await ValidateClientSecretAsync(user, model.ClientSecret, (key, message) => ModelState.AddModelError(key, message));
             }
-            
+
             OpenIdApplication application = null;
 
             if (ModelState.IsValid)
@@ -200,8 +199,6 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             application.DisplayName = model.DisplayName;
-            application.RedirectUri = model.RedirectUri;
-            application.LogoutRedirectUri = model.LogoutRedirectUri;
             application.ClientId = model.ClientId;
             application.Type = model.Type;
             application.SkipConsent = model.SkipConsent;
@@ -212,10 +209,19 @@ namespace OrchardCore.OpenId.Controllers
             application.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
             application.AllowHybridFlow = model.AllowHybridFlow;
 
-            application.RoleNames = new List<string>();
             if (application.Type == ClientType.Confidential && application.AllowClientCredentialsFlow)
             {
-                application.RoleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
+                application.RoleNames = new HashSet<string>(model.RoleEntries.Where(r => r.Selected).Select(r => r.Name));
+            }
+
+            if (!string.IsNullOrEmpty(model.RedirectUri))
+            {
+                application.RedirectUris = new HashSet<string> { model.RedirectUri };
+            }
+
+            if (!string.IsNullOrEmpty(model.LogoutRedirectUri))
+            {
+                application.PostLogoutRedirectUris = new HashSet<string> { model.LogoutRedirectUri };
             }
 
             if (model.UpdateClientSecret)
@@ -290,17 +296,16 @@ namespace OrchardCore.OpenId.Controllers
                 return View("Create", model);
             }
 
-            var roleNames = new List<string>();
+            var roleNames = new HashSet<string>();
             if (model.Type == ClientType.Confidential && model.AllowClientCredentialsFlow)
             {
-                roleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
+                roleNames = new HashSet<string>(model.RoleEntries.Where(r => r.Selected).Select(r => r.Name));
             }
-            
+
             var application = new OpenIdApplication
             {
+                ApplicationId = Guid.NewGuid().ToString("n"),
                 DisplayName = model.DisplayName,
-                RedirectUri = model.RedirectUri,
-                LogoutRedirectUri = model.LogoutRedirectUri,
                 ClientId = model.ClientId,
                 Type = model.Type,
                 SkipConsent = model.SkipConsent,
@@ -312,6 +317,16 @@ namespace OrchardCore.OpenId.Controllers
                 AllowRefreshTokenFlow = model.AllowRefreshTokenFlow,
                 AllowHybridFlow = model.AllowHybridFlow
             };
+
+            if (!string.IsNullOrEmpty(model.RedirectUri))
+            {
+                application.RedirectUris = new HashSet<string> { model.RedirectUri };
+            }
+
+            if (!string.IsNullOrEmpty(model.LogoutRedirectUri))
+            {
+                application.PostLogoutRedirectUris = new HashSet<string> { model.LogoutRedirectUri };
+            }
 
             await _applicationManager.CreateAsync(application, model.ClientSecret, HttpContext.RequestAborted);
 
