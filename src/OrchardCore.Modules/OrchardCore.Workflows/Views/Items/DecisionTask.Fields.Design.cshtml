@@ -1,0 +1,8 @@
+@using OrchardCore.Workflows.Activities
+@{
+    var activity = (DecisionTask)Model.Activity;
+}
+<header>
+    <h4><i class="fa fa-diamond"></i>@T["Decision"]</h4>
+</header>
+<span>@T["Evaluates <em>{0}</em> to true or false", activity.ConditionExpression]</span>

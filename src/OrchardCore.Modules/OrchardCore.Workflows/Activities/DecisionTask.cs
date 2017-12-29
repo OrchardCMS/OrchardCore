@@ -6,21 +6,21 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class WhileLoopTask : TaskActivity
+    public class DecisionTask : TaskActivity
     {
-        public WhileLoopTask(IStringLocalizer<WhileLoopTask> localizer)
+        public DecisionTask(IStringLocalizer<DecisionTask> localizer)
         {
             T = localizer;
         }
 
         private IStringLocalizer T { get; }
 
-        public override string Name => nameof(WhileLoopTask);
+        public override string Name => nameof(DecisionTask);
         public override LocalizedString Category => T["Control Flow"];
-        public override LocalizedString Description => T["Iterates over a branch of execution while the specified condition is true."];
+        public override LocalizedString Description => T["Evaluates the specified condition and continues execution based on the outcome."];
 
         /// <summary>
-        /// An expression evaluating to true or false.
+        /// An expression evaluating to either true or false.
         /// </summary>
         public WorkflowExpression<bool> ConditionExpression
         {
@@ -30,21 +30,13 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Iterate"], T["Done"]);
+            return Outcomes(T["True"], T["False"]);
         }
 
         public override IEnumerable<string> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            var loop = workflowContext.Evaluate(ConditionExpression);
-
-            if (loop)
-            {
-                yield return "Iterate";
-            }
-            else
-            {
-                yield return "Done";
-            }
+            var result = workflowContext.Evaluate(ConditionExpression);
+            yield return result ? "True" : "False";
         }
     }
 }
