@@ -27,6 +27,9 @@
     <None Remove="Views\Items\SetVariableTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\SetVariableTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\SetVariableTask.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\Items\SignalEvent.Fields.Design.cshtml" />
+    <None Remove="Views\Items\SignalEvent.Fields.Edit.cshtml" />
+    <None Remove="Views\Items\SignalEvent.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\WhileLoopTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\WhileLoopTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\WhileLoopTask.Fields.Thumbnail.cshtml" />
@@ -53,6 +56,7 @@
   <ItemGroup>
     <Folder Include="Content\Scripts\" />
     <Folder Include="Content\Styles\Images\" />
+    <Folder Include="Handlers\" />
   </ItemGroup>
 
   <ItemGroup>
