@@ -5,14 +5,13 @@ using OrchardCore.Environment.Shell.Models;
 namespace OrchardCore.Environment.Shell
 {
     /// <summary>
-    /// Represents the minimalistic set of fields stored for each tenant. This
+    /// Represents the minimum set of fields stored for each tenant. This
     /// model is obtained from the IShellSettingsManager, which by default reads this
-    /// from the App_Data settings.txt files.
+    /// from the App_Data Settings.txt files.
     /// </summary>
     public class ShellSettings
     {
-        private TenantState _tenantState;
-
+        private TenantStatus _tenantStatus;
         private readonly IDictionary<string, string> _values;
 
         public ShellSettings() : this(new Dictionary<string, string>()) { }
@@ -21,11 +20,15 @@ namespace OrchardCore.Environment.Shell
         {
             _values = new Dictionary<string, string>(configuration);
 
-            if (!configuration.ContainsKey("State") || !Enum.TryParse(configuration["State"], true, out _tenantState)) {
-                _tenantState = TenantState.Invalid;
+            if (!configuration.ContainsKey(nameof(Status)) || !Enum.TryParse(configuration[nameof(Status)], true, out _tenantStatus))
+            {
+                _tenantStatus = TenantStatus.Invalid;
             }
         }
 
+        /// <summary>
+        /// Gets all keys held by this shell settings.
+        /// </summary>
         public string this[string key]
         {
             get
@@ -38,49 +41,103 @@ namespace OrchardCore.Environment.Shell
 
         public IDictionary<string, string> Configuration => _values;
 
+        /// <summary>
+        /// The name of the tenant.
+        /// </summary>
         public string Name
         {
-            get { return this["Name"] ?? ""; }
-            set { this["Name"] = value; }
+            get => this[nameof(Name)] ?? "";
+            set => this[nameof(Name)] = value;
         }
 
+        /// <summary>
+        /// The host name of the tenant.
+        /// </summary>
         public string RequestUrlHost
         {
-            get { return this["RequestUrlHost"]; }
-            set { this["RequestUrlHost"] = value; }
+            get => this[nameof(RequestUrlHost)];
+            set => this[nameof(RequestUrlHost)] = value;
         }
 
+        /// <summary>
+        /// The request url prefix of the tenant.
+        /// </summary>
         public string RequestUrlPrefix
         {
-            get { return this["RequestUrlPrefix"]; }
-            set { _values["RequestUrlPrefix"] = value; }
+            get => this[nameof(RequestUrlPrefix)];
+            set => _values[nameof(RequestUrlPrefix)] = value;
         }
 
+        /// <summary>
+        /// The database provider for the tenant.
+        /// </summary>
         public string DatabaseProvider
         {
-            get { return this["DatabaseProvider"]; }
-            set { _values["DatabaseProvider"] = value; }
+            get => this[nameof(DatabaseProvider)];
+            set => _values[nameof(DatabaseProvider)] = value;
         }
 
+        /// <summary>
+        /// The data table prefix added to table names for this tenant.
+        /// </summary>
         public string TablePrefix
         {
-            get { return this["TablePrefix"]; }
-            set { _values["TablePrefix"] = value; }
+            get => this[nameof(TablePrefix)];
+            set => _values[nameof(TablePrefix)] = value;
         }
 
+        /// <summary>
+        /// The database connection string.
+        /// </summary>
         public string ConnectionString
         {
-            get { return this["ConnectionString"]; }
-            set { _values["ConnectionString"] = value; }
+            get => this[nameof(ConnectionString)];
+            set => _values[nameof(ConnectionString)] = value;
         }
 
-        public TenantState State
+        /// <summary>
+        /// The encryption algorithm used for encryption services.
+        /// </summary>
+        public string EncryptionAlgorithm
         {
-            get => _tenantState;
+            get => this[nameof(EncryptionAlgorithm)];
+            set => this[nameof(EncryptionAlgorithm)] = value;
+        }
+
+        /// <summary>
+        /// The encryption key used for encryption services.
+        /// </summary>
+        public string EncryptionKey
+        {
+            get => this[nameof(EncryptionKey)];
+            set => _values[nameof(EncryptionKey)] = value;
+        }
+
+        /// <summary>
+        /// The hash algorithm used for encryption services.
+        /// </summary>
+        public string HashAlgorithm
+        {
+            get => this[nameof(HashAlgorithm)];
+            set => this[nameof(HashAlgorithm)] = value;
+        }
+
+        /// <summary>
+        /// The hash key used for encryption services.
+        /// </summary>
+        public string HashKey
+        {
+            get => this[nameof(HashKey)];
+            set => this[nameof(HashKey)] = value;
+        }
+
+        public TenantStatus Status
+        {
+            get => _tenantStatus;
             set
             {
-                _tenantState = value;
-                this["State"] = value.ToString();
+                _tenantStatus = value;
+                this[nameof(Status)] = value.ToString();
             }
         }
     }

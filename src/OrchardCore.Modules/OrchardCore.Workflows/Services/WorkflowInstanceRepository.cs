@@ -16,12 +16,13 @@ namespace OrchardCore.Workflows.Services
             _session = session;
         }
 
-        public async Task<IList<WorkflowInstanceRecord>> GetPendingWorkflowInstancesByActivityAsync(string activityName)
+        public async Task<IList<WorkflowInstanceRecord>> GetWaitingWorkflowInstancesAsync(string activityName, string correlationId = null)
         {
             var query = await _session
                 .QueryIndex<WorkflowInstanceByAwaitingActivitiesIndex>(index =>
                     index.ActivityName == activityName &&
-                    index.ActivityIsStart == false)
+                    index.ActivityIsStart == false &&
+                    index.WorkflowInstanceCorrelationId == correlationId)
                 .ListAsync();
 
             var pendingWorkflowInstanceIndexes = query.ToList();

@@ -25,16 +25,18 @@ namespace OrchardCore.Workflows.Services
         /// </summary>
         /// <param name="name">The type of the event to trigger, e.g. ContentPublishedEvent.</param>
         /// <param name="input">An object containing context for the event.</param>
-        Task TriggerEventAsync(string name, IDictionary<string, object> input);
+        /// <param name="correlationId">Optionally specify a application-specific value to associate the workflow instance with. For example, a content item ID.</param>
+        Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null);
 
         /// <summary>
         /// Starts a new workflow using the specified workflow definition.
         /// </summary>
         /// <param name="workflowDefinition">The workflow definition to start.</param>
-        /// <param name="input">Optional. Specify any inputs to be used by the workflow.</param>
-        /// <param name="startActivityName">Optional. If a workflow definition contains multiple start activities, you can specify which one to use. If none specified, the first one will be used.</param>
+        /// <param name="input">Optionally specify any inputs to be used by the workflow.</param>
+        /// <param name="correlationId">Optionally specify a application-specific value to associate the workflow instance with. For example, a content item ID.</param>
+        /// <param name="startActivityName">If a workflow definition contains multiple start activities, you can specify which one to use. If none specified, the first one will be used.</param>
         /// <returns>Returns the created workflow context. Can be used for further inspection of the workflow state.</returns>
-        Task<WorkflowContext> StartWorkflowAsync(WorkflowDefinitionRecord workflowDefinition, IDictionary<string, object> input = null, string startActivityName = null);
+        Task<WorkflowContext> StartWorkflowAsync(WorkflowDefinitionRecord workflowDefinition, IDictionary<string, object> input = null, string correlationId = null, string startActivityName = null);
 
         /// <summary>
         /// Executes the specified workflow starting at the specified activity.

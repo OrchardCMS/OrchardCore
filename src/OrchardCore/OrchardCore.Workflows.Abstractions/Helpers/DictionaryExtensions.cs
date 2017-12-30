@@ -13,6 +13,14 @@ namespace OrchardCore.Workflows.Helpers
         }
 
         /// <summary>
+        /// Safely tries and returns a value by the specified key. If the specified key does not exist, null is returned.
+        /// </summary>
+        public static TValue GetValue<TValue>(this IDictionary<string, object> dictionary, string key)
+        {
+            return (TValue)GetValue(dictionary, key);
+        }
+
+        /// <summary>
         /// Merges the specified other dictionary into this dictionary.
         /// Existing entries are overwritten.
         /// </summary>

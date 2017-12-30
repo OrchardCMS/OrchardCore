@@ -7,7 +7,7 @@ namespace OrchardCore.Workflows.Services
 {
     public interface IWorkflowInstanceRepository
     {
-        Task<IList<WorkflowInstanceRecord>> GetPendingWorkflowInstancesByActivityAsync(string activityName);
+        Task<IList<WorkflowInstanceRecord>> GetWaitingWorkflowInstancesAsync(string activityName, string correlationId = null);
         void Save(WorkflowInstanceRecord workflowInstance);
         void Delete(WorkflowInstanceRecord workflowInstance);
     }

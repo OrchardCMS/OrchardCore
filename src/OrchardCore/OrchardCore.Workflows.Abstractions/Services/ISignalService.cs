@@ -1,8 +1,8 @@
-﻿namespace OrchardCore.Workflows.Services
+namespace OrchardCore.Workflows.Services
 {
     public interface ISignalService
     {
-        string CreateNonce(int contentItemId, string signal);
-        bool DecryptNonce(string nonce, out int contentItemId, out string signal);
+        string CreateNonce(string correlationId, string signal);
+        bool DecryptNonce(string nonce, out string correlationId, out string signal);
     }
 }

@@ -55,7 +55,7 @@ namespace OrchardCore.Workflows.Services
             };
         }
 
-        public async Task TriggerEventAsync(string name, IDictionary<string, object> input)
+        public async Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null)
         {
             var activity = _activityLibrary.GetActivityByName(name);
 
@@ -70,7 +70,7 @@ namespace OrchardCore.Workflows.Services
 
             // And any running workflow paused on this kind of activity for the specified target.
             // When an activity is restarted, all the other ones of the same workflow are cancelled.
-            var awaitingWorkflowInstances = await _workInstanceRepository.GetPendingWorkflowInstancesByActivityAsync(name);
+            var awaitingWorkflowInstances = await _workInstanceRepository.GetWaitingWorkflowInstancesAsync(name, correlationId);
 
             // If no activity record is matching the event, do nothing.
             if (!workflowsToStart.Any() && !awaitingWorkflowInstances.Any())
@@ -82,7 +82,7 @@ namespace OrchardCore.Workflows.Services
             foreach (var workflowInstance in awaitingWorkflowInstances)
             {
                 // Merge additional input, if any.
-                if (input.Any())
+                if (input?.Any() == true)
                 {
                     var workflowState = workflowInstance.State.ToObject<WorkflowState>();
                     workflowState.Input.Merge(input);
@@ -151,7 +151,7 @@ namespace OrchardCore.Workflows.Services
             }
         }
 
-        public async Task<WorkflowContext> StartWorkflowAsync(WorkflowDefinitionRecord workflowDefinition, IDictionary<string, object> input = null, string startActivityName = null)
+        public async Task<WorkflowContext> StartWorkflowAsync(WorkflowDefinitionRecord workflowDefinition, IDictionary<string, object> input = null, string correlationId = null, string startActivityName = null)
         {
             // Get the starting activity.
             var startActivityQuery = workflowDefinition.Activities.Where(x => x.IsStart);
@@ -167,7 +167,8 @@ namespace OrchardCore.Workflows.Services
             var workflowInstance = new WorkflowInstanceRecord
             {
                 DefinitionId = workflowDefinition.Id,
-                State = JObject.FromObject(new WorkflowState { Input = input ?? new Dictionary<string, object>() })
+                State = JObject.FromObject(new WorkflowState { Input = input ?? new Dictionary<string, object>() }),
+                CorrelationId = correlationId
             };
 
             // Create a workflow context.

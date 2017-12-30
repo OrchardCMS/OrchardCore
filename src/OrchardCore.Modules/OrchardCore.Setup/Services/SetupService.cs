@@ -74,14 +74,14 @@ namespace OrchardCore.Setup.Services
 
         public Task<string> SetupAsync(SetupContext context)
         {
-            var initialState = _shellSettings.State;
+            var initialState = _shellSettings.Status;
             try
             {
                 return SetupInternalAsync(context);
             }
             catch
             {
-                _shellSettings.State = initialState;
+                _shellSettings.Status = initialState;
                 throw;
             }
         }
@@ -107,7 +107,7 @@ namespace OrchardCore.Setup.Services
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
 
             // Set shell state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while Orchard is setting up.
-            _shellSettings.State = TenantState.Initializing;
+            _shellSettings.Status = TenantStatus.Initializing;
 
             var shellSettings = new ShellSettings(_shellSettings.Configuration);
 
@@ -239,7 +239,7 @@ namespace OrchardCore.Setup.Services
             }
 
             // Update the shell state
-            shellSettings.State = TenantState.Running;
+            shellSettings.Status = TenantStatus.Running;
             _orchardHost.UpdateShellSettings(shellSettings);
 
             return executionId;

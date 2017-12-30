@@ -23,6 +23,7 @@ namespace OrchardCore.Workflows
                 .Column<string>("ActivityName")
                 .Column<bool>("ActivityIsStart")
                 .Column<int>("WorkflowInstanceId")
+                .Column<string>("WorkflowInstanceCorrelationId")
             );
 
             return 1;

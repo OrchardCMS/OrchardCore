@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Entities;
 
 namespace OrchardCore.Workflows.Models
 {
@@ -15,6 +14,11 @@ namespace OrchardCore.Workflows.Models
         /// The ID of the workflow definition.
         /// </summary>
         public int DefinitionId { get; set; }
+
+        /// <summary>
+        /// The correlation ID can be used to resume workflow instances that sre associated with specific objects, such as content items.
+        /// </summary>
+        public string CorrelationId { get; set; }
 
         /// <summary>
         /// Serialized state of the workflow.

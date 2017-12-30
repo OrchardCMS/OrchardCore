@@ -6,5 +6,7 @@ namespace OrchardCore.Workflows.ViewModels
     {
         [Required]
         public string SignalName { get; set; }
+
+        public string ConditionExpression { get; set; }
     }
 }

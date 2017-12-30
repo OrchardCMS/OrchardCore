@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
-using OrchardCore.Entities;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
@@ -22,7 +21,6 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         protected IContentManager ContentManager { get; }
         protected IStringLocalizer S { get; }
-        public override bool CanStartWorkflow => true;
         public override LocalizedString Category => S["Content"];
 
         public IList<string> ContentTypeFilter

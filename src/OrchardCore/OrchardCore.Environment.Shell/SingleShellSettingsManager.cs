@@ -9,7 +9,7 @@ namespace OrchardCore.Environment.Shell
             yield return new ShellSettings
             {
                 Name = "Default",
-                State = Models.TenantState.Running
+                Status = Models.TenantStatus.Running
             };
         }
 

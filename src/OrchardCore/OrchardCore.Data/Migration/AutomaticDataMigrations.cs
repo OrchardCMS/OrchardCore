@@ -28,7 +28,7 @@ namespace OrchardCore.Data.Migration
 
         public Task ActivatedAsync()
         {
-            if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized)
+            if (_shellSettings.Status != Environment.Shell.Models.TenantStatus.Uninitialized)
             {
                 var dataMigrationManager = _serviceProvider.GetService<IDataMigrationManager>();
                 return dataMigrationManager.UpdateAllFeaturesAsync();

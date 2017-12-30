@@ -12,7 +12,7 @@ namespace OrchardCore.Environment.Shell
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IOptions<ShellOptions> _optionsAccessor;
-        
+
         public ShellSettingsConfigurationProvider(
             IHostingEnvironment hostingEnvironment,
             IOptions<ShellOptions> optionsAccessor)
@@ -56,12 +56,16 @@ namespace OrchardCore.Environment.Shell
             });
 
             configurationProvider.Set(name, null);
-            configurationProvider.Set($"{name}:RequestUrlHost", ObtainValue(configuration,$"{name}:RequestUrlHost"));
-            configurationProvider.Set($"{name}:RequestUrlPrefix", ObtainValue(configuration,$"{name}:RequestUrlPrefix"));
-            configurationProvider.Set($"{name}:DatabaseProvider", ObtainValue(configuration,$"{name}:DatabaseProvider"));
-            configurationProvider.Set($"{name}:TablePrefix", ObtainValue(configuration,$"{name}:TablePrefix"));
-            configurationProvider.Set($"{name}:ConnectionString", ObtainValue(configuration,$"{name}:ConnectionString"));
-            configurationProvider.Set($"{name}:State", ObtainValue(configuration,$"{name}:State"));
+            configurationProvider.Set($"{name}:RequestUrlHost", ObtainValue(configuration, $"{name}:RequestUrlHost"));
+            configurationProvider.Set($"{name}:RequestUrlPrefix", ObtainValue(configuration, $"{name}:RequestUrlPrefix"));
+            configurationProvider.Set($"{name}:DatabaseProvider", ObtainValue(configuration, $"{name}:DatabaseProvider"));
+            configurationProvider.Set($"{name}:TablePrefix", ObtainValue(configuration, $"{name}:TablePrefix"));
+            configurationProvider.Set($"{name}:ConnectionString", ObtainValue(configuration, $"{name}:ConnectionString"));
+            configurationProvider.Set($"{name}:EncryptionAlgorithm", ObtainValue(configuration, $"{name}:EncryptionAlgorithm"));
+            configurationProvider.Set($"{name}:EncryptionKey", ObtainValue(configuration, $"{name}:EncryptionKey"));
+            configurationProvider.Set($"{name}:HashAlgorithm", ObtainValue(configuration, $"{name}:HashAlgorithm"));
+            configurationProvider.Set($"{name}:HashKey", ObtainValue(configuration, $"{name}:HashKey"));
+            configurationProvider.Set($"{name}:Status", ObtainValue(configuration, $"{name}:Status"));
 
             configurationProvider.Commit();
         }
