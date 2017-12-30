@@ -108,10 +108,52 @@ namespace OrchardCore.Users.Services
                 return await Task.FromResult<IUser>(null);
             }
 
-            var user = (User)(iUser);
-            user.ResetCode = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var user = (User)iUser;
+            user.ResetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             return user;
+        }
+
+        public async Task<bool> ResetPasswordAsync(string userIdentifier, string resetToken, string newPassword, Action<string, string> reportError)
+        {
+            var result = true;
+            if (string.IsNullOrWhiteSpace(userIdentifier))
+            {
+                reportError("UserName", T["A user name or email is required."]);
+                result = false;
+            }
+
+            if (string.IsNullOrWhiteSpace(newPassword))
+            {
+                reportError("Password", T["A password is required."]);
+                result = false;
+            }
+
+            if (string.IsNullOrWhiteSpace(resetToken))
+            {
+                reportError("Token", T["A token is required."]);
+                result = false;
+            }
+
+            if (!result)
+            {
+                return result;
+            }
+
+            var iUser = await FindByUsernameOrEmailAsync(userIdentifier);
+            if (iUser == null)
+            {
+                return false;
+            }
+
+            var identityResult = await _userManager.ResetPasswordAsync(iUser, resetToken, newPassword);
+
+            if (!identityResult.Succeeded)
+            {
+                ProcessValidationErrors(identityResult.Errors, (User)iUser, reportError);
+            }
+
+            return identityResult.Succeeded;
         }
 
         /// <summary>

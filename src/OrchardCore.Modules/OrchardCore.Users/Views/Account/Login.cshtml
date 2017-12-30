@@ -49,9 +49,9 @@
                         <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">@T["Register as a new user?"]</a>
                     </p>
                 }
-                @*<p>
-                        <a asp-action="ForgotPassword">@T["Forgot your password?"]</a>
-                    </p>*@
+                    <p>
+                        <a asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="ForgotPassword">@T["Forgot your password?"]</a>
+                    </p>
             </form>
         </section>
     </div>

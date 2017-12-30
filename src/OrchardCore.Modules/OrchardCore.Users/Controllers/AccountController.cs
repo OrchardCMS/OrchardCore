@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -181,20 +182,22 @@ namespace OrchardCore.Users.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult ForgotPassword()
         {
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model)
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = _userService.GetForgotPasswordUserAsync(model.UserIdentifier);
+                var user = (User)await _userService.GetForgotPasswordUserAsync(model.UserIdentifier);
                 if (user != null)
                 {
-                    await Task.Yield();
+                    user.ResetToken = HttpUtility.UrlEncode(user.ResetToken);
                     // send email with callback link
                 }
             }
@@ -204,7 +207,42 @@ namespace OrchardCore.Users.Controllers
         }
 
         [HttpGet]
-        public IActionResult ResetPassword()
+        [AllowAnonymous]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string code = null)
+        {
+            if (code == null)
+            {
+                //"A code must be supplied for password reset.";
+            }
+            return View(new ResetPasswordViewModel { ResetToken = HttpUtility.UrlEncode(HttpUtility.UrlDecode(code)) });
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (await _userService.ResetPasswordAsync(model.Email, HttpUtility.UrlDecode(model.ResetToken), model.NewPassword, (key, message) => ModelState.AddModelError(key, message)))
+                {
+                    return RedirectToLocal(Url.Action("ResetPasswordConfirmation"));
+                }
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPasswordConfirmation()
         {
             return View();
         }
