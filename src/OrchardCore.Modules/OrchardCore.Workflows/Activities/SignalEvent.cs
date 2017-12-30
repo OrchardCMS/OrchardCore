@@ -22,9 +22,9 @@ namespace OrchardCore.Workflows.Activities
         public override LocalizedString Category => T["Events"];
         public override LocalizedString Description => T["Executes when the specified signal name is triggered."];
 
-        public string SignalName
+        public WorkflowExpression<string> SignalNameExpression
         {
-            get => GetProperty<string>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
@@ -36,8 +36,9 @@ namespace OrchardCore.Workflows.Activities
 
         public override bool CanExecute(WorkflowContext workflowContext, ActivityContext activityContext)
         {
+            var signalName = workflowContext.Evaluate(SignalNameExpression);
             var conditionResult = workflowContext.Evaluate(ConditionExpression);
-            return workflowContext.Input.GetValue<string>("Signal") == SignalName;
+            return workflowContext.Input.GetValue<string>("Signal") == signalName;
         }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)

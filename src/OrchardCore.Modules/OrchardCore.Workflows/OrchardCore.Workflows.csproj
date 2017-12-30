@@ -15,6 +15,9 @@
     <None Remove="Views\Items\DecisionTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\DecisionTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\DecisionTask.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\Items\EmailTask.Fields.Design.cshtml" />
+    <None Remove="Views\Items\EmailTask.Fields.Edit.cshtml" />
+    <None Remove="Views\Items\EmailTask.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\EvaluateExpressionTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\EvaluateExpressionTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\EvaluateExpressionTask.Fields.Thumbnail.cshtml" />
@@ -57,6 +60,7 @@
     <Folder Include="Content\Scripts\" />
     <Folder Include="Content\Styles\Images\" />
     <Folder Include="Handlers\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 
   <ItemGroup>

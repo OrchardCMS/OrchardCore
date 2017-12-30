@@ -18,6 +18,7 @@ namespace OrchardCore.Workflows.Services
         private readonly IWorkflowDefinitionRepository _workflowDefinitionRepository;
         private readonly IWorkflowInstanceRepository _workInstanceRepository;
         private readonly IScriptingManager _scriptingManager;
+        private readonly IEnumerable<IWorkflowContextProvider> _workflowContextProviders;
         private readonly ILogger _logger;
 
         public WorkflowManager
@@ -26,6 +27,7 @@ namespace OrchardCore.Workflows.Services
             IWorkflowDefinitionRepository workflowDefinitionRepository,
             IWorkflowInstanceRepository workflowInstanceRepository,
             IScriptingManager scriptingManager,
+            IEnumerable<IWorkflowContextProvider> workflowContextProviders,
             ILogger<WorkflowManager> logger
         )
         {
@@ -33,13 +35,21 @@ namespace OrchardCore.Workflows.Services
             _workflowDefinitionRepository = workflowDefinitionRepository;
             _workInstanceRepository = workflowInstanceRepository;
             _scriptingManager = scriptingManager;
+            _workflowContextProviders = workflowContextProviders;
             _logger = logger;
         }
 
         public WorkflowContext CreateWorkflowContext(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord)
         {
             var activityQuery = workflowDefinitionRecord.Activities.Select(CreateActivityContext);
-            return new WorkflowContextImpl(workflowDefinitionRecord, workflowInstanceRecord, activityQuery, _scriptingManager);
+            var context = new WorkflowContext(workflowDefinitionRecord, workflowInstanceRecord, activityQuery, _scriptingManager);
+
+            foreach (var provider in _workflowContextProviders)
+            {
+                provider.Configure(context);
+            }
+
+            return context;
         }
 
         public ActivityContext CreateActivityContext(ActivityRecord activityRecord)

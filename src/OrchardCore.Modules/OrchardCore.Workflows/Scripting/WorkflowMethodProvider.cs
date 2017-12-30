@@ -12,6 +12,7 @@ namespace OrchardCore.Workflows.Scripting
         private readonly GlobalMethod _outputMethod;
         private readonly GlobalMethod _variableMethod;
         private readonly GlobalMethod _resultMethod;
+        private readonly GlobalMethod _correlationIdMethod;
 
         public WorkflowMethodProvider(WorkflowContext workflowContext)
         {
@@ -44,11 +45,17 @@ namespace OrchardCore.Workflows.Scripting
                 Name = "result",
                 Method = serviceProvider => (Func<object>)(() => workflowContext.Stack.Pop())
             };
+
+            _correlationIdMethod = new GlobalMethod
+            {
+                Name = "correlation",
+                Method = serviceProvider => (Func<string>)(() => workflowContext.WorkflowInstance.CorrelationId)
+            };
         }
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new[] { _workflowMethod, _inputMethod, _outputMethod, _variableMethod, _resultMethod };
+            return new[] { _workflowMethod, _inputMethod, _outputMethod, _variableMethod, _resultMethod, _correlationIdMethod };
         }
     }
 }

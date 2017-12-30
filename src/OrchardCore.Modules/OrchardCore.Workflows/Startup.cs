@@ -9,6 +9,7 @@ using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Drivers;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Services;
+using OrchardCore.Workflows.WorkflowContextProviders;
 using YesSql.Indexes;
 
 namespace OrchardCore.Workflows
@@ -18,6 +19,7 @@ namespace OrchardCore.Workflows
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped(typeof(Resolver<>));
+            services.AddScoped<ISignalService, SignalService>();
             services.AddScoped<IActivityLibrary, ActivityLibrary>();
             services.AddScoped<IWorkflowDefinitionRepository, WorkflowDefinitionRepository>();
             services.AddScoped<IWorkflowInstanceRepository, WorkflowInstanceRepository>();
@@ -39,6 +41,7 @@ namespace OrchardCore.Workflows
             services.AddScoped<IActivity, WhileLoopTask>();
             services.AddScoped<IActivity, DecisionTask>();
             services.AddScoped<IActivity, SignalEvent>();
+            services.AddScoped<IActivity, EmailTask>();
 
             services.AddScoped<IDisplayDriver<IActivity>, NotifyTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, SetVariableTaskDisplay>();
@@ -49,6 +52,10 @@ namespace OrchardCore.Workflows
             services.AddScoped<IDisplayDriver<IActivity>, WhileLoopTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, DecisionTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, SignalEventDisplay>();
+            services.AddScoped<IDisplayDriver<IActivity>, EmailTaskDisplay>();
+
+            services.AddScoped<IWorkflowContextProvider, DefaultWorkflowContextProvider>();
+            services.AddScoped<IWorkflowContextProvider, SignalWorkflowContextProvider>();
         }
     }
 }

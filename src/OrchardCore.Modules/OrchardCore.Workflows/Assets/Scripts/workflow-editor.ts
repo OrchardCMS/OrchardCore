@@ -6,12 +6,13 @@
 class WorkflowEditor {
     private isPopoverVisible: boolean;
     private isDragging: boolean;
+    private hasDragged: boolean;
+    private dragStart: JQuery.Coordinates;
     private minCanvasHeight: number = 400;
 
     constructor(private container: HTMLElement, private workflowDefinition: Workflows.Workflow, private deleteActivityPrompt: string, private localId: string, loadLocalState: boolean) {
         const self = this;
         jsPlumb.ready(() => {
-
             jsPlumb.importDefaults({
                 Anchor: "Continuous",
                 // default drag options
@@ -136,10 +137,11 @@ class WorkflowEditor {
                     plumber.draggable(activityElement, {
                         grid: [10, 10],
                         containment: true,
-                        start: () => {
-                            this.isDragging = true;
+                        start: (args: any) => {
+                            this.dragStart = { left: args.e.screenX, top: args.e.screenY };
                         },
-                        stop: () => {
+                        stop: (args: any) => {
+                            this.hasDragged = this.dragStart.left != args.e.screenX || this.dragStart.top != args.e.screenY;
                             this.updateCanvasHeight();
                         }
                     });
@@ -232,8 +234,8 @@ class WorkflowEditor {
 
             $(container).on('click', '.activity', e => {
 
-                if (this.isDragging) {
-                    this.isDragging = false;
+                if (this.hasDragged) {
+                    this.hasDragged = false;
                     return;
                 }
 
