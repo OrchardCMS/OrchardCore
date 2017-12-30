@@ -31,11 +31,13 @@
         Include=".Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.Link)|%(ModuleAssetFiles.FullPath)"
         Condition="'%(ModuleAssetFiles.Link)' != ''" />
 
-    <ModuleAssets Include=".Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists  ('$(ModuleType).txt')" />
+      <ModuleAssets Include=".Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')" />
     </ItemGroup>
 
+    <MakeDir Directories="$(IntermediateOutputPath)" ContinueOnError="True"/>
+
     <WriteLinesToFile
-      File="obj\module.assets.map"
+      File="$(IntermediateOutputPath)module.assets.map"
       Lines="@(ModuleAssets)"
       Condition="'@(ModuleAssets)' != ''"
       Overwrite="true"
@@ -60,9 +62,12 @@
       <EmbeddedResource Remove="@(EmbeddedResource)" />
       <EmbeddedResource Include="@(ModuleAssetFiles)" />
       <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' == ''">
-        <LogicalName>$([System.String]::new('$(MSBuildProjectName)\%(RelativeDir)%(FileName)%(Extension)').Replace('\', '.').Replace('/', '.'))</LogicalName>
+        <LogicalName>$([System.String]::new('$(MSBuildProjectName).%(RelativeDir)%(FileName)%(Extension)').Replace('\', '>').Replace('/', '>'))</LogicalName>
       </EmbeddedResource>
-      <EmbeddedResource Include="obj\module.assets.map">
+      <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' != ''">
+        <LogicalName>$([System.String]::new('$(MSBuildProjectName).%(EmbeddedResource.Link)').Replace('\', '>').Replace('/', '>'))</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="$(IntermediateOutputPath)module.assets.map">
         <Link>module.assets.map</Link>
       </EmbeddedResource>
       <EmbeddedResource Include="obj\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')">

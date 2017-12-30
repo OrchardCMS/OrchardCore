@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
 using OrchardCore.FileStorage;
 
@@ -14,15 +15,18 @@ namespace OrchardCore.Media.Controllers
     {
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IContentTypeProvider _contentTypeProvider;
         private readonly ILogger _logger;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
             IAuthorizationService authorizationService,
+            IContentTypeProvider contentTypeProvider,
             ILogger<AdminController> logger)
         {
             _mediaFileStore = mediaFileStore;
             _authorizationService = authorizationService;
+            _contentTypeProvider = contentTypeProvider;
             _logger = logger;
         }
 
@@ -228,6 +232,8 @@ namespace OrchardCore.Media.Controllers
 
         public object CreateFileResult(IFileStoreEntry mediaFile)
         {
+            _contentTypeProvider.TryGetContentType(mediaFile.Name, out var contentType);
+
             return new
             {
                 name = mediaFile.Name,
@@ -235,7 +241,7 @@ namespace OrchardCore.Media.Controllers
                 folder = mediaFile.DirectoryPath,
                 url = _mediaFileStore.MapPathToPublicUrl(mediaFile.Path),
                 mediaPath = mediaFile.Path,
-                mime = MimeMapping.MimeUtility.GetMimeMapping(mediaFile.Path)
+                mime = contentType ?? "application/octet-stream"
             };
         }
     }
