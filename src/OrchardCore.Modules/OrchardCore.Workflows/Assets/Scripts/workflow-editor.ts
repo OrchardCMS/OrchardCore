@@ -6,6 +6,7 @@
 class WorkflowEditor {
     private isPopoverVisible: boolean;
     private isDragging: boolean;
+    private minCanvasHeight: number = 400;
 
     constructor(private container: HTMLElement, private workflowDefinition: Workflows.Workflow, private deleteActivityPrompt: string, private localId: string, loadLocalState: boolean) {
         const self = this;
@@ -116,7 +117,6 @@ class WorkflowEditor {
 
                     // Update the activity's visual state.
                     if (loadLocalState) {
-                        debugger;
                         if (activity == null) {
                             // This is a newly added activity not yet added to local state.
                             activity = this.getActivity(activityId, serverWorkflowDefinition.activities);
@@ -133,7 +133,16 @@ class WorkflowEditor {
                     }
 
                     // Make the activity draggable.
-                    plumber.draggable(activityElement, { grid: [10, 10], });
+                    plumber.draggable(activityElement, {
+                        grid: [10, 10],
+                        containment: true,
+                        start: () => {
+                            this.isDragging = true;
+                        },
+                        stop: () => {
+                            this.updateCanvasHeight();
+                        }
+                    });
 
                     // Configure the activity as a target.
                     plumber.makeTarget(activityElement, {
@@ -175,6 +184,8 @@ class WorkflowEditor {
                 plumber.bind('connectionMoved', function (params) {
                     console.log('connection ' + params.connection.id + ' was moved');
                 });
+
+                this.updateCanvasHeight();
             });
 
             // Initialize popovers.
@@ -222,6 +233,7 @@ class WorkflowEditor {
             $(container).on('click', '.activity', e => {
 
                 if (this.isDragging) {
+                    this.isDragging = false;
                     return;
                 }
 
@@ -330,6 +342,35 @@ class WorkflowEditor {
     private loadLocalState = function (): Workflows.Workflow {
         return JSON.parse(sessionStorage[this.localId]);
     }
+
+    private updateCanvasHeight = function () {
+        const $container = $(this.container);
+
+        // Get the activity element with the highest Y coordinate.
+        const $activityElements = $container.find(".activity");
+        let currentElementTop = 0;
+        let currentActivityHeight = 0;
+
+        for (let activityElement of $activityElements.toArray()) {
+            const $activityElement = $(activityElement);
+            const top = $activityElement.position().top;
+
+            if (top > currentElementTop) {
+                currentElementTop = top;
+                currentActivityHeight = $activityElement.height();
+            }
+        }
+
+        let newCanvasHeight = currentElementTop + currentActivityHeight;
+        const elementBottom = currentElementTop + currentActivityHeight;
+        const stretchValue = 100;
+
+        if (newCanvasHeight - elementBottom <= stretchValue) {
+            newCanvasHeight += stretchValue;
+        }
+
+        $container.height(Math.max(this.minCanvasHeight, newCanvasHeight));
+    };
 }
 
 $.fn.workflowEditor = function (this: JQuery): JQuery {

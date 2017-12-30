@@ -1,7 +1,8 @@
 .workflow-editor-canvas {
-    overflow: hidden !important;
+    overflow: auto !important;
     position: relative;
     touch-action: none;
+    min-height: 400px;
 
     .activity {
         display: block;

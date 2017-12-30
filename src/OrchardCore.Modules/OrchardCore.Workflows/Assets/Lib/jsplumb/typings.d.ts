@@ -114,6 +114,9 @@ interface DragOptions {
     cursor?: string;
     zIndex?: number;
     grid?: Array<number>;
+    containment?: boolean;
+    start?: (params: any) => void;
+    stop?: (params: any) => void;
 }
 
 interface SourceOptions {
