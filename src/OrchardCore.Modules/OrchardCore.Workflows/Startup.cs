@@ -39,6 +39,7 @@ namespace OrchardCore.Workflows
             services.AddScoped<IActivity, BranchTask>();
             services.AddScoped<IActivity, ForLoopTask>();
             services.AddScoped<IActivity, WhileLoopTask>();
+            services.AddScoped<IActivity, IfElseTask>();
             services.AddScoped<IActivity, DecisionTask>();
             services.AddScoped<IActivity, SignalEvent>();
             services.AddScoped<IActivity, EmailTask>();
@@ -50,6 +51,7 @@ namespace OrchardCore.Workflows
             services.AddScoped<IDisplayDriver<IActivity>, BranchTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, ForLoopTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, WhileLoopTaskDisplay>();
+            services.AddScoped<IDisplayDriver<IActivity>, IfElseTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, DecisionTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, SignalEventDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, EmailTaskDisplay>();

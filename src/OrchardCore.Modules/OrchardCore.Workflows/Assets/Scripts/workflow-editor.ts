@@ -2,10 +2,9 @@
 ///<reference path='../Lib/jsplumb/typings.d.ts' />
 ///<reference path='./workflow-models.ts' />
 
-// TODO: Re-implement this using an MVVM approach.
+// TODO: Re-implement this using a MVVM approach.
 class WorkflowEditor {
     private isPopoverVisible: boolean;
-    private isDragging: boolean;
     private hasDragged: boolean;
     private dragStart: JQuery.Coordinates;
     private minCanvasHeight: number = 400;
