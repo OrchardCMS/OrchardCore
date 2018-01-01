@@ -4,6 +4,7 @@ namespace Workflows {
         id: number;
         activities: Array<Activity>;
         transitions: Array<Transition>;
+        removedActivities: Array<number>;
     }
 
     export interface Activity {

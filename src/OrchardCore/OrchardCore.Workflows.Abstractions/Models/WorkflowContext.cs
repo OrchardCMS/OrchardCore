@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Scripting;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Models
@@ -44,6 +45,13 @@ namespace OrchardCore.Workflows.Models
         public virtual T Evaluate<T>(WorkflowExpression<T> expression)
         {
             return (T)ScriptingManager.Evaluate(expression.Expression);
+        }
+
+        public virtual void Evaluate(string script, params IGlobalMethodProvider[] scopedMethodProviders)
+        {
+            ScriptingManager.GlobalMethodProviders.AddRange(scopedMethodProviders);
+            ScriptingManager.Evaluate(script);
+            ScriptingManager.GlobalMethodProviders.RemoveRange(scopedMethodProviders);
         }
 
         public IEnumerable<TransitionRecord> GetInboundTransitions(ActivityRecord activityRecord)

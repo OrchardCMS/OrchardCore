@@ -1,6 +1,7 @@
+using System;
+using System.Linq;
 using OrchardCore.Workflows.Abstractions.Display;
 using OrchardCore.Workflows.Activities;
-using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
@@ -9,12 +10,14 @@ namespace OrchardCore.Workflows.Drivers
     {
         protected override void Map(DecisionTask source, DecisionTaskViewModel target)
         {
-            target.ConditionExpression = source.ConditionExpression.Expression;
+            target.AvailableOutcomes = string.Join(", ", source.AvailableOutcomes);
+            target.Script = source.Script;
         }
 
         protected override void Map(DecisionTaskViewModel source, DecisionTask target)
         {
-            target.ConditionExpression = new WorkflowExpression<bool>(source.ConditionExpression);
+            target.AvailableOutcomes = source.AvailableOutcomes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
+            target.Script = source.Script;
         }
     }
 }

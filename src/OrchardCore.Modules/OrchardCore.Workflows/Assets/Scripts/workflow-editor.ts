@@ -8,23 +8,19 @@ class WorkflowEditor {
     private hasDragged: boolean;
     private dragStart: JQuery.Coordinates;
     private minCanvasHeight: number = 400;
+    private jsPlumbInstance: jsPlumbInstance;
 
     constructor(private container: HTMLElement, private workflowDefinition: Workflows.Workflow, private deleteActivityPrompt: string, private localId: string, loadLocalState: boolean) {
         const self = this;
+
         jsPlumb.ready(() => {
             jsPlumb.importDefaults({
                 Anchor: "Continuous",
-                // default drag options
                 DragOptions: { cursor: 'pointer', zIndex: 2000 },
-                // default to blue at one end and green at the other
                 EndpointStyles: [{ fillStyle: '#225588' }],
-                // blue endpoints 7 px; Blank endpoints.
                 Endpoints: [["Dot", { radius: 7 }], ["Blank"]],
-                // the overlays to decorate each connection with.  note that the label overlay uses a function to generate the label text; in this
-                // case it returns the 'labelText' member that we set on each connection in the 'init' method below.
                 ConnectionOverlays: [
                     ["Arrow", { width: 12, length: 12, location: -5 }],
-                    // ["Label", { location: 0.1, id: "label", cssClass: "aLabel" }]
                 ],
                 ConnectorZIndex: 5
             });
@@ -97,6 +93,23 @@ class WorkflowEditor {
 
             const activityElements = $(container).find('.activity');
 
+            var areEqualOutcomes = function (outcomes1: Workflows.Outcome[], outcomes2: Workflows.Outcome[]): boolean {
+                if (outcomes1.length != outcomes2.length) {
+                    return false;
+                }
+
+                for (let i = 0; i < outcomes1.length; i++) {
+                    const outcome1 = outcomes1[i];
+                    const outcome2 = outcomes2[i];
+
+                    if (outcome1.name != outcome2.displayName || outcome1.displayName != outcome2.displayName) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
             // Suspend drawing and initialize.
             plumber.batch(() => {
                 var serverWorkflowDefinition: Workflows.Workflow = this.workflowDefinition;
@@ -113,23 +126,40 @@ class WorkflowEditor {
                 activityElements.each((index, activityElement) => {
                     const $activityElement = $(activityElement);
                     const activityId = $activityElement.data('activity-id');
+                    const isDeleted = this.workflowDefinition.removedActivities.indexOf(activityId) > -1;
+
+                    if (isDeleted) {
+                        $activityElement.remove();
+                        return;
+                    }
+
                     let activity = this.getActivity(activityId);
+                    const serverActivity = this.getActivity(activityId, serverWorkflowDefinition.activities);
 
                     // Update the activity's visual state.
                     if (loadLocalState) {
                         if (activity == null) {
                             // This is a newly added activity not yet added to local state.
-                            activity = this.getActivity(activityId, serverWorkflowDefinition.activities);
+                            activity = serverActivity;
                             this.workflowDefinition.activities.push(activity);
 
                             activity.x = 50;
                             activity.y = 50;
                         }
+                        else {
+                            // The available outcomes might have changed when editing an activity,
+                            // so we need to check for that and update the client's activity outcomes if so.
+                            const sameOutcomes = areEqualOutcomes(activity.outcomes, serverActivity.outcomes);
 
-                        $activityElement
-                            .css({ left: activity.x, top: activity.y })
-                            .toggleClass('activity-start', activity.isStart)
-                            .data('activity-start', activity.isStart);
+                            if (!sameOutcomes) {
+                                activity.outcomes = serverActivity.outcomes;
+                            }
+
+                            $activityElement
+                                .css({ left: activity.x, top: activity.y })
+                                .toggleClass('activity-start', activity.isStart)
+                                .data('activity-start', activity.isStart);
+                        }
                     }
 
                     // Make the activity draggable.
@@ -198,6 +228,7 @@ class WorkflowEditor {
                     const $content: JQuery = activityElement.find('.activity-commands').clone().show();
                     const startButton = $content.find('.activity-start-action');
                     const isStart = activityElement.data('activity-start') === true;
+                    const activityId: number = activityElement.data('activity-id');
 
                     startButton.attr('aria-pressed', activityElement.data('activity-start'));
                     startButton.toggleClass('active', isStart);
@@ -219,6 +250,7 @@ class WorkflowEditor {
                             return;
                         }
 
+                        self.workflowDefinition.removedActivities.push(activityId);
                         plumber.remove(activityElement);
                         activityElement.popover('dispose');
                     });
@@ -276,8 +308,6 @@ class WorkflowEditor {
         });
     }
 
-    private jsPlumbInstance: jsPlumbInstance;
-
     private getActivity = function (id: number, activities: Array<Workflows.Activity> = null): Workflows.Activity {
         if (!activities) {
             activities = this.workflowDefinition.activities;
@@ -290,7 +320,8 @@ class WorkflowEditor {
         const workflow: Workflows.Workflow = {
             id: this.workflowDefinition.id,
             activities: [],
-            transitions: []
+            transitions: [],
+            removedActivities: this.workflowDefinition.removedActivities
         };
 
         // Collect activities.
@@ -382,6 +413,7 @@ $.fn.workflowEditor = function (this: JQuery): JQuery {
         var localId: string = $element.data('workflow-local-id');
         var loadLocalState: boolean = $element.data('workflow-load-local-state');
 
+        workflowDefinition.removedActivities = workflowDefinition.removedActivities || [];
         $element.data('workflowEditor', new WorkflowEditor(element, workflowDefinition, deleteActivityPrompt, localId, loadLocalState));
     });
 
