@@ -83,7 +83,7 @@ namespace OrchardCore.Workflows.Controllers
                 options = new AdminIndexOptions();
             }
 
-            var query = _session.Query<WorkflowDefinitionRecord, WorkflowDefinitionByNameIndex>();
+            var query = _session.Query<WorkflowDefinitionRecord, WorkflowDefinitionIndex>();
 
             switch (options.Filter)
             {

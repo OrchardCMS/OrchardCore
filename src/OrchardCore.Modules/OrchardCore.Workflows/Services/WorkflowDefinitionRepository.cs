@@ -21,10 +21,15 @@ namespace OrchardCore.Workflows.Services
             return _session.GetAsync<WorkflowDefinitionRecord>(id);
         }
 
+        public Task<IEnumerable<WorkflowDefinitionRecord>> GetWorkflowDefinitionsAsync(IEnumerable<int> ids)
+        {
+            return _session.GetAsync<WorkflowDefinitionRecord>(ids.ToArray());
+        }
+
         public async Task<IList<WorkflowDefinitionRecord>> GetWorkflowDefinitionsByStartActivityAsync(string activityName)
         {
             var query = await _session
-                .Query<WorkflowDefinitionRecord, WorkflowDefinitionByStartActivityIndex>(index =>
+                .Query<WorkflowDefinitionRecord, WorkflowDefinitionIndex>(index =>
                     index.HasStart &&
                     index.StartActivityName == activityName &&
                     index.IsEnabled)

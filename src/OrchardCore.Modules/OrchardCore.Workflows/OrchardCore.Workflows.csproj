@@ -24,6 +24,9 @@
     <None Remove="Views\Items\ForLoopTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\ForLoopTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\ForLoopTask.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\Items\HttpRequestEvent.Fields.Design.cshtml" />
+    <None Remove="Views\Items\HttpRequestEvent.Fields.Edit.cshtml" />
+    <None Remove="Views\Items\HttpRequestEvent.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\IfElseTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\IfElseTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\IfElseTask.Fields.Thumbnail.cshtml" />
