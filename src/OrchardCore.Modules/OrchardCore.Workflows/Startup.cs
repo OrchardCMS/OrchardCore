@@ -59,6 +59,7 @@ namespace OrchardCore.Workflows
             services.AddScoped<IActivity, SignalEvent>();
             services.AddScoped<IActivity, EmailTask>();
             services.AddScoped<IActivity, HttpRequestEvent>();
+            services.AddScoped<IActivity, HttpRedirectTask>();
 
             services.AddScoped<IDisplayDriver<IActivity>, NotifyTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, SetVariableTaskDisplay>();
@@ -72,6 +73,7 @@ namespace OrchardCore.Workflows
             services.AddScoped<IDisplayDriver<IActivity>, SignalEventDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, EmailTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, HttpRequestEventDisplay>();
+            services.AddScoped<IDisplayDriver<IActivity>, HttpRedirectTaskDisplay>();
 
             services.AddScoped<IWorkflowContextProvider, DefaultWorkflowContextProvider>();
             services.AddScoped<IWorkflowContextProvider, SignalWorkflowContextProvider>();

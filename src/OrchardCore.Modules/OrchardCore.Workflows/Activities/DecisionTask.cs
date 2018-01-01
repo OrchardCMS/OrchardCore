@@ -30,6 +30,15 @@ namespace OrchardCore.Workflows.Activities
         }
 
         /// <summary>
+        /// A title describing the work done by the script.
+        /// </summary>
+        public string Title
+        {
+            get => GetProperty<String>();
+            set => SetProperty(value);
+        }
+
+        /// <summary>
         /// The script can call any available functions, including setOutcome().
         /// </summary>
         public string Script

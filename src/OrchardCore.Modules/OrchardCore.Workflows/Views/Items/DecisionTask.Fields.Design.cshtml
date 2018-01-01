@@ -5,3 +5,7 @@
 <header>
     <h4><i class="fa fa-diamond"></i>@T["Decision"]</h4>
 </header>
+@if (!String.IsNullOrWhiteSpace(activity.Title))
+{
+    <span>@activity.Title</span>
+}

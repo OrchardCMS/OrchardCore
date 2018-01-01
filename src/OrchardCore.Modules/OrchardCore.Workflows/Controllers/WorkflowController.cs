@@ -23,8 +23,7 @@ namespace OrchardCore.Workflows.Controllers
             var workflowDefinition = await _workflowDefinitionRepository.GetWorkflowDefinitionAsync(workflowDefinitionId);
             var workflowContext = await _workflowManager.StartWorkflowAsync(workflowDefinition);
 
-            var test = Response.StatusCode;
-            return Ok();
+            return new EmptyResult();
         }
     }
 }

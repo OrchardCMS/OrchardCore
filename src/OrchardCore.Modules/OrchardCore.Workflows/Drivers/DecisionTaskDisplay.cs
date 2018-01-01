@@ -10,12 +10,14 @@ namespace OrchardCore.Workflows.Drivers
     {
         protected override void Map(DecisionTask source, DecisionTaskViewModel target)
         {
+            target.Title = source.Title;
             target.AvailableOutcomes = string.Join(", ", source.AvailableOutcomes);
             target.Script = source.Script;
         }
 
         protected override void Map(DecisionTaskViewModel source, DecisionTask target)
         {
+            target.Title = source.Title?.Trim();
             target.AvailableOutcomes = source.AvailableOutcomes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
             target.Script = source.Script;
         }
