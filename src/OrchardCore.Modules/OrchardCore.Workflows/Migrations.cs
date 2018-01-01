@@ -1,5 +1,6 @@
 using OrchardCore.Data.Migration;
 using OrchardCore.Workflows.Indexes;
+using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows
 {
@@ -24,6 +25,7 @@ namespace OrchardCore.Workflows
 
             SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionByHttpRequestIndex), table => table
                 .Column<int>("WorkflowDefinitionId")
+                .Column<string>("Mode")
                 .Column<string>("HttpMethod")
                 .Column<string>("RequestPath")
             );

@@ -66,7 +66,6 @@
     <Folder Include="Content\Scripts\" />
     <Folder Include="Content\Styles\Images\" />
     <Folder Include="Handlers\" />
-    <Folder Include="Models\" />
   </ItemGroup>
 
   <ItemGroup>

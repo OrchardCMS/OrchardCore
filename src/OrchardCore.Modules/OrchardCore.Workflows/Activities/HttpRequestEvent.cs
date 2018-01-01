@@ -22,8 +22,14 @@ namespace OrchardCore.Workflows.Activities
         private IStringLocalizer T { get; }
 
         public override string Name => EventName;
-        public override LocalizedString Category => T["Networking"];
+        public override LocalizedString Category => T["HTTP"];
         public override LocalizedString Description => T["Executes when the specified HTTP request comes in."];
+
+        public HttpProcessingMode Mode
+        {
+            get => GetProperty(() => HttpProcessingMode.ActionFilter);
+            set => SetProperty(value);
+        }
 
         public string HttpMethod
         {

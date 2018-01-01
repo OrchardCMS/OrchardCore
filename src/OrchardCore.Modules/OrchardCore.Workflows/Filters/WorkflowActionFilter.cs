@@ -25,7 +25,14 @@ namespace OrchardCore.Workflows.Filters
         {
             var httpMethod = context.HttpContext.Request.Method;
             var requestPath = context.HttpContext.Request.Path.Value;
-            var indexes = await _session.QueryIndex<WorkflowDefinitionByHttpRequestIndex>(x => x.HttpMethod == httpMethod && x.RequestPath == requestPath).ListAsync();
+
+            // TODO: Cache workflow definition IDs by HTTP methods and paths.
+            var indexes = await _session.QueryIndex<WorkflowDefinitionByHttpRequestIndex>(
+                x => x.Mode == Models.HttpProcessingMode.ActionFilter.ToString() &&
+                x.HttpMethod == httpMethod &&
+                x.RequestPath == requestPath
+            ).ListAsync();
+
             var ids = indexes.Select(x => x.WorkflowDefinitionId).ToList();
             var workflowDefinitions = await _workflowDefinitionRepository.GetWorkflowDefinitionsAsync(ids);
 

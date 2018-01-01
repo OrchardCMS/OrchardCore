@@ -1,17 +1,24 @@
-using Microsoft.AspNetCore.Mvc.Filters;
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Modules;
+using OrchardCore.Scripting;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Drivers;
 using OrchardCore.Workflows.Filters;
 using OrchardCore.Workflows.Indexes;
+using OrchardCore.Workflows.Routing;
+using OrchardCore.Workflows.Scripting;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
+using YesSql;
 using YesSql.Indexes;
 
 namespace OrchardCore.Workflows
@@ -20,6 +27,11 @@ namespace OrchardCore.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(WorkflowActionFilter));
+            });
+
             services.AddScoped(typeof(Resolver<>));
             services.AddScoped<ISignalService, SignalService>();
             services.AddScoped<IActivityLibrary, ActivityLibrary>();
@@ -30,8 +42,6 @@ namespace OrchardCore.Workflows
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
-
-            services.AddScoped<IAsyncActionFilter, WorkflowActionFilter>();
 
             services.AddSingleton<IIndexProvider, WorkflowDefinitionIndexProvider>();
             services.AddSingleton<IIndexProvider, WorkflowInstanceIndexProvider>();
@@ -65,6 +75,15 @@ namespace OrchardCore.Workflows
 
             services.AddScoped<IWorkflowContextProvider, DefaultWorkflowContextProvider>();
             services.AddScoped<IWorkflowContextProvider, SignalWorkflowContextProvider>();
+
+            services.AddSingleton<IGlobalMethodProvider, HttpContextMethodProvider>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var workflowRoute = new WorkflowRouter(routes.DefaultHandler);
+
+            routes.Routes.Insert(0, workflowRoute);
         }
     }
 }

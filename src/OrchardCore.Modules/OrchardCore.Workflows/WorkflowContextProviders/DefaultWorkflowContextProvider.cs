@@ -8,7 +8,7 @@ namespace OrchardCore.Workflows.WorkflowContextProviders
     {
         public void Configure(WorkflowContext workflowContext)
         {
-            workflowContext.ScriptingManager.GlobalMethodProviders.Add(new WorkflowMethodProvider(workflowContext));
+            workflowContext.ScriptingManager.GlobalMethodProviders.Add(new WorkflowMethodsProvider(workflowContext));
         }
     }
 }

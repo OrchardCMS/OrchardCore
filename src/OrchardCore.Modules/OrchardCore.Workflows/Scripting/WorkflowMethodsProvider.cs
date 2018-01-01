@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Scripting
 {
-    public class WorkflowMethodProvider : IGlobalMethodProvider
+    public class WorkflowMethodsProvider : IGlobalMethodProvider
     {
         private readonly GlobalMethod _workflowMethod;
         private readonly GlobalMethod _inputMethod;
@@ -14,7 +14,7 @@ namespace OrchardCore.Workflows.Scripting
         private readonly GlobalMethod _resultMethod;
         private readonly GlobalMethod _correlationIdMethod;
 
-        public WorkflowMethodProvider(WorkflowContext workflowContext)
+        public WorkflowMethodsProvider(WorkflowContext workflowContext)
         {
             _workflowMethod = new GlobalMethod
             {
