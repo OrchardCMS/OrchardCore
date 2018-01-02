@@ -17,7 +17,7 @@
     <button type="button" id="close-warning" class="close" aria-label="Close" style="position: relative; padding: 0 0 0 1rem; margin-top: -0.2rem;">
         <span aria-hidden="true">&times;</span>
     </button>
-    <span>@T["Preview Not Connected"] </span>
+    <span>@T["Preview Disconnected"] </span>
 </div>
 
 
@@ -28,13 +28,14 @@
 <script type="text/javascript">
     $(function() {
         $(window).on('storage', function (ev) {
-            if (ev.originalEvent.key.indexOf('contentpreview:not-connected:') !== -1) {
+            if (ev.key.indexOf('contentpreview:not-connected:') !== -1) {
                 $(notConnectedWarning).show();
             }
-            else if (ev.originalEvent.key.indexOf('contentpreview:') !== -1) {
-                $(notConnectedWarning).hide();
-                renderPreview(ev.originalEvent.newValue);
-                localStorage.removeItem('contentpreview:@previewId');
+            else if (ev.key.indexOf('contentpreview:') !== -1) {
+                if (ev.originalEvent.newValue != null) {
+                    $(notConnectedWarning).hide();
+                    renderPreview(ev.originalEvent.newValue);
+                }
             }
         });
 
@@ -45,11 +46,16 @@
 
         iframe.contentWindow.onbeforeunload = function () { return ""; }
 
-        // notify the editor to render the preview
-        localStorage.setItem('contentpreview:ready:@previewId', '');
-        localStorage.removeItem('contentpreview:ready:@previewId');
-        renderPreview(localStorage.getItem('contentpreview:@previewId'));
-        localStorage.removeItem('contentpreview:@previewId');
+        var preview = localStorage.getItem('contentpreview:@previewId');
+
+        if (preview == null) {
+            // notify the editor to render the preview
+            localStorage.setItem('contentpreview:ready:@previewId', '');
+            localStorage.removeItem('contentpreview:ready:@previewId');
+        }
+        else {
+            renderPreview(preview);
+        }
     });
 
     var renderPreviewUrl = $(document.getElementById('renderPreviewUrl')).data('value');

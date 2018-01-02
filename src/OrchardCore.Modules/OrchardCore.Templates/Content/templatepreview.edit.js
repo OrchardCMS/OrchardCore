@@ -35,4 +35,11 @@ function initializeTemplatePreview(nameElement, editorElement) {
                 storeTemplate(nameElement);
             }
         });
+
+    $(window).on('unload', function () {
+        localStorage.removeItem('OrchardCore.templates');
+        // this will raise an event in the preview window to notify that the live preview is no longer active.
+        localStorage.setItem('OrchardCore.templates:not-connected', '');
+        localStorage.removeItem('OrchardCore.templates:not-connected');
+   });
 }
