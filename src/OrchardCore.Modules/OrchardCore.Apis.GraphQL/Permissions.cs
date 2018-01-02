@@ -6,6 +6,7 @@ namespace OrchardCore.Apis.GraphQL
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ExecuteGraphQL = new Permission("ExecuteGraphQL", "Execute GraphQL.");
+
         public IEnumerable<Permission> GetPermissions()
         {
             return new[] {

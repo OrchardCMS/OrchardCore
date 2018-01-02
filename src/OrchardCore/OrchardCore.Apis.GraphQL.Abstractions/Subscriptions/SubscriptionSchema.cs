@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using GraphQL.Types;
 using OrchardCore.Apis.GraphQL.Types;
 
-namespace OrchardCore.Apis.GraphQL.Mutations
+namespace OrchardCore.Apis.GraphQL.Subscriptions
 {
-    public class MutationsSchema : ObjectGraphType
+    public class SubscriptionSchema : ObjectGraphType
     {
-        public MutationsSchema(IEnumerable<MutationFieldType> fields)
+        public SubscriptionSchema(IEnumerable<SubscriptionFieldType> fields)
         {
-            Name = "Mutations";
+            Name = "Subscription";
 
             foreach (var field in fields)
             {

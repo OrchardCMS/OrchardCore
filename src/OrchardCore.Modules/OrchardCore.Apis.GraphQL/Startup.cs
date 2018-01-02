@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Mutations;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Services;
+using OrchardCore.Apis.GraphQL.Subscriptions;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
@@ -26,6 +27,7 @@ namespace OrchardCore.Apis.GraphQL
 
             services.AddGraphQLQueries();
             services.AddGraphQLMutations();
+            services.AddGraphQLSubscriptions();
 
             // Schema
             services.AddScoped<ISchema, ContentSchema>();

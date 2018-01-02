@@ -107,7 +107,7 @@ namespace OrchardCore.Apis.GraphQL.Mutations
 
                 foreach (var content in child.Children())
                 {
-                    var property = modelMetadata.Properties.FirstOrDefault(x => string.Equals(
+                    var property = modelMetadata.Properties.FirstOrDefault(x => String.Equals(
                         (x.ContainerType.Name + "." + x.PropertyName), content.Path, StringComparison.InvariantCultureIgnoreCase));
 
                     if (property != null)
@@ -177,7 +177,7 @@ namespace OrchardCore.Apis.GraphQL.Mutations
             }
 
             var splitKey = key.Split('.').Select(x => x.ToGraphQLStringFormat());
-            var path = string.Join(".", splitKey);
+            var path = String.Join(".", splitKey);
 
             var token = _values.SelectToken(path);
             if (token == null)

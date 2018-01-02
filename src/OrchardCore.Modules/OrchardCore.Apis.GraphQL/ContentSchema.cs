@@ -5,6 +5,7 @@ using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Mutations;
 using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.Apis.GraphQL.Subscriptions;
 
 namespace OrchardCore.Apis.GraphQL
 {
@@ -18,6 +19,7 @@ namespace OrchardCore.Apis.GraphQL
         {
             Mutation = serviceProvider.GetService<MutationsSchema>();
             Query = serviceProvider.GetService<QueriesSchema>();
+            Subscription = serviceProvider.GetService<SubscriptionSchema>();
 
             foreach (var type in inputGraphTypes)
             {

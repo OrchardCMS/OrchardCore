@@ -7,14 +7,14 @@ namespace OrchardCore.Apis.GraphQL.Queries
     public class QueriesSchema : ObjectGraphType
     {
         public QueriesSchema(
-            IEnumerable<QueryFieldType> queryFields,
+            IEnumerable<QueryFieldType> fields,
             IEnumerable<IQueryFieldTypeProvider> queryFieldTypeProviders)
         {
             Name = "Query";
 
-            foreach (var queryField in queryFields)
+            foreach (var field in fields)
             {
-                AddField(queryField);
+                AddField(field);
             }
 
             foreach (var provider in queryFieldTypeProviders)
