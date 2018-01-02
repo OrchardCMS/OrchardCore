@@ -5,6 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageAssetFiles Remove="Content\graphiql.css" />
+    <PackageAssetFiles Remove="Content\graphiql.js" />
+    <PackageAssetFiles Remove="Content\graphiql.min.js" />
+    <PackageAssetFiles Remove="Content\Scripts\react-dom.js" />
+    <PackageAssetFiles Remove="Content\Scripts\react-dom.min.js" />
+    <PackageAssetFiles Remove="Content\Scripts\react.js" />
+    <PackageAssetFiles Remove="Content\Scripts\react.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="$(MicrosoftAspNetCoreMvcViewFeaturesPackageVersion)" />
     <PackageReference Include="YesSql.Abstractions" Version="$(YesSqlVersion)" />
   </ItemGroup>

@@ -5,6 +5,7 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Apis.GraphQL.Mutations;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Services;
 using OrchardCore.Environment.Navigation;
@@ -15,6 +16,8 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class Startup : StartupBase
     {
+        public override int Order => 10;
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IDependencyResolver, InternalDependencyResolver>();
