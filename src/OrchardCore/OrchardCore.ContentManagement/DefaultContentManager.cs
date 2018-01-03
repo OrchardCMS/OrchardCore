@@ -41,7 +41,7 @@ namespace OrchardCore.ContentManagement
         public IEnumerable<IContentHandler> Handlers { get; private set; }
         public IEnumerable<IContentHandler> ReversedHandlers { get; private set; }
 
-        public ContentItem New(string contentType)
+        public async Task<ContentItem> NewAsync(string contentType)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentType);
             if (contentTypeDefinition == null)
@@ -58,18 +58,18 @@ namespace OrchardCore.ContentManagement
             };
 
             // invoke handlers to weld aspects onto kernel
-            Handlers.Invoke(async handler => await handler.ActivatingAsync(context), _logger);
+            await Handlers.InvokeAsync(async handler => await handler.ActivatingAsync(context), _logger);
 
             var context2 = new ActivatedContentContext(context.Builder.Build());
 
             context2.ContentItem.ContentItemId = _idGenerator.GenerateUniqueId(context2.ContentItem);
 
-            ReversedHandlers.Invoke(async handler => await handler.ActivatedAsync(context2), _logger);
+            await ReversedHandlers.InvokeAsync(async handler => await handler.ActivatedAsync(context2), _logger);
 
             var context3 = new InitializingContentContext(context2.ContentItem);
 
-            Handlers.Invoke(async handler => await handler.InitializingAsync(context3), _logger);
-            ReversedHandlers.Invoke(async handler => await handler.InitializedAsync(context3), _logger);
+            await Handlers.InvokeAsync(async handler => await handler.InitializingAsync(context3), _logger);
+            await ReversedHandlers.InvokeAsync(async handler => await handler.InitializedAsync(context3), _logger);
 
             // composite result is returned
             return context3.ContentItem;
@@ -136,7 +136,7 @@ namespace OrchardCore.ContentManagement
                 return null;
             }
 
-            contentItem = Load(contentItem);
+            contentItem = await LoadAsync(contentItem);
 
             if (options.IsDraftRequired)
             {
@@ -166,7 +166,7 @@ namespace OrchardCore.ContentManagement
             return contentItem;
         }
 
-        private ContentItem Load(ContentItem contentItem)
+        private async Task<ContentItem> LoadAsync(ContentItem contentItem)
         {
             if (!_contentManagerSession.RecallVersionId(contentItem.Id, out var loaded))
             {
@@ -177,8 +177,8 @@ namespace OrchardCore.ContentManagement
                 var context = new LoadContentContext(contentItem);
 
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
-                Handlers.Invoke(async handler => await handler.LoadingAsync(context), _logger);
-                ReversedHandlers.Invoke(async handler => await handler.LoadedAsync(context), _logger);
+                await Handlers.InvokeAsync(async handler => await handler.LoadingAsync(context), _logger);
+                await ReversedHandlers.InvokeAsync(async handler => await handler.LoadedAsync(context), _logger);
 
                 loaded = context.ContentItem;
             }
@@ -197,7 +197,7 @@ namespace OrchardCore.ContentManagement
                 return null;
             }
 
-            return Load(contentItem);
+            return await LoadAsync(contentItem);
         }
 
         public async Task PublishAsync(ContentItem contentItem)
@@ -218,7 +218,7 @@ namespace OrchardCore.ContentManagement
             var context = new PublishContentContext(contentItem, previous);
 
             // invoke handlers to acquire state, or at least establish lazy loading callbacks
-            Handlers.Invoke(async handler => await handler.PublishingAsync(context), _logger);
+            await Handlers.InvokeAsync(async handler => await handler.PublishingAsync(context), _logger);
 
             if (context.Cancel)
             {
@@ -235,7 +235,7 @@ namespace OrchardCore.ContentManagement
 
             _session.Save(contentItem);
 
-            ReversedHandlers.Invoke(async handler => await handler.PublishedAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(async handler => await handler.PublishedAsync(context), _logger);
         }
 
         public async Task UnpublishAsync(ContentItem contentItem)
@@ -272,18 +272,18 @@ namespace OrchardCore.ContentManagement
                 PublishingItem = null
             };
 
-            Handlers.Invoke(async handler => await handler.UnpublishingAsync(context), _logger);
+            await Handlers.InvokeAsync(async handler => await handler.UnpublishingAsync(context), _logger);
 
             publishedItem.Published = false;
 
             _session.Save(publishedItem);
 
-            ReversedHandlers.Invoke(async handler => await handler.UnpublishedAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(async handler => await handler.UnpublishedAsync(context), _logger);
         }
 
         protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
         {
-            var buildingContentItem = New(existingContentItem.ContentType);
+            var buildingContentItem = await NewAsync(existingContentItem.ContentType);
 
             ContentItem latestVersion;
 
@@ -317,18 +317,18 @@ namespace OrchardCore.ContentManagement
 
             var context = new VersionContentContext(existingContentItem, buildingContentItem);
 
-            Handlers.Invoke(async handler => await handler.VersioningAsync(context), _logger);
-            ReversedHandlers.Invoke(async handler => await handler.VersionedAsync(context), _logger);
+            await Handlers.InvokeAsync(async handler => await handler.VersioningAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(async handler => await handler.VersionedAsync(context), _logger);
 
             return context.BuildingContentItem;
         }
 
-        public void Create(ContentItem contentItem)
+        public Task CreateAsync(ContentItem contentItem)
         {
-            Create(contentItem, VersionOptions.Published);
+            return CreateAsync(contentItem, VersionOptions.Published);
         }
 
-        public void Create(ContentItem contentItem, VersionOptions options)
+        public async Task CreateAsync(ContentItem contentItem, VersionOptions options)
         {
             if (String.IsNullOrEmpty(contentItem.ContentItemVersionId))
             {
@@ -347,9 +347,9 @@ namespace OrchardCore.ContentManagement
             var context = new CreateContentContext(contentItem);
 
             // invoke handlers to add information to persistent stores
-            Handlers.Invoke(async handler => await handler.CreatingAsync(context), _logger);
+            await Handlers.InvokeAsync(async handler => await handler.CreatingAsync(context), _logger);
 
-            ReversedHandlers.Invoke(async handler => await handler.CreatedAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(async handler => await handler.CreatedAsync(context), _logger);
 
             _session.Save(contentItem);
             _contentManagerSession.Store(contentItem);
@@ -359,14 +359,14 @@ namespace OrchardCore.ContentManagement
                 var publishContext = new PublishContentContext(contentItem, null);
 
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
-                Handlers.Invoke(async handler => await handler.PublishingAsync(publishContext), _logger);
+                await Handlers.InvokeAsync(async handler => await handler.PublishingAsync(publishContext), _logger);
 
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
-                ReversedHandlers.Invoke(async handler => await handler.PublishedAsync(publishContext), _logger);
+                await ReversedHandlers.InvokeAsync(async handler => await handler.PublishedAsync(publishContext), _logger);
             }
         }
 
-        public TAspect PopulateAspect<TAspect>(IContent content, TAspect aspect)
+        public async Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect)
         {
             var context = new ContentItemAspectContext
             {
@@ -374,7 +374,7 @@ namespace OrchardCore.ContentManagement
                 Aspect = aspect
             };
 
-            Handlers.Invoke(async handler => await handler.GetContentItemAspectAsync(context), _logger);
+            await Handlers.InvokeAsync(async handler => await handler.GetContentItemAspectAsync(context), _logger);
 
             return aspect;
         }
@@ -388,7 +388,7 @@ namespace OrchardCore.ContentManagement
 
             var context = new RemoveContentContext(contentItem);
 
-            Handlers.Invoke(async handler => await handler.RemovingAsync(context), _logger);
+            await Handlers.InvokeAsync(async handler => await handler.RemovingAsync(context), _logger);
 
             foreach (var version in activeVersions)
             {
@@ -397,7 +397,7 @@ namespace OrchardCore.ContentManagement
                 _session.Save(version);
             }
 
-            ReversedHandlers.Invoke(async handler => await handler.RemovedAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(async handler => await handler.RemovedAsync(context), _logger);
         }
 
         public async Task DiscardDraftAsync(ContentItem contentItem)
@@ -409,12 +409,12 @@ namespace OrchardCore.ContentManagement
 
             var context = new RemoveContentContext(contentItem);
 
-            Handlers.Invoke(async handler => await handler.RemovingAsync(context), _logger);
+            await Handlers.InvokeAsync(async handler => await handler.RemovingAsync(context), _logger);
 
             contentItem.Latest = false;
             _session.Save(contentItem);
 
-            ReversedHandlers.Invoke(async handler => await handler.RemovedAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(async handler => await handler.RemovedAsync(context), _logger);
 
             var publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
 

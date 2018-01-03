@@ -30,7 +30,7 @@ namespace OrchardCore.Lists.Feeds
         {
             var model = new ListFeedQueryViewModel();
 
-            if(!context.Updater.TryUpdateModelAsync(model).GetAwaiter().GetResult() || model.ContentItemId == null)
+            if (!context.Updater.TryUpdateModelAsync(model).GetAwaiter().GetResult() || model.ContentItemId == null)
             {
                 return null;
             }
@@ -54,8 +54,8 @@ namespace OrchardCore.Lists.Feeds
                 return;
             }
 
-            var contentItemMetadata = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem);
-            var bodyAspect = _contentManager.PopulateAspect<BodyAspect>(contentItem);
+            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+            var bodyAspect = await _contentManager.PopulateAspectAsync<BodyAspect>(contentItem);
             var routes = contentItemMetadata.DisplayRouteValues;
 
             if (context.Format == "rss")

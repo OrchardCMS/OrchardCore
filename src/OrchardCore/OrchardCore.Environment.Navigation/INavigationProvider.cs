@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Environment.Navigation
+namespace OrchardCore.Environment.Navigation
 {
     public interface INavigationProvider
     {

@@ -52,9 +52,9 @@ namespace OrchardCore.Demo.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(string text)
+        public async Task<IActionResult> Index(string text)
         {
-            var contentItem = _contentManager.New("Foo");
+            var contentItem = await _contentManager.NewAsync("Foo");
 
             // Dynamic syntax
             contentItem.Content.TestContentPartA.Line = text + "blah";
@@ -67,7 +67,7 @@ namespace OrchardCore.Demo.Controllers
             // "Alter" syntax
             contentItem.Alter<TestContentPartA>(x => x.Line = text);
 
-            _contentManager.Create(contentItem);
+            await _contentManager.CreateAsync(contentItem);
 
             _logger.LogInformation("This is some log");
 
@@ -147,7 +147,7 @@ namespace OrchardCore.Demo.Controllers
 
             return "Check for logs";
         }
-        
+
         public IActionResult ShapePerformance()
         {
             return View();
