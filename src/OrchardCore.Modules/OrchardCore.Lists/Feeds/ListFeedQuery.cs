@@ -42,12 +42,12 @@ namespace OrchardCore.Lists.Feeds
         {
             var model = new ListFeedQueryViewModel();
 
-            if (!context.Updater.TryUpdateModelAsync(model).GetAwaiter().GetResult() || model.ContentItemId == null)
+            if (!await context.Updater.TryUpdateModelAsync(model) || model.ContentItemId == null)
             {
                 return;
             }
 
-            var contentItem = _contentManager.GetAsync(model.ContentItemId).GetAwaiter().GetResult();
+            var contentItem = await _contentManager.GetAsync(model.ContentItemId);
 
             if (contentItem == null)
             {

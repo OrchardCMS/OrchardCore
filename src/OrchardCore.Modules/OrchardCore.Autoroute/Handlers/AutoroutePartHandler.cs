@@ -110,9 +110,9 @@ namespace OrchardCore.Autoroute.Handlers
 
                 part.Path = await _liquidTemplateManager.RenderAsync(pattern, templateContext);
 
-                if (!IsPathUnique(part.Path, part))
+                if (!await IsPathUniqueAsync(part.Path, part))
                 {
-                    part.Path = GenerateUniquePath(part.Path, part);
+                    part.Path = await GenerateUniquePathAsync(part.Path, part);
                 }
 
                 part.Apply();
@@ -136,7 +136,7 @@ namespace OrchardCore.Autoroute.Handlers
             return pattern;
         }
 
-        private string GenerateUniquePath(string path, AutoroutePart context)
+        private async Task<string> GenerateUniquePathAsync(string path, AutoroutePart context)
         {
             var version = 1;
             var unversionedPath = path;
@@ -151,16 +151,16 @@ namespace OrchardCore.Autoroute.Handlers
             while (true)
             {
                 var versionedPath = $"{unversionedPath}-{version++}";
-                if (IsPathUnique(versionedPath, context))
+                if (await IsPathUniqueAsync(versionedPath, context))
                 {
                     return versionedPath;
                 }
             }
         }
 
-        private bool IsPathUnique(string path, AutoroutePart context)
+        private async Task<bool> IsPathUniqueAsync(string path, AutoroutePart context)
         {
-            return _session.QueryIndex<AutoroutePartIndex>(o => o.ContentItemId != context.ContentItem.ContentItemId && o.Path == path).CountAsync().GetAwaiter().GetResult() == 0;
+            return (await _session.QueryIndex<AutoroutePartIndex>(o => o.ContentItemId != context.ContentItem.ContentItemId && o.Path == path).CountAsync()) == 0;
         }
     }
 }
