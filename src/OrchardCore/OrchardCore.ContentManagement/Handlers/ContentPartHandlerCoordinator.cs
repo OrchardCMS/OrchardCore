@@ -34,14 +34,14 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public ILogger Logger { get; set; }
 
-        public override Task ActivatingAsync(ActivatingContentContext context)
+        public override async Task ActivatingAsync(ActivatingContentContext context)
         {
             // This method is called on New()
             // Adds all the parts to a content item based on the content type definition.
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -50,19 +50,17 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
                 // We create the part from it's known type or from a generic one
                 var part = _contentPartFactory.GetTypeActivator(partName).CreateInstance();
 
-                _partHandlers.Invoke(handler => handler.Activating(context, part), Logger);
+                await _partHandlers.InvokeAsync(async handler => await handler.ActivatingAsync(context, part), Logger);
 
                 context.Builder.Weld(typePartDefinition.Name, part);
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task ActivatedAsync(ActivatedContentContext context)
+        public override async Task ActivatedAsync(ActivatedContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -72,18 +70,16 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    _partHandlers.Invoke(handler => handler.Activated(context, part), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.ActivatedAsync(context, part), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task CreatingAsync(CreateContentContext context)
+        public override async Task CreatingAsync(CreateContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -94,18 +90,16 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    _partHandlers.Invoke(handler => handler.Creating(context, part), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.CreatingAsync(context, part), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task CreatedAsync(CreateContentContext context)
+        public override async Task CreatedAsync(CreateContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -116,18 +110,16 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    _partHandlers.Invoke(handler => handler.Created(context, part), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.CreatedAsync(context, part), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task InitializingAsync(InitializingContentContext context)
+        public override async Task InitializingAsync(InitializingContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -135,17 +127,15 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
                 var activator = _contentPartFactory.GetTypeActivator(partName);
 
                 var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-                _partHandlers.Invoke(handler => handler.Initializing(context, part), Logger);
+                await _partHandlers.InvokeAsync(async handler => await handler.InitializingAsync(context, part), Logger);
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task InitializedAsync(InitializingContentContext context)
+        public override async Task InitializedAsync(InitializingContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -156,14 +146,12 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    _partHandlers.Invoke(handler => handler.Initialized(context, part), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.InitializedAsync(context, part), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task LoadingAsync(LoadContentContext context)
+        public override async Task LoadingAsync(LoadContentContext context)
         {
             // This method is called on Get()
             // Adds all the missing parts to a content item based on the content type definition.
@@ -173,7 +161,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
             {
-                return Task.CompletedTask;
+                return;
             }
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
@@ -187,7 +175,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
                     context.ContentItem.Weld(typePartDefinition.Name, part);
                 }
 
-                _partHandlers.Invoke(handler => handler.Loading(context, part), Logger);
+                await _partHandlers.InvokeAsync(async handler => await handler.LoadingAsync(context, part), Logger);
 
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
@@ -200,15 +188,13 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
                     }
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task LoadedAsync(LoadContentContext context)
+        public override async Task LoadedAsync(LoadContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -219,18 +205,16 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    _partHandlers.Invoke(handler => handler.Loaded(context, part), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.LoadedAsync(context, part), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task PublishingAsync(PublishContentContext context)
+        public override async Task PublishingAsync(PublishContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -240,18 +224,16 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    _partHandlers.Invoke(handler => handler.Publishing(context, part), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.PublishingAsync(context, part), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task PublishedAsync(PublishContentContext context)
+        public override async Task PublishedAsync(PublishContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -261,18 +243,16 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    _partHandlers.Invoke(handler => handler.Published(context, part), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.PublishedAsync(context, part), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task RemovingAsync(RemoveContentContext context)
+        public override async Task RemovingAsync(RemoveContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -282,18 +262,16 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    _partHandlers.Invoke(handler => handler.Removing(context, part), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.RemovingAsync(context, part), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task RemovedAsync(RemoveContentContext context)
+        public override async Task RemovedAsync(RemoveContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -303,18 +281,16 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    _partHandlers.Invoke(handler => handler.Removed(context, part), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.RemovedAsync(context, part), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task UnpublishingAsync(PublishContentContext context)
+        public override async Task UnpublishingAsync(PublishContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -324,18 +300,16 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    _partHandlers.Invoke(handler => handler.Unpublishing(context, part), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.UnpublishingAsync(context, part), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task UnpublishedAsync(PublishContentContext context)
+        public override async Task UnpublishedAsync(PublishContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -345,18 +319,16 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    _partHandlers.Invoke(handler => handler.Unpublished(context, part), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.UnpublishedAsync(context, part), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task UpdatingAsync(UpdateContentContext context)
+        public override async Task UpdatingAsync(UpdateContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -366,18 +338,16 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    _partHandlers.Invoke(handler => handler.Updating(context, part), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.UpdatingAsync(context, part), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task UpdatedAsync(UpdateContentContext context)
+        public override async Task UpdatedAsync(UpdateContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -387,18 +357,16 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    _partHandlers.Invoke(handler => handler.Updated(context, part), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.UpdatedAsync(context, part), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task VersioningAsync(VersionContentContext context)
+        public override async Task VersioningAsync(VersionContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -410,18 +378,16 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (buildingPart != null && existingPart != null)
                 {
-                    _partHandlers.Invoke(handler => handler.Versioning(context, existingPart, buildingPart), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.VersioningAsync(context, existingPart, buildingPart), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task VersionedAsync(VersionContentContext context)
+        public override async Task VersionedAsync(VersionContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -433,18 +399,16 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (buildingPart != null && existingPart != null)
                 {
-                    _partHandlers.Invoke(handler => handler.Versioned(context, existingPart, buildingPart), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.VersionedAsync(context, existingPart, buildingPart), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
+        public override async Task GetContentItemAspectAsync(ContentItemAspectContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -454,11 +418,9 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    _partHandlers.Invoke(handler => handler.GetContentItemAspect(context, part), Logger);
+                    await _partHandlers.InvokeAsync(async handler => await handler.GetContentItemAspectAsync(context, part), Logger);
                 }
             }
-
-            return Task.CompletedTask;
         }
     }
 }

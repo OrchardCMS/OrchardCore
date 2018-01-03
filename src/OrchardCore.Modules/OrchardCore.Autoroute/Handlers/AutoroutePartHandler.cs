@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Fluid;
 using OrchardCore.Autoroute.Model;
 using OrchardCore.Autoroute.Models;
@@ -40,7 +41,7 @@ namespace OrchardCore.Autoroute.Handlers
             _session = session;
         }
 
-        public override void Published(PublishContentContext context, AutoroutePart part)
+        public override async Task PublishedAsync(PublishContentContext context, AutoroutePart part)
         {
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
@@ -49,7 +50,7 @@ namespace OrchardCore.Autoroute.Handlers
 
             if (part.SetHomepage)
             {
-                var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
+                var site = await _siteService.GetSiteSettingsAsync();
                 var homeRoute = site.HomeRoute;
 
                 homeRoute["area"] = "OrchardCore.Contents";
@@ -59,14 +60,14 @@ namespace OrchardCore.Autoroute.Handlers
 
                 // Once we too the flag into account we can dismiss it.
                 part.SetHomepage = false;
-                _siteService.UpdateSiteSettingsAsync(site).GetAwaiter().GetResult();
+                await _siteService.UpdateSiteSettingsAsync(site);
             }
 
             // Evict any dependent item from cache
             RemoveTag(part);
         }
 
-        public override void Unpublished(PublishContentContext context, AutoroutePart part)
+        public override Task UnpublishedAsync(PublishContentContext context, AutoroutePart part)
         {
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
@@ -75,9 +76,11 @@ namespace OrchardCore.Autoroute.Handlers
                 // Evict any dependent item from cache
                 RemoveTag(part);
             }
+
+            return Task.CompletedTask;
         }
 
-        public override void Removed(RemoveContentContext context, AutoroutePart part)
+        public override Task RemovedAsync(RemoveContentContext context, AutoroutePart part)
         {
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
@@ -86,9 +89,11 @@ namespace OrchardCore.Autoroute.Handlers
                 // Evict any dependent item from cache
                 RemoveTag(part);
             }
+
+            return Task.CompletedTask;
         }
 
-        public override void Updated(UpdateContentContext context, AutoroutePart part)
+        public override async Task UpdatedAsync(UpdateContentContext context, AutoroutePart part)
         {
             // Compute the Path only if it's empty
             if (!String.IsNullOrWhiteSpace(part.Path))
@@ -103,7 +108,7 @@ namespace OrchardCore.Autoroute.Handlers
                 var templateContext = new TemplateContext();
                 templateContext.SetValue("ContentItem", part.ContentItem);
 
-                part.Path = _liquidTemplateManager.RenderAsync(pattern, templateContext).GetAwaiter().GetResult();
+                part.Path = await _liquidTemplateManager.RenderAsync(pattern, templateContext);
 
                 if (!IsPathUnique(part.Path, part))
                 {
