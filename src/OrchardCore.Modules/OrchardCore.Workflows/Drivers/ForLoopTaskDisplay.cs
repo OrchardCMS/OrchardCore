@@ -14,7 +14,7 @@ namespace OrchardCore.Workflows.Drivers
 
         protected override void Map(ForLoopTaskViewModel source, ForLoopTask target)
         {
-            target.CountExpression = new WorkflowExpression<int>(source.CountExpression);
+            target.CountExpression = new WorkflowExpression<double>(source.CountExpression);
         }
     }
 }

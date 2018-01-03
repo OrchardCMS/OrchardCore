@@ -22,9 +22,9 @@ namespace OrchardCore.Workflows.Activities
         /// <summary>
         /// An expression evaluating to the number of times to loop.
         /// </summary>
-        public WorkflowExpression<int> CountExpression
+        public WorkflowExpression<double> CountExpression
         {
-            get => GetProperty(() => new WorkflowExpression<int>());
+            get => GetProperty(() => new WorkflowExpression<double>());
             set => SetProperty(value);
         }
 
