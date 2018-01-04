@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -68,7 +67,7 @@ namespace OrchardCore.Contents
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            serviceProvider.AddTagHelpers(typeof(ContentLinkTagHelper).GetTypeInfo().Assembly);
+            serviceProvider.AddTagHelpers(typeof(ContentLinkTagHelper).Assembly);
 
             routes.MapAreaRoute(
                 name: "DisplayContentItem",
