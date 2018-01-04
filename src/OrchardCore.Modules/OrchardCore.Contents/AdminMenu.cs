@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Environment.Navigation;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Contents
 {
@@ -43,14 +44,15 @@ namespace OrchardCore.Contents
                 );
 
             var contentTypes = contentTypeDefinitions.Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
-            if (contentTypes.Any()) {
-                builder.Add(T["New"], "-1", newMenu =>
+            if (contentTypes.Any())
+            {
+                builder.Add(T["New"], "-1", async newMenu =>
                 {
                     newMenu.LinkToFirstChild(false).AddClass("new").Id("new");
                     foreach (var contentTypeDefinition in contentTypes)
                     {
-                        var ci = _contentManager.New(contentTypeDefinition.Name);
-                        var cim = _contentManager.PopulateAspect<ContentItemMetadata>(ci);
+                        var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
+                        var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
                         var createRouteValues = cim.CreateRouteValues;
                         if (createRouteValues.Any())
                             newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item

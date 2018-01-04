@@ -60,7 +60,7 @@ namespace OrchardCore.Flows.Drivers
 
             for (var i = 0; i < model.Prefixes.Length; i++)
             {
-                var contentItem = _contentManager.New(model.ContentTypes[i]);
+                var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
 
                 contentItem.Weld(new FlowMetadata());
 
