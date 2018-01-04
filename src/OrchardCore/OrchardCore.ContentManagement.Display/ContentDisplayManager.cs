@@ -169,11 +169,9 @@ namespace OrchardCore.ContentManagement.Display
 
             var updateContentContext = new UpdateContentContext(contentItem, updater);
 
-            _contentHandlers.Invoke(async handler => await handler.UpdatingAsync(updateContentContext), Logger);
-
+            await _contentHandlers.InvokeAsync(async handler => await handler.UpdatingAsync(updateContentContext), Logger);
             await _handlers.InvokeAsync(async handler => await handler.UpdateEditorAsync(contentItem, context), Logger);
-
-            _contentHandlers.Reverse().Invoke(async handler => await handler.UpdatedAsync(updateContentContext), Logger);
+            await _contentHandlers.Reverse().InvokeAsync(async handler => await handler.UpdatedAsync(updateContentContext), Logger);
 
             return context.Shape;
         }
