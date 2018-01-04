@@ -1,4 +1,5 @@
-﻿using System.IO;
+using System.IO;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Media
@@ -7,9 +8,9 @@ namespace OrchardCore.Media
     {
         public static IMediaFactory Instance => new NullMediaFactory();
 
-        public IContent CreateMedia(Stream stream, string path, string mimeType, long length, string contentType)
+        public Task<IContent> CreateMediaAsync(Stream stream, string path, string mimeType, long length, string contentType)
         {
-            return null;
+            return Task.FromResult<IContent>(null);
         }
     }
 }

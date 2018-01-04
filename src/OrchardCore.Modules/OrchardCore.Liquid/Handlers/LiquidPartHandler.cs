@@ -1,4 +1,5 @@
-﻿using Fluid;
+using System.Threading.Tasks;
+using Fluid;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -16,7 +17,7 @@ namespace OrchardCore.Liquid.Handlers
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public override void GetContentItemAspect(ContentItemAspectContext context, LiquidPart part)
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context, LiquidPart part)
         {
             context.For<BodyAspect>(bodyAspect =>
             {
@@ -30,6 +31,8 @@ namespace OrchardCore.Liquid.Handlers
                     bodyAspect.Body = HtmlString.Empty;
                 }
             });
+
+            return Task.CompletedTask;
         }
     }
 }
