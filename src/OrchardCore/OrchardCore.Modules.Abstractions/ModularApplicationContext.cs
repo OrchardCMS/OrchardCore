@@ -78,6 +78,8 @@ namespace OrchardCore.Modules
         public static string ContentRoot = ContentPath + "/";
         private const string ModuleAssetsMap = "module.assets.map";
 
+        private readonly string _baseNamespace;
+        private readonly DateTimeOffset _lastModified;
         private readonly IDictionary<string, IFileInfo> _fileInfos = new Dictionary<string, IFileInfo>();
 
         public Module(string name)
@@ -96,6 +98,9 @@ namespace OrchardCore.Modules
                 Assets = Enumerable.Empty<Asset>();
                 AssetPaths = Enumerable.Empty<string>();
             }
+
+            _baseNamespace = Name + '.';
+            _lastModified = DateTimeOffset.UtcNow;
         }
 
         public string Name { get; }
@@ -117,7 +122,7 @@ namespace OrchardCore.Modules
                 {
                     if (!_fileInfos.TryGetValue(subpath, out fileInfo))
                     {
-                        var resourcePath = Name + '.' + subpath.Replace('/', '>');
+                        var resourcePath = _baseNamespace + subpath.Replace('/', '>');
                         var fileName = Path.GetFileName(subpath);
 
                         if (Assembly.GetManifestResourceInfo(resourcePath) == null)
@@ -126,7 +131,7 @@ namespace OrchardCore.Modules
                         }
 
                         _fileInfos[subpath] = fileInfo = new EmbeddedResourceFileInfo(
-                            Assembly, resourcePath, fileName, DateTimeOffset.UtcNow);
+                            Assembly, resourcePath, fileName, _lastModified);
                     }
                 }
             }
