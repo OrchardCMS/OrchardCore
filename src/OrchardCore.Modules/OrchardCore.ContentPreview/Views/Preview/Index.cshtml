@@ -14,10 +14,18 @@
 </iframe>
 
 <div id="notConnectedWarning" class="alert alert-info alert-dismissible fade show collapse" role="alert" style="position:fixed; height:60px; top:10px;right:40px; display:none; z-index:999999;">
-    <button type="button" id="close-warning" class="close" aria-label="Close" style="position: relative; padding: 0 0 0 1rem; margin-top: -0.2rem;">
+    <button type="button" id="close-connect-warning" class="close" aria-label="Close" style="position: relative; padding: 0 0 0 1rem; margin-top: -0.2rem;">
         <span aria-hidden="true">&times;</span>
     </button>
     <span>@T["Preview Disconnected"] </span>
+</div>
+
+<div id="serverErrorWarning" class="alert alert-warning alert-dismissible fade show" role="alert" style="position:fixed; top:10px;right:40px; display:none; z-index:999999;">
+    <button type="button" id="close-server-warning" class="close" aria-label="Close" style="position: relative; padding: 0 0 0 1rem; margin-top: -0.2rem;">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <p>@T["Preview Error"] </p>
+    <ul></ul>
 </div>
 
 
@@ -41,8 +49,12 @@
         });
 
         // override default behaviour of Bootstrap's. We only hide, not remove the alert.
-        $('#close-warning').on('click', function(){
+        $('#close-connect-warning').on('click', function(){
             $('#notConnectedWarning').hide();
+        });
+
+        $('#close-server-warning').on('click', function () {
+            $('#serverErrorWarning').hide();
         });
 
         iframe.contentWindow.onbeforeunload = function () { return ""; }
@@ -94,12 +106,16 @@
                     iframe.contentWindow.document.body.innerHTML = '';
                     iframe.contentWindow.document.write(data);
                     $(iframe.contentWindow).scrollTop(scrollTop);
+                    $(serverErrorWarning).hide();
                 })
                 .fail(function (data) {
-                    if (data.responseJSON && data.responseJSON != undefined && data.responseJSON.errors) {
+                    if (data.responseJSON && data.responseJSON.errors) {
+                        var ul = $('#serverErrorWarning ul').empty();
                         data.responseJSON.errors.forEach(function (error) {
                             console.error(error);
+                            $('<li/>').text(error).appendTo(ul);
                         });
+                        $(serverErrorWarning).show();
                     }
                 })
                 .always(function () {
