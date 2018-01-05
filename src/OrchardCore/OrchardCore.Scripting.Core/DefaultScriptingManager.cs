@@ -21,7 +21,7 @@ namespace OrchardCore.Scripting
 
         public IList<IGlobalMethodProvider> GlobalMethodProviders { get; }
 
-        public object Evaluate(string directive)
+        public object Evaluate(string directive, IEnumerable<IGlobalMethodProvider> scopedMethodProviders = null)
         {
             var directiveIndex = directive.IndexOf(":");
 
@@ -39,7 +39,8 @@ namespace OrchardCore.Scripting
                 return directive;
             }
 
-            var scope = engine.CreateScope(GlobalMethodProviders.SelectMany(x => x.GetMethods()), _serviceProvider);
+            var methodProviders = scopedMethodProviders != null ? GlobalMethodProviders.Concat(scopedMethodProviders) : GlobalMethodProviders;
+            var scope = engine.CreateScope(methodProviders.SelectMany(x => x.GetMethods()), _serviceProvider);
             return engine.Evaluate(scope, script);
         }
 

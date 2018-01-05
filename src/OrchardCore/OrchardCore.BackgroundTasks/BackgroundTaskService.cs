@@ -137,7 +137,7 @@ namespace OrchardCore.BackgroundTasks
 
         private string GetGroupName(IBackgroundTask task)
         {
-            var attributes = task.GetType().GetTypeInfo().GetCustomAttributes<BackgroundTaskAttribute>().ToList();
+            var attributes = task.GetType().GetCustomAttributes<BackgroundTaskAttribute>().ToList();
 
             if (attributes.Count == 0)
             {
