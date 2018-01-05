@@ -34,7 +34,7 @@
             else if (ev.key.indexOf('contentpreview:') !== -1) {
                 if (ev.originalEvent.newValue != null) {
                     clearTimeout(previewEventTimer);
-                    previewEventTimer = setTimeout(function () { renderPreview(ev.originalEvent.newValue); }, 300);
+                    previewEventTimer = setTimeout(function () { renderPreview(ev.originalEvent.newValue); }, 150);
                     $(notConnectedWarning).hide();
                 }
             }
