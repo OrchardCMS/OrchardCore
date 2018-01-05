@@ -72,26 +72,26 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("popper")
-                .SetUrl("/OrchardCore.Resources/Scripts/popper.js")
-                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js", "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.js")
-                .SetCdnIntegrity("sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh")
-                .SetVersion("1.12.3")
+                .SetUrl("/OrchardCore.Resources/Scripts/popper.js", "/OrchardCore.Resources/Scripts/popper.min.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js", "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.js")
+                .SetCdnIntegrity("sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q")
+                .SetVersion("1.12.9")
                 ;
 
             manifest
                 .DefineScript("bootstrap")
                 .SetDependencies("jQuery", "popper")
                 .SetUrl("/OrchardCore.Resources/Scripts/bootstrap.min.js", "/OrchardCore.Resources/Scripts/bootstrap.js")
-                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js")
-                .SetCdnIntegrity("sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ")
+                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js", "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.js")
+                .SetCdnIntegrity("sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4")
                 .SetVersion("4.0.0")
                 ;
 
             manifest
                 .DefineStyle("bootstrap")
                 .SetUrl("/OrchardCore.Resources/Styles/bootstrap.min.css", "/OrchardCore.Resources/Styles/bootstrap.css")
-                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css")
-                .SetCdnIntegrity("sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb")
+                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css", "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.css")
+                .SetCdnIntegrity("sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy")
                 .SetVersion("4.0.0")
                 ;
 
