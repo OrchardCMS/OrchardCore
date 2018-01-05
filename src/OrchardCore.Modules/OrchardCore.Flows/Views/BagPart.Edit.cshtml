@@ -29,7 +29,7 @@
 
                     widgetEditor.Metadata.Alternates.Add("Widget_Edit__Bag");
                 }
-                    
+
                 @await DisplayAsync(widgetEditor)
 
                 @{ this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix; }
@@ -46,11 +46,11 @@
         <div class="dropdown-menu">
             @foreach (var type in Model.ContainedContentTypeDefinitions)
             {
-                <a class="dropdown-item add-widget  btn-sm" 
-                   data-target-id="@widgetTemplatePlaceholderId" 
+                <a class="dropdown-item add-widget  btn-sm"
+                   data-target-id="@widgetTemplatePlaceholderId"
                    data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
                    data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
-                   data-widget-type="@type.Name" 
+                   data-widget-type="@type.Name"
                    data-flowmetadata="false"
                    href="javascript:;">@type.DisplayName</a>
             }
@@ -76,7 +76,7 @@
             Context.Items["BagPart.Edit:" + type.Name] = new object();
 
             // Render a mock widget so that its resources are included in the page
-            var contentItem = ContentManager.New(type.Name);
+            var contentItem = await ContentManager.NewAsync(type.Name);
             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
         }
     }

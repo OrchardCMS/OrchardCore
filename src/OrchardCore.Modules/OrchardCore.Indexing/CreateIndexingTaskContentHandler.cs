@@ -1,4 +1,5 @@
-﻿using OrchardCore.ContentManagement.Handlers;
+using System.Threading.Tasks;
+using OrchardCore.ContentManagement.Handlers;
 
 namespace OrchardCore.Indexing
 {
@@ -11,14 +12,14 @@ namespace OrchardCore.Indexing
             _indexingTaskManager = indexingTaskManager;
         }
 
-        public override void Published(PublishContentContext context)
+        public override Task PublishedAsync(PublishContentContext context)
         {
-            _indexingTaskManager.CreateTaskAsync(context.ContentItem, IndexingTaskTypes.Update).Wait();
+            return _indexingTaskManager.CreateTaskAsync(context.ContentItem, IndexingTaskTypes.Update);
         }
 
-        public override void Removed(RemoveContentContext context)
+        public override Task RemovedAsync(RemoveContentContext context)
         {
-            _indexingTaskManager.CreateTaskAsync(context.ContentItem, IndexingTaskTypes.Delete).Wait();
+            return _indexingTaskManager.CreateTaskAsync(context.ContentItem, IndexingTaskTypes.Delete);
         }
     }
 }

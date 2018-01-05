@@ -1,30 +1,107 @@
-﻿namespace OrchardCore.ContentManagement.Handlers
+using System.Threading.Tasks;
+
+namespace OrchardCore.ContentManagement.Handlers
 {
     public abstract class ContentHandlerBase : IContentHandler
     {
-        public virtual void Activating(ActivatingContentContext context) { }
-        public virtual void Activated(ActivatedContentContext context) { }
-        public virtual void Initializing(InitializingContentContext context) { }
-        public virtual void Initialized(InitializingContentContext context) { }
-        public virtual void Creating(CreateContentContext context) { }
-        public virtual void Created(CreateContentContext context) { }
-        public virtual void Loading(LoadContentContext context) { }
-        public virtual void Loaded(LoadContentContext context) { }
-        public virtual void Updating(UpdateContentContext context) { }
-        public virtual void Updated(UpdateContentContext context) { }
-        public virtual void Versioning(VersionContentContext context) { }
-        public virtual void Versioned(VersionContentContext context) { }
-        public virtual void Publishing(PublishContentContext context) { }
-        public virtual void Published(PublishContentContext context) { }
-        public virtual void Unpublishing(PublishContentContext context) { }
-        public virtual void Unpublished(PublishContentContext context) { }
-        public virtual void Removing(RemoveContentContext context) { }
-        public virtual void Removed(RemoveContentContext context) { }
+        public virtual Task ActivatingAsync(ActivatingContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task ActivatedAsync(ActivatedContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task InitializingAsync(InitializingContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task InitializedAsync(InitializingContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task CreatingAsync(CreateContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task CreatedAsync(CreateContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task LoadingAsync(LoadContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task LoadedAsync(LoadContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task UpdatingAsync(UpdateContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task UpdatedAsync(UpdateContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task VersioningAsync(VersionContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task VersionedAsync(VersionContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task PublishingAsync(PublishContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task PublishedAsync(PublishContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task UnpublishingAsync(PublishContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task UnpublishedAsync(PublishContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task RemovingAsync(RemoveContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task RemovedAsync(RemoveContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
 
         // TODO: Implement Clone event
         //protected virtual void Cloning(CloneContentContext context) { }
         //protected virtual void Cloned(CloneContentContext context) { }
 
-        public virtual void GetContentItemAspect(ContentItemAspectContext context) { }
+        public virtual Task GetContentItemAspectAsync(ContentItemAspectContext context)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

@@ -1,7 +1,5 @@
 using System;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundTasks;
@@ -13,6 +11,7 @@ using OrchardCore.DisplayManagement.TagHelpers;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Data;
+using OrchardCore.Modules;
 using OrchardCore.Mvc;
 using OrchardCore.ResourceManagement;
 using OrchardCore.ResourceManagement.TagHelpers;
@@ -40,8 +39,8 @@ namespace OrchardCore.Commons
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            serviceProvider.AddTagHelpers(typeof(ResourcesTagHelper).GetTypeInfo().Assembly);
-            serviceProvider.AddTagHelpers(typeof(ShapeTagHelper).GetTypeInfo().Assembly);
+            serviceProvider.AddTagHelpers(typeof(ResourcesTagHelper).Assembly);
+            serviceProvider.AddTagHelpers(typeof(ShapeTagHelper).Assembly);
         }
     }
 
