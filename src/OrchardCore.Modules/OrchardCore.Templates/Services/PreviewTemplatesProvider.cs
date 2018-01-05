@@ -1,8 +1,8 @@
 using System;
-using System.Text;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Templates.Models;
+using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Services
 {
@@ -13,41 +13,32 @@ namespace OrchardCore.Templates.Services
     {
         private readonly Lazy<TemplatesDocument> _templatesDocument;
 
-        public PreviewTemplatesProvider(IHttpContextAccessor httpContextAccessor)
+        public PreviewTemplatesProvider(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache)
         {
             _templatesDocument = new Lazy<TemplatesDocument>(() =>
             {
-
                 var httpContext = httpContextAccessor.HttpContext;
 
-                if (!httpContext.Request.Cookies.ContainsKey("orchard:templates:count"))
+                if (!httpContext.Request.Cookies.ContainsKey("orchard:templates"))
                 {
                     return null;
                 }
 
-                var sb = new StringBuilder();
-                int.TryParse(httpContext.Request.Cookies["orchard:templates:count"], out int count);
-                for(var i = 0; i < count; i++)
-                {
-                    var chunk = httpContext.Request.Cookies["orchard:templates:" + i];
-                    sb.Append(chunk);
-                }
-
-                var content = Encoding.UTF8.GetString(Convert.FromBase64String(sb.ToString()));
-                var template = JsonConvert.DeserializeObject<Template>(content);
                 var templatesDocument = new TemplatesDocument();
 
-                if (template == null || template.Description == null)
+                if (memoryCache.TryGetValue<TemplateViewModel>("OrchardCore.PreviewTemplate", out var viewModel))
                 {
-                    // An error occured while deserializing
-                    return templatesDocument;
-                }
+                    if (viewModel == null || viewModel.Name == null)
+                    {
+                        return templatesDocument;
+                    }
 
-                templatesDocument.Templates.Add(template.Description, template);
+                    var template = new Template { Content = viewModel.Content };
+                    templatesDocument.Templates.Add(viewModel.Name, template);
+                }
 
                 return templatesDocument;
             });
-
         }
 
         public TemplatesDocument GetTemplates()

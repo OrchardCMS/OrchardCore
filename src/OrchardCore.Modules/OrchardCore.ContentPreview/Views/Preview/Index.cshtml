@@ -26,15 +26,16 @@
 <resources type="Footer" />
 
 <script type="text/javascript">
-    $(function() {
+    $(function () {
         $(window).on('storage', function (ev) {
             if (ev.key.indexOf('contentpreview:not-connected:') !== -1) {
                 $(notConnectedWarning).show();
             }
             else if (ev.key.indexOf('contentpreview:') !== -1) {
                 if (ev.originalEvent.newValue != null) {
+                    clearTimeout(previewEventTimer);
+                    previewEventTimer = setTimeout(function () { renderPreview(ev.originalEvent.newValue); }, 300);
                     $(notConnectedWarning).hide();
-                    renderPreview(ev.originalEvent.newValue);
                 }
             }
         });
@@ -61,58 +62,53 @@
     var renderPreviewUrl = $(document.getElementById('renderPreviewUrl')).data('value');
     var iframe = document.getElementById('iframe');
     var notConnectedWarning = document.getElementById('notConnectedWarning');
+    var previewEventTimer = null;
 
     var scrollTop;
     var rendering;
 
     function renderPreview(value) {
 
-        renderRequested = true;
-
-        // Squashes all event calls into one
         if (rendering) {
             return;
         }
 
-        // Pump renderPreview calls
-        while (renderRequested) {
-            renderRequested = false;
-            rendering = true;
-            try {
+        rendering = true;
 
-                var formData = JSON.parse(value);
-                if (!formData) return;
-
-                scrollTop = $(iframe.contentWindow).scrollTop();
-
-                $.post(renderPreviewUrl, formData)
-                    .done(function (data) {
-                        if (!iframe || !iframe.contentWindow) {
-                            iframe.contentWindow.document.open();
-                            iframe.contentWindow.document.close();
-                        }
-
-                        iframe.contentWindow.document.body.innerHTML = '';
-                        iframe.contentWindow.document.write(data);
-                        $(iframe.contentWindow).scrollTop(scrollTop);
-                    })
-                    .fail(function (data) {
-                        if (data.responseJSON && data.responseJSON.errors) {
-                            responseJSON.errors.forEach(function (error) {
-                                console.error(error);
-                            });
-                        }
-                    })
-                    .always(function () {
-                    }
-                );
-            }
-            catch (e) {
-                console.log('Error while previewing: ' + e);
-            }
-            finally {
+        try {
+            var formData = JSON.parse(value);
+            if (!formData) {
                 rendering = false;
+                return;
             }
+
+            scrollTop = $(iframe.contentWindow).scrollTop();
+
+            $.post(renderPreviewUrl, formData)
+                .done(function (data) {
+                    if (!iframe || !iframe.contentWindow) {
+                        iframe.contentWindow.document.open();
+                        iframe.contentWindow.document.close();
+                    }
+
+                    iframe.contentWindow.document.body.innerHTML = '';
+                    iframe.contentWindow.document.write(data);
+                    $(iframe.contentWindow).scrollTop(scrollTop);
+                })
+                .fail(function (data) {
+                    if (data.responseJSON && data.responseJSON != undefined && data.responseJSON.errors) {
+                        data.responseJSON.errors.forEach(function (error) {
+                            console.error(error);
+                        });
+                    }
+                })
+                .always(function () {
+                    rendering = false;
+                });
+        }
+        catch (e) {
+            rendering = false;
+            console.log('Error while previewing: ' + e);
         }
     }
 
