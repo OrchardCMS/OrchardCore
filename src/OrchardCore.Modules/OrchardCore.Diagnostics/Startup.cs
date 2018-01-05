@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -34,7 +34,7 @@ namespace OrchardCore.Diagnostics
             {
                 var builder = next();
 
-                if (context.Response.StatusCode != 200)
+                if (context.Response.StatusCode < 200 || context.Response.StatusCode >= 400)
                 {
                     string contentType;
                     if (_contentTypeProvider.TryGetContentType(context.Request.Path, out contentType))

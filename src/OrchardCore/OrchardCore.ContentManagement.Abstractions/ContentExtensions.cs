@@ -151,10 +151,5 @@ namespace OrchardCore.ContentManagement
         {
             return content.ContentItem != null && (!content.ContentItem.Published || !content.ContentItem.Latest);
         }
-
-        public static bool IsNew(this IContent content)
-        {
-            return content.ContentItem != null && content.ContentItem.Id == 0;
-        }
     }
 }

@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width initial-scale=1.0">
     <link type="image/x-icon" rel="shortcut icon" href="TheBlogTheme/favicon.ico" />
 
-    {% script name:"jquery", use_cdn:"true", at:"Foot" %}
-    {% script name:"bootstrap", use_cdn:"true", version:"3", at:"Foot" %}
-    {% script src:"/TheBlogTheme/Scripts/clean-blog.min.js", debug_src:"/TheBlogTheme/Scripts/clean-blog.js", at:"Foot" %}
+    {% script name:"jQuery", use_cdn:"true", at:"Foot" %}
+    {% script name:"Bootstrap", use_cdn:"true", version:"3", at:"Foot" %}
+    {% script source:"/TheBlogTheme/Scripts/clean-blog.min.js", debug_src:"/TheBlogTheme/Scripts/clean-blog.js", at:"Foot" %}
 
     <link rel="stylesheet" href="/TheBlogTheme/Styles/blog.min.css">
 
@@ -31,13 +31,13 @@
 
 <body>
     <nav class="navbar navbar-default  navbar-custom navbar-fixed-top">
-        <div class="container-fluid">
+        <div class="container">
             <div class="navbar-header page-scroll">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                     <span class="sr-only">{{ "Toggle navigation" | t }}</span>
                     {{ "Menu" | t }} <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href= {{ "~/" | href }}>{{ Site.SiteName }}</a>
+                <a class="navbar-brand" href="{{ "~/" | href }}">{{ Site.SiteName }}</a>
             </div>
 
             <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">

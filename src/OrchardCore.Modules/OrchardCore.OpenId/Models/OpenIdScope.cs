@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace OrchardCore.OpenId.Models
 {
     public class OpenIdScope
     {
+
+        /// <summary>
+        /// Gets or sets the unique identifier
+        /// associated with the current scope.
+        /// </summary>
+        public string ScopeId { get; set; }
+
         /// <summary>
         /// Gets or sets the public description
         /// associated with the current scope.
@@ -14,9 +16,15 @@ namespace OrchardCore.OpenId.Models
         public string Description { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique identifier
+        /// Gets or sets the physical identifier
         /// associated with the current scope.
         /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique name
+        /// associated with the current scope.
+        /// </summary>
+        public string Name { get; set; }
     }
 }

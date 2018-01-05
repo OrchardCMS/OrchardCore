@@ -8,7 +8,6 @@ namespace OrchardCore.ContentManagement.Records
         public int DocumentId { get; set; }
         public string ContentItemId { get; set; }
         public string ContentItemVersionId { get; set; }
-        public int Number { get; set; }
         public bool Published { get; set; }
         public bool Latest { get; set; }
         public string ContentType { get; set; }
@@ -27,7 +26,6 @@ namespace OrchardCore.ContentManagement.Records
                 .Map(contentItem => new ContentItemIndex
                 {
                     Latest = contentItem.Latest,
-                    Number = contentItem.Number,
                     Published = contentItem.Published,
                     ContentType = contentItem.ContentType,
                     ContentItemId = contentItem.ContentItemId,

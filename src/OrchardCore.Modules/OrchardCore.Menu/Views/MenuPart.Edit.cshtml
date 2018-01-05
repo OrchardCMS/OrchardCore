@@ -3,7 +3,6 @@
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
-
 @*
     This template is used to render the editor for a Menu content item.
     It render the hierarchy of the menu items.
@@ -32,7 +31,7 @@
     <ol id="menu">
         @foreach (var menuItem in Model.MenuPart.ContentItem.As<MenuItemsListPart>().MenuItems)
         {
-            var menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
+            dynamic menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
             menuItemShape.MenuPart = Model.MenuPart;
             menuItemShape.Index = index++;
             @await DisplayAsync(menuItemShape);
@@ -54,8 +53,8 @@
                 <div class="row">
                     @foreach (var type in menuItemContentTypes)
                     {
-                        var menuItem = ContentManager.New(type.Name);
-                        var thumbnail = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Thumbnail");
+                        var menuItem = await ContentManager.NewAsync(type.Name);
+                        dynamic thumbnail = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Thumbnail");
                         thumbnail.MenuItemType = type.Name;
                         thumbnail.MenuContentItemId = Model.MenuPart.ContentItem.ContentItemId;
                         <div class="col-sm-6">
@@ -72,7 +71,7 @@
 </div>
 
 <input asp-for="Hierarchy" type="hidden" value="" />
-<div id="msg-leave"style="display:none" data>@T["You have reordered the navigation."]</div>
+<div id="msg-leave" style="display:none" data>@T["You have reordered the navigation."]</div>
 
 <script at="Foot">
     var menuItemId;

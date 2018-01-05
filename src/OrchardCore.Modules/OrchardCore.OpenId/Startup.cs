@@ -4,7 +4,6 @@ using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -13,6 +12,7 @@ using OpenIddict;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
+using OrchardCore.Modules;
 using OrchardCore.OpenId.Drivers;
 using OrchardCore.OpenId.Indexes;
 using OrchardCore.OpenId.Models;
@@ -44,17 +44,14 @@ namespace OrchardCore.OpenId
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddSingleton<IIndexProvider, OpenIdApplicationIndexProvider>();
-            services.AddSingleton<IIndexProvider, OpenIdApplicationByRoleNameIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdTokenIndexProvider>();
+            services.AddSingleton<IIndexProvider, OpenIdAuthorizationIndexProvider>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<IDisplayDriver<ISite>, OpenIdSiteSettingsDisplayDriver>();
             services.AddSingleton<IOpenIdService, OpenIdService>();
             services.AddRecipeExecutionStep<OpenIdSettingsStep>();
             services.AddRecipeExecutionStep<OpenIdApplicationStep>();
-
-            services.AddScoped<OpenIdApplicationIndexProvider>();
-            services.AddScoped<OpenIdTokenIndexProvider>();
 
             services.AddScoped<OpenIdApplicationStore>();
 
@@ -78,16 +75,16 @@ namespace OrchardCore.OpenId
             services.TryAddEnumerable(new[]
             {
                 // Orchard-specific initializers:
-                ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictOptions>, OpenIdConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<JwtBearerOptions>, OpenIdConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<OAuthValidationOptions>, OpenIdConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, OpenIdConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<OpenIddictOptions>, OpenIdConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<JwtBearerOptions>, OpenIdConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<OAuthValidationOptions>, OpenIdConfiguration>(),
 
                 // Built-in initializers:
-                ServiceDescriptor.Singleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigureOptions>(),
-                ServiceDescriptor.Singleton<IPostConfigureOptions<OAuthValidationOptions>, OAuthValidationInitializer>(),
-                ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIddictOptions>, OpenIddictInitializer>(),
-                ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIddictOptions>, OpenIdConnectServerInitializer>()
+                ServiceDescriptor.Transient<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigureOptions>(),
+                ServiceDescriptor.Transient<IPostConfigureOptions<OAuthValidationOptions>, OAuthValidationInitializer>(),
+                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictOptions>, OpenIddictInitializer>(),
+                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictOptions>, OpenIdConnectServerInitializer>()
             });
         }
     }

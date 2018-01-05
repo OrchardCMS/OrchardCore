@@ -11,7 +11,7 @@ placement rules.
 
 In the following example, we describe the placement for the `TextField` and `Parts_Contents_Publish` shapes.
 
-```csharp
+```json
 {
   "TextField": [ ... ],
   "Parts_Contents_Publish" : [ ... ]
@@ -64,6 +64,33 @@ be `Address.City`.
 
 ## Shapes
 
+### Tag Helpers
+
+#### Manipulating shape metadata
+
+It's possible to manipulate a shape's metadata by using the `metadata` tag helper as a child of the shape's tag helper. The metadata tag helper allows you to:
+
+- Change the display type
+- Add, remove, or clear alternates
+- Add, remove, or clear wrappers
+
+Metadata tag helper example:
+
+```xml
+<menu alias="alias:main-menu">
+    <metadata display-type="summary">
+        <clear-alternates />
+        <add-alternate name="Menu_Alternate1" />
+        <add-alternate name="Menu_Alternate2" />
+        <remove-alternate name="Menu_Alternate1" />
+        <clear-wrappers />
+        <add-wrapper name="Menu_Wrapper1" />
+        <add-wrapper name="Menu_Wrapper2" />
+        <remove-wrapper name="Menu_Wrapper2" />
+    </metadata>
+</menu>
+```
+
 ### Date Time shapes
 
 #### DateTime
@@ -77,7 +104,7 @@ Renders a Date and Time value using the timezone of the request.
 
 Tag helper example:
 
-```csharp
+```html
 <datetime utc="@contentItem.CreatedUtc" />
 ```
 
@@ -92,7 +119,7 @@ Renders a relative textual representation of a Date and Time interval.
 
 Tag helper example:
 
-```csharp
+```html
 <timespan utc="@contentItem.CreatedUtc" />
 ```
 

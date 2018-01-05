@@ -3,7 +3,8 @@
 
 @{ 
     ContentItem widget = Model.Widget;
-    bool rendertitle = widget.Content.LayerMetadata.RenderTitle;
+    var layerMetadata = widget.As<LayerMetadata>();
+    bool rendertitle = layerMetadata.RenderTitle;
 }
 
 <div class="widget-container">

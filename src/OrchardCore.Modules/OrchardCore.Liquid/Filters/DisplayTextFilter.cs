@@ -14,18 +14,18 @@ namespace OrchardCore.Liquid.Filters
             _contentManager = contentManager;
         }
 
-        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var contentItem = input.ToObjectValue() as ContentItem;
 
             if (contentItem == null)
             {
-                return Task.FromResult<FluidValue>(NilValue.Instance);
+                return NilValue.Instance;
             }
 
-            var contentItemMetadata = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem);
+            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
 
-            return Task.FromResult<FluidValue>(new StringValue(contentItemMetadata.DisplayText ?? ""));
+            return new StringValue(contentItemMetadata.DisplayText ?? "");
         }
     }
 }

@@ -2,21 +2,36 @@
 
 ## Theming
 
-These shapes are available for theming
+### Shapes
 
-### BodyPart
+The following shapes are rendered when the **BodyPart** is attached to a content type
 
-This shape is rendered when a `BodyPart` is attached to a content item.
-The shape based class is of type `BodyPartViewModel`.
+| Name | Display Type | Default Location | Model Type |
+| ------| ------------ |----------------- | ---------- |
+| `BodyPart` | `Detail` | `Content:5` | `BodyPartViewModel` |
+| `BodyPart` | `Summary` | `Content:10` | `BodyPartViewModel` |
+
+### BodyPartViewModel
 
 The following properties are available on the `BodyPartViewModel` class.
 
 | Property | Type | Description |
 | --------- | ---- |------------ |
-| `Body` | `string` | The HTML content once all tokens have been processed |
+| `Body` | `string` | The content that was edited. It might contain tokens. |
+| `Html` | `string` | The HTML content once all tokens have been processed |
 | `ContentItem` | `ContentItem` | The content item of the part |
 | `BodyPart` | `BodyPart` | The `BodyPart` instance|
 | `TypePartSettings` | `BodyPartSettings` | The settings of the part |
+
+### BodyPart
+
+The following properties are available on `BodyPart`
+
+| Name | Type | Description |
+| -----| ---- |------------ |
+| `Body` | `string` | The HTML content in the body. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `BodyPart` shape instead |
+| `Content` | The raw content of the part |
+| `ContentItem` | The content item containing this part |
 
 ## Editors
 
@@ -34,7 +49,7 @@ Customizing the editor can mean to replace the predefined one with different exp
 new options for the user to choose from.
 
 To create a new custom editor, it is required to provide two shape templates, one to provide
-the name of the editor (optional if you want to override and existing one), and a shape to
+the name of the editor (optional if you want to override an existing one), and a shape to
 render the actual HTML for the editor.
 
 #### Declaration
@@ -74,23 +89,6 @@ Sample content:
 You can override the HTML editor for the `Default` editor by creating a shape file named 
 `Body.Editor.cshtml`. The Wysiwyg editor is defined by using the file named 
 `Body-Wysiwyg.Editor.cshtml`.
-
-## Theming
-
-The following shapes are rendered when the **BodyPart** is attached to a content type
-
-| Name | Display Type | Default Location | Model Type |
-| ------| ------------ |----------------- | ---------- |
-| `BodyPart` | `Detail` | `Content:5` | `BodyPartViewModel` |
-| `BodyPart_Summary` | `Summary` | `Content:10` | `BodyPartViewModel` |
-
-### BodyPartViewModel
-
-The following properties are available on `BodyPartViewModel`
-
-| Name | Type | Description |
-| -----| ---- |------------ |
-| `Body` | `string` | The HTML content in the body. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `BodyPart` shape instead |
 
 ## CREDITS
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -68,7 +68,7 @@ namespace OrchardCore.Contents.Drivers
                 var model = new OwnerEditorViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                if (!string.IsNullOrEmpty(part.ContentItem.Owner) || part.ContentItem.Number > 0)
+                if (!string.IsNullOrEmpty(part.ContentItem.Owner) || !context.IsNew)
                 {
                     part.ContentItem.Owner = model.Owner;
                 }                

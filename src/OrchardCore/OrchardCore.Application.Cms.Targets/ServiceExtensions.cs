@@ -1,7 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Commands;
-using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell.Data;
 
@@ -18,8 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddThemingHost();
             services.AddManifestDefinition("Theme.txt", "theme");
-            services.AddExtensionLocation("Themes");
-            services.AddSitesFolder("App_Data", "Sites");
+            services.AddSitesFolder();
             services.AddCommands();
             services.AddAuthentication();
             services.AddModules(modules => 

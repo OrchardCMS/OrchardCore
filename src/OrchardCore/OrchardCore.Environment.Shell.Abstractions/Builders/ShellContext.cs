@@ -14,7 +14,7 @@ namespace OrchardCore.Hosting.ShellBuilders
     public class ShellContext : IDisposable
     {
         private bool _disposed = false;
-        private int _refCount = 0;
+        private volatile int _refCount = 0;
         private bool _released = false;
 
         public ShellSettings Settings { get; set; }
@@ -66,12 +66,9 @@ namespace OrchardCore.Hosting.ShellBuilders
         public void RequestEnded()
         {
             var refCount = Interlocked.Decrement(ref _refCount);
-
-            if (_released && refCount == 0)
-            {
-                Dispose();
-            }
         }
+
+        public bool CanTerminate => _released && _refCount == 0;
 
         /// <summary>
         /// Mark the <see cref="ShellContext"/> has a candidate to be released.

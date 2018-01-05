@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -60,11 +60,11 @@ namespace OrchardCore.Flows.Drivers
 
             for (var i = 0; i < model.Prefixes.Length; i++)
             {
-                var contentItem = _contentManager.New(model.ContentTypes[i]);
+                var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
 
                 contentItem.Weld(new FlowMetadata());
 
-                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, htmlFieldPrefix: model.Prefixes[i]);
+                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
 
                 part.Widgets.Add(contentItem);
             }

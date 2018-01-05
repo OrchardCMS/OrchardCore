@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -34,7 +34,7 @@ namespace OrchardCore.Widgets.Controllers
         public dynamic New { get; set; }
 
         public ILogger Logger { get; set; }
-        
+
         public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string zonesName, string zone, string targetId)
         {
             if (String.IsNullOrWhiteSpace(id))
@@ -42,11 +42,11 @@ namespace OrchardCore.Widgets.Controllers
                 return NotFound();
             }
 
-            var contentItem = _contentManager.New(id);
+            var contentItem = await _contentManager.NewAsync(id);
 
             contentItem.Weld(new WidgetMetadata());
 
-            var editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, htmlFieldPrefix: prefix);
+            dynamic editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true, htmlFieldPrefix: prefix);
 
             editor.ZonesName = zonesName;
             editor.PrefixesName = prefixesName;

@@ -2,12 +2,11 @@ using System;
 using System.Data;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using YesSql;
 using YesSql.Indexes;
 using YesSql.Provider.MySql;
@@ -35,7 +34,6 @@ namespace OrchardCore.Data
 			services.AddSingleton<IStore>(sp =>
             {
                 var shellSettings = sp.GetService<ShellSettings>();
-                var hostingEnvironment = sp.GetService<IHostingEnvironment>();
 
                 if (shellSettings.DatabaseProvider == null)
                 {
@@ -43,6 +41,9 @@ namespace OrchardCore.Data
                 }
                 
                 var storeConfiguration = new Configuration();
+
+                // Disabling query gating as it's failing to improve performance right now
+                storeConfiguration.DisableQueryGating();
 
                 switch (shellSettings.DatabaseProvider)
                 {
@@ -52,7 +53,7 @@ namespace OrchardCore.Data
                     case "Sqlite":
                         var shellOptions = sp.GetService<IOptions<ShellOptions>>();
                         var option = shellOptions.Value;
-                        var databaseFolder = Path.Combine(hostingEnvironment.ContentRootPath, option.ShellsRootContainerName, option.ShellsContainerName, shellSettings.Name);
+                        var databaseFolder = Path.Combine(option.ShellsApplicationDataPath, option.ShellsContainerName, shellSettings.Name);
                         var databaseFile = Path.Combine(databaseFolder, "yessql.db");
                         Directory.CreateDirectory(databaseFolder);
                         storeConfiguration.UseSqLite($"Data Source={databaseFile};Cache=Shared", IsolationLevel.ReadUncommitted);

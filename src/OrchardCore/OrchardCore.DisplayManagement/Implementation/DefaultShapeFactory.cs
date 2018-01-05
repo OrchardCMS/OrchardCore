@@ -111,10 +111,10 @@ namespace OrchardCore.DisplayManagement.Implementation
             ShapeMetadata shapeMetadata = shape.Metadata;
             shape.Metadata.Type = shapeType;
 
-            // Concatenate wrappers if there are any
+            // Merge wrappers if there are any
             if (shapeDescriptor != null && shapeMetadata.Wrappers.Count + shapeDescriptor.Wrappers.Count > 0)
             {
-                shapeMetadata.Wrappers = shapeMetadata.Wrappers.Concat(shapeDescriptor.Wrappers).ToList();
+                shapeMetadata.Wrappers.AddRange(shapeDescriptor.Wrappers);
             }
 
             // "created" events provides default values and new object initialization

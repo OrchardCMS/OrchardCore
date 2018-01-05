@@ -26,12 +26,12 @@
             <a :href="parents.length - i == 1 ? null : '#'" v-on:click="selectFolder(folder)">{{ folder.name }}</a>
         </span>
         <div class="btn-group">
-            <a v-cloak href="javascript:;" class="btn btn-secondary btn-sm" v-on:click="createFolder"><i class="fa fa-plus text-muted"></i></a>
-            <a v-cloak v-show="!isHome" href="javascript:;" v-on:click="deleteFolder" class="btn btn-secondary btn-sm"><i class="fa fa-trash text-muted"></i></a>
+            <a v-cloak href="javascript:;" class="btn btn-light btn-sm" v-on:click="createFolder"><i class="fa fa-plus"></i></a>
+            <a v-cloak v-show="!isHome" href="javascript:;" v-on:click="deleteFolder" class="btn btn-light btn-sm"><i class="fa fa-trash"></i></a>
         </div>
         <div class="pull-right btn-group" v-if="selectedMedia" >
             <code>{{ selectedMedia.name }}</code>
-            <a href="javascript:;" v-on:click="deleteMedia" class="btn btn-secondary btn-sm"><i class="fa fa-trash text-muted"></i></a>
+            <a href="javascript:;" v-on:click="deleteMedia" class="btn btn-light btn-sm"><i class="fa fa-trash"></i></a>
         </div>
     </nav>
 
@@ -51,8 +51,7 @@
                     class="media-container-main-list-item"
                     v-on:click="selectMedia(media)">
                     <div class="media-container-main-item" v-bind:class="{selected: selectedMedia == media}">
-                        <img v-if="media.mime.startsWith('image')" v-bind:src="media.url + '?width=240&height=240'" v-bind:data-mime="media.mime" />
-                        <i v-else class="fa fa-file-o" v-bind:data-mime="media.mime"></i>
+                        <img v-bind:src="media.url + '?width=240&height=240'" />
                         <div class="media-container-main-item-title">
                             <span class="media-filename">{{ media.name }}</span>
                         </div>
@@ -90,7 +89,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="modalFooterOk">@T["Ok"]</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+                <button type="button" class="btn btn-light" data-dismiss="modal">@T["Cancel"]</button>
             </div>
         </div>
     </div>

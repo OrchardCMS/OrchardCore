@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddWebHost();
             services.AddManifestDefinition("Module.txt", "module");
-            services.AddExtensionLocation("Packages");
+            services.AddExtensionLocation(Application.ModulesPath);
 
             // ModularTenantRouterMiddleware which is configured with UseModules() calls UserRouter() which requires the routing services to be
             // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
@@ -84,7 +84,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             modules.Configure(services =>
             {
-                services.AddScoped<IShellSettingsConfigurationProvider, FileShellSettingsConfigurationProvider>();
+                services.AddSingleton<IShellSettingsConfigurationProvider, FileShellSettingsConfigurationProvider>();
                 services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
                 services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
                 services.AddScoped<ShellSettingsWithTenants>();
@@ -123,6 +123,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddLocalization();
             services.AddHostingShellServices();
             services.AddExtensionManagerHost();
+            services.AddWebEncoders();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IClock, Clock>();

@@ -93,6 +93,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "False",
             "Stereotype": null
@@ -157,6 +158,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "False",
             "Stereotype": null
@@ -218,6 +220,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "True",
             "Stereotype": null
@@ -282,6 +285,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": null
@@ -351,6 +355,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -371,6 +376,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": null
@@ -423,6 +429,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": null
@@ -588,6 +595,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "False",
+            "Versionable": "False",
             "Listable": "False",
             "Securable": "False",
             "Stereotype": null
@@ -696,6 +704,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "False",
+            "Versionable": "False",
             "Listable": "False",
             "Securable": "False",
             "Stereotype": null
@@ -723,6 +732,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "False",
+            "Versionable": "False",
             "Listable": "False",
             "Securable": "False",
             "Stereotype": null
@@ -1170,11 +1180,10 @@
       "name": "Content",
       "data": [
         {
-          "ContentItemId": "412twjnn0rddhzpxrmt1bv8n44",
-          "ContentItemVersionId": "4r6dvzcxk2xagyzebm9crwap5b",
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
           "ContentType": "Menu",
           "Latest": true,
-          "Number": 1,
           "Published": true,
           "ModifiedUtc": "2017-08-16T00:32:59.1057293Z",
           "PublishedUtc": "2017-08-16T00:32:59.1287452Z",
@@ -1189,7 +1198,7 @@
             "MenuItems": [
               {
                 "ContentType": "LinkMenuItem",
-                "ContentItemId": "4pe57e9z616j8wj85vfvp03c40",
+                "ContentItemId": "[js:uuid()]",
                 "LinkMenuItemPart": {
                   "Name": "Home",
                   "Url": "~/"
@@ -1202,11 +1211,10 @@
           }
         },
         {
-          "ContentItemId": "4deh835p7emt23gpxz15wmz5x5",
-          "ContentItemVersionId": "4jse9chj6kkjzyxcr1te1r41xx",
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
           "ContentType": "LandingPage",
           "Latest": true,
-          "Number": 16,
           "Published": true,
           "ModifiedUtc": "2017-08-16T23:21:36.8836967Z",
           "PublishedUtc": "2017-08-16T23:21:37.1612415Z",
@@ -1224,11 +1232,10 @@
           "MenuItems": {
             "ContentItems": [
               {
-                "ContentItemId": "43xmbrmyss2ts0bp2g1wzxcfdj",
-                "ContentItemVersionId": "4ad6jdemq0695x34k7c088dwxx",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "MenuItem",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0237162Z",
                 "PublishedUtc": null,
@@ -1245,11 +1252,10 @@
                 }
               },
               {
-                "ContentItemId": "49wky2w6dtgccz0m59vvpdvnny",
-                "ContentItemVersionId": "4tysqc8pggzhdrq5h1rcrqbg49",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "MenuItem",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0357161Z",
                 "PublishedUtc": null,
@@ -1266,11 +1272,10 @@
                 }
               },
               {
-                "ContentItemId": "4v18zz927xshn17bp118hjxwxy",
-                "ContentItemVersionId": "4h706h7pt1tep7yk00bn5xyrwq",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "MenuItem",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0377161Z",
                 "PublishedUtc": null,
@@ -1287,11 +1292,10 @@
                 }
               },
               {
-                "ContentItemId": "4665xeg2gbmj3rbbar8p3pmqw5",
-                "ContentItemVersionId": "461ad86xzyc89ytevd67eg59d1",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "MenuItem",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0387161Z",
                 "PublishedUtc": null,
@@ -1312,11 +1316,10 @@
           "Services": {
             "ContentItems": [
               {
-                "ContentItemId": "4vxbn052nxbw4vt0a1p2y4x7cd",
-                "ContentItemVersionId": "4kegmtepdzc5e1x8s2kq2yhfmj",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Service",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0437165Z",
                 "PublishedUtc": null,
@@ -1336,11 +1339,10 @@
                 }
               },
               {
-                "ContentItemId": "4v8ckhj5cqt0h4xct4b4q0fkxg",
-                "ContentItemVersionId": "4hd6zx6hc78dnx69ave9psm0xf",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Service",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0507163Z",
                 "PublishedUtc": null,
@@ -1360,11 +1362,10 @@
                 }
               },
               {
-                "ContentItemId": "42qq3sqp94v1nw1gxwt881rgmc",
-                "ContentItemVersionId": "41hxdahm2qt1gzdpz0y52yw14b",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Service",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0527169Z",
                 "PublishedUtc": null,
@@ -1388,11 +1389,10 @@
           "Portfolio": {
             "ContentItems": [
               {
-                "ContentItemId": "4bsnqcc62b8b42tmqjfgxw91x9",
-                "ContentItemVersionId": "4t1dcer2qt7qay78s1y719pdcs",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Project",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0557279Z",
                 "PublishedUtc": null,
@@ -1417,11 +1417,10 @@
                 }
               },
               {
-                "ContentItemId": "4r0snepj4jvyrrsnr0mbk8mnwz",
-                "ContentItemVersionId": "4xbgewh09d10q4vbds1ga4f4we",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Project",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0662276Z",
                 "PublishedUtc": null,
@@ -1446,11 +1445,10 @@
                 }
               },
               {
-                "ContentItemId": "4xzv851mp3d327he122qt6vtn9",
-                "ContentItemVersionId": "4ffrat5th3p6hspgnzattrf1de",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Project",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0687296Z",
                 "PublishedUtc": null,
@@ -1475,11 +1473,10 @@
                 }
               },
               {
-                "ContentItemId": "4p97ttjdx2yzz4k38b4yad4656",
-                "ContentItemVersionId": "4q083c90mkm3xwz3cz0r0xhanz",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Project",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0717342Z",
                 "PublishedUtc": null,
@@ -1504,11 +1501,10 @@
                 }
               },
               {
-                "ContentItemId": "4qnx6jhkkp2tf562n3988nq15a",
-                "ContentItemVersionId": "4r817bnsdqndz4dqdkptsywmcp",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Project",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0767335Z",
                 "PublishedUtc": null,
@@ -1533,11 +1529,10 @@
                 }
               },
               {
-                "ContentItemId": "4brr5gjmw4e0c0p08q700fefm0",
-                "ContentItemVersionId": "4qn0w9k2kp0ehwehvmecpcf44d",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Project",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0797331Z",
                 "PublishedUtc": null,
@@ -1566,11 +1561,10 @@
           "About": {
             "ContentItems": [
               {
-                "ContentItemId": "40mb9dsmbhh5v4g2rwp9sgyamg",
-                "ContentItemVersionId": "4n6dkmxsm7hrrydb3ehx3j40ce",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Milestone",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0827325Z",
                 "PublishedUtc": null,
@@ -1595,11 +1589,10 @@
                 }
               },
               {
-                "ContentItemId": "4f7sr7kjyn62q7qfyremy8srnt",
-                "ContentItemVersionId": "45t1p0f1tsv6n2mws7m5tbb9dq",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Milestone",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0857333Z",
                 "PublishedUtc": null,
@@ -1624,11 +1617,10 @@
                 }
               },
               {
-                "ContentItemId": "4qjmdmz4hez273hqa76ftdmdnh",
-                "ContentItemVersionId": "43jhw7rsf0v7ax2az2vf0b0fcb",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Milestone",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0887326Z",
                 "PublishedUtc": null,
@@ -1653,11 +1645,10 @@
                 }
               },
               {
-                "ContentItemId": "4sz25vvv2zzfv4ghkxp4rsgawn",
-                "ContentItemVersionId": "4s5nwde6yexxvrn42vda57e0xy",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Milestone",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0907331Z",
                 "PublishedUtc": null,
@@ -1686,11 +1677,10 @@
           "Team": {
             "ContentItems": [
               {
-                "ContentItemId": "480nv1nakh4r5w8bns3768hm5z",
-                "ContentItemVersionId": "4cdhtart0q6e007rnmtnpf72nc",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "TeamMember",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0947327Z",
                 "PublishedUtc": null,
@@ -1721,11 +1711,10 @@
                 }
               },
               {
-                "ContentItemId": "4drbjbekgecf1rztg6a72f53na",
-                "ContentItemVersionId": "42sem1a3y94fm6te7gs2kmn9nj",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "TeamMember",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.0977324Z",
                 "PublishedUtc": null,
@@ -1756,11 +1745,10 @@
                 }
               },
               {
-                "ContentItemId": "45y8whb5vyw1a60q3bhveaqbxz",
-                "ContentItemVersionId": "4a4mxdkqd3mq50p1pmkk39h557",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "TeamMember",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.1017334Z",
                 "PublishedUtc": null,
@@ -1795,11 +1783,10 @@
           "Clients": {
             "ContentItems": [
               {
-                "ContentItemId": "4fswrhbc56pm71h235dr6tb1nt",
-                "ContentItemVersionId": "49tm04zy2pcmb28h7gh1945fnd",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.1067324Z",
                 "PublishedUtc": null,
@@ -1821,11 +1808,10 @@
                 }
               },
               {
-                "ContentItemId": "4h94cw2cpt2m7x478vdvmng1c5",
-                "ContentItemVersionId": "4azzte72pcg6g6299rpdthb3nc",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.108733Z",
                 "PublishedUtc": null,
@@ -1847,11 +1833,10 @@
                 }
               },
               {
-                "ContentItemId": "46btvve5z7jfmw1641163x4kxf",
-                "ContentItemVersionId": "4y7s46z583y5k0rgz9fbazbjwp",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.1107326Z",
                 "PublishedUtc": null,
@@ -1873,11 +1858,10 @@
                 }
               },
               {
-                "ContentItemId": "4qbb9ba5wbph0s4g3hfhe87am9",
-                "ContentItemVersionId": "42jbndxyhp8n63tes8rzj4ya5b",
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
                 "Latest": false,
-                "Number": 0,
                 "Published": false,
                 "ModifiedUtc": "2017-08-16T23:21:37.1127323Z",
                 "PublishedUtc": null,

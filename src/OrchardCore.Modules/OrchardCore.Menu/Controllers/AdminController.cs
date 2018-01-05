@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -56,9 +56,9 @@ namespace OrchardCore.Menu.Controllers
                 return Unauthorized();
             }
 
-            var contentItem = _contentManager.New(id);
+            var contentItem = await _contentManager.NewAsync(id);
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true);
 
             model.MenuContentItemId = menuContentItemId;
             model.MenuItemId = menuItemId;
@@ -93,9 +93,9 @@ namespace OrchardCore.Menu.Controllers
                 return NotFound();
             }
 
-            var contentItem = _contentManager.New(id);
+            var contentItem = await _contentManager.NewAsync(id);
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
 
             if (!ModelState.IsValid)
             {
@@ -112,7 +112,7 @@ namespace OrchardCore.Menu.Controllers
                 // Look for the target menu item in the hierarchy
                 var parentMenuItem = FindMenuItem(menu.Content, menuItemId);
 
-                // Couldn't find targetted menu item
+                // Couldn't find targeted menu item
                 if (parentMenuItem == null)
                 {
                     return NotFound();
@@ -160,7 +160,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = menuItem.ToObject<ContentItem>();
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
 
             model.MenuContentItemId = menuContentItemId;
             model.MenuItemId = menuItemId;
@@ -206,7 +206,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = menuItem.ToObject<ContentItem>();
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
 
             if (!ModelState.IsValid)
             {
@@ -275,11 +275,11 @@ namespace OrchardCore.Menu.Controllers
                 return null;
             }
 
-            var menuItems = (JArray) contentItem["MenuItemsListPart"]["MenuItems"];
+            var menuItems = (JArray)contentItem["MenuItemsListPart"]["MenuItems"];
 
             JObject result;
 
-            foreach(JObject menuItem in menuItems)
+            foreach (JObject menuItem in menuItems)
             {
                 // Search in inner menu items
                 result = FindMenuItem(menuItem, menuItemId);

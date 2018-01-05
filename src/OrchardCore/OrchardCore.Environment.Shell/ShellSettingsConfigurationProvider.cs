@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Parser;
 using OrchardCore.Yaml.Parser;
@@ -26,21 +25,27 @@ namespace OrchardCore.Environment.Shell
 
         public void AddSource(IConfigurationBuilder builder)
         {
-            foreach (var tenant in
-                _hostingEnvironment.ContentRootFileProvider.GetDirectoryContents(
-                    Path.Combine(
-                        _optionsAccessor.Value.ShellsRootContainerName,
-                        _optionsAccessor.Value.ShellsContainerName)))
+            var tenantSettingsPath = Path.Combine(
+                        _optionsAccessor.Value.ShellsApplicationDataPath,
+                        _optionsAccessor.Value.ShellsContainerName);
+
+            if (!Directory.Exists(tenantSettingsPath))
             {
-                builder
-                    .AddYamlFile(ObtainSettingsPath(tenant.PhysicalPath));
+                return;
+            }
+
+            var tenants = Directory.GetDirectories(tenantSettingsPath);
+
+            foreach (var tenant in tenants)
+            {
+                builder.AddYamlFile(GetSettingsFilePath(tenant));
             }
         }
 
         public void SaveToSource(string name, IDictionary<string, string> configuration)
         {
-            var settingsFile = ObtainSettingsPath(Path.Combine(
-                        _optionsAccessor.Value.ShellsRootContainerName,
+            var settingsFile = GetSettingsFilePath(Path.Combine(
+                        _optionsAccessor.Value.ShellsApplicationDataPath,
                         _optionsAccessor.Value.ShellsContainerName,
                         name));
 
@@ -67,6 +72,6 @@ namespace OrchardCore.Environment.Shell
             return (value ?? "~");
         }
 
-        private string ObtainSettingsPath(string tenantPath) => Path.Combine(tenantPath, "Settings.txt");
+        private string GetSettingsFilePath(string tenantFolderPath) => Path.Combine(tenantFolderPath, "Settings.txt");
     }
 }

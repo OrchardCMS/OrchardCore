@@ -1,6 +1,6 @@
 using System;
+using Fluid;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -8,7 +8,6 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Services;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.XmlRpc;
 using OrchardCore.Data.Migration;
 using OrchardCore.Feeds;
 using OrchardCore.Lists.Drivers;
@@ -17,12 +16,19 @@ using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
 using OrchardCore.Lists.Settings;
+using OrchardCore.Lists.ViewModels;
+using OrchardCore.Modules;
 using YesSql.Indexes;
 
 namespace OrchardCore.Lists
 {
     public class Startup : StartupBase
     {
+        static Startup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<ListPartViewModel>();
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IIndexProvider, ContainedPartIndexProvider>();

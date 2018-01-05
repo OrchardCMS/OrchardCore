@@ -1,7 +1,5 @@
 using System;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -10,6 +8,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;
+using OrchardCore.Contents.Filters;
 using OrchardCore.Contents.Handlers;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Contents.Models;
@@ -22,7 +21,9 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
+using OrchardCore.Liquid;
 using OrchardCore.Lists.Settings;
+using OrchardCore.Modules;
 using OrchardCore.Mvc;
 using OrchardCore.Recipes;
 using OrchardCore.Scripting;
@@ -60,11 +61,13 @@ namespace OrchardCore.Contents
             // Feeds
             // TODO: Move to feature
             services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
+
+            services.AddLiquidFilter<BuildDisplayFilter>("build_display");
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            serviceProvider.AddTagHelpers(typeof(ContentLinkTagHelper).GetTypeInfo().Assembly);
+            serviceProvider.AddTagHelpers(typeof(ContentLinkTagHelper).Assembly);
 
             routes.MapAreaRoute(
                 name: "DisplayContentItem",
