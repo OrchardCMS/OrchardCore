@@ -31,7 +31,7 @@ namespace OrchardCore.Templates.Controllers
             if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(content))
             {
                 _memoryCache.Set("OrchardCore.PreviewTemplate", new TemplateViewModel { Name = name, Content = content },
-                    new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromSeconds(30)));
+                    new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromSeconds(15)));
             }
         }
     }

@@ -29,6 +29,7 @@
     var setTemplateUrl = $(document.getElementById('setTemplateUrl')).data('value');
     var renderPreviewUrl = $(document.getElementById('renderPreviewUrl')).data('value');
     var previewEventTimer = null;
+    var previewRenderTimer = null;
 
     $(function () {
         $(window).on('storage', function (ev) {
@@ -38,7 +39,7 @@
             else if (ev.key == 'OrchardCore.templates') {
                 if (ev.originalEvent.newValue != null) {
                     clearTimeout(previewEventTimer);
-                    previewEventTimer = setTimeout(function () { renderPreview(ev.originalEvent.newValue); }, 250);
+                    previewEventTimer = setTimeout(function () { renderPreview(ev.originalEvent.newValue); }, 150);
                     $(notConnectedWarning).hide();
                 }
             }
@@ -76,10 +77,12 @@
     function renderPreview(value) {
 
         if (rendering) {
-            return;
+            clearTimeout(previewRenderTimer);
+            previewRenderTimer = setTimeout(function () { renderPreview(value); }, 150);
         }
 
         rendering = true;
+        clearTimeout(previewRenderTimer);
 
         try {
             var formData = JSON.parse(value);
@@ -88,15 +91,14 @@
                 return;
             }
 
-            Cookies.set("orchard:templates", true);
             $.post(setTemplateUrl, formData)
                 .done(function () {
                     try {
+                        Cookies.set("orchard:templates", true);
                         iframe.contentWindow.location = renderPreviewUrl;
                         scrollTop = $(iframe.contentWindow).scrollTop();
                     }
                     catch (e) {
-                        rendering = false;
                         console.log('Error while previewing: ' + e);
                     }
                 })

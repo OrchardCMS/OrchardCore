@@ -75,6 +75,7 @@
     var iframe = document.getElementById('iframe');
     var notConnectedWarning = document.getElementById('notConnectedWarning');
     var previewEventTimer = null;
+    var previewRenderTimer = null;
 
     var scrollTop;
     var rendering;
@@ -82,10 +83,13 @@
     function renderPreview(value) {
 
         if (rendering) {
+            clearTimeout(previewRenderTimer);
+            previewRenderTimer = setTimeout(function () { renderPreview(value); }, 150);
             return;
         }
 
         rendering = true;
+        clearTimeout(previewRenderTimer);
 
         try {
             var formData = JSON.parse(value);
