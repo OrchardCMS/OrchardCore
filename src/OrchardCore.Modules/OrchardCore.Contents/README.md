@@ -44,5 +44,5 @@ The following methods are available from the Razor helper in the `OrchardCore.Co
 | --------- | ---- |------------ |
 | `GetContentItemIdByAliasAsync` | `string alias` | Returns the content item id from its alias. |
 | `GetContentItemByAliasAsync` | `string alias, bool latest = false` | Loads a content item from its alias, seeking the latest version or not. |
-| `GetContentItemByIdAsync` | `string contentItemId, bool latest: false` | Loads a content item from its id, seeking the latest version or not. |
+| `GetContentItemByIdAsync` | `string contentItemId, bool latest = false` | Loads a content item from its id, seeking the latest version or not. |
 | `GetContentItemByVersionIdAsync` | `string contentItemVersionId` | Loads a content item from its version id. |
