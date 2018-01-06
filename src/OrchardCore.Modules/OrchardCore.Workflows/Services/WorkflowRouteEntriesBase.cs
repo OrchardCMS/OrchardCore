@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Routing;
@@ -6,12 +7,12 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
 {
-    public class WorkflowRouteEntries : IWorkflowRouteEntries
+    public abstract class WorkflowRouteEntriesBase : IWorkflowRouteEntries
     {
         private readonly object _syncLock = new object();
-        private IDictionary<int, IList<WorkflowRoutesEntry>> _entries = new Dictionary<int, IList<WorkflowRoutesEntry>>();
+        private IDictionary<string, IList<WorkflowRoutesEntry>> _entries = new Dictionary<string, IList<WorkflowRoutesEntry>>();
 
-        public IEnumerable<WorkflowRoutesEntry> GetWorkflowRouteEntries(string httpMethod, RouteValueDictionary routeValues)
+        public IEnumerable<WorkflowRoutesEntry> GetWorkflowRouteEntries(string httpMethod, RouteValueDictionary routeValues, string correlationId)
         {
             var controllerName = routeValues.GetValue<string>("controller");
             var actionName = routeValues.GetValue<string>("action");
@@ -21,24 +22,28 @@ namespace OrchardCore.Workflows.Services
                 x.HttpMethod == httpMethod
                 && (x.ControllerName == controllerName || string.IsNullOrWhiteSpace(x.ControllerName))
                 && (x.ActionName == actionName || string.IsNullOrWhiteSpace(x.ActionName))
-                && (x.AreaName == areaName || string.IsNullOrWhiteSpace(x.AreaName)));
+                && (x.AreaName == areaName || string.IsNullOrWhiteSpace(x.AreaName))
+                && (string.Equals(x.CorrelationId, correlationId, StringComparison.OrdinalIgnoreCase)));
 
             return entries.ToList();
         }
 
-        public void AddEntries(int workflowDefinitionId, IEnumerable<WorkflowRoutesEntry> entries)
+        public void AddEntries(IEnumerable<WorkflowRoutesEntry> entries)
         {
             lock (_syncLock)
             {
-                _entries[workflowDefinitionId] = entries.ToList();
+                foreach (var group in entries.GroupBy(x => x.WorkflowId))
+                {
+                    _entries[group.Key] = group.ToList();
+                }
             }
         }
 
-        public void RemoveEntries(int workflowDefinitionId)
+        public void RemoveEntries(string workflowId)
         {
             lock (_syncLock)
             {
-                _entries.Remove(workflowDefinitionId);
+                _entries.Remove(workflowId);
             }
         }
     }

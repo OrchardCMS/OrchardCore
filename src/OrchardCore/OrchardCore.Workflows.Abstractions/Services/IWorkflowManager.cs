@@ -39,6 +39,16 @@ namespace OrchardCore.Workflows.Services
         Task<WorkflowContext> StartWorkflowAsync(WorkflowDefinitionRecord workflowDefinition, ActivityRecord startActivity = null, IDictionary<string, object> input = null, string correlationId = null);
 
         /// <summary>
+        /// Resumes the specified workflow instance at the specified activity.
+        /// </summary>
+        Task<WorkflowContext> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance, AwaitingActivityRecord awaitingActivity);
+
+        /// <summary>
+        /// Resumes the specified workflow instance.
+        /// </summary>
+        Task<IList<WorkflowContext>> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance);
+
+        /// <summary>
         /// Executes the specified workflow starting at the specified activity.
         /// </summary>
         Task<IEnumerable<ActivityRecord>> ExecuteWorkflowAsync(WorkflowContext workflowContext, ActivityRecord activity);

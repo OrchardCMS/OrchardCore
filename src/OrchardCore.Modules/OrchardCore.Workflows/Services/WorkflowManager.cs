@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
+using OrchardCore.Modules;
 using OrchardCore.Scripting;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
@@ -114,15 +115,19 @@ namespace OrchardCore.Workflows.Services
             }
         }
 
-        public async Task ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance)
+        public async Task<IList<WorkflowContext>> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance)
         {
+            var workflowContexts = new List<WorkflowContext>();
             foreach (var awaitingActivity in workflowInstance.AwaitingActivities.ToList())
             {
-                await ResumeWorkflowAsync(workflowInstance, awaitingActivity);
+                var context = await ResumeWorkflowAsync(workflowInstance, awaitingActivity);
+                workflowContexts.Add(context);
             }
+
+            return workflowContexts;
         }
 
-        public async Task ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance, AwaitingActivityRecord awaitingActivity)
+        public async Task<WorkflowContext> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance, AwaitingActivityRecord awaitingActivity)
         {
             var workflowDefinition = await _workflowDefinitionRepository.GetWorkflowDefinitionAsync(workflowInstance.DefinitionId);
             var activityRecord = workflowDefinition.Activities.SingleOrDefault(x => x.Id == awaitingActivity.ActivityId);
@@ -130,16 +135,17 @@ namespace OrchardCore.Workflows.Services
 
             // Signal every activity that the workflow is about to be resumed.
             var cancellationToken = new CancellationToken();
-            InvokeActivities(workflowContext, x => x.Activity.OnWorkflowResuming(workflowContext, cancellationToken));
+
+            await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowResumingAsync(workflowContext, cancellationToken));
 
             if (cancellationToken.IsCancellationRequested)
             {
                 // Workflow is aborted.
-                return;
+                return workflowContext;
             }
 
             // Signal every activity that the workflow is resumed.
-            InvokeActivities(workflowContext, x => x.Activity.OnWorkflowResumed(workflowContext));
+            await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowResumedAsync(workflowContext));
 
             // Remove the awaiting activity.
             workflowContext.WorkflowInstance.AwaitingActivities.Remove(awaitingActivity);
@@ -151,7 +157,7 @@ namespace OrchardCore.Workflows.Services
             if (blockedOn.Count == 0 && workflowContext.WorkflowInstance.AwaitingActivities.Count == 0)
             {
                 // No, delete the workflow.
-                _workInstanceRepository.Delete(workflowContext.WorkflowInstance);
+                await _workInstanceRepository.DeleteAsync(workflowContext.WorkflowInstance);
             }
             else
             {
@@ -162,8 +168,10 @@ namespace OrchardCore.Workflows.Services
                 }
 
                 // Serialize state.
-                _workInstanceRepository.Save(workflowContext);
+                await _workInstanceRepository.SaveAsync(workflowContext);
             }
+
+            return workflowContext;
         }
 
         public async Task<WorkflowContext> StartWorkflowAsync(WorkflowDefinitionRecord workflowDefinition, ActivityRecord startActivity = null, IDictionary<string, object> input = null, string correlationId = null)
@@ -182,6 +190,7 @@ namespace OrchardCore.Workflows.Services
             var workflowInstance = new WorkflowInstanceRecord
             {
                 DefinitionId = workflowDefinition.Id,
+                Uid = Guid.NewGuid().ToString("N"),
                 State = JObject.FromObject(new WorkflowState { Input = input ?? new Dictionary<string, object>() }),
                 CorrelationId = correlationId
             };
@@ -191,7 +200,7 @@ namespace OrchardCore.Workflows.Services
 
             // Signal every activity that the workflow is about to start.
             var cancellationToken = new CancellationToken();
-            InvokeActivities(workflowContext, x => x.Activity.OnWorkflowStarting(workflowContext, cancellationToken));
+            await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowStartingAsync(workflowContext, cancellationToken));
 
             if (cancellationToken.IsCancellationRequested)
             {
@@ -200,7 +209,7 @@ namespace OrchardCore.Workflows.Services
             }
 
             // Signal every activity that the workflow has started.
-            InvokeActivities(workflowContext, x => x.Activity.OnWorkflowStarted(workflowContext));
+            await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowStartedAsync(workflowContext));
 
             // Execute the activity.
             var blockedOn = (await ExecuteWorkflowAsync(workflowContext, startActivity)).ToList();
@@ -219,7 +228,7 @@ namespace OrchardCore.Workflows.Services
                 }
 
                 // Serialize state.
-                _workInstanceRepository.Save(workflowContext);
+                await _workInstanceRepository.SaveAsync(workflowContext);
             }
 
             return workflowContext;
@@ -241,13 +250,6 @@ namespace OrchardCore.Workflows.Services
 
                 var activityContext = workflowContext.GetActivity(activity.Id);
 
-                // Check if the current activity can execute.
-                if (!await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
-                {
-                    // No, so break out and return.
-                    break;
-                }
-
                 // While there is an activity to process.
                 if (!firstPass)
                 {
@@ -262,9 +264,16 @@ namespace OrchardCore.Workflows.Services
                     firstPass = false;
                 }
 
+                // Check if the current activity can execute.
+                if (!await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
+                {
+                    // No, so break out and return.
+                    break;
+                }
+
                 // Signal every activity that the activity is about to be executed.
                 var cancellationToken = new CancellationToken();
-                InvokeActivities(workflowContext, x => x.Activity.OnActivityExecuting(workflowContext, activityContext, cancellationToken));
+                await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnActivityExecutingAsync(workflowContext, activityContext, cancellationToken));
 
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -276,7 +285,7 @@ namespace OrchardCore.Workflows.Services
                 var outcomes = (await activityContext.Activity.ExecuteAsync(workflowContext, activityContext)).ToList();
 
                 // Signal every activity that the activity is executed.
-                InvokeActivities(workflowContext, x => x.Activity.OnActivityExecuted(workflowContext, activityContext));
+                await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnActivityExecutedAsync(workflowContext, activityContext));
 
                 foreach (var outcome in outcomes)
                 {
@@ -298,12 +307,9 @@ namespace OrchardCore.Workflows.Services
         /// <summary>
         /// Executes a specific action on all the activities of a workflow.
         /// </summary>
-        private void InvokeActivities(WorkflowContext workflowContext, Action<ActivityContext> action)
+        private async Task InvokeActivitiesAsync(WorkflowContext workflowContext, Func<ActivityContext, Task> action)
         {
-            foreach (var activity in workflowContext.Activities)
-            {
-                action(activity);
-            }
+            await workflowContext.Activities.InvokeAsync(x => action(x), _logger);
         }
     }
 }

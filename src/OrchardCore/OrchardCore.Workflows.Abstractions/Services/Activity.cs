@@ -40,28 +40,34 @@ namespace OrchardCore.Workflows.Services
             yield break;
         }
 
-        public virtual void OnWorkflowStarting(WorkflowContext context, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task OnWorkflowStartingAsync(WorkflowContext context, CancellationToken cancellationToken = default(CancellationToken))
         {
+            return Task.CompletedTask;
         }
 
-        public virtual void OnWorkflowStarted(WorkflowContext context)
+        public virtual Task OnWorkflowStartedAsync(WorkflowContext context)
         {
+            return Task.CompletedTask;
         }
 
-        public virtual void OnWorkflowResuming(WorkflowContext context, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task OnWorkflowResumingAsync(WorkflowContext context, CancellationToken cancellationToken = default(CancellationToken))
         {
+            return Task.CompletedTask;
         }
 
-        public virtual void OnWorkflowResumed(WorkflowContext context)
+        public virtual Task OnWorkflowResumedAsync(WorkflowContext context)
         {
+            return Task.CompletedTask;
         }
 
-        public virtual void OnActivityExecuting(WorkflowContext workflowContext, ActivityContext activityContext, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task OnActivityExecutingAsync(WorkflowContext workflowContext, ActivityContext activityContext, CancellationToken cancellationToken = default(CancellationToken))
         {
+            return Task.CompletedTask;
         }
 
-        public virtual void OnActivityExecuted(WorkflowContext workflowContext, ActivityContext activityContext)
+        public virtual Task OnActivityExecutedAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
+            return Task.CompletedTask;
         }
 
         protected Outcome Outcome(LocalizedString name)

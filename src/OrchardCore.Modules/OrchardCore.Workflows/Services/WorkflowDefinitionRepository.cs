@@ -27,7 +27,7 @@ namespace OrchardCore.Workflows.Services
             return _session.GetAsync<WorkflowDefinitionRecord>(id);
         }
 
-        public Task<IEnumerable<WorkflowDefinitionRecord>> ListWorkflowDefinitionsAsync()
+        public Task<IEnumerable<WorkflowDefinitionRecord>> ListAsync()
         {
             return _session.Query<WorkflowDefinitionRecord, WorkflowDefinitionsIndex>().ListAsync();
         }

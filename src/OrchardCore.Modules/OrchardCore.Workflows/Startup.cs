@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,6 @@ using OrchardCore.Workflows.Routing;
 using OrchardCore.Workflows.Scripting;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
-using YesSql;
 using YesSql.Indexes;
 
 namespace OrchardCore.Workflows
@@ -48,12 +48,11 @@ namespace OrchardCore.Workflows
 
             services.AddSingleton<IIndexProvider, WorkflowDefinitionIndexProvider>();
             services.AddSingleton<IIndexProvider, WorkflowInstanceIndexProvider>();
-            services.AddSingleton<IIndexProvider, HttpRequestEventIndexProvider>();
-            services.AddSingleton<IIndexProvider, HttpRequestFilterEventIndexProvider>();
 
             services.AddScoped<IActivity, NotifyTask>();
             services.AddScoped<IActivity, SetVariableTask>();
             services.AddScoped<IActivity, SetOutputTask>();
+            services.AddScoped<IActivity, CorrelateTask>();
             services.AddScoped<IActivity, EvaluateExpressionTask>();
             services.AddScoped<IActivity, BranchTask>();
             services.AddScoped<IActivity, ForLoopTask>();
@@ -69,6 +68,7 @@ namespace OrchardCore.Workflows
             services.AddScoped<IDisplayDriver<IActivity>, NotifyTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, SetVariableTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, SetOutputTaskDisplay>();
+            services.AddScoped<IDisplayDriver<IActivity>, CorrelateTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, EvaluateExpressionTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, BranchTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, ForLoopTaskDisplay>();
@@ -85,50 +85,76 @@ namespace OrchardCore.Workflows
             services.AddScoped<IWorkflowContextProvider, SignalWorkflowContextProvider>();
 
             services.AddScoped<IWorkflowDefinitionHandler, WorkflowDefinitionRoutesHandler>();
+            services.AddScoped<IWorkflowInstanceHandler, WorkflowInstanceRoutesHandler>();
 
-            services.AddSingleton<IWorkflowRouteEntries, WorkflowRouteEntries>();
-            services.AddSingleton<IWorkflowPathEntries, WorkflowPathEntries>();
+            services.AddSingleton<IWorkflowDefinitionRouteEntries, WorkflowDefinitionRouteEntries>();
+            services.AddSingleton<IWorkflowInstanceRouteEntries, WorkflowInstanceRouteEntries>();
+            services.AddSingleton<IWorkflowDefinitionPathEntries, WorkflowDefinitionPathEntries>();
+            services.AddSingleton<IWorkflowInstancePathEntries, WorkflowInstancePathEntries>();
             services.AddSingleton<IGlobalMethodProvider, HttpContextMethodProvider>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var routeEntries = serviceProvider.GetRequiredService<IWorkflowRouteEntries>();
-            var pathEntries = serviceProvider.GetRequiredService<IWorkflowPathEntries>();
-            var session = serviceProvider.GetRequiredService<ISession>();
-            var workflowRoutes = session.QueryIndex<WorkflowDefinitionByHttpRequestFilterIndex>().ListAsync().GetAwaiter().GetResult().GroupBy(x => x.WorkflowDefinitionId);
-            var workflowPaths = session.QueryIndex<WorkflowDefinitionByHttpRequestIndex>().ListAsync().GetAwaiter().GetResult().GroupBy(x => x.WorkflowDefinitionId);
+            var workflowDefinitionRepository = serviceProvider.GetRequiredService<IWorkflowDefinitionRepository>();
+            var workflowInstanceRepository = serviceProvider.GetRequiredService<IWorkflowInstanceRepository>();
+            var workflowDefinitionDictionary = workflowDefinitionRepository.ListAsync().GetAwaiter().GetResult().ToDictionary(x => x.Id);
+            var workflowInstanceDictionary = workflowInstanceRepository.ListAsync().GetAwaiter().GetResult().ToDictionary(x => x.Id);
 
-            foreach (var item in workflowRoutes)
-            {
-                routeEntries.AddEntries(item.Key, item.Select(x => new WorkflowRoutesEntry
-                {
-                    WorkflowDefinitionId = x.WorkflowDefinitionId,
-                    ActivityId = x.ActivityId,
-                    HttpMethod = x.HttpMethod,
-                    RouteValues = new RouteValueDictionary
-                {
-                    { "controller", x.ControllerName },
-                    { "action", x.ActionName },
-                    { "area", x.AreaName }
-                }
-                }));
-            }
+            ConfigureWorkflowRouteEntries(serviceProvider, workflowDefinitionDictionary, workflowInstanceDictionary);
+            ConfigureWorkflowPathEntries(serviceProvider, workflowDefinitionDictionary, workflowInstanceDictionary);
+            ConfigureWorkflowRoutes(routes);
+        }
 
-            foreach (var item in workflowPaths)
-            {
-                pathEntries.AddEntries(item.Key, item.Select(x => new WorkflowPathEntry
-                {
-                    WorkflowDefinitionId = x.WorkflowDefinitionId,
-                    ActivityId = x.ActivityId,
-                    HttpMethod = x.HttpMethod,
-                    Path = x.RequestPath
-                }));
-            }
+        private void ConfigureWorkflowRouteEntries(IServiceProvider serviceProvider, IDictionary<int, WorkflowDefinitionRecord> workflowDefinitionDictionary, IDictionary<int, WorkflowInstanceRecord> workflowInstanceDictionary)
+        {
+            var activityLibrary = serviceProvider.GetRequiredService<IActivityLibrary>();
+            var workflowDefinitionRouteEntries = serviceProvider.GetRequiredService<IWorkflowDefinitionRouteEntries>();
+            var workflowInstanceRouteEntries = serviceProvider.GetRequiredService<IWorkflowInstanceRouteEntries>();
 
-            var workflowRoute = new WorkflowRouter(routes.DefaultHandler);
+            var workflowDefinitionRouteEntryQuery =
+                from workflowDefinition in workflowDefinitionDictionary.Values
+                from entry in WorkflowDefinitionRouteEntries.GetWorkflowDefinitionRoutesEntries(workflowDefinition, activityLibrary)
+                select entry;
 
-            routes.Routes.Insert(0, workflowRoute);
+            var workflowInstanceRouteEntryQuery =
+                from workflowInstance in workflowInstanceDictionary.Values
+                let workflowDefinition = workflowDefinitionDictionary[workflowInstance.DefinitionId]
+                from entry in WorkflowInstanceRouteEntries.GetWorkflowInstanceRoutesEntries(workflowInstance, workflowDefinition, activityLibrary)
+                select entry;
+
+            workflowDefinitionRouteEntries.AddEntries(workflowDefinitionRouteEntryQuery);
+            workflowInstanceRouteEntries.AddEntries(workflowInstanceRouteEntryQuery);
+        }
+
+        private void ConfigureWorkflowPathEntries(IServiceProvider serviceProvider, IDictionary<int, WorkflowDefinitionRecord> workflowDefinitionDictionary, IDictionary<int, WorkflowInstanceRecord> workflowInstanceDictionary)
+        {
+            var activityLibrary = serviceProvider.GetRequiredService<IActivityLibrary>();
+            var workflowDefinitionPathEntries = serviceProvider.GetRequiredService<IWorkflowDefinitionPathEntries>();
+            var workflowInstancePathEntries = serviceProvider.GetRequiredService<IWorkflowInstancePathEntries>();
+
+            var workflowDefinitionPathEntryQuery =
+                from workflowDefinition in workflowDefinitionDictionary.Values
+                from entry in WorkflowDefinitionPathEntries.GetWorkflowPathEntries(workflowDefinition, activityLibrary)
+                select entry;
+
+            var workflowInstancePathEntryQuery =
+                from workflowInstance in workflowInstanceDictionary.Values
+                let workflowDefinition = workflowDefinitionDictionary[workflowInstance.DefinitionId]
+                from entry in WorkflowInstancePathEntries.GetWorkflowPathEntries(workflowInstance, workflowDefinition, activityLibrary)
+                select entry;
+
+            workflowDefinitionPathEntries.AddEntries(workflowDefinitionPathEntryQuery);
+            workflowInstancePathEntries.AddEntries(workflowInstancePathEntryQuery);
+        }
+
+        private void ConfigureWorkflowRoutes(IRouteBuilder routes)
+        {
+            var workflowDefinitionRouter = new WorkflowDefinitionRouter(routes.DefaultHandler);
+            var workflowInstanceRouter = new WorkflowInstanceRouter(routes.DefaultHandler);
+
+            routes.Routes.Insert(0, workflowInstanceRouter);
+            routes.Routes.Insert(0, workflowDefinitionRouter);
         }
     }
 }

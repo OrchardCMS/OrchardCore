@@ -10,20 +10,40 @@ namespace OrchardCore.Workflows.Controllers
     {
         private readonly IWorkflowManager _workflowManager;
         private readonly IWorkflowDefinitionRepository _workflowDefinitionRepository;
+        private readonly IWorkflowInstanceRepository _workflowInstanceRepository;
         private readonly ILogger<WorkflowController> _logger;
 
-        public WorkflowController(IWorkflowManager workflowManager, IWorkflowDefinitionRepository workflowDefinitionRepository, ILogger<WorkflowController> logger)
+        public WorkflowController(
+            IWorkflowManager workflowManager,
+            IWorkflowDefinitionRepository workflowDefinitionRepository,
+            IWorkflowInstanceRepository workflowInstanceRepository,
+            ILogger<WorkflowController> logger)
         {
             _workflowManager = workflowManager;
             _workflowDefinitionRepository = workflowDefinitionRepository;
+            _workflowInstanceRepository = workflowInstanceRepository;
             _logger = logger;
         }
 
-        public async Task<IActionResult> Invoke(int workflowDefinitionId, int activityId)
+        public async Task<IActionResult> Start(int workflowDefinitionId, int activityId)
         {
             var workflowDefinition = await _workflowDefinitionRepository.GetWorkflowDefinitionAsync(workflowDefinitionId);
             var activity = workflowDefinition.Activities.Single(x => x.Id == activityId);
-            var workflowContext = await _workflowManager.StartWorkflowAsync(workflowDefinition, activity);
+            await _workflowManager.StartWorkflowAsync(workflowDefinition, activity);
+
+            return new EmptyResult();
+        }
+
+        public async Task<IActionResult> Resume(string uid, int activityId)
+        {
+            var workflowInstance = await _workflowInstanceRepository.GetAsync(uid);
+
+            if (workflowInstance == null)
+                return NotFound();
+
+            var workflowDefinition = await _workflowDefinitionRepository.GetAsync(workflowInstance.DefinitionId);
+            var activity = workflowInstance.AwaitingActivities.Single(x => x.ActivityId == activityId);
+            await _workflowManager.ResumeWorkflowAsync(workflowInstance, activity);
 
             return new EmptyResult();
         }

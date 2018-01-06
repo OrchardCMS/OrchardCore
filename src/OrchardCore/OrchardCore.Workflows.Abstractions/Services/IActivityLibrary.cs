@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
 {
@@ -23,5 +25,25 @@ namespace OrchardCore.Workflows.Services
         /// Returns new instances the specified activities.
         /// </summary>
         IEnumerable<IActivity> InstantiateActivities(IEnumerable<string> activityNames);
+    }
+
+    public static class ActivityLibraryExtensions
+    {
+        public static T InstantiateActivity<T>(this IActivityLibrary library, string name) where T : IActivity
+        {
+            return (T)library.InstantiateActivity(name);
+        }
+
+        public static T InstantiateActivity<T>(this IActivityLibrary library, string name, JObject properties) where T : IActivity
+        {
+            var activity = InstantiateActivity<T>(library, name);
+            activity.Properties = properties;
+            return activity;
+        }
+
+        public static T InstantiateActivity<T>(this IActivityLibrary library, ActivityRecord record) where T : IActivity
+        {
+            return InstantiateActivity<T>(library, record.Name, record.Properties);
+        }
     }
 }

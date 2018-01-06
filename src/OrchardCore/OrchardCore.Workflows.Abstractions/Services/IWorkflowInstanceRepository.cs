@@ -7,16 +7,22 @@ namespace OrchardCore.Workflows.Services
 {
     public interface IWorkflowInstanceRepository
     {
-        Task<IList<WorkflowInstanceRecord>> GetWaitingWorkflowInstancesAsync(string activityName, string correlationId = null);
-        void Save(WorkflowInstanceRecord workflowInstance);
-        void Delete(WorkflowInstanceRecord workflowInstance);
+        Task<IEnumerable<WorkflowInstanceRecord>> ListAsync();
+        Task<WorkflowInstanceRecord> GetAsync(int id);
+        Task<WorkflowInstanceRecord> GetAsync(string uid);
+        Task<IEnumerable<WorkflowInstanceRecord>> GetAsync(IEnumerable<int> ids);
+        Task<IEnumerable<WorkflowInstanceRecord>> GetAsync(IEnumerable<string> uids);
+        Task<IEnumerable<WorkflowInstanceRecord>> GetWaitingWorkflowInstancesAsync(string activityName, string correlationId = null);
+        Task SaveAsync(WorkflowInstanceRecord workflowInstance);
+        Task DeleteAsync(WorkflowInstanceRecord workflowInstance);
     }
 
     public static class WorkflowInstanceRepositoryExtensions
     {
-        public static void Save(this IWorkflowInstanceRepository repository, WorkflowContext workflowContext)
+        public static Task SaveAsync(this IWorkflowInstanceRepository repository, WorkflowContext workflowContext)
         {
             workflowContext.WorkflowInstance.State = JObject.FromObject(workflowContext.State);
+            return repository.SaveAsync(workflowContext.WorkflowInstance);
         }
     }
 }

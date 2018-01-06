@@ -12,6 +12,9 @@
     <None Remove="Views\Items\BranchTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\BranchTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\BranchTask.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\Items\CorrelateTask.Fields.Design.cshtml" />
+    <None Remove="Views\Items\CorrelateTask.Fields.Edit.cshtml" />
+    <None Remove="Views\Items\CorrelateTask.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\DecisionTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\DecisionTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\DecisionTask.Fields.Thumbnail.cshtml" />
@@ -71,6 +74,7 @@
   <ItemGroup>
     <Folder Include="Content\Scripts\" />
     <Folder Include="Content\Styles\Images\" />
+    <Folder Include="Http\" />
   </ItemGroup>
 
   <ItemGroup>

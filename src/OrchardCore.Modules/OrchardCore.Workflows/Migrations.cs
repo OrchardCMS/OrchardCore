@@ -25,23 +25,8 @@ namespace OrchardCore.Workflows
                 .Column<string>("ActivityName")
                 .Column<bool>("ActivityIsStart")
                 .Column<int>("WorkflowInstanceId")
+                .Column<string>("WorkflowInstanceUid")
                 .Column<string>("WorkflowInstanceCorrelationId")
-            );
-
-            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionByHttpRequestIndex), table => table
-                .Column<int>("WorkflowDefinitionId")
-                .Column<int>("ActivityId")
-                .Column<string>("HttpMethod")
-                .Column<string>("RequestPath")
-            );
-
-            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionByHttpRequestFilterIndex), table => table
-                .Column<int>("WorkflowDefinitionId")
-                .Column<int>("ActivityId")
-                .Column<string>("HttpMethod")
-                .Column<string>("ControllerName")
-                .Column<string>("ActionName")
-                .Column<string>("AreaName")
             );
 
             return 1;

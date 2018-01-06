@@ -10,6 +10,7 @@ namespace OrchardCore.Workflows.Indexes
         public string ActivityName { get; set; }
         public bool ActivityIsStart { get; set; }
         public int WorkflowInstanceId { get; set; }
+        public string WorkflowInstanceUid { get; set; }
         public string WorkflowInstanceCorrelationId { get; set; }
     }
 
@@ -26,6 +27,7 @@ namespace OrchardCore.Workflows.Indexes
                         ActivityName = x.Name,
                         ActivityIsStart = x.IsStart,
                         WorkflowInstanceId = workflowInstance.Id,
+                        WorkflowInstanceUid = workflowInstance.Uid,
                         WorkflowInstanceCorrelationId = workflowInstance.CorrelationId
                     })
                 );

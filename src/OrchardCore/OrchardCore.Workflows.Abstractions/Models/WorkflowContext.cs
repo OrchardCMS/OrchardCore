@@ -31,7 +31,11 @@ namespace OrchardCore.Workflows.Models
         public IList<ActivityContext> Activities { get; }
         public IScriptingManager ScriptingManager { get; }
         public WorkflowState State { get; }
-        public string CorrelationId => WorkflowInstance.CorrelationId;
+        public string CorrelationId
+        {
+            get => WorkflowInstance.CorrelationId;
+            set => WorkflowInstance.CorrelationId = value;
+        }
         public Stack<object> Stack => State.Stack;
         public IDictionary<string, object> Input => State.Input;
         public IDictionary<string, object> Output => State.Output;

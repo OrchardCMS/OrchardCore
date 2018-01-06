@@ -16,6 +16,11 @@ namespace OrchardCore.Workflows.Models
         public int DefinitionId { get; set; }
 
         /// <summary>
+        /// A unique identifier for this workflow instance.
+        /// </summary>
+        public string Uid { get; set; }
+
+        /// <summary>
         /// The correlation ID can be used to resume workflow instances that sre associated with specific objects, such as content items.
         /// </summary>
         public string CorrelationId { get; set; }
