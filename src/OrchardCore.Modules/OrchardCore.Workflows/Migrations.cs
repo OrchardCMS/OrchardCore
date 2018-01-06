@@ -1,6 +1,5 @@
 using OrchardCore.Data.Migration;
 using OrchardCore.Workflows.Indexes;
-using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows
 {
@@ -8,10 +7,16 @@ namespace OrchardCore.Workflows
     {
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionsIndex), table => table
                 .Column<string>("Name")
                 .Column<bool>("IsEnabled")
                 .Column<bool>("HasStart")
+            );
+
+            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionStartActivitiesIndex), table => table
+                .Column<string>("Name")
+                .Column<bool>("IsEnabled")
+                .Column<int>("StartActivityId")
                 .Column<string>("StartActivityName")
             );
 
@@ -25,9 +30,18 @@ namespace OrchardCore.Workflows
 
             SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionByHttpRequestIndex), table => table
                 .Column<int>("WorkflowDefinitionId")
-                .Column<string>("Mode")
+                .Column<int>("ActivityId")
                 .Column<string>("HttpMethod")
                 .Column<string>("RequestPath")
+            );
+
+            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionByHttpRequestFilterIndex), table => table
+                .Column<int>("WorkflowDefinitionId")
+                .Column<int>("ActivityId")
+                .Column<string>("HttpMethod")
+                .Column<string>("ControllerName")
+                .Column<string>("ActionName")
+                .Column<string>("AreaName")
             );
 
             return 1;

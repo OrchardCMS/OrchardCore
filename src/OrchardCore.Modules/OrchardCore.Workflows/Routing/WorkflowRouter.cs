@@ -70,6 +70,7 @@ namespace OrchardCore.Workflows.Routing
                 context.RouteData.Values["controller"] = "Workflow";
                 context.RouteData.Values["action"] = "Invoke";
                 context.RouteData.Values["workflowDefinitionId"] = index.WorkflowDefinitionId;
+                context.RouteData.Values["activityId"] = index.ActivityId;
 
                 context.RouteData.Routers.Add(_target);
                 await _target.RouteAsync(context);

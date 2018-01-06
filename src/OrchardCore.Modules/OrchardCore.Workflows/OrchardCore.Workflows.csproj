@@ -30,6 +30,9 @@
     <None Remove="Views\Items\HttpRequestEvent.Fields.Design.cshtml" />
     <None Remove="Views\Items\HttpRequestEvent.Fields.Edit.cshtml" />
     <None Remove="Views\Items\HttpRequestEvent.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\Items\HttpRequestFilterEvent.Fields.Design.cshtml" />
+    <None Remove="Views\Items\HttpRequestFilterEvent.Fields.Edit.cshtml" />
+    <None Remove="Views\Items\HttpRequestFilterEvent.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\IfElseTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\IfElseTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\IfElseTask.Fields.Thumbnail.cshtml" />
@@ -69,6 +72,7 @@
     <Folder Include="Content\Scripts\" />
     <Folder Include="Content\Styles\Images\" />
     <Folder Include="Handlers\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 
   <ItemGroup>

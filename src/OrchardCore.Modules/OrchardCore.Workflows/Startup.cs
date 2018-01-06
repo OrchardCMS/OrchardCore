@@ -18,7 +18,6 @@ using OrchardCore.Workflows.Routing;
 using OrchardCore.Workflows.Scripting;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
-using YesSql;
 using YesSql.Indexes;
 
 namespace OrchardCore.Workflows
@@ -45,7 +44,8 @@ namespace OrchardCore.Workflows
 
             services.AddSingleton<IIndexProvider, WorkflowDefinitionIndexProvider>();
             services.AddSingleton<IIndexProvider, WorkflowInstanceIndexProvider>();
-            services.AddSingleton<IIndexProvider, HttpRequestEventWorkflowDefinitionIndexProvider>();
+            services.AddSingleton<IIndexProvider, HttpRequestEventIndexProvider>();
+            services.AddSingleton<IIndexProvider, HttpRequestFilterEventIndexProvider>();
 
             services.AddScoped<IActivity, NotifyTask>();
             services.AddScoped<IActivity, SetVariableTask>();
@@ -59,6 +59,7 @@ namespace OrchardCore.Workflows
             services.AddScoped<IActivity, SignalEvent>();
             services.AddScoped<IActivity, EmailTask>();
             services.AddScoped<IActivity, HttpRequestEvent>();
+            services.AddScoped<IActivity, HttpRequestFilterEvent>();
             services.AddScoped<IActivity, HttpRedirectTask>();
 
             services.AddScoped<IDisplayDriver<IActivity>, NotifyTaskDisplay>();
@@ -73,6 +74,7 @@ namespace OrchardCore.Workflows
             services.AddScoped<IDisplayDriver<IActivity>, SignalEventDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, EmailTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, HttpRequestEventDisplay>();
+            services.AddScoped<IDisplayDriver<IActivity>, HttpRequestFilterEventDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, HttpRedirectTaskDisplay>();
 
             services.AddScoped<IWorkflowContextProvider, DefaultWorkflowContextProvider>();

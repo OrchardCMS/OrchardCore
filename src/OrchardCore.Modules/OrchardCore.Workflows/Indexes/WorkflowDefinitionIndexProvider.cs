@@ -4,11 +4,18 @@ using YesSql.Indexes;
 
 namespace OrchardCore.Workflows.Indexes
 {
-    public class WorkflowDefinitionIndex : MapIndex
+    public class WorkflowDefinitionsIndex : MapIndex
     {
         public string Name { get; set; }
         public bool IsEnabled { get; set; }
         public bool HasStart { get; set; }
+    }
+
+    public class WorkflowDefinitionStartActivitiesIndex : MapIndex
+    {
+        public string Name { get; set; }
+        public bool IsEnabled { get; set; }
+        public int StartActivityId { get; set; }
         public string StartActivityName { get; set; }
     }
 
@@ -16,14 +23,24 @@ namespace OrchardCore.Workflows.Indexes
     {
         public override void Describe(DescribeContext<WorkflowDefinitionRecord> context)
         {
-            context.For<WorkflowDefinitionIndex>()
+            context.For<WorkflowDefinitionsIndex>()
                 .Map(workflowDefinition =>
-                    workflowDefinition.Activities.Select(x =>
-                        new WorkflowDefinitionIndex
+                        new WorkflowDefinitionsIndex
                         {
                             Name = workflowDefinition.Name,
                             IsEnabled = workflowDefinition.IsEnabled,
-                            HasStart = x.IsStart,
+                            HasStart = workflowDefinition.Activities.Any(x => x.IsStart)
+                        }
+                );
+
+            context.For<WorkflowDefinitionStartActivitiesIndex>()
+                .Map(workflowDefinition =>
+                    workflowDefinition.Activities.Where(x => x.IsStart).Select(x =>
+                        new WorkflowDefinitionStartActivitiesIndex
+                        {
+                            Name = workflowDefinition.Name,
+                            IsEnabled = workflowDefinition.IsEnabled,
+                            StartActivityId = x.Id,
                             StartActivityName = x.Name
                         })
                 );

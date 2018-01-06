@@ -16,6 +16,11 @@ namespace OrchardCore.Workflows.Services
             _session = session;
         }
 
+        public Task<IEnumerable<WorkflowDefinitionRecord>> ListWorkflowDefinitionsAsync()
+        {
+            return _session.Query<WorkflowDefinitionRecord, WorkflowDefinitionsIndex>().ListAsync();
+        }
+
         public Task<WorkflowDefinitionRecord> GetWorkflowDefinitionAsync(int id)
         {
             return _session.GetAsync<WorkflowDefinitionRecord>(id);
@@ -29,8 +34,7 @@ namespace OrchardCore.Workflows.Services
         public async Task<IList<WorkflowDefinitionRecord>> GetWorkflowDefinitionsByStartActivityAsync(string activityName)
         {
             var query = await _session
-                .Query<WorkflowDefinitionRecord, WorkflowDefinitionIndex>(index =>
-                    index.HasStart &&
+                .Query<WorkflowDefinitionRecord, WorkflowDefinitionStartActivitiesIndex>(index =>
                     index.StartActivityName == activityName &&
                     index.IsEnabled)
                 .ListAsync();

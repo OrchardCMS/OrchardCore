@@ -1,12 +1,5 @@
-@using OrchardCore.Workflows.Models;
 @using OrchardCore.Workflows.ViewModels;
 @model HttpRequestEventViewModel
-
-<fieldset class="form-group" asp-validation-class-for="Mode">
-    <label asp-for="Mode">@T["Mode"] <span asp-validation-for="HttpMethod"></span></label>
-    <select asp-for="Mode" class="form-control" asp-items="Html.GetEnumSelectList<HttpProcessingMode>()"></select>
-    <span class="hint">@T["Select the processing mode to control how request are intercepted."]</span>
-</fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="HttpMethod">
     <label asp-for="HttpMethod">@T["HTTP Method"] <span asp-validation-for="HttpMethod"></span></label>

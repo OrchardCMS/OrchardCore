@@ -105,7 +105,12 @@ namespace OrchardCore.Workflows.Services
             // Start new workflows.
             foreach (var workflowToStart in workflowsToStart)
             {
-                await StartWorkflowAsync(workflowToStart, input, name);
+                var startActivity = workflowToStart.Activities.FirstOrDefault(x => x.IsStart && string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+
+                if (startActivity != null)
+                {
+                    await StartWorkflowAsync(workflowToStart, startActivity, input);
+                }
             }
         }
 
@@ -161,17 +166,17 @@ namespace OrchardCore.Workflows.Services
             }
         }
 
-        public async Task<WorkflowContext> StartWorkflowAsync(WorkflowDefinitionRecord workflowDefinition, IDictionary<string, object> input = null, string correlationId = null, string startActivityName = null)
+        public async Task<WorkflowContext> StartWorkflowAsync(WorkflowDefinitionRecord workflowDefinition, ActivityRecord startActivity = null, IDictionary<string, object> input = null, string correlationId = null)
         {
-            // Get the starting activity.
-            var startActivityQuery = workflowDefinition.Activities.Where(x => x.IsStart);
-
-            if (!string.IsNullOrWhiteSpace(startActivityName))
+            if (startActivity == null)
             {
-                startActivityQuery = startActivityQuery.Where(x => x.Name == startActivityName);
-            }
+                startActivity = workflowDefinition.Activities.FirstOrDefault(x => x.IsStart);
 
-            var startActivity = startActivityQuery.First();
+                if (startActivity == null)
+                {
+                    throw new InvalidOperationException($"Workflow with ID {workflowDefinition.Id} does not have a start activity.");
+                }
+            }
 
             // Create a new workflow instance.
             var workflowInstance = new WorkflowInstanceRecord

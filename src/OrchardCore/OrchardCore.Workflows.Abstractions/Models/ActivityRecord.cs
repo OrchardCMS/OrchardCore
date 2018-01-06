@@ -25,11 +25,5 @@ namespace OrchardCore.Workflows.Models
         /// Whether the activity is a start state for a WorkflowDefinition.
         /// </summary>
         public bool IsStart { get; set; }
-
-        /// <summary>
-        /// Gets the Id which can be used on the client.
-        /// </summary>
-        /// <returns>An unique Id to represent this activity on the client.</returns>
-        public string ClientId => string.Format("{0}_{1}", Name, Id);
     }
 }

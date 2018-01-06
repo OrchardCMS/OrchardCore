@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -24,12 +23,6 @@ namespace OrchardCore.Workflows.Activities
         public override string Name => EventName;
         public override LocalizedString Category => T["HTTP"];
         public override LocalizedString Description => T["Executes when the specified HTTP request comes in."];
-
-        public HttpProcessingMode Mode
-        {
-            get => GetProperty(() => HttpProcessingMode.ActionFilter);
-            set => SetProperty(value);
-        }
 
         public string HttpMethod
         {

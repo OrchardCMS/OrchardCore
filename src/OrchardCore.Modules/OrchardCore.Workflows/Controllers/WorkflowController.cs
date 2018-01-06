@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,10 +19,11 @@ namespace OrchardCore.Workflows.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Invoke(int workflowDefinitionId)
+        public async Task<IActionResult> Invoke(int workflowDefinitionId, int activityId)
         {
             var workflowDefinition = await _workflowDefinitionRepository.GetWorkflowDefinitionAsync(workflowDefinitionId);
-            var workflowContext = await _workflowManager.StartWorkflowAsync(workflowDefinition);
+            var activity = workflowDefinition.Activities.Single(x => x.Id == activityId);
+            var workflowContext = await _workflowManager.StartWorkflowAsync(workflowDefinition, activity);
 
             return new EmptyResult();
         }
