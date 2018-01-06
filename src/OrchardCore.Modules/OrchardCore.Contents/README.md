@@ -30,6 +30,14 @@ By default it loads the published version. The latest version (either published 
 
 The latest version can be loaded using the `latest: true` option. 
 
+Aliases can be in various forms, like when using Autoroute, with the `slug` prefix.
+
+```
+{% assign my_content = "slug:my-blog/my-blog-post" | content: 'alias' %}
+```
+
+> Aliases are provided by implementing `IContentAliasProvider`.
+
 #### Loading from a content version id
 
 ```
