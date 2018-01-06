@@ -6,34 +6,39 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Handlers
 {
-    public class WorkflowDefinitionFilterRoutesHandler : WorkflowDefinitionHandlerBase
+    public class WorkflowDefinitionRoutesHandler : WorkflowDefinitionHandlerBase
     {
         private readonly IWorkflowRouteEntries _workflowRouteEntries;
+        private readonly IWorkflowPathEntries _workflowPathEntries;
 
-        public WorkflowDefinitionFilterRoutesHandler(IWorkflowRouteEntries workflowRouteEntries)
+        public WorkflowDefinitionRoutesHandler(IWorkflowRouteEntries workflowRouteEntries, IWorkflowPathEntries workflowPathEntries)
         {
             _workflowRouteEntries = workflowRouteEntries;
+            _workflowPathEntries = workflowPathEntries;
         }
 
         public override Task CreatedAsync(WorkflowDefinitionCreatedContext context)
         {
-            UpdateEntries(context);
+            UpdateRouteEntries(context);
+            UpdatePathEntries(context);
             return Task.CompletedTask;
         }
 
         public override Task UpdatedAsync(WorkflowDefinitionUpdatedContext context)
         {
-            UpdateEntries(context);
+            UpdateRouteEntries(context);
+            UpdatePathEntries(context);
             return Task.CompletedTask;
         }
 
         public override Task DeletedAsync(WorkflowDefinitionDeletedContext context)
         {
             _workflowRouteEntries.RemoveEntries(context.WorkflowDefinition.Id);
+            _workflowPathEntries.RemoveEntries(context.WorkflowDefinition.Id);
             return Task.CompletedTask;
         }
 
-        private void UpdateEntries(WorkflowDefinitionContext context)
+        private void UpdateRouteEntries(WorkflowDefinitionContext context)
         {
             var workflowDefinition = context.WorkflowDefinition;
             var entries = workflowDefinition.Activities.Where(x => x.Name == HttpRequestFilterEvent.EventName && x.IsStart).Select(x =>
@@ -60,6 +65,28 @@ namespace OrchardCore.Workflows.Handlers
             });
 
             _workflowRouteEntries.AddEntries(workflowDefinition.Id, entries);
+        }
+
+        private void UpdatePathEntries(WorkflowDefinitionContext context)
+        {
+            var workflowDefinition = context.WorkflowDefinition;
+            var entries = workflowDefinition.Activities.Where(x => x.Name == HttpRequestEvent.EventName && x.IsStart).Select(x =>
+            {
+                dynamic properties = x.Properties;
+                var httpMethod = (string)properties.HttpMethod;
+                var path = (string)properties.RequestPath;
+                var entry = new WorkflowPathEntry
+                {
+                    WorkflowDefinitionId = workflowDefinition.Id,
+                    ActivityId = x.Id,
+                    HttpMethod = httpMethod,
+                    Path = path
+                };
+
+                return entry;
+            });
+
+            _workflowPathEntries.AddEntries(workflowDefinition.Id, entries);
         }
     }
 }

@@ -84,21 +84,24 @@ namespace OrchardCore.Workflows
             services.AddScoped<IWorkflowContextProvider, DefaultWorkflowContextProvider>();
             services.AddScoped<IWorkflowContextProvider, SignalWorkflowContextProvider>();
 
-            services.AddScoped<IWorkflowDefinitionHandler, WorkflowDefinitionFilterRoutesHandler>();
+            services.AddScoped<IWorkflowDefinitionHandler, WorkflowDefinitionRoutesHandler>();
 
             services.AddSingleton<IWorkflowRouteEntries, WorkflowRouteEntries>();
+            services.AddSingleton<IWorkflowPathEntries, WorkflowPathEntries>();
             services.AddSingleton<IGlobalMethodProvider, HttpContextMethodProvider>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var entries = serviceProvider.GetRequiredService<IWorkflowRouteEntries>();
+            var routeEntries = serviceProvider.GetRequiredService<IWorkflowRouteEntries>();
+            var pathEntries = serviceProvider.GetRequiredService<IWorkflowPathEntries>();
             var session = serviceProvider.GetRequiredService<ISession>();
             var workflowRoutes = session.QueryIndex<WorkflowDefinitionByHttpRequestFilterIndex>().ListAsync().GetAwaiter().GetResult().GroupBy(x => x.WorkflowDefinitionId);
+            var workflowPaths = session.QueryIndex<WorkflowDefinitionByHttpRequestIndex>().ListAsync().GetAwaiter().GetResult().GroupBy(x => x.WorkflowDefinitionId);
 
             foreach (var item in workflowRoutes)
             {
-                entries.AddEntries(item.Key, item.Select(x => new WorkflowRoutesEntry
+                routeEntries.AddEntries(item.Key, item.Select(x => new WorkflowRoutesEntry
                 {
                     WorkflowDefinitionId = x.WorkflowDefinitionId,
                     ActivityId = x.ActivityId,
@@ -109,6 +112,17 @@ namespace OrchardCore.Workflows
                     { "action", x.ActionName },
                     { "area", x.AreaName }
                 }
+                }));
+            }
+
+            foreach (var item in workflowPaths)
+            {
+                pathEntries.AddEntries(item.Key, item.Select(x => new WorkflowPathEntry
+                {
+                    WorkflowDefinitionId = x.WorkflowDefinitionId,
+                    ActivityId = x.ActivityId,
+                    HttpMethod = x.HttpMethod,
+                    Path = x.RequestPath
                 }));
             }
 
