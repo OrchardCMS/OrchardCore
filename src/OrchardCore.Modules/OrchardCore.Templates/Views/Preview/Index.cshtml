@@ -39,7 +39,7 @@
             else if (ev.key == 'OrchardCore.templates') {
                 if (ev.originalEvent.newValue != null) {
                     clearTimeout(previewEventTimer);
-                    previewEventTimer = setTimeout(function () { renderPreview(ev.originalEvent.newValue); }, 150);
+                    previewEventTimer = setTimeout(function () { renderPreview(ev.originalEvent.newValue); }, 250);
                     $(notConnectedWarning).hide();
                 }
             }
