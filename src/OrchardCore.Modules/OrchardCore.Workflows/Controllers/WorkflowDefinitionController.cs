@@ -33,6 +33,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly ISession _session;
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowManager _workflowManager;
+        private readonly IWorkflowDefinitionRepository _workflowDefinitionRepository;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<IActivity> _activityDisplayManager;
         private readonly INotifier _notifier;
@@ -47,6 +48,7 @@ namespace OrchardCore.Workflows.Controllers
             ISession session,
             IActivityLibrary activityLibrary,
             IWorkflowManager workflowManager,
+            IWorkflowDefinitionRepository workflowDefinitionRepository,
             IAuthorizationService authorizationService,
             IDisplayManager<IActivity> activityDisplayManager,
             IShapeFactory shapeFactory,
@@ -59,6 +61,7 @@ namespace OrchardCore.Workflows.Controllers
             _session = session;
             _activityLibrary = activityLibrary;
             _workflowManager = workflowManager;
+            _workflowDefinitionRepository = workflowDefinitionRepository;
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
@@ -228,7 +231,7 @@ namespace OrchardCore.Workflows.Controllers
                     IsEnabled = true
                 };
 
-                _session.Save(workflowDefinition);
+                await _workflowDefinitionRepository.SaveAsync(workflowDefinition);
 
                 return RedirectToAction("Edit", new { workflowDefinition.Id });
             }
@@ -241,7 +244,7 @@ namespace OrchardCore.Workflows.Controllers
                 }
 
                 workflowDefinition.Name = viewModel.Name?.Trim();
-                _session.Save(workflowDefinition);
+                await _workflowDefinitionRepository.SaveAsync(workflowDefinition);
 
                 return RedirectToAction("Index");
             }
@@ -303,7 +306,7 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowDefinitionRecord = await _session.GetAsync<WorkflowDefinitionRecord>(model.Id);
+            var workflowDefinitionRecord = await _workflowDefinitionRepository.GetAsync(model.Id);
             dynamic state = JObject.Parse(model.State);
             var currentActivities = workflowDefinitionRecord.Activities.ToDictionary(x => x.Id);
             var postedActivities = ((IEnumerable<dynamic>)state.activities).ToDictionary(x => (int)x.id);
@@ -321,6 +324,7 @@ namespace OrchardCore.Workflows.Controllers
                 currentActivities.Remove(activityId);
             }
 
+            // Update activities.
             foreach (var activityState in state.activities)
             {
                 var activity = currentActivities[(int)activityState.id];
@@ -329,6 +333,7 @@ namespace OrchardCore.Workflows.Controllers
                 activity.IsStart = activityState.isStart;
             }
 
+            // Update transitions.
             workflowDefinitionRecord.Transitions.Clear();
             foreach (var transitionState in state.transitions)
             {
@@ -340,7 +345,7 @@ namespace OrchardCore.Workflows.Controllers
                 });
             }
 
-            _session.Save(workflowDefinitionRecord);
+            await _workflowDefinitionRepository.SaveAsync(workflowDefinitionRecord);
             await _session.CommitAsync();
             _notifier.Success(H["Workflow Definition has been saved."]);
             return RedirectToAction(nameof(Edit), new { id = model.Id });
@@ -354,11 +359,11 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(id);
+            var workflowDefinition = await _workflowDefinitionRepository.GetAsync(id);
 
             if (workflowDefinition != null)
             {
-                _session.Delete(workflowDefinition);
+                await _workflowDefinitionRepository.DeleteAsync(workflowDefinition);
                 _notifier.Success(H["Workflow definition {0} deleted", workflowDefinition.Name]);
             }
 

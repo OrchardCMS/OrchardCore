@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -13,11 +14,14 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Drivers;
 using OrchardCore.Workflows.Filters;
+using OrchardCore.Workflows.Handlers;
 using OrchardCore.Workflows.Indexes;
+using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Routing;
 using OrchardCore.Workflows.Scripting;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
+using YesSql;
 using YesSql.Indexes;
 
 namespace OrchardCore.Workflows
@@ -80,11 +84,34 @@ namespace OrchardCore.Workflows
             services.AddScoped<IWorkflowContextProvider, DefaultWorkflowContextProvider>();
             services.AddScoped<IWorkflowContextProvider, SignalWorkflowContextProvider>();
 
+            services.AddScoped<IWorkflowDefinitionHandler, WorkflowDefinitionFilterRoutesHandler>();
+
+            services.AddSingleton<IWorkflowRouteEntries, WorkflowRouteEntries>();
             services.AddSingleton<IGlobalMethodProvider, HttpContextMethodProvider>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var entries = serviceProvider.GetRequiredService<IWorkflowRouteEntries>();
+            var session = serviceProvider.GetRequiredService<ISession>();
+            var workflowRoutes = session.QueryIndex<WorkflowDefinitionByHttpRequestFilterIndex>().ListAsync().GetAwaiter().GetResult().GroupBy(x => x.WorkflowDefinitionId);
+
+            foreach (var item in workflowRoutes)
+            {
+                entries.AddEntries(item.Key, item.Select(x => new WorkflowRoutesEntry
+                {
+                    WorkflowDefinitionId = x.WorkflowDefinitionId,
+                    ActivityId = x.ActivityId,
+                    HttpMethod = x.HttpMethod,
+                    RouteValues = new RouteValueDictionary
+                {
+                    { "controller", x.ControllerName },
+                    { "action", x.ActionName },
+                    { "area", x.AreaName }
+                }
+                }));
+            }
+
             var workflowRoute = new WorkflowRouter(routes.DefaultHandler);
 
             routes.Routes.Insert(0, workflowRoute);
