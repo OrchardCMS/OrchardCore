@@ -8,7 +8,9 @@ Category: Workflows
 Description: Provides tools to create custom workflows.
 Features:
     OrchardCore.Workflows:
+        Name: Workflows
         Description: Provides tools to create custom workflows.
     OrchardCore.Workflows.Http:
+        Name: Workflows HTTP Services
         Description: Provides HTTP-related workflow activities.
         Dependencies: OrchardCore.Workflows
