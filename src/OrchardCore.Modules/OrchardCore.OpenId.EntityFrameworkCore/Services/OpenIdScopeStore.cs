@@ -23,196 +23,6 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         }
 
         /// <summary>
-        /// Determines the number of scopes that exist in the database.
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
-        /// whose result returns the number of scopes in the database.
-        /// </returns>
-        Task<long> IOpenIddictScopeStore<IOpenIdScope>.CountAsync(CancellationToken cancellationToken)
-            => CountAsync(cancellationToken);
-
-        /// <summary>
-        /// Determines the number of scopes that match the specified query.
-        /// </summary>
-        /// <typeparam name="TResult">The result type.</typeparam>
-        /// <param name="query">The query to execute.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
-        /// whose result returns the number of scopes that match the specified query.
-        /// </returns>
-        Task<long> IOpenIddictScopeStore<IOpenIdScope>.CountAsync<TResult>(Func<IQueryable<IOpenIdScope>, IQueryable<TResult>> query, CancellationToken cancellationToken)
-            => CountAsync(query, cancellationToken);
-
-        /// <summary>
-        /// Creates a new scope.
-        /// </summary>
-        /// <param name="scope">The scope to create.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose result returns the scope.
-        /// </returns>
-        async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.CreateAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => await CreateAsync((OpenIdScope<TKey>) scope, cancellationToken);
-
-        /// <summary>
-        /// Removes an existing scope.
-        /// </summary>
-        /// <param name="scope">The scope to delete.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
-        /// </returns>
-        Task IOpenIddictScopeStore<IOpenIdScope>.DeleteAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => DeleteAsync((OpenIdScope<TKey>) scope, cancellationToken);
-
-        /// <summary>
-        /// Retrieves a scope using its unique identifier.
-        /// </summary>
-        /// <param name="identifier">The unique identifier associated with the scope.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
-        /// whose result returns the scope corresponding to the identifier.
-        /// </returns>
-        async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
-            // Note: unlike the YesSql-specific models, the default OpenIddict models used by
-            // the Entity Framework Core stores don't have distinct physical/logical identifiers.
-            // To ensure this method can be safely used, the base FindByIdAsync() method is called.
-            => await FindByIdAsync(identifier, cancellationToken);
-
-        /// <summary>
-        /// Executes the specified query and returns the first element.
-        /// </summary>
-        /// <typeparam name="TState">The state type.</typeparam>
-        /// <typeparam name="TResult">The result type.</typeparam>
-        /// <param name="query">The query to execute.</param>
-        /// <param name="state">The optional state.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
-        /// whose result returns the first element returned when executing the query.
-        /// </returns>
-        Task<TResult> IOpenIddictScopeStore<IOpenIdScope>.GetAsync<TState, TResult>(
-            Func<IQueryable<IOpenIdScope>, TState, IQueryable<TResult>> query,
-            TState state, CancellationToken cancellationToken)
-            => GetAsync(query, state, cancellationToken);
-
-        /// <summary>
-        /// Retrieves the description associated with a scope.
-        /// </summary>
-        /// <param name="scope">The scope.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
-        /// whose result returns the description associated with the specified scope.
-        /// </returns>
-        Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetDescriptionAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => GetDescriptionAsync((OpenIdScope<TKey>) scope, cancellationToken);
-
-        /// <summary>
-        /// Retrieves the unique identifier associated with a scope.
-        /// </summary>
-        /// <param name="scope">The scope.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
-        /// whose result returns the unique identifier associated with the scope.
-        /// </returns>
-        Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetIdAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => GetIdAsync((OpenIdScope<TKey>) scope, cancellationToken);
-
-        /// <summary>
-        /// Retrieves the name associated with a scope.
-        /// </summary>
-        /// <param name="scope">The scope.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
-        /// whose result returns the name associated with the specified scope.
-        /// </returns>
-        Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetNameAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => GetNameAsync((OpenIdScope<TKey>) scope, cancellationToken);
-
-        /// <summary>
-        /// Instantiates a new scope.
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
-        /// whose result returns the instantiated scope, that can be persisted in the database.
-        /// </returns>
-        async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.InstantiateAsync(CancellationToken cancellationToken)
-            => await InstantiateAsync(cancellationToken);
-
-        /// <summary>
-        /// Executes the specified query and returns all the corresponding elements.
-        /// </summary>
-        /// <param name="count">The number of results to return.</param>
-        /// <param name="offset">The number of results to skip.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
-        /// whose result returns all the elements returned when executing the specified query.
-        /// </returns>
-        async Task<ImmutableArray<IOpenIdScope>> IOpenIddictScopeStore<IOpenIdScope>.ListAsync(int? count, int? offset, CancellationToken cancellationToken)
-            => (await ListAsync(count, offset, cancellationToken)).CastArray<IOpenIdScope>();
-
-        /// <summary>
-        /// Executes the specified query and returns all the corresponding elements.
-        /// </summary>
-        /// <typeparam name="TState">The state type.</typeparam>
-        /// <typeparam name="TResult">The result type.</typeparam>
-        /// <param name="query">The query to execute.</param>
-        /// <param name="state">The optional state.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
-        /// whose result returns all the elements returned when executing the specified query.
-        /// </returns>
-        Task<ImmutableArray<TResult>> IOpenIddictScopeStore<IOpenIdScope>.ListAsync<TState, TResult>(
-            Func<IQueryable<IOpenIdScope>, TState, IQueryable<TResult>> query,
-            TState state, CancellationToken cancellationToken)
-            => ListAsync(query, state, cancellationToken);
-
-        /// <summary>
-        /// Sets the description associated with a scope.
-        /// </summary>
-        /// <param name="scope">The scope.</param>
-        /// <param name="description">The description associated with the authorization.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
-        /// </returns>
-        Task IOpenIddictScopeStore<IOpenIdScope>.SetDescriptionAsync(IOpenIdScope scope, string description, CancellationToken cancellationToken)
-            => SetDescriptionAsync((OpenIdScope<TKey>) scope, description, cancellationToken);
-
-        /// <summary>
-        /// Sets the name associated with a scope.
-        /// </summary>
-        /// <param name="scope">The scope.</param>
-        /// <param name="name">The name associated with the authorization.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
-        /// </returns>
-        Task IOpenIddictScopeStore<IOpenIdScope>.SetNameAsync(IOpenIdScope scope, string name, CancellationToken cancellationToken)
-            => SetNameAsync((OpenIdScope<TKey>) scope, name, cancellationToken);
-
-        /// <summary>
-        /// Updates an existing scope.
-        /// </summary>
-        /// <param name="scope">The scope to update.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
-        /// </returns>
-        Task IOpenIddictScopeStore<IOpenIdScope>.UpdateAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => UpdateAsync((OpenIdScope<TKey>) scope, cancellationToken);
-
-        /// <summary>
         /// Retrieves a scope using its physical identifier.
         /// </summary>
         /// <param name="identifier">The physical identifier associated with the scope.</param>
@@ -221,11 +31,11 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the scope corresponding to the identifier.
         /// </returns>
-        public virtual async Task<IOpenIdScope> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual Task<OpenIdScope<TKey>> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
             // Note: unlike the YesSql-specific models, the default OpenIddict models used by
             // the Entity Framework Core stores don't have distinct physical/logical identifiers.
             // To ensure this method can be safely used, the base FindByIdAsync() method is called.
-            => await FindByIdAsync(identifier, cancellationToken);
+            => FindByIdAsync(identifier, cancellationToken);
 
         /// <summary>
         /// Retrieves the physical identifier associated with a scope.
@@ -236,10 +46,77 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the physical identifier associated with the scope.
         /// </returns>
-        public virtual Task<string> GetPhysicalIdAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+        public virtual Task<string> GetPhysicalIdAsync(OpenIdScope<TKey> scope, CancellationToken cancellationToken)
             // Note: unlike the YesSql-specific models, the default OpenIddict models used by
             // the Entity Framework Core stores don't have distinct physical/logical identifiers.
             // To ensure this method can be safely used, the base GetIdAsync() method is called.
+            => GetIdAsync(scope, cancellationToken);
+
+        // Note: the following methods are deliberately implemented as explicit methods so they are not
+        // exposed by Intellisense. Their logic MUST be limited to dealing with casts and downcasts.
+        // Developers who need to customize the logic SHOULD override the methods taking concretes types.
+
+        // -------------------------------------------------------
+        // Methods defined by the IOpenIddictScopeStore interface:
+        // -------------------------------------------------------
+
+        Task<long> IOpenIddictScopeStore<IOpenIdScope>.CountAsync(CancellationToken cancellationToken)
+            => CountAsync(cancellationToken);
+
+        Task<long> IOpenIddictScopeStore<IOpenIdScope>.CountAsync<TResult>(Func<IQueryable<IOpenIdScope>, IQueryable<TResult>> query, CancellationToken cancellationToken)
+            => CountAsync(query, cancellationToken);
+
+        async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.CreateAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+            => await CreateAsync((OpenIdScope<TKey>) scope, cancellationToken);
+
+        Task IOpenIddictScopeStore<IOpenIdScope>.DeleteAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+            => DeleteAsync((OpenIdScope<TKey>) scope, cancellationToken);
+
+        async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
+            => await FindByIdAsync(identifier, cancellationToken);
+
+        Task<TResult> IOpenIddictScopeStore<IOpenIdScope>.GetAsync<TState, TResult>(
+            Func<IQueryable<IOpenIdScope>, TState, IQueryable<TResult>> query,
+            TState state, CancellationToken cancellationToken)
+            => GetAsync(query, state, cancellationToken);
+
+        Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetDescriptionAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+            => GetDescriptionAsync((OpenIdScope<TKey>) scope, cancellationToken);
+
+        Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetIdAsync(IOpenIdScope scope, CancellationToken cancellationToken)
             => GetIdAsync((OpenIdScope<TKey>) scope, cancellationToken);
+
+        Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetNameAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+            => GetNameAsync((OpenIdScope<TKey>) scope, cancellationToken);
+
+        async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.InstantiateAsync(CancellationToken cancellationToken)
+            => await InstantiateAsync(cancellationToken);
+
+        async Task<ImmutableArray<IOpenIdScope>> IOpenIddictScopeStore<IOpenIdScope>.ListAsync(int? count, int? offset, CancellationToken cancellationToken)
+            => (await ListAsync(count, offset, cancellationToken)).CastArray<IOpenIdScope>();
+
+        Task<ImmutableArray<TResult>> IOpenIddictScopeStore<IOpenIdScope>.ListAsync<TState, TResult>(
+            Func<IQueryable<IOpenIdScope>, TState, IQueryable<TResult>> query,
+            TState state, CancellationToken cancellationToken)
+            => ListAsync(query, state, cancellationToken);
+
+        Task IOpenIddictScopeStore<IOpenIdScope>.SetDescriptionAsync(IOpenIdScope scope, string description, CancellationToken cancellationToken)
+            => SetDescriptionAsync((OpenIdScope<TKey>) scope, description, cancellationToken);
+
+        Task IOpenIddictScopeStore<IOpenIdScope>.SetNameAsync(IOpenIdScope scope, string name, CancellationToken cancellationToken)
+            => SetNameAsync((OpenIdScope<TKey>) scope, name, cancellationToken);
+
+        Task IOpenIddictScopeStore<IOpenIdScope>.UpdateAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+            => UpdateAsync((OpenIdScope<TKey>) scope, cancellationToken);
+
+        // ---------------------------------------------------
+        // Methods defined by the IOpenIdScopeStore interface:
+        // ---------------------------------------------------
+
+        async Task<IOpenIdScope> IOpenIdScopeStore.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+            => await FindByPhysicalIdAsync(identifier, cancellationToken);
+
+        Task<string> IOpenIdScopeStore.GetPhysicalIdAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+            => GetPhysicalIdAsync((OpenIdScope<TKey>) scope, cancellationToken);
     }
 }
