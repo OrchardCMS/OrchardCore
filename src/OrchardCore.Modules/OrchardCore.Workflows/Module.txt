@@ -1,4 +1,4 @@
-﻿Name: Workflows
+Name: Workflows
 AntiForgery: enabled
 Author: The Orchard Team
 Website: http://orchardproject.net
@@ -9,3 +9,6 @@ Description: Provides tools to create custom workflows.
 Features:
     OrchardCore.Workflows:
         Description: Provides tools to create custom workflows.
+    OrchardCore.Workflows.Http:
+        Description: Provides HTTP-related workflow activities.
+        Dependencies: OrchardCore.Workflows

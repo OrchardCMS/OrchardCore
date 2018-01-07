@@ -75,7 +75,6 @@
   <ItemGroup>
     <Folder Include="Content\Scripts\" />
     <Folder Include="Content\Styles\Images\" />
-    <Folder Include="Http\" />
   </ItemGroup>
 
   <ItemGroup>

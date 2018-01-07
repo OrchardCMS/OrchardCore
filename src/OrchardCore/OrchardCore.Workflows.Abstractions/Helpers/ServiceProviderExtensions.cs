@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace OrchardCore.Workflows.Abstractions.Helpers
+namespace OrchardCore.Workflows.Helpers
 {
     public static class ServiceProviderExtensions
     {
