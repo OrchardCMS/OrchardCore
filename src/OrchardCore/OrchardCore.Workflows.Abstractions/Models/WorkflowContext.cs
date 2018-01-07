@@ -15,8 +15,7 @@ namespace OrchardCore.Workflows.Models
             WorkflowDefinitionRecord workflowDefinitionRecord,
             WorkflowInstanceRecord workflowInstanceRecord,
             IEnumerable<ActivityContext> activities,
-            IScriptingManager scriptingManager,
-            IServiceProvider serviceProvider,
+            IScriptingManager scriptingManager
         )
         {
             WorkflowDefinition = workflowDefinitionRecord;
