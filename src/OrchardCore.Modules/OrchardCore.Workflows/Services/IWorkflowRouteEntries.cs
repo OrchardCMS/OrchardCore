@@ -6,7 +6,7 @@ namespace OrchardCore.Workflows.Services
 {
     public interface IWorkflowRouteEntries
     {
-        IEnumerable<WorkflowRoutesEntry> GetWorkflowRouteEntries(string httpMethod, RouteValueDictionary routeValues, string correlationId);
+        IEnumerable<WorkflowRoutesEntry> GetWorkflowRouteEntries(string httpMethod, RouteValueDictionary routeValues);
         void AddEntries(IEnumerable<WorkflowRoutesEntry> entries);
         void RemoveEntries(string workflowId);
     }

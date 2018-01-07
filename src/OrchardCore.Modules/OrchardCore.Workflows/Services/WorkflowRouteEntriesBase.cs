@@ -12,7 +12,7 @@ namespace OrchardCore.Workflows.Services
         private readonly object _syncLock = new object();
         private IDictionary<string, IList<WorkflowRoutesEntry>> _entries = new Dictionary<string, IList<WorkflowRoutesEntry>>();
 
-        public IEnumerable<WorkflowRoutesEntry> GetWorkflowRouteEntries(string httpMethod, RouteValueDictionary routeValues, string correlationId)
+        public IEnumerable<WorkflowRoutesEntry> GetWorkflowRouteEntries(string httpMethod, RouteValueDictionary routeValues)
         {
             var controllerName = routeValues.GetValue<string>("controller");
             var actionName = routeValues.GetValue<string>("action");
@@ -22,8 +22,7 @@ namespace OrchardCore.Workflows.Services
                 x.HttpMethod == httpMethod
                 && (x.ControllerName == controllerName || string.IsNullOrWhiteSpace(x.ControllerName))
                 && (x.ActionName == actionName || string.IsNullOrWhiteSpace(x.ActionName))
-                && (x.AreaName == areaName || string.IsNullOrWhiteSpace(x.AreaName))
-                && (string.Equals(x.CorrelationId, correlationId, StringComparison.OrdinalIgnoreCase)));
+                && (x.AreaName == areaName || string.IsNullOrWhiteSpace(x.AreaName)));
 
             return entries.ToList();
         }
