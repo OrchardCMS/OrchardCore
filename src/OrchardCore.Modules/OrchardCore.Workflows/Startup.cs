@@ -58,13 +58,14 @@ namespace OrchardCore.Workflows
             services.AddScoped<IActivity, ForLoopTask>();
             services.AddScoped<IActivity, WhileLoopTask>();
             services.AddScoped<IActivity, IfElseTask>();
-            services.AddScoped<IActivity, DecisionTask>();
+            services.AddScoped<IActivity, ScriptTask>();
             services.AddScoped<IActivity, SignalEvent>();
             services.AddScoped<IActivity, EmailTask>();
             services.AddScoped<IActivity, HttpRequestEvent>();
             services.AddScoped<IActivity, HttpRequestFilterEvent>();
             services.AddScoped<IActivity, HttpRedirectTask>();
 
+            services.AddScoped<IDisplayDriver<IActivity>, MissingActivityDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, NotifyTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, SetVariableTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, SetOutputTaskDisplay>();
@@ -74,7 +75,7 @@ namespace OrchardCore.Workflows
             services.AddScoped<IDisplayDriver<IActivity>, ForLoopTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, WhileLoopTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, IfElseTaskDisplay>();
-            services.AddScoped<IDisplayDriver<IActivity>, DecisionTaskDisplay>();
+            services.AddScoped<IDisplayDriver<IActivity>, ScriptTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, SignalEventDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, EmailTaskDisplay>();
             services.AddScoped<IDisplayDriver<IActivity>, HttpRequestEventDisplay>();

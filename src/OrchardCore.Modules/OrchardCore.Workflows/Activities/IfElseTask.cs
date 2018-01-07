@@ -8,7 +8,7 @@ namespace OrchardCore.Workflows.Activities
 {
     public class IfElseTask : TaskActivity
     {
-        public IfElseTask(IStringLocalizer<DecisionTask> localizer)
+        public IfElseTask(IStringLocalizer<IfElseTask> localizer)
         {
             T = localizer;
         }

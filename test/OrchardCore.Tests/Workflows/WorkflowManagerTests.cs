@@ -70,7 +70,7 @@ namespace OrchardCore.Tests.Workflows
             var workflowInstanceRepository = new Mock<IWorkflowInstanceRepository>();
             var workflowContextProviders = new IWorkflowContextProvider[0];
             var logger = new Mock<ILogger<WorkflowManager>>();
-            var workflowManager = new WorkflowManager(activityLibrary.Object, workflowDefinitionRepository.Object, workflowInstanceRepository.Object, scriptingManager, workflowContextProviders, logger.Object);
+            var workflowManager = new WorkflowManager(activityLibrary.Object, workflowDefinitionRepository.Object, workflowInstanceRepository.Object, scriptingManager, workflowContextProviders, logger.Object, serviceProvider);
 
             foreach (var activity in activities)
             {

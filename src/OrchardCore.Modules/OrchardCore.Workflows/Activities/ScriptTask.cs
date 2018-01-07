@@ -9,17 +9,16 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    // TODO: Turns this into a more advanced activity like the one in Orchard 1, allowing custom outcomes and a script that yields one or more outcomes.
-    public class DecisionTask : TaskActivity
+    public class ScriptTask : TaskActivity
     {
-        public DecisionTask(IStringLocalizer<DecisionTask> localizer)
+        public ScriptTask(IStringLocalizer<ScriptTask> localizer)
         {
             T = localizer;
         }
 
         private IStringLocalizer T { get; }
 
-        public override string Name => nameof(DecisionTask);
+        public override string Name => nameof(ScriptTask);
         public override LocalizedString Category => T["Control Flow"];
         public override LocalizedString Description => T["Executes the specified script and continues execution based on any outcomes it sets."];
 
@@ -43,7 +42,7 @@ namespace OrchardCore.Workflows.Activities
         /// </summary>
         public string Script
         {
-            get => GetProperty(() => "setOutcome('Done')");
+            get => GetProperty(() => "setOutcome('Done');");
             set => SetProperty(value);
         }
 

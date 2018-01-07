@@ -37,7 +37,12 @@ namespace OrchardCore.Workflows.Services
         public static T InstantiateActivity<T>(this IActivityLibrary library, string name, JObject properties) where T : IActivity
         {
             var activity = InstantiateActivity<T>(library, name);
-            activity.Properties = properties;
+
+            if (activity != null)
+            {
+                activity.Properties = properties;
+            }
+
             return activity;
         }
 

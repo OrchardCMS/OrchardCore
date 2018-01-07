@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Workflows.ViewModels
 {
-    public class DecisionTaskViewModel
+    public class ScriptTaskViewModel
     {
         public string Title { get; set; }
 

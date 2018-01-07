@@ -30,6 +30,9 @@ namespace OrchardCore.Workflows.Models
         /// </summary>
         public JObject State { get; set; } = new JObject();
 
+        public WorkflowStatus Status { get; set; }
+        public string FaultMessage { get; set; }
+
         /// <summary>
         /// List of activities the current workflow instance is waiting on 
         /// for continuing its process.

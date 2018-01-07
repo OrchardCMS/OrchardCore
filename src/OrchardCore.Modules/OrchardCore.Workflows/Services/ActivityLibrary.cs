@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Workflows.Abstractions.Helpers;
 
 namespace OrchardCore.Workflows.Services
@@ -9,6 +10,7 @@ namespace OrchardCore.Workflows.Services
     {
         private readonly Lazy<IDictionary<string, IActivity>> _activityDictionary;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<ActivityLibrary> _logger;
 
         // TODO: Use Func<T> once we add support for it using DryIoc or Autofac.
         // Alternatively, we could implement a custom class similar to Lazy<T> or Work<T> that simply resolves the requested type.
@@ -18,10 +20,11 @@ namespace OrchardCore.Workflows.Services
         //    _serviceProvider = serviceProvider;
         //}
 
-        public ActivityLibrary(Resolver<IEnumerable<IActivity>> activities, IServiceProvider serviceProvider)
+        public ActivityLibrary(Resolver<IEnumerable<IActivity>> activities, IServiceProvider serviceProvider, ILogger<ActivityLibrary> logger)
         {
             _activityDictionary = new Lazy<IDictionary<string, IActivity>>(() => activities.Resolve().OrderBy(x => x.Name).ToDictionary(x => x.Name));
             _serviceProvider = serviceProvider;
+            _logger = logger;
         }
 
         private IDictionary<string, IActivity> ActivityDictionary => _activityDictionary.Value;
@@ -38,7 +41,14 @@ namespace OrchardCore.Workflows.Services
 
         public IActivity InstantiateActivity(string name)
         {
-            var activityType = GetActivityByName(name).GetType();
+            var activityType = GetActivityByName(name)?.GetType();
+
+            if (activityType == null)
+            {
+                _logger.LogWarning($"Requested activity '{name}' does not exist in the library. This could indicate a changed name or a missing feature.");
+                return null;
+            }
+
             return InstantiateActivity(activityType);
         }
 

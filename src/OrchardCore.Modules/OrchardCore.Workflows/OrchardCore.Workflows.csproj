@@ -15,9 +15,6 @@
     <None Remove="Views\Items\CorrelateTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\CorrelateTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\CorrelateTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\DecisionTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\DecisionTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\DecisionTask.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\EmailTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\EmailTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\EmailTask.Fields.Thumbnail.cshtml" />
@@ -39,6 +36,10 @@
     <None Remove="Views\Items\IfElseTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\IfElseTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\IfElseTask.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\Items\MissingActivity.Fields.Design.cshtml" />
+    <None Remove="Views\Items\ScriptTask.Fields.Design.cshtml" />
+    <None Remove="Views\Items\ScriptTask.Fields.Edit.cshtml" />
+    <None Remove="Views\Items\ScriptTask.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\SetOutputTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\SetOutputTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\SetOutputTask.Fields.Thumbnail.cshtml" />

@@ -40,6 +40,11 @@ namespace OrchardCore.Workflows.Models
         public IDictionary<string, object> Input => State.Input;
         public IDictionary<string, object> Output => State.Output;
         public IDictionary<string, object> Variables => State.Variables;
+        public WorkflowStatus Status
+        {
+            get => WorkflowInstance.Status;
+            set => WorkflowInstance.Status = value;
+        }
 
         public ActivityContext GetActivity(int activityId)
         {
@@ -56,6 +61,11 @@ namespace OrchardCore.Workflows.Models
             ScriptingManager.GlobalMethodProviders.AddRange(scopedMethodProviders);
             ScriptingManager.Evaluate(script);
             ScriptingManager.GlobalMethodProviders.RemoveRange(scopedMethodProviders);
+        }
+        public void Fault(Exception exception, ActivityContext activityContext)
+        {
+            WorkflowInstance.Status = WorkflowStatus.Faulted;
+            WorkflowInstance.FaultMessage = exception.Message;
         }
 
         public IEnumerable<TransitionRecord> GetInboundTransitions(ActivityRecord activityRecord)

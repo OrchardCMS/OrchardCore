@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 
@@ -21,6 +23,7 @@ namespace OrchardCore.Workflows.Services
         private readonly IScriptingManager _scriptingManager;
         private readonly IEnumerable<IWorkflowContextProvider> _workflowContextProviders;
         private readonly ILogger _logger;
+        private readonly IServiceProvider _serviceProvider;
 
         public WorkflowManager
         (
@@ -29,7 +32,8 @@ namespace OrchardCore.Workflows.Services
             IWorkflowInstanceRepository workflowInstanceRepository,
             IScriptingManager scriptingManager,
             IEnumerable<IWorkflowContextProvider> workflowContextProviders,
-            ILogger<WorkflowManager> logger
+            ILogger<WorkflowManager> logger,
+            IServiceProvider serviceProvider
         )
         {
             _activityLibrary = activityLibrary;
@@ -38,11 +42,12 @@ namespace OrchardCore.Workflows.Services
             _scriptingManager = scriptingManager;
             _workflowContextProviders = workflowContextProviders;
             _logger = logger;
+            _serviceProvider = serviceProvider;
         }
 
         public WorkflowContext CreateWorkflowContext(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord)
         {
-            var activityQuery = workflowDefinitionRecord.Activities.Select(CreateActivityContext);
+            var activityQuery = workflowDefinitionRecord.Activities.Select(CreateActivityContext).Where(x => x != null);
             var context = new WorkflowContext(workflowDefinitionRecord, workflowInstanceRecord, activityQuery, _scriptingManager);
 
             foreach (var provider in _workflowContextProviders)
@@ -55,10 +60,16 @@ namespace OrchardCore.Workflows.Services
 
         public ActivityContext CreateActivityContext(ActivityRecord activityRecord)
         {
-            var activity = _activityLibrary.InstantiateActivity(activityRecord.Name);
-            var entity = activity as Entity;
+            var activity = _activityLibrary.InstantiateActivity<IActivity>(activityRecord.Name, activityRecord.Properties);
 
-            entity.Properties = activityRecord.Properties;
+            if (activity == null)
+            {
+                _logger.LogWarning($"Requested activity '{activityRecord.Name}' does not exist in the library. This could indicate a changed name or a missing feature. Replacing it with MissingActivity.");
+                var localizer = _serviceProvider.GetRequiredService<IStringLocalizer<MissingActivity>>();
+                var logger = _serviceProvider.GetRequiredService<ILogger<MissingActivity>>();
+                activity = new MissingActivity(localizer, logger, activityRecord);
+            }
+
             return new ActivityContext
             {
                 ActivityRecord = activityRecord,
@@ -133,6 +144,8 @@ namespace OrchardCore.Workflows.Services
             var activityRecord = workflowDefinition.Activities.SingleOrDefault(x => x.Id == awaitingActivity.ActivityId);
             var workflowContext = CreateWorkflowContext(workflowDefinition, workflowInstance);
 
+            workflowContext.Status = WorkflowStatus.Resuming;
+
             // Signal every activity that the workflow is about to be resumed.
             var cancellationToken = new CancellationToken();
 
@@ -157,11 +170,13 @@ namespace OrchardCore.Workflows.Services
             if (blockedOn.Count == 0 && workflowContext.WorkflowInstance.AwaitingActivities.Count == 0)
             {
                 // No, delete the workflow.
+                workflowContext.Status = WorkflowStatus.Finished;
                 await _workInstanceRepository.DeleteAsync(workflowContext.WorkflowInstance);
             }
             else
             {
                 // Add the new ones.
+                workflowContext.Status = WorkflowStatus.Halted;
                 foreach (var blocking in blockedOn)
                 {
                     workflowContext.WorkflowInstance.AwaitingActivities.Add(AwaitingActivityRecord.FromActivity(blocking));
@@ -197,6 +212,7 @@ namespace OrchardCore.Workflows.Services
 
             // Create a workflow context.
             var workflowContext = CreateWorkflowContext(workflowDefinition, workflowInstance);
+            workflowContext.Status = WorkflowStatus.Starting;
 
             // Signal every activity that the workflow is about to start.
             var cancellationToken = new CancellationToken();
@@ -218,10 +234,12 @@ namespace OrchardCore.Workflows.Services
             if (blockedOn.Count == 0)
             {
                 // No, nothing to do.
+                workflowContext.Status = WorkflowStatus.Finished;
             }
             else
             {
                 // Workflow halted, create a workflow state.
+                workflowContext.Status = WorkflowStatus.Halted;
                 foreach (var blocking in blockedOn)
                 {
                     workflowContext.WorkflowInstance.AwaitingActivities.Add(AwaitingActivityRecord.FromActivity(blocking));
@@ -239,10 +257,10 @@ namespace OrchardCore.Workflows.Services
             var definition = await _workflowDefinitionRepository.GetWorkflowDefinitionAsync(workflowContext.WorkflowDefinition.Id);
             var firstPass = true;
             var scheduled = new Stack<ActivityRecord>();
-
-            scheduled.Push(activity);
-
             var blocking = new List<ActivityRecord>();
+
+            workflowContext.Status = WorkflowStatus.Executing;
+            scheduled.Push(activity);
 
             while (scheduled.Count > 0)
             {
@@ -282,7 +300,18 @@ namespace OrchardCore.Workflows.Services
                 }
 
                 // Execute the current activity.
-                var outcomes = (await activityContext.Activity.ExecuteAsync(workflowContext, activityContext)).ToList();
+                IList<string> outcomes;
+
+                try
+                {
+                    outcomes = (await activityContext.Activity.ExecuteAsync(workflowContext, activityContext)).ToList();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"An error occurred while executing an activity. Workflow ID: {definition.Id}. Activity: {activityContext.ActivityRecord.Id}, {activityContext.ActivityRecord.Name}");
+                    workflowContext.Fault(ex, activityContext);
+                    return blocking.Distinct();
+                }
 
                 // Signal every activity that the activity is executed.
                 await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnActivityExecutedAsync(workflowContext, activityContext));
