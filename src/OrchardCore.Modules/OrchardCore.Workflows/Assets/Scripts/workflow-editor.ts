@@ -91,7 +91,7 @@ class WorkflowEditor {
                 label.setLabel(outcome.displayName);
             });
 
-            const activityElements = $(container).find('.activity');
+            let activityElements = $(container).find('.activity');
 
             var areEqualOutcomes = function (outcomes1: Workflows.Outcome[], outcomes2: Workflows.Outcome[]): boolean {
                 if (outcomes1.length != outcomes2.length) {
@@ -200,6 +200,12 @@ class WorkflowEditor {
                         target: destinationElementId
                     });
                 }
+
+                // Re-query the activity elements.
+                activityElements = $(container).find('.activity');
+
+                // Make all activity elements visible.
+                activityElements.show();
 
                 plumber.bind('contextmenu', function (component, originalEvent) {
                 });
