@@ -9,7 +9,11 @@
 
 <resources type="Header" />
 
-<iframe id="iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;">
+<iframe id="irenderingframe" style="visibility:hidden; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;">
+    Your browser doesn't support iframes
+</iframe>
+
+<iframe id="inoflickerframe" style="visibility:hidden; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;">
     Your browser doesn't support iframes
 </iframe>
 
@@ -39,7 +43,7 @@
             else if (ev.key == 'OrchardCore.templates') {
                 if (ev.originalEvent.newValue != null) {
                     clearTimeout(previewEventTimer);
-                    previewEventTimer = setTimeout(function () { renderPreview(ev.originalEvent.newValue); }, 250);
+                    previewEventTimer = setTimeout(function () { renderPreview(ev.originalEvent.newValue); }, 150);
                     $(notConnectedWarning).hide();
                 }
             }
@@ -62,16 +66,32 @@
         }
     });
 
-    var iframe = document.getElementById('iframe');
+    var irenderingframe = document.getElementById('irenderingframe');
+    var inoflickerframe = document.getElementById('inoflickerframe');
     var notConnectedWarning = document.getElementById('notConnectedWarning');
 
-    iframe.onload = function () {
+    irenderingframe.onload = function () {
+        var scrollTop = $(inoflickerframe.contentWindow).scrollTop();
+        $(irenderingframe.contentWindow).scrollTop(scrollTop);
+        irenderingframe.style.visibility = "visible";
+        inoflickerframe.style.visibility = "hidden";
+
         renderPreviewUrl = this.contentWindow.location;
-        $(iframe.contentWindow).scrollTop(scrollTop);
+        // the no flicker frame is loaded once to be fully initialized
+        if (inoflickerframe.contentWindow.location.href != renderPreviewUrl.href) {
+            inoflickerframe.contentWindow.location = renderPreviewUrl;
+        }
+        else {
+            Cookies.remove("orchard:templates");
+            inoflickerframe.contentWindow.document.head.innerHTML = this.contentWindow.document.head.innerHTML;
+            inoflickerframe.contentWindow.document.body.innerHTML = this.contentWindow.document.body.innerHTML;
+        }
+    }
+
+    inoflickerframe.onload = function () {
         Cookies.remove("orchard:templates");
     }
 
-    var scrollTop;
     var rendering;
 
     function renderPreview(value) {
@@ -95,8 +115,11 @@
                 .done(function () {
                     try {
                         Cookies.set("orchard:templates", true);
-                        iframe.contentWindow.location = renderPreviewUrl;
-                        scrollTop = $(iframe.contentWindow).scrollTop();
+                        irenderingframe.contentWindow.location = renderPreviewUrl;
+                        var scrollTop = $(irenderingframe.contentWindow).scrollTop();
+                        $(inoflickerframe.contentWindow).scrollTop(scrollTop);
+                        inoflickerframe.style.visibility = "visible";
+                        irenderingframe.style.visibility = "hidden";
                     }
                     catch (e) {
                         console.log('Error while previewing: ' + e);
