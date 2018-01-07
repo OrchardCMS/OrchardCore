@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -40,13 +42,15 @@ namespace OrchardCore.Workflows.Http.Activities
             return Outcomes(T["Done"]);
         }
 
-        public override IEnumerable<string> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            var location = workflowContext.Evaluate(Location);
-            var permanent = workflowContext.Evaluate(Permanent);
+            var locationTask = workflowContext.EvaluateAsync(Location);
+            var permanentTask = workflowContext.EvaluateAsync(Permanent);
 
-            _httpContextAccessor.HttpContext.Response.Redirect(location, permanent);
-            yield return "Done";
+            await Task.WhenAll(locationTask, permanentTask);
+
+            _httpContextAccessor.HttpContext.Response.Redirect(locationTask.Result, permanentTask.Result);
+            return new[] { "Done" };
         }
     }
 }

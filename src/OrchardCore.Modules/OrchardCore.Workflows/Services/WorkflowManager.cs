@@ -21,9 +21,11 @@ namespace OrchardCore.Workflows.Services
         private readonly IWorkflowDefinitionRepository _workflowDefinitionRepository;
         private readonly IWorkflowInstanceRepository _workInstanceRepository;
         private readonly IScriptingManager _scriptingManager;
-        private readonly IEnumerable<IWorkflowContextProvider> _workflowContextProviders;
-        private readonly ILogger _logger;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IEnumerable<IWorkflowContextHandler> _workflowContextHandlers;
+        private readonly ILogger<WorkflowManager> _logger;
+        private readonly ILogger<WorkflowContext> _workflowContextLogger;
+        private readonly ILogger<MissingActivity> _missingActivityLogger;
+        private readonly IStringLocalizer<MissingActivity> _missingActivityLocalizer;
 
         public WorkflowManager
         (
@@ -31,31 +33,28 @@ namespace OrchardCore.Workflows.Services
             IWorkflowDefinitionRepository workflowDefinitionRepository,
             IWorkflowInstanceRepository workflowInstanceRepository,
             IScriptingManager scriptingManager,
-            IEnumerable<IWorkflowContextProvider> workflowContextProviders,
+            IEnumerable<IWorkflowContextHandler> workflowContextHandlers,
             ILogger<WorkflowManager> logger,
-            IServiceProvider serviceProvider
+            ILogger<WorkflowContext> workflowContextLogger,
+            ILogger<MissingActivity> missingActivityLogger,
+            IStringLocalizer<MissingActivity> missingActivityLocalizer
         )
         {
             _activityLibrary = activityLibrary;
             _workflowDefinitionRepository = workflowDefinitionRepository;
             _workInstanceRepository = workflowInstanceRepository;
             _scriptingManager = scriptingManager;
-            _workflowContextProviders = workflowContextProviders;
+            _workflowContextHandlers = workflowContextHandlers;
             _logger = logger;
-            _serviceProvider = serviceProvider;
+            _workflowContextLogger = workflowContextLogger;
+            _missingActivityLogger = missingActivityLogger;
+            _missingActivityLocalizer = missingActivityLocalizer;
         }
 
         public WorkflowContext CreateWorkflowContext(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord)
         {
             var activityQuery = workflowDefinitionRecord.Activities.Select(CreateActivityContext).Where(x => x != null);
-            var context = new WorkflowContext(workflowDefinitionRecord, workflowInstanceRecord, activityQuery, _scriptingManager);
-
-            foreach (var provider in _workflowContextProviders)
-            {
-                provider.Configure(context);
-            }
-
-            return context;
+            return new WorkflowContext(workflowDefinitionRecord, workflowInstanceRecord, activityQuery, _workflowContextHandlers, _scriptingManager, _workflowContextLogger);
         }
 
         public ActivityContext CreateActivityContext(ActivityRecord activityRecord)
@@ -65,9 +64,7 @@ namespace OrchardCore.Workflows.Services
             if (activity == null)
             {
                 _logger.LogWarning($"Requested activity '{activityRecord.Name}' does not exist in the library. This could indicate a changed name or a missing feature. Replacing it with MissingActivity.");
-                var localizer = _serviceProvider.GetRequiredService<IStringLocalizer<MissingActivity>>();
-                var logger = _serviceProvider.GetRequiredService<ILogger<MissingActivity>>();
-                activity = new MissingActivity(localizer, logger, activityRecord);
+                activity = new MissingActivity(_missingActivityLocalizer, _missingActivityLogger, activityRecord);
             }
 
             return new ActivityContext

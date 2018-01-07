@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
@@ -33,18 +34,10 @@ namespace OrchardCore.Workflows.Activities
             return Outcomes(T["Iterate"], T["Done"]);
         }
 
-        public override IEnumerable<string> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            var loop = workflowContext.Evaluate(ConditionExpression);
-
-            if (loop)
-            {
-                yield return "Iterate";
-            }
-            else
-            {
-                yield return "Done";
-            }
+            var loop = await workflowContext.EvaluateAsync(ConditionExpression);
+            return Outcomes(loop ? "Iterate" : "Done");
         }
     }
 }

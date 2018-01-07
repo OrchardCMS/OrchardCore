@@ -1,4 +1,4 @@
-namespace OrchardCore.Workflows.Services
+namespace OrchardCore.Workflows.Activities
 {
     public abstract class EventActivity : Activity, IEvent
     {

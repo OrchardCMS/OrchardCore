@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Workflows.Services;
+using OrchardCore.Workflows.Activities;
 
 namespace OrchardCore.Workflows.Abstractions.Display
 {

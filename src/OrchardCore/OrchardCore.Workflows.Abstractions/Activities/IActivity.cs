@@ -7,7 +7,7 @@ using OrchardCore.Entities;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Workflows.Services
+namespace OrchardCore.Workflows.Activities
 {
     public interface IActivity : IEntity
     {

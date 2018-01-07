@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Abstractions.Models;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows.Activities
 {
@@ -52,7 +52,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             // Try and evaluate a content item from the ContentExpression, if provided.
             // If no expression was provided, assume the content item was provided as an input using the "Content" key.
             var contentValue = !String.IsNullOrWhiteSpace(ContentExpression.Expression)
-                ? workflowContext.Evaluate(ContentExpression)
+                ? await workflowContext.EvaluateAsync(ContentExpression)
                 : workflowContext.Input.GetValue("Content");
 
             var contentId = contentValue as string;

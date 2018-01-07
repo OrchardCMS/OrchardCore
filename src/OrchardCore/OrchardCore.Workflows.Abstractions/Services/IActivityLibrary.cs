@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services

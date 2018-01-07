@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Helpers

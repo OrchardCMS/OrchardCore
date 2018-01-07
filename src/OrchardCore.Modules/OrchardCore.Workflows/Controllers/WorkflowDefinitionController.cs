@@ -20,6 +20,7 @@ using OrchardCore.Mvc.ActionConstraints;
 using OrchardCore.Navigation;
 using OrchardCore.Scripting;
 using OrchardCore.Settings;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;

@@ -5,7 +5,7 @@ using OrchardCore.Contents.Workflows.Drivers;
 using OrchardCore.Contents.Workflows.Handlers;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
-using OrchardCore.Workflows.Services;
+using OrchardCore.Workflows.Activities;
 
 namespace OrchardCore.Contents.Workflows
 {

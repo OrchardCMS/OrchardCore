@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
@@ -51,10 +52,10 @@ namespace OrchardCore.Workflows.Activities
             return Outcomes(AvailableOutcomes.Select(x => T[x]).ToArray());
         }
 
-        public override IEnumerable<string> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             var outcomes = new List<string>();
-            workflowContext.Evaluate(Script, new OutcomeMethodProvider(outcomes));
+            await workflowContext.EvaluateAsync(Script, new OutcomeMethodProvider(outcomes));
             return outcomes;
         }
     }

@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Modules;
 using OrchardCore.Scripting;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Services;
@@ -10,26 +13,33 @@ namespace OrchardCore.Workflows.Models
 {
     public class WorkflowContext
     {
+        private readonly IScriptingManager _scriptingManager;
+        private readonly IEnumerable<IWorkflowContextHandler> _handlers;
+        private readonly ILogger<WorkflowContext> _logger;
+
         public WorkflowContext
         (
             WorkflowDefinitionRecord workflowDefinitionRecord,
             WorkflowInstanceRecord workflowInstanceRecord,
             IEnumerable<ActivityContext> activities,
-            IScriptingManager scriptingManager
+            IEnumerable<IWorkflowContextHandler> handlers,
+            IScriptingManager scriptingManager,
+            ILogger<WorkflowContext> logger
         )
         {
+            _scriptingManager = scriptingManager;
+            _handlers = handlers;
+            _logger = logger;
+
             WorkflowDefinition = workflowDefinitionRecord;
             WorkflowInstance = workflowInstanceRecord;
             Activities = activities.ToList();
-            ScriptingManager = scriptingManager;
             State = workflowInstanceRecord.State.ToObject<WorkflowState>();
         }
 
-        protected IEnumerable<IWorkflowContextProvider> WorkflowContextProviders { get; set; }
         public WorkflowDefinitionRecord WorkflowDefinition { get; }
         public WorkflowInstanceRecord WorkflowInstance { get; }
         public IList<ActivityContext> Activities { get; }
-        public IScriptingManager ScriptingManager { get; }
         public WorkflowState State { get; }
         public string CorrelationId
         {
@@ -51,19 +61,16 @@ namespace OrchardCore.Workflows.Models
             return Activities.Single(x => x.ActivityRecord.Id == activityId);
         }
 
-        public virtual T Evaluate<T>(WorkflowExpression<T> expression, IEnumerable<IGlobalMethodProvider> scopedMethodProviders = null)
+        public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, params IGlobalMethodProvider[] scopedMethodProviders)
         {
-            var prefix = !String.IsNullOrWhiteSpace(WorkflowDefinition.ScriptingEngine) ? WorkflowDefinition.ScriptingEngine : "js";
-            var directive = $"{prefix}:{expression}";
-            return (T)ScriptingManager.Evaluate(directive, scopedMethodProviders);
+            return (T)await EvaluateScriptAsync(expression.Expression, scopedMethodProviders);
         }
 
-        public virtual void Evaluate(string script, params IGlobalMethodProvider[] scopedMethodProviders)
+        public Task EvaluateAsync(string script, params IGlobalMethodProvider[] scopedMethodProviders)
         {
-            ScriptingManager.GlobalMethodProviders.AddRange(scopedMethodProviders);
-            ScriptingManager.Evaluate(script);
-            ScriptingManager.GlobalMethodProviders.RemoveRange(scopedMethodProviders);
+            return EvaluateScriptAsync(script, scopedMethodProviders);
         }
+
         public void Fault(Exception exception, ActivityContext activityContext)
         {
             WorkflowInstance.Status = WorkflowStatus.Faulted;
@@ -83,6 +90,18 @@ namespace OrchardCore.Workflows.Models
         public IEnumerable<TransitionRecord> GetOutboundTransitions(ActivityRecord activityRecord, LocalizedString outcome)
         {
             throw new NotImplementedException();
+        }
+
+        private async Task<object> EvaluateScriptAsync(string script, params IGlobalMethodProvider[] scopedMethodProviders)
+        {
+            var prefix = !String.IsNullOrWhiteSpace(WorkflowDefinition.ScriptingEngine) ? WorkflowDefinition.ScriptingEngine : "js";
+            var directive = $"{prefix}:{script}";
+            var context = new WorkflowContextScriptEvalContext(this);
+
+            context.ScopedMethodProviders.AddRange(scopedMethodProviders);
+
+            await _handlers.InvokeAsync(async x => await x.EvaluatingScriptAsync(context), _logger);
+            return _scriptingManager.Evaluate(directive, context.ScopedMethodProviders);
         }
     }
 }

@@ -9,6 +9,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Settings;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;

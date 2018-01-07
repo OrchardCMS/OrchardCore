@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Tests.Workflows.Activities
 {
@@ -36,14 +36,14 @@ namespace OrchardCore.Tests.Workflows.Activities
             return Outcomes(T["Done"]);
         }
 
-        public override IEnumerable<string> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            var a = workflowContext.Evaluate(A);
-            var b = workflowContext.Evaluate(B);
+            var a = await workflowContext.EvaluateAsync(A);
+            var b = await workflowContext.EvaluateAsync(B);
             var result = a + b;
 
             workflowContext.Stack.Push(result);
-            yield return "Done";
+            return new[] { "Done" };
         }
     }
 }

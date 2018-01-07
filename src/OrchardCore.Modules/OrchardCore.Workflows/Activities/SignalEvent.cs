@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Helpers;
@@ -34,10 +35,10 @@ namespace OrchardCore.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public override bool CanExecute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<bool> CanExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            var signalName = workflowContext.Evaluate(SignalNameExpression);
-            var conditionResult = workflowContext.Evaluate(ConditionExpression);
+            var signalName = await workflowContext.EvaluateAsync(SignalNameExpression);
+            var conditionResult = await workflowContext.EvaluateAsync(ConditionExpression);
             return workflowContext.Input.GetValue<string>("Signal") == signalName;
         }
 

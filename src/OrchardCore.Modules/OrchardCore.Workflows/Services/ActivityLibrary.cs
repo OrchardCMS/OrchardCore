@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 
 namespace OrchardCore.Workflows.Services

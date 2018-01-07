@@ -10,7 +10,7 @@ using OrchardCore.Entities;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Workflows.Services
+namespace OrchardCore.Workflows.Activities
 {
     public abstract class Activity : Entity, IActivity
     {
@@ -78,6 +78,11 @@ namespace OrchardCore.Workflows.Services
         protected IEnumerable<Outcome> Outcomes(params LocalizedString[] names)
         {
             return names.Select(x => new Outcome(x));
+        }
+
+        protected IEnumerable<string> Outcomes(params string[] names)
+        {
+            return names;
         }
 
         protected virtual T GetProperty<T>(Func<T> defaultValue = null, [CallerMemberName]string name = null)

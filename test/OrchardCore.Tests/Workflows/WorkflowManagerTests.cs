@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
 using OrchardCore.Tests.Workflows.Activities;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using Xunit;
@@ -68,9 +69,21 @@ namespace OrchardCore.Tests.Workflows
             var activityLibrary = new Mock<IActivityLibrary>();
             var workflowDefinitionRepository = new Mock<IWorkflowDefinitionRepository>();
             var workflowInstanceRepository = new Mock<IWorkflowInstanceRepository>();
-            var workflowContextProviders = new IWorkflowContextProvider[0];
-            var logger = new Mock<ILogger<WorkflowManager>>();
-            var workflowManager = new WorkflowManager(activityLibrary.Object, workflowDefinitionRepository.Object, workflowInstanceRepository.Object, scriptingManager, workflowContextProviders, logger.Object, serviceProvider);
+            var workflowContextHandlers = new IWorkflowContextHandler[0];
+            var workflowManagerLogger = new Mock<ILogger<WorkflowManager>>();
+            var workflowContextLogger = new Mock<ILogger<WorkflowContext>>();
+            var missingActivityLogger = new Mock<ILogger<MissingActivity>>();
+            var missingActivityLocalizer = new Mock<IStringLocalizer<MissingActivity>>();
+            var workflowManager = new WorkflowManager(
+                activityLibrary.Object,
+                workflowDefinitionRepository.Object,
+                workflowInstanceRepository.Object,
+                scriptingManager,
+                workflowContextHandlers,
+                workflowManagerLogger.Object,
+                workflowContextLogger.Object,
+                missingActivityLogger.Object,
+                missingActivityLocalizer.Object);
 
             foreach (var activity in activities)
             {

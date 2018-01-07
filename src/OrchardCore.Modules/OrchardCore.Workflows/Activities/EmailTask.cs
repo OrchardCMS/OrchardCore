@@ -59,9 +59,9 @@ namespace OrchardCore.Workflows.Activities
             // TODO: Read host and credentials from configuration.
             using (var smtpClient = new SmtpClient("localhost"))
             {
-                var sender = workflowContext.Evaluate(SenderExpression);
-                var recipients = string.Join(";", (workflowContext.Evaluate(RecipientsExpression) ?? new List<string>()));
-                var subject = workflowContext.Evaluate(SubjectExpression)?.Trim();
+                var sender = await workflowContext.EvaluateAsync(SenderExpression);
+                var recipients = string.Join(";", (await workflowContext.EvaluateAsync(RecipientsExpression) ?? new List<string>()));
+                var subject = (await workflowContext.EvaluateAsync(SubjectExpression))?.Trim();
                 var mailMessage = new MailMessage(sender, recipients, subject, Body);
 
                 await smtpClient.SendMailAsync(mailMessage);

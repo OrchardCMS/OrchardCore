@@ -32,8 +32,8 @@ namespace OrchardCore.Workflows
             services.AddScoped<IDisplayDriver<IActivity>, MissingActivityDisplay>();
             services.AddSingleton<IIndexProvider, WorkflowDefinitionIndexProvider>();
             services.AddSingleton<IIndexProvider, WorkflowInstanceIndexProvider>();
-            services.AddScoped<IWorkflowContextProvider, DefaultWorkflowContextProvider>();
-            services.AddScoped<IWorkflowContextProvider, SignalWorkflowContextProvider>();
+            services.AddScoped<IWorkflowContextHandler, DefaultWorkflowContextHandler>();
+            services.AddScoped<IWorkflowContextHandler, SignalWorkflowContextHandler>();
 
             services.AddActivity<NotifyTask, NotifyTaskDisplay>();
             services.AddActivity<SetVariableTask, SetVariableTaskDisplay>();
