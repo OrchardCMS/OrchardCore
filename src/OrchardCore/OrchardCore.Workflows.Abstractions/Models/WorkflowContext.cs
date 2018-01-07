@@ -15,7 +15,8 @@ namespace OrchardCore.Workflows.Models
             WorkflowDefinitionRecord workflowDefinitionRecord,
             WorkflowInstanceRecord workflowInstanceRecord,
             IEnumerable<ActivityContext> activities,
-            IScriptingManager scriptingManager
+            IScriptingManager scriptingManager,
+            IServiceProvider serviceProvider,
         )
         {
             WorkflowDefinition = workflowDefinitionRecord;
@@ -51,9 +52,11 @@ namespace OrchardCore.Workflows.Models
             return Activities.Single(x => x.ActivityRecord.Id == activityId);
         }
 
-        public virtual T Evaluate<T>(WorkflowExpression<T> expression)
+        public virtual T Evaluate<T>(WorkflowExpression<T> expression, IEnumerable<IGlobalMethodProvider> scopedMethodProviders = null)
         {
-            return (T)ScriptingManager.Evaluate(expression.Expression);
+            var prefix = !String.IsNullOrWhiteSpace(WorkflowDefinition.ScriptingEngine) ? WorkflowDefinition.ScriptingEngine : "js";
+            var directive = $"{prefix}:{expression}";
+            return (T)ScriptingManager.Evaluate(directive, scopedMethodProviders);
         }
 
         public virtual void Evaluate(string script, params IGlobalMethodProvider[] scopedMethodProviders)

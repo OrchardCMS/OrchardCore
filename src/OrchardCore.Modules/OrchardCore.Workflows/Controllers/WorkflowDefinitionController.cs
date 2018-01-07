@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -17,6 +18,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.ActionConstraints;
 using OrchardCore.Navigation;
+using OrchardCore.Scripting;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
@@ -37,6 +39,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<IActivity> _activityDisplayManager;
         private readonly INotifier _notifier;
+        private readonly IEnumerable<IScriptingEngine> _availableScriptingEngines;
 
         private dynamic New { get; }
         private IStringLocalizer S { get; }
@@ -53,6 +56,7 @@ namespace OrchardCore.Workflows.Controllers
             IDisplayManager<IActivity> activityDisplayManager,
             IShapeFactory shapeFactory,
             INotifier notifier,
+            IEnumerable<IScriptingEngine> availableScriptingEngines,
             IStringLocalizer<WorkflowDefinitionController> s,
             IHtmlLocalizer<WorkflowDefinitionController> h
         )
@@ -65,6 +69,7 @@ namespace OrchardCore.Workflows.Controllers
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
+            _availableScriptingEngines = availableScriptingEngines;
 
             New = shapeFactory;
             S = s;
@@ -185,7 +190,7 @@ namespace OrchardCore.Workflows.Controllers
             return RedirectToAction("Index", new { page = pagerParameters.Page, pageSize = pagerParameters.PageSize });
         }
 
-        public async Task<IActionResult> EditProperties(int? id)
+        public async Task<IActionResult> EditProperties(int? id, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -200,7 +205,15 @@ namespace OrchardCore.Workflows.Controllers
             {
                 var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(id.Value);
 
-                return View(new WorkflowDefinitionPropertiesViewModel { Name = workflowDefinition.Name, Id = workflowDefinition.Id });
+                return View(new WorkflowDefinitionPropertiesViewModel
+                {
+                    Id = workflowDefinition.Id,
+                    Name = workflowDefinition.Name,
+                    IsEnabled = workflowDefinition.IsEnabled,
+                    ScriptingEngine = workflowDefinition.ScriptingEngine,
+                    ReturnUrl = returnUrl,
+                    AvailableScriptingEngines = GetAvailableScriptingEngines()
+                });
             }
         }
 
@@ -213,41 +226,30 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            if (string.IsNullOrWhiteSpace(viewModel.Name))
-            {
-                ModelState.AddModelError("Name", S["The name can't be empty."]);
-            }
-
             if (!ModelState.IsValid)
             {
-                return View();
+                viewModel.AvailableScriptingEngines = GetAvailableScriptingEngines();
+                return View(viewModel);
             }
 
-            if (id == null)
+            var isNew = id == null;
+            var workflowDefinition = isNew ? new WorkflowDefinitionRecord() : await _session.GetAsync<WorkflowDefinitionRecord>(id.Value);
+            if (workflowDefinition == null)
             {
-                var workflowDefinition = new WorkflowDefinitionRecord
-                {
-                    Name = viewModel.Name?.Trim(),
-                    IsEnabled = true
-                };
-
-                await _workflowDefinitionRepository.SaveAsync(workflowDefinition);
-
-                return RedirectToAction("Edit", new { workflowDefinition.Id });
+                return NotFound();
             }
-            else
-            {
-                var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(id.Value);
-                if (workflowDefinition == null)
-                {
-                    return NotFound();
-                }
 
-                workflowDefinition.Name = viewModel.Name?.Trim();
-                await _workflowDefinitionRepository.SaveAsync(workflowDefinition);
+            workflowDefinition.Name = viewModel.Name?.Trim();
+            workflowDefinition.IsEnabled = viewModel.IsEnabled;
+            workflowDefinition.ScriptingEngine = viewModel.ScriptingEngine;
 
-                return RedirectToAction("Index");
-            }
+            await _workflowDefinitionRepository.SaveAsync(workflowDefinition);
+
+            return Url.IsLocalUrl(viewModel.ReturnUrl)
+                ? Redirect(viewModel.ReturnUrl)
+                : isNew
+                    ? (IActionResult)RedirectToAction("Edit", new { workflowDefinition.Id })
+                    : RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Edit(int id, string localId)
@@ -410,6 +412,11 @@ namespace OrchardCore.Workflows.Controllers
             activityShape.Index = index;
             activityShape.ReturnUrl = Url.Action(nameof(Edit), new { id = workflowDefinitionId, localId = localId });
             return activityShape;
+        }
+
+        private IList<SelectListItem> GetAvailableScriptingEngines()
+        {
+            return _availableScriptingEngines.Select(x => new SelectListItem { Text = x.Name, Value = x.Prefix }).ToList();
         }
     }
 }

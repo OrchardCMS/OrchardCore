@@ -20,6 +20,11 @@ namespace OrchardCore.Workflows.Models
         public bool IsEnabled { get; set; }
 
         /// <summary>
+        /// The scripting engine to use for this workflow.
+        /// </summary>
+        public string ScriptingEngine { get; set; } = "js";
+
+        /// <summary>
         /// A complete list of all activities that are part of this workflow.
         /// </summary>
         public IList<ActivityRecord> Activities { get; set; } = new List<ActivityRecord>();

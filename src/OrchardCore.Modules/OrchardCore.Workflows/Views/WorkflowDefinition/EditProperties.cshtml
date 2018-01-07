@@ -4,11 +4,24 @@
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="EditProperties" method="post">
-    <div class="form-group" asp-validation-class-for="Name">
+    <input type="hidden" asp-for="ReturnUrl" />
+
+    <fieldset class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Workflow Name"]</label>
         <span asp-validation-for="Name" class="text-danger"></span>
         <input asp-for="Name" class="form-control" autofocus />
-    </div>
+    </fieldset>
+
+    <fieldset class="form-group" asp-validation-class-for="ScriptingEngine">
+        <label asp-for="ScriptingEngine">@T["Scripting Engine"]</label>
+        <span asp-validation-for="ScriptingEngine" class="text-danger"></span>
+        <select asp-items="Model.AvailableScriptingEngines" class="form-control"></select>
+    </fieldset>
+
+    <fieldset class="form-group form-check">
+        <input class="form-check-input" type="checkbox" asp-for="IsEnabled">
+        <label class="form-check-label" asp-for="IsEnabled">@T["Enabled"]</label>
+    </fieldset>
 
     <fieldset>
         <div class="form-group">
