@@ -206,7 +206,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             if (model != null)
             {
                 context.MemberAccessStrategy.Register(model.GetType());
-                context.LocalScope.SetValue("Model", displayContext.Value);
+                context.LocalScope.SetValue("Model", model);
             }
         }
     }
