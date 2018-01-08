@@ -12,8 +12,18 @@ using OrchardCore.OpenId.EntityFrameworkCore.Models;
 
 namespace OrchardCore.OpenId.EntityFrameworkCore.Services
 {
-    public class OpenIdScopeStore<TContext, TKey> :
-        OpenIddictScopeStore<OpenIdScope<TKey>, TContext, TKey>, IOpenIdScopeStore
+    public class OpenIdScopeStore<TContext, TKey> : OpenIdScopeStore<OpenIdScope<TKey>, TContext, TKey>
+        where TContext : DbContext
+        where TKey : IEquatable<TKey>
+    {
+        public OpenIdScopeStore(TContext context)
+            : base(context)
+        {
+        }
+    }
+
+    public class OpenIdScopeStore<TScope, TContext, TKey> : OpenIddictScopeStore<TScope, TContext, TKey>, IOpenIdScopeStore
+        where TScope : OpenIdScope<TKey>, new()
         where TContext : DbContext
         where TKey : IEquatable<TKey>
     {
@@ -31,7 +41,7 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the scope corresponding to the identifier.
         /// </returns>
-        public virtual Task<OpenIdScope<TKey>> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual Task<TScope> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
             // Note: unlike the YesSql-specific models, the default OpenIddict models used by
             // the Entity Framework Core stores don't have distinct physical/logical identifiers.
             // To ensure this method can be safely used, the base FindByIdAsync() method is called.
@@ -46,7 +56,7 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the physical identifier associated with the scope.
         /// </returns>
-        public virtual Task<string> GetPhysicalIdAsync(OpenIdScope<TKey> scope, CancellationToken cancellationToken)
+        public virtual Task<string> GetPhysicalIdAsync(TScope scope, CancellationToken cancellationToken)
             // Note: unlike the YesSql-specific models, the default OpenIddict models used by
             // the Entity Framework Core stores don't have distinct physical/logical identifiers.
             // To ensure this method can be safely used, the base GetIdAsync() method is called.
@@ -67,10 +77,10 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             => CountAsync(query, cancellationToken);
 
         async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.CreateAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => await CreateAsync((OpenIdScope<TKey>) scope, cancellationToken);
+            => await CreateAsync((TScope) scope, cancellationToken);
 
         Task IOpenIddictScopeStore<IOpenIdScope>.DeleteAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => DeleteAsync((OpenIdScope<TKey>) scope, cancellationToken);
+            => DeleteAsync((TScope) scope, cancellationToken);
 
         async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
             => await FindByIdAsync(identifier, cancellationToken);
@@ -81,13 +91,13 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             => GetAsync(query, state, cancellationToken);
 
         Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetDescriptionAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => GetDescriptionAsync((OpenIdScope<TKey>) scope, cancellationToken);
+            => GetDescriptionAsync((TScope) scope, cancellationToken);
 
         Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetIdAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => GetIdAsync((OpenIdScope<TKey>) scope, cancellationToken);
+            => GetIdAsync((TScope) scope, cancellationToken);
 
         Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetNameAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => GetNameAsync((OpenIdScope<TKey>) scope, cancellationToken);
+            => GetNameAsync((TScope) scope, cancellationToken);
 
         async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.InstantiateAsync(CancellationToken cancellationToken)
             => await InstantiateAsync(cancellationToken);
@@ -101,13 +111,13 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             => ListAsync(query, state, cancellationToken);
 
         Task IOpenIddictScopeStore<IOpenIdScope>.SetDescriptionAsync(IOpenIdScope scope, string description, CancellationToken cancellationToken)
-            => SetDescriptionAsync((OpenIdScope<TKey>) scope, description, cancellationToken);
+            => SetDescriptionAsync((TScope) scope, description, cancellationToken);
 
         Task IOpenIddictScopeStore<IOpenIdScope>.SetNameAsync(IOpenIdScope scope, string name, CancellationToken cancellationToken)
-            => SetNameAsync((OpenIdScope<TKey>) scope, name, cancellationToken);
+            => SetNameAsync((TScope) scope, name, cancellationToken);
 
         Task IOpenIddictScopeStore<IOpenIdScope>.UpdateAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => UpdateAsync((OpenIdScope<TKey>) scope, cancellationToken);
+            => UpdateAsync((TScope) scope, cancellationToken);
 
         // ---------------------------------------------------
         // Methods defined by the IOpenIdScopeStore interface:
@@ -117,6 +127,6 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             => await FindByPhysicalIdAsync(identifier, cancellationToken);
 
         Task<string> IOpenIdScopeStore.GetPhysicalIdAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => GetPhysicalIdAsync((OpenIdScope<TKey>) scope, cancellationToken);
+            => GetPhysicalIdAsync((TScope) scope, cancellationToken);
     }
 }

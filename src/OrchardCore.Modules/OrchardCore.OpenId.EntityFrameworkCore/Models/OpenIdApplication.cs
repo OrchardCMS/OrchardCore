@@ -4,7 +4,12 @@ using OrchardCore.OpenId.Abstractions.Models;
 
 namespace OrchardCore.OpenId.EntityFrameworkCore.Models
 {
-    public class OpenIdApplication<TKey> : OpenIddictApplication<TKey, OpenIdAuthorization<TKey>, OpenIdToken<TKey>>, IOpenIdApplication
+    public class OpenIdApplication<TKey> : OpenIdApplication<TKey, OpenIdAuthorization<TKey>, OpenIdToken<TKey>>
+        where TKey : IEquatable<TKey>
+    {
+    }
+
+    public class OpenIdApplication<TKey, TAuthorization, TToken> : OpenIddictApplication<TKey, TAuthorization, TToken>, IOpenIdApplication
         where TKey : IEquatable<TKey>
     {
         /// <summary>

@@ -12,8 +12,23 @@ using OrchardCore.OpenId.EntityFrameworkCore.Models;
 
 namespace OrchardCore.OpenId.EntityFrameworkCore.Services
 {
-    public class OpenIdTokenStore<TContext, TKey> :
-        OpenIddictTokenStore<OpenIdToken<TKey>, OpenIdApplication<TKey>, OpenIdAuthorization<TKey>, TContext, TKey>, IOpenIdTokenStore
+    public class OpenIdTokenStore<TContext, TKey> : OpenIdTokenStore<OpenIdToken<TKey>,
+                                                                     OpenIdApplication<TKey>,
+                                                                     OpenIdAuthorization<TKey>, TContext, TKey>
+        where TContext : DbContext
+        where TKey : IEquatable<TKey>
+    {
+        public OpenIdTokenStore(TContext context)
+            : base(context)
+        {
+        }
+    }
+
+    public class OpenIdTokenStore<TToken, TApplication, TAuthorization, TContext, TKey> :
+        OpenIddictTokenStore<TToken, TApplication, TAuthorization, TContext, TKey>, IOpenIdTokenStore
+        where TToken : OpenIdToken<TKey, TApplication, TAuthorization>, new()
+        where TApplication : OpenIdApplication<TKey, TAuthorization, TToken>, new()
+        where TAuthorization : OpenIdAuthorization<TKey, TApplication, TToken>, new()
         where TContext : DbContext
         where TKey : IEquatable<TKey>
     {
@@ -31,7 +46,7 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the token corresponding to the physical identifier.
         /// </returns>
-        public virtual Task<OpenIdToken<TKey>> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual Task<TToken> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
             // Note: unlike the YesSql-specific models, the default OpenIddict models used by
             // the Entity Framework Core stores don't have distinct physical/logical identifiers.
             // To ensure this method can be safely used, the base FindByIdAsync() method is called.
@@ -46,7 +61,7 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the physical identifier associated with the token.
         /// </returns>
-        public virtual Task<string> GetPhysicalIdAsync(OpenIdToken<TKey> token, CancellationToken cancellationToken)
+        public virtual Task<string> GetPhysicalIdAsync(TToken token, CancellationToken cancellationToken)
             // Note: unlike the YesSql-specific models, the default OpenIddict models used by
             // the Entity Framework Core stores don't have distinct physical/logical identifiers.
             // To ensure this method can be safely used, the base GetIdAsync() method is called.
@@ -67,10 +82,10 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             => CountAsync(query, cancellationToken);
 
         async Task<IOpenIdToken> IOpenIddictTokenStore<IOpenIdToken>.CreateAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => await CreateAsync((OpenIdToken<TKey>) token, cancellationToken);
+            => await CreateAsync((TToken) token, cancellationToken);
 
         Task IOpenIddictTokenStore<IOpenIdToken>.DeleteAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => DeleteAsync((OpenIdToken<TKey>) token, cancellationToken);
+            => DeleteAsync((TToken) token, cancellationToken);
 
         async Task<ImmutableArray<IOpenIdToken>> IOpenIddictTokenStore<IOpenIdToken>.FindByApplicationIdAsync(string identifier, CancellationToken cancellationToken)
             => (await FindByApplicationIdAsync(identifier, cancellationToken)).CastArray<IOpenIdToken>();
@@ -93,34 +108,34 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             => GetAsync(query, state, cancellationToken);
 
         Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetApplicationIdAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetApplicationIdAsync((OpenIdToken<TKey>) token, cancellationToken);
+            => GetApplicationIdAsync((TToken) token, cancellationToken);
 
         Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetAuthorizationIdAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetAuthorizationIdAsync((OpenIdToken<TKey>) token, cancellationToken);
+            => GetAuthorizationIdAsync((TToken) token, cancellationToken);
 
         Task<DateTimeOffset?> IOpenIddictTokenStore<IOpenIdToken>.GetCreationDateAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetCreationDateAsync((OpenIdToken<TKey>) token, cancellationToken);
+            => GetCreationDateAsync((TToken) token, cancellationToken);
 
         Task<DateTimeOffset?> IOpenIddictTokenStore<IOpenIdToken>.GetExpirationDateAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetExpirationDateAsync((OpenIdToken<TKey>) token, cancellationToken);
+            => GetExpirationDateAsync((TToken) token, cancellationToken);
 
         Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetIdAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetIdAsync((OpenIdToken<TKey>) token, cancellationToken);
+            => GetIdAsync((TToken) token, cancellationToken);
 
         Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetPayloadAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetPayloadAsync((OpenIdToken<TKey>) token, cancellationToken);
+            => GetPayloadAsync((TToken) token, cancellationToken);
 
         Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetReferenceIdAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetReferenceIdAsync((OpenIdToken<TKey>) token, cancellationToken);
+            => GetReferenceIdAsync((TToken) token, cancellationToken);
 
         Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetStatusAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetStatusAsync((OpenIdToken<TKey>) token, cancellationToken);
+            => GetStatusAsync((TToken) token, cancellationToken);
 
         Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetSubjectAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetSubjectAsync((OpenIdToken<TKey>) token, cancellationToken);
+            => GetSubjectAsync((TToken) token, cancellationToken);
 
         Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetTokenTypeAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetTokenTypeAsync((OpenIdToken<TKey>) token, cancellationToken);
+            => GetTokenTypeAsync((TToken) token, cancellationToken);
 
         async Task<IOpenIdToken> IOpenIddictTokenStore<IOpenIdToken>.InstantiateAsync(CancellationToken cancellationToken)
             => await InstantiateAsync(cancellationToken);
@@ -137,34 +152,34 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             => (await ListInvalidAsync(count, offset, cancellationToken)).CastArray<IOpenIdToken>();
 
         Task IOpenIddictTokenStore<IOpenIdToken>.SetApplicationIdAsync(IOpenIdToken token, string identifier, CancellationToken cancellationToken)
-            => SetApplicationIdAsync((OpenIdToken<TKey>) token, identifier, cancellationToken);
+            => SetApplicationIdAsync((TToken) token, identifier, cancellationToken);
 
         Task IOpenIddictTokenStore<IOpenIdToken>.SetAuthorizationIdAsync(IOpenIdToken token, string identifier, CancellationToken cancellationToken)
-            => SetAuthorizationIdAsync((OpenIdToken<TKey>) token, identifier, cancellationToken);
+            => SetAuthorizationIdAsync((TToken) token, identifier, cancellationToken);
 
         Task IOpenIddictTokenStore<IOpenIdToken>.SetCreationDateAsync(IOpenIdToken token, DateTimeOffset? date, CancellationToken cancellationToken)
-            => SetCreationDateAsync((OpenIdToken<TKey>) token, date, cancellationToken);
+            => SetCreationDateAsync((TToken) token, date, cancellationToken);
 
         Task IOpenIddictTokenStore<IOpenIdToken>.SetExpirationDateAsync(IOpenIdToken token, DateTimeOffset? date, CancellationToken cancellationToken)
-            => SetExpirationDateAsync((OpenIdToken<TKey>) token, date, cancellationToken);
+            => SetExpirationDateAsync((TToken) token, date, cancellationToken);
 
         Task IOpenIddictTokenStore<IOpenIdToken>.SetPayloadAsync(IOpenIdToken token, string payload, CancellationToken cancellationToken)
-            => SetPayloadAsync((OpenIdToken<TKey>) token, payload, cancellationToken);
+            => SetPayloadAsync((TToken) token, payload, cancellationToken);
 
         Task IOpenIddictTokenStore<IOpenIdToken>.SetReferenceIdAsync(IOpenIdToken token, string identifier, CancellationToken cancellationToken)
-            => SetReferenceIdAsync((OpenIdToken<TKey>) token, identifier, cancellationToken);
+            => SetReferenceIdAsync((TToken) token, identifier, cancellationToken);
 
         Task IOpenIddictTokenStore<IOpenIdToken>.SetStatusAsync(IOpenIdToken token, string status, CancellationToken cancellationToken)
-            => SetStatusAsync((OpenIdToken<TKey>) token, status, cancellationToken);
+            => SetStatusAsync((TToken) token, status, cancellationToken);
 
         Task IOpenIddictTokenStore<IOpenIdToken>.SetSubjectAsync(IOpenIdToken token, string subject, CancellationToken cancellationToken)
-            => SetSubjectAsync((OpenIdToken<TKey>) token, subject, cancellationToken);
+            => SetSubjectAsync((TToken) token, subject, cancellationToken);
 
         Task IOpenIddictTokenStore<IOpenIdToken>.SetTokenTypeAsync(IOpenIdToken token, string type, CancellationToken cancellationToken)
-            => SetTokenTypeAsync((OpenIdToken<TKey>) token, type, cancellationToken);
+            => SetTokenTypeAsync((TToken) token, type, cancellationToken);
 
         Task IOpenIddictTokenStore<IOpenIdToken>.UpdateAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => UpdateAsync((OpenIdToken<TKey>) token, cancellationToken);
+            => UpdateAsync((TToken) token, cancellationToken);
 
         // ---------------------------------------------------
         // Methods defined by the IOpenIdTokenStore interface:
@@ -174,6 +189,6 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             => await FindByPhysicalIdAsync(identifier, cancellationToken);
 
         Task<string> IOpenIdTokenStore.GetPhysicalIdAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetPhysicalIdAsync((OpenIdToken<TKey>) token, cancellationToken);
+            => GetPhysicalIdAsync((TToken) token, cancellationToken);
     }
 }

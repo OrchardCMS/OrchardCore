@@ -13,7 +13,23 @@ using OrchardCore.OpenId.EntityFrameworkCore.Models;
 
 namespace OrchardCore.OpenId.EntityFrameworkCore.Services
 {
-    public class OpenIdApplicationStore<TContext, TKey> : OpenIddictApplicationStore<OpenIdApplication<TKey>, OpenIdAuthorization<TKey>, OpenIdToken<TKey>, TContext, TKey>, IOpenIdApplicationStore
+    public class OpenIdApplicationStore<TContext, TKey> : OpenIdApplicationStore<OpenIdApplication<TKey>,
+                                                                                 OpenIdAuthorization<TKey>,
+                                                                                 OpenIdToken<TKey>, TContext, TKey>
+        where TContext : DbContext
+        where TKey : IEquatable<TKey>
+    {
+        public OpenIdApplicationStore(TContext context)
+            : base(context)
+        {
+        }
+    }
+
+    public class OpenIdApplicationStore<TApplication, TAuthorization, TToken, TContext, TKey> :
+        OpenIddictApplicationStore<TApplication, TAuthorization, TToken, TContext, TKey>, IOpenIdApplicationStore
+        where TApplication : OpenIdApplication<TKey, TAuthorization, TToken>, new()
+        where TAuthorization : OpenIdAuthorization<TKey, TApplication, TToken>, new()
+        where TToken : OpenIdToken<TKey, TApplication, TAuthorization>, new()
         where TContext : DbContext
         where TKey : IEquatable<TKey>
     {
@@ -31,7 +47,7 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the client application corresponding to the identifier.
         /// </returns>
-        public virtual Task<OpenIdApplication<TKey>> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual Task<TApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
             // Note: unlike the YesSql-specific models, the default OpenIddict models used by
             // the Entity Framework Core stores don't have distinct physical/logical identifiers.
             // To ensure this method can be safely used, the base FindByIdAsync() method is called.
@@ -46,14 +62,14 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the physical identifier associated with the application.
         /// </returns>
-        public virtual Task<string> GetPhysicalIdAsync(OpenIdApplication<TKey> application, CancellationToken cancellationToken)
+        public virtual Task<string> GetPhysicalIdAsync(TApplication application, CancellationToken cancellationToken)
             // Note: unlike the YesSql-specific models, the default OpenIddict models used by
             // the Entity Framework Core stores don't have distinct physical/logical identifiers.
             // To ensure this method can be safely used, the base GetIdAsync() method is called.
             => GetIdAsync(application, cancellationToken);
 
         // TODO: remove these methods once per-application grant type limitation is added to OpenIddict.
-        public virtual Task<ImmutableArray<string>> GetGrantTypesAsync(OpenIdApplication<TKey> application, CancellationToken cancellationToken)
+        public virtual Task<ImmutableArray<string>> GetGrantTypesAsync(TApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -90,7 +106,7 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             return Task.FromResult(builder.ToImmutable());
         }
 
-        public virtual Task SetGrantTypesAsync(OpenIdApplication<TKey> application, ImmutableArray<string> types, CancellationToken cancellationToken)
+        public virtual Task SetGrantTypesAsync(TApplication application, ImmutableArray<string> types, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -106,7 +122,7 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             return Task.CompletedTask;
         }
 
-        public virtual Task<bool> IsConsentRequiredAsync(OpenIdApplication<TKey> application, CancellationToken cancellationToken)
+        public virtual Task<bool> IsConsentRequiredAsync(TApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -116,7 +132,7 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             return Task.FromResult(!application.SkipConsent);
         }
 
-        public virtual Task SetConsentRequiredAsync(OpenIdApplication<TKey> application, bool value, CancellationToken cancellationToken)
+        public virtual Task SetConsentRequiredAsync(TApplication application, bool value, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -129,13 +145,13 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         }
 
         // TODO: implement these methods.
-        public virtual Task<ImmutableArray<string>> GetRolesAsync(OpenIdApplication<TKey> application, CancellationToken cancellationToken)
+        public virtual Task<ImmutableArray<string>> GetRolesAsync(TApplication application, CancellationToken cancellationToken)
             => Task.FromResult(ImmutableArray.Create<string>());
 
-        public virtual Task<ImmutableArray<OpenIdApplication<TKey>>> ListInRoleAsync(string role, CancellationToken cancellationToken)
-            => Task.FromResult(ImmutableArray.Create<OpenIdApplication<TKey>>());
+        public virtual Task<ImmutableArray<TApplication>> ListInRoleAsync(string role, CancellationToken cancellationToken)
+            => Task.FromResult(ImmutableArray.Create<TApplication>());
 
-        public virtual Task SetRolesAsync(OpenIdApplication<TKey> application, ImmutableArray<string> roles, CancellationToken cancellationToken)
+        public virtual Task SetRolesAsync(TApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken)
             => Task.CompletedTask;
 
         // Note: the following methods are deliberately implemented as explicit methods so they are not
@@ -153,10 +169,10 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             => CountAsync(query, cancellationToken);
 
         async Task<IOpenIdApplication> IOpenIddictApplicationStore<IOpenIdApplication>.CreateAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => await CreateAsync((OpenIdApplication<TKey>) application, cancellationToken);
+            => await CreateAsync((TApplication) application, cancellationToken);
 
         Task IOpenIddictApplicationStore<IOpenIdApplication>.DeleteAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => DeleteAsync((OpenIdApplication<TKey>) application, cancellationToken);
+            => DeleteAsync((TApplication) application, cancellationToken);
 
         async Task<IOpenIdApplication> IOpenIddictApplicationStore<IOpenIdApplication>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
             => await FindByIdAsync(identifier, cancellationToken);
@@ -176,25 +192,25 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             => GetAsync(query, state, cancellationToken);
 
         Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetClientIdAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => GetClientIdAsync((OpenIdApplication<TKey>) application, cancellationToken);
+            => GetClientIdAsync((TApplication) application, cancellationToken);
 
         Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetClientSecretAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => GetClientSecretAsync((OpenIdApplication<TKey>) application, cancellationToken);
+            => GetClientSecretAsync((TApplication) application, cancellationToken);
 
         Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetClientTypeAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => GetClientTypeAsync((OpenIdApplication<TKey>) application, cancellationToken);
+            => GetClientTypeAsync((TApplication) application, cancellationToken);
 
         Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetDisplayNameAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => GetDisplayNameAsync((OpenIdApplication<TKey>) application, cancellationToken);
+            => GetDisplayNameAsync((TApplication) application, cancellationToken);
 
         Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetIdAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => GetIdAsync((OpenIdApplication<TKey>) application, cancellationToken);
+            => GetIdAsync((TApplication) application, cancellationToken);
 
         Task<ImmutableArray<string>> IOpenIddictApplicationStore<IOpenIdApplication>.GetPostLogoutRedirectUrisAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => GetPostLogoutRedirectUrisAsync((OpenIdApplication<TKey>) application, cancellationToken);
+            => GetPostLogoutRedirectUrisAsync((TApplication) application, cancellationToken);
 
         Task<ImmutableArray<string>> IOpenIddictApplicationStore<IOpenIdApplication>.GetRedirectUrisAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => GetRedirectUrisAsync((OpenIdApplication<TKey>) application, cancellationToken);
+            => GetRedirectUrisAsync((TApplication) application, cancellationToken);
 
         async Task<IOpenIdApplication> IOpenIddictApplicationStore<IOpenIdApplication>.InstantiateAsync(CancellationToken cancellationToken)
             => await InstantiateAsync(cancellationToken);
@@ -209,27 +225,27 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
 
         Task IOpenIddictApplicationStore<IOpenIdApplication>.SetClientIdAsync(IOpenIdApplication application,
             string identifier, CancellationToken cancellationToken)
-            => SetClientIdAsync((OpenIdApplication<TKey>) application, identifier, cancellationToken);
+            => SetClientIdAsync((TApplication) application, identifier, cancellationToken);
 
         Task IOpenIddictApplicationStore<IOpenIdApplication>.SetClientSecretAsync(IOpenIdApplication application, string secret, CancellationToken cancellationToken)
-            => SetClientSecretAsync((OpenIdApplication<TKey>) application, secret, cancellationToken);
+            => SetClientSecretAsync((TApplication) application, secret, cancellationToken);
 
         Task IOpenIddictApplicationStore<IOpenIdApplication>.SetClientTypeAsync(IOpenIdApplication application, string type, CancellationToken cancellationToken)
-            => SetClientTypeAsync((OpenIdApplication<TKey>) application, type, cancellationToken);
+            => SetClientTypeAsync((TApplication) application, type, cancellationToken);
 
         Task IOpenIddictApplicationStore<IOpenIdApplication>.SetDisplayNameAsync(IOpenIdApplication application, string name, CancellationToken cancellationToken)
-            => SetDisplayNameAsync((OpenIdApplication<TKey>) application, name, cancellationToken);
+            => SetDisplayNameAsync((TApplication) application, name, cancellationToken);
 
         Task IOpenIddictApplicationStore<IOpenIdApplication>.SetPostLogoutRedirectUrisAsync(IOpenIdApplication application,
             ImmutableArray<string> addresses, CancellationToken cancellationToken)
-            => SetPostLogoutRedirectUrisAsync((OpenIdApplication<TKey>) application, addresses, cancellationToken);
+            => SetPostLogoutRedirectUrisAsync((TApplication) application, addresses, cancellationToken);
 
         Task IOpenIddictApplicationStore<IOpenIdApplication>.SetRedirectUrisAsync(IOpenIdApplication application,
             ImmutableArray<string> addresses, CancellationToken cancellationToken)
-            => SetRedirectUrisAsync((OpenIdApplication<TKey>) application, addresses, cancellationToken);
+            => SetRedirectUrisAsync((TApplication) application, addresses, cancellationToken);
 
         Task IOpenIddictApplicationStore<IOpenIdApplication>.UpdateAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => UpdateAsync((OpenIdApplication<TKey>) application, cancellationToken);
+            => UpdateAsync((TApplication) application, cancellationToken);
 
         // ---------------------------------------------------------
         // Methods defined by the IOpenIdApplicationStore interface:
@@ -239,27 +255,27 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             => await FindByPhysicalIdAsync(identifier, cancellationToken);
 
         Task<ImmutableArray<string>> IOpenIdApplicationStore.GetGrantTypesAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => GetGrantTypesAsync((OpenIdApplication<TKey>) application, cancellationToken);
+            => GetGrantTypesAsync((TApplication) application, cancellationToken);
 
         Task<string> IOpenIdApplicationStore.GetPhysicalIdAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => GetPhysicalIdAsync((OpenIdApplication<TKey>) application, cancellationToken);
+            => GetPhysicalIdAsync((TApplication) application, cancellationToken);
 
         Task<ImmutableArray<string>> IOpenIdApplicationStore.GetRolesAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => GetRolesAsync((OpenIdApplication<TKey>) application, cancellationToken);
+            => GetRolesAsync((TApplication) application, cancellationToken);
 
         Task<bool> IOpenIdApplicationStore.IsConsentRequiredAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => IsConsentRequiredAsync((OpenIdApplication<TKey>) application, cancellationToken);
+            => IsConsentRequiredAsync((TApplication) application, cancellationToken);
 
         async Task<ImmutableArray<IOpenIdApplication>> IOpenIdApplicationStore.ListInRoleAsync(string role, CancellationToken cancellationToken)
             => (await ListInRoleAsync(role, cancellationToken)).CastArray<IOpenIdApplication>();
 
         Task IOpenIdApplicationStore.SetConsentRequiredAsync(IOpenIdApplication application, bool value, CancellationToken cancellationToken)
-            => SetConsentRequiredAsync((OpenIdApplication<TKey>) application, value, cancellationToken);
+            => SetConsentRequiredAsync((TApplication) application, value, cancellationToken);
 
         Task IOpenIdApplicationStore.SetGrantTypesAsync(IOpenIdApplication application, ImmutableArray<string> types, CancellationToken cancellationToken)
-            => SetGrantTypesAsync((OpenIdApplication<TKey>) application, types, cancellationToken);
+            => SetGrantTypesAsync((TApplication) application, types, cancellationToken);
 
         Task IOpenIdApplicationStore.SetRolesAsync(IOpenIdApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken)
-            => SetRolesAsync((OpenIdApplication<TKey>) application, roles, cancellationToken);
+            => SetRolesAsync((TApplication) application, roles, cancellationToken);
     }
 }
