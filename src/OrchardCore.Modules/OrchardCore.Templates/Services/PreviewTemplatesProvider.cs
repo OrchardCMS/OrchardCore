@@ -1,6 +1,5 @@
 using System;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Templates.Models;
 using OrchardCore.Templates.ViewModels;
 
@@ -13,7 +12,7 @@ namespace OrchardCore.Templates.Services
     {
         private readonly Lazy<TemplatesDocument> _templatesDocument;
 
-        public PreviewTemplatesProvider(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache)
+        public PreviewTemplatesProvider(IHttpContextAccessor httpContextAccessor)
         {
             _templatesDocument = new Lazy<TemplatesDocument>(() =>
             {

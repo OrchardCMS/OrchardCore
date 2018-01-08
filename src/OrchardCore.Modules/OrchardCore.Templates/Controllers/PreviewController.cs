@@ -61,7 +61,7 @@ namespace OrchardCore.Templates.Controllers
             string contentItemId;
             if (string.IsNullOrEmpty(alias) || alias == "/" || alias.EndsWith("Preview/Index"))
             {
-                var homeRoute = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult().HomeRoute;
+                var homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
                 contentItemId = homeRoute["contentItemId"]?.ToString();
             }
             else
