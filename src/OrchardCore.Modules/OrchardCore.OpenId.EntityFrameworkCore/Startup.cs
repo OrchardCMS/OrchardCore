@@ -27,8 +27,10 @@ namespace OrchardCore.OpenId.EntityFrameworkCore
             // invalid configuration doesn't prevent the entire application from loading correctly.
             try
             {
-                Type contextType = GetContextType(), keyType = GetKeyType();
-                if (contextType == null || keyType == null)
+                Type contextType = GetConfigurationNodeAsType("Modules:OrchardCore.OpenId:EntityFrameworkCore:ContextType"),
+                     keyType     = GetConfigurationNodeAsType("Modules:OrchardCore.OpenId:EntityFrameworkCore:KeyType") ?? typeof(long);
+
+                if (contextType == null)
                 {
                     _logger.LogWarning("The OpenID Connect module is not correctly configured.");
 
@@ -68,21 +70,10 @@ namespace OrchardCore.OpenId.EntityFrameworkCore
 
         private (Type applicationType, Type authorizationType, Type scopeType, Type tokenType) GetEntityTypes(Type keyType)
         {
-            Type GetEntityType(string node)
-            {
-                var name = _configuration[node];
-                if (string.IsNullOrEmpty(name))
-                {
-                    return null;
-                }
-
-                return Type.GetType(name, throwOnError: true, ignoreCase: true);
-            }
-
-            Type applicationType   = GetEntityType("Modules:OrchardCore.OpenId:EntityFrameworkCore:ApplicationType"),
-                 authorizationType = GetEntityType("Modules:OrchardCore.OpenId:EntityFrameworkCore:AuthorizationType"),
-                 scopeType         = GetEntityType("Modules:OrchardCore.OpenId:EntityFrameworkCore:ScopeType"),
-                 tokenType         = GetEntityType("Modules:OrchardCore.OpenId:EntityFrameworkCore:TokenType");
+            Type applicationType   = GetConfigurationNodeAsType("Modules:OrchardCore.OpenId:EntityFrameworkCore:ApplicationType"),
+                 authorizationType = GetConfigurationNodeAsType("Modules:OrchardCore.OpenId:EntityFrameworkCore:AuthorizationType"),
+                 scopeType         = GetConfigurationNodeAsType("Modules:OrchardCore.OpenId:EntityFrameworkCore:ScopeType"),
+                 tokenType         = GetConfigurationNodeAsType("Modules:OrchardCore.OpenId:EntityFrameworkCore:TokenType");
 
             if (applicationType != null && authorizationType != null && scopeType != null && tokenType != null)
             {
@@ -96,23 +87,12 @@ namespace OrchardCore.OpenId.EntityFrameworkCore
                 tokenType:         typeof(OpenIdToken<>).MakeGenericType(keyType));
         }
 
-        private Type GetContextType()
+        private Type GetConfigurationNodeAsType(string node)
         {
-            var name = _configuration["Modules:OrchardCore.OpenId:EntityFrameworkCore:ContextType"];
+            var name = _configuration[node];
             if (string.IsNullOrEmpty(name))
             {
                 return null;
-            }
-
-            return Type.GetType(name, throwOnError: true, ignoreCase: true);
-        }
-
-        private Type GetKeyType()
-        {
-            var name = _configuration["Modules:OrchardCore.OpenId:EntityFrameworkCore:KeyType"];
-            if (string.IsNullOrEmpty(name))
-            {
-                return typeof(long);
             }
 
             return Type.GetType(name, throwOnError: true, ignoreCase: true);
