@@ -9,11 +9,7 @@
 
 <resources type="Header" />
 
-<iframe id="irenderingframe" style="visibility:hidden; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;">
-    Your browser doesn't support iframes
-</iframe>
-
-<iframe id="inoflickerframe" style="visibility:hidden; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;">
+<iframe id="iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;">
     Your browser doesn't support iframes
 </iframe>
 
@@ -24,14 +20,22 @@
     <span>@T["Preview Disconnected"] </span>
 </div>
 
+<div id="serverErrorWarning" class="alert alert-warning alert-dismissible fade show" role="alert" style="position:fixed; top:10px;right:40px; display:none; z-index:999999;">
+    <button type="button" id="close-server-warning" class="close" aria-label="Close" style="position: relative; padding: 0 0 0 1rem; margin-top: -0.2rem;">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <p>@T["Preview Error"] </p>
+    <ul></ul>
+</div>
+
+<div id="renderPreviewUrl" style="display:none" data-value="@Url.Action("Render", "Preview" , new { area="OrchardCore.Templates" })"></div>
+<div id="contentPreviewUrl" style="display:none" data-value="@Url.Content("~/")"></div>
+
 <resources type="Footer" />
 
-<div id="setTemplateUrl" style="display:none" data-value="@Url.Action("SetTemplate", "Preview", new { area = "OrchardCore.Templates" })"></div>
-<div id="renderPreviewUrl" style="display:none" data-value="@Url.Content("~/")"></div>
-
 <script type="text/javascript">
-    var setTemplateUrl = $(document.getElementById('setTemplateUrl')).data('value');
     var renderPreviewUrl = $(document.getElementById('renderPreviewUrl')).data('value');
+    var contentPreviewUrl = $(document.getElementById('contentPreviewUrl')).data('value');
     var previewEventTimer = null;
     var previewRenderTimer = null;
 
@@ -54,6 +58,10 @@
             $('#notConnectedWarning').hide();
         });
 
+        $('#close-server-warning').on('click', function () {
+            $('#serverErrorWarning').hide();
+        });
+
         var preview = localStorage.getItem('OrchardCore.templates');
 
         if (preview == null) {
@@ -66,33 +74,14 @@
         }
     });
 
-    var irenderingframe = document.getElementById('irenderingframe');
-    var inoflickerframe = document.getElementById('inoflickerframe');
-    var notConnectedWarning = document.getElementById('notConnectedWarning');
+    var iframe = document.getElementById('iframe');
 
-    irenderingframe.onload = function () {
-        var scrollTop = $(inoflickerframe.contentWindow).scrollTop();
-        $(irenderingframe.contentWindow).scrollTop(scrollTop);
-        irenderingframe.style.visibility = "visible";
-        inoflickerframe.style.visibility = "hidden";
-
-        renderPreviewUrl = this.contentWindow.location;
-        // the no flicker frame is loaded once to be fully initialized
-        if (inoflickerframe.contentWindow.location.href != renderPreviewUrl.href) {
-            inoflickerframe.contentWindow.location = renderPreviewUrl;
-        }
-        else {
-            Cookies.remove("orchard:templates");
-            inoflickerframe.contentWindow.document.head.innerHTML = this.contentWindow.document.head.innerHTML;
-            inoflickerframe.contentWindow.document.body.innerHTML = this.contentWindow.document.body.innerHTML;
-        }
-    }
-
-    inoflickerframe.onload = function () {
-        Cookies.remove("orchard:templates");
+    iframe.onload = function () {
+        contentPreviewUrl = this.contentWindow.location.pathname;
     }
 
     var rendering;
+    var scrollTop;
 
     function renderPreview(value) {
 
@@ -105,24 +94,42 @@
         clearTimeout(previewRenderTimer);
 
         try {
+
             var formData = JSON.parse(value);
             if (!formData) {
                 rendering = false;
                 return;
             }
 
-            $.post(setTemplateUrl, formData)
-                .done(function () {
-                    try {
-                        Cookies.set("orchard:templates", true);
-                        irenderingframe.contentWindow.location = renderPreviewUrl;
-                        var scrollTop = $(irenderingframe.contentWindow).scrollTop();
-                        $(inoflickerframe.contentWindow).scrollTop(scrollTop);
-                        inoflickerframe.style.visibility = "visible";
-                        irenderingframe.style.visibility = "hidden";
+            var alias = contentPreviewUrl || "";
+            if (alias == 'blank') {
+                alias = '/';
+            }
+            formData += '&' + $.param({ 'Alias': alias });
+
+            scrollTop = $(iframe.contentWindow).scrollTop();
+
+            $.post(renderPreviewUrl, formData)
+                .done(function (data) {
+                    if (iframe && iframe.contentWindow) {
+                        if (iframe.contentWindow.document.head.innerHTML == "") {
+                            iframe.contentWindow.document.write(data);
+                        }
+                        else {
+                            var body = data.substring(data.indexOf('<body>') + 6, data.indexOf('</body>'));
+                            iframe.contentWindow.document.body.innerHTML = body;
+                        }
+                        $(iframe.contentWindow).scrollTop(scrollTop);
                     }
-                    catch (e) {
-                        console.log('Error while previewing: ' + e);
+                    $(serverErrorWarning).hide();
+                })
+                .fail(function (data) {
+                    if (data.status) {
+                        var ul = $('#serverErrorWarning ul').empty();
+                        var error = 'Status code ' + data.status;
+                        console.error(error);
+                        $('<li/>').text(error).appendTo(ul);
+                        $(serverErrorWarning).show();
                     }
                 })
                 .always(function () {

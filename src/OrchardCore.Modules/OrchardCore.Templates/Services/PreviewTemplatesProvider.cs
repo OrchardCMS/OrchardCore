@@ -19,15 +19,12 @@ namespace OrchardCore.Templates.Services
             {
                 var httpContext = httpContextAccessor.HttpContext;
 
-                if (!httpContext.Request.Cookies.ContainsKey("orchard:templates"))
-                {
-                    return null;
-                }
-
                 var templatesDocument = new TemplatesDocument();
 
-                if (memoryCache.TryGetValue<TemplateViewModel>("OrchardCore.PreviewTemplate", out var viewModel))
+                if (httpContext.Items.TryGetValue("OrchardCore.PreviewTemplate", out var model))
                 {
+                    var viewModel = model as TemplateViewModel;
+
                     if (viewModel == null || viewModel.Name == null)
                     {
                         return templatesDocument;
