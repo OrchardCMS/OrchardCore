@@ -38,11 +38,13 @@
     var contentPreviewUrl = $(document.getElementById('contentPreviewUrl')).data('value');
     var previewEventTimer = null;
     var previewRenderTimer = null;
+    var previewHeadRefresh = false;
 
     $(function () {
         $(window).on('storage', function (ev) {
             if (ev.key == 'OrchardCore.templates:not-connected') {
                 $(notConnectedWarning).show();
+                previewHeadRefresh = true;
             }
             else if (ev.key == 'OrchardCore.templates') {
                 if (ev.originalEvent.newValue != null) {
@@ -112,10 +114,16 @@
             $.post(renderPreviewUrl, formData)
                 .done(function (data) {
                     if (iframe && iframe.contentWindow) {
-                        if (iframe.contentWindow.document.head.innerHTML == "") {
+                        if (iframe.contentWindow.document.head.innerHTML == '') {
                             iframe.contentWindow.document.write(data);
+                            previewHeadRefresh = false;
                         }
                         else {
+                            if (previewHeadRefresh) {
+                                previewHeadRefresh = false;
+                                var head = data.substring(data.indexOf('<head>') + 6, data.indexOf('</head>'));
+                                iframe.contentWindow.document.head.innerHTML == head;
+                            }
                             var body = data.substring(data.indexOf('<body>') + 6, data.indexOf('</body>'));
                             iframe.contentWindow.document.body.innerHTML = body;
                         }
