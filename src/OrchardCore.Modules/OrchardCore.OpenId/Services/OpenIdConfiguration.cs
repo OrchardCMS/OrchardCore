@@ -95,6 +95,7 @@ namespace OrchardCore.OpenId
             options.DataProtectionProvider = _dataProtectionProvider;
             options.RequireClientIdentification = true;
             options.EnableRequestCaching = true;
+            options.UseRollingTokens = true;
 
             if (settings.AccessTokenFormat == OpenIdSettings.TokenFormat.JWT)
             {

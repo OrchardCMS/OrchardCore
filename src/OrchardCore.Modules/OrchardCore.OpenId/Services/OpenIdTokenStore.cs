@@ -176,8 +176,8 @@ namespace OrchardCore.OpenId.Services
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-
-            return _session.GetAsync<OpenIdToken>(int.Parse(identifier, CultureInfo.InvariantCulture));
+            return _session.Query<OpenIdToken, OpenIdTokenIndex>(index => index.TokenId == identifier).FirstOrDefaultAsync();
+            //return _session.GetAsync<OpenIdToken>(int.Parse(identifier, CultureInfo.InvariantCulture));
         }
 
         /// <summary>
