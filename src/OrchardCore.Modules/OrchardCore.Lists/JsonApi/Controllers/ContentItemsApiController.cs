@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Contents;
 using OrchardCore.Lists.Indexes;
 using OrchardCore.Modules;
 using YesSql;

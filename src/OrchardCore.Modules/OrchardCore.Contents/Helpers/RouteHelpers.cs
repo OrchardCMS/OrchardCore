@@ -1,6 +1,6 @@
 namespace OrchardCore.Contents.Helpers
 {
-    internal static class RouteHelpers
+    public static class RouteHelpers
     {
         public const string AreaName = "OrchardCore.Contents";
 
@@ -9,6 +9,8 @@ namespace OrchardCore.Contents.Helpers
             public const string ApiRouteByIdName = "Api.GetContents.ById";
             public const string ApiRouteByVersionName = "Api.GetContents.ByVersion";
             public const string ApiRouteByTypeName = "Api.GetContents.ByType";
+            public const string ApiRouteByRelationshipTypeName = "Api.GetContents.ByRelatedContentType";
+            
         }
 
         public class ContentTypes {

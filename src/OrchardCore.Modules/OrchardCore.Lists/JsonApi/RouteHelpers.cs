@@ -8,9 +8,5 @@ namespace OrchardCore.Lists.JsonApi
         {
             public const string ApiRouteRelationshipByIdAndTypeName = "Api.GetContents.Relationships.ByIdAndType";
         }
-
-        public class ContentTypes {
-        }
-        
     }
 }

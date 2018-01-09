@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +20,13 @@ namespace OrchardCore.Apis.GraphQL
         {
             Mutation = serviceProvider.GetService<MutationsSchema>();
             Query = serviceProvider.GetService<QueriesSchema>();
-            Subscription = serviceProvider.GetService<SubscriptionSchema>();
+
+            var subscription = serviceProvider.GetService<SubscriptionSchema>();
+
+            if (subscription.Fields.Any())
+            {
+                Subscription = subscription;
+            }
 
             foreach (var type in inputGraphTypes)
             {

@@ -53,8 +53,8 @@ namespace OrchardCore.Lists.JsonApi
                         {
                             Keywords.Self,
                             urlHelper.RouteUrl(
-                                "Api.GetContents.ByRelatedContentType",
-                                new { area = "Orchard.Contents", contentItemId = item.ContentItemId, contentType = item.ContentType })
+                                RouteHelpers.ContentItems.ApiRouteRelationshipByIdAndTypeName,
+                                new { area = RouteHelpers.AreaName, contentItemId = item.ContentItemId, contentType = contentType })
                         }
                     },
                     Data = new List<ResourceIdentifier>(contentItemIds

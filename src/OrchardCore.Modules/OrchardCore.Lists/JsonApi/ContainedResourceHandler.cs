@@ -59,10 +59,13 @@ namespace OrchardCore.Lists.JsonApi
                     {
                         Keywords.Related,
                         urlHelper.RouteUrl(
-                            "Api.GetContents.ById",
-                            new { area = "Orchard.Contents", contentItemId = containedPart.ListContentItemId })
+                            OrchardCore.Contents.Helpers.RouteHelpers.ContentItems.ApiRouteByIdName,
+                            new {
+                                area = OrchardCore.Contents.Helpers.RouteHelpers.AreaName,
+                                contentItemId = parentContentItem.ContentItemId })
                     }
-                }
+                },
+                Data = new ResourceIdentifier(parentContentItem.ContentType, parentContentItem.ContentItemId)
             });
         }
     }
