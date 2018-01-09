@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Workflows.ViewModels
+namespace OrchardCore.Workflows.Email.ViewModels
 {
     public class EmailTaskViewModel
     {

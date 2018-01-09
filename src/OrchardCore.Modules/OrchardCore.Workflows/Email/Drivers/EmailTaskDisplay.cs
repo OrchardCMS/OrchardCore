@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using OrchardCore.Workflows.Abstractions.Display;
-using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Email.Activities;
+using OrchardCore.Workflows.Email.ViewModels;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.ViewModels;
 
-namespace OrchardCore.Workflows.Drivers
+namespace OrchardCore.Workflows.Email.Drivers
 {
     public class EmailTaskDisplay : ActivityDisplayDriver<EmailTask, EmailTaskViewModel>
     {

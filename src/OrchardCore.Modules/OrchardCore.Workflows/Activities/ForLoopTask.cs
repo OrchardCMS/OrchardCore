@@ -24,7 +24,7 @@ namespace OrchardCore.Workflows.Activities
         /// </summary>
         public WorkflowExpression<double> CountExpression
         {
-            get => GetProperty(() => new WorkflowExpression<double>());
+            get => GetProperty(() => new DoubleWorkflowExpression());
             set => SetProperty(value);
         }
 

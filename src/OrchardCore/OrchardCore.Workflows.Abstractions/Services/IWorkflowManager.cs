@@ -11,7 +11,7 @@ namespace OrchardCore.Workflows.Services
         /// <summary>
         /// Creates a new <see cref="WorkflowContext"/>.
         /// </summary>
-        WorkflowContext CreateWorkflowContext(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord);
+        WorkflowContext CreateWorkflowContext(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord, IDictionary<string, object> input = null);
 
         /// <summary>
         /// Creates a new <see cref="ActivityContext"/>.
@@ -41,12 +41,12 @@ namespace OrchardCore.Workflows.Services
         /// <summary>
         /// Resumes the specified workflow instance at the specified activity.
         /// </summary>
-        Task<WorkflowContext> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance, AwaitingActivityRecord awaitingActivity);
+        Task<WorkflowContext> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance, AwaitingActivityRecord awaitingActivity, IDictionary<string, object> input = null);
 
         /// <summary>
         /// Resumes the specified workflow instance.
         /// </summary>
-        Task<IList<WorkflowContext>> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance);
+        Task<IList<WorkflowContext>> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance, IDictionary<string, object> input = null);
 
         /// <summary>
         /// Executes the specified workflow starting at the specified activity.
@@ -56,14 +56,14 @@ namespace OrchardCore.Workflows.Services
 
     public static class WorkflowManagerExtensions
     {
-        public static Task TriggerEventAsync(this IWorkflowManager workflowManager, string name, object input = null)
+        public static Task TriggerEventAsync(this IWorkflowManager workflowManager, string name, object input = null, string correlationId = null)
         {
             return workflowManager.TriggerEventAsync(name, new RouteValueDictionary(input));
         }
 
-        public static Task<WorkflowContext> StartWorkflowAsync(this IWorkflowManager workflowManager, WorkflowDefinitionRecord workflowDefinition, object input = null, string startActivityName = null)
+        public static Task<WorkflowContext> StartWorkflowAsync(this IWorkflowManager workflowManager, WorkflowDefinitionRecord workflowDefinition, object input = null, string startActivityName = null, string correlationId = null)
         {
-            return workflowManager.StartWorkflowAsync(workflowDefinition, new RouteValueDictionary(input), startActivityName);
+            return workflowManager.StartWorkflowAsync(workflowDefinition, new RouteValueDictionary(input), startActivityName, correlationId);
         }
     }
 }

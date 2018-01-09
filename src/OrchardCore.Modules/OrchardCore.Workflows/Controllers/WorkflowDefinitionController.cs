@@ -200,7 +200,12 @@ namespace OrchardCore.Workflows.Controllers
 
             if (id == null)
             {
-                return View();
+                return View(new WorkflowDefinitionPropertiesViewModel
+                {
+                    IsEnabled = true,
+                    ReturnUrl = returnUrl,
+                    AvailableScriptingEngines = GetAvailableScriptingEngines()
+                });
             }
             else
             {

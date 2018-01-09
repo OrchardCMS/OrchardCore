@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
@@ -40,7 +39,7 @@ namespace OrchardCore.Workflows.Activities
         public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             var value = await workflowContext.EvaluateAsync(Expression);
-            workflowContext.Variables[VariableName] = value;
+            workflowContext.Properties[VariableName] = value;
 
             return Outcomes("Done");
         }

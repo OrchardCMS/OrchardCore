@@ -22,7 +22,7 @@ namespace OrchardCore.Workflows.Activities
 
         public WorkflowExpression<string> Expression
         {
-            get => GetProperty(() => new WorkflowExpression<string>());
+            get => GetProperty(() => new StringWorkflowExpression());
             set => SetProperty(value);
         }
 

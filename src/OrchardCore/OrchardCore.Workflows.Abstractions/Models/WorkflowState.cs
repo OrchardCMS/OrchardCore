@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace OrchardCore.Workflows.Models
 {
     /// <summary>
-    /// Represents a workflow's runtime state.
+    /// Represents a workflow's serializable runtime state.
     /// </summary>
     public class WorkflowState
     {
@@ -16,16 +16,6 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// A dictionary of values that activities within a running workflow can read and write information from and to.
         /// </summary>
-        public IDictionary<string, object> Variables { get; set; } = new Dictionary<string, object>();
-
-        /// <summary>
-        /// A dictionary of values provided by the initiator of the workflow.
-        /// </summary>
-        public IDictionary<string, object> Input { get; set; } = new Dictionary<string, object>();
-
-        /// <summary>
-        /// A dictionary of values that individual activities within a running workflow can return to the initiator of the workflow.
-        /// </summary>
-        public IDictionary<string, object> Output { get; set; } = new Dictionary<string, object>();
+        public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
     }
 }

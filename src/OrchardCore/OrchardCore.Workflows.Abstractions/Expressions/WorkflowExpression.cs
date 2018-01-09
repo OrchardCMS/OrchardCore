@@ -1,3 +1,5 @@
+using System;
+
 namespace OrchardCore.Workflows.Models
 {
     /// <summary>
@@ -19,6 +21,16 @@ namespace OrchardCore.Workflows.Models
         /// The expression.
         /// </summary>
         public string Expression { get; set; } // Needs a setter for deserialization purposes.
+
+        public virtual T Parse()
+        {
+            return (T)Convert.ChangeType(Expression, typeof(T));
+        }
+
+        public virtual T ProcessScriptResult(object result)
+        {
+            return (T)result;
+        }
 
         public override string ToString()
         {

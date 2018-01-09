@@ -16,17 +16,17 @@ namespace OrchardCore.Contents.Workflows.Handlers
 
         public override async Task CreatedAsync(CreateContentContext context)
         {
-            await _workflowManager.TriggerEventAsync(nameof(ContentCreatedEvent), new { Content = context.ContentItem.ContentItemId });
+            await _workflowManager.TriggerEventAsync(nameof(ContentCreatedEvent), new { Content = context.ContentItem }, context.ContentItem.ContentItemId);
         }
 
         public override Task PublishedAsync(PublishContentContext context)
         {
-            return _workflowManager.TriggerEventAsync(nameof(ContentPublishedEvent), new { Content = context.ContentItem.ContentItemId });
+            return _workflowManager.TriggerEventAsync(nameof(ContentPublishedEvent), new { Content = context.ContentItem }, context.ContentItem.ContentItemId);
         }
 
         public override Task RemovedAsync(RemoveContentContext context)
         {
-            return _workflowManager.TriggerEventAsync(nameof(ContentDeletedEvent), new { Content = context.ContentItem.ContentItemId });
+            return _workflowManager.TriggerEventAsync(nameof(ContentDeletedEvent), new { Content = context.ContentItem }, context.ContentItem.ContentItemId);
         }
     }
 }

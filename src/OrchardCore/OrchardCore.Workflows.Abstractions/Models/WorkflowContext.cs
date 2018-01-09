@@ -21,6 +21,7 @@ namespace OrchardCore.Workflows.Models
         (
             WorkflowDefinitionRecord workflowDefinitionRecord,
             WorkflowInstanceRecord workflowInstanceRecord,
+            IDictionary<string, object> input,
             IEnumerable<ActivityContext> activities,
             IEnumerable<IWorkflowContextHandler> handlers,
             IScriptingManager scriptingManager,
@@ -31,6 +32,7 @@ namespace OrchardCore.Workflows.Models
             _handlers = handlers;
             _logger = logger;
 
+            Input = input ?? new Dictionary<string, object>();
             WorkflowDefinition = workflowDefinitionRecord;
             WorkflowInstance = workflowInstanceRecord;
             Activities = activities.ToList();
@@ -40,16 +42,34 @@ namespace OrchardCore.Workflows.Models
         public WorkflowDefinitionRecord WorkflowDefinition { get; }
         public WorkflowInstanceRecord WorkflowInstance { get; }
         public IList<ActivityContext> Activities { get; }
+
         public WorkflowState State { get; }
         public string CorrelationId
         {
             get => WorkflowInstance.CorrelationId;
             set => WorkflowInstance.CorrelationId = value;
         }
+
+        /// <summary>
+        /// A dictionary of non-serialized values provided by the initiator of the workflow.
+        /// </summary>
+        public IDictionary<string, object> Input { get; }
+
+        /// <summary>
+        /// A dictionary of non-serialized values provided to the initiator of the workflow.
+        /// </summary>
+        public IDictionary<string, object> Output { get; set; } = new Dictionary<string, object>();
+
+        /// <summary>
+        /// A dictionary of serialized values provided by the workflow activities.
+        /// </summary>
+        public IDictionary<string, object> Properties => State.Properties;
+
+        /// <summary>
+        /// The value returned from the previous activity, if any.
+        /// </summary>
         public Stack<object> Stack => State.Stack;
-        public IDictionary<string, object> Input => State.Input;
-        public IDictionary<string, object> Output => State.Output;
-        public IDictionary<string, object> Variables => State.Variables;
+
         public WorkflowStatus Status
         {
             get => WorkflowInstance.Status;
@@ -63,7 +83,7 @@ namespace OrchardCore.Workflows.Models
 
         public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, params IGlobalMethodProvider[] scopedMethodProviders)
         {
-            return (T)await EvaluateScriptAsync(expression.Expression, scopedMethodProviders);
+            return expression.ProcessScriptResult(await EvaluateScriptAsync(expression.Expression, scopedMethodProviders));
         }
 
         public Task EvaluateAsync(string script, params IGlobalMethodProvider[] scopedMethodProviders)
@@ -92,10 +112,10 @@ namespace OrchardCore.Workflows.Models
             throw new NotImplementedException();
         }
 
-        private async Task<object> EvaluateScriptAsync(string script, params IGlobalMethodProvider[] scopedMethodProviders)
+        private async Task<object> EvaluateScriptAsync(string expression, params IGlobalMethodProvider[] scopedMethodProviders)
         {
             var prefix = !String.IsNullOrWhiteSpace(WorkflowDefinition.ScriptingEngine) ? WorkflowDefinition.ScriptingEngine : "js";
-            var directive = $"{prefix}:{script}";
+            var directive = $"{prefix}:{expression}";
             var context = new WorkflowContextScriptEvalContext(this);
 
             context.ScopedMethodProviders.AddRange(scopedMethodProviders);

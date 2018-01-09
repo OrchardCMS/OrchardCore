@@ -46,7 +46,6 @@ namespace OrchardCore.Workflows
             services.AddActivity<IfElseTask, IfElseTaskDisplay>();
             services.AddActivity<ScriptTask, ScriptTaskDisplay>();
             services.AddActivity<SignalEvent, SignalEventDisplay>();
-            services.AddActivity<EmailTask, EmailTaskDisplay>();
         }
     }
 }

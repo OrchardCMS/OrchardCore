@@ -1,4 +1,4 @@
-@using OrchardCore.Workflows.ViewModels;
+@using OrchardCore.Workflows.Email.ViewModels;
 @model EmailTaskViewModel
 
 <fieldset class="form-group" asp-validation-class-for="SenderExpression">
@@ -19,8 +19,28 @@
     <span class="hint">@T["The subject of the email message."]</span>
 </fieldset>
 
-<fieldset class="form-group" asp-validation-class-for="Body">
-    <label asp-for="Body">@T["Body"] <span asp-validation-for="Body"></span></label>
-    <textarea asp-for="Body" class="form-control"></textarea>
-    <span class="hint">@T["The body of the email message."]</span>
+<fieldset class="form-group">
+    <label asp-for="Body">@T["Body"]</label>
+    <textarea asp-for="Body" rows="5" class="form-control"></textarea>
+    <span class="hint">@T["The body of the email message, in Liquid format."]</span>
 </fieldset>
+
+
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/javascript/javascript.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/simple.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/multiplex.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/xml/xml.min.js" at="Foot"></script>
+
+<script asp-src="/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<script at="Foot">
+$(function () {
+    var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Body)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+});
+</script>

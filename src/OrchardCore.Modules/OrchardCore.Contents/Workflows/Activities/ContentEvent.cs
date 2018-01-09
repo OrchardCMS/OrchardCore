@@ -73,7 +73,13 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             var contentId = contentValue as string;
 
-            return contentId != null ? await ContentManager.GetAsync(contentId, VersionOptions.Latest) : null;
+            if (contentId != null)
+            {
+                return await ContentManager.GetAsync(contentId, VersionOptions.Latest);
+            }
+
+            var content = contentValue as IContent;
+            return content;
         }
     }
 }

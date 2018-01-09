@@ -19,8 +19,10 @@
     </fieldset>
 
     <fieldset class="form-group form-check">
-        <input class="form-check-input" type="checkbox" asp-for="IsEnabled">
-        <label class="form-check-label" asp-for="IsEnabled">@T["Enabled"]</label>
+        <label class="form-check-label" asp-for="IsEnabled">
+            <input class="form-check-input" type="checkbox" asp-for="IsEnabled">
+            @T["Enabled"]
+        </label>
     </fieldset>
 
     <fieldset>

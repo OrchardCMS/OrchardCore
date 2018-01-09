@@ -6,6 +6,7 @@ using OrchardCore.Modules;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Workflows.Services
 {
@@ -37,25 +38,25 @@ namespace OrchardCore.Workflows.Services
             return _session.Query<WorkflowInstanceRecord, WorkflowInstanceByAwaitingActivitiesIndex>(x => x.WorkflowInstanceUid == uid).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<WorkflowInstanceRecord>> GetAsync(IEnumerable<string> uids)
+        public Task<IEnumerable<WorkflowInstanceRecord>> GetAsync(IEnumerable<string> uids)
         {
             var uidList = uids.ToList();
 
             // TODO: Uncomment the following when I figured out how to select multiple documents directly.
-            //return _session.Query<WorkflowInstanceRecord, WorkflowInstanceByAwaitingActivitiesIndex>(x => uidList.Contains(x.WorkflowInstanceUid)).ListAsync();
+            return _session.Query<WorkflowInstanceRecord, WorkflowInstanceByAwaitingActivitiesIndex>(x => x.WorkflowInstanceCorrelationId.IsIn(uidList)).ListAsync();
 
-            var results = new Dictionary<string, WorkflowInstanceRecord>();
+            //var results = new Dictionary<string, WorkflowInstanceRecord>();
 
-            foreach (var uid in uids)
-            {
-                var workflowInstance = await _session.Query<WorkflowInstanceRecord, WorkflowInstanceByAwaitingActivitiesIndex>(x => x.WorkflowInstanceUid == uid).FirstOrDefaultAsync();
-                if (workflowInstance != null)
-                {
-                    results[uid] = workflowInstance;
-                }
-            }
+            //foreach (var uid in uids)
+            //{
+            //    var workflowInstance = await _session.Query<WorkflowInstanceRecord, WorkflowInstanceByAwaitingActivitiesIndex>(x => x.WorkflowInstanceUid == uid).FirstOrDefaultAsync();
+            //    if (workflowInstance != null)
+            //    {
+            //        results[uid] = workflowInstance;
+            //    }
+            //}
 
-            return results.Values;
+            //return results.Values;
         }
 
         public Task<IEnumerable<WorkflowInstanceRecord>> GetAsync(IEnumerable<int> ids)
