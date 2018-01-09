@@ -27,6 +27,7 @@ using OrchardCore.Media.Settings;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Recipes;
+using OrchardCore.Security.Permissions;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
@@ -69,6 +70,7 @@ namespace OrchardCore.Media
                 return new MediaFileStore(fileStore, mediaUrlBase);
             });
 
+            services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddSingleton<ContentPart, ImageMediaPart>();
