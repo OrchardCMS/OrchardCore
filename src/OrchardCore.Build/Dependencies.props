@@ -4,8 +4,12 @@
   <Import Project="..\..\src\OrchardCore.Build\Dependencies.AspNetContrib.props" />
 
   <PropertyGroup>
-    <!-- This value is deprecated and will be deleted in beta2-->
+    <!-- This value is deprecated and will be deleted in beta2 -->
     <AspNetCoreVersion>2.0.1</AspNetCoreVersion>
+    <!-- 
+      .NET Core automatically rolls forward the patch version to the latest available runtime, thus
+      we don't need to specify a specific version (including security pathes).
+    -->
     <RuntimeFrameworkVersion Condition="'$(TargetFramework)'=='netcoreapp2.0'">2.0.0</RuntimeFrameworkVersion>
     <TestSdkVersion>15.3.0</TestSdkVersion>
     <XunitAnalyzers>0.3.0</XunitAnalyzers>
