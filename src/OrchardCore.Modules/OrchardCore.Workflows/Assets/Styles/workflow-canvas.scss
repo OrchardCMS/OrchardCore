@@ -1,4 +1,20 @@
-.workflow-editor-canvas {
+.workflow-container {
+    .workflow-canvas-container {
+        border: 1px solid #e4e5e6;
+        border-radius: 0.25em;
+        padding: 15px;
+    }
+}
+
+.modal-activities {
+    h4.card-title {
+        .fa {
+            margin-right: 0.5em;
+        }
+    }
+}
+
+.workflow-canvas {
     overflow: auto !important;
     position: relative;
     touch-action: none;
@@ -30,14 +46,6 @@
         -o-transition: -o-box-shadow 0.15s ease-in;
         transition: box-shadow 0.15s ease-in;
 
-        &:hover {
-            box-shadow: 2px 2px 19px #444;
-            -o-box-shadow: 2px 2px 19px #444;
-            -webkit-box-shadow: 2px 2px 19px #444;
-            -moz-box-shadow: 2px 2px 19px #444;
-            opacity: 0.6;
-        }
-
         &.activity-start {
             background-color: #7ab02c;
             color: #ffffff;
@@ -55,10 +63,6 @@
                     margin-right: 0.5em;
                 }
             }
-        }
-
-        .activity-commands {
-            display: none;
         }
     }
 
@@ -87,21 +91,5 @@
         -webkit-border-radius: 2px;
         border-radius: 2px;
         background-color: white;
-    }
-
-    .jtk-drag {
-    }
-
-    .jtk-drag-select {
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-    }
-
-    path, .jtk-endpoint {
-        cursor: pointer;
     }
 }

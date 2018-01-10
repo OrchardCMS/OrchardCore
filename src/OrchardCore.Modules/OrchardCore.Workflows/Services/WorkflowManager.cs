@@ -26,6 +26,7 @@ namespace OrchardCore.Workflows.Services
         private readonly ILogger<WorkflowContext> _workflowContextLogger;
         private readonly ILogger<MissingActivity> _missingActivityLogger;
         private readonly IStringLocalizer<MissingActivity> _missingActivityLocalizer;
+        private readonly IClock _clock;
 
         public WorkflowManager
         (
@@ -37,7 +38,8 @@ namespace OrchardCore.Workflows.Services
             ILogger<WorkflowManager> logger,
             ILogger<WorkflowContext> workflowContextLogger,
             ILogger<MissingActivity> missingActivityLogger,
-            IStringLocalizer<MissingActivity> missingActivityLocalizer
+            IStringLocalizer<MissingActivity> missingActivityLocalizer,
+            IClock clock
         )
         {
             _activityLibrary = activityLibrary;
@@ -49,6 +51,7 @@ namespace OrchardCore.Workflows.Services
             _workflowContextLogger = workflowContextLogger;
             _missingActivityLogger = missingActivityLogger;
             _missingActivityLocalizer = missingActivityLocalizer;
+            _clock = clock;
         }
 
         public WorkflowContext CreateWorkflowContext(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord, IDictionary<string, object> input)
@@ -203,7 +206,8 @@ namespace OrchardCore.Workflows.Services
                 DefinitionId = workflowDefinition.Id,
                 Uid = Guid.NewGuid().ToString("N"),
                 State = JObject.FromObject(new WorkflowState()),
-                CorrelationId = correlationId
+                CorrelationId = correlationId,
+                CreatedUtc = _clock.UtcNow
             };
 
             // Create a workflow context.

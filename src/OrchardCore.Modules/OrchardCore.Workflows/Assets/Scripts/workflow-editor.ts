@@ -1,86 +1,23 @@
 ///<reference path='../Lib/jquery/typings.d.ts' />
 ///<reference path='../Lib/jsplumb/typings.d.ts' />
 ///<reference path='./workflow-models.ts' />
+///<reference path='./workflow-canvas.ts' />
 
 // TODO: Re-implement this using a MVVM approach.
-class WorkflowEditor {
+class WorkflowEditor extends WorkflowCanvas {
+    private jsPlumbInstance: jsPlumbInstance;
     private isPopoverVisible: boolean;
     private hasDragged: boolean;
     private dragStart: JQuery.Coordinates;
-    private minCanvasHeight: number = 400;
-    private jsPlumbInstance: jsPlumbInstance;
 
-    constructor(private container: HTMLElement, private workflowDefinition: Workflows.Workflow, private deleteActivityPrompt: string, private localId: string, loadLocalState: boolean) {
+    constructor(protected container: HTMLElement, protected workflowDefinition: Workflows.Workflow, private deleteActivityPrompt: string, private localId: string, loadLocalState: boolean) {
+        super(container, workflowDefinition);
         const self = this;
 
         jsPlumb.ready(() => {
-            jsPlumb.importDefaults({
-                Anchor: "Continuous",
-                DragOptions: { cursor: 'pointer', zIndex: 2000 },
-                EndpointStyles: [{ fillStyle: '#225588' }],
-                Endpoints: [["Dot", { radius: 7 }], ["Blank"]],
-                ConnectionOverlays: [
-                    ["Arrow", { width: 12, length: 12, location: -5 }],
-                ],
-                ConnectorZIndex: 5
-            });
+            jsPlumb.importDefaults(this.getDefaults());
 
-            var plumber = jsPlumb.getInstance({
-                DragOptions: { cursor: 'pointer', zIndex: 2000 },
-                ConnectionOverlays: [
-                    ['Arrow', {
-                        location: 1,
-                        visible: true,
-                        width: 11,
-                        length: 11
-                    }],
-                    ['Label', {
-                        location: 0.5,
-                        id: 'label',
-                        cssClass: 'connection-label'
-                    }]
-                ],
-                Container: container
-            });
-
-            var getSourceEndpointOptions = function (activity: Workflows.Activity, outcome: Workflows.Outcome): EndpointOptions {
-                // The definition of source endpoints.
-                return {
-                    endpoint: 'Dot',
-                    anchor: 'Continuous',
-                    paintStyle: {
-                        stroke: '#7AB02C',
-                        fill: '#7AB02C',
-                        radius: 7,
-                        strokeWidth: 1
-                    },
-                    isSource: true,
-                    connector: ['Flowchart', { stub: [40, 60], gap: 0, cornerRadius: 5, alwaysRespectStubs: true }],
-                    connectorStyle: {
-                        strokeWidth: 2,
-                        stroke: '#999999',
-                        joinstyle: 'round',
-                        outlineStroke: 'white',
-                        outlineWidth: 2
-                    },
-                    hoverPaintStyle: {
-                        fill: '#216477',
-                        stroke: '#216477'
-                    },
-                    connectorHoverStyle: {
-                        strokeWidth: 3,
-                        stroke: '#216477',
-                        outlineWidth: 5,
-                        outlineStroke: 'white'
-                    },
-                    connectorOverlays: [['Label', { location: [3, -1.5], cssClass: 'endpointSourceLabel' }]],
-                    dragOptions: {},
-                    uuid: `${activity.id}-${outcome.name}`,
-                    parameters: {
-                        outcome: outcome
-                    }
-                };
-            };
+            const plumber = this.createJsPlumbInstance();
 
             // Listen for new connections.
             plumber.bind('connection', function (connInfo, originalEvent) {
@@ -91,7 +28,7 @@ class WorkflowEditor {
                 label.setLabel(outcome.displayName);
             });
 
-            let activityElements = $(container).find('.activity');
+            let activityElements = this.getActivityElements();
 
             var areEqualOutcomes = function (outcomes1: Workflows.Outcome[], outcomes2: Workflows.Outcome[]): boolean {
                 if (outcomes1.length != outcomes2.length) {
@@ -184,43 +121,19 @@ class WorkflowEditor {
 
                     // Add source endpoints.
                     for (let outcome of activity.outcomes) {
-                        const sourceEndpointOptions = getSourceEndpointOptions(activity, outcome);
+                        const sourceEndpointOptions = this.getSourceEndpointOptions(activity, outcome);
                         plumber.addEndpoint(activityElement, { connectorOverlays: [['Label', { label: outcome.displayName, cssClass: 'connection-label' }]] }, sourceEndpointOptions);
                     }
                 });
 
                 // Connect activities.
-                for (let transitionModel of this.workflowDefinition.transitions) {
-                    const sourceEndpointUuid: string = `${transitionModel.sourceActivityId}-${transitionModel.sourceOutcomeName}`;
-                    const sourceEndpoint: Endpoint = plumber.getEndpoint(sourceEndpointUuid);
-                    const destinationElementId: string = `activity-${workflowId}-${transitionModel.destinationActivityId}`;
-
-                    plumber.connect({
-                        source: sourceEndpoint,
-                        target: destinationElementId
-                    });
-                }
+                this.updateConnections(plumber);
 
                 // Re-query the activity elements.
-                activityElements = $(container).find('.activity');
+                activityElements = this.getActivityElements();
 
                 // Make all activity elements visible.
                 activityElements.show();
-
-                plumber.bind('contextmenu', function (component, originalEvent) {
-                });
-
-                plumber.bind('connectionDrag', function (connection) {
-                    console.log('connection ' + connection.id + ' is being dragged. suspendedElement is ', connection.suspendedElement, ' of type ', connection.suspendedElementType);
-                });
-
-                plumber.bind('connectionDragStop', function (connection) {
-                    console.log('connection ' + connection.id + ' was dragged');
-                });
-
-                plumber.bind('connectionMoved', function (params) {
-                    console.log('connection ' + params.connection.id + ' was moved');
-                });
 
                 this.updateCanvasHeight();
             });
@@ -252,9 +165,11 @@ class WorkflowEditor {
 
                     $content.on('click', '.activity-delete-action', e => {
                         e.preventDefault();
-                        if (!confirm(self.deleteActivityPrompt)) {
-                            return;
-                        }
+
+                        // TODO: The prompts are really annoying. Consider showing some sort of small message balloon somewhere to undo the action instead.
+                        //if (!confirm(self.deleteActivityPrompt)) {
+                        //    return;
+                        //}
 
                         self.workflowDefinition.removedActivities.push(activityId);
                         plumber.remove(activityElement);
@@ -308,20 +223,13 @@ class WorkflowEditor {
             // Save local changes if the event target has the 'data-persist-workflow' attribute.
             $('body').on('click', '[data-persist-workflow]', e => {
                 this.saveLocalState();
-            })
+            });
 
             this.jsPlumbInstance = plumber;
         });
     }
 
-    private getActivity = function (id: number, activities: Array<Workflows.Activity> = null): Workflows.Activity {
-        if (!activities) {
-            activities = this.workflowDefinition.activities;
-        }
-        return $.grep(activities, (x: Workflows.Activity) => x.id === id)[0];
-    }
-
-    private getState = function (): Workflows.Workflow {
+    private getState = (): Workflows.Workflow => {
         const $allActivityElements = $(this.container).find('.activity');
         const workflow: Workflows.Workflow = {
             id: this.workflowDefinition.id,
@@ -367,48 +275,18 @@ class WorkflowEditor {
         return workflow;
     }
 
-    public serialize = function (): string {
+    public serialize = (): string => {
         const workflow: Workflows.Workflow = this.getState();
         return JSON.stringify(workflow);
     }
 
-    private saveLocalState = function (): void {
-        const workflow: Workflows.Workflow = this.getState();
-        sessionStorage[this.localId] = this.serialize(workflow);
+    private saveLocalState = (): void => {
+        sessionStorage[this.localId] = this.serialize();
     }
 
-    private loadLocalState = function (): Workflows.Workflow {
+    private loadLocalState = (): Workflows.Workflow => {
         return JSON.parse(sessionStorage[this.localId]);
     }
-
-    private updateCanvasHeight = function () {
-        const $container = $(this.container);
-
-        // Get the activity element with the highest Y coordinate.
-        const $activityElements = $container.find(".activity");
-        let currentElementTop = 0;
-        let currentActivityHeight = 0;
-
-        for (let activityElement of $activityElements.toArray()) {
-            const $activityElement = $(activityElement);
-            const top = $activityElement.position().top;
-
-            if (top > currentElementTop) {
-                currentElementTop = top;
-                currentActivityHeight = $activityElement.height();
-            }
-        }
-
-        let newCanvasHeight = currentElementTop + currentActivityHeight;
-        const elementBottom = currentElementTop + currentActivityHeight;
-        const stretchValue = 100;
-
-        if (newCanvasHeight - elementBottom <= stretchValue) {
-            newCanvasHeight += stretchValue;
-        }
-
-        $container.height(Math.max(this.minCanvasHeight, newCanvasHeight));
-    };
 }
 
 $.fn.workflowEditor = function (this: JQuery): JQuery {
@@ -427,7 +305,7 @@ $.fn.workflowEditor = function (this: JQuery): JQuery {
 };
 
 $(document).ready(function () {
-    const workflowEditor: WorkflowEditor = $('.workflow-editor-canvas').workflowEditor().data('workflowEditor');
+    const workflowEditor: WorkflowEditor = $('.workflow-canvas').workflowEditor().data('workflowEditor');
 
     $('#workflowEditorForm').on('submit', (s, e) => {
         const state = workflowEditor.serialize();

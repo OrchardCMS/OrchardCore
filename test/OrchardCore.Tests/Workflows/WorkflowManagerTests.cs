@@ -8,6 +8,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Modules;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
 using OrchardCore.Tests.Workflows.Activities;
@@ -74,6 +75,7 @@ namespace OrchardCore.Tests.Workflows
             var workflowContextLogger = new Mock<ILogger<WorkflowContext>>();
             var missingActivityLogger = new Mock<ILogger<MissingActivity>>();
             var missingActivityLocalizer = new Mock<IStringLocalizer<MissingActivity>>();
+            var clock = new Mock<IClock>();
             var workflowManager = new WorkflowManager(
                 activityLibrary.Object,
                 workflowDefinitionRepository.Object,
@@ -83,7 +85,8 @@ namespace OrchardCore.Tests.Workflows
                 workflowManagerLogger.Object,
                 workflowContextLogger.Object,
                 missingActivityLogger.Object,
-                missingActivityLocalizer.Object);
+                missingActivityLocalizer.Object,
+                clock.Object);
 
             foreach (var activity in activities)
             {

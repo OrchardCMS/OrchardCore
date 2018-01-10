@@ -14,10 +14,15 @@
   {
     "inputs": [
       "Assets/Styles/workflow-editor.scss",
-      "Assets/Styles/workflow-editor-activity-toolbox.scss",
-      "Assets/Styles/jsplumbtoolkit-orchard.scss"
+      "Assets/Styles/workflow-editor-activity-toolbox.scss"
     ],
-    "output": "Content/Styles/orchard.workflows-workflow-editor.css"
+    "output": "Content/Styles/orchard.workflows-editor.css"
+  },
+  {
+    "inputs": [
+      "Assets/Styles/workflow-canvas.scss"
+    ],
+    "output": "Content/Styles/orchard.workflows-viewer.css"
   },
   {
     "inputs": [
@@ -26,8 +31,18 @@
     "output": "Content/Styles/menu.workflows-admin.css"
   },
   {
-    "inputs": [ "Assets/Scripts/workflow-editor.ts" ],
-    "output": "Content/Scripts/orchard.workflows-workflow-editor.js"
+    "inputs": [
+      "Assets/Scripts/workflow-canvas.ts",
+      "Assets/Scripts/workflow-editor.ts"
+    ],
+    "output": "Content/Scripts/orchard.workflows-editor.js"
+  },
+  {
+    "inputs": [
+      "Assets/Scripts/workflow-canvas.ts",
+      "Assets/Scripts/workflow-viewer.ts"
+    ],
+    "output": "Content/Scripts/orchard.workflows-viewer.js"
   },
   {
     "copy": true,

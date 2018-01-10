@@ -1,0 +1,13 @@
+@using OrchardCore.Workflows.Models
+@using OrchardCore.Workflows.Activities
+@{
+    var activityRecord = (ActivityRecord)Model.ActivityRecord;
+    var activity = (IActivity)Model.Activity;
+    var activityEvent = activity as IEvent;
+    var canStart = activityEvent?.CanStartWorkflow ?? false;
+    var isStart = canStart && activityRecord.IsStart;
+    var cssClass = isStart ? "activity-start" : "";
+}
+<div class="activity @cssClass" style="left:@(activityRecord.X)px; top:@(activityRecord.Y)px;" id="@($"activity-{Model.WorkflowDefinitionId}-{activityRecord.Id}")" data-activity-id="@activityRecord.Id" data-activity-start="@isStart.ToString().ToLower()" data-placement="bottom">
+    @await DisplayAsync(Model.Content)
+</div>

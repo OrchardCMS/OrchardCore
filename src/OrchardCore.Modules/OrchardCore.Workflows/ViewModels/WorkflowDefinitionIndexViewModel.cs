@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.ViewModels
 {
 
-    public class AdminIndexViewModel
+    public class WorkflowDefinitionIndexViewModel
     {
         public IList<WorkflowDefinitionEntry> WorkflowDefinitions { get; set; }
-        public AdminIndexOptions Options { get; set; }
+        public WorkflowDefinitionIndexOptions Options { get; set; }
         public dynamic Pager { get; set; }
     }
 
@@ -18,9 +18,10 @@ namespace OrchardCore.Workflows.ViewModels
 
         public int DefinitionId { get; set; }
         public string Name { get; set; }
+        public int WorkflowInstanceCount { get; set; }
     }
 
-    public class AdminIndexOptions
+    public class WorkflowDefinitionIndexOptions
     {
         public string Search { get; set; }
         public WorkflowDefinitionOrder Order { get; set; }

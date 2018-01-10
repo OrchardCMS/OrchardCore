@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
@@ -38,5 +39,7 @@ namespace OrchardCore.Workflows.Models
         /// for continuing its process.
         /// </summary>
         public IList<AwaitingActivityRecord> AwaitingActivities { get; } = new List<AwaitingActivityRecord>();
+
+        public DateTime CreatedUtc { get; set; }
     }
 }

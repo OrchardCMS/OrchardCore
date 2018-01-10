@@ -9,6 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Scripts\workflow-canvas.ts" />
+    <None Remove="Assets\Scripts\workflow-viewer.ts" />
+    <None Remove="Views\Activity.DesignReadonly.cshtml" />
     <None Remove="Views\Items\BranchTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\BranchTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\BranchTask.Fields.Thumbnail.cshtml" />
@@ -52,9 +55,13 @@
     <None Remove="Views\Items\WhileLoopTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\WhileLoopTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\WhileLoopTask.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\WorkflowInstance\Details.cshtml" />
+    <None Remove="Views\WorkflowInstance\Index.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Assets\Scripts\workflow-canvas.ts" />
+    <Content Include="Assets\Scripts\workflow-viewer.ts" />
     <Content Include="Assets\Scripts\workflow-models.ts" />
     <Content Include="Assets\Scripts\workflow-editor.ts" />
   </ItemGroup>
@@ -75,7 +82,7 @@
 
   <ItemGroup>
     <Folder Include="Content\Scripts\" />
-    <Folder Include="Content\Styles\Images\" />
+    <Folder Include="Content\Styles\" />
     <Folder Include="Models\" />
   </ItemGroup>
 

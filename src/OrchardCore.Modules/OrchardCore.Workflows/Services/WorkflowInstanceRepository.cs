@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,9 +24,26 @@ namespace OrchardCore.Workflows.Services
             _logger = logger;
         }
 
-        public Task<IEnumerable<WorkflowInstanceRecord>> ListAsync()
+        public Task<int> CountAsync()
         {
-            return _session.Query<WorkflowInstanceRecord>().ListAsync();
+            return _session.Query<WorkflowInstanceRecord>().CountAsync();
+        }
+
+        public Task<IEnumerable<WorkflowInstanceRecord>> ListAsync(int? skip = null, int? take = null)
+        {
+            var query = _session.Query<WorkflowInstanceRecord>();
+
+            if (skip != null)
+            {
+                query = query.Skip(skip.Value);
+            }
+
+            if (take != null)
+            {
+                query = query.Take(take.Value);
+            }
+
+            return query.ListAsync();
         }
 
         public Task<WorkflowInstanceRecord> GetAsync(int id)

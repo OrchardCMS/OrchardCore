@@ -1,15 +1,43 @@
-.workflow-editor-container {
-    .workflow-editor-canvas-container {
-        border: 1px solid #e4e5e6;
-        border-radius: 0.25em;
-        padding: 15px;
-    }
-}
+@import './workflow-canvas.scss';
 
 .modal-activities {
     h4.card-title {
         .fa {
             margin-right: 0.5em;
         }
+    }
+}
+
+.workflow-canvas {
+
+    .activity {
+
+        &:hover {
+            box-shadow: 2px 2px 19px #444;
+            -o-box-shadow: 2px 2px 19px #444;
+            -webkit-box-shadow: 2px 2px 19px #444;
+            -moz-box-shadow: 2px 2px 19px #444;
+            opacity: 0.6;
+        }
+
+        .activity-commands {
+            display: none;
+        }
+    }
+
+    .jtk-drag {
+    }
+
+    .jtk-drag-select {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    path, .jtk-endpoint {
+        cursor: pointer;
     }
 }

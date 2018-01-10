@@ -26,6 +26,7 @@ using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Workflows.Controllers
 {
@@ -77,7 +78,7 @@ namespace OrchardCore.Workflows.Controllers
             H = h;
         }
 
-        public async Task<IActionResult> Index(AdminIndexOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(WorkflowDefinitionIndexOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -89,7 +90,7 @@ namespace OrchardCore.Workflows.Controllers
 
             if (options == null)
             {
-                options = new AdminIndexOptions();
+                options = new WorkflowDefinitionIndexOptions();
             }
 
             var query = _session.Query<WorkflowDefinitionRecord, WorkflowDefinitionsIndex>();
@@ -115,10 +116,16 @@ namespace OrchardCore.Workflows.Controllers
 
             var count = await query.CountAsync();
 
-            var results = await query
+            var workflowDefinitions = await query
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize)
                 .ListAsync();
+
+            var workflowDefinitionIds = workflowDefinitions.Select(x => x.Id).ToList();
+
+            // TODO: Figure out how to do a "list contains x" expression.
+            //var workflowInstanceGroups = (await _session.QueryIndex<WorkflowInstanceIndex>(x => workflowDefinitionIds.Contains(x.WorkflowDefinitionId)).ListAsync()).GroupBy(x => x.WorkflowDefinitionId).ToDictionary(x => x.Key);
+            var workflowInstanceGroups = (await _session.QueryIndex<WorkflowInstanceIndex>().ListAsync()).GroupBy(x => x.WorkflowDefinitionId).ToDictionary(x => x.Key);
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -127,14 +134,13 @@ namespace OrchardCore.Workflows.Controllers
             routeData.Values.Add("Options.Order", options.Order);
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
-
-            var model = new AdminIndexViewModel
+            var model = new WorkflowDefinitionIndexViewModel
             {
-                WorkflowDefinitions = results
+                WorkflowDefinitions = workflowDefinitions
                     .Select(x => new WorkflowDefinitionEntry
                     {
                         Definition = x,
-                        DefinitionId = x.Id,
+                        WorkflowInstanceCount = workflowInstanceGroups.ContainsKey(x.Id) ? workflowInstanceGroups[x.Id].Count() : 0,
                         Name = x.Name
                     })
                     .ToList(),
@@ -147,14 +153,14 @@ namespace OrchardCore.Workflows.Controllers
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkEdit")]
-        public async Task<IActionResult> BulkEdit(AdminIndexOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> BulkEdit(WorkflowDefinitionIndexOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
                 return Unauthorized();
             }
 
-            var viewModel = new AdminIndexViewModel { WorkflowDefinitions = new List<WorkflowDefinitionEntry>(), Options = new AdminIndexOptions() };
+            var viewModel = new WorkflowDefinitionIndexViewModel { WorkflowDefinitions = new List<WorkflowDefinitionEntry>(), Options = new WorkflowDefinitionIndexOptions() };
 
             if (!(await TryUpdateModelAsync(viewModel)))
             {
@@ -270,8 +276,8 @@ namespace OrchardCore.Workflows.Controllers
             var workflowDefinitionRecord = await _session.GetAsync<WorkflowDefinitionRecord>(id);
             var workflowContext = _workflowManager.CreateWorkflowContext(workflowDefinitionRecord, new WorkflowInstanceRecord { DefinitionId = workflowDefinitionRecord.Id });
             var activityContexts = workflowDefinitionRecord.Activities.Select(x => _workflowManager.CreateActivityContext(x)).ToList();
-            var activityThumbnailDisplayTasks = availableActivities.Select((x, i) => BuildActivityDisplay(x, i, id, newLocalId, "Thumbnail"));
-            var activityDesignDisplayTasks = activityContexts.Select((x, i) => BuildActivityDisplay(x, i, id, newLocalId, "Design"));
+            var activityThumbnailDisplayTasks = availableActivities.Select(async (x, i) => await BuildActivityDisplay(x, i, id, newLocalId, "Thumbnail"));
+            var activityDesignDisplayTasks = activityContexts.Select(async (x, i) => await BuildActivityDisplay(x, i, id, newLocalId, "Design"));
 
             await Task.WhenAll(activityThumbnailDisplayTasks.Concat(activityDesignDisplayTasks));
 
@@ -376,25 +382,6 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             return RedirectToAction("Index");
-        }
-
-        public async Task<JsonResult> State(int? id)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
-            {
-                throw new AuthenticationException("");
-            }
-
-            var workflowDefinition = id.HasValue ? await _session.GetAsync<WorkflowDefinitionRecord>(id.Value) : null;
-            var isRunning = false;
-
-            if (workflowDefinition != null)
-            {
-                isRunning = await _session
-                    .Query<WorkflowInstanceRecord, WorkflowInstanceByAwaitingActivitiesIndex>(query => query.Id == workflowDefinition.Id)
-                    .CountAsync() > 0;
-            }
-            return Json(new { isRunning = isRunning });
         }
 
         private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, int workflowDefinitionId, string localId, string displayType)

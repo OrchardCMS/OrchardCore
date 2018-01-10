@@ -1,4 +1,4 @@
-@model AdminIndexViewModel
+@model WorkflowDefinitionIndexViewModel
 @using OrchardCore.Workflows.ViewModels;
 
 <h1>@RenderTitleSegments(T["Manage Workflow Definitions"])</h1>
@@ -16,25 +16,35 @@
     </form>
 </nav>
 
-
-@using (Html.BeginForm())
+@if (Model.WorkflowDefinitions.Any())
 {
-    <ul class="list-group">
-        @foreach (var entry in Model.WorkflowDefinitions)
-        {
-            <li class="list-group-item">
-                <div class="properties">
-                    <div class="related">
-                        <a asp-action="EditProperties" asp-route-id="@entry.DefinitionId" class="btn btn-primary btn-sm">@T["Edit Properties"]</a>
-                        <a asp-action="Edit" asp-route-id="@entry.DefinitionId" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                        <a asp-action="Delete" asp-route-id="@entry.DefinitionId" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+    using (Html.BeginForm())
+    {
+        <ul class="list-group">
+            @foreach (var entry in Model.WorkflowDefinitions)
+            {
+                <li class="list-group-item">
+                    <div class="properties">
+                        <div class="related">
+                            <a asp-action="Edit" asp-route-id="@entry.Definition.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="EditProperties" asp-route-id="@entry.Definition.Id" class="btn btn-primary btn-sm">@T["Properties"]</a>
+                            <a asp-action="Delete" asp-route-id="@entry.Definition.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                        </div>
+
+                        <a asp-action="Edit" asp-route-id="@entry.Definition.Id">@entry.Name</a>
                     </div>
 
-                    <a asp-action="Edit" asp-route-id="@entry.DefinitionId">@entry.Name</a>
-                </div>
-            </li>
-        }
-    </ul>
-}
+                    <div class="metadata">
+                        <a asp-action="Index" asp-controller="WorkflowInstance" asp-route-workflowDefinitionId="@entry.Definition.Id" class="hint">@T["Running workflows: {0}", entry.WorkflowInstanceCount]</a>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
 
-@await DisplayAsync(Model.Pager)
+    @await DisplayAsync(Model.Pager)
+}
+else
+{
+    <p>@T["There are no workflows."]</p>
+}

@@ -17,9 +17,9 @@
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" id="workflowEditorForm">
     <fieldset class="form-group">
-        <div class="workflow-editor-container">
-            <div class="workflow-editor-canvas-container">
-                <div class="workflow-editor-canvas" data-workflow-definition="@Model.WorkflowDefinitionJson" data-workflow-delete-activity-prompt="@T["Are you sure you want to delete this activity?"]" data-workflow-local-id="@Model.LocalId" data-workflow-load-local-state="@Model.LoadLocalState.ToString().ToLower()">
+        <div class="workflow-container">
+            <div class="workflow-canvas-container">
+                <div class="workflow-canvas" data-workflow-definition="@Model.WorkflowDefinitionJson" data-workflow-delete-activity-prompt="@T["Are you sure you want to delete this activity?"]" data-workflow-local-id="@Model.LocalId" data-workflow-load-local-state="@Model.LoadLocalState.ToString().ToLower()">
                     @foreach (var activityShape in Model.ActivityDesignShapes)
                     {
                         @await DisplayAsync(activityShape)
@@ -63,7 +63,7 @@
 </div>
 
 <style asp-src="~/OrchardCore.Workflows/Styles/jsplumbtoolkit-defaults.min.css" debug-src="~/OrchardCore.Workflows/Styles/jsplumbtoolkit-defaults.css" cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.5.5/css/jsplumbtoolkit-defaults.min.css" debug-cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.5.5/css/jsplumbtoolkit-defaults.css" version="2.5.5"></style>
-<style asp-src="~/OrchardCore.Workflows/Styles/orchard.workflows-workflow-editor.min.css" debug-src="~/OrchardCore.Workflows/Styles/orchard.workflows-workflow-editor.css"></style>
+<style asp-src="~/OrchardCore.Workflows/Styles/orchard.workflows-editor.min.css" debug-src="~/OrchardCore.Workflows/Styles/orchard.workflows-editor.css"></style>
 <script asp-name="bootstrap" version="4.0.0" at="Foot"></script>
 <script asp-name="jsplumb" depends-on="jQuery" asp-src="~/OrchardCore.Workflows/Scripts/jsplumb.min.js" debug-src="~/OrchardCore.Workflows/Scripts/jsplumb.js" cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.5.5/jsplumb.min.js" debug-cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.2.9/jsplumb.js" type="text/javascript" version="2.5.5" at="Foot"></script>
-<script depends-on="jsplumb" asp-src="~/OrchardCore.Workflows/Scripts/orchard.workflows-workflow-editor.min.js" debug-src="~/OrchardCore.Workflows/Scripts/orchard.workflows-workflow-editor.js" type="text/javascript" at="Foot"></script>
+<script depends-on="jsplumb" asp-src="~/OrchardCore.Workflows/Scripts/orchard.workflows-editor.min.js" debug-src="~/OrchardCore.Workflows/Scripts/orchard.workflows-editor.js" type="text/javascript" at="Foot"></script>
