@@ -51,6 +51,7 @@
             }
             else if (ev.key.indexOf('contentpreview:') !== -1) {
                 if (ev.originalEvent.newValue != null) {
+                    // Smooth event cascading
                     clearTimeout(previewEventTimer);
                     previewEventTimer = setTimeout(function () { renderPreview(ev.originalEvent.newValue); }, 150);
                     $(notConnectedWarning).hide();
@@ -85,7 +86,8 @@
 
         if (previewRendering) {
             clearTimeout(previewRenderTimer);
-            previewRenderTimer = setTimeout(function () { renderPreview(value); }, 150);
+            // Defer the last captured value while rendering
+            previewRenderTimer = setTimeout(function () { renderPreview(value); }, 100);
             return;
         }
 
@@ -103,27 +105,16 @@
                 .done(function (data) {
                     if (iframe && iframe.contentWindow && iframe2 && iframe2.contentWindow) {
 
-                        // Under 'Chrome' (not 'Firefox') writing correctly the full frame
-                        // implies that we need a delay before updating the scroll position.
-                        // This delay adds some flickering that we cancel by using 2 frames.
+                        // Under 'Chrome', after having written the frame, we need to use a delay before updating
+                        // the scroll position. Then, we use 2 frames to cancel the flicker that the delay causes.
 
                         var scrollTop = $(iframe.contentWindow).scrollTop();
-                        $(iframe2.contentWindow).scrollTop(scrollTop);
-                        iframe.style.visibility = 'hidden';
-                        iframe2.style.visibility = 'visible';
-
-                        iframe.contentWindow.document.open();
-                        iframe.contentWindow.document.write(data);
-                        iframe.contentWindow.document.close();
+                        ScrollAndShowFrame(iframe2, scrollTop);
+                        HideAndUpdateFrame(iframe, data);
 
                         setTimeout(function () {
-                            $(iframe.contentWindow).scrollTop(scrollTop);
-                            iframe2.style.visibility = 'hidden';
-                            iframe.style.visibility = 'visible';
-
-                            iframe2.contentWindow.document.open();
-                            iframe2.contentWindow.document.write(data);
-                            iframe2.contentWindow.document.close();
+                            ScrollAndShowFrame(iframe, scrollTop);
+                            HideAndUpdateFrame(iframe2, data);
                             previewRendering = false;
                         }, 50);
                     }
@@ -145,6 +136,18 @@
             previewRendering = false;
             console.log('Error while previewing: ' + e);
         }
+    }
+
+    function HideAndUpdateFrame(frame, data) {
+        frame.style.visibility = 'hidden';
+        frame.contentWindow.document.open();
+        frame.contentWindow.document.write(data);
+        frame.contentWindow.document.close();
+    }
+
+    function ScrollAndShowFrame(frame, scrollTop) {
+        $(frame.contentWindow).scrollTop(scrollTop);
+        frame.style.visibility = 'visible';
     }
 
 </script>

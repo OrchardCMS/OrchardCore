@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Templates.ViewModels;
 
@@ -17,22 +16,19 @@ namespace OrchardCore.Templates.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-        private readonly IClock _clock;
 
         public PreviewController(
             IContentManager contentManager,
             IContentAliasManager contentAliasManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IAuthorizationService authorizationService,
-            ISiteService siteService,
-            IClock clock)
+            ISiteService siteService)
         {
             _contentManager = contentManager;
             _contentAliasManager = contentAliasManager;
             _contentItemDisplayManager = contentItemDisplayManager;
             _authorizationService = authorizationService;
             _siteService = siteService;
-            _clock = clock;
         }
 
         public IActionResult Index()
@@ -59,7 +55,7 @@ namespace OrchardCore.Templates.Controllers
             var alias = Request.Form["Alias"].ToString();
 
             string contentItemId;
-            if (string.IsNullOrEmpty(alias) || alias == "/" || alias.EndsWith("Preview/Index"))
+            if (string.IsNullOrEmpty(alias) || alias == "/")
             {
                 var homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
                 contentItemId = homeRoute["contentItemId"]?.ToString();

@@ -32,12 +32,14 @@
     <ul></ul>
 </div>
 
+<div id="indexPreviewUrl" style="display:none" data-value="@Url.Action("Index", "Preview" , new { area="OrchardCore.Templates" })"></div>
 <div id="renderPreviewUrl" style="display:none" data-value="@Url.Action("Render", "Preview" , new { area="OrchardCore.Templates" })"></div>
 <div id="contentPreviewUrl" style="display:none" data-value="@Url.Content("~/")"></div>
 
 <resources type="Footer" />
 
 <script type="text/javascript">
+    var indexPreviewUrl = $(document.getElementById('indexPreviewUrl')).data('value');
     var renderPreviewUrl = $(document.getElementById('renderPreviewUrl')).data('value');
     var contentPreviewUrl = $(document.getElementById('contentPreviewUrl')).data('value');
     var iframe = document.getElementById('iframe');
@@ -52,6 +54,7 @@
             }
             else if (ev.key == 'OrchardCore.templates') {
                 if (ev.originalEvent.newValue != null) {
+                    // Smooth event cascading
                     clearTimeout(previewEventTimer);
                     previewEventTimer = setTimeout(function () { renderPreview(ev.originalEvent.newValue); }, 150);
                     $(notConnectedWarning).hide();
@@ -81,9 +84,11 @@
     });
 
     iframe.onload = function () {
-        if (!this.contentWindow.location.pathname.endsWith("Preview/Index")) {
+        if (this.contentWindow && this.contentWindow.location.pathname != indexPreviewUrl) {
             contentPreviewUrl = this.contentWindow.location.pathname;
-            iframe2.contentWindow.location = this.contentWindow.location;
+            if (iframe2 && iframe2.contentWindow) {
+                iframe2.contentWindow.location = this.contentWindow.location;
+            }
         }
     }
 
@@ -92,8 +97,9 @@
     function renderPreview(value) {
 
         if (previewRendering) {
+            // Defer the last rendering
             clearTimeout(previewRenderTimer);
-            previewRenderTimer = setTimeout(function () { renderPreview(value); }, 150);
+            previewRenderTimer = setTimeout(function () { renderPreview(value); }, 100);
         }
 
         previewRendering = true;
@@ -106,39 +112,22 @@
                 previewRendering = false;
                 return;
             }
-
-            var alias = contentPreviewUrl || "";
-            if (alias == 'blank') {
-                alias = '/';
-            }
-
-            formData += '&' + $.param({ 'Alias': alias });
+            formData += '&' + $.param({ 'Alias': contentPreviewUrl || "" });
 
             $.post(renderPreviewUrl, formData)
                 .done(function (data) {
                     if (iframe && iframe.contentWindow && iframe2 && iframe2.contentWindow) {
 
-                        // Under 'Chrome' (not 'Firefox') writing correctly the full frame
-                        // implies that we need a delay before updating the scroll position.
-                        // This delay adds some flickering that we cancel by using 2 frames.
+                        // Under 'Chrome', after having written the frame, we need to use a delay before updating
+                        // the scroll position. Then, we use 2 frames to cancel the flicker that the delay causes.
 
                         var scrollTop = $(iframe.contentWindow).scrollTop();
-                        $(iframe2.contentWindow).scrollTop(scrollTop);
-                        iframe.style.visibility = 'hidden';
-                        iframe2.style.visibility = 'visible';
-
-                        iframe.contentWindow.document.open();
-                        iframe.contentWindow.document.write(data);
-                        iframe.contentWindow.document.close();
+                        ScrollAndShowFrame(iframe2, scrollTop);
+                        HideAndUpdateFrame(iframe, data);
 
                         setTimeout(function () {
-                            $(iframe.contentWindow).scrollTop(scrollTop);
-                            iframe2.style.visibility = 'hidden';
-                            iframe.style.visibility = 'visible';
-
-                            iframe2.contentWindow.document.open();
-                            iframe2.contentWindow.document.write(data);
-                            iframe2.contentWindow.document.close();
+                            ScrollAndShowFrame(iframe, scrollTop);
+                            HideAndUpdateFrame(iframe2, data);
                             previewRendering = false;
                         }, 50);
                     }
@@ -152,8 +141,6 @@
                         $('<li/>').text(error).appendTo(ul);
                         $(serverErrorWarning).show();
                     }
-                })
-                .always(function () {
                     previewRendering = false;
                 });
         }
@@ -161,6 +148,18 @@
             previewRendering = false;
             console.log('Error while previewing: ' + e);
         }
+    }
+
+    function HideAndUpdateFrame(frame, data) {
+        frame.style.visibility = 'hidden';
+        frame.contentWindow.document.open();
+        frame.contentWindow.document.write(data);
+        frame.contentWindow.document.close();
+    }
+
+    function ScrollAndShowFrame(frame, scrollTop) {
+        $(frame.contentWindow).scrollTop(scrollTop);
+        frame.style.visibility = 'visible';
     }
 
 </script>
