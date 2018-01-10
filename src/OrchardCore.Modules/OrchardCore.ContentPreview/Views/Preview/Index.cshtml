@@ -9,7 +9,11 @@
 
 <resources type="Header" />
 
-<iframe id="iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden;z-index:999990;">
+<iframe id="iframe" style="visibility:hidden; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden;z-index:999990;">
+    Your browser doesn't support iframes
+</iframe>
+
+<iframe id="iframe2" style="visibility:hidden; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden;z-index:999990;">
     Your browser doesn't support iframes
 </iframe>
 
@@ -36,15 +40,14 @@
 <script type="text/javascript">
     var renderPreviewUrl = $(document.getElementById('renderPreviewUrl')).data('value');
     var iframe = document.getElementById('iframe');
+    var iframe2 = document.getElementById('iframe2');
     var previewEventTimer = null;
     var previewRenderTimer = null;
-    var previewHeadRefresh = false;
 
     $(function () {
         $(window).on('storage', function (ev) {
             if (ev.key.indexOf('contentpreview:not-connected:') !== -1) {
                 $(notConnectedWarning).show();
-                previewHeadRefresh = true;
             }
             else if (ev.key.indexOf('contentpreview:') !== -1) {
                 if (ev.originalEvent.newValue != null) {
@@ -76,50 +79,53 @@
         }
     });
 
-    iframe.onload = function () {
-        previewHeadRefresh = true;
-    }
-
-    var scrollTop;
-    var rendering;
+    var previewRendering;
 
     function renderPreview(value) {
 
-        if (rendering) {
+        if (previewRendering) {
             clearTimeout(previewRenderTimer);
             previewRenderTimer = setTimeout(function () { renderPreview(value); }, 150);
             return;
         }
 
-        rendering = true;
+        previewRendering = true;
         clearTimeout(previewRenderTimer);
 
         try {
             var formData = JSON.parse(value);
             if (!formData) {
-                rendering = false;
+                previewRendering = false;
                 return;
             }
 
-            scrollTop = $(iframe.contentWindow).scrollTop();
-
             $.post(renderPreviewUrl, formData)
                 .done(function (data) {
-                    if (iframe && iframe.contentWindow) {
-                        if (iframe.contentWindow.document.head.innerHTML == '') {
-                            iframe.contentWindow.document.write(data);
-                            previewHeadRefresh = false;
-                        }
-                        else {
-                            if (previewHeadRefresh) {
-                                previewHeadRefresh = false;
-                                var head = data.substring(data.indexOf('<head>') + 6, data.indexOf('</head>'));
-                                iframe.contentWindow.document.head.innerHTML = head;
-                            }
-                            var body = data.substring(data.indexOf('<body>') + 6, data.indexOf('</body>'));
-                            iframe.contentWindow.document.body.innerHTML = body;
-                        }
-                        $(iframe.contentWindow).scrollTop(scrollTop);
+                    if (iframe && iframe.contentWindow && iframe2 && iframe2.contentWindow) {
+
+                        // Under 'Chrome' (not 'Firefox') writing correctly the full frame
+                        // implies that we need a delay before updating the scroll position.
+                        // This delay adds some flickering that we cancel by using 2 frames.
+
+                        var scrollTop = $(iframe.contentWindow).scrollTop();
+                        $(iframe2.contentWindow).scrollTop(scrollTop);
+                        iframe.style.visibility = 'hidden';
+                        iframe2.style.visibility = 'visible';
+
+                        iframe.contentWindow.document.open();
+                        iframe.contentWindow.document.write(data);
+                        iframe.contentWindow.document.close();
+
+                        setTimeout(function () {
+                            $(iframe.contentWindow).scrollTop(scrollTop);
+                            iframe2.style.visibility = 'hidden';
+                            iframe.style.visibility = 'visible';
+
+                            iframe2.contentWindow.document.open();
+                            iframe2.contentWindow.document.write(data);
+                            iframe2.contentWindow.document.close();
+                            previewRendering = false;
+                        }, 50);
                     }
                     $(serverErrorWarning).hide();
                 })
@@ -132,13 +138,11 @@
                         });
                         $(serverErrorWarning).show();
                     }
-                })
-                .always(function () {
-                    rendering = false;
+                    previewRendering = false;
                 });
         }
         catch (e) {
-            rendering = false;
+            previewRendering = false;
             console.log('Error while previewing: ' + e);
         }
     }
