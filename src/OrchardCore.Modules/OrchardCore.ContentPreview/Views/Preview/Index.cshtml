@@ -85,8 +85,8 @@
     function renderPreview(value) {
 
         if (previewRendering) {
+            // Defer the last rendering
             clearTimeout(previewRenderTimer);
-            // Defer the last captured value while rendering
             previewRenderTimer = setTimeout(function () { renderPreview(value); }, 100);
             return;
         }
