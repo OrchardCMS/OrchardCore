@@ -5,14 +5,18 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AspNet.Security.OpenIdConnect.Primitives;
 using OpenIddict.Core;
-using OrchardCore.OpenId.Indexes;
+using OrchardCore.OpenId.Abstractions.Models;
+using OrchardCore.OpenId.Abstractions.Stores;
 using OrchardCore.OpenId.Models;
+using OrchardCore.OpenId.YesSql.Indexes;
+using OrchardCore.OpenId.YesSql.Models;
 using YesSql;
 
-namespace OrchardCore.OpenId.Services
+namespace OrchardCore.OpenId.YesSql.Services
 {
-    public class OpenIdApplicationStore : IOpenIddictApplicationStore<OpenIdApplication>
+    public class OpenIdApplicationStore : IOpenIdApplicationStore
     {
         private readonly ISession _session;
 
@@ -112,7 +116,7 @@ namespace OrchardCore.OpenId.Services
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.GetAsync<OpenIdApplication>(int.Parse(identifier, CultureInfo.InvariantCulture));
+            return _session.Query<OpenIdApplication, OpenIdApplicationIndex>(index => index.ApplicationId == identifier).FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -134,6 +138,27 @@ namespace OrchardCore.OpenId.Services
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.Query<OpenIdApplication, OpenIdApplicationIndex>(index => index.ClientId == identifier).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Retrieves an application using its physical identifier.
+        /// </summary>
+        /// <param name="identifier">The unique identifier associated with the application.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the client application corresponding to the identifier.
+        /// </returns>
+        public virtual Task<OpenIdApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(identifier))
+            {
+                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return _session.GetAsync<OpenIdApplication>(int.Parse(identifier, CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -304,6 +329,25 @@ namespace OrchardCore.OpenId.Services
             }
 
             return Task.FromResult(application.ApplicationId);
+        }
+
+        /// <summary>
+        /// Retrieves the physical identifier associated with an application.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the physical identifier associated with the application.
+        /// </returns>
+        public virtual Task<string> GetPhysicalIdAsync(OpenIdApplication application, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            return Task.FromResult(application.Id.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -557,61 +601,237 @@ namespace OrchardCore.OpenId.Services
             return _session.CommitAsync();
         }
 
-        public Task AddToRoleAsync(OpenIdApplication application, string roleName, CancellationToken cancellationToken = default(CancellationToken))
+        // TODO: remove these methods once per-application grant type limitation is added to OpenIddict.
+        public virtual Task<ImmutableArray<string>> GetGrantTypesAsync(OpenIdApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
             {
                 throw new ArgumentNullException(nameof(application));
             }
 
-            application.RoleNames.Add(roleName);
+            var builder = ImmutableArray.CreateBuilder<string>();
+
+            if (application.AllowAuthorizationCodeFlow)
+            {
+                builder.Add(OpenIdConnectConstants.GrantTypes.AuthorizationCode);
+            }
+
+            if (application.AllowClientCredentialsFlow)
+            {
+                builder.Add(OpenIdConnectConstants.GrantTypes.ClientCredentials);
+            }
+
+            if (application.AllowImplicitFlow)
+            {
+                builder.Add(OpenIdConnectConstants.GrantTypes.Implicit);
+            }
+
+            if (application.AllowPasswordFlow)
+            {
+                builder.Add(OpenIdConnectConstants.GrantTypes.Password);
+            }
+
+            if (application.AllowRefreshTokenFlow)
+            {
+                builder.Add(OpenIdConnectConstants.GrantTypes.RefreshToken);
+            }
+
+            return Task.FromResult(builder.ToImmutable());
+        }
+
+        public virtual Task SetGrantTypesAsync(OpenIdApplication application, ImmutableArray<string> types, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            application.AllowAuthorizationCodeFlow = types.Contains(OpenIdConnectConstants.GrantTypes.AuthorizationCode);
+            application.AllowClientCredentialsFlow = types.Contains(OpenIdConnectConstants.GrantTypes.ClientCredentials);
+            application.AllowImplicitFlow = types.Contains(OpenIdConnectConstants.GrantTypes.Implicit);
+            application.AllowPasswordFlow = types.Contains(OpenIdConnectConstants.GrantTypes.Password);
+            application.AllowRefreshTokenFlow = types.Contains(OpenIdConnectConstants.GrantTypes.RefreshToken);
+
+            return Task.CompletedTask;
+        }
+
+        public virtual Task<bool> IsConsentRequiredAsync(OpenIdApplication application, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            return Task.FromResult(!application.SkipConsent);
+        }
+
+        public virtual Task SetConsentRequiredAsync(OpenIdApplication application, bool value, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            application.SkipConsent = !value;
+
+            return Task.CompletedTask;
+        }
+
+        public virtual Task<ImmutableArray<string>> GetRolesAsync(OpenIdApplication application, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            return Task.FromResult(ImmutableArray.CreateRange(application.RoleNames));
+        }
+
+        public virtual async Task<ImmutableArray<OpenIdApplication>> ListInRoleAsync(string role, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(role))
+            {
+                throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
+            }
+
+            return ImmutableArray.CreateRange(await _session.Query<OpenIdApplication, OpenIdApplicationByRoleNameIndex>(index => index.RoleName == role).ListAsync());
+        }
+
+        public virtual Task SetRolesAsync(OpenIdApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            application.RoleNames = new HashSet<string>(roles);
             _session.Save(application);
 
             return Task.CompletedTask;
         }
 
-        public Task RemoveFromRoleAsync(OpenIdApplication application, string roleName, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+        // Note: the following methods are deliberately implemented as explicit methods so they are not
+        // exposed by Intellisense. Their logic MUST be limited to dealing with casts and downcasts.
+        // Developers who need to customize the logic SHOULD override the methods taking concretes types.
 
-            application.RoleNames.Remove(roleName);
-            _session.Save(application);
+        // -------------------------------------------------------------
+        // Methods defined by the IOpenIddictApplicationStore interface:
+        // -------------------------------------------------------------
 
-            return Task.CompletedTask;
-        }
+        Task<long> IOpenIddictApplicationStore<IOpenIdApplication>.CountAsync(CancellationToken cancellationToken)
+            => CountAsync(cancellationToken);
 
-        public Task<IList<string>> GetRolesAsync(OpenIdApplication application, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+        Task<long> IOpenIddictApplicationStore<IOpenIdApplication>.CountAsync<TResult>(Func<IQueryable<IOpenIdApplication>, IQueryable<TResult>> query, CancellationToken cancellationToken)
+            => CountAsync(query, cancellationToken);
 
-            return Task.FromResult<IList<string>>(application.RoleNames.ToList());
-        }
+        async Task<IOpenIdApplication> IOpenIddictApplicationStore<IOpenIdApplication>.CreateAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => await CreateAsync((OpenIdApplication) application, cancellationToken);
 
-        public Task<bool> IsInRoleAsync(OpenIdApplication application, string roleName, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.DeleteAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => DeleteAsync((OpenIdApplication) application, cancellationToken);
 
-            return Task.FromResult(application.RoleNames.Contains(roleName, StringComparer.OrdinalIgnoreCase));
-        }
+        async Task<IOpenIdApplication> IOpenIddictApplicationStore<IOpenIdApplication>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
+            => await FindByIdAsync(identifier, cancellationToken);
 
-        public async Task<IList<OpenIdApplication>> GetAppsInRoleAsync(string roleName, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (string.IsNullOrWhiteSpace(roleName))
-            {
-                throw new ArgumentNullException(nameof(roleName));
-            }
+        async Task<IOpenIdApplication> IOpenIddictApplicationStore<IOpenIdApplication>.FindByClientIdAsync(string identifier, CancellationToken cancellationToken)
+            => await FindByClientIdAsync(identifier, cancellationToken);
 
-            var apps = await _session.Query<OpenIdApplication, OpenIdApplicationByRoleNameIndex>(x => x.RoleName == roleName).ListAsync();
-            return apps == null ? new List<OpenIdApplication>() : apps.ToList();
-        }
+        async Task<ImmutableArray<IOpenIdApplication>> IOpenIddictApplicationStore<IOpenIdApplication>.FindByPostLogoutRedirectUriAsync(string address, CancellationToken cancellationToken)
+            => (await FindByPostLogoutRedirectUriAsync(address, cancellationToken)).CastArray<IOpenIdApplication>();
+
+        async Task<ImmutableArray<IOpenIdApplication>> IOpenIddictApplicationStore<IOpenIdApplication>.FindByRedirectUriAsync(string address, CancellationToken cancellationToken)
+            => (await FindByRedirectUriAsync(address, cancellationToken)).CastArray<IOpenIdApplication>();
+
+        Task<TResult> IOpenIddictApplicationStore<IOpenIdApplication>.GetAsync<TState, TResult>(
+            Func<IQueryable<IOpenIdApplication>, TState, IQueryable<TResult>> query,
+            TState state, CancellationToken cancellationToken)
+            => GetAsync(query, state, cancellationToken);
+
+        Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetClientIdAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetClientIdAsync((OpenIdApplication) application, cancellationToken);
+
+        Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetClientSecretAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetClientSecretAsync((OpenIdApplication) application, cancellationToken);
+
+        Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetClientTypeAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetClientTypeAsync((OpenIdApplication) application, cancellationToken);
+
+        Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetDisplayNameAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetDisplayNameAsync((OpenIdApplication) application, cancellationToken);
+
+        Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetIdAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetIdAsync((OpenIdApplication) application, cancellationToken);
+
+        Task<ImmutableArray<string>> IOpenIddictApplicationStore<IOpenIdApplication>.GetPostLogoutRedirectUrisAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetPostLogoutRedirectUrisAsync((OpenIdApplication) application, cancellationToken);
+
+        Task<ImmutableArray<string>> IOpenIddictApplicationStore<IOpenIdApplication>.GetRedirectUrisAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetRedirectUrisAsync((OpenIdApplication) application, cancellationToken);
+
+        async Task<IOpenIdApplication> IOpenIddictApplicationStore<IOpenIdApplication>.InstantiateAsync(CancellationToken cancellationToken)
+            => await InstantiateAsync(cancellationToken);
+
+        async Task<ImmutableArray<IOpenIdApplication>> IOpenIddictApplicationStore<IOpenIdApplication>.ListAsync(int? count, int? offset, CancellationToken cancellationToken)
+            => (await ListAsync(count, offset, cancellationToken)).CastArray<IOpenIdApplication>();
+
+        Task<ImmutableArray<TResult>> IOpenIddictApplicationStore<IOpenIdApplication>.ListAsync<TState, TResult>(
+            Func<IQueryable<IOpenIdApplication>, TState, IQueryable<TResult>> query,
+            TState state, CancellationToken cancellationToken)
+            => ListAsync(query, state, cancellationToken);
+
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetClientIdAsync(IOpenIdApplication application,
+            string identifier, CancellationToken cancellationToken)
+            => SetClientIdAsync((OpenIdApplication) application, identifier, cancellationToken);
+
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetClientSecretAsync(IOpenIdApplication application, string secret, CancellationToken cancellationToken)
+            => SetClientSecretAsync((OpenIdApplication) application, secret, cancellationToken);
+
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetClientTypeAsync(IOpenIdApplication application, string type, CancellationToken cancellationToken)
+            => SetClientTypeAsync((OpenIdApplication) application, type, cancellationToken);
+
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetDisplayNameAsync(IOpenIdApplication application, string name, CancellationToken cancellationToken)
+            => SetDisplayNameAsync((OpenIdApplication) application, name, cancellationToken);
+
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetPostLogoutRedirectUrisAsync(IOpenIdApplication application,
+            ImmutableArray<string> addresses, CancellationToken cancellationToken)
+            => SetPostLogoutRedirectUrisAsync((OpenIdApplication) application, addresses, cancellationToken);
+
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetRedirectUrisAsync(IOpenIdApplication application,
+            ImmutableArray<string> addresses, CancellationToken cancellationToken)
+            => SetRedirectUrisAsync((OpenIdApplication) application, addresses, cancellationToken);
+
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.UpdateAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => UpdateAsync((OpenIdApplication) application, cancellationToken);
+
+        // ---------------------------------------------------------
+        // Methods defined by the IOpenIdApplicationStore interface:
+        // ---------------------------------------------------------
+
+        async Task<IOpenIdApplication> IOpenIdApplicationStore.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+            => await FindByPhysicalIdAsync(identifier, cancellationToken);
+
+        Task<ImmutableArray<string>> IOpenIdApplicationStore.GetGrantTypesAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetGrantTypesAsync((OpenIdApplication) application, cancellationToken);
+
+        Task<string> IOpenIdApplicationStore.GetPhysicalIdAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetPhysicalIdAsync((OpenIdApplication) application, cancellationToken);
+
+        Task<ImmutableArray<string>> IOpenIdApplicationStore.GetRolesAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetRolesAsync((OpenIdApplication) application, cancellationToken);
+
+        Task<bool> IOpenIdApplicationStore.IsConsentRequiredAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => IsConsentRequiredAsync((OpenIdApplication) application, cancellationToken);
+
+        async Task<ImmutableArray<IOpenIdApplication>> IOpenIdApplicationStore.ListInRoleAsync(string role, CancellationToken cancellationToken)
+            => (await ListInRoleAsync(role, cancellationToken)).CastArray<IOpenIdApplication>();
+
+        Task IOpenIdApplicationStore.SetConsentRequiredAsync(IOpenIdApplication application, bool value, CancellationToken cancellationToken)
+            => SetConsentRequiredAsync((OpenIdApplication) application, value, cancellationToken);
+
+        Task IOpenIdApplicationStore.SetGrantTypesAsync(IOpenIdApplication application, ImmutableArray<string> types, CancellationToken cancellationToken)
+            => SetGrantTypesAsync((OpenIdApplication) application, types, cancellationToken);
+
+        Task IOpenIdApplicationStore.SetRolesAsync(IOpenIdApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken)
+            => SetRolesAsync((OpenIdApplication) application, roles, cancellationToken);
     }
 }

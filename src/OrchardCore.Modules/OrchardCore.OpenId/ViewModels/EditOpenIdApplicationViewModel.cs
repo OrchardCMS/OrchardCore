@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using OrchardCore.OpenId.Models;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using OrchardCore.OpenId.Models;
 
 namespace OrchardCore.OpenId.ViewModels
 {
@@ -28,7 +25,7 @@ namespace OrchardCore.OpenId.ViewModels
         [DataType(DataType.Password)]
         [Compare("ClientSecret")]
         public string ConfirmClientSecret { get; set; }
-        public List<RoleEntry> RoleEntries { get; set; } = new List<RoleEntry>();
+        public List<RoleEntry> RoleEntries { get; } = new List<RoleEntry>();
         public bool AllowPasswordFlow { get; set; }
         public bool AllowClientCredentialsFlow { get; set; }
         public bool AllowAuthorizationCodeFlow { get; set; }

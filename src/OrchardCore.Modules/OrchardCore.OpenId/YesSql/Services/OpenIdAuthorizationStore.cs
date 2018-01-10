@@ -6,14 +6,16 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenIddict.Core;
-using OrchardCore.OpenId.Indexes;
-using OrchardCore.OpenId.Models;
+using OrchardCore.OpenId.Abstractions.Models;
+using OrchardCore.OpenId.Abstractions.Stores;
+using OrchardCore.OpenId.YesSql.Indexes;
+using OrchardCore.OpenId.YesSql.Models;
 using YesSql;
 using YesSql.Services;
 
-namespace OrchardCore.OpenId.Services
+namespace OrchardCore.OpenId.YesSql.Services
 {
-    public class OpenIdAuthorizationStore : IOpenIddictAuthorizationStore<OpenIdAuthorization>
+    public class OpenIdAuthorizationStore : IOpenIdAuthorizationStore
     {
         private readonly ISession _session;
 
@@ -144,6 +146,27 @@ namespace OrchardCore.OpenId.Services
 
             cancellationToken.ThrowIfCancellationRequested();
 
+            return _session.Query<OpenIdAuthorization, OpenIdAuthorizationIndex>(index => index.AuthorizationId == identifier).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Retrieves an authorization using its physical identifier.
+        /// </summary>
+        /// <param name="identifier">The physical identifier associated with the authorization.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the authorization corresponding to the identifier.
+        /// </returns>
+        public virtual Task<OpenIdAuthorization> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(identifier))
+            {
+                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
             return _session.GetAsync<OpenIdAuthorization>(int.Parse(identifier, CultureInfo.InvariantCulture));
         }
 
@@ -200,6 +223,25 @@ namespace OrchardCore.OpenId.Services
             }
 
             return Task.FromResult(authorization.AuthorizationId);
+        }
+
+        /// <summary>
+        /// Retrieves the physical identifier associated with an authorization.
+        /// </summary>
+        /// <param name="authorization">The authorization.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the physical identifier associated with the authorization.
+        /// </returns>
+        public virtual Task<string> GetPhysicalIdAsync(OpenIdAuthorization authorization, CancellationToken cancellationToken)
+        {
+            if (authorization == null)
+            {
+                throw new ArgumentNullException(nameof(authorization));
+            }
+
+            return Task.FromResult(authorization.Id.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -504,5 +546,101 @@ namespace OrchardCore.OpenId.Services
 
             return _session.CommitAsync();
         }
+
+        // Note: the following methods are deliberately implemented as explicit methods so they are not
+        // exposed by Intellisense. Their logic MUST be limited to dealing with casts and downcasts.
+        // Developers who need to customize the logic SHOULD override the methods taking concretes types.
+
+        // ---------------------------------------------------------------
+        // Methods defined by the IOpenIddictAuthorizationStore interface:
+        // ---------------------------------------------------------------
+
+        Task<long> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.CountAsync(CancellationToken cancellationToken)
+            => CountAsync(cancellationToken);
+
+        Task<long> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.CountAsync<TResult>(Func<IQueryable<IOpenIdAuthorization>, IQueryable<TResult>> query, CancellationToken cancellationToken)
+            => CountAsync(query, cancellationToken);
+
+        async Task<IOpenIdAuthorization> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.CreateAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
+            => await CreateAsync((OpenIdAuthorization) authorization, cancellationToken);
+
+        Task IOpenIddictAuthorizationStore<IOpenIdAuthorization>.DeleteAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
+            => DeleteAsync((OpenIdAuthorization) authorization, cancellationToken);
+
+        async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindAsync(string subject, string client, CancellationToken cancellationToken)
+            => (await FindAsync(subject, client, cancellationToken)).CastArray<IOpenIdAuthorization>();
+
+        async Task<IOpenIdAuthorization> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
+            => await FindByIdAsync(identifier, cancellationToken);
+
+        Task<string> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.GetApplicationIdAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
+            => GetApplicationIdAsync((OpenIdAuthorization) authorization, cancellationToken);
+
+        Task<TResult> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.GetAsync<TState, TResult>(
+            Func<IQueryable<IOpenIdAuthorization>, TState, IQueryable<TResult>> query,
+            TState state, CancellationToken cancellationToken)
+            => GetAsync(query, state, cancellationToken);
+
+        Task<string> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.GetIdAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
+            => GetIdAsync((OpenIdAuthorization) authorization, cancellationToken);
+
+        Task<ImmutableArray<string>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.GetScopesAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
+            => GetScopesAsync((OpenIdAuthorization) authorization, cancellationToken);
+
+        Task<string> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.GetStatusAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
+            => GetStatusAsync((OpenIdAuthorization) authorization, cancellationToken);
+
+        Task<string> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.GetSubjectAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
+            => GetSubjectAsync((OpenIdAuthorization) authorization, cancellationToken);
+
+        Task<string> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.GetTypeAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
+            => GetTypeAsync((OpenIdAuthorization) authorization, cancellationToken);
+
+        async Task<IOpenIdAuthorization> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.InstantiateAsync(CancellationToken cancellationToken)
+            => await InstantiateAsync(cancellationToken);
+
+        async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.ListAsync(int? count, int? offset, CancellationToken cancellationToken)
+            => (await ListAsync(count, offset, cancellationToken)).CastArray<IOpenIdAuthorization>();
+
+        Task<ImmutableArray<TResult>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.ListAsync<TState, TResult>(
+            Func<IQueryable<IOpenIdAuthorization>, TState, IQueryable<TResult>> query,
+            TState state, CancellationToken cancellationToken)
+            => ListAsync(query, state, cancellationToken);
+
+        async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.ListInvalidAsync(int? count, int? offset, CancellationToken cancellationToken)
+            => (await ListInvalidAsync(count, offset, cancellationToken)).CastArray<IOpenIdAuthorization>();
+
+        Task IOpenIddictAuthorizationStore<IOpenIdAuthorization>.SetApplicationIdAsync(IOpenIdAuthorization authorization,
+            string identifier, CancellationToken cancellationToken)
+            => SetApplicationIdAsync((OpenIdAuthorization) authorization, identifier, cancellationToken);
+
+        Task IOpenIddictAuthorizationStore<IOpenIdAuthorization>.SetScopesAsync(IOpenIdAuthorization authorization,
+            ImmutableArray<string> scopes, CancellationToken cancellationToken)
+            => SetScopesAsync((OpenIdAuthorization) authorization, scopes, cancellationToken);
+
+        Task IOpenIddictAuthorizationStore<IOpenIdAuthorization>.SetStatusAsync(IOpenIdAuthorization authorization,
+            string status, CancellationToken cancellationToken)
+            => SetStatusAsync((OpenIdAuthorization) authorization, status, cancellationToken);
+
+        Task IOpenIddictAuthorizationStore<IOpenIdAuthorization>.SetSubjectAsync(IOpenIdAuthorization authorization,
+            string subject, CancellationToken cancellationToken)
+            => SetSubjectAsync((OpenIdAuthorization) authorization, subject, cancellationToken);
+
+        Task IOpenIddictAuthorizationStore<IOpenIdAuthorization>.SetTypeAsync(IOpenIdAuthorization authorization,
+            string type, CancellationToken cancellationToken)
+            => SetTypeAsync((OpenIdAuthorization) authorization, type, cancellationToken);
+
+        Task IOpenIddictAuthorizationStore<IOpenIdAuthorization>.UpdateAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
+            => UpdateAsync((OpenIdAuthorization) authorization, cancellationToken);
+
+        // -----------------------------------------------------------
+        // Methods defined by the IOpenIdAuthorizationStore interface:
+        // -----------------------------------------------------------
+
+        async Task<IOpenIdAuthorization> IOpenIdAuthorizationStore.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+            => await FindByPhysicalIdAsync(identifier, cancellationToken);
+
+        Task<string> IOpenIdAuthorizationStore.GetPhysicalIdAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
+            => GetPhysicalIdAsync((OpenIdAuthorization) authorization, cancellationToken);
     }
 }

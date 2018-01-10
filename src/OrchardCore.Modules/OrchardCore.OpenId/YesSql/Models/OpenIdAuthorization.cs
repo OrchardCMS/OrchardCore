@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using OrchardCore.OpenId.Abstractions.Models;
 
-namespace OrchardCore.OpenId.Models
+namespace OrchardCore.OpenId.YesSql.Models
 {
-    public class OpenIdAuthorization
+    public class OpenIdAuthorization : IOpenIdAuthorization
     {
         /// <summary>
         /// Gets or sets the unique identifier
