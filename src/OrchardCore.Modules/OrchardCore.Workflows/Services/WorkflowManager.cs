@@ -120,7 +120,7 @@ namespace OrchardCore.Workflows.Services
 
                 if (startActivity != null)
                 {
-                    await StartWorkflowAsync(workflowToStart, startActivity, input);
+                    await StartWorkflowAsync(workflowToStart, startActivity, input, correlationId);
                 }
             }
         }

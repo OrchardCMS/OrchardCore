@@ -207,6 +207,10 @@ $link-padding-left: 16px !default;
     @extend .text-danger;
 }
 
+.inline-form {
+    display: inline;
+}
+
 // When the validation message in inside the label, add a separator
 label .field-validation-error::before {
     content: "- ";

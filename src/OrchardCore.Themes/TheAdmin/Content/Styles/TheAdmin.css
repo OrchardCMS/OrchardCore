@@ -6011,6 +6011,9 @@ a.text-dark:focus, a.text-dark:hover {
 .validation-summary-errors {
   padding-bottom: 0; }
 
+.inline-form {
+  display: inline; }
+
 label .field-validation-error::before {
   content: "- "; }
 

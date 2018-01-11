@@ -30,10 +30,9 @@ namespace OrchardCore.Workflows.Http.Routing
             {
                 var workflowInstanceUid = (string)context.Values["workflowInstanceUid"];
                 var activityId = (int)context.Values["activityId"];
-                var correlationId = context.Values.GetValue<string>("correlationId");
                 var httpMethod = context.HttpContext.Request.Method;
                 var workflowInstancePathEntries = context.HttpContext.RequestServices.GetRequiredService<IWorkflowInstancePathEntries>();
-                var entry = workflowInstancePathEntries.GetEntry(httpMethod, workflowInstanceUid, activityId, correlationId);
+                var entry = workflowInstancePathEntries.GetEntry(httpMethod, workflowInstanceUid, activityId);
 
                 if (entry != null)
                 {
@@ -64,15 +63,14 @@ namespace OrchardCore.Workflows.Http.Routing
             var httpMethod = context.HttpContext.Request.Method;
             var workflowInstancePathEntries = context.HttpContext.RequestServices.GetRequiredService<IWorkflowInstancePathEntries>();
             var workflowInstanceUid = context.HttpContext.Request.Query["uid"];
-            var correlationId = context.RouteData.Values.GetValue<string>("correlationId");
+            var correlationId = context.HttpContext.Request.Query["correlationId"];
             var query = workflowInstancePathEntries.GetEntries(httpMethod, requestPath);
 
             if (!string.IsNullOrWhiteSpace(workflowInstanceUid))
             {
                 query = query.Where(x => x.WorkflowId == workflowInstanceUid);
             }
-
-            if (!string.IsNullOrWhiteSpace(correlationId))
+            else if (!string.IsNullOrWhiteSpace(correlationId))
             {
                 query = query.Where(x => string.Equals(x.CorrelationId, correlationId, StringComparison.OrdinalIgnoreCase));
             }

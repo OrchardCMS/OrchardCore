@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Http.Services;
 
 namespace OrchardCore.Workflows.Http.Routing
@@ -13,7 +12,7 @@ namespace OrchardCore.Workflows.Http.Routing
     public class WorkflowDefinitionRouter : IRouter
     {
         private readonly IRouter _target;
-        private static HashSet<string> _keys = new HashSet<string>(new[] { "area", "controller", "action", "workflowDefinitionId", "activityId", "correlationId" }, StringComparer.OrdinalIgnoreCase);
+        private static HashSet<string> _keys = new HashSet<string>(new[] { "area", "controller", "action", "workflowDefinitionId", "activityId" }, StringComparer.OrdinalIgnoreCase);
 
         public WorkflowDefinitionRouter(IRouter target)
         {
@@ -30,10 +29,9 @@ namespace OrchardCore.Workflows.Http.Routing
             {
                 var workflowDefinitionId = context.Values["workflowDefinitionId"].ToString();
                 var activityId = (int)context.Values["activityId"];
-                var correlationId = context.Values.GetValue<string>("correlationId");
                 var httpMethod = context.HttpContext.Request.Method;
                 var workflowDefinitionPathEntries = context.HttpContext.RequestServices.GetRequiredService<IWorkflowDefinitionPathEntries>();
-                var entry = workflowDefinitionPathEntries.GetEntry(httpMethod, workflowDefinitionId, activityId, correlationId);
+                var entry = workflowDefinitionPathEntries.GetEntry(httpMethod, workflowDefinitionId, activityId);
 
                 if (entry != null)
                 {

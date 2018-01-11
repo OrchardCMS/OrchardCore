@@ -58,7 +58,7 @@ namespace OrchardCore.Workflows.Services
     {
         public static Task TriggerEventAsync(this IWorkflowManager workflowManager, string name, object input = null, string correlationId = null)
         {
-            return workflowManager.TriggerEventAsync(name, new RouteValueDictionary(input));
+            return workflowManager.TriggerEventAsync(name, new RouteValueDictionary(input), correlationId);
         }
 
         public static Task<WorkflowContext> StartWorkflowAsync(this IWorkflowManager workflowManager, WorkflowDefinitionRecord workflowDefinition, object input = null, string startActivityName = null, string correlationId = null)

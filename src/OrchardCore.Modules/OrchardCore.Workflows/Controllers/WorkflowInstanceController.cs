@@ -2,12 +2,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Activities;
@@ -26,6 +29,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IWorkflowInstanceRepository _workflowInstanceRepository;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<IActivity> _activityDisplayManager;
+        private readonly INotifier _notifier;
         private readonly ILogger<WorkflowInstanceController> _logger;
 
         public WorkflowInstanceController(
@@ -36,6 +40,8 @@ namespace OrchardCore.Workflows.Controllers
             IAuthorizationService authorizationService,
             IDisplayManager<IActivity> activityDisplayManager,
             IShapeFactory shapeFactory,
+            INotifier notifier,
+            IHtmlLocalizer<WorkflowInstanceController> localizer,
             ILogger<WorkflowInstanceController> logger
         )
         {
@@ -45,12 +51,15 @@ namespace OrchardCore.Workflows.Controllers
             _workflowInstanceRepository = workflowInstanceRepository;
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
+            _notifier = notifier;
             _logger = logger;
 
             New = shapeFactory;
+            T = localizer;
         }
 
         private dynamic New { get; }
+        private IHtmlLocalizer<WorkflowInstanceController> T { get; }
 
         public async Task<IActionResult> Index(int workflowDefinitionId, PagerParameters pagerParameters)
         {
@@ -88,9 +97,10 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowInstance = await _workflowInstanceRepository.GetAsync(id);
             var workflowDefinitionRecord = await _workflowDefinitionRepository.GetAsync(workflowInstance.DefinitionId);
+            var blockingActivities = workflowInstance.AwaitingActivities.ToDictionary(x => x.ActivityId);
             var workflowContext = _workflowManager.CreateWorkflowContext(workflowDefinitionRecord, workflowInstance);
             var activityContexts = workflowDefinitionRecord.Activities.Select(x => _workflowManager.CreateActivityContext(x)).ToList();
-            var activityDesignShapes = (await Task.WhenAll(activityContexts.Select(async x => await BuildActivityDisplayAsync(x, workflowDefinitionRecord.Id, "Design")))).ToList();
+            var activityDesignShapes = (await Task.WhenAll(activityContexts.Select(async x => await BuildActivityDisplayAsync(x, workflowDefinitionRecord.Id, blockingActivities.ContainsKey(x.ActivityRecord.Id), "Design")))).ToList();
             var activitiesDataQuery = activityContexts.Select(x => new
             {
                 Id = x.ActivityRecord.Id,
@@ -108,23 +118,50 @@ namespace OrchardCore.Workflows.Controllers
                 Activities = activitiesDataQuery.ToArray(),
                 Transitions = workflowDefinitionRecord.Transitions
             };
+
+            var jsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
             var viewModel = new WorkflowInstanceViewModel
             {
                 WorkflowInstance = workflowInstance,
                 WorkflowDefinition = workflowDefinitionRecord,
-                WorkflowDefinitionJson = JsonConvert.SerializeObject(workflowDefinitionData, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }),
+                WorkflowDefinitionJson = JsonConvert.SerializeObject(workflowDefinitionData, Formatting.None, jsonSerializerSettings),
+                WorkflowInstanceJson = JsonConvert.SerializeObject(workflowInstance, Formatting.Indented, jsonSerializerSettings),
                 ActivityDesignShapes = activityDesignShapes
             };
             return View(viewModel);
         }
 
-        private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, int workflowDefinitionId, string displayType)
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+            {
+                return Unauthorized();
+            }
+
+            var workflowInstance = await _workflowInstanceRepository.GetAsync(id);
+
+            if (workflowInstance == null)
+            {
+                _notifier.Information(T["Workflow instance {0} no longer exists.", id]);
+                return RedirectToAction("Index", "WorkflowDefinition");
+            }
+            else
+            {
+                await _workflowInstanceRepository.DeleteAsync(workflowInstance);
+                _notifier.Success(T["Workflow instance {0} has been deleted.", id]);
+                return RedirectToAction("Index", new { workflowDefinitionId = workflowInstance.DefinitionId });
+            }
+        }
+
+        private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, int workflowDefinitionId, bool isBlocking, string displayType)
         {
             dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, this, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}ReadOnly";
             activityShape.Activity = activityContext.Activity;
             activityShape.ActivityRecord = activityContext.ActivityRecord;
             activityShape.WorkflowDefinitionId = workflowDefinitionId;
+            activityShape.IsBlocking = isBlocking;
             return activityShape;
         }
     }

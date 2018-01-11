@@ -9,5 +9,6 @@ namespace OrchardCore.Workflows.ViewModels
         public WorkflowDefinitionRecord WorkflowDefinition { get; set; }
         public IList<dynamic> ActivityDesignShapes { get; set; }
         public string WorkflowDefinitionJson { get; set; }
+        public string WorkflowInstanceJson { get; set; }
     }
 }

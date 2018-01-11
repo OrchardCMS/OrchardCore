@@ -32,12 +32,11 @@
         opacity: 0.8;
         min-width: 80px;
         min-height: 80px;
-        cursor: move;
         text-align: left;
         z-index: 20;
         position: absolute;
         background-color: #eeeeef;
-        color: black;
+        color: #000000;
         font-family: helvetica, sans-serif;
         padding: 1em;
         font-size: 0.7em;
@@ -47,6 +46,11 @@
         transition: box-shadow 0.15s ease-in;
 
         &.activity-start {
+            background-color: #7ab02c;
+            color: #ffffff;
+        }
+
+        &.activity-blocking {
             background-color: #7ab02c;
             color: #ffffff;
         }

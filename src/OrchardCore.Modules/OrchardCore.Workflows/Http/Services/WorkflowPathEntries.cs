@@ -15,7 +15,7 @@ namespace OrchardCore.Workflows.Http.Services
             return entries.ToList();
         }
 
-        public WorkflowPathEntry GetEntry(string httpMethod, string workflowId, int activityId, string correlationId)
+        public WorkflowPathEntry GetEntry(string httpMethod, string workflowId, int activityId)
         {
             if (!_entries.ContainsKey(workflowId))
             {
@@ -25,9 +25,7 @@ namespace OrchardCore.Workflows.Http.Services
             var entries = _entries[workflowId];
             var query =
                 from entry in entries
-                where entry.ActivityId == activityId
-                && string.Equals(entry.HttpMethod, httpMethod, System.StringComparison.OrdinalIgnoreCase)
-                && string.Equals(entry.CorrelationId, correlationId, System.StringComparison.OrdinalIgnoreCase)
+                where entry.ActivityId == activityId && string.Equals(entry.HttpMethod, httpMethod, System.StringComparison.OrdinalIgnoreCase)
                 select entry;
 
             return query.FirstOrDefault();

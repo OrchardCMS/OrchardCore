@@ -3,31 +3,47 @@
 
 <h1>@RenderTitleSegments(T["{0} Instances", Model.WorkflowDefinition.Name])</h1>
 
-@if (Model.WorkflowInstances.Any())
-{
-    using (Html.BeginForm())
-    {
-        <ul class="list-group">
-            @foreach (var entry in Model.WorkflowInstances)
-            {
-                <li class="list-group-item">
-                    <div class="properties">
-                        <div class="related">
-                            <a asp-action="Delete" asp-route-id="@entry.WorkflowInstance.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-                        </div>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowDefinition">@T["Workflow Definitions"]</a></li>
+        <li class="breadcrumb-item"><a asp-action="Edit" asp-controller="WorkflowDefinition" asp-route-id="@Model.WorkflowDefinition.Id">@Model.WorkflowDefinition.Name</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@T["Instances"]</li>
+    </ol>
+</nav>
 
-                        <a asp-action="Details" asp-route-id="@entry.WorkflowInstance.Id">@entry.WorkflowInstance.Uid</a>
-                        <div>
-                            <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.WorkflowInstance.CreatedUtc)))]</span>
+<div class="form-group">
+    @if (Model.WorkflowInstances.Any())
+    {
+        using (Html.BeginForm())
+        {
+            <ul class="list-group">
+                @foreach (var entry in Model.WorkflowInstances)
+                {
+                    <li class="list-group-item">
+                        <div class="properties">
+                            <div class="related">
+                                <a asp-action="Delete" asp-route-id="@entry.WorkflowInstance.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            </div>
+
+                            <a asp-action="Details" asp-route-id="@entry.WorkflowInstance.Id">@entry.WorkflowInstance.Uid</a>
+                            <div>
+                                <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.WorkflowInstance.CreatedUtc)))]</span>
+                            </div>
                         </div>
-                    </div>
-                </li>
-            }
-        </ul>
+                    </li>
+                }
+            </ul>
+        }
+        @await DisplayAsync(Model.Pager)
     }
-    @await DisplayAsync(Model.Pager)
-}
-else
-{
-    <p>@T["There are no running instances."]</p>
-}
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            @T["<strong>Nothing here!</strong> There are no halted workflows at the moment."]
+        </div>
+    }
+</div>
+
+<div class="form-group">
+    <a class="btn btn-secondary" asp-route-action="Index" asp-route-controller="WorkflowDefinition">@T["Back"]</a>
+</div>

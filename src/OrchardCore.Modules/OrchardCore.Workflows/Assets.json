@@ -20,7 +20,7 @@
   },
   {
     "inputs": [
-      "Assets/Styles/workflow-canvas.scss"
+      "Assets/Styles/workflow-viewer.scss"
     ],
     "output": "Content/Styles/orchard.workflows-viewer.css"
   },

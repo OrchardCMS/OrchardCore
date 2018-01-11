@@ -3,6 +3,13 @@
 
 <h1>@RenderTitleSegments(Model.WorkflowDefinition.Name)</h1>
 
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">@T["Workflow Definitions"]</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.WorkflowDefinition.Name</li>
+    </ol>
+</nav>
+
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
