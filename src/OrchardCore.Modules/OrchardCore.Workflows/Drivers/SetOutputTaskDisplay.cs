@@ -1,5 +1,5 @@
-using OrchardCore.Workflows.Abstractions.Display;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
 
@@ -10,13 +10,13 @@ namespace OrchardCore.Workflows.Drivers
         protected override void Map(SetOutputTask source, SetOutputTaskViewModel target)
         {
             target.OutputName = source.OutputName;
-            target.Expression = source.Expression.Expression;
+            target.Expression = source.ScriptExpression.Expression;
         }
 
         protected override void Map(SetOutputTaskViewModel source, SetOutputTask target)
         {
             target.OutputName = source.OutputName.Trim();
-            target.Expression = new WorkflowExpression<object>(source.Expression);
+            target.ScriptExpression = new WorkflowExpression<object>(source.Expression);
         }
     }
 }

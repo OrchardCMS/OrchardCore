@@ -3,12 +3,12 @@
 
 <fieldset class="form-group" asp-validation-class-for="Location">
     <label asp-for="Location">@T["Location"] <span asp-validation-for="Location"></span></label>
-    <input asp-for="Location" class="form-control workflow-expression" />
+    <input type="expression" asp-for="Location" syntax="Liquid" />
     <span class="hint">@T["The URL to redirect to."]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="Permanent">
     <label asp-for="Permanent">@T["Permanent"] <span asp-validation-for="Permanent"></span></label>
-    <input asp-for="Permanent" class="form-control workflow-expression" />
-    <span class="hint">@T["Enter an expression thatevaluates to true or false."]</span>
+    <input type="expression" asp-for="Permanent" syntax="Script" />
+    <span class="hint">@T["Enter an expression that evaluates to true or false."]</span>
 </fieldset>

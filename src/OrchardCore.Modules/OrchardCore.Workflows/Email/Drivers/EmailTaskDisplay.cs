@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using OrchardCore.Workflows.Abstractions.Display;
+using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Email.Activities;
 using OrchardCore.Workflows.Email.ViewModels;
 using OrchardCore.Workflows.Models;
@@ -10,18 +9,18 @@ namespace OrchardCore.Workflows.Email.Drivers
     {
         protected override void Map(EmailTask source, EmailTaskViewModel target)
         {
-            target.SenderExpression = source.SenderExpression.Expression;
-            target.RecipientsExpression = source.RecipientsExpression.Expression;
-            target.SubjectExpression = source.SubjectExpression.Expression;
-            target.Body = source.Body;
+            target.SenderExpression = source.Sender.Expression;
+            target.RecipientsExpression = source.Recipients.Expression;
+            target.SubjectExpression = source.Subject.Expression;
+            target.Body = source.Body.Expression;
         }
 
         protected override void Map(EmailTaskViewModel source, EmailTask target)
         {
-            target.SenderExpression = new WorkflowExpression<string>(source.SenderExpression);
-            target.RecipientsExpression = new WorkflowExpression<IList<string>>(source.RecipientsExpression);
-            target.SubjectExpression = new WorkflowExpression<string>(source.SubjectExpression);
-            target.Body = source.Body?.Trim();
+            target.Sender = new WorkflowExpression<string>(source.SenderExpression);
+            target.Recipients = new WorkflowExpression<string>(source.RecipientsExpression);
+            target.Subject = new WorkflowExpression<string>(source.SubjectExpression);
+            target.Body = new WorkflowExpression<string>(source.Body);
         }
     }
 }

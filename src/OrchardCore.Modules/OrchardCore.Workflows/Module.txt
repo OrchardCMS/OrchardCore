@@ -10,6 +10,7 @@ Features:
     OrchardCore.Workflows:
         Name: Workflows
         Description: Provides tools to create custom workflows.
+        Dependencies: OrchardCore.Liquid
     OrchardCore.Workflows.Http:
         Name: HTTP Activities
         Description: Provides HTTP-related services and activities.
@@ -17,4 +18,4 @@ Features:
     OrchardCore.Workflows.Email:
         Name: Email Activities
         Description: Provides email-related services and activities.
-        Dependencies: OrchardCore.Workflows, OrchardCore.Liquid
+        Dependencies: OrchardCore.Workflows

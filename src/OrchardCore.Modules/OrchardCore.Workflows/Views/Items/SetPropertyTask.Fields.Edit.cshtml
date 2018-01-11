@@ -1,0 +1,14 @@
+@using OrchardCore.Workflows.ViewModels;
+@model SetPropertyTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="PropertyName">
+    <label asp-for="PropertyName">@T["Name"] <span asp-validation-for="PropertyName"></span></label>
+    <input asp-for="PropertyName" class="form-control" autofocus="autofocus" />
+    <span class="hint">@T["The property to set. If the specified property doesn't exist yet, it will be added."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="ScriptExpression">
+    <label asp-for="ScriptExpression">@T["Script Expression"] <span asp-validation-for="ScriptExpression"></span></label>
+    <input type="expression" asp-for="ScriptExpression" syntax="Script" />
+    <span class="hint">@T["The expression to evaluate. The result will be assigned to the specified property."]</span>
+</fieldset>

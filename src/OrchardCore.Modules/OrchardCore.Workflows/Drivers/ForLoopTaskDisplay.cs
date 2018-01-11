@@ -1,4 +1,4 @@
-using OrchardCore.Workflows.Abstractions.Display;
+using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
@@ -9,12 +9,12 @@ namespace OrchardCore.Workflows.Drivers
     {
         protected override void Map(ForLoopTask source, ForLoopTaskViewModel target)
         {
-            target.CountExpression = source.CountExpression.Expression;
+            target.CountExpression = source.Count.Expression;
         }
 
         protected override void Map(ForLoopTaskViewModel source, ForLoopTask target)
         {
-            target.CountExpression = new WorkflowExpression<double>(source.CountExpression);
+            target.Count = new WorkflowExpression<int>(source.CountExpression);
         }
     }
 }

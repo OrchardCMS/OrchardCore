@@ -6,7 +6,6 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Scripting;
-using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
@@ -41,9 +40,9 @@ namespace OrchardCore.Workflows.Activities
         /// <summary>
         /// The script can call any available functions, including setOutcome().
         /// </summary>
-        public string Script
+        public WorkflowExpression<object> Script
         {
-            get => GetProperty(() => "setOutcome('Done');");
+            get => GetProperty(() => new WorkflowExpression<object>("setOutcome('Done');"));
             set => SetProperty(value);
         }
 
@@ -55,7 +54,7 @@ namespace OrchardCore.Workflows.Activities
         public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             var outcomes = new List<string>();
-            await workflowContext.EvaluateAsync(Script, new OutcomeMethodProvider(outcomes));
+            await workflowContext.EvaluateScriptAsync(Script, new OutcomeMethodProvider(outcomes));
             return outcomes;
         }
     }

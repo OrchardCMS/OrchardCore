@@ -9,6 +9,6 @@
 
 <fieldset class="form-group" asp-validation-class-for="Expression">
     <label asp-for="Expression">@T["Expression"] <span asp-validation-for="Expression"></span></label>
-    <input asp-for="Expression" class="form-control workflow-expression" />
+    <input type="expression" asp-for="Expression" syntax="Script" />
     <span class="hint">@T["The expression to evaluate. The result will be assigned to the specified output."]</span>
 </fieldset>

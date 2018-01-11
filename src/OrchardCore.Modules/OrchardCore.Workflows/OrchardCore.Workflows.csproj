@@ -21,9 +21,6 @@
     <None Remove="Views\Items\EmailTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\EmailTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\EmailTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\EvaluateExpressionTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\EvaluateExpressionTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\EvaluateExpressionTask.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\ForLoopTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\ForLoopTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\ForLoopTask.Fields.Thumbnail.cshtml" />
@@ -46,9 +43,9 @@
     <None Remove="Views\Items\SetOutputTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\SetOutputTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\SetOutputTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\SetVariableTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\SetVariableTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\SetVariableTask.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\Items\SetPropertyTask.Fields.Design.cshtml" />
+    <None Remove="Views\Items\SetPropertyTask.Fields.Edit.cshtml" />
+    <None Remove="Views\Items\SetPropertyTask.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\SignalEvent.Fields.Design.cshtml" />
     <None Remove="Views\Items\SignalEvent.Fields.Edit.cshtml" />
     <None Remove="Views\Items\SignalEvent.Fields.Thumbnail.cshtml" />
@@ -83,6 +80,7 @@
   <ItemGroup>
     <Folder Include="Content\Scripts\" />
     <Folder Include="Content\Styles\" />
+    <Folder Include="Evaluators\" />
     <Folder Include="Models\" />
   </ItemGroup>
 

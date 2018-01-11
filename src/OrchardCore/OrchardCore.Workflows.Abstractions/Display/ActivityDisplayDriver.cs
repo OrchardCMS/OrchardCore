@@ -4,7 +4,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Activities;
 
-namespace OrchardCore.Workflows.Abstractions.Display
+namespace OrchardCore.Workflows.Display
 {
     /// <summary>
     /// A display driver for <see cref="IActivity"/> types. Will add useful information to the created shape, such as the <see cref="IActivity"/> itself.

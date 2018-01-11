@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
@@ -21,9 +20,9 @@ namespace OrchardCore.Workflows.Activities
         public override LocalizedString Description => T["Evaluates the specified condition and continues execution based on the outcome."];
 
         /// <summary>
-        /// An expression evaluating to either true or false.
+        /// A script evaluating to either true or false.
         /// </summary>
-        public WorkflowExpression<bool> ConditionExpression
+        public WorkflowExpression<bool> Condition
         {
             get => GetProperty(() => new WorkflowExpression<bool>());
             set => SetProperty(value);
@@ -36,7 +35,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            var result = await workflowContext.EvaluateAsync(ConditionExpression);
+            var result = await workflowContext.EvaluateScriptAsync(Condition);
             return Outcomes(result ? "True" : "False");
         }
     }

@@ -6,20 +6,26 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class EvaluateExpressionTask : TaskActivity
+    public class SetPropertyTask : TaskActivity
     {
-        public EvaluateExpressionTask(IStringLocalizer<EvaluateExpressionTask> localizer)
+        public SetPropertyTask(IStringLocalizer<SetPropertyTask> localizer)
         {
             T = localizer;
         }
 
         private IStringLocalizer T { get; }
 
-        public override string Name => nameof(EvaluateExpressionTask);
+        public override string Name => nameof(SetPropertyTask);
         public override LocalizedString Category => T["Primitives"];
-        public override LocalizedString Description => T["Evaluates an expression and pushes the result onto the stack."];
+        public override LocalizedString Description => T["Assigns a value to a property on the workflow."];
 
-        public WorkflowExpression<object> Expression
+        public string PropertyName
+        {
+            get => GetProperty<string>();
+            set => SetProperty(value);
+        }
+
+        public WorkflowExpression<object> ScriptExpression
         {
             get => GetProperty(() => new WorkflowExpression<object>());
             set => SetProperty(value);
@@ -32,8 +38,8 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            var value = await workflowContext.EvaluateAsync(Expression);
-            workflowContext.Stack.Push(value);
+            var value = await workflowContext.EvaluateScriptAsync(ScriptExpression);
+            workflowContext.Properties[PropertyName] = value;
 
             return Outcomes("Done");
         }

@@ -5,6 +5,7 @@ namespace OrchardCore.Workflows.Services
 {
     public interface IWorkflowContextHandler
     {
-        Task EvaluatingScriptAsync(WorkflowContextScriptEvalContext context);
+        Task EvaluatingExpressionAsync(WorkflowContextExpressionContext context);
+        Task EvaluatingScriptAsync(WorkflowContextScriptContext context);
     }
 }

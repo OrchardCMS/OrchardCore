@@ -1,5 +1,5 @@
-using OrchardCore.Workflows.Abstractions.Display;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
 
@@ -9,12 +9,12 @@ namespace OrchardCore.Workflows.Drivers
     {
         protected override void Map(WhileLoopTask source, WhileLoopTaskViewModel target)
         {
-            target.ConditionExpression = source.ConditionExpression.Expression;
+            target.ConditionExpression = source.Condition.Expression;
         }
 
         protected override void Map(WhileLoopTaskViewModel source, WhileLoopTask target)
         {
-            target.ConditionExpression = new WorkflowExpression<bool>(source.ConditionExpression);
+            target.Condition = new WorkflowExpression<bool>(source.ConditionExpression.Trim());
         }
     }
 }

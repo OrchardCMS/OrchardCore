@@ -1,10 +1,10 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
@@ -14,12 +14,7 @@ namespace OrchardCore.Workflows.Activities
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
 
-        public NotifyTask
-        (
-            INotifier notifier,
-            IStringLocalizer<NotifyTask> s,
-            IHtmlLocalizer<NotifyTask> h
-        )
+        public NotifyTask(INotifier notifier, IStringLocalizer<NotifyTask> s, IHtmlLocalizer<NotifyTask> h)
         {
             _notifier = notifier;
 
@@ -37,9 +32,9 @@ namespace OrchardCore.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public string Message
+        public WorkflowExpression<string> Message
         {
-            get => GetProperty<string>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
@@ -48,10 +43,11 @@ namespace OrchardCore.Workflows.Activities
             return Outcomes(S["Done"]);
         }
 
-        public override IEnumerable<string> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            _notifier.Add(NotificationType, H[Message]);
-            yield return "Done";
+            var message = await workflowContext.EvaluateExpressionAsync(Message);
+            _notifier.Add(NotificationType, H[message]);
+            return Outcomes("Done");
         }
     }
 }

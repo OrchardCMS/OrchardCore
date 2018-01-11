@@ -38,8 +38,8 @@ namespace OrchardCore.Tests.Workflows.Activities
 
         public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            var a = await workflowContext.EvaluateAsync(A);
-            var b = await workflowContext.EvaluateAsync(B);
+            var a = await workflowContext.EvaluateScriptAsync(A);
+            var b = await workflowContext.EvaluateScriptAsync(B);
             var result = a + b;
 
             workflowContext.Stack.Push(result);

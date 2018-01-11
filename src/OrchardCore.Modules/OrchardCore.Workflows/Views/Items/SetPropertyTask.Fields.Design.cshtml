@@ -1,0 +1,8 @@
+@using OrchardCore.Workflows.Activities
+@{
+    var activity = (SetPropertyTask)Model.Activity;
+}
+<header>
+    <h4><i class="fa fa-pencil"></i>@T["Set {0} Property", activity.PropertyName]</h4>
+</header>
+<span>@T["<em>{0}</em>", activity.ScriptExpression]</span>

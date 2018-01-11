@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
@@ -7,6 +9,8 @@ using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Drivers;
+using OrchardCore.Workflows.Evaluators;
+using OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Services;
@@ -34,18 +38,21 @@ namespace OrchardCore.Workflows
             services.AddSingleton<IIndexProvider, WorkflowInstanceIndexProvider>();
             services.AddScoped<IWorkflowContextHandler, DefaultWorkflowContextHandler>();
             services.AddScoped<IWorkflowContextHandler, SignalWorkflowContextHandler>();
+            services.AddScoped<IWorkflowExpressionEvaluator, LiquidWorkflowExpressionEvaluator>();
+            services.AddScoped<IWorkflowScriptEvaluator, DefaultWorkflowScriptEvaluator>();
 
             services.AddActivity<NotifyTask, NotifyTaskDisplay>();
-            services.AddActivity<SetVariableTask, SetVariableTaskDisplay>();
+            services.AddActivity<SetPropertyTask, SetVariableTaskDisplay>();
             services.AddActivity<SetOutputTask, SetOutputTaskDisplay>();
             services.AddActivity<CorrelateTask, CorrelateTaskDisplay>();
-            services.AddActivity<EvaluateExpressionTask, EvaluateExpressionTaskDisplay>();
             services.AddActivity<BranchTask, BranchTaskDisplay>();
             services.AddActivity<ForLoopTask, ForLoopTaskDisplay>();
             services.AddActivity<WhileLoopTask, WhileLoopTaskDisplay>();
             services.AddActivity<IfElseTask, IfElseTaskDisplay>();
             services.AddActivity<ScriptTask, ScriptTaskDisplay>();
             services.AddActivity<SignalEvent, SignalEventDisplay>();
+
+            services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
         }
     }
 }

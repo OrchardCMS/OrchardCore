@@ -44,8 +44,8 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            var locationTask = workflowContext.EvaluateAsync(Location);
-            var permanentTask = workflowContext.EvaluateAsync(Permanent);
+            var locationTask = workflowContext.EvaluateExpressionAsync(Location);
+            var permanentTask = workflowContext.EvaluateScriptAsync(Permanent);
 
             await Task.WhenAll(locationTask, permanentTask);
 

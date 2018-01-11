@@ -14,7 +14,7 @@ namespace OrchardCore.Workflows.WorkflowContextProviders
             _signalService = signalService;
         }
 
-        public override Task EvaluatingScriptAsync(WorkflowContextScriptEvalContext context)
+        public override Task EvaluatingScriptAsync(WorkflowContextScriptContext context)
         {
             context.ScopedMethodProviders.Add(new SignalMethodProvider(context.WorkflowContext, _signalService));
             return Task.CompletedTask;

@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Email.Activities;
 using OrchardCore.Workflows.Email.Drivers;
@@ -24,7 +22,6 @@ namespace OrchardCore.Workflows.Email
         {
             services.Configure<SmtpOptions>(_configuration.GetSection("Modules:OrchardCore.Email"));
             services.AddActivity<EmailTask, EmailTaskDisplay>();
-            services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
         }
     }
 }

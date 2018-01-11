@@ -3,9 +3,9 @@ using OrchardCore.Scripting;
 
 namespace OrchardCore.Workflows.Models
 {
-    public class WorkflowContextScriptEvalContext : WorkflowContextHandlerContextBase
+    public class WorkflowContextScriptContext : WorkflowContextHandlerContextBase
     {
-        public WorkflowContextScriptEvalContext(WorkflowContext workflowContext) : base(workflowContext)
+        public WorkflowContextScriptContext(WorkflowContext workflowContext) : base(workflowContext)
         {
         }
 

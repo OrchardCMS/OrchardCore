@@ -3,19 +3,19 @@
 
 <fieldset class="form-group" asp-validation-class-for="SenderExpression">
     <label asp-for="SenderExpression">@T["Sender"] <span asp-validation-for="SenderExpression"></span></label>
-    <input asp-for="SenderExpression" class="form-control workflow-expression" />
+    <input type="expression" asp-for="SenderExpression" syntax="Liquid" />
     <span class="hint">@T["The sender's email address. Leave blank to use the configured email address."]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="RecipientsExpression">
     <label asp-for="RecipientsExpression">@T["Recipients"] <span asp-validation-for="RecipientsExpression"></span></label>
-    <input asp-for="RecipientsExpression" class="form-control workflow-expression" />
+    <input type="expression" asp-for="RecipientsExpression" syntax="Liquid" />
     <span class="hint">@T["The comma-separated list of recipient email addresses"]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="SubjectExpression">
     <label asp-for="SubjectExpression">@T["Subject"] <span asp-validation-for="SubjectExpression"></span></label>
-    <input asp-for="SubjectExpression" class="form-control workflow-expression" />
+    <input type="expression" asp-for="SubjectExpression" syntax="Liquid" />
     <span class="hint">@T["The subject of the email message."]</span>
 </fieldset>
 

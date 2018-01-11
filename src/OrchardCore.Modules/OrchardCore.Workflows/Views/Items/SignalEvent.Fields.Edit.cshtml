@@ -3,6 +3,6 @@
 
 <fieldset class="form-group" asp-validation-class-for="SignalNameExpression">
     <label asp-for="SignalNameExpression">@T["Name"] <span asp-validation-for="SignalNameExpression"></span></label>
-    <input asp-for="SignalNameExpression" class="form-control workflow-expression" autofocus="autofocus" />
+    <input type="expression" asp-for="SignalNameExpression" syntax="Liquid" autofocus />
     <span class="hint">@T["The signal name."]</span>
 </fieldset>

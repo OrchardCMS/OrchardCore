@@ -6,13 +6,18 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Liquid;
+using OrchardCore.Liquid.Services;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
 using OrchardCore.Tests.Workflows.Activities;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Evaluators;
+using OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using Xunit;
@@ -65,22 +70,28 @@ namespace OrchardCore.Tests.Workflows
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var javaScriptEngine = new JavaScriptEngine(memoryCache, new Mock<IStringLocalizer<JavaScriptEngine>>().Object);
+            var workflowContextHandlers = new IWorkflowContextHandler[0];
             var globalMethodProviders = new IGlobalMethodProvider[0];
             var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders, serviceProvider);
+            var scriptEvaluator = new DefaultWorkflowScriptEvaluator(serviceProvider, scriptingManager, workflowContextHandlers, new Mock<IStringLocalizer<DefaultWorkflowScriptEvaluator>>().Object, new Mock<ILogger<DefaultWorkflowScriptEvaluator>>().Object);
+            var liquidOptions = new Mock<IOptions<LiquidOptions>>();
+            var liquidTemplateManager = new LiquidTemplateManager(memoryCache, liquidOptions.Object, serviceProvider);
+            var liquidEvaluator = new LiquidWorkflowExpressionEvaluator(serviceProvider, liquidTemplateManager, new Mock<IStringLocalizer<LiquidWorkflowExpressionEvaluator>>().Object, workflowContextHandlers, new Mock<ILogger<LiquidWorkflowExpressionEvaluator>>().Object);
             var activityLibrary = new Mock<IActivityLibrary>();
             var workflowDefinitionRepository = new Mock<IWorkflowDefinitionRepository>();
             var workflowInstanceRepository = new Mock<IWorkflowInstanceRepository>();
-            var workflowContextHandlers = new IWorkflowContextHandler[0];
             var workflowManagerLogger = new Mock<ILogger<WorkflowManager>>();
             var workflowContextLogger = new Mock<ILogger<WorkflowContext>>();
             var missingActivityLogger = new Mock<ILogger<MissingActivity>>();
             var missingActivityLocalizer = new Mock<IStringLocalizer<MissingActivity>>();
             var clock = new Mock<IClock>();
             var workflowManager = new WorkflowManager(
+                serviceProvider,
                 activityLibrary.Object,
                 workflowDefinitionRepository.Object,
                 workflowInstanceRepository.Object,
-                scriptingManager,
+                liquidEvaluator,
+                scriptEvaluator,
                 workflowContextHandlers,
                 workflowManagerLogger.Object,
                 workflowContextLogger.Object,
@@ -93,6 +104,7 @@ namespace OrchardCore.Tests.Workflows
                 activityLibrary.Setup(x => x.InstantiateActivity(activity.Name)).Returns(activity);
             }
 
+            liquidOptions.SetupGet(x => x.Value).Returns(() => new LiquidOptions());
             workflowDefinitionRepository.Setup(x => x.GetWorkflowDefinitionAsync(workflowDefinition.Id)).Returns(Task.FromResult(workflowDefinition));
 
             return workflowManager;

@@ -1,22 +1,22 @@
-using OrchardCore.Workflows.Abstractions.Display;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class SetVariableTaskDisplay : ActivityDisplayDriver<SetVariableTask, SetVariableTaskViewModel>
+    public class SetVariableTaskDisplay : ActivityDisplayDriver<SetPropertyTask, SetPropertyTaskViewModel>
     {
-        protected override void Map(SetVariableTask source, SetVariableTaskViewModel target)
+        protected override void Map(SetPropertyTask source, SetPropertyTaskViewModel target)
         {
-            target.VariableName = source.VariableName;
-            target.Expression = source.Expression.Expression;
+            target.PropertyName = source.PropertyName;
+            target.ScriptExpression = source.ScriptExpression.Expression;
         }
 
-        protected override void Map(SetVariableTaskViewModel source, SetVariableTask target)
+        protected override void Map(SetPropertyTaskViewModel source, SetPropertyTask target)
         {
-            target.VariableName = source.VariableName.Trim();
-            target.Expression = new WorkflowExpression<object>(source.Expression);
+            target.PropertyName = source.PropertyName.Trim();
+            target.ScriptExpression = new WorkflowExpression<object>(source.ScriptExpression);
         }
     }
 }

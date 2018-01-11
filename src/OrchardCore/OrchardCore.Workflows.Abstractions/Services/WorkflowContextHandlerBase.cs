@@ -5,7 +5,12 @@ namespace OrchardCore.Workflows.Services
 {
     public abstract class WorkflowContextHandlerBase : IWorkflowContextHandler
     {
-        public virtual Task EvaluatingScriptAsync(WorkflowContextScriptEvalContext context)
+        public virtual Task EvaluatingExpressionAsync(WorkflowContextExpressionContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task EvaluatingScriptAsync(WorkflowContextScriptContext context)
         {
             return Task.CompletedTask;
         }

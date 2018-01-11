@@ -1,8 +1,0 @@
-@using OrchardCore.Workflows.Activities
-@{
-    var activity = (SetVariableTask)Model.Activity;
-}
-<header>
-    <h4><i class="fa fa-pencil"></i>@T["Set {0} Variable", activity.VariableName]</h4>
-</header>
-<span>@T["<em>{0}</em> = <em>{1}</em>", activity.VariableName, activity.Expression]</span>

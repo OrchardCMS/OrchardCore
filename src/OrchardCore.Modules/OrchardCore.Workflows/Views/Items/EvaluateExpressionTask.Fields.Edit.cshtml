@@ -1,8 +1,0 @@
-@using OrchardCore.Workflows.ViewModels;
-@model EvaluateExpressionTaskViewModel
-
-<fieldset class="form-group" asp-validation-class-for="Expression">
-    <label asp-for="Expression">@T["Expression"] <span asp-validation-for="Expression"></span></label>
-    <input asp-for="Expression" class="form-control workflow-expression" />
-    <span class="hint">@T["The expression to evaluate. The result will be pushed onto the return stack."]</span>
-</fieldset>

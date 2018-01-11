@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
@@ -18,7 +17,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override string Name => nameof(SetOutputTask);
         public override LocalizedString Category => T["Primitives"];
-        public override LocalizedString Description => T["Evaluates an expression and stores the result into the workflow's output."];
+        public override LocalizedString Description => T["Evaluates a script expression and stores the result into the workflow's output."];
 
         public string OutputName
         {
@@ -26,7 +25,7 @@ namespace OrchardCore.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public WorkflowExpression<object> Expression
+        public WorkflowExpression<object> ScriptExpression
         {
             get => GetProperty(() => new WorkflowExpression<object>());
             set => SetProperty(value);
@@ -39,7 +38,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            var value = await workflowContext.EvaluateAsync(Expression);
+            var value = await workflowContext.EvaluateScriptAsync(ScriptExpression);
             workflowContext.Output[OutputName] = value;
 
             return Outcomes("Done");

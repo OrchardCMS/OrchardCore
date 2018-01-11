@@ -7,7 +7,7 @@ namespace OrchardCore.Workflows.WorkflowContextProviders
 {
     public class DefaultWorkflowContextHandler : WorkflowContextHandlerBase
     {
-        public override Task EvaluatingScriptAsync(WorkflowContextScriptEvalContext context)
+        public override Task EvaluatingScriptAsync(WorkflowContextScriptContext context)
         {
             context.ScopedMethodProviders.Add(new WorkflowMethodsProvider(context.WorkflowContext));
             return Task.CompletedTask;

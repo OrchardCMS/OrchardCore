@@ -1,4 +1,4 @@
-using OrchardCore.Workflows.Abstractions.Display;
+using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.ViewModels;
 

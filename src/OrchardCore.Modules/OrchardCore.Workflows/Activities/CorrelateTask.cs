@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
@@ -18,11 +17,11 @@ namespace OrchardCore.Workflows.Activities
 
         public override string Name => nameof(CorrelateTask);
         public override LocalizedString Category => T["Primitives"];
-        public override LocalizedString Description => T["Correlates the current workflow instance with a configurable value."];
+        public override LocalizedString Description => T["Correlates the current workflow instance with a value."];
 
-        public WorkflowExpression<string> Expression
+        public WorkflowExpression<string> Value
         {
-            get => GetProperty(() => new StringWorkflowExpression());
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
@@ -33,7 +32,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            var value = await workflowContext.EvaluateAsync(Expression);
+            var value = (await workflowContext.EvaluateExpressionAsync(Value))?.Trim();
             workflowContext.CorrelationId = value;
 
             return Outcomes("Done");

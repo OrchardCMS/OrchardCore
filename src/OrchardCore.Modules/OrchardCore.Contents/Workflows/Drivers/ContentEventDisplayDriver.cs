@@ -7,7 +7,7 @@ using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Workflows.Abstractions.Display;
+using OrchardCore.Workflows.Display;
 
 namespace OrchardCore.Contents.Workflows.Drivers
 {

@@ -5,11 +5,11 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class ContentDeletedEvent : ContentEvent
     {
-        public ContentDeletedEvent(IContentManager contentManager, IStringLocalizer<ContentCreatedEvent> s) : base(contentManager, s)
+        public ContentDeletedEvent(IContentManager contentManager, IStringLocalizer<ContentCreatedEvent> localizer) : base(contentManager, localizer)
         {
         }
 
         public override string Name => nameof(ContentDeletedEvent);
-        public override LocalizedString Description => S["Content is deleted."];
+        public override LocalizedString Description => T["Content is deleted."];
     }
 }

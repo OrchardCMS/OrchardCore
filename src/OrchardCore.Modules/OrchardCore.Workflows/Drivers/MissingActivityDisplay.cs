@@ -1,6 +1,6 @@
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Workflows.Abstractions.Display;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Display;
 
 namespace OrchardCore.Workflows.Drivers
 {

@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Modules;
-using OrchardCore.Scripting;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
@@ -17,10 +15,12 @@ namespace OrchardCore.Workflows.Services
 {
     public class WorkflowManager : IWorkflowManager
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowDefinitionRepository _workflowDefinitionRepository;
         private readonly IWorkflowInstanceRepository _workInstanceRepository;
-        private readonly IScriptingManager _scriptingManager;
+        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         private readonly IEnumerable<IWorkflowContextHandler> _workflowContextHandlers;
         private readonly ILogger<WorkflowManager> _logger;
         private readonly ILogger<WorkflowContext> _workflowContextLogger;
@@ -30,10 +30,12 @@ namespace OrchardCore.Workflows.Services
 
         public WorkflowManager
         (
+            IServiceProvider serviceProvider,
             IActivityLibrary activityLibrary,
             IWorkflowDefinitionRepository workflowDefinitionRepository,
             IWorkflowInstanceRepository workflowInstanceRepository,
-            IScriptingManager scriptingManager,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IWorkflowScriptEvaluator scriptEvaluator,
             IEnumerable<IWorkflowContextHandler> workflowContextHandlers,
             ILogger<WorkflowManager> logger,
             ILogger<WorkflowContext> workflowContextLogger,
@@ -42,10 +44,12 @@ namespace OrchardCore.Workflows.Services
             IClock clock
         )
         {
+            _serviceProvider = serviceProvider;
             _activityLibrary = activityLibrary;
             _workflowDefinitionRepository = workflowDefinitionRepository;
             _workInstanceRepository = workflowInstanceRepository;
-            _scriptingManager = scriptingManager;
+            _expressionEvaluator = expressionEvaluator;
+            _scriptEvaluator = scriptEvaluator;
             _workflowContextHandlers = workflowContextHandlers;
             _logger = logger;
             _workflowContextLogger = workflowContextLogger;
@@ -57,7 +61,7 @@ namespace OrchardCore.Workflows.Services
         public WorkflowContext CreateWorkflowContext(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord, IDictionary<string, object> input)
         {
             var activityQuery = workflowDefinitionRecord.Activities.Select(CreateActivityContext);
-            return new WorkflowContext(workflowDefinitionRecord, workflowInstanceRecord, input, activityQuery, _workflowContextHandlers, _scriptingManager, _workflowContextLogger);
+            return new WorkflowContext(workflowDefinitionRecord, workflowInstanceRecord, _serviceProvider, input, activityQuery, _workflowContextHandlers, _expressionEvaluator, _scriptEvaluator, _workflowContextLogger);
         }
 
         public ActivityContext CreateActivityContext(ActivityRecord activityRecord)

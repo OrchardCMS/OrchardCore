@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -22,9 +23,9 @@ namespace OrchardCore.Workflows.Activities
         /// <summary>
         /// An expression evaluating to the number of times to loop.
         /// </summary>
-        public WorkflowExpression<double> CountExpression
+        public WorkflowExpression<int> Count
         {
-            get => GetProperty(() => new DoubleWorkflowExpression());
+            get => GetProperty(() => new WorkflowExpression<int>());
             set => SetProperty(value);
         }
 
@@ -44,7 +45,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            var count = await workflowContext.EvaluateAsync(CountExpression);
+            var count = await workflowContext.EvaluateScriptAsync(Count);
 
             if (Index < count)
             {

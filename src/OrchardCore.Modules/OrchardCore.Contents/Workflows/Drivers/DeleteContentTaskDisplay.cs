@@ -1,9 +1,10 @@
 using System.Threading.Tasks;
+using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Workflows.Abstractions.Display;
+using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Contents.Workflows.Drivers
@@ -22,7 +23,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
         {
             return Shape<DeleteContentTaskViewModel>("DeleteContentTask_Fields_Edit", model =>
             {
-                model.Expression = activity.ContentExpression.Expression;
+                model.Expression = activity.Content.Expression;
             }).Location("Content");
         }
 
@@ -31,7 +32,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
             var viewModel = new DeleteContentTaskViewModel();
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.Expression))
             {
-                activity.ContentExpression = new WorkflowExpression<object>(viewModel.Expression);
+                activity.Content = new WorkflowExpression<IContent>(viewModel.Expression);
             }
             return Edit(activity);
         }
