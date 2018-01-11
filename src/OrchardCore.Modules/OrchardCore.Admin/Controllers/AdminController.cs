@@ -17,9 +17,7 @@ namespace OrchardCore.Admin.Controllers
 
          public async Task<IActionResult> Index()
         {
-            var adminshape = await _shapeFactory.CreateAsync("AdminContent");
-
-            return View(adminshape);
+            return View();
         }
     }
 }
