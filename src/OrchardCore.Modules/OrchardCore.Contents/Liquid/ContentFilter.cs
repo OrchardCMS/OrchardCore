@@ -31,8 +31,12 @@ namespace OrchardCore.Contents.Liquid
             if (mode.ToStringValue() == "alias")
             {
                 var contentItemId = await _contentAliasManager.GetContentItemIdAsync(input.ToStringValue());
-                var contentItem = await _contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published);
-                return FluidValue.Create(contentItem);
+
+                if (contentItemId != null)
+                {
+                    var contentItem = await _contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published);
+                    return FluidValue.Create(contentItem);
+                }
             }
             else if (mode.ToStringValue() == "version")
             {
