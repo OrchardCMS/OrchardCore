@@ -68,6 +68,7 @@ namespace OrchardCore.OpenId.Drivers
                 model.AllowRefreshTokenFlow = settings.AllowRefreshTokenFlow;
                 model.AllowImplicitFlow = settings.AllowImplicitFlow;
                 model.AllowHybridFlow = settings.AllowHybridFlow;
+                model.UseRollingTokens = settings.UseRollingTokens;
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -98,6 +99,7 @@ namespace OrchardCore.OpenId.Drivers
                 settings.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
                 settings.AllowImplicitFlow = model.AllowImplicitFlow;
                 settings.AllowHybridFlow = model.AllowHybridFlow;
+                settings.UseRollingTokens = model.UseRollingTokens;
 
                 if (_openIdServices.IsValidOpenIdSettings(settings, updater.ModelState) && _memoryCache.Get(RestartPendingCacheKey) == null)
                 {

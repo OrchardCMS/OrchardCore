@@ -1,4 +1,4 @@
-﻿@using OrchardCore.OpenId.ViewModels
+@using OrchardCore.OpenId.ViewModels
 @using OrchardCore.OpenId.Settings;
 @using System.Security.Cryptography.X509Certificates
 @model OpenIdSettingsViewModel
@@ -11,6 +11,16 @@
             </label>
         </div>
         <span class="hint">@T["Disables https requirement and uses an ephemeral signing key."]</span>
+    </fieldset>
+
+    <fieldset class="form-group" asp-validation-class-for="UseRollingTokens">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="UseRollingTokens" class="form-check-input" checked="@Model.UseRollingTokens" />
+                @T["Use Rolling Tokens"]
+            </label>
+        </div>
+        <span class="hint">@T["When this option is enabled, a new refresh token is issued for each refresh token request (and the previous one is automatically revoked)"]</span>
     </fieldset>
 
     <fieldset class="form-group" asp-validation-class-for="AccessTokenFormat">
