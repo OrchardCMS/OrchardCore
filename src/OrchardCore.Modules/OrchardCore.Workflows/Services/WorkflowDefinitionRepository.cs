@@ -72,6 +72,17 @@ namespace OrchardCore.Workflows.Services
 
         public async Task DeleteAsync(WorkflowDefinitionRecord workflowDefinition)
         {
+            // TODO: Remove this when versioning is implemented.
+
+            // Delete workflow instances first.
+            var workflowInstances = await _session.Query<WorkflowInstanceRecord, WorkflowInstanceIndex>(x => x.WorkflowDefinitionId == workflowDefinition.Id).ListAsync();
+
+            foreach (var workflowInstance in workflowInstances)
+            {
+                _session.Delete(workflowInstance);
+            }
+
+            // Then delete the workflow definition.
             _session.Delete(workflowDefinition);
             var context = new WorkflowDefinitionDeletedContext(workflowDefinition);
             await _handlers.InvokeAsync(async x => await x.DeletedAsync(context), _logger);

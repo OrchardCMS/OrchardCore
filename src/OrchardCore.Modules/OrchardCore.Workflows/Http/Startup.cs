@@ -70,6 +70,7 @@ namespace OrchardCore.Workflows.Http
 
             var workflowInstanceRouteEntryQuery =
                 from workflowInstance in workflowInstanceDictionary.Values
+                where workflowDefinitionDictionary.ContainsKey(workflowInstance.DefinitionId)
                 let workflowDefinition = workflowDefinitionDictionary[workflowInstance.DefinitionId]
                 from entry in WorkflowInstanceRouteEntries.GetWorkflowInstanceRoutesEntries(workflowInstance, workflowDefinition, activityLibrary)
                 select entry;
@@ -91,6 +92,7 @@ namespace OrchardCore.Workflows.Http
 
             var workflowInstancePathEntryQuery =
                 from workflowInstance in workflowInstanceDictionary.Values
+                where workflowDefinitionDictionary.ContainsKey(workflowInstance.DefinitionId)
                 let workflowDefinition = workflowDefinitionDictionary[workflowInstance.DefinitionId]
                 from entry in WorkflowInstancePathEntries.GetWorkflowPathEntries(workflowInstance, workflowDefinition, activityLibrary)
                 select entry;
