@@ -101,14 +101,7 @@ namespace OrchardCore.OpenId
                 options.AccessTokenHandler = new JwtSecurityTokenHandler();
             }
 
-            if (settings.UseRollingTokens)
-            {
-                options.UseRollingTokens = true;
-            }
-            else
-            {
-                options.UseRollingTokens = false;
-            }
+            options.UseRollingTokens = settings.UseRollingTokens;
 
             if (settings.TestingModeEnabled)
             {
