@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
 namespace OrchardCore.OpenId.Settings
@@ -22,7 +22,8 @@ namespace OrchardCore.OpenId.Settings
         public bool AllowRefreshTokenFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
         public bool AllowHybridFlow { get; set; }
-        
+        public bool UseRollingTokens { get; set; }
+
         public enum TokenFormat
         {
             Encrypted = 0,

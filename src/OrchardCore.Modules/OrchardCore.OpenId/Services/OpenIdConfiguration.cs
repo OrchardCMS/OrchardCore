@@ -101,6 +101,8 @@ namespace OrchardCore.OpenId
                 options.AccessTokenHandler = new JwtSecurityTokenHandler();
             }
 
+            options.UseRollingTokens = settings.UseRollingTokens;
+
             if (settings.TestingModeEnabled)
             {
                 options.SigningCredentials.AddEphemeralKey();
