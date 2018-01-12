@@ -14,5 +14,15 @@ namespace OrchardCore.Workflows.Services
         {
             return Task.CompletedTask;
         }
+
+        public Task DehydrateValueAsync(SerializeWorkflowValueContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task RehydrateValueAsync(SerializeWorkflowValueContext context)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

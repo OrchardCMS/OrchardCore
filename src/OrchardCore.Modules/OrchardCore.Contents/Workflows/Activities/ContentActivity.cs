@@ -30,7 +30,7 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         /// <summary>
-        /// An expression that evaluates to either a <see cref="IContent"/> item or a content item ID.
+        /// An expression that evaluates to either a <see cref="IContent"/> item.
         /// </summary>
         public WorkflowExpression<IContent> Content
         {
@@ -66,12 +66,20 @@ namespace OrchardCore.Contents.Workflows.Activities
         protected virtual async Task<IContent> GetContentAsync(WorkflowContext workflowContext)
         {
             // Try and evaluate a content item from the Content expression, if provided.
-            // If no expression was provided, assume the content item was provided as an input using the "Content" key.
-            var content = !string.IsNullOrWhiteSpace(Content.Expression)
-                ? await workflowContext.EvaluateScriptAsync(Content)
-                : workflowContext.Input.GetValue("Content") as IContent;
+            if (!string.IsNullOrWhiteSpace(Content.Expression))
+            {
+                return await workflowContext.EvaluateScriptAsync(Content);
+            }
 
-            return content;
+            // If no expression was provided, see if the content item was provided as an input using the "Content" key.
+            var content = workflowContext.Input.GetValue<IContent>("Content");
+
+            if (content != null)
+            {
+                return content;
+            }
+
+            return null;
         }
     }
 }

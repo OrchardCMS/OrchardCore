@@ -211,6 +211,14 @@ $link-padding-left: 16px !default;
     display: inline;
 }
 
+.code, .form-control.code {
+    font-family: $font-family-monospace;
+    font-size: $code-font-size;
+    padding: $code-padding-y $code-padding-x;
+    color: $pre-color;
+    @include border-radius($border-radius);
+}
+
 // When the validation message in inside the label, add a separator
 label .field-validation-error::before {
     content: "- ";

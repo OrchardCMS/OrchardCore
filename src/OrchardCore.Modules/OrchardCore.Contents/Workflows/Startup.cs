@@ -5,6 +5,7 @@ using OrchardCore.Contents.Workflows.Drivers;
 using OrchardCore.Contents.Workflows.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Helpers;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows
 {
@@ -22,6 +23,7 @@ namespace OrchardCore.Contents.Workflows
             services.AddActivity<PublishContentTask, PublishContentTaskDisplay>();
 
             services.AddScoped<IContentHandler, ContentsHandler>();
+            services.AddScoped<IWorkflowValueSerializer, ContentItemSerializer>();
         }
     }
 }

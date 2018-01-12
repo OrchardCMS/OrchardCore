@@ -6014,6 +6014,13 @@ a.text-dark:focus, a.text-dark:hover {
 .inline-form {
   display: inline; }
 
+.code, .form-control.code {
+  font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 90%;
+  padding: 0.2rem 0.4rem;
+  color: #212529;
+  border-radius: 0.25rem; }
+
 label .field-validation-error::before {
   content: "- "; }
 

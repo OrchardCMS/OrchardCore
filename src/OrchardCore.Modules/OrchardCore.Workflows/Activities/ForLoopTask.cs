@@ -49,7 +49,7 @@ namespace OrchardCore.Workflows.Activities
 
             if (Index < count)
             {
-                workflowContext.Stack.Push(Index);
+                workflowContext.LastResult = Index;
                 Index++;
                 return Outcomes("Iterate");
             }

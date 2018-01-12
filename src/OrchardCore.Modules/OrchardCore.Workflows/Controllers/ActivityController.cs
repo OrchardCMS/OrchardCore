@@ -126,7 +126,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(workflowDefinitionId);
             var activityRecord = workflowDefinition.Activities.Single(x => x.Id == activityId);
-            var activityContext = _workflowManager.CreateActivityContext(activityRecord);
+            var activityContext = await _workflowManager.CreateActivityContextAsync(activityRecord);
             var activityEditor = await _activityDisplayManager.BuildEditorAsync(activityContext.Activity, this, isNew: false);
 
             activityEditor.Metadata.Type = "Activity_Edit";
@@ -153,7 +153,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(model.WorkflowDefinitionId);
             var activityRecord = workflowDefinition.Activities.Single(x => x.Id == model.ActivityId.Value);
-            var activityContext = _workflowManager.CreateActivityContext(activityRecord);
+            var activityContext = await _workflowManager.CreateActivityContextAsync(activityRecord);
             var activityEditor = await _activityDisplayManager.UpdateEditorAsync(activityContext.Activity, this, isNew: false);
 
             if (!ModelState.IsValid)

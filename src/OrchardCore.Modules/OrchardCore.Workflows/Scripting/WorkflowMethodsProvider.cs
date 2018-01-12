@@ -49,8 +49,8 @@ namespace OrchardCore.Workflows.Scripting
 
             _resultMethod = new GlobalMethod
             {
-                Name = "result",
-                Method = serviceProvider => (Func<object>)(() => workflowContext.Stack.Pop())
+                Name = "lastResult",
+                Method = serviceProvider => (Func<object>)(() => workflowContext.LastResult)
             };
 
             _correlationIdMethod = new GlobalMethod

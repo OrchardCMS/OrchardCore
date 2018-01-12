@@ -42,7 +42,7 @@ namespace OrchardCore.Tests.Workflows.Activities
             var b = await workflowContext.EvaluateScriptAsync(B);
             var result = a + b;
 
-            workflowContext.Stack.Push(result);
+            workflowContext.LastResult = result;
             return new[] { "Done" };
         }
     }

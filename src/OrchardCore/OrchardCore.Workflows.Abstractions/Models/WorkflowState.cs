@@ -11,7 +11,17 @@ namespace OrchardCore.Workflows.Models
         /// The stack of values pushed onto by individual activities.
         /// Can be used by subsequent activities to pop the last value and do something with it.
         /// </summary>
-        public Stack<object> Stack { get; set; } = new Stack<object>();
+        public object LastResult { get; set; }
+
+        /// <summary>
+        /// A dictionary of input values provided by the caller of the workflow.
+        /// </summary>
+        public IDictionary<string, object> Input { get; set; } = new Dictionary<string, object>();
+
+        /// <summary>
+        /// A dictionary of output values provided by activities of the workflow.
+        /// </summary>
+        public IDictionary<string, object> Output { get; set; } = new Dictionary<string, object>();
 
         /// <summary>
         /// A dictionary of values that activities within a running workflow can read and write information from and to.

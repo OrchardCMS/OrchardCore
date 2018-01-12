@@ -70,13 +70,14 @@ namespace OrchardCore.Tests.Workflows
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var javaScriptEngine = new JavaScriptEngine(memoryCache, new Mock<IStringLocalizer<JavaScriptEngine>>().Object);
-            var workflowContextHandlers = new IWorkflowContextHandler[0];
+            var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowContextHandler>>(serviceProvider);
+            var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
             var globalMethodProviders = new IGlobalMethodProvider[0];
             var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders, serviceProvider);
-            var scriptEvaluator = new DefaultWorkflowScriptEvaluator(serviceProvider, scriptingManager, workflowContextHandlers, new Mock<IStringLocalizer<DefaultWorkflowScriptEvaluator>>().Object, new Mock<ILogger<DefaultWorkflowScriptEvaluator>>().Object);
+            var scriptEvaluator = new DefaultWorkflowScriptEvaluator(serviceProvider, scriptingManager, workflowContextHandlers.Resolve(), new Mock<IStringLocalizer<DefaultWorkflowScriptEvaluator>>().Object, new Mock<ILogger<DefaultWorkflowScriptEvaluator>>().Object);
             var liquidOptions = new Mock<IOptions<LiquidOptions>>();
             var liquidTemplateManager = new LiquidTemplateManager(memoryCache, liquidOptions.Object, serviceProvider);
-            var liquidEvaluator = new LiquidWorkflowExpressionEvaluator(serviceProvider, liquidTemplateManager, new Mock<IStringLocalizer<LiquidWorkflowExpressionEvaluator>>().Object, workflowContextHandlers, new Mock<ILogger<LiquidWorkflowExpressionEvaluator>>().Object);
+            var liquidEvaluator = new LiquidWorkflowExpressionEvaluator(serviceProvider, liquidTemplateManager, new Mock<IStringLocalizer<LiquidWorkflowExpressionEvaluator>>().Object, workflowContextHandlers.Resolve(), new Mock<ILogger<LiquidWorkflowExpressionEvaluator>>().Object);
             var activityLibrary = new Mock<IActivityLibrary>();
             var workflowDefinitionRepository = new Mock<IWorkflowDefinitionRepository>();
             var workflowInstanceRepository = new Mock<IWorkflowInstanceRepository>();
@@ -93,6 +94,7 @@ namespace OrchardCore.Tests.Workflows
                 liquidEvaluator,
                 scriptEvaluator,
                 workflowContextHandlers,
+                workflowValueSerializers,
                 workflowManagerLogger.Object,
                 workflowContextLogger.Object,
                 missingActivityLogger.Object,

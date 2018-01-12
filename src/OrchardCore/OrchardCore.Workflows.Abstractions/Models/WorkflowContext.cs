@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fluid;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Modules;
 using OrchardCore.Scripting;
 using OrchardCore.Workflows.Services;
 
@@ -25,6 +23,9 @@ namespace OrchardCore.Workflows.Models
             WorkflowInstanceRecord workflowInstanceRecord,
             IServiceProvider serviceProvider,
             IDictionary<string, object> input,
+            IDictionary<string, object> output,
+            IDictionary<string, object> properties,
+            object lastResult,
             IEnumerable<ActivityContext> activities,
             IEnumerable<IWorkflowContextHandler> handlers,
             IWorkflowExpressionEvaluator expressionEvaluator,
@@ -39,17 +40,18 @@ namespace OrchardCore.Workflows.Models
             _logger = logger;
 
             Input = input ?? new Dictionary<string, object>();
+            Output = output ?? new Dictionary<string, object>();
+            Properties = properties ?? new Dictionary<string, object>();
+            LastResult = lastResult;
             WorkflowDefinition = workflowDefinitionRecord;
             WorkflowInstance = workflowInstanceRecord;
             Activities = activities.ToList();
-            State = workflowInstanceRecord.State.ToObject<WorkflowState>();
         }
 
         public WorkflowDefinitionRecord WorkflowDefinition { get; }
         public WorkflowInstanceRecord WorkflowInstance { get; }
         public IList<ActivityContext> Activities { get; }
 
-        public WorkflowState State { get; }
         public string CorrelationId
         {
             get => WorkflowInstance.CorrelationId;
@@ -57,24 +59,24 @@ namespace OrchardCore.Workflows.Models
         }
 
         /// <summary>
-        /// A dictionary of non-serialized values provided by the initiator of the workflow.
+        /// A dictionary of re-hydrated values provided by the initiator of the workflow.
         /// </summary>
         public IDictionary<string, object> Input { get; }
 
         /// <summary>
-        /// A dictionary of non-serialized values provided to the initiator of the workflow.
+        /// A dictionary of re-hydrated values provided to the initiator of the workflow.
         /// </summary>
-        public IDictionary<string, object> Output { get; set; } = new Dictionary<string, object>();
+        public IDictionary<string, object> Output { get; }
 
         /// <summary>
-        /// A dictionary of serialized values provided by the workflow activities.
+        /// A dictionary of re-hydrated values provided by the workflow activities.
         /// </summary>
-        public IDictionary<string, object> Properties => State.Properties;
+        public IDictionary<string, object> Properties { get; }
 
         /// <summary>
         /// The value returned from the previous activity, if any.
         /// </summary>
-        public Stack<object> Stack => State.Stack;
+        public object LastResult { get; set; }
 
         public WorkflowStatus Status
         {

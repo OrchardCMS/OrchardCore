@@ -24,12 +24,14 @@ namespace OrchardCore.Workflows.Helpers
         /// Merges the specified other dictionary into this dictionary.
         /// Existing entries are overwritten.
         /// </summary>
-        public static void Merge<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IDictionary<TKey, TValue> other)
+        public static IDictionary<TKey, TValue> Merge<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IDictionary<TKey, TValue> other)
         {
+            var copy = new Dictionary<TKey, TValue>(dictionary);
             foreach (var item in other)
             {
-                dictionary[item.Key] = item.Value;
+                copy[item.Key] = item.Value;
             }
+            return copy;
         }
     }
 }

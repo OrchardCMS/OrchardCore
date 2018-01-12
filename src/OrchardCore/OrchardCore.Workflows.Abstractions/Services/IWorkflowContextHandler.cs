@@ -7,5 +7,7 @@ namespace OrchardCore.Workflows.Services
     {
         Task EvaluatingExpressionAsync(WorkflowContextExpressionContext context);
         Task EvaluatingScriptAsync(WorkflowContextScriptContext context);
+        Task DehydrateValueAsync(SerializeWorkflowValueContext context);
+        Task RehydrateValueAsync(SerializeWorkflowValueContext context);
     }
 }

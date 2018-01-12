@@ -40,6 +40,11 @@ namespace OrchardCore.Workflows.Activities
             yield break;
         }
 
+        public virtual Task OnInputReceivedAsync(WorkflowContext workflowContext, IDictionary<string, object> input)
+        {
+            return Task.CompletedTask;
+        }
+
         public virtual Task OnWorkflowStartingAsync(WorkflowContext context, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;

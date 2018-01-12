@@ -274,8 +274,8 @@ namespace OrchardCore.Workflows.Controllers
             var newLocalId = string.IsNullOrWhiteSpace(localId) ? Guid.NewGuid().ToString() : localId;
             var availableActivities = _activityLibrary.ListActivities();
             var workflowDefinitionRecord = await _session.GetAsync<WorkflowDefinitionRecord>(id);
-            var workflowContext = _workflowManager.CreateWorkflowContext(workflowDefinitionRecord, new WorkflowInstanceRecord { DefinitionId = workflowDefinitionRecord.Id });
-            var activityContexts = workflowDefinitionRecord.Activities.Select(x => _workflowManager.CreateActivityContext(x)).ToList();
+            var workflowContext = await _workflowManager.CreateWorkflowContextAsync(workflowDefinitionRecord, new WorkflowInstanceRecord { DefinitionId = workflowDefinitionRecord.Id });
+            var activityContexts = await Task.WhenAll(workflowDefinitionRecord.Activities.Select(async x => await _workflowManager.CreateActivityContextAsync(x)));
             var activityThumbnailDisplayTasks = availableActivities.Select(async (x, i) => await BuildActivityDisplay(x, i, id, newLocalId, "Thumbnail"));
             var activityDesignDisplayTasks = activityContexts.Select(async (x, i) => await BuildActivityDisplay(x, i, id, newLocalId, "Design"));
 

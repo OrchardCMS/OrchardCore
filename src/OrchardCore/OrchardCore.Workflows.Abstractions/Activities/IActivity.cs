@@ -34,6 +34,11 @@ namespace OrchardCore.Workflows.Activities
         Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext);
 
         /// <summary>
+        /// Executes before a workflow starts or resumes, giving activities an opportunity to read and store any values of interest.
+        /// </summary>
+        Task OnInputReceivedAsync(WorkflowContext workflowContext, IDictionary<string, object> input);
+
+        /// <summary>
         /// Called on each activity when a workflow is about to start.
         /// </summary>
         Task OnWorkflowStartingAsync(WorkflowContext context, CancellationToken cancellationToken = default(CancellationToken));

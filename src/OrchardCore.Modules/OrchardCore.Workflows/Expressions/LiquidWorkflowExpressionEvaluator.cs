@@ -58,9 +58,14 @@ namespace OrchardCore.Workflows.Expressions
 
             // Set WorkflowContext as the model.
             context.MemberAccessStrategy.Register<WorkflowContext>();
-            context.LocalScope.SetValue("Model", this);
+            context.SetValue("WorkflowContext", workflowContext);
 
-            // Add workflow inputs.
+            // TODO: Add Liquid filters to easily access values from Input and Properties.
+            context.SetValue("Input", workflowContext.Input);
+            context.SetValue("Properties", workflowContext.Properties);
+
+            // TODO: For now, simply add each Input and Property to the context, with the risk of overwriting items with the same key.
+            // Add workflow input.
             foreach (var item in workflowContext.Input)
             {
                 context.SetValue(item.Key, item.Value);
