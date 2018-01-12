@@ -80,7 +80,24 @@
         }
     });
 
+    iframe.onload = function () {
+        if (previewRendering) {
+            $(this.contentWindow).scrollTop(scrollTop);
+            this.style.visibility = 'visible';
+
+            if (iframe2 && iframe2.contentWindow) {
+                iframe2.style.visibility = 'hidden';
+                iframe2.contentWindow.document.open();
+                iframe2.contentWindow.document.write(previewRenderData);
+                iframe2.contentWindow.document.close();
+            }
+            previewRendering = false;
+        }
+    }
+
     var previewRendering;
+    var previewRenderData;
+    var scrollTop = 0;
 
     function renderPreview(value) {
 
@@ -105,18 +122,19 @@
                 .done(function (data) {
                     if (iframe && iframe.contentWindow && iframe2 && iframe2.contentWindow) {
 
-                        // Under 'Chrome', after having written the frame, we need to use a delay before updating
-                        // the scroll position. Then, we use 2 frames to cancel the flicker that the delay causes.
+                        // A full writing of the frame document causes the iframe to be re-loaded.
+                        // So, better to update the scroll position on the related 'onload' event.
+                        // Then, we use 2 frames to cancel the flicker that this deferring causes.
 
-                        var scrollTop = $(iframe.contentWindow).scrollTop();
-                        ScrollAndShowFrame(iframe2, scrollTop);
-                        HideAndUpdateFrame(iframe, data);
+                        scrollTop = $(iframe.contentWindow).scrollTop();
+                        $(iframe2.contentWindow).scrollTop(scrollTop);
+                        iframe2.style.visibility = 'visible';
 
-                        setTimeout(function () {
-                            ScrollAndShowFrame(iframe, scrollTop);
-                            HideAndUpdateFrame(iframe2, data);
-                            previewRendering = false;
-                        }, 50);
+                        iframe.style.visibility = 'hidden';
+                        iframe.contentWindow.document.open();
+                        iframe.contentWindow.document.write(data);
+                        iframe.contentWindow.document.close();
+                        previewRenderData = data;
                     }
                     $(serverErrorWarning).hide();
                 })
@@ -136,18 +154,6 @@
             previewRendering = false;
             console.log('Error while previewing: ' + e);
         }
-    }
-
-    function HideAndUpdateFrame(frame, data) {
-        frame.style.visibility = 'hidden';
-        frame.contentWindow.document.open();
-        frame.contentWindow.document.write(data);
-        frame.contentWindow.document.close();
-    }
-
-    function ScrollAndShowFrame(frame, scrollTop) {
-        $(frame.contentWindow).scrollTop(scrollTop);
-        frame.style.visibility = 'visible';
     }
 
 </script>
