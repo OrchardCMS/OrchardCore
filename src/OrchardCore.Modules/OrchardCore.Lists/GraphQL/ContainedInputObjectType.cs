@@ -1,17 +1,16 @@
-using GraphQL.Types;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Lists.Models;
 
 namespace OrchardCore.Lists.GraphQL
 {
-    public class ContainedInputObjectType : InputObjectGraphType<ContainedPart>, IQueryArgumentObjectGraphType
+    public class ContainedInputObjectType : QueryArgumentObjectGraphType<ContainedPart>
     {
         public ContainedInputObjectType()
         {
             Name = "ContainedPartInput";
 
-            this.AddInputField("listContentItemId", x => x.ListContentItemId, true);
-            this.AddInputField("order", x => x.Order, true);
+            AddInputField("listContentItemId", x => x.ListContentItemId, true);
+            AddInputField("order", x => x.Order, true);
         }
     }
 }

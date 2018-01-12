@@ -15,4 +15,11 @@
     <ProjectReference Include="..\OrchardCore.Mvc.Abstractions\OrchardCore.Mvc.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="README.md">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+      <Pack>true</Pack>
+    </None>
+  </ItemGroup>
+
 </Project>

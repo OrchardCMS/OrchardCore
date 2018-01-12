@@ -1,19 +1,21 @@
 using System;
 using System.Linq.Expressions;
+using GraphQL;
 using GraphQL.Builders;
 using GraphQL.Resolvers;
-using OrchardCore.Apis.GraphQL;
+using GraphQL.Types;
 
-namespace GraphQL.Types
+namespace OrchardCore.Apis.GraphQL.Queries
 {
-    public static class IInputObjectGraphTypeExtensions
+    public abstract class QueryArgumentObjectGraphType<TSourceType> :
+        InputObjectGraphType<TSourceType>,
+        IQueryArgumentObjectGraphType
     {
-        public static FieldBuilder<TSourceType, TProperty> AddInputField<TSourceType, TProperty>(
-            this InputObjectGraphType<TSourceType> graphType,
-            string name,
-            Expression<Func<TSourceType, TProperty>> expression,
-            bool nullable = false,
-            Type type = null)
+        public FieldBuilder<TSourceType, TProperty> AddInputField<TProperty>(
+           string name,
+           Expression<Func<TSourceType, TProperty>> expression,
+           bool nullable = false,
+           Type type = null)
         {
             if (type == null)
                 type = typeof(TProperty).GetGraphTypeFromType(nullable);
@@ -23,7 +25,7 @@ namespace GraphQL.Types
                 .Type(type.BuildNamedType())
                 .Name(name);
 
-            graphType.AddField(builder.FieldType);
+            AddField(builder.FieldType);
 
             return builder;
         }
