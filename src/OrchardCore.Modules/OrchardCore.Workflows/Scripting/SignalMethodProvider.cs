@@ -14,8 +14,8 @@ namespace OrchardCore.Workflows.Scripting
         {
             _nonceMethod = new GlobalMethod
             {
-                Name = "nonce",
-                Method = serviceProvider => (Func<string, string>)((signal) => signalService.CreateNonce(workflowContext.CorrelationId, signal))
+                Name = "createSignalToken",
+                Method = serviceProvider => (Func<string, string>)((signal) => signalService.CreateToken(workflowContext.CorrelationId, signal))
             };
         }
 

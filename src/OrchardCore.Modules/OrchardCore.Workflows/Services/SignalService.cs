@@ -1,38 +1,42 @@
 using System;
-using System.Text;
-using System.Xml.Linq;
-using OrchardCore.Security;
+using Microsoft.AspNetCore.DataProtection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Workflows.Services
 {
     public class SignalService : ISignalService
     {
-        private readonly IEncryptionService _encryptionService;
+        private readonly Lazy<IDataProtector> _dataProtector;
 
-        public SignalService(IEncryptionService encryptionService)
+        public SignalService(IDataProtectionProvider dataProtectionProvider)
         {
-            _encryptionService = encryptionService;
+            _dataProtector = new Lazy<IDataProtector>(() => dataProtectionProvider.CreateProtector("OrchardCore.Workflows.Services.SignalService.V1"));
         }
 
-        public string CreateNonce(string correlationId, string signal)
+        public string CreateToken(string correlationId, string signal)
         {
-            var challengeToken = new XElement("n", new XAttribute("c", correlationId), new XAttribute("n", signal)).ToString();
-            var data = Encoding.UTF8.GetBytes(challengeToken);
-            return Convert.ToBase64String(_encryptionService.Encode(data));
+            var payload = new
+            {
+                C = correlationId,
+                S = signal
+            };
+            var json = JsonConvert.SerializeObject(payload);
+            var token = _dataProtector.Value.Protect(json);
+            return token;
         }
 
-        public bool DecryptNonce(string nonce, out string correlationId, out string signal)
+        public bool DecryptToken(string token, out string correlationId, out string signal)
         {
             correlationId = null;
             signal = "";
 
             try
             {
-                var data = _encryptionService.Decode(Convert.FromBase64String(nonce));
-                var xml = Encoding.UTF8.GetString(data);
-                var element = XElement.Parse(xml);
-                correlationId = element.Attribute("c").Value;
-                signal = element.Attribute("n").Value;
+                var json = _dataProtector.Value.Unprotect(token);
+                dynamic payload = JObject.Parse(json);
+                correlationId = payload.C;
+                signal = payload.S;
                 return true;
             }
             catch

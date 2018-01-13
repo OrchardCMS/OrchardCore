@@ -33,7 +33,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public WorkflowExpression<bool> Permanent
         {
-            get => GetProperty(() => new WorkflowExpression<bool>());
+            get => GetProperty(() => new WorkflowExpression<bool>("false"));
             set => SetProperty(value);
         }
 

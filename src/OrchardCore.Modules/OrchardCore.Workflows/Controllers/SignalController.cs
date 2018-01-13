@@ -21,34 +21,30 @@ namespace OrchardCore.Workflows.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Trigger(string nonce)
+        public async Task<IActionResult> Trigger(string token)
         {
             string correlationId;
             string signal;
 
-            if (!_signalService.DecryptNonce(nonce, out correlationId, out signal))
+            if (!_signalService.DecryptToken(token, out correlationId, out signal))
             {
-                _logger.LogDebug("Invalid nonce provided: " + nonce);
+                _logger.LogDebug("Invalid SAS token provided: " + token);
                 return NotFound();
             }
 
             var input = new Dictionary<string, object> { { "Signal", signal } };
 
-            // Include request details, so that the Signal activity can decide whether or not it should execute.
             CopyTo(Request.Query, input);
-            CopyTo(Request.Form, input);
-            CopyTo(Request.Headers, input);
 
             await _workflowManager.TriggerEventAsync(SignalEvent.EventName, input, correlationId);
-
-            return NoContent();
+            return new EmptyResult();
         }
 
         private void CopyTo(IEnumerable<KeyValuePair<string, StringValues>> source, IDictionary<string, object> target)
         {
             foreach (var item in source)
             {
-                target[item.Key] = item.Value;
+                target[item.Key] = item.Value.ToString();
             }
         }
     }

@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Evaluators\**" />
+    <EmbeddedResource Remove="Evaluators\**" />
+    <None Remove="Evaluators\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Assets\Scripts\activity-picker.ts" />
     <None Remove="Assets\Scripts\workflow-canvas.ts" />
     <None Remove="Assets\Scripts\workflow-viewer.ts" />
@@ -68,10 +74,12 @@
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement.Liquid\OrchardCore.DisplayManagement.Liquid.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Navigation\OrchardCore.Environment.Navigation.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Liquid.Abstractions\OrchardCore.Liquid.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Mvc.Abstractions\OrchardCore.Mvc.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Mvc.Core\OrchardCore.Mvc.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Scripting.Abstractions\OrchardCore.Scripting.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Security.Abstractions\OrchardCore.Security.Abstractions.csproj" />
@@ -82,7 +90,6 @@
   <ItemGroup>
     <Folder Include="Content\Scripts\" />
     <Folder Include="Content\Styles\" />
-    <Folder Include="Evaluators\" />
     <Folder Include="Models\" />
   </ItemGroup>
 

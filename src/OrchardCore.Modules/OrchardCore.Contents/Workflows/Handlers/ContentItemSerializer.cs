@@ -18,12 +18,11 @@ namespace OrchardCore.Workflows.Services
         {
             if (context.Input is JObject jObject)
             {
-                dynamic value = jObject;
-                var type = value.Type as string;
+                var type = jObject.Value<string>("Type");
 
                 if (type == "Content")
                 {
-                    var contentId = value.ContentId as string;
+                    var contentId = jObject.Value<string>("ContentId");
                     context.Output = contentId != null ? await _contentManager.GetAsync(contentId, VersionOptions.Latest) : default(IContent);
                 }
             }

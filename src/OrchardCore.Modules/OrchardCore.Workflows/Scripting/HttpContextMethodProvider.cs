@@ -5,6 +5,7 @@ using OrchardCore.Scripting;
 
 namespace OrchardCore.Workflows.Scripting
 {
+    // TODO: Consider moving this to a more common package so that it's available without a dependency on Workflows.
     public class HttpContextMethodProvider : IGlobalMethodProvider
     {
         private readonly GlobalMethod _httpContextMethod;

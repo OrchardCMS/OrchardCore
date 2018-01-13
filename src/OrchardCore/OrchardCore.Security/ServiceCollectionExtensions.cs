@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Security.AuthorizationHandlers;
-using OrchardCore.Security.Services;
 
 namespace OrchardCore.Security
 {
@@ -15,7 +14,6 @@ namespace OrchardCore.Security
             services.AddAuthorization();
             services.AddScoped<IAuthorizationHandler, SuperUserHandler>();
             services.AddScoped<IAuthorizationHandler, PermissionHandler>();
-            services.AddScoped<IEncryptionService, EncryptionService>();
 
             return services;
         }

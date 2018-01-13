@@ -95,42 +95,6 @@ namespace OrchardCore.Environment.Shell
             set => _values[nameof(ConnectionString)] = value;
         }
 
-        /// <summary>
-        /// The encryption algorithm used for encryption services.
-        /// </summary>
-        public string EncryptionAlgorithm
-        {
-            get => this[nameof(EncryptionAlgorithm)];
-            set => this[nameof(EncryptionAlgorithm)] = value;
-        }
-
-        /// <summary>
-        /// The encryption key used for encryption services.
-        /// </summary>
-        public string EncryptionKey
-        {
-            get => this[nameof(EncryptionKey)];
-            set => _values[nameof(EncryptionKey)] = value;
-        }
-
-        /// <summary>
-        /// The hash algorithm used for encryption services.
-        /// </summary>
-        public string HashAlgorithm
-        {
-            get => this[nameof(HashAlgorithm)];
-            set => this[nameof(HashAlgorithm)] = value;
-        }
-
-        /// <summary>
-        /// The hash key used for encryption services.
-        /// </summary>
-        public string HashKey
-        {
-            get => this[nameof(HashKey)];
-            set => this[nameof(HashKey)] = value;
-        }
-
         public TenantStatus Status
         {
             get => _tenantStatus;

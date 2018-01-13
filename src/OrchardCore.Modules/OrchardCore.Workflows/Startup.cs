@@ -4,7 +4,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Navigation;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
@@ -13,6 +15,7 @@ using OrchardCore.Workflows.Evaluators;
 using OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
+using OrchardCore.Workflows.Liquid;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
 using YesSql.Indexes;
@@ -23,6 +26,7 @@ namespace OrchardCore.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddDataProtection();
             services.AddScoped(typeof(Resolver<>));
             services.AddScoped<ISignalService, SignalService>();
             services.AddScoped<IActivityLibrary, ActivityLibrary>();
@@ -53,6 +57,9 @@ namespace OrchardCore.Workflows
             services.AddActivity<SignalEvent, SignalEventDisplay>();
 
             services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
+            services.AddScoped<ILiquidTemplateEventHandler, SignalLiquidTemplateHandler>();
+            services.AddLiquidFilter<SignalUrlFilter>("signal_url");
         }
     }
 }
