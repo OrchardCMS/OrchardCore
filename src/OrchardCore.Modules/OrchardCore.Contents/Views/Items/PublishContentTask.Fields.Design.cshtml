@@ -5,11 +5,11 @@
 <header>
     <h4><i class="fa fa-cloud-upload"></i>@T["Publish Content"]</h4>
 </header>
-@if (string.IsNullOrWhiteSpace(activity.ContentExpression?.Expression))
+@if (string.IsNullOrWhiteSpace(activity.Content?.Expression))
 {
-    <span>@T["Publish content provided via the <em>Content</em> input", activity.ContentExpression]</span>
+    <span>@T["Publish content provided via the <em>Content</em> input argument"]</span>
 }
 else
 {
-    <span>@T["Publish content using expression: <em>{0}</em>", activity.ContentExpression]</span>
+    <span>@T["Publish content using expression: <em>{0}</em>", activity.Content.Expression]</span>
 }
