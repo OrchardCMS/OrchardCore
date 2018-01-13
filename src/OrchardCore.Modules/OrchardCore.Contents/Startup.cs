@@ -11,6 +11,7 @@ using OrchardCore.Contents.Feeds.Builders;
 using OrchardCore.Contents.Filters;
 using OrchardCore.Contents.Handlers;
 using OrchardCore.Contents.Indexing;
+using OrchardCore.Contents.Liquid;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.Recipes;
 using OrchardCore.Contents.Services;
@@ -120,6 +121,15 @@ namespace OrchardCore.Contents
             );
 
 
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Liquid")]
+    public class LiquidStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddLiquidFilter<ContentFilter>("content");
         }
     }
 }

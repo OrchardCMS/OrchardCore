@@ -202,8 +202,12 @@ namespace OrchardCore.DisplayManagement.Liquid
                 await handler.RenderingAsync(context);
             }
 
-            context.MemberAccessStrategy.Register(displayContext.Value.GetType());
-            context.LocalScope.SetValue("Model", displayContext.Value);
+            var model = displayContext.Value;
+            if (model != null)
+            {
+                context.MemberAccessStrategy.Register(model.GetType());
+                context.LocalScope.SetValue("Model", model);
+            }
         }
     }
 }
