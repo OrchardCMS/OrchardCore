@@ -1,3 +1,5 @@
+@import "src/OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/scss/_variables";
+@import "src/OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/scss/mixins/_breakpoints";
 @import './workflow-canvas.scss';
 
 .modal-activities {
@@ -40,5 +42,13 @@
 
     path, .jtk-endpoint {
         cursor: pointer;
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    .modal-activities {
+        .modal-lg {
+            max-width: 1200px;
+        }
     }
 }

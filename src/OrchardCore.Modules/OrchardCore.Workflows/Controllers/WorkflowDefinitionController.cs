@@ -306,6 +306,7 @@ namespace OrchardCore.Workflows.Controllers
                 WorkflowDefinitionJson = JsonConvert.SerializeObject(workflowDefinitionData, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }),
                 ActivityThumbnailShapes = activityThumbnailShapes,
                 ActivityDesignShapes = activityDesignShapes,
+                ActivityCategories = _activityLibrary.ListCategories().ToList(),
                 LocalId = newLocalId,
                 LoadLocalState = !string.IsNullOrWhiteSpace(localId)
             };

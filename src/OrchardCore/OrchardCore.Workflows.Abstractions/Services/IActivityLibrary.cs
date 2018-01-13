@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -11,6 +12,12 @@ namespace OrchardCore.Workflows.Services
         /// Returns a list of instances of all available <see cref="IActivity"/> implementations.
         /// </summary>
         IEnumerable<IActivity> ListActivities();
+
+        /// <summary>
+        /// Returns a list of all available activity categories.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<LocalizedString> ListCategories();
 
         /// <summary>
         /// Returns an activity instance with the specified name from the library.

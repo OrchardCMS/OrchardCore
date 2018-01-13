@@ -55,11 +55,31 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="card-columns">
-                    @foreach (var activityShape in Model.ActivityThumbnailShapes)
-                    {
-                        @await DisplayAsync(activityShape)
-                    }
+                <div class="row">
+                    <div class="col-sm-3 col-md-3 col-lg-2">
+                        <div class="form-group">
+                            <input class="form-control" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus>
+                        </div>
+                        <ul class="nav nav-pills flex-column activity-picker-categories">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#all" data-toggle="pill">All</a>
+                            </li>
+                            @foreach (var category in Model.ActivityCategories)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#@category.Name.HtmlClassify()" data-toggle="pill">@category</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <div class="card-columns tab-content">
+                            @foreach (var activityShape in Model.ActivityThumbnailShapes)
+                            {
+                                @await DisplayAsync(activityShape)
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
