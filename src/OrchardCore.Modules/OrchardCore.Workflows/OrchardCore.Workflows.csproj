@@ -43,6 +43,8 @@
     <None Remove="Views\Items\IfElseTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\IfElseTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\IfElseTask.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\Items\MergeTask.Fields.Design.cshtml" />
+    <None Remove="Views\Items\MergeTask.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\MissingActivity.Fields.Design.cshtml" />
     <None Remove="Views\Items\ScriptTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\ScriptTask.Fields.Edit.cshtml" />

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Scripting;
 using OrchardCore.Workflows.Services;
@@ -45,12 +44,12 @@ namespace OrchardCore.Workflows.Models
             LastResult = lastResult;
             WorkflowDefinition = workflowDefinitionRecord;
             WorkflowInstance = workflowInstanceRecord;
-            Activities = activities.ToList();
+            Activities = activities.ToDictionary(x => x.ActivityRecord.Id);
         }
 
         public WorkflowDefinitionRecord WorkflowDefinition { get; }
         public WorkflowInstanceRecord WorkflowInstance { get; }
-        public IList<ActivityContext> Activities { get; }
+        public IDictionary<int, ActivityContext> Activities { get; }
 
         public string CorrelationId
         {
@@ -86,7 +85,7 @@ namespace OrchardCore.Workflows.Models
 
         public ActivityContext GetActivity(int activityId)
         {
-            return Activities.Single(x => x.ActivityRecord.Id == activityId);
+            return Activities[activityId];
         }
 
         public Task<T> EvaluateExpressionAsync<T>(WorkflowExpression<T> expression)
@@ -105,19 +104,14 @@ namespace OrchardCore.Workflows.Models
             WorkflowInstance.FaultMessage = exception.Message;
         }
 
-        public IEnumerable<TransitionRecord> GetInboundTransitions(ActivityRecord activityRecord)
+        public IEnumerable<TransitionRecord> GetInboundTransitions(int activityId)
         {
-            throw new NotImplementedException();
+            return WorkflowDefinition.Transitions.Where(x => x.DestinationActivityId == activityId).ToList();
         }
 
-        public IEnumerable<TransitionRecord> GetOutboundTransitions(ActivityRecord activityRecord)
+        public IEnumerable<TransitionRecord> GetOutboundTransitions(int activityId)
         {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<TransitionRecord> GetOutboundTransitions(ActivityRecord activityRecord, LocalizedString outcome)
-        {
-            throw new NotImplementedException();
+            return WorkflowDefinition.Transitions.Where(x => x.SourceActivityId == activityId).ToList();
         }
     }
 }

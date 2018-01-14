@@ -204,11 +204,6 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            if (!Url.IsLocalUrl(returnUrl))
-            {
-                returnUrl = Url.Action(nameof(Index));
-            }
-
             if (id == null)
             {
                 return View(new WorkflowDefinitionPropertiesViewModel

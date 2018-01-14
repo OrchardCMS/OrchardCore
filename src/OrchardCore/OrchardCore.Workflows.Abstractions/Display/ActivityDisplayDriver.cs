@@ -7,11 +7,21 @@ using OrchardCore.Workflows.Activities;
 namespace OrchardCore.Workflows.Display
 {
     /// <summary>
-    /// A display driver for <see cref="IActivity"/> types. Will add useful information to the created shape, such as the <see cref="IActivity"/> itself.
+    /// A display driver for <see cref="IActivity"/> types. Adds useful values to the created shape, such as the <see cref="IActivity"/> itself.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public abstract class ActivityDisplayDriver<T> : DisplayDriver<IActivity, T> where T : class, IActivity
     {
+        protected virtual string ShapeNameBase => typeof(T).Name;
+
+        public override IDisplayResult Display(T activity)
+        {
+            return Combine(
+                Shape($"{ShapeNameBase}_Fields_Thumbnail", activity).Location("Thumbnail", "Content"),
+                Shape($"{ShapeNameBase}_Fields_Design", activity).Location("Design", "Content")
+            );
+        }
+
         protected virtual ShapeResult Shape(string shapeType, T activity)
         {
             return Shape(shapeType, shape =>
@@ -26,16 +36,6 @@ namespace OrchardCore.Workflows.Display
     /// </summary>
     public abstract class ActivityDisplayDriver<TActivity, TActivityViewModel> : ActivityDisplayDriver<TActivity> where TActivity : class, IActivity where TActivityViewModel : class, new()
     {
-        protected virtual string ShapeNameBase => typeof(TActivity).Name;
-
-        public override IDisplayResult Display(TActivity activity)
-        {
-            return Combine(
-                Shape($"{ShapeNameBase}_Fields_Thumbnail", activity).Location("Thumbnail", "Content"),
-                Shape($"{ShapeNameBase}_Fields_Design", activity).Location("Design", "Content")
-            );
-        }
-
         public override IDisplayResult Edit(TActivity activity)
         {
             return Shape<TActivityViewModel>($"{ShapeNameBase}_Fields_Edit", model =>

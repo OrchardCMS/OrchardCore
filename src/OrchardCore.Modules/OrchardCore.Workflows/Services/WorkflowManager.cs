@@ -384,7 +384,7 @@ namespace OrchardCore.Workflows.Services
         /// </summary>
         private async Task InvokeActivitiesAsync(WorkflowContext workflowContext, Func<ActivityContext, Task> action)
         {
-            await workflowContext.Activities.InvokeAsync(x => action(x), _logger);
+            await workflowContext.Activities.Values.InvokeAsync(x => action(x), _logger);
         }
 
         private async Task<IDictionary<string, object>> SerializeAsync(IDictionary<string, object> dictionary)
