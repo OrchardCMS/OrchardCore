@@ -21,9 +21,10 @@
         <li class="nav-item">
             <a class="nav-link" id="state-tab" data-toggle="pill" href="#state" role="tab" aria-controls="state">State</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" id="log-tab" data-toggle="pill" href="#log" role="tab" aria-controls="log">Log</a>
-        </li>
+        @*TODO: Enable this when workflow logging is implemented.*@
+        @*<li class="nav-item">
+                <a class="nav-link" id="log-tab" data-toggle="pill" href="#log" role="tab" aria-controls="log">Log</a>
+            </li>*@
     </ul>
 </nav>
 <div class="tab-content">
@@ -77,13 +78,14 @@
             </div>
         </div>
     </div>
-    <div id="log" class="tab-pane" role="tabpanel" aria-labelledby="log-tab">
-        <div class="card form-group">
-            <div class="card-body">
-                Pretty LOG goes here...
+    @*TODO: Enable this when workflow logging is implemented.*@
+    @*<div id="log" class="tab-pane" role="tabpanel" aria-labelledby="log-tab">
+            <div class="card form-group">
+                <div class="card-body">
+                    Pretty LOG goes here...
+                </div>
             </div>
-        </div>
-    </div>
+        </div>*@
 </div>
 <fieldset class="form-group">
     <a class="btn btn-secondary" asp-route-action="Index" asp-route-workflowDefinitionId="@Model.WorkflowDefinition.Id">@T["Back"]</a>

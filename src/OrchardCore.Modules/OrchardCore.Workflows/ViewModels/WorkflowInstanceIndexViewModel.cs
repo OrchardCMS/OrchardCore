@@ -8,6 +8,7 @@ namespace OrchardCore.Workflows.ViewModels
         public WorkflowDefinitionRecord WorkflowDefinition { get; set; }
         public IList<WorkflowInstanceEntry> WorkflowInstances { get; set; }
         public dynamic Pager { get; set; }
+        public string ReturnUrl { get; set; }
     }
 
     public class WorkflowInstanceEntry

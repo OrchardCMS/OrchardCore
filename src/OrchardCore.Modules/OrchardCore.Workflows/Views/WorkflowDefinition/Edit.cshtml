@@ -19,6 +19,12 @@
             </button>
         </li>
     </ul>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <a class="btn btn-secondary btn-sm" asp-action="EditProperties" asp-route-id="@Model.WorkflowDefinition.Id" asp-route-returnUrl="@Context.Request.Path">@T["Properties"]</a>
+            <a class="btn btn-secondary btn-sm" asp-action="Index" asp-controller="WorkflowInstance" asp-route-workflowDefinitionId="@Model.WorkflowDefinition.Id" asp-route-returnUrl="@Context.Request.Path">@T["Instances"] <span class="badge badge-light">@Model.WorkflowInstanceCount</span></a>
+        </li>
+    </ul>
 </nav>
 
 <div asp-validation-summary="ModelOnly"></div>

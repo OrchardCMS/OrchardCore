@@ -61,11 +61,16 @@ namespace OrchardCore.Workflows.Controllers
         private dynamic New { get; }
         private IHtmlLocalizer<WorkflowInstanceController> T { get; }
 
-        public async Task<IActionResult> Index(int workflowDefinitionId, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(int workflowDefinitionId, PagerParameters pagerParameters, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
                 return Unauthorized();
+            }
+
+            if (!Url.IsLocalUrl(returnUrl))
+            {
+                returnUrl = Url.Action(nameof(Index), "WorkflowDefinition");
             }
 
             var workflowDefinition = await _workflowDefinitionRepository.GetAsync(workflowDefinitionId);
@@ -82,7 +87,8 @@ namespace OrchardCore.Workflows.Controllers
                 {
                     WorkflowInstance = x,
                 }).ToList(),
-                Pager = pagerShape
+                Pager = pagerShape,
+                ReturnUrl = returnUrl
             };
 
             return View(viewModel);

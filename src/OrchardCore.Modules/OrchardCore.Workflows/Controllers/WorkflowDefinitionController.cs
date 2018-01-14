@@ -204,6 +204,11 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
+            if (!Url.IsLocalUrl(returnUrl))
+            {
+                returnUrl = Url.Action(nameof(Index));
+            }
+
             if (id == null)
             {
                 return View(new WorkflowDefinitionPropertiesViewModel
@@ -278,6 +283,7 @@ namespace OrchardCore.Workflows.Controllers
             var activityContexts = await Task.WhenAll(workflowDefinitionRecord.Activities.Select(async x => await _workflowManager.CreateActivityContextAsync(x)));
             var activityThumbnailDisplayTasks = availableActivities.Select(async (x, i) => await BuildActivityDisplay(x, i, id, newLocalId, "Thumbnail"));
             var activityDesignDisplayTasks = activityContexts.Select(async (x, i) => await BuildActivityDisplay(x, i, id, newLocalId, "Design"));
+            var workflowInstanceCount = await _session.QueryIndex<WorkflowInstanceIndex>(x => x.WorkflowDefinitionId == id).CountAsync();
 
             await Task.WhenAll(activityThumbnailDisplayTasks.Concat(activityDesignDisplayTasks));
 
@@ -308,7 +314,8 @@ namespace OrchardCore.Workflows.Controllers
                 ActivityDesignShapes = activityDesignShapes,
                 ActivityCategories = _activityLibrary.ListCategories().ToList(),
                 LocalId = newLocalId,
-                LoadLocalState = !string.IsNullOrWhiteSpace(localId)
+                LoadLocalState = !string.IsNullOrWhiteSpace(localId),
+                WorkflowInstanceCount = workflowInstanceCount
             };
             return View(viewModel);
         }

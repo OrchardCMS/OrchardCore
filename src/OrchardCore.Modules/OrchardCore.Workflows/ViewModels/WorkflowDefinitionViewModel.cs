@@ -15,5 +15,6 @@ namespace OrchardCore.Workflows.ViewModels
         public string State { get; set; }
         public string LocalId { get; set; }
         public bool LoadLocalState { get; set; }
+        public int WorkflowInstanceCount { get; set; }
     }
 }
