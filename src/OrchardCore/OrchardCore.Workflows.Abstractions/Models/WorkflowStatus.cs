@@ -8,6 +8,7 @@ namespace OrchardCore.Workflows.Models
         Executing,
         Halted,
         Finished,
-        Faulted
+        Faulted,
+        Aborted
     }
 }

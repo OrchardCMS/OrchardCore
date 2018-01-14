@@ -161,35 +161,42 @@ namespace OrchardCore.Workflows.Services
             if (cancellationToken.IsCancellationRequested)
             {
                 // Workflow is aborted.
-                return workflowContext;
+                workflowContext.Status = WorkflowStatus.Aborted;
+            }
+            else
+            {
+                // Signal every activity that the workflow is resumed.
+                await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowResumedAsync(workflowContext));
+
+                // Remove the awaiting activity.
+                workflowContext.WorkflowInstance.AwaitingActivities.Remove(awaitingActivity);
+
+                // Resume the workflow at the specified blocking activity.
+                var blockedOn = (await ExecuteWorkflowAsync(workflowContext, activityRecord)).ToList();
+
+                // Check if the workflow halted on any blocking activities, and if there are no more awaiting activities.
+                if (blockedOn.Count == 0 && workflowContext.WorkflowInstance.AwaitingActivities.Count == 0)
+                {
+                    // No, delete the workflow.
+                    workflowContext.Status = WorkflowStatus.Finished;
+                }
+                else
+                {
+                    // Add the new ones.
+                    workflowContext.Status = WorkflowStatus.Halted;
+                    foreach (var blocking in blockedOn)
+                    {
+                        workflowContext.WorkflowInstance.AwaitingActivities.Add(AwaitingActivityRecord.FromActivity(blocking));
+                    }
+                }
             }
 
-            // Signal every activity that the workflow is resumed.
-            await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowResumedAsync(workflowContext));
-
-            // Remove the awaiting activity.
-            workflowContext.WorkflowInstance.AwaitingActivities.Remove(awaitingActivity);
-
-            // Resume the workflow at the specified blocking activity.
-            var blockedOn = (await ExecuteWorkflowAsync(workflowContext, activityRecord)).ToList();
-
-            // Check if the workflow halted on any blocking activities, and if there are no more awaiting activities.
-            if (blockedOn.Count == 0 && workflowContext.WorkflowInstance.AwaitingActivities.Count == 0)
+            if (workflowContext.Status == WorkflowStatus.Finished)
             {
-                // No, delete the workflow.
-                workflowContext.Status = WorkflowStatus.Finished;
                 await _workInstanceRepository.DeleteAsync(workflowContext.WorkflowInstance);
             }
             else
             {
-                // Add the new ones.
-                workflowContext.Status = WorkflowStatus.Halted;
-                foreach (var blocking in blockedOn)
-                {
-                    workflowContext.WorkflowInstance.AwaitingActivities.Add(AwaitingActivityRecord.FromActivity(blocking));
-                }
-
-                // Serialize state.
                 await PersistAsync(workflowContext);
             }
 
@@ -232,30 +239,36 @@ namespace OrchardCore.Workflows.Services
             if (cancellationToken.IsCancellationRequested)
             {
                 // Workflow is aborted.
+                workflowContext.Status = WorkflowStatus.Aborted;
                 return workflowContext;
-            }
-
-            // Signal every activity that the workflow has started.
-            await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowStartedAsync(workflowContext));
-
-            // Execute the activity.
-            var blockedOn = (await ExecuteWorkflowAsync(workflowContext, startActivity)).ToList();
-
-            // Is the workflow halted on a blocking activity?
-            if (blockedOn.Count == 0)
-            {
-                // No, nothing to do.
-                workflowContext.Status = WorkflowStatus.Finished;
             }
             else
             {
-                // Workflow halted, create a workflow state.
-                workflowContext.Status = WorkflowStatus.Halted;
-                foreach (var blocking in blockedOn)
-                {
-                    workflowContext.WorkflowInstance.AwaitingActivities.Add(AwaitingActivityRecord.FromActivity(blocking));
-                }
+                // Signal every activity that the workflow has started.
+                await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowStartedAsync(workflowContext));
 
+                // Execute the activity.
+                var blockedOn = (await ExecuteWorkflowAsync(workflowContext, startActivity)).ToList();
+
+                // Is the workflow halted on a blocking activity?
+                if (blockedOn.Count == 0)
+                {
+                    // No, nothing to do.
+                    workflowContext.Status = WorkflowStatus.Finished;
+                }
+                else
+                {
+                    // Workflow halted, create a workflow state.
+                    workflowContext.Status = WorkflowStatus.Halted;
+                    foreach (var blocking in blockedOn)
+                    {
+                        workflowContext.WorkflowInstance.AwaitingActivities.Add(AwaitingActivityRecord.FromActivity(blocking));
+                    }
+                }
+            }
+
+            if (workflowContext.Status != WorkflowStatus.Finished)
+            {
                 // Serialize state.
                 await PersistAsync(workflowContext);
             }
