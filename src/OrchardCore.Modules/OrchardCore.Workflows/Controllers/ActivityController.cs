@@ -66,8 +66,8 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(workflowDefinitionId);
             var activity = _activityLibrary.InstantiateActivity(activityName);
+            var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(workflowDefinitionId);
             var activityEditor = await _activityDisplayManager.BuildEditorAsync(activity, this, isNew: true);
 
             activityEditor.Metadata.Type = "Activity_Edit";
@@ -80,6 +80,12 @@ namespace OrchardCore.Workflows.Controllers
                 WorkflowDefinitionId = workflowDefinitionId,
                 ReturnUrl = returnUrl
             };
+
+            if (!activity.HasEditor)
+            {
+                // No editor to show; short-circuit straight to the "POST" action.
+                return await Create(activityName, viewModel);
+            }
 
             return View(viewModel);
         }

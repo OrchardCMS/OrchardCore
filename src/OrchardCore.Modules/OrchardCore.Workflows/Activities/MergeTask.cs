@@ -19,6 +19,7 @@ namespace OrchardCore.Workflows.Activities
         public override string Name => nameof(MergeTask);
         public override LocalizedString Category => T["Control Flow"];
         public override LocalizedString Description => T["Merges workflow execution back into a single branch."];
+        public override bool HasEditor => false;
 
         private IList<string> Branches
         {

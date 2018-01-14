@@ -15,6 +15,7 @@ namespace OrchardCore.Workflows.Activities
         LocalizedString Category { get; }
         LocalizedString Description { get; }
         new JObject Properties { get; set; }
+        bool HasEditor { get; }
 
         /// <summary>
         /// List of possible outcomes when the activity is executed.

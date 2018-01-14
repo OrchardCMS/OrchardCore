@@ -210,8 +210,12 @@ class WorkflowEditor extends WorkflowCanvas {
 
             $(container).on('dblclick', '.activity', e => {
                 const sender = $(e.currentTarget);
-                this.saveLocalState();
-                sender.find('.activity-edit-action').get(0).click();
+                const hasEditor = sender.data('activity-has-editor');
+
+                if (hasEditor) {
+                    this.saveLocalState();
+                    sender.find('.activity-edit-action').get(0).click();
+                }
             });
 
             // Hide all popovers when clicking anywhere but on an activity.
