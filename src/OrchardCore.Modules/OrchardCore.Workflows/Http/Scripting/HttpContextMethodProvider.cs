@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Scripting;
 
-namespace OrchardCore.Workflows.Scripting
+namespace OrchardCore.Workflows.Http.Scripting
 {
     // TODO: Consider moving this to a more common package so that it's available without a dependency on Workflows.
     public class HttpContextMethodProvider : IGlobalMethodProvider
@@ -11,6 +14,7 @@ namespace OrchardCore.Workflows.Scripting
         private readonly GlobalMethod _httpContextMethod;
         private readonly GlobalMethod _queryStringMethod;
         private readonly GlobalMethod _writeMethod;
+        private readonly GlobalMethod _absoluteUrlMethod;
 
         public HttpContextMethodProvider(IHttpContextAccessor httpContextAccessor)
         {
@@ -31,11 +35,21 @@ namespace OrchardCore.Workflows.Scripting
                 Name = "responseWrite",
                 Method = serviceProvider => (Action<string>)(text => httpContextAccessor.HttpContext.Response.WriteAsync(text).GetAwaiter().GetResult())
             };
+
+            _absoluteUrlMethod = new GlobalMethod
+            {
+                Name = "absoluteUrl",
+                Method = serviceProvider => (Func<string, string>)(relativePath =>
+                {
+                    var urlHelper = serviceProvider.GetRequiredService<IUrlHelper>();
+                    return urlHelper.ToAbsoluteUrl(relativePath);
+                })
+            };
         }
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new[] { _httpContextMethod, _queryStringMethod, _writeMethod };
+            return new[] { _httpContextMethod, _queryStringMethod, _writeMethod, _absoluteUrlMethod };
         }
     }
 }
