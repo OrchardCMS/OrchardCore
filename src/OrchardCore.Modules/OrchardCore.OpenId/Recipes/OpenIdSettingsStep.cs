@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -45,6 +45,7 @@ namespace OrchardCore.OpenId.Recipes
             settings.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
             settings.AllowImplicitFlow = model.AllowImplicitFlow;
             settings.AllowHybridFlow = model.AllowHybridFlow;
+            settings.UseRollingTokens = model.UseRollingTokens;
 
             await _openIdService.UpdateOpenIdSettingsAsync(settings);
         }
@@ -69,5 +70,6 @@ namespace OrchardCore.OpenId.Recipes
         public bool AllowRefreshTokenFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
         public bool AllowHybridFlow { get; set; }
+        public bool UseRollingTokens { get; set; }
     }
 }
