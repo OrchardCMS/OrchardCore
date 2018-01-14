@@ -43,7 +43,7 @@ namespace OrchardCore.Workflows.Activities
             return Outcomes(S["Done"]);
         }
 
-        public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             var message = await workflowContext.EvaluateExpressionAsync(Message);
             _notifier.Add(NotificationType, H[message]);

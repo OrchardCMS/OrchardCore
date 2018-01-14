@@ -51,11 +51,11 @@ namespace OrchardCore.Workflows.Activities
             return Outcomes(AvailableOutcomes.Select(x => T[x]).ToArray());
         }
 
-        public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             var outcomes = new List<string>();
             await workflowContext.EvaluateScriptAsync(Script, new OutcomeMethodProvider(outcomes));
-            return outcomes;
+            return Outcomes(outcomes);
         }
     }
 }

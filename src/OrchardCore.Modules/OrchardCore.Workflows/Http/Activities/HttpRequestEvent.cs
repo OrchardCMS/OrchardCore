@@ -54,9 +54,9 @@ namespace OrchardCore.Workflows.Http.Activities
             return Outcomes(T["Matched"]);
         }
 
-        public override IEnumerable<string> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override ActivityExecutionResult Resume(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            yield return "Matched";
+            return Outcomes("Matched");
         }
     }
 }

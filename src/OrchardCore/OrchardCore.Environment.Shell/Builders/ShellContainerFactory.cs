@@ -44,7 +44,7 @@ namespace OrchardCore.Environment.Shell.Builders
             tenantServiceCollection.AddSingleton(blueprint);
 
             AddCoreServices(tenantServiceCollection);
-            
+
             // Execute IStartup registrations
 
             // TODO: Use StartupLoader in RTM and then don't need to register the classes anymore then
@@ -75,7 +75,7 @@ namespace OrchardCore.Environment.Shell.Builders
             // IStartup instances are ordered by module dependency with an Order of 0 by default.
             // OrderBy performs a stable sort so order is preserved among equal Order values.
             startups = startups.OrderBy(s => s.Order);
-            
+
             // Let any module add custom service descriptors to the tenant
             foreach (var startup in startups)
             {
@@ -87,9 +87,9 @@ namespace OrchardCore.Environment.Shell.Builders
 
             (moduleServiceProvider as IDisposable).Dispose();
 
-            // add already instanciated services like DefaultOrchardHost
+            // add already instantiated services like DefaultOrchardHost
             var applicationServiceDescriptors = _applicationServices.Where(x => x.Lifetime == ServiceLifetime.Singleton);
-            
+
             var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
 
             // Register all DIed types in ITypeFeatureProvider
@@ -113,7 +113,7 @@ namespace OrchardCore.Environment.Shell.Builders
                     }
                 }
             }
-            
+
             return shellServiceProvider;
         }
     }

@@ -30,14 +30,24 @@ namespace OrchardCore.Workflows.Activities
             return true;
         }
 
-        public virtual Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public virtual Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             return Task.FromResult(Execute(workflowContext, activityContext));
         }
 
-        public virtual IEnumerable<string> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public virtual ActivityExecutionResult Execute(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            yield break;
+            return ActivityExecutionResult.Noop();
+        }
+
+        public virtual Task<ActivityExecutionResult> ResumeAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        {
+            return Task.FromResult(Resume(workflowContext, activityContext));
+        }
+
+        public virtual ActivityExecutionResult Resume(WorkflowContext workflowContext, ActivityContext activityContext)
+        {
+            return ActivityExecutionResult.Noop();
         }
 
         public virtual Task OnInputReceivedAsync(WorkflowContext workflowContext, IDictionary<string, object> input)
@@ -85,9 +95,24 @@ namespace OrchardCore.Workflows.Activities
             return names.Select(x => new Outcome(x));
         }
 
-        protected IEnumerable<string> Outcomes(params string[] names)
+        protected ActivityExecutionResult Outcomes(params string[] names)
         {
-            return names;
+            return ActivityExecutionResult.FromOutcomes(names);
+        }
+
+        protected ActivityExecutionResult Outcomes(IEnumerable<string> names)
+        {
+            return ActivityExecutionResult.FromOutcomes(names);
+        }
+
+        protected ActivityExecutionResult Halt()
+        {
+            return ActivityExecutionResult.Halt();
+        }
+
+        protected ActivityExecutionResult Noop()
+        {
+            return ActivityExecutionResult.Noop();
         }
 
         protected virtual T GetProperty<T>(Func<T> defaultValue = null, [CallerMemberName]string name = null)

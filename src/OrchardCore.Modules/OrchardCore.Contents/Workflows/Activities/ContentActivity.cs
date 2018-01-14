@@ -58,9 +58,9 @@ namespace OrchardCore.Contents.Workflows.Activities
             return Outcomes(T["Done"]);
         }
 
-        public override IEnumerable<string> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override ActivityExecutionResult Execute(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            yield return "Done";
+            return Outcomes("Done");
         }
 
         protected virtual async Task<IContent> GetContentAsync(WorkflowContext workflowContext)

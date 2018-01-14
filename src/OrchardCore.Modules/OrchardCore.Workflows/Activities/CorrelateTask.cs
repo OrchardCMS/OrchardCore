@@ -30,7 +30,7 @@ namespace OrchardCore.Workflows.Activities
             return Outcomes(T["Done"]);
         }
 
-        public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             var value = (await workflowContext.EvaluateExpressionAsync(Value))?.Trim();
             workflowContext.CorrelationId = value;

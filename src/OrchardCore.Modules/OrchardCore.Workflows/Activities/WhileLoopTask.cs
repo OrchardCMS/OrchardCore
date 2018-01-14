@@ -33,7 +33,7 @@ namespace OrchardCore.Workflows.Activities
             return Outcomes(T["Iterate"], T["Done"]);
         }
 
-        public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             var loop = await workflowContext.EvaluateScriptAsync(Condition);
             return Outcomes(loop ? "Iterate" : "Done");

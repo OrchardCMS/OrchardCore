@@ -31,10 +31,10 @@ namespace OrchardCore.Workflows.Activities
             yield break;
         }
 
-        public override IEnumerable<string> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override ActivityExecutionResult Execute(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             _logger.LogWarning($"Activity {MissingActivityRecord.Name} is no longer available. This can happen if the feature providing the activity is no longer enabled. Either enable the feature, or remove this activity from workflow definition with ID {workflowContext.WorkflowDefinition.Id}");
-            yield break;
+            return Noop();
         }
     }
 }

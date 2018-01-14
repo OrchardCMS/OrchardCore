@@ -267,9 +267,10 @@ namespace OrchardCore.Workflows.Services
         public async Task<IEnumerable<ActivityRecord>> ExecuteWorkflowAsync(WorkflowContext workflowContext, ActivityRecord activity)
         {
             var definition = workflowContext.WorkflowDefinition;
-            var firstPass = true;
             var scheduled = new Stack<ActivityRecord>();
             var blocking = new List<ActivityRecord>();
+            var isResuming = workflowContext.Status == WorkflowStatus.Resuming;
+            var isFirstPass = true;
 
             workflowContext.Status = WorkflowStatus.Executing;
             scheduled.Push(activity);
@@ -279,22 +280,6 @@ namespace OrchardCore.Workflows.Services
                 activity = scheduled.Pop();
 
                 var activityContext = workflowContext.GetActivity(activity.Id);
-
-                // While there is an activity to process.
-                if (!firstPass)
-                {
-                    if (activityContext.Activity.IsEvent())
-                    {
-                        // Block on this activity.
-                        blocking.Add(activity);
-
-                        continue;
-                    }
-                }
-                else
-                {
-                    firstPass = false;
-                }
 
                 // Signal every activity that the activity is about to be executed.
                 var cancellationToken = new CancellationToken();
@@ -312,7 +297,39 @@ namespace OrchardCore.Workflows.Services
 
                 try
                 {
-                    outcomes = (await activityContext.Activity.ExecuteAsync(workflowContext, activityContext)).ToList();
+                    ActivityExecutionResult result;
+
+                    if (isResuming)
+                    {
+                        result = await activityContext.Activity.ResumeAsync(workflowContext, activityContext);
+                        isResuming = false;
+                    }
+                    else
+                    {
+                        result = await activityContext.Activity.ExecuteAsync(workflowContext, activityContext);
+                    }
+
+                    if (result.IsHalted)
+                    {
+                        if (isFirstPass)
+                        {
+                            // Resume immediately when this is the first pass.
+                            result = await activityContext.Activity.ResumeAsync(workflowContext, activityContext);
+                            isFirstPass = false;
+                            outcomes = result.Outcomes;
+                        }
+                        else
+                        {
+                            // Block on this activity.
+                            blocking.Add(activity);
+
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        outcomes = result.Outcomes;
+                    }
                 }
                 catch (Exception ex)
                 {

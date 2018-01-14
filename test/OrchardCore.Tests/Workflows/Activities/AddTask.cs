@@ -36,14 +36,14 @@ namespace OrchardCore.Tests.Workflows.Activities
             return Outcomes(T["Done"]);
         }
 
-        public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             var a = await workflowContext.EvaluateScriptAsync(A);
             var b = await workflowContext.EvaluateScriptAsync(B);
             var result = a + b;
 
             workflowContext.LastResult = result;
-            return new[] { "Done" };
+            return Outcomes("Done");
         }
     }
 }

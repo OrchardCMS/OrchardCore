@@ -65,7 +65,7 @@ namespace OrchardCore.Workflows.Email.Activities
             return Outcomes(T["Done"]);
         }
 
-        public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             var host = _smtpOptions.Value.Host;
             var port = _smtpOptions.Value.Port;
@@ -80,7 +80,7 @@ namespace OrchardCore.Workflows.Email.Activities
 
                 await smtpClient.SendMailAsync(mailMessage);
 
-                return new[] { "Done" };
+                return Outcomes("Done");
             }
         }
     }

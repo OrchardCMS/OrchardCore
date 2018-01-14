@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Abstractions.Models;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Contents.Workflows.Activities
@@ -22,7 +23,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             return Outcomes(T["Published"]);
         }
 
-        public override async Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
         {
             var content = await GetContentAsync(workflowContext);
             await ContentManager.PublishAsync(content.ContentItem);

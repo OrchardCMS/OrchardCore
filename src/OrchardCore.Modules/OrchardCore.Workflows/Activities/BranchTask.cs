@@ -30,9 +30,9 @@ namespace OrchardCore.Workflows.Activities
             return Branches.Select(x => Outcome(T[x]));
         }
 
-        public override IEnumerable<string> Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override ActivityExecutionResult Execute(WorkflowContext workflowContext, ActivityContext activityContext)
         {
-            return Branches;
+            return Outcomes(Branches);
         }
     }
 }

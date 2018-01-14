@@ -28,10 +28,14 @@ namespace OrchardCore.Workflows.Activities
         Task<bool> CanExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext);
 
         /// <summary>
-        /// Executes the current activity.
+        /// Executes the specified activity.
         /// </summary>
-        /// <returns>The names of the resulting outcomes.</returns>
-        Task<IEnumerable<string>> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext);
+        Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext);
+
+        /// <summary>
+        /// Resumes the specified activity.
+        /// </summary>
+        Task<ActivityExecutionResult> ResumeAsync(WorkflowContext workflowContext, ActivityContext activityContext);
 
         /// <summary>
         /// Executes before a workflow starts or resumes, giving activities an opportunity to read and store any values of interest.
