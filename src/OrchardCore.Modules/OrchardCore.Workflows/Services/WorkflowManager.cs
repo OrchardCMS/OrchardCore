@@ -165,29 +165,23 @@ namespace OrchardCore.Workflows.Services
             }
             else
             {
-                // Signal every activity that the workflow is resumed.
-                await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowResumedAsync(workflowContext));
-
-                // Remove the awaiting activity.
-                workflowContext.WorkflowInstance.AwaitingActivities.Remove(awaitingActivity);
-
-                // Resume the workflow at the specified blocking activity.
-                var blockedOn = (await ExecuteWorkflowAsync(workflowContext, activityRecord)).ToList();
-
-                // Check if the workflow halted on any blocking activities, and if there are no more awaiting activities.
-                if (blockedOn.Count == 0 && workflowContext.WorkflowInstance.AwaitingActivities.Count == 0)
+                // Check if the current activity can execute.
+                var activityContext = workflowContext.GetActivity(activityRecord.Id);
+                if (await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
                 {
-                    // No, delete the workflow.
-                    workflowContext.Status = WorkflowStatus.Finished;
+                    // Signal every activity that the workflow is resumed.
+                    await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowResumedAsync(workflowContext));
+
+                    // Remove the blocking activity.
+                    workflowContext.WorkflowInstance.AwaitingActivities.Remove(awaitingActivity);
+
+                    // Resume the workflow at the specified blocking activity.
+                    await ExecuteWorkflowAsync(workflowContext, activityRecord);
                 }
                 else
                 {
-                    // Add the new ones.
                     workflowContext.Status = WorkflowStatus.Halted;
-                    foreach (var blocking in blockedOn)
-                    {
-                        workflowContext.WorkflowInstance.AwaitingActivities.Add(AwaitingActivityRecord.FromActivity(blocking));
-                    }
+                    return workflowContext;
                 }
             }
 
@@ -244,26 +238,20 @@ namespace OrchardCore.Workflows.Services
             }
             else
             {
-                // Signal every activity that the workflow has started.
-                await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowStartedAsync(workflowContext));
-
-                // Execute the activity.
-                var blockedOn = (await ExecuteWorkflowAsync(workflowContext, startActivity)).ToList();
-
-                // Is the workflow halted on a blocking activity?
-                if (blockedOn.Count == 0)
+                // Check if the current activity can execute.
+                var activityContext = workflowContext.GetActivity(startActivity.Id);
+                if (await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
                 {
-                    // No, nothing to do.
-                    workflowContext.Status = WorkflowStatus.Finished;
+                    // Signal every activity that the workflow has started.
+                    await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowStartedAsync(workflowContext));
+
+                    // Execute the activity.
+                    await ExecuteWorkflowAsync(workflowContext, startActivity);
                 }
                 else
                 {
-                    // Workflow halted, create a workflow state.
-                    workflowContext.Status = WorkflowStatus.Halted;
-                    foreach (var blocking in blockedOn)
-                    {
-                        workflowContext.WorkflowInstance.AwaitingActivities.Add(AwaitingActivityRecord.FromActivity(blocking));
-                    }
+                    workflowContext.Status = WorkflowStatus.Idle;
+                    return workflowContext;
                 }
             }
 
@@ -297,20 +285,15 @@ namespace OrchardCore.Workflows.Services
                 {
                     if (activityContext.Activity.IsEvent())
                     {
+                        // Block on this activity.
                         blocking.Add(activity);
+
                         continue;
                     }
                 }
                 else
                 {
                     firstPass = false;
-                }
-
-                // Check if the current activity can execute.
-                if (!await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
-                {
-                    // No, so break out and return.
-                    break;
                 }
 
                 // Signal every activity that the activity is about to be executed.
@@ -320,7 +303,8 @@ namespace OrchardCore.Workflows.Services
                 if (cancellationToken.IsCancellationRequested)
                 {
                     // Activity is aborted.
-                    continue;
+                    workflowContext.Status = WorkflowStatus.Aborted;
+                    break;
                 }
 
                 // Execute the current activity.
@@ -354,7 +338,15 @@ namespace OrchardCore.Workflows.Services
             }
 
             // Apply Distinct() as two paths could block on the same activity.
-            return blocking.Distinct();
+            var blockingActivities = blocking.Distinct().ToList();
+            workflowContext.Status = blockingActivities.Any() || workflowContext.WorkflowInstance.AwaitingActivities.Any() ? WorkflowStatus.Halted : WorkflowStatus.Finished;
+
+            foreach (var blockingActivity in blockingActivities)
+            {
+                workflowContext.WorkflowInstance.AwaitingActivities.Add(AwaitingActivityRecord.FromActivity(blockingActivity));
+            }
+
+            return blockingActivities;
         }
 
         private async Task PersistAsync(WorkflowContext workflowContext)
