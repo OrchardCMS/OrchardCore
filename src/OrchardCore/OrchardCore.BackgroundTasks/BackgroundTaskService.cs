@@ -60,8 +60,8 @@ namespace OrchardCore.BackgroundTasks
         // c.f. http://stackoverflow.com/questions/25007670/using-async-await-inside-the-timer-elapsed-event-handler-within-a-windows-servic
         private async void DoWorkAsync(object group)
         {
-            // DoWork is not re-entrant as Timer will not call the callback until the previous callback has returned.
-            // This way if a tasks takes longer than the period itself, DoWork is not called while it's still running.
+            // DoWork needs to be re-entrant as Timer may call the callback before the previous callback has returned.
+            // So, because a task may take longer than the period itself, DoWork needs to check if it's still running.
             ShellContext shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
 
             var groupName = group as string ?? "";
@@ -74,7 +74,7 @@ namespace OrchardCore.BackgroundTasks
                 {
                     try
                     {
-                        if (_states[task] == BackgroundTaskState.Stopped)
+                        if (_states[task] != BackgroundTaskState.Idle)
                         {
                             return;
                         }
@@ -82,7 +82,7 @@ namespace OrchardCore.BackgroundTasks
                         lock (_states)
                         {
                             // Ensure Terminate() was not called before
-                            if (_states[task] == BackgroundTaskState.Stopped)
+                            if (_states[task] != BackgroundTaskState.Idle)
                             {
                                 return;
                             }
