@@ -1,4 +1,5 @@
 @model WorkflowInstanceIndexViewModel
+@using OrchardCore.Workflows.Models;
 @using OrchardCore.Workflows.ViewModels;
 
 <h1>@RenderTitleSegments(T["{0} Instances", Model.WorkflowDefinition.Name])</h1>
@@ -19,6 +20,31 @@
             <ul class="list-group">
                 @foreach (var entry in Model.WorkflowInstances)
                 {
+                    var statusCss = "";
+
+                    switch (entry.WorkflowInstance.Status)
+                    {
+                        case WorkflowStatus.Aborted:
+                            statusCss = "warning";
+                            break;
+                        case WorkflowStatus.Idle:
+                        default:
+                            statusCss = "secondary";
+                            break;
+                        case WorkflowStatus.Finished:
+                            statusCss = "success";
+                            break;
+                        case WorkflowStatus.Executing:
+                        case WorkflowStatus.Halted:
+                        case WorkflowStatus.Resuming:
+                        case WorkflowStatus.Starting:
+                            statusCss = "info";
+                            break;
+                        case WorkflowStatus.Faulted:
+                            statusCss = "danger";
+                            break;
+                    }
+
                     <li class="list-group-item">
                         <div class="properties">
                             <div class="related">
@@ -28,6 +54,9 @@
                             <a asp-action="Details" asp-route-id="@entry.WorkflowInstance.Id">@entry.WorkflowInstance.Uid</a>
                             <div>
                                 <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.WorkflowInstance.CreatedUtc)))]</span>
+                                <div class="info">
+                                    <span class="badge badge-@statusCss">@entry.WorkflowInstance.Status</span>
+                                </div>
                             </div>
                         </div>
                     </li>

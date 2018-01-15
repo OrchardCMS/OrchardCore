@@ -32,14 +32,16 @@
                         </div>
 
                         <a asp-action="Edit" asp-route-id="@entry.Definition.Id">@entry.Name</a>
-                        @if (!entry.Definition.IsEnabled)
-                        {
-                            <span class="badge badge-warning">@T["disabled"]</span>
-                        }
-                    </div>
-
-                    <div class="metadata">
-                        <a asp-action="Index" asp-controller="WorkflowInstance" asp-route-workflowDefinitionId="@entry.Definition.Id" class="hint">@T["Running workflows: {0}", entry.WorkflowInstanceCount]</a>
+                        <div class="metadata">
+                            @if (!entry.Definition.IsEnabled)
+                            {
+                                <span class="badge badge-secondary">@T["disabled"]</span>
+                            }
+                            @if (entry.WorkflowInstanceCount > 0)
+                            {
+                                <a asp-action="Index" asp-controller="WorkflowInstance" asp-route-workflowDefinitionId="@entry.Definition.Id" class="badge badge-info">@T.Plural(entry.WorkflowInstanceCount, "1 instance", "{0} instances", entry.WorkflowInstanceCount)</a>
+                            }
+                        </div>
                     </div>
                 </li>
             }
