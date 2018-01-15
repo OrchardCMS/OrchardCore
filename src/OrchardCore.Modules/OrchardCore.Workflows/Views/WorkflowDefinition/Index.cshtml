@@ -32,6 +32,10 @@
                         </div>
 
                         <a asp-action="Edit" asp-route-id="@entry.Definition.Id">@entry.Name</a>
+                        @if (!entry.Definition.IsEnabled)
+                        {
+                            <span class="badge badge-warning">@T["disabled"]</span>
+                        }
                     </div>
 
                     <div class="metadata">
