@@ -96,6 +96,11 @@ namespace OrchardCore.Workflows.Activities
             return names.Select(x => new Outcome(x));
         }
 
+        protected IEnumerable<Outcome> Outcomes(IEnumerable<LocalizedString> names)
+        {
+            return names.Select(x => new Outcome(x));
+        }
+
         protected ActivityExecutionResult Outcomes(params string[] names)
         {
             return ActivityExecutionResult.FromOutcomes(names);

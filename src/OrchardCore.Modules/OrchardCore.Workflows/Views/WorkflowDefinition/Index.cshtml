@@ -27,7 +27,7 @@
                     <div class="properties">
                         <div class="related">
                             <a asp-action="Edit" asp-route-id="@entry.Definition.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="EditProperties" asp-route-id="@entry.Definition.Id" class="btn btn-primary btn-sm">@T["Properties"]</a>
+                            <a asp-action="EditProperties" asp-route-id="@entry.Definition.Id" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary btn-sm">@T["Properties"]</a>
                             <a asp-action="Delete" asp-route-id="@entry.Definition.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
 

@@ -1,0 +1,59 @@
+@using OrchardCore.Workflows.Http.ViewModels;
+@model HttpRequestTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="Url">
+    <label asp-for="Url">@T["URL"] <span asp-validation-for="Url"></span></label>
+    <input type="expression" asp-for="Url" syntax="Liquid" />
+    <span class="hint">@T["The URL to send the request to."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="HttpMethod">
+    <label asp-for="HttpMethod">@T["HttpMethod"] <span asp-validation-for="HttpMethod"></span></label>
+    <input type="expression" asp-for="HttpMethod" syntax="Liquid" />
+    <span class="hint">@T["The HTTP Method. For example: GET, POST, PUT, PATCH, OPTIONS, HEAD, DELETE"]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Headers">
+    <label asp-for="Headers">@T["Headers"] <span asp-validation-for="Headers"></span></label>
+    <textarea asp-for="Headers"></textarea>
+    <span class="hint">@T["Provide additional HTTP headers, one per line. For example: Authorization: Bearer 123ABC. Supports Liquid."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Body">
+    <label asp-for="Body">@T["Body"] <span asp-validation-for="Body"></span></label>
+    <textarea asp-for="Body"></textarea>
+    <span class="hint">@T["The body to send with POST, PUT and PATCH requests. Supports Liquid."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="ContentType">
+    <label asp-for="ContentType">@T["ContentType"] <span asp-validation-for="ContentType"></span></label>
+    <input type="expression" asp-for="ContentType" syntax="Liquid" />
+    <span class="hint">@T["The content type of the request body. For example: text/plain, text/html, application/json, application/x-www-form-urlencoded."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="HttpResponseCodes">
+    <label asp-for="HttpResponseCodes">@T["HTTP Response Codes"] <span asp-validation-for="HttpResponseCodes"></span></label>
+    <input type="text" class="form-control" asp-for="HttpResponseCodes" />
+    <span class="hint">@T["A comma-separated list of HTTP response status codes to handle as activity outcomes. For example: 200, 404, 500"]</span>
+</fieldset>
+
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/javascript/javascript.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/simple.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/multiplex.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/xml/xml.min.js" at="Foot"></script>
+
+<script asp-src="/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<script at="Foot">
+    $(function () {
+        var codeMirrorOptions = {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        };
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Headers)'), codeMirrorOptions);
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Body)'), codeMirrorOptions);
+});
+</script>

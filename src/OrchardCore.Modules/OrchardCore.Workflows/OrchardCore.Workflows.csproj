@@ -40,6 +40,9 @@
     <None Remove="Views\Items\HttpRequestFilterEvent.Fields.Design.cshtml" />
     <None Remove="Views\Items\HttpRequestFilterEvent.Fields.Edit.cshtml" />
     <None Remove="Views\Items\HttpRequestFilterEvent.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\Items\HttpRequestTask.Fields.Design.cshtml" />
+    <None Remove="Views\Items\HttpRequestTask.Fields.Edit.cshtml" />
+    <None Remove="Views\Items\HttpRequestTask.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\IfElseTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\IfElseTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\IfElseTask.Fields.Thumbnail.cshtml" />

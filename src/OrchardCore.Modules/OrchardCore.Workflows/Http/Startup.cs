@@ -43,6 +43,7 @@ namespace OrchardCore.Workflows.Http
             services.AddActivity<HttpRequestEvent, HttpRequestEventDisplay>();
             services.AddActivity<HttpRequestFilterEvent, HttpRequestFilterEventDisplay>();
             services.AddActivity<HttpRedirectTask, HttpRedirectTaskDisplay>();
+            services.AddActivity<HttpRequestTask, HttpRequestTaskDisplay>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
