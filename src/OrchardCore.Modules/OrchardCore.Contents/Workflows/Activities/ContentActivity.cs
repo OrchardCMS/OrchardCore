@@ -38,7 +38,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public override async Task<bool> CanExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var content = await GetContentAsync(workflowContext);
 
@@ -53,17 +53,17 @@ namespace OrchardCore.Contents.Workflows.Activities
             return !contentTypes.Any() || contentTypes.Any(contentType => content.ContentItem.ContentType == contentType);
         }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(T["Done"]);
         }
 
-        public override ActivityExecutionResult Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes("Done");
         }
 
-        protected virtual async Task<IContent> GetContentAsync(WorkflowContext workflowContext)
+        protected virtual async Task<IContent> GetContentAsync(WorkflowExecutionContext workflowContext)
         {
             // Try and evaluate a content item from the Content expression, if provided.
             if (!string.IsNullOrWhiteSpace(Content.Expression))

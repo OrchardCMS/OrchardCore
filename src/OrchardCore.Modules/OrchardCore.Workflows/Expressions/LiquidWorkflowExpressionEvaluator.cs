@@ -20,14 +20,14 @@ namespace OrchardCore.Workflows.Expressions
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IEnumerable<IWorkflowContextHandler> _workflowContextHandlers;
+        private readonly IEnumerable<IWorkflowExecutionContextHandler> _workflowContextHandlers;
         private readonly ILogger<LiquidWorkflowExpressionEvaluator> _logger;
 
         public LiquidWorkflowExpressionEvaluator(
             IServiceProvider serviceProvider,
             ILiquidTemplateManager liquidTemplateManager,
             IStringLocalizer<LiquidWorkflowExpressionEvaluator> localizer,
-            IEnumerable<IWorkflowContextHandler> workflowContextHandlers,
+            IEnumerable<IWorkflowExecutionContextHandler> workflowContextHandlers,
             ILogger<LiquidWorkflowExpressionEvaluator> logger
         )
         {
@@ -40,10 +40,10 @@ namespace OrchardCore.Workflows.Expressions
 
         private IStringLocalizer T { get; }
 
-        public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowContext workflowContext)
+        public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext)
         {
             var templateContext = await CreateTemplateContextAsync(workflowContext);
-            var expressionContext = new WorkflowContextExpressionContext(templateContext, workflowContext);
+            var expressionContext = new WorkflowExecutionExpressionContext(templateContext, workflowContext);
 
             await _workflowContextHandlers.InvokeAsync(async x => await x.EvaluatingExpressionAsync(expressionContext), _logger);
 
@@ -51,13 +51,13 @@ namespace OrchardCore.Workflows.Expressions
             return string.IsNullOrWhiteSpace(result) ? default(T) : (T)Convert.ChangeType(result, typeof(T));
         }
 
-        private async Task<TemplateContext> CreateTemplateContextAsync(WorkflowContext workflowContext)
+        private async Task<TemplateContext> CreateTemplateContextAsync(WorkflowExecutionContext workflowContext)
         {
             var context = new TemplateContext();
             var services = _serviceProvider;
 
             // Set WorkflowContext as the model.
-            context.MemberAccessStrategy.Register<WorkflowContext>();
+            context.MemberAccessStrategy.Register<WorkflowExecutionContext>();
             context.SetValue("WorkflowContext", workflowContext);
             context.SetValue("CorrelationId", workflowContext.CorrelationId);
 

@@ -3,14 +3,14 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
 {
-    public abstract class WorkflowContextHandlerBase : IWorkflowContextHandler
+    public abstract class WorkflowExecutionContextHandlerBase : IWorkflowExecutionContextHandler
     {
-        public virtual Task EvaluatingExpressionAsync(WorkflowContextExpressionContext context)
+        public virtual Task EvaluatingExpressionAsync(WorkflowExecutionExpressionContext context)
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task EvaluatingScriptAsync(WorkflowContextScriptContext context)
+        public virtual Task EvaluatingScriptAsync(WorkflowExecutionScriptContext context)
         {
             return Task.CompletedTask;
         }

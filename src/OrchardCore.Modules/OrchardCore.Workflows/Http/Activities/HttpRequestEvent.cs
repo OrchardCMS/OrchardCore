@@ -36,7 +36,7 @@ namespace OrchardCore.Workflows.Http.Activities
             set => SetProperty(value);
         }
 
-        public override bool CanExecute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var httpRequest = httpContext.Request;
@@ -49,12 +49,12 @@ namespace OrchardCore.Workflows.Http.Activities
 
         }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(T["Matched"]);
         }
 
-        public override ActivityExecutionResult Resume(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes("Matched");
         }

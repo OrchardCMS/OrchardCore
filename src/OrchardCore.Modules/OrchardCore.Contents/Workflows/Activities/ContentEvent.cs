@@ -13,12 +13,12 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public virtual bool CanStartWorkflow => true;
 
-        public override ActivityExecutionResult Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Halt();
         }
 
-        public override ActivityExecutionResult Resume(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes("Done");
         }

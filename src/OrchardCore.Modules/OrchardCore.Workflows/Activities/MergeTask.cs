@@ -27,12 +27,12 @@ namespace OrchardCore.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(T["Merged"]);
         }
 
-        public override ActivityExecutionResult Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             // Wait for all incoming branches to have executed their activity.
             var branches = Branches;
@@ -46,7 +46,7 @@ namespace OrchardCore.Workflows.Activities
 
             return Noop();
         }
-        public override Task OnActivityExecutedAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override Task OnActivityExecutedAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             // Get outbound transitions of the executing activity.
             var outboundTransitions = workflowContext.GetOutboundTransitions(activityContext.ActivityRecord.Id);

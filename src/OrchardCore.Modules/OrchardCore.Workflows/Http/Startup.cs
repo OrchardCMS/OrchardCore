@@ -31,7 +31,7 @@ namespace OrchardCore.Workflows.Http
                 options.Filters.Add(typeof(WorkflowActionFilter));
             });
 
-            services.AddScoped<IWorkflowDefinitionHandler, WorkflowDefinitionRoutesHandler>();
+            services.AddScoped<IWorkflowDefinitionEventHandler, WorkflowDefinitionRoutesHandler>();
             services.AddScoped<IWorkflowInstanceHandler, WorkflowInstanceRoutesHandler>();
 
             services.AddSingleton<IWorkflowDefinitionRouteEntries, WorkflowDefinitionRouteEntries>();

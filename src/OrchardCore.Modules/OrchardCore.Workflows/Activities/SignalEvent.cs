@@ -29,18 +29,18 @@ namespace OrchardCore.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public override async Task<bool> CanExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var signalName = await workflowContext.EvaluateExpressionAsync(SignalName);
             return string.Equals(workflowContext.Input.GetValue<string>("Signal"), signalName, StringComparison.OrdinalIgnoreCase);
         }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(T["Done"]);
         }
 
-        public override ActivityExecutionResult Resume(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes("Done");
         }

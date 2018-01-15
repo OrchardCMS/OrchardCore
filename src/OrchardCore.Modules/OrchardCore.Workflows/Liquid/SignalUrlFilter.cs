@@ -27,14 +27,14 @@ namespace OrchardCore.Workflows.Liquid
             var correlationIdValue = arguments.At(0);
             if (correlationIdValue.IsNil())
             {
-                var workflowContextValue = context.GetValue(nameof(WorkflowContext));
+                var workflowContextValue = context.GetValue(nameof(WorkflowExecutionContext));
 
                 if (workflowContextValue.IsNil())
                 {
                     throw new ArgumentException("WorkflowContext missing and no correlation ID provided while invoking 'signal_url'");
                 }
 
-                var workflowContext = (WorkflowContext)workflowContextValue.ToObjectValue();
+                var workflowContext = (WorkflowExecutionContext)workflowContextValue.ToObjectValue();
                 correlationId = workflowContext.CorrelationId;
             }
             else
@@ -48,14 +48,14 @@ namespace OrchardCore.Workflows.Liquid
 
             if (string.IsNullOrWhiteSpace(correlationId))
             {
-                var workflowContextValue = context.GetValue(nameof(WorkflowContext));
+                var workflowContextValue = context.GetValue(nameof(WorkflowExecutionContext));
 
                 if (workflowContextValue.IsNil())
                 {
                     throw new ArgumentException("WorkflowContext missing and no correlation ID provided while invoking 'signal_url'");
                 }
 
-                var workflowContext = (WorkflowContext)workflowContextValue.ToObjectValue();
+                var workflowContext = (WorkflowExecutionContext)workflowContextValue.ToObjectValue();
                 correlationId = workflowContext.CorrelationId;
             }
 

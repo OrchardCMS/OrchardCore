@@ -12,7 +12,7 @@ namespace OrchardCore.Workflows.Scripting
     {
         private readonly GlobalMethod _signalUrlMethod;
 
-        public SignalMethodProvider(WorkflowContext workflowContext, ISignalService signalService)
+        public SignalMethodProvider(WorkflowExecutionContext workflowContext, ISignalService signalService)
         {
             _signalUrlMethod = new GlobalMethod
             {

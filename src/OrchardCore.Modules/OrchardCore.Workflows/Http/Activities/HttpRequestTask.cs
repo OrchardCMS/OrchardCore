@@ -65,7 +65,7 @@ namespace OrchardCore.Workflows.Http.Activities
             set => SetProperty(value);
         }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var outcomes = !string.IsNullOrWhiteSpace(HttpResponseCodes) ? HttpResponseCodes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => new Outcome(T[x.Trim()])).ToList() : new List<Outcome>();
             outcomes.Add(new Outcome("UnhandledHttpStatus", T["Unhandled Http Status"]));
@@ -73,7 +73,7 @@ namespace OrchardCore.Workflows.Http.Activities
             return outcomes;
         }
 
-        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             using (var httpClient = new HttpClient())
             {

@@ -15,7 +15,7 @@ namespace OrchardCore.Workflows.Scripting
         private readonly GlobalMethod _resultMethod;
         private readonly GlobalMethod _correlationIdMethod;
 
-        public WorkflowMethodsProvider(WorkflowContext workflowContext)
+        public WorkflowMethodsProvider(WorkflowExecutionContext workflowContext)
         {
             _workflowMethod = new GlobalMethod
             {

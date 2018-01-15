@@ -19,69 +19,69 @@ namespace OrchardCore.Workflows.Activities
         public abstract LocalizedString Description { get; }
         public virtual bool HasEditor => true;
 
-        public abstract IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext);
+        public abstract IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
 
-        public virtual Task<bool> CanExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public virtual Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Task.FromResult(CanExecute(workflowContext, activityContext));
         }
 
-        public virtual bool CanExecute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public virtual bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return true;
         }
 
-        public virtual Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public virtual Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Task.FromResult(Execute(workflowContext, activityContext));
         }
 
-        public virtual ActivityExecutionResult Execute(WorkflowContext workflowContext, ActivityContext activityContext)
+        public virtual ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return ActivityExecutionResult.Noop();
         }
 
-        public virtual Task<ActivityExecutionResult> ResumeAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public virtual Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Task.FromResult(Resume(workflowContext, activityContext));
         }
 
-        public virtual ActivityExecutionResult Resume(WorkflowContext workflowContext, ActivityContext activityContext)
+        public virtual ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return ActivityExecutionResult.Noop();
         }
 
-        public virtual Task OnInputReceivedAsync(WorkflowContext workflowContext, IDictionary<string, object> input)
+        public virtual Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task OnWorkflowStartingAsync(WorkflowContext context, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task OnWorkflowStartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task OnWorkflowStartedAsync(WorkflowContext context)
+        public virtual Task OnWorkflowStartedAsync(WorkflowExecutionContext context)
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task OnWorkflowResumingAsync(WorkflowContext context, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task OnWorkflowResumingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task OnWorkflowResumedAsync(WorkflowContext context)
+        public virtual Task OnWorkflowResumedAsync(WorkflowExecutionContext context)
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task OnActivityExecutingAsync(WorkflowContext workflowContext, ActivityContext activityContext, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task OnActivityExecutingAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task OnActivityExecutedAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public virtual Task OnActivityExecutedAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Task.CompletedTask;
         }

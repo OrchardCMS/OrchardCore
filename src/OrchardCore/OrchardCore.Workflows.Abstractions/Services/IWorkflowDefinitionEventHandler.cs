@@ -3,7 +3,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
 {
-    public interface IWorkflowDefinitionHandler
+    public interface IWorkflowDefinitionEventHandler
     {
         Task CreatedAsync(WorkflowDefinitionCreatedContext context);
         Task UpdatedAsync(WorkflowDefinitionUpdatedContext context);

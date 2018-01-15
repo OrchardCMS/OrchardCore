@@ -12,10 +12,10 @@ namespace OrchardCore.Workflows.Services
     public class WorkflowDefinitionRepository : IWorkflowDefinitionRepository
     {
         private readonly ISession _session;
-        private readonly IEnumerable<IWorkflowDefinitionHandler> _handlers;
+        private readonly IEnumerable<IWorkflowDefinitionEventHandler> _handlers;
         readonly ILogger<WorkflowDefinitionRepository> _logger;
 
-        public WorkflowDefinitionRepository(ISession session, IEnumerable<IWorkflowDefinitionHandler> handlers, ILogger<WorkflowDefinitionRepository> logger)
+        public WorkflowDefinitionRepository(ISession session, IEnumerable<IWorkflowDefinitionEventHandler> handlers, ILogger<WorkflowDefinitionRepository> logger)
         {
             _session = session;
             _handlers = handlers;

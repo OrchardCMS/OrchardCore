@@ -9,15 +9,15 @@ namespace OrchardCore.Workflows.Services
     public interface IWorkflowManager
     {
         /// <summary>
-        /// Creates a new <see cref="WorkflowContext"/>.
+        /// Creates a new <see cref="WorkflowExecutionContext"/>.
         /// </summary>
-        Task<WorkflowContext> CreateWorkflowContextAsync(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord, IDictionary<string, object> input = null);
+        Task<WorkflowExecutionContext> CreateWorkflowExecutionContextAsync(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord, IDictionary<string, object> input = null);
 
         /// <summary>
         /// Creates a new <see cref="ActivityContext"/>.
         /// </summary>
         /// <param name="activityRecord"></param>
-        Task<ActivityContext> CreateActivityContextAsync(ActivityRecord activityRecord);
+        Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord);
 
         /// <summary>
         /// Triggers a specific <see cref="IEvent"/>, and provides context if the event is
@@ -36,22 +36,22 @@ namespace OrchardCore.Workflows.Services
         /// <param name="correlationId">Optionally specify a application-specific value to associate the workflow instance with. For example, a content item ID.</param>
         /// <param name="startActivityName">If a workflow definition contains multiple start activities, you can specify which one to use. If none specified, the first one will be used.</param>
         /// <returns>Returns the created workflow context. Can be used for further inspection of the workflow state.</returns>
-        Task<WorkflowContext> StartWorkflowAsync(WorkflowDefinitionRecord workflowDefinition, ActivityRecord startActivity = null, IDictionary<string, object> input = null, string correlationId = null);
+        Task<WorkflowExecutionContext> StartWorkflowAsync(WorkflowDefinitionRecord workflowDefinition, ActivityRecord startActivity = null, IDictionary<string, object> input = null, string correlationId = null);
 
         /// <summary>
         /// Resumes the specified workflow instance at the specified activity.
         /// </summary>
-        Task<WorkflowContext> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance, AwaitingActivityRecord awaitingActivity, IDictionary<string, object> input = null);
+        Task<WorkflowExecutionContext> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance, AwaitingActivityRecord awaitingActivity, IDictionary<string, object> input = null);
 
         /// <summary>
         /// Resumes the specified workflow instance.
         /// </summary>
-        Task<IList<WorkflowContext>> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance, IDictionary<string, object> input = null);
+        Task<IList<WorkflowExecutionContext>> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance, IDictionary<string, object> input = null);
 
         /// <summary>
         /// Executes the specified workflow starting at the specified activity.
         /// </summary>
-        Task<IEnumerable<ActivityRecord>> ExecuteWorkflowAsync(WorkflowContext workflowContext, ActivityRecord activity);
+        Task<IEnumerable<ActivityRecord>> ExecuteWorkflowAsync(WorkflowExecutionContext workflowExecutionContext, ActivityRecord activity);
     }
 
     public static class WorkflowManagerExtensions
@@ -59,11 +59,6 @@ namespace OrchardCore.Workflows.Services
         public static Task TriggerEventAsync(this IWorkflowManager workflowManager, string name, object input = null, string correlationId = null)
         {
             return workflowManager.TriggerEventAsync(name, new RouteValueDictionary(input), correlationId);
-        }
-
-        public static Task<WorkflowContext> StartWorkflowAsync(this IWorkflowManager workflowManager, WorkflowDefinitionRecord workflowDefinition, object input = null, string startActivityName = null, string correlationId = null)
-        {
-            return workflowManager.StartWorkflowAsync(workflowDefinition, new RouteValueDictionary(input), startActivityName, correlationId);
         }
     }
 }

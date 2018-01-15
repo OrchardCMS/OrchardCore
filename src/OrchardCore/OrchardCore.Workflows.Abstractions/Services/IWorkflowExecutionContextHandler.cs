@@ -3,10 +3,10 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
 {
-    public interface IWorkflowContextHandler
+    public interface IWorkflowExecutionContextHandler
     {
-        Task EvaluatingExpressionAsync(WorkflowContextExpressionContext context);
-        Task EvaluatingScriptAsync(WorkflowContextScriptContext context);
+        Task EvaluatingExpressionAsync(WorkflowExecutionExpressionContext context);
+        Task EvaluatingScriptAsync(WorkflowExecutionScriptContext context);
         Task DehydrateValueAsync(SerializeWorkflowValueContext context);
         Task RehydrateValueAsync(SerializeWorkflowValueContext context);
     }

@@ -5,16 +5,16 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.WorkflowContextProviders
 {
-    public class SignalWorkflowContextHandler : WorkflowContextHandlerBase
+    public class SignalWorkflowExecutionContextHandler : WorkflowExecutionContextHandlerBase
     {
         private readonly ISignalService _signalService;
 
-        public SignalWorkflowContextHandler(ISignalService signalService)
+        public SignalWorkflowExecutionContextHandler(ISignalService signalService)
         {
             _signalService = signalService;
         }
 
-        public override Task EvaluatingScriptAsync(WorkflowContextScriptContext context)
+        public override Task EvaluatingScriptAsync(WorkflowExecutionScriptContext context)
         {
             context.ScopedMethodProviders.Add(new SignalMethodProvider(context.WorkflowContext, _signalService));
             return Task.CompletedTask;

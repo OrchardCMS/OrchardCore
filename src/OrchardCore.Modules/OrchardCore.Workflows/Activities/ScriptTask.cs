@@ -46,12 +46,12 @@ namespace OrchardCore.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(AvailableOutcomes.Select(x => T[x]).ToArray());
         }
 
-        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var outcomes = new List<string>();
             await workflowContext.EvaluateScriptAsync(Script, new OutcomeMethodProvider(outcomes));

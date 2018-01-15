@@ -20,57 +20,57 @@ namespace OrchardCore.Workflows.Activities
         /// <summary>
         /// List of possible outcomes when the activity is executed.
         /// </summary>
-        IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext);
+        IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
 
         /// <summary>
         /// Whether the activity can transition to the next outcome. Can prevent the activity from being transitioned
         /// because a condition is not valid.
         /// </summary>
-        Task<bool> CanExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext);
+        Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
 
         /// <summary>
         /// Executes the specified activity.
         /// </summary>
-        Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext);
+        Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
 
         /// <summary>
         /// Resumes the specified activity.
         /// </summary>
-        Task<ActivityExecutionResult> ResumeAsync(WorkflowContext workflowContext, ActivityContext activityContext);
+        Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
 
         /// <summary>
         /// Executes before a workflow starts or resumes, giving activities an opportunity to read and store any values of interest.
         /// </summary>
-        Task OnInputReceivedAsync(WorkflowContext workflowContext, IDictionary<string, object> input);
+        Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input);
 
         /// <summary>
         /// Called on each activity when a workflow is about to start.
         /// </summary>
-        Task OnWorkflowStartingAsync(WorkflowContext context, CancellationToken cancellationToken = default(CancellationToken));
+        Task OnWorkflowStartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Called on each activity when a workflow has started.
         /// </summary>
-        Task OnWorkflowStartedAsync(WorkflowContext context);
+        Task OnWorkflowStartedAsync(WorkflowExecutionContext context);
 
         /// <summary>
         /// Called on each activity when a workflow is about to be resumed.
         /// </summary>
-        Task OnWorkflowResumingAsync(WorkflowContext context, CancellationToken cancellationToken = default(CancellationToken));
+        Task OnWorkflowResumingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Called on each activity when a workflow is resumed.
         /// </summary>
-        Task OnWorkflowResumedAsync(WorkflowContext context);
+        Task OnWorkflowResumedAsync(WorkflowExecutionContext context);
 
         /// <summary>
         /// Called on each activity when an activity is about to be executed.
         /// </summary>
-        Task OnActivityExecutingAsync(WorkflowContext workflowContext, ActivityContext activityContext, CancellationToken cancellationToken = default(CancellationToken));
+        Task OnActivityExecutingAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Called on each activity when an activity has been executed.
         /// </summary>
-        Task OnActivityExecutedAsync(WorkflowContext workflowContext, ActivityContext activityContext);
+        Task OnActivityExecutedAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
     }
 }

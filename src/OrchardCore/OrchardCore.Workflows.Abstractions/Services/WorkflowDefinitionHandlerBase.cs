@@ -3,7 +3,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
 {
-    public abstract class WorkflowDefinitionHandlerBase : IWorkflowDefinitionHandler
+    public abstract class WorkflowDefinitionHandlerBase : IWorkflowDefinitionEventHandler
     {
         public virtual Task CreatedAsync(WorkflowDefinitionCreatedContext context)
         {

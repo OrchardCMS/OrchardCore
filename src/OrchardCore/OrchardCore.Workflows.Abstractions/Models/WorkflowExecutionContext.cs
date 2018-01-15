@@ -8,15 +8,15 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Models
 {
-    public class WorkflowContext
+    public class WorkflowExecutionContext
     {
-        private readonly IEnumerable<IWorkflowContextHandler> _handlers;
+        private readonly IEnumerable<IWorkflowExecutionContextHandler> _handlers;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<WorkflowContext> _logger;
+        private readonly ILogger<WorkflowExecutionContext> _logger;
 
-        public WorkflowContext
+        public WorkflowExecutionContext
         (
             WorkflowDefinitionRecord workflowDefinitionRecord,
             WorkflowInstanceRecord workflowInstanceRecord,
@@ -26,10 +26,10 @@ namespace OrchardCore.Workflows.Models
             IDictionary<string, object> properties,
             object lastResult,
             IEnumerable<ActivityContext> activities,
-            IEnumerable<IWorkflowContextHandler> handlers,
+            IEnumerable<IWorkflowExecutionContextHandler> handlers,
             IWorkflowExpressionEvaluator expressionEvaluator,
             IWorkflowScriptEvaluator scriptEvaluator,
-            ILogger<WorkflowContext> logger
+            ILogger<WorkflowExecutionContext> logger
         )
         {
             _serviceProvider = serviceProvider;

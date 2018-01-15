@@ -6,6 +6,6 @@ namespace OrchardCore.Workflows.Services
 {
     public interface IWorkflowScriptEvaluator
     {
-        Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowContext workflowContext, params IGlobalMethodProvider[] scopedMethodProviders);
+        Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, params IGlobalMethodProvider[] scopedMethodProviders);
     }
 }

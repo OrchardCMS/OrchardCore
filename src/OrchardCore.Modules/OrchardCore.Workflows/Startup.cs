@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -40,8 +39,8 @@ namespace OrchardCore.Workflows
             services.AddScoped<IDisplayDriver<IActivity>, MissingActivityDisplay>();
             services.AddSingleton<IIndexProvider, WorkflowDefinitionIndexProvider>();
             services.AddSingleton<IIndexProvider, WorkflowInstanceIndexProvider>();
-            services.AddScoped<IWorkflowContextHandler, DefaultWorkflowContextHandler>();
-            services.AddScoped<IWorkflowContextHandler, SignalWorkflowContextHandler>();
+            services.AddScoped<IWorkflowExecutionContextHandler, DefaultWorkflowExecutionContextHandler>();
+            services.AddScoped<IWorkflowExecutionContextHandler, SignalWorkflowExecutionContextHandler>();
             services.AddScoped<IWorkflowExpressionEvaluator, LiquidWorkflowExpressionEvaluator>();
             services.AddScoped<IWorkflowScriptEvaluator, DefaultWorkflowScriptEvaluator>();
 
