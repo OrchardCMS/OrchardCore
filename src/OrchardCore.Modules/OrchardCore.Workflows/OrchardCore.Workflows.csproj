@@ -10,14 +10,18 @@
 
   <ItemGroup>
     <Compile Remove="Evaluators\**" />
+    <Compile Remove="Models\**" />
     <EmbeddedResource Remove="Evaluators\**" />
+    <EmbeddedResource Remove="Models\**" />
     <None Remove="Evaluators\**" />
+    <None Remove="Models\**" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Assets\Scripts\activity-picker.ts" />
     <None Remove="Assets\Scripts\workflow-canvas.ts" />
     <None Remove="Assets\Scripts\workflow-viewer.ts" />
+    <None Remove="README.md" />
     <None Remove="Views\Activity.DesignReadonly.cshtml" />
     <None Remove="Views\Items\BranchTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\BranchTask.Fields.Edit.cshtml" />
@@ -96,7 +100,7 @@
   <ItemGroup>
     <Folder Include="Content\Scripts\" />
     <Folder Include="Content\Styles\" />
-    <Folder Include="Models\" />
+    <Folder Include="docs\" />
   </ItemGroup>
 
   <ItemGroup>
