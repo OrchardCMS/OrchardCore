@@ -32,7 +32,7 @@ namespace OrchardCore.Workflows.Abstractions.TagHelpers
 
             output.Content.Clear();
             output.Content.AppendHtml(inputTextBuilder);
-            output.Content.AppendHtml($@"<div class=""input-group-addon""><span>{Syntax}</span></div>");
+            output.Content.AppendHtml($@"<div class=""input-group-append""><span class=""input-group-text"">{Syntax}</span></div>");
         }
     }
 }

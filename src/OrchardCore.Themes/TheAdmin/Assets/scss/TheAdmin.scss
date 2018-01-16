@@ -214,7 +214,7 @@ $link-padding-left: 16px !default;
 .code, .form-control.code {
     font-family: $font-family-monospace;
     font-size: $code-font-size;
-    padding: $code-padding-y $code-padding-x;
+    padding: $kbd-padding-y $kbd-padding-x;
     color: $pre-color;
     @include border-radius($border-radius);
 }
