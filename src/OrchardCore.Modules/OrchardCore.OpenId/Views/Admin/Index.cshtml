@@ -1,4 +1,4 @@
-﻿@model OpenIdApplicationsIndexViewModel
+@model OpenIdApplicationsIndexViewModel
 @using OrchardCore.OpenId.ViewModels;
 
 <h1>@RenderTitleSegments(T["OpenID Connect Applications"])</h1>
@@ -19,10 +19,10 @@
             <li class="list-group-item">
                 <div class="properties">
                     <div class="related float-xs-right">
-                        <a asp-action="Edit" asp-route-id="@entry.Application.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                        <a class="delete btn btn-danger btn-sm" asp-route-id="@entry.Application.Id" role="button" asp-action="Delete" itemprop="UnsafeUrl RemoveUrl">@T["Delete"]</a>
+                        <a asp-action="Edit" asp-route-id="@entry.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                        <a class="delete btn btn-danger btn-sm" asp-route-id="@entry.Id" role="button" asp-action="Delete" itemprop="UnsafeUrl RemoveUrl">@T["Delete"]</a>
                     </div>
-                    @entry.Application.DisplayName
+                    @entry.DisplayName
                 </div>
             </li>
         }
