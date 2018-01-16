@@ -5,13 +5,13 @@ using AspNet.Security.OpenIdConnect.Primitives;
 using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenIddict;
 using OrchardCore.Environment.Shell;
-using OrchardCore.OpenId.Models;
+using OrchardCore.OpenId.Abstractions.Models;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 
@@ -91,15 +91,18 @@ namespace OrchardCore.OpenId
                 return;
             }
 
-            options.ProviderType = typeof(OpenIddictProvider<OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>);
+            options.ProviderType = typeof(OpenIddictProvider<IOpenIdApplication, IOpenIdAuthorization, IOpenIdScope, IOpenIdToken>);
             options.DataProtectionProvider = _dataProtectionProvider;
             options.RequireClientIdentification = true;
             options.EnableRequestCaching = true;
+            options.UseRollingTokens = true;
 
             if (settings.AccessTokenFormat == OpenIdSettings.TokenFormat.JWT)
             {
                 options.AccessTokenHandler = new JwtSecurityTokenHandler();
             }
+
+            options.UseRollingTokens = settings.UseRollingTokens;
 
             if (settings.TestingModeEnabled)
             {

@@ -1,0 +1,27 @@
+@model HttpsSettingsViewModel
+
+<fieldset class="form-group" asp-validation-class-for="RequireHttps">
+    <div class="form-check">
+        <label class="form-check-label">
+            <input asp-for="RequireHttps" class="form-check-input" asp-is-disabled="@(!Model.IsHttpsRequest)" />
+            @T["Require HTTPS"]
+        </label>
+    </div>
+    <span class="hint">@T["Require HTTPS for all requests"]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="RequireHttpsPermanent">
+    <div class="form-check">
+        <label class="form-check-label">
+            <input asp-for="RequireHttpsPermanent" class="form-check-input" asp-is-disabled="@(!Model.IsHttpsRequest)"/>
+            @T["Require HTTPS Permanent"]
+        </label>
+    </div>
+    <span class="hint">@T["Specifies whether a permanent redirect, 301 Moved Permanently, should be used instead of a temporary redirect, 302 Found, when redirecting to HTTPS"]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="SslPort">
+    <label asp-for="SslPort">@T["SSL Port"] <span asp-validation-for="SslPort"></span></label>
+    <input asp-for="SslPort" class="form-control" type="number" asp-is-disabled="@(!Model.IsHttpsRequest)"/>
+    <span class="hint">@T["The SSL Port Number"]</span>
+</fieldset>

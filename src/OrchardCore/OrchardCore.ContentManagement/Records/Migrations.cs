@@ -11,7 +11,6 @@ namespace OrchardCore.ContentManagement.Records
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentItemVersionId", c => c.WithLength(26))
                 .Column<bool>("Latest")
-                .Column<int>("Number")
                 .Column<bool>("Published")
                 .Column<string>("ContentType", column => column.WithLength(255))
                 .Column<DateTime>("ModifiedUtc", column => column.Nullable())

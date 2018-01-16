@@ -56,7 +56,7 @@ $(function () {
         localStorage.setItem('contentpreview:' + previewId, JSON.stringify($.param(formData)));
     }
 
-    $(document).on('contentpreview:render', function () {        
+    $(document).on('contentpreview:render', function () {
         sendFormData();
     });
 
@@ -64,8 +64,15 @@ $(function () {
     $(window).on('storage', function (ev) {
         if (ev.originalEvent.key != 'contentpreview:ready:' + previewId) return; // ignore other keys
 
-        // triggered by the preview window the first time it is loaded in order 
+        // triggered by the preview window the first time it is loaded in order
         // to pre-render the view even if no contentpreview:render is already sent
         sendFormData();
     });    
+
+    $(window).on('unload', function () {
+        localStorage.removeItem('contentpreview:' + previewId);
+        // this will raise an event in the preview window to notify that the live preview is no longer active.
+        localStorage.setItem('contentpreview:not-connected:' + previewId, '');
+        localStorage.removeItem('contentpreview:not-connected:' + previewId);
+    });
 });

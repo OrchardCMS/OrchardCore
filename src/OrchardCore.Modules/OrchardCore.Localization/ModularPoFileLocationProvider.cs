@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Extensions;
@@ -10,13 +12,14 @@ namespace OrchardCore.Localization
 {
     public class ModularPoFileLocationProvider : ILocalizationFileLocationProvider
     {
-        private const string PoFileName = "OrchardCore.po";
+        private const string PoFileExtension = ".po";
+        private const string ExtensionDataFolder = "App_Data";
 
         private readonly IExtensionManager _extensionsManager;
-        private readonly string _root;
+        private readonly IFileProvider _fileProvider;
         private readonly string _resourcesContainer;
-        private readonly string _shellContainer;
-        private readonly string _shellName;
+        private readonly string _applicationDataContainer;
+        private readonly string _shellDataContainer;
 
         public ModularPoFileLocationProvider(
             IExtensionManager extensionsManager,
@@ -27,25 +30,27 @@ namespace OrchardCore.Localization
         {
             _extensionsManager = extensionsManager;
 
-            _root = hostingEnvironment.ContentRootPath;
+            _fileProvider = hostingEnvironment.ContentRootFileProvider;
             _resourcesContainer = localizationOptions.Value.ResourcesPath; // Localization
-            _shellContainer = shellOptions.Value.ShellsContainerName;
-            _shellName = shellSettings.Name;
+            _applicationDataContainer = shellOptions.Value.ShellsApplicationDataPath;
+            _shellDataContainer = Path.Combine(_applicationDataContainer, shellOptions.Value.ShellsContainerName, shellSettings.Name);
         }
 
-        public IEnumerable<string> GetLocations(string cultureName)
+        public IEnumerable<IFileInfo> GetLocations(string cultureName)
         {
+            var poFileName = cultureName + PoFileExtension;
+
             // Load .po files in each extension folder first, based on the extensions order
             foreach (var extension in _extensionsManager.GetExtensions())
             {
-                yield return Path.Combine(_root, extension.SubPath, _resourcesContainer, cultureName, PoFileName);
+                yield return _fileProvider.GetFileInfo(Path.Combine(extension.SubPath, ExtensionDataFolder, _resourcesContainer, poFileName));
             }
 
             // Then load global .po file for the applications
-            yield return Path.Combine(_root, _resourcesContainer, cultureName, PoFileName);
+            yield return new PhysicalFileInfo(new FileInfo(Path.Combine(_applicationDataContainer, _resourcesContainer, poFileName)));
 
             // Finally load tenant-specific .po file
-            yield return Path.Combine(_root, _shellContainer, _shellName, _resourcesContainer, cultureName, PoFileName);
+            yield return new PhysicalFileInfo(new FileInfo(Path.Combine(_shellDataContainer, _resourcesContainer, poFileName)));
         }
     }
 }

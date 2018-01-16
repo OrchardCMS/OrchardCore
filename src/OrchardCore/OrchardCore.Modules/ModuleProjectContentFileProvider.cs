@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
@@ -14,17 +15,14 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleProjectContentFileProvider : IFileProvider
     {
-        private const string MappingFileFolder = "obj";
-        private const string MappingFileName = "ModuleProjectContentFiles.map";
-
         private static Dictionary<string, string> _paths;
         private static object _synLock = new object();
 
-        private string _contentPath;
+        private string _contentRoot;
 
-        public ModuleProjectContentFileProvider(string rootPath, string contentPath)
+        public ModuleProjectContentFileProvider(IHostingEnvironment environment, string contentPath)
         {
-            _contentPath = '/' + contentPath.Replace('\\', '/').Trim('/');
+            _contentRoot = NormalizePath(contentPath) + "/";
 
             if (_paths != null)
             {
@@ -35,49 +33,60 @@ namespace OrchardCore.Modules
             {
                 if (_paths == null)
                 {
-                    var path = Path.Combine(rootPath, MappingFileFolder, MappingFileName);
+                    var assets = new List<Asset>();
+                    var application = environment.GetApplication();
 
-                    if (File.Exists(path))
+                    foreach (var name in application.ModuleNames)
                     {
-                        var paths = File.ReadAllLines(path)
-                            .Select(x => x.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
-                            .Where(x => x.Length == 2).ToDictionary(x => x[1].Replace('\\', '/'), x => x[0]);
+                        var module = environment.GetModule(name);
 
-                        _paths = new Dictionary<string, string>(paths);
+                        if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
+                            != Path.GetDirectoryName(application.Assembly.Location))
+                        {
+                            continue;
+                        }
+
+                        var contentRoot = Application.ModulesRoot + name + '/' + Module.ContentRoot;
+
+                        assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath
+                            .StartsWith(contentRoot, StringComparison.Ordinal)));
                     }
-                    else
-                    {
-                        _paths = new Dictionary<string, string>();
-                    }
+
+                    _paths = assets.ToDictionary(a => a.ModuleAssetPath, a => a.ProjectAssetPath);
                 }
             }
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
-            return null;
+            return NotFoundDirectoryContents.Singleton;
         }
 
         public IFileInfo GetFileInfo(string subpath)
         {
             if (subpath == null)
             {
-                return null;
+                return new NotFoundFileInfo(subpath);
             }
 
-            var path = _contentPath + subpath;
+            var path = _contentRoot + NormalizePath(subpath);
 
             if (_paths.ContainsKey(path))
             {
                 return new PhysicalFileInfo(new FileInfo(_paths[path]));
             }
 
-            return null;
+            return new NotFoundFileInfo(subpath);
         }
 
         public IChangeToken Watch(string filter)
         {
-            return null;
+            return NullChangeToken.Singleton;
+        }
+
+        private string NormalizePath(string path)
+        {
+            return path.Replace('\\', '/').Trim('/');
         }
     }
 }

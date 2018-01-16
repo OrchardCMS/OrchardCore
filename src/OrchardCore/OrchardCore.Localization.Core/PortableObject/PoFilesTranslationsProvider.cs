@@ -1,4 +1,5 @@
 using System.IO;
+using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Localization.PortableObject
 {
@@ -15,17 +16,17 @@ namespace OrchardCore.Localization.PortableObject
 
         public void LoadTranslations(string cultureName, CultureDictionary dictionary)
         {
-            foreach (var location in _poFilesLocationProvider.GetLocations(cultureName))
+            foreach (var fileInfo in _poFilesLocationProvider.GetLocations(cultureName))
             {
-                LoadFileToDictionary(location, dictionary);
+                LoadFileToDictionary(fileInfo, dictionary);
             }
         }
 
-        private void LoadFileToDictionary(string path, CultureDictionary dictionary)
+        private void LoadFileToDictionary(IFileInfo fileInfo, CultureDictionary dictionary)
         {
-            if (File.Exists(path))
+            if (fileInfo.Exists)
             {
-                using (var stream = File.OpenRead(path))
+                using (var stream = fileInfo.CreateReadStream())
                 {
                     using (var reader = new StreamReader(stream))
                     {

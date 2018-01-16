@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OpenIddict.Core;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.OpenId.Abstractions.Models;
 using OrchardCore.OpenId.Models;
 using OrchardCore.OpenId.Services;
+using OrchardCore.OpenId.Services.Managers;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Security.Services;
 using OrchardCore.Settings;
@@ -30,8 +30,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly ISiteService _siteService;
         private readonly IShapeFactory _shapeFactory;
         private readonly IRoleProvider _roleProvider;
-        private readonly OpenIddictApplicationManager<OpenIdApplication> _applicationManager;
-        private readonly OpenIdApplicationStore _applicationStore;
+        private readonly OpenIdApplicationManager _applicationManager;
         private readonly INotifier _notifier;
         private readonly IOpenIdService _openIdService;
         private readonly IEnumerable<IPasswordValidator<IUser>> _passwordValidators;
@@ -44,8 +43,7 @@ namespace OrchardCore.OpenId.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             IAuthorizationService authorizationService,
             IRoleProvider roleProvider,
-            OpenIddictApplicationManager<OpenIdApplication> applicationManager,
-            OpenIdApplicationStore applicationStore,
+            OpenIdApplicationManager applicationManager,
             IEnumerable<IPasswordValidator<IUser>> passwordValidators,
             UserManager<IUser> userManager,
             IOptions<IdentityOptions> identityOptions,
@@ -60,7 +58,6 @@ namespace OrchardCore.OpenId.Controllers
             _authorizationService = authorizationService;
             _applicationManager = applicationManager;
             _roleProvider = roleProvider;
-            _applicationStore = applicationStore;
             _notifier = notifier;
             _openIdService = openIdService;
             _passwordValidators = passwordValidators;
@@ -84,17 +81,22 @@ namespace OrchardCore.OpenId.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            var results = await _applicationStore.GetAppsAsync(pager.GetStartIndex(), pager.PageSize);
-
-            var pagerShape = await _shapeFactory.CreateAsync("Pager", new { TotalItemCount = await _applicationStore.GetCount() });
-
             var model = new OpenIdApplicationsIndexViewModel
             {
-                Applications = results
-                    .Select(x => new OpenIdApplicationEntry { Application = x })
-                    .ToList(),
-                Pager = pagerShape
+                Pager = await _shapeFactory.CreateAsync("Pager", new
+                {
+                    TotalItemCount = await _applicationManager.CountAsync(HttpContext.RequestAborted)
+                })
             };
+
+            foreach (var application in await _applicationManager.ListAsync(pager.PageSize, pager.GetStartIndex(), HttpContext.RequestAborted))
+            {
+                model.Applications.Add(new OpenIdApplicationEntry
+                {
+                    DisplayName = await _applicationManager.GetDisplayNameAsync(application, HttpContext.RequestAborted),
+                    Id = await _applicationManager.GetPhysicalIdAsync(application, HttpContext.RequestAborted)
+                });
+            }
 
             return View(model);
         }
@@ -112,33 +114,36 @@ namespace OrchardCore.OpenId.Controllers
                 _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
             }
 
-            var application = await _applicationManager.FindByIdAsync(id, HttpContext.RequestAborted);
+            var application = await _applicationManager.FindByPhysicalIdAsync(id, HttpContext.RequestAborted);
             if (application == null)
             {
                 return NotFound();
             }
 
-            var model = new EditOpenIdApplicationViewModel()
+            var model = new EditOpenIdApplicationViewModel
             {
-                Id = id,
-                DisplayName = application.DisplayName,
-                RedirectUri = application.RedirectUri,
-                LogoutRedirectUri = application.LogoutRedirectUri,
-                ClientId = application.ClientId,
-                Type = application.Type,
-                SkipConsent = application.SkipConsent,
-                RoleEntries = (await _roleProvider.GetRoleNamesAsync())
-                    .Select(r => new RoleEntry()
-                    {
-                        Name = r,
-                        Selected = application.RoleNames.Contains(r),
-                    }).ToList(),
-                AllowAuthorizationCodeFlow = application.AllowAuthorizationCodeFlow,
-                AllowClientCredentialsFlow = application.AllowClientCredentialsFlow,
-                AllowImplicitFlow = application.AllowImplicitFlow,
-                AllowPasswordFlow = application.AllowPasswordFlow,
-                AllowRefreshTokenFlow = application.AllowRefreshTokenFlow
+                AllowAuthorizationCodeFlow = await _applicationManager.IsAuthorizationCodeFlowAllowedAsync(application, HttpContext.RequestAborted),
+                AllowClientCredentialsFlow = await _applicationManager.IsClientCredentialsFlowAllowedAsync(application, HttpContext.RequestAborted),
+                AllowImplicitFlow = await _applicationManager.IsImplicitFlowAllowedAsync(application, HttpContext.RequestAborted),
+                AllowPasswordFlow = await _applicationManager.IsPasswordFlowAllowedAsync(application, HttpContext.RequestAborted),
+                AllowRefreshTokenFlow = await _applicationManager.IsRefreshTokenFlowAllowedAsync(application, HttpContext.RequestAborted),
+                ClientId = await _applicationManager.GetClientIdAsync(application, HttpContext.RequestAborted),
+                DisplayName = await _applicationManager.GetDisplayNameAsync(application, HttpContext.RequestAborted),
+                Id = await _applicationManager.GetPhysicalIdAsync(application, HttpContext.RequestAborted),
+                LogoutRedirectUri = (await _applicationManager.GetPostLogoutRedirectUrisAsync(application, HttpContext.RequestAborted)).FirstOrDefault(),
+                RedirectUri = (await _applicationManager.GetRedirectUrisAsync(application, HttpContext.RequestAborted)).FirstOrDefault(),
+                SkipConsent = await _applicationManager.IsConsentRequiredAsync(application, HttpContext.RequestAborted),
+                Type = await _applicationManager.GetClientTypeAsync(application, HttpContext.RequestAborted)
             };
+
+            foreach (var role in await _roleProvider.GetRoleNamesAsync())
+            {
+                model.RoleEntries.Add(new RoleEntry
+                {
+                    Name = role,
+                    Selected = await _applicationManager.IsInRoleAsync(application, role, HttpContext.RequestAborted)
+                });
+            }
 
             ViewData["OpenIdSettings"] = openIdSettings;
             ViewData["ReturnUrl"] = returnUrl;
@@ -162,18 +167,19 @@ namespace OrchardCore.OpenId.Controllers
                 var user = await _userManager.FindByNameAsync(User.Identity.Name);
                 await ValidateClientSecretAsync(user, model.ClientSecret, (key, message) => ModelState.AddModelError(key, message));
             }
-            
-            OpenIdApplication application = null;
+
+            IOpenIdApplication application = null;
 
             if (ModelState.IsValid)
             {
-                application = await _applicationManager.FindByIdAsync(model.Id, HttpContext.RequestAborted);
+                application = await _applicationManager.FindByPhysicalIdAsync(model.Id, HttpContext.RequestAborted);
                 if (application == null)
                 {
                     return NotFound();
                 }
 
-                if (application.Type == ClientType.Public && model.Type == ClientType.Confidential && !model.UpdateClientSecret)
+                if (model.Type == ClientType.Confidential && !model.UpdateClientSecret &&
+                    await _applicationManager.IsPublicAsync(application, HttpContext.RequestAborted))
                 {
                     ModelState.AddModelError(nameof(model.UpdateClientSecret), T["Setting a new client secret is required"]);
                 }
@@ -192,40 +198,7 @@ namespace OrchardCore.OpenId.Controllers
                 return View(model);
             }
 
-            // If the application was confidential and is now public, the client secret must be reset.
-            if (application.Type == ClientType.Confidential && model.Type == ClientType.Public)
-            {
-                model.UpdateClientSecret = true;
-                model.ClientSecret = null;
-            }
-
-            application.DisplayName = model.DisplayName;
-            application.RedirectUri = model.RedirectUri;
-            application.LogoutRedirectUri = model.LogoutRedirectUri;
-            application.ClientId = model.ClientId;
-            application.Type = model.Type;
-            application.SkipConsent = model.SkipConsent;
-            application.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
-            application.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
-            application.AllowImplicitFlow = model.AllowImplicitFlow;
-            application.AllowPasswordFlow = model.AllowPasswordFlow;
-            application.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
-            application.AllowHybridFlow = model.AllowHybridFlow;
-
-            application.RoleNames = new List<string>();
-            if (application.Type == ClientType.Confidential && application.AllowClientCredentialsFlow)
-            {
-                application.RoleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
-            }
-
-            if (model.UpdateClientSecret)
-            {
-                await _applicationManager.UpdateAsync(application, model.ClientSecret, HttpContext.RequestAborted);
-            }
-            else
-            {
-                await _applicationManager.UpdateAsync(application, HttpContext.RequestAborted);
-            }
+            await _applicationManager.UpdateAsync(application, model, HttpContext.RequestAborted);
 
             if (string.IsNullOrEmpty(returnUrl))
             {
@@ -242,17 +215,19 @@ namespace OrchardCore.OpenId.Controllers
             {
                 return Unauthorized();
             }
-            
+
             var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
             if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
             {
                 _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
             }
 
-            var model = new CreateOpenIdApplicationViewModel()
+            var model = new CreateOpenIdApplicationViewModel();
+
+            foreach (var role in await _roleProvider.GetRoleNamesAsync())
             {
-                RoleEntries = (await _roleProvider.GetRoleNamesAsync()).Select(r => new RoleEntry() { Name = r }).ToList()
-            };
+                model.RoleEntries.Add(new RoleEntry { Name = role });
+            }
 
             ViewData["OpenIdSettings"] = openIdSettings;
             ViewData["ReturnUrl"] = returnUrl;
@@ -290,37 +265,16 @@ namespace OrchardCore.OpenId.Controllers
                 return View("Create", model);
             }
 
-            var roleNames = new List<string>();
-            if (model.Type == ClientType.Confidential && model.AllowClientCredentialsFlow)
-            {
-                roleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
-            }
-            
-            var application = new OpenIdApplication
-            {
-                DisplayName = model.DisplayName,
-                RedirectUri = model.RedirectUri,
-                LogoutRedirectUri = model.LogoutRedirectUri,
-                ClientId = model.ClientId,
-                Type = model.Type,
-                SkipConsent = model.SkipConsent,
-                RoleNames = roleNames,
-                AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow,
-                AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
-                AllowImplicitFlow = model.AllowImplicitFlow,
-                AllowPasswordFlow = model.AllowPasswordFlow,
-                AllowRefreshTokenFlow = model.AllowRefreshTokenFlow,
-                AllowHybridFlow = model.AllowHybridFlow
-            };
-
-            await _applicationManager.CreateAsync(application, model.ClientSecret, HttpContext.RequestAborted);
+            await _applicationManager.CreateAsync(model, HttpContext.RequestAborted);
 
             if (string.IsNullOrEmpty(returnUrl))
             {
                 return RedirectToAction("Index");
             }
+
             return LocalRedirect(returnUrl);
         }
+
         private async Task<bool> ValidateClientSecretAsync(IUser user, string password, Action<string, string> reportError)
         {
             if (string.IsNullOrEmpty(password))
@@ -340,21 +294,21 @@ namespace OrchardCore.OpenId.Controllers
                     {
                         switch (error.Code)
                         {
-                            case "PasswordRequiresDigit":
-                                reportError("ClientSecret", T["Passwords must have at least one digit ('0'-'9')."]);
-                                break;
-                            case "PasswordRequiresLower":
-                                reportError("ClientSecret", T["Passwords must have at least one lowercase ('a'-'z')."]);
-                                break;
-                            case "PasswordRequiresUpper":
-                                reportError("ClientSecret", T["Passwords must have at least one uppercase('A'-'Z')."]);
-                                break;
-                            case "PasswordRequiresNonAlphanumeric":
-                                reportError("ClientSecret", T["Passwords must have at least one non letter or digit character."]);
-                                break;
-                            case "PasswordTooShort":
-                                reportError("ClientSecret", T["Passwords must be at least {0} characters.", _identityOptions.Value.Password.RequiredLength]);
-                                break;
+                        case "PasswordRequiresDigit":
+                            reportError("ClientSecret", T["Passwords must have at least one digit ('0'-'9')."]);
+                            break;
+                        case "PasswordRequiresLower":
+                            reportError("ClientSecret", T["Passwords must have at least one lowercase ('a'-'z')."]);
+                            break;
+                        case "PasswordRequiresUpper":
+                            reportError("ClientSecret", T["Passwords must have at least one uppercase('A'-'Z')."]);
+                            break;
+                        case "PasswordRequiresNonAlphanumeric":
+                            reportError("ClientSecret", T["Passwords must have at least one non letter or digit character."]);
+                            break;
+                        case "PasswordTooShort":
+                            reportError("ClientSecret", T["Passwords must be at least {0} characters.", _identityOptions.Value.Password.RequiredLength]);
+                            break;
                         }
                     }
                 }
@@ -370,7 +324,7 @@ namespace OrchardCore.OpenId.Controllers
                 return Unauthorized();
             }
 
-            var application = await _applicationManager.FindByIdAsync(id, HttpContext.RequestAborted);
+            var application = await _applicationManager.FindByPhysicalIdAsync(id, HttpContext.RequestAborted);
             if (application == null)
             {
                 return NotFound();

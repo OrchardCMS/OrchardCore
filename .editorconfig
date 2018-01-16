@@ -34,7 +34,7 @@ dotnet_style_qualification_for_event                       = false : suggestion
 
 # Use language keywords instead of framework type names for type references
 dotnet_style_predefined_type_for_locals_parameters_members = true : suggestion
-dotnet_style_predefined_type_for_member_access             = true : suggestion
+dotnet_style_predefined_type_for_member_access             = false : suggestion
 
 # Suggest more modern language features when available
 csharp_style_pattern_matching_over_is_with_cast_check = true : none

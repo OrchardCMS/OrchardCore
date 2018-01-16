@@ -108,7 +108,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
                     foreach (var value in values)
                     {
-                        shape.Classes.Add(value);
+                        shape.Metadata.Alternates.Add(value);
                     }
                 }
                 else if (alternates.Type == FluidValues.Array)
