@@ -64,13 +64,8 @@ namespace OrchardCore.Contents.Workflows.Drivers
         {
             return Shape<TModel>(shapeType, model =>
             {
-                var availableContentTypes = ContentDefinitionManager.ListTypeDefinitions().Select(x => new SelectListItem { Text = x.DisplayName, Value = x.Name }).OrderBy(x => x.Text).ToList();
-
-                availableContentTypes.Insert(0, new SelectListItem { Text = "Any", Value = "" });
-
                 model.Activity = activity;
-                model.AvailableContentTypes = availableContentTypes;
-                model.SelectedContentTypeNames = activity.ContentTypeFilter.ToList();
+                model.SelectedContentTypeNames = activity.ContentTypeFilter;
             });
         }
 

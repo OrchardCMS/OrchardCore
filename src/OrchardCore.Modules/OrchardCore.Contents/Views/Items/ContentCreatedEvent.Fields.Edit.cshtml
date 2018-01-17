@@ -3,6 +3,6 @@
 
 <fieldset class="form-group" asp-validation-class-for="SelectedContentTypeNames">
     <label asp-for="SelectedContentTypeNames">@T["Content Types"] <span asp-validation-for="SelectedContentTypeNames"></span></label>
-    <select asp-for="SelectedContentTypeNames" class="form-control" asp-items="Model.AvailableContentTypes"></select>
+    @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.SelectedContentTypeNames, htmlName = Html.NameFor(m => m.SelectedContentTypeNames) })
     <span class="hint">@T["Select any content types to filter on."]</span>
 </fieldset>
