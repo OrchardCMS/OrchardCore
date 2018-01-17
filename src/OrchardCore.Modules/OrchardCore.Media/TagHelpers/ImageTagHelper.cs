@@ -14,12 +14,14 @@ namespace OrchardCore.Media.TagHelpers
         Stretch
     }
 
-    [HtmlTargetElement("img", Attributes = ImageSizeWidthAttributeName)]
-    [HtmlTargetElement("img", Attributes = ImageSizeHeightAttributeName)]
-    [HtmlTargetElement("img", Attributes = ImageSizeModeAttributeName)]
+    [HtmlTargetElement("img", Attributes = SrcRequiredPrefx + ImageSizeWidthAttributeName)]
+    [HtmlTargetElement("img", Attributes = SrcRequiredPrefx + ImageSizeHeightAttributeName)]
+    [HtmlTargetElement("img", Attributes = SrcRequiredPrefx + ImageSizeModeAttributeName)]
     public class ImageTagHelper : TagHelper
     {
+        private const string SrcRequiredPrefx = "src,";
         private const string ImageSizeAttributePrefix = "media-";
+
         private const string ImageSizeWidthAttributeName = ImageSizeAttributePrefix + "width";
         private const string ImageSizeHeightAttributeName = ImageSizeAttributePrefix + "height";
         private const string ImageSizeModeAttributeName = ImageSizeAttributePrefix + "resize-mode";
@@ -33,21 +35,31 @@ namespace OrchardCore.Media.TagHelpers
         [HtmlAttributeName(ImageSizeModeAttributeName)]
         public ResizeMode ResizeMode { get; set; }
 
+        [HtmlAttributeName("src")]
+        public string Src { get; set; }
+
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            var src = output.Attributes["src"].Value.ToString();
-            var srcParts = src.Split('?');
+            if (string.IsNullOrEmpty(Src))
+            {
+                return;
+            }
+
+            var srcParts = Src.Split('?');
             var query = HttpUtility.ParseQueryString(srcParts.Length > 1 ? srcParts[1] : string.Empty);
 
-            if (ImageWidth.HasValue) {
+            if (ImageWidth.HasValue)
+            {
                 query["width"] = ImageWidth.ToString();
             }
 
-            if (ImageHeight.HasValue) {
+            if (ImageHeight.HasValue)
+            {
                 query["height"] = ImageHeight.ToString();
             }
 
-            if (ResizeMode != ResizeMode.Undefined) {
+            if (ResizeMode != ResizeMode.Undefined)
+            {
                 query["rmode"] = ResizeMode.ToString().ToLower();
             }
 
