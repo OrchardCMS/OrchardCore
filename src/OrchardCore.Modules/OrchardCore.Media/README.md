@@ -97,6 +97,12 @@ To obtain the correct URL for an asset, use the `AssetUrl` helper extension meth
 
 `<img src="@OrchardCore.AssetUrl(Model.Field.Paths[0])" alt="..." />`
 
+### Razor image resizing tag helpers
+
+To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to _ViewImports. Width, height and resize mode can be set using `media-width`, `media-height` and `media-resize-mode` respectively. e.g.:
+
+`<img src="@OrchardCore.AssetUrl(Model.Field.Paths[0])" alt="..." media-width="100" media-height="240" media-resize-mode="Crop" />`
+
 
 ## CREDITS
 
