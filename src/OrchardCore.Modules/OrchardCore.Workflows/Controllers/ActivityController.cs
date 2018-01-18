@@ -41,8 +41,8 @@ namespace OrchardCore.Workflows.Controllers
             IActivityDisplayManager activityDisplayManager,
             IShapeFactory shapeFactory,
             INotifier notifier,
-            IStringLocalizer<WorkflowDefinitionController> s,
-            IHtmlLocalizer<WorkflowDefinitionController> h
+            IStringLocalizer<ActivityController> s,
+            IHtmlLocalizer<ActivityController> h
         )
         {
             _siteService = siteService;
