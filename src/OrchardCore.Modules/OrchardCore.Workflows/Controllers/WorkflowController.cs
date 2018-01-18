@@ -25,6 +25,7 @@ namespace OrchardCore.Workflows.Controllers
             _logger = logger;
         }
 
+        [HttpPost]
         public async Task<IActionResult> Start(int workflowDefinitionId, int activityId)
         {
             var workflowDefinition = await _workflowDefinitionRepository.GetWorkflowDefinitionAsync(workflowDefinitionId);
@@ -34,6 +35,7 @@ namespace OrchardCore.Workflows.Controllers
             return new EmptyResult();
         }
 
+        [HttpPost]
         public async Task<IActionResult> Resume(string uid, int activityId)
         {
             var workflowInstance = await _workflowInstanceRepository.GetAsync(uid);
