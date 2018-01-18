@@ -9,7 +9,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Settings;
-using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;
@@ -25,7 +24,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowManager _workflowManager;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IDisplayManager<IActivity> _activityDisplayManager;
+        private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
 
         private dynamic New { get; }
@@ -39,7 +38,7 @@ namespace OrchardCore.Workflows.Controllers
             IActivityLibrary activityLibrary,
             IWorkflowManager workflowManager,
             IAuthorizationService authorizationService,
-            IDisplayManager<IActivity> activityDisplayManager,
+            IActivityDisplayManager activityDisplayManager,
             IShapeFactory shapeFactory,
             INotifier notifier,
             IStringLocalizer<WorkflowDefinitionController> s,

@@ -39,7 +39,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IWorkflowManager _workflowManager;
         private readonly IWorkflowDefinitionRepository _workflowDefinitionRepository;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IDisplayManager<IActivity> _activityDisplayManager;
+        private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
         private readonly IEnumerable<IScriptingEngine> _availableScriptingEngines;
 
@@ -55,7 +55,7 @@ namespace OrchardCore.Workflows.Controllers
             IWorkflowManager workflowManager,
             IWorkflowDefinitionRepository workflowDefinitionRepository,
             IAuthorizationService authorizationService,
-            IDisplayManager<IActivity> activityDisplayManager,
+            IActivityDisplayManager activityDisplayManager,
             IShapeFactory shapeFactory,
             INotifier notifier,
             IEnumerable<IScriptingEngine> availableScriptingEngines,

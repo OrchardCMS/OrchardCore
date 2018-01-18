@@ -3,29 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
+using OrchardCore.Workflows.Options;
 
 namespace OrchardCore.Workflows.Services
 {
     public class ActivityLibrary : IActivityLibrary
     {
+        private readonly IOptions<WorkflowOptions> _workflowOptions;
         private readonly Lazy<IDictionary<string, IActivity>> _activityDictionary;
         private readonly Lazy<IList<LocalizedString>> _activityCategories;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<ActivityLibrary> _logger;
 
-        // TODO: Use Func<T> once we add support for it using DryIoc or Autofac.
-        // Alternatively, we could implement a custom class similar to Lazy<T> or Work<T> that simply resolves the requested type.
-        //public ActivityLibrary(Func<IEnumerable<IActivity>> activities, IServiceProvider serviceProvider)
-        //{
-        //    _activityDictionary = new Lazy<IDictionary<string, IActivity>>(() => activityLibrary().OrderBy(x => x.Name).ToDictionary(x => x.Name));
-        //    _serviceProvider = serviceProvider;
-        //}
-
-        public ActivityLibrary(Resolver<IEnumerable<IActivity>> activities, IServiceProvider serviceProvider, ILogger<ActivityLibrary> logger)
+        public ActivityLibrary(IOptions<WorkflowOptions> workflowOptions, IServiceProvider serviceProvider, ILogger<ActivityLibrary> logger)
         {
-            _activityDictionary = new Lazy<IDictionary<string, IActivity>>(() => activities.Resolve().OrderBy(x => x.Name).ToDictionary(x => x.Name));
+            _workflowOptions = workflowOptions;
+            _activityDictionary = new Lazy<IDictionary<string, IActivity>>(() => workflowOptions.Value.ActivityTypes.Select(x => serviceProvider.CreateInstance<IActivity>(x)).OrderBy(x => x.Name).ToDictionary(x => x.Name));
             _activityCategories = new Lazy<IList<LocalizedString>>(() => _activityDictionary.Value.Values.OrderBy(x => x.Category.Value).Select(x => x.Category).Distinct(new LocalizedStringComparer()).ToList());
             _serviceProvider = serviceProvider;
             _logger = logger;

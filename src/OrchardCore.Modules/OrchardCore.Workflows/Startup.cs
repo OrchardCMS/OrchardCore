@@ -1,4 +1,7 @@
+using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
@@ -15,6 +18,7 @@ using OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Liquid;
+using OrchardCore.Workflows.Options;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
 using YesSql.Indexes;
@@ -32,7 +36,7 @@ namespace OrchardCore.Workflows
             services.AddScoped<IWorkflowDefinitionRepository, WorkflowDefinitionRepository>();
             services.AddScoped<IWorkflowInstanceRepository, WorkflowInstanceRepository>();
             services.AddScoped<IWorkflowManager, WorkflowManager>();
-            services.AddScoped<IDisplayManager<IActivity>, DisplayManager<IActivity>>();
+            services.AddScoped<IActivityDisplayManager, ActivityDisplayManager>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
