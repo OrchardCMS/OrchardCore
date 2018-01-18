@@ -16,7 +16,6 @@ namespace OrchardCore.Media.TagHelpers
 
     [HtmlTargetElement("img", Attributes = SrcRequiredPrefx + ImageSizeWidthAttributeName)]
     [HtmlTargetElement("img", Attributes = SrcRequiredPrefx + ImageSizeHeightAttributeName)]
-    [HtmlTargetElement("img", Attributes = SrcRequiredPrefx + ImageSizeModeAttributeName)]
     public class ImageTagHelper : TagHelper
     {
         private const string SrcRequiredPrefx = "src,";
