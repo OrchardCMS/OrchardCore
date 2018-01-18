@@ -1,10 +1,10 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace OrchardCore.Environment.Shell.State
 {
     /// <summary>
-    /// Represents the state if a feature in a tenant.
+    /// Reprensents the state if a feature in a tenant.
     /// </summary>
     public class ShellFeatureState
     {

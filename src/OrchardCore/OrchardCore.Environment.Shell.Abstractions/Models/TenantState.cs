@@ -1,6 +1,6 @@
-namespace OrchardCore.Environment.Shell.Models
+﻿namespace OrchardCore.Environment.Shell.Models
 {
-    public enum TenantStatus
+    public enum TenantState
     {
         Uninitialized,
         Initializing,

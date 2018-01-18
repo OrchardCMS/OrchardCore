@@ -45,7 +45,7 @@ namespace OrchardCore.BackgroundTasks
 
         public void Activate()
         {
-            if (_shellSettings.Status == TenantStatus.Running)
+            if (_shellSettings.State == TenantState.Running)
             {
                 foreach (var group in _timers.Keys)
                 {

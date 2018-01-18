@@ -71,7 +71,7 @@ namespace OrchardCore.Modules
                     {
                         pipeline = BuildTenantPipeline(shellSettings, httpContext.RequestServices);
 
-                        if (shellSettings.Status == TenantStatus.Running)
+                        if (shellSettings.State == TenantState.Running)
                         {
                             _pipelines.Add(shellSettings.Name, pipeline);
                         }

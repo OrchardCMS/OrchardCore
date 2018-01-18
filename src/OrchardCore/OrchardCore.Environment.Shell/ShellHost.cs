@@ -167,7 +167,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public Task<ShellContext> CreateShellContextAsync(ShellSettings settings)
         {
-            if (settings.Status == TenantStatus.Uninitialized)
+            if (settings.State == TenantState.Uninitialized)
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -176,7 +176,7 @@ namespace OrchardCore.Environment.Shell
 
                 return _shellContextFactory.CreateSetupContextAsync(settings);
             }
-            else if (settings.Status == TenantStatus.Disabled)
+            else if (settings.State == TenantState.Disabled)
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -185,7 +185,7 @@ namespace OrchardCore.Environment.Shell
 
                 return Task.FromResult(new ShellContext { Settings = settings });
             }
-            else if(settings.Status == TenantStatus.Running || settings.Status == TenantStatus.Initializing)
+            else if(settings.State == TenantState.Running || settings.State == TenantState.Initializing)
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -260,10 +260,10 @@ namespace OrchardCore.Environment.Shell
         private bool CanCreateShell(ShellSettings shellSettings)
         {
             return
-                shellSettings.Status == TenantStatus.Running ||
-                shellSettings.Status == TenantStatus.Uninitialized ||
-                shellSettings.Status == TenantStatus.Initializing ||
-                shellSettings.Status == TenantStatus.Disabled;
+                shellSettings.State == TenantState.Running ||
+                shellSettings.State == TenantState.Uninitialized ||
+                shellSettings.State == TenantState.Initializing ||
+                shellSettings.State == TenantState.Disabled;
         }
 
         /// <summary>
@@ -272,9 +272,9 @@ namespace OrchardCore.Environment.Shell
         private bool CanRegisterShell(ShellSettings shellSettings)
         {
             return
-                shellSettings.Status == TenantStatus.Running ||
-                shellSettings.Status == TenantStatus.Uninitialized ||
-                shellSettings.Status == TenantStatus.Initializing;
+                shellSettings.State == TenantState.Running ||
+                shellSettings.State == TenantState.Uninitialized ||
+                shellSettings.State == TenantState.Initializing;
         }
 }
 }

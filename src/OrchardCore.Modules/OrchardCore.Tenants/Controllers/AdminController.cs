@@ -108,7 +108,7 @@ namespace OrchardCore.Tenants.Controllers
                     ConnectionString = model.ConnectionString,
                     TablePrefix = model.TablePrefix,
                     DatabaseProvider = model.DatabaseProvider,
-                    Status = TenantStatus.Uninitialized
+                    State = TenantState.Uninitialized
                 };
 
                 _shellSettingsManager.SaveSettings(shellSettings);
@@ -153,7 +153,7 @@ namespace OrchardCore.Tenants.Controllers
 
             // The user can change the 'preset' database information only if the 
             // tenant has not been initialized yet
-            if (shellSettings.Status == TenantStatus.Uninitialized)
+            if (shellSettings.State == TenantState.Uninitialized)
             {
                 model.DatabaseProvider = shellSettings.DatabaseProvider;
                 model.TablePrefix = shellSettings.TablePrefix;
@@ -200,7 +200,7 @@ namespace OrchardCore.Tenants.Controllers
 
                 // The user can change the 'preset' database information only if the 
                 // tenant has not been initialized yet
-                if (shellSettings.Status == TenantStatus.Uninitialized)
+                if (shellSettings.State == TenantState.Uninitialized)
                 {
                     shellSettings.DatabaseProvider = model.DatabaseProvider;
                     shellSettings.TablePrefix = model.TablePrefix;
@@ -214,7 +214,7 @@ namespace OrchardCore.Tenants.Controllers
 
             // The user can change the 'preset' database information only if the 
             // tenant has not been initialized yet
-            if (shellSettings.Status == TenantStatus.Uninitialized)
+            if (shellSettings.State == TenantState.Uninitialized)
             {
                 model.DatabaseProvider = shellSettings.DatabaseProvider;
                 model.TablePrefix = shellSettings.TablePrefix;
@@ -256,13 +256,13 @@ namespace OrchardCore.Tenants.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            if (shellSettings.Status != TenantStatus.Running)
+            if (shellSettings.State != TenantState.Running)
             {
                 _notifier.Error(H["You can only disable a Running shell."]);
                 return RedirectToAction(nameof(Index));
             }
 
-            shellSettings.Status = TenantStatus.Disabled;
+            shellSettings.State = TenantState.Disabled;
             _orchardHost.UpdateShellSettings(shellSettings);
 
             return RedirectToAction(nameof(Index));
@@ -294,12 +294,12 @@ namespace OrchardCore.Tenants.Controllers
 
             var shellSettings = shellContext.Settings;
 
-            if (shellSettings.Status != TenantStatus.Disabled)
+            if (shellSettings.State != TenantState.Disabled)
             {
                 _notifier.Error(H["You can only enable a Disabled shell."]);
             }
 
-            shellSettings.Status = TenantStatus.Running;
+            shellSettings.State = TenantState.Running;
             _orchardHost.UpdateShellSettings(shellSettings);
 
             return RedirectToAction(nameof(Index));
