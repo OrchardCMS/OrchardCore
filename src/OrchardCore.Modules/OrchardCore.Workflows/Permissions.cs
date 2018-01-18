@@ -6,10 +6,11 @@ namespace OrchardCore.Workflows
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageWorkflows = new Permission("ManageWorkflows", "Manage workflows");
+        public static readonly Permission ExecuteWorkflows = new Permission("ExecuteWorkflows", "Execute workflows");
 
         public IEnumerable<Permission> GetPermissions()
         {
-            return new List<Permission> { ManageWorkflows };
+            return new Permission[] { ManageWorkflows, ExecuteWorkflows };
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -17,11 +18,11 @@ namespace OrchardCore.Workflows
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] { ManageWorkflows }
+                    Permissions = new[] { ManageWorkflows, ExecuteWorkflows }
                 },
                 new PermissionStereotype {
                     Name = "Editor",
-                    Permissions = new[] { ManageWorkflows }
+                    Permissions = new[] { ManageWorkflows, ExecuteWorkflows }
                 }
             };
         }
