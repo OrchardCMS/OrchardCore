@@ -8,7 +8,7 @@ using OrchardCore.Workflows.Helpers;
 namespace OrchardCore.Workflows.Email
 {
     [Feature("OrchardCore.Workflows.Email")]
-    [RequireFeatures("OrchardCore.Liquid")]
+    [RequireFeatures("OrchardCore.Workflows")]
     public class Startup : StartupBase
     {
         private readonly IConfiguration _configuration;
