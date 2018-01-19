@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <None Remove="**\*" />
-    <None Include="$(ModuleNoneIncludes)" />
+    <None Include="$(ModuleAssetExcludes)" />
   </ItemGroup>
 
 </Project>

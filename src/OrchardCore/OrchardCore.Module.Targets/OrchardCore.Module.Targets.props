@@ -7,14 +7,14 @@
 
   <PropertyGroup>
     <ModuleManifest>Name: $(MSBuildProjectName)</ModuleManifest>
-    <ModuleAssetExcludes>**\*.cs;*.csproj*;obj\**;bin\**;Assets.json;Assets\**;Properties\**;*.props;*.targets;**/.*/**</ModuleAssetExcludes>
+    <ModuleAssetExcludes>Assets.*;Assets\**</ModuleAssetExcludes>
     <ModuleType Condition="'$(ModuleType)' == ''">Module</ModuleType>
-    <ModuleNoneIncludes>Assets.*;Assets\**</ModuleNoneIncludes>
     <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="**\*" Exclude="$(ModuleAssetExcludes)" />
+    <Test Include="**/*$(DefaultLanguageSourceExtension);$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    <EmbeddedResource Include="**\*" Exclude="$(ModuleAssetExcludes);@(Test)" />
   </ItemGroup>
 
   <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
