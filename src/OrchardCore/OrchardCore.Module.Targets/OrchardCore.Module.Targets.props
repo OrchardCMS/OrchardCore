@@ -15,6 +15,12 @@
   <ItemGroup>
     <ModuleDefaultAssetExcludes Include="**\*$(DefaultLanguageSourceExtension)" />
     <ModuleDefaultAssetExcludes Include="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    <ModuleDefaultAssetExcludes Include="**\bower_components\**;bower_components\**" />
+    <ModuleDefaultAssetExcludes Include="**\jspm_packages\**;jspm_packages\**" />
+    <ModuleDefaultAssetExcludes Include="**\node_modules\**;node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="**\*" Exclude="$(ModuleAssetExcludes);@(ModuleDefaultAssetExcludes)" />
   </ItemGroup>
 
