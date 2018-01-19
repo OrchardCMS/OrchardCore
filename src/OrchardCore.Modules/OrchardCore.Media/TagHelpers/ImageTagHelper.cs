@@ -1,31 +1,28 @@
 using System.Web;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using OrchardCore.Media.Processing;
 
 namespace OrchardCore.Media.TagHelpers
 {
-    public enum ResizeMode
-    {
-        Undefined,
-        Max,
-        Crop,
-        Pad,
-        BoxPad,
-        Min,
-        Stretch
-    }
-
-    [HtmlTargetElement("img", Attributes = SrcRequiredPrefx + ImageSizeWidthAttributeName)]
-    [HtmlTargetElement("img", Attributes = SrcRequiredPrefx + ImageSizeHeightAttributeName)]
-    [HtmlTargetElement("img", Attributes = SrcRequiredPrefx + ImageSizeWidthAttributeName + "," + ImageSizeModeAttributeName)]
-    [HtmlTargetElement("img", Attributes = SrcRequiredPrefx + ImageSizeHeightAttributeName + "," + ImageSizeModeAttributeName)]
+    [HtmlTargetElement("img", Attributes = ImageSrcAttributeName + "," + ImageSizeWidthAttributeName)]
+    [HtmlTargetElement("img", Attributes = ImageSrcAttributeName + "," + ImageSizeHeightAttributeName)]
+    [HtmlTargetElement("img", Attributes = ImageSrcAttributeName + "," + ImageSizeWidthAttributeName + "," + ImageSizeModeAttributeName)]
+    [HtmlTargetElement("img", Attributes = ImageSrcAttributeName + "," + ImageSizeHeightAttributeName + "," + ImageSizeModeAttributeName)]
     public class ImageTagHelper : TagHelper
     {
-        private const string SrcRequiredPrefx = "src,";
         private const string ImageSizeAttributePrefix = "media-";
 
+        private const string ImageSrcAttributeName = ImageSizeAttributePrefix + "src";
         private const string ImageSizeWidthAttributeName = ImageSizeAttributePrefix + "width";
         private const string ImageSizeHeightAttributeName = ImageSizeAttributePrefix + "height";
         private const string ImageSizeModeAttributeName = ImageSizeAttributePrefix + "resize-mode";
+
+        private readonly IMediaFileStore _mediaFileStore;
+
+        public ImageTagHelper(IMediaFileStore mediaFileStore)
+        {
+            _mediaFileStore = mediaFileStore;
+        }
 
         [HtmlAttributeName(ImageSizeWidthAttributeName)]
         public int? ImageWidth { get; set; }
@@ -36,7 +33,7 @@ namespace OrchardCore.Media.TagHelpers
         [HtmlAttributeName(ImageSizeModeAttributeName)]
         public ResizeMode ResizeMode { get; set; }
 
-        [HtmlAttributeName("src")]
+        [HtmlAttributeName(ImageSrcAttributeName)]
         public string Src { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
@@ -46,25 +43,10 @@ namespace OrchardCore.Media.TagHelpers
                 return;
             }
 
-            var srcParts = Src.Split('?');
-            var query = HttpUtility.ParseQueryString(srcParts.Length > 1 ? srcParts[1] : string.Empty);
+            var resolvedSrc = _mediaFileStore != null ? _mediaFileStore.MapPathToPublicUrl(Src) : Src;
+            var resizedSrc = ImageSharpUrlFormatter.GetMediaResizeUrl(resolvedSrc, ImageWidth, ImageHeight, ResizeMode);
 
-            if (ImageWidth.HasValue)
-            {
-                query["width"] = ImageWidth.ToString();
-            }
-
-            if (ImageHeight.HasValue)
-            {
-                query["height"] = ImageHeight.ToString();
-            }
-
-            if (ResizeMode != ResizeMode.Undefined)
-            {
-                query["rmode"] = ResizeMode.ToString().ToLower();
-            }
-
-            output.Attributes.SetAttribute("src", $"{srcParts[0]}?{query.ToString()}");
+            output.Attributes.SetAttribute("src", resizedSrc);
         }
     }
 }
