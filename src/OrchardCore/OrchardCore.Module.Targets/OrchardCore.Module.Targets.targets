@@ -2,6 +2,9 @@
 
   <!--
     This file is packaged with "OrchardCore.Module.Targets.nupkg" in "./build".
+    It prevents VS from updating the project file e.g after copy / pasting an asset file.
+    Note: Right now, doing the same in the related `.props` file doesn't work for razor files.
+    It also includes in the VS project the 'Assets' files which are used by the gulp pipeline.
   -->
 
   <ItemGroup>
