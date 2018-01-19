@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.0
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules.Cms", "OrchardCore.Modules.Cms", "{90030E85-0C4F-456F-B879-443E8A3F220D}"
 EndProject
@@ -290,7 +290,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Media.Azure", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Https", "src\OrchardCore.Modules\OrchardCore.Https\OrchardCore.Https.csproj", "{5C795749-3907-4F12-A1EF-A7C4AFA0B92F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.OpenId.EntityFrameworkCore", "src\OrchardCore.Modules\OrchardCore.OpenId.EntityFrameworkCore\OrchardCore.OpenId.EntityFrameworkCore.csproj", "{12C4BD5B-207C-4A90-9F9F-E41EABBCD157}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.OpenId.EntityFrameworkCore", "src\OrchardCore.Modules\OrchardCore.OpenId.EntityFrameworkCore\OrchardCore.OpenId.EntityFrameworkCore.csproj", "{12C4BD5B-207C-4A90-9F9F-E41EABBCD157}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary1", "ClassLibrary1\ClassLibrary1.csproj", "{833A9A76-8462-4548-8F11-BE5683DD8A52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -822,6 +824,10 @@ Global
 		{12C4BD5B-207C-4A90-9F9F-E41EABBCD157}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12C4BD5B-207C-4A90-9F9F-E41EABBCD157}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12C4BD5B-207C-4A90-9F9F-E41EABBCD157}.Release|Any CPU.Build.0 = Release|Any CPU
+		{833A9A76-8462-4548-8F11-BE5683DD8A52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{833A9A76-8462-4548-8F11-BE5683DD8A52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{833A9A76-8462-4548-8F11-BE5683DD8A52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{833A9A76-8462-4548-8F11-BE5683DD8A52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -970,6 +976,7 @@ Global
 		{7BB7DDE2-5C66-4E0B-81A8-C0CBE6D3B4A2} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{5C795749-3907-4F12-A1EF-A7C4AFA0B92F} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{12C4BD5B-207C-4A90-9F9F-E41EABBCD157} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
+		{833A9A76-8462-4548-8F11-BE5683DD8A52} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
