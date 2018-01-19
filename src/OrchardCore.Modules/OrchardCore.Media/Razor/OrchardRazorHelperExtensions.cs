@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Media;
+using OrchardCore.Media.Processing;
 
 namespace OrchardCore.DisplayManagement.Razor
 {
@@ -15,6 +16,12 @@ namespace OrchardCore.DisplayManagement.Razor
             }
 
             return mediaFileStore.MapPathToPublicUrl(assetPath);
+        }
+
+        public static string AssetUrl(this OrchardRazorHelper razorHelper, string assetPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)
+        {
+            var resolvedAssetPath = razorHelper.AssetUrl(assetPath);
+            return ImageSharpUrlFormatter.GetMediaResizeUrl(resolvedAssetPath, width, height, resizeMode);
         }
     }
 }
