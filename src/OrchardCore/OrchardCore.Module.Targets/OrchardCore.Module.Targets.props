@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!-- 
+  <!--
     This file is packaged with "OrchardCore.Module.Targets.nupkg" in "./build" such that any
     Module that references it will embedd in its assembly all its static assets.
   -->
@@ -9,6 +9,8 @@
     <ModuleManifest>Name: $(MSBuildProjectName)</ModuleManifest>
     <ModuleAssetExcludes>**\*.cs;*.csproj*;obj\**;bin\**;Assets.json;Assets\**;Properties\**;*.props;*.targets;**/.*/**</ModuleAssetExcludes>
     <ModuleType Condition="'$(ModuleType)' == ''">Module</ModuleType>
+    <ModuleNoneIncludes>Assets.*;Assets\**</ModuleNoneIncludes>
+    <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
   </PropertyGroup>
 
   <ItemGroup>

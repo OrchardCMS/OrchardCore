@@ -1,13 +1,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!-- 
+  <!--
     This file is packaged with "OrchardCore.Module.Targets.nupkg" in "./build".
   -->
-
-  <PropertyGroup>
-    <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
-    <ModuleNoneIncludes>Assets.*;Assets\**</ModuleNoneIncludes>
-  </PropertyGroup>
 
   <ItemGroup>
     <None Remove="**\*" />
