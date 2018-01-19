@@ -141,7 +141,7 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
 }
 
 .media-container-main-item-title {
-    @extend .card;
+    @extend .card-body;
     
     .media-filename {
         @extend .card-text;
