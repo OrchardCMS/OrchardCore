@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using OrchardCore.Queries.Sql;
 using Xunit;
 using YesSql;
@@ -110,6 +110,17 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a order by b asc", "SELECT [a] ORDER BY [b] ASC;", new object[0])]
         [InlineData("select a order by b desc", "SELECT [a] ORDER BY [b] DESC;", new object[0])]
         public void ShouldParseOrderByClause(string sql, string expectedSql, object[] expectedParameters = null)
+        {
+            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, out var rawQuery, out var rawParameters, out var messages);
+            Assert.True(result);
+            Assert.Equal(expectedSql, FormatSql(rawQuery));
+        }
+
+        [Theory]
+        [InlineData("select a limit 100", "SELECT TOP 100 [a];", new object[0])]
+        [InlineData("select a limit 100 offset 10", "SELECT [a] OFFSET 10 ROWS FETCH NEXT 100 ROWS ONLY;", new object[0])]
+        [InlineData("select a offset 10", "SELECT [a] OFFSET 10 ROWS;", new object[0])]
+        public void ShouldParseLimitOffsetClause(string sql, string expectedSql, object[] expectedParameters = null)
         {
             var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, out var rawQuery, out var rawParameters, out var messages);
             Assert.True(result);

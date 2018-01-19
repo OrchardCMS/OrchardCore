@@ -116,3 +116,48 @@ For example, to run a query called LatestBlogPosts, and display the results:
     @await OrchardCore.DisplayAsync(contentItem)
 }
 ```
+
+# Executing SQL Queries
+
+## RDBMS support
+Because RDMBS vendors support different SQL flavors this module will analyze the query you defined and render a specific one based on the RDBMS that is used.
+This also allows the queries to be exported and shared across website instances even if they run on different RDBMS.
+
+## Examples
+
+Here is an example of a query that returns all published Blog Posts:
+
+```sql
+    select DocumentId
+    from ContentItemIndex 
+    where Published = true and ContentType = 'BlogPost'
+```
+
+By selecting the "Return documents" options, the content items associated with the resulting `DocumentId` values are loaded.
+
+The example below returns a custom set of value instead of content items:
+
+```sql
+select 
+    month(CreatedUtc) as [Month], 
+    year(CreatedUtc) as [Year],
+    day(CreatedUtc) as [Day],
+    count(*) as [Count]
+from ContentItemIndex 
+where Published = true and ContentType = 'BlogPost'
+group by day(CreatedUtc), month(CreatedUtc), year(CreatedUtc)
+```
+
+## Templates
+A sql query is actually a Liquid template. This allows your queries to accept parameters. These parameters are parsed and evaluated as so, such that
+it's not possible for external calls to inject SQL statements into them.
+
+For instance the previous example can be modified to filter a content type using a parameter like this:
+
+`where Published = true and ContentType = {{type}}`
+
+## Paging
+
+Use `LIMIT [number]` and `OFFSET [number]` to define paged results.
+
+These statements will be converted automatically based on the actual RDBMS.

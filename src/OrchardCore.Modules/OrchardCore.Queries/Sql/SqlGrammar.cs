@@ -47,6 +47,8 @@ namespace OrchardCore.Queries.Sql
             var groupClauseOpt = new NonTerminal("groupClauseOpt");
             var havingClauseOpt = new NonTerminal("havingClauseOpt");
             var orderClauseOpt = new NonTerminal("orderClauseOpt");
+            var limitClauseOpt = new NonTerminal("limitClauseOpt");
+            var offsetClauseOpt = new NonTerminal("offsetClauseOpt");
             var columnItemList = new NonTerminal("columnItemList");
             var columnItem = new NonTerminal("columnItem");
             var columnSource = new NonTerminal("columnSource");
@@ -97,7 +99,7 @@ namespace OrchardCore.Queries.Sql
 
             //Select stmt
             selectStatement.Rule = SELECT + optionalSelectRestriction + selectorList + fromClauseOpt + whereClauseOptional +
-                              groupClauseOpt + havingClauseOpt + orderClauseOpt;
+                              groupClauseOpt + havingClauseOpt + orderClauseOpt + limitClauseOpt + offsetClauseOpt;
             optionalSelectRestriction.Rule = Empty | "ALL" | "DISTINCT";
             selectorList.Rule = columnItemList | "*";
             columnItemList.Rule = MakePlusRule(columnItemList, comma, columnItem);
@@ -111,6 +113,8 @@ namespace OrchardCore.Queries.Sql
             groupClauseOpt.Rule = Empty | "GROUP" + BY + idlist;
             havingClauseOpt.Rule = Empty | "HAVING" + expression;
             orderClauseOpt.Rule = Empty | "ORDER" + BY + orderList;
+            limitClauseOpt.Rule = Empty | "LIMIT" + number;
+            offsetClauseOpt.Rule = Empty | "OFFSET" + number;
 
             //Expression
             expressionList.Rule = MakePlusRule(expressionList, comma, expression);
