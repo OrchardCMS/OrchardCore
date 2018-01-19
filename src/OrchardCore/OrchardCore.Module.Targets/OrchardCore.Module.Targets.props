@@ -13,8 +13,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Test Include="**/*$(DefaultLanguageSourceExtension);$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
-    <EmbeddedResource Include="**\*" Exclude="$(ModuleAssetExcludes);@(Test)" />
+    <ModuleDefaultAssetExcludes Include="**\*$(DefaultLanguageSourceExtension)" />
+    <ModuleDefaultAssetExcludes Include="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    <EmbeddedResource Include="**\*" Exclude="$(ModuleAssetExcludes);@(ModuleDefaultAssetExcludes)" />
   </ItemGroup>
 
   <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
