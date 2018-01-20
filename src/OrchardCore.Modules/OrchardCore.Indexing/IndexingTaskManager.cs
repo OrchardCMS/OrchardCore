@@ -135,7 +135,12 @@ namespace OrchardCore.Indexing.Services
                 sqlBuilder.Select();
                 sqlBuilder.Table(nameof(IndexingTask));
                 sqlBuilder.Selector("*");
-                sqlBuilder.Take(count);
+
+                if (count > 0)
+                {
+                    sqlBuilder.Take(count.ToString());
+                }
+
                 sqlBuilder.WhereAlso($"{dialect.QuoteForColumnName("Id")} > @Id");
 
                 return await transaction.Connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(), new { Id = afterTaskId }, transaction);

@@ -148,16 +148,59 @@ where Published = true and ContentType = 'BlogPost'
 group by day(CreatedUtc), month(CreatedUtc), year(CreatedUtc)
 ```
 
+## Parameters
+
+Parameters can be provided when running queries. Parameters are safe to use as they will always be parsed before 
+being included in a query. The syntax of a parameter is 
+
+`@name:default_value`
+
+Where `name` is the name of the parameter, and `default_value` an expression (usually a literal) to use in case
+the parameter is not defined.
+
+The following example load the document ids for a parameterized content type.
+
+```sql
+select DocumentId
+from ContentItemIndex 
+where Published = true and ContentType = @contenttype:'BlogPost'
+```
+
+If the `contenttype` parameter is not passed when the query is invoked, then the default value is used.
+
+Parameter names are case-sensitive.
+
 ## Templates
-A sql query is actually a Liquid template. This allows your queries to accept parameters. These parameters are parsed and evaluated as so, such that
-it's not possible for external calls to inject SQL statements into them.
 
-For instance the previous example can be modified to filter a content type using a parameter like this:
+A sql query is actually a Liquid template. This allows your queries to be shaped based on the parameters it gets. 
+When injecting user provided value, be sure to encode these such that they can't be exploited. It is recommended
+ot use parameters to inject values in the queries, and only use Liquid templates to change the shape of the query.
 
-`where Published = true and ContentType = {{type}}`
+This example checks that a `limit` parameter is provided and if so uses it.
+
+```
+{% if limit > 0 %}
+    select ... limit @limit
+{% else %}
+    select ... 
+{% endif %}
+```
 
 ## Paging
 
 Use `LIMIT [number]` and `OFFSET [number]` to define paged results.
 
 These statements will be converted automatically based on the actual RDBMS.
+
+## Helper functions
+
+The SQL parser is also able to convert some specific function and convert them to the intended dialect.
+
+| Name             | Description                        |
+| ---------------- |----------------------------------- |
+| `second(_date_)` | Returns the seconds part of a date |
+| `minute(_date_)` | Returns the minutes part of a date |
+| `hour(_date_)`   | Returns the hours part of a date   |
+| `day(_date_)`    | Returns the days part of a date    |
+| `month(_date_)`  | Returns the months part of a date  |
+| `year(_date_)`   | Returns the years part of a date   |

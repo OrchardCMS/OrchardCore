@@ -51,7 +51,7 @@ namespace OrchardCore.Queries.Sql
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             var dialect = SqlDialectFactory.For(connection);
             
-            if (!SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, out var rawQuery, out var rawParameters, out var messages))
+            if (!SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
                 return new object[0];
             }
@@ -63,7 +63,7 @@ namespace OrchardCore.Queries.Sql
                 using (connection)
                 {
                     connection.Open();
-                    documentIds = await connection.QueryAsync<int>(rawQuery, rawParameters);
+                    documentIds = await connection.QueryAsync<int>(rawQuery, parameters);
                 }
 
                 return await _session.GetAsync<object>(documentIds.ToArray());
@@ -75,7 +75,7 @@ namespace OrchardCore.Queries.Sql
                 using (connection)
                 {
                     connection.Open();
-                    queryResults = await connection.QueryAsync(rawQuery, rawParameters);
+                    queryResults = await connection.QueryAsync(rawQuery);
                 }
 
                 var results = new List<JObject>();

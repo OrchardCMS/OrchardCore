@@ -10,7 +10,7 @@ namespace OrchardCore.Queries.Sql
     public class SqlParser
     {
         private StringBuilder _builder;
-        private Dictionary<string, object> _parameters;
+        private IDictionary<string, object> _parameters;
         private ISqlDialect _dialect;
         private string _tablePrefix;
         private HashSet<string> _aliases;
@@ -28,17 +28,17 @@ namespace OrchardCore.Queries.Sql
         private string _groupBy;
         private string _orderBy;
 
-        private SqlParser(ParseTree tree, ISqlDialect dialect, string tablePrefix)
+        private SqlParser(ParseTree tree, ISqlDialect dialect, string tablePrefix, IDictionary<string, object> parameters)
         {
             _tree = tree;
             _dialect = dialect;
             _tablePrefix = tablePrefix;
-            _parameters = new Dictionary<string, object>();
+            _parameters = parameters;
             _builder = new StringBuilder(tree.SourceText.Length);
             _modes = new Stack<FormattingModes>();
         }
 
-        public static bool TryParse(string sql, ISqlDialect dialect, string tablePrefix, out string query, out Dictionary<string, object> parameters, out IEnumerable<string> messages)
+        public static bool TryParse(string sql, ISqlDialect dialect, string tablePrefix, IDictionary<string, object> parameters, out string query, out IEnumerable<string> messages)
         {
             try
             {
@@ -47,7 +47,6 @@ namespace OrchardCore.Queries.Sql
                 if (tree.HasErrors())
                 {
                     query = null;
-                    parameters = null;
 
                     messages = tree
                         .ParserMessages
@@ -57,18 +56,21 @@ namespace OrchardCore.Queries.Sql
                     return false;
                 }
 
-                var sqlParser = new SqlParser(tree, dialect, tablePrefix);
+                var sqlParser = new SqlParser(tree, dialect, tablePrefix, parameters);
                 query = sqlParser.Evaluate();
 
-                parameters = sqlParser._parameters;
                 messages = Array.Empty<string>();
 
                 return true;
             }
+            catch(SqlParserException se)
+            {
+                query = null;
+                messages = new string[] { se.Message };
+            }
             catch (Exception e)
             {
                 query = null;
-                parameters = null;
                 messages = new string[] { "Unexpected error: " + e.Message };
             }
 
@@ -165,16 +167,16 @@ namespace OrchardCore.Queries.Sql
 
             EvaluateLimitClause(selectStatement.ChildNodes[8]);
 
-            if (int.TryParse(_limit, out int limit))
+            if (!String.IsNullOrEmpty(_limit))
             {
-                sqlBuilder.Take(limit);
+                sqlBuilder.Take(_limit);
             }
 
             EvaluateOffsetClause(selectStatement.ChildNodes[9]);
 
-            if (int.TryParse(_offset, out int offset))
+            if (!String.IsNullOrEmpty(_offset))
             {
-                sqlBuilder.Skip(offset);
+                sqlBuilder.Skip(_offset);
             }
 
             if (previousContent != null)
@@ -193,7 +195,12 @@ namespace OrchardCore.Queries.Sql
                 return;
             }
 
-            _limit = parseTreeNode.ChildNodes[1].Token.ValueString;
+            _builder.Clear();
+
+            // Evaluating so that the value can be transformed as a parameter
+            EvaluateExpression(parseTreeNode.ChildNodes[1]);
+
+            _limit = _builder.ToString();
         }
 
         private void EvaluateOffsetClause(ParseTreeNode parseTreeNode)
@@ -203,7 +210,12 @@ namespace OrchardCore.Queries.Sql
                 return;
             }
 
-            _offset = parseTreeNode.ChildNodes[1].Token.ValueString;
+            _builder.Clear();
+
+            // Evaluating so that the value can be transformed as a parameter
+            EvaluateExpression(parseTreeNode.ChildNodes[1]);
+
+            _offset = _builder.ToString();
         }
 
         private void EvaluateOrderClause(ParseTreeNode parseTreeNode)
@@ -344,13 +356,13 @@ namespace OrchardCore.Queries.Sql
                     EvaluateId(parseTreeNode);
                     break;
                 case "boolean":
-                    _builder.Append(AddParameter(parseTreeNode.ChildNodes[0].Term.Name == "TRUE"));
+                    _builder.Append(_dialect.GetSqlValue(parseTreeNode.ChildNodes[0].Term.Name == "TRUE"));
                     break;
                 case "string":
-                    _builder.Append(AddParameter(parseTreeNode.Token.ValueString));
+                    _builder.Append(_dialect.GetSqlValue(parseTreeNode.Token.ValueString));
                     break;
                 case "number":
-                    _builder.Append(AddParameter(parseTreeNode.Token.Value));
+                    _builder.Append(_dialect.GetSqlValue(parseTreeNode.Token.Value));
                     break;
                 case "funCall":
                     EvaluateFunCall(parseTreeNode);
@@ -370,6 +382,25 @@ namespace OrchardCore.Queries.Sql
                     _builder.Append(" IN (");
                     EvaluateExpressionList(parseTreeNode.ChildNodes[2]);
                     _builder.Append(")");
+                    break;
+                case "parameter":
+                    var name = parseTreeNode.ChildNodes[1].ChildNodes[0].Token.ValueString;
+
+                    _builder.Append("@" + name);
+                    
+                    if (_parameters != null && !_parameters.ContainsKey(name))
+                    {
+                        // If a parameter is not set and there is no default value, report it
+                        if (parseTreeNode.ChildNodes.Count < 3)
+                        {
+                            throw new SqlParserException("Missing parameters: " + name);
+                        }
+                        else
+                        {
+                            _parameters[name] = parseTreeNode.ChildNodes[3].Token.Value;
+                        }
+                    }
+
                     break;
                 case "*":
                     _builder.Append("*");
@@ -611,13 +642,7 @@ namespace OrchardCore.Queries.Sql
                 _builder.Append(parseTreeNode.ChildNodes[0].Term.Name).Append(" ");
             }
         }
-
-        private string AddParameter(object value)
-        {
-            var parameterName = "@p" + _parameters.Count;
-            _parameters.Add(parameterName, value);
-            return parameterName;
-        }
+        
         private enum FormattingModes
         {
             SelectClause,

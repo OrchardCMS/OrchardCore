@@ -67,6 +67,7 @@ namespace OrchardCore.Queries.Sql
             var parSelectStatement = new NonTerminal("parSelectStmt");
             var notOpt = new NonTerminal("notOpt");
             var funCall = new NonTerminal("funCall");
+            var parameter = new NonTerminal("parameter");
             var statementLine = new NonTerminal("stmtLine");
             var optionalSemicolon = new NonTerminal("semiOpt");
             var statementList = new NonTerminal("stmtList");
@@ -113,12 +114,12 @@ namespace OrchardCore.Queries.Sql
             groupClauseOpt.Rule = Empty | "GROUP" + BY + idlist;
             havingClauseOpt.Rule = Empty | "HAVING" + expression;
             orderClauseOpt.Rule = Empty | "ORDER" + BY + orderList;
-            limitClauseOpt.Rule = Empty | "LIMIT" + number;
-            offsetClauseOpt.Rule = Empty | "OFFSET" + number;
+            limitClauseOpt.Rule = Empty | "LIMIT" + expression;
+            offsetClauseOpt.Rule = Empty | "OFFSET" + expression;
 
             //Expression
             expressionList.Rule = MakePlusRule(expressionList, comma, expression);
-            expression.Rule = term | unExpr | binExpr | betweenExpr;
+            expression.Rule = term | unExpr | binExpr | betweenExpr | parameter;
             term.Rule = Id | boolean | string_literal | number | funCall | tuple | parSelectStatement | inStatement;
             boolean.Rule = TRUE | FALSE;
             tuple.Rule = "(" + expressionList + ")";
@@ -136,6 +137,7 @@ namespace OrchardCore.Queries.Sql
             funCall.Rule = Id + "(" + functionArguments + ")";
             functionArguments.Rule = selectStatement | expressionList | "*";
             inStatement.Rule = expression + "IN" + "(" + expressionList + ")";
+            parameter.Rule = "@" + Id | "@" + Id + ":" + term;
 
             //Operators
             RegisterOperators(10, "*", "/", "%");
