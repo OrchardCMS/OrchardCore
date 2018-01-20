@@ -35,16 +35,23 @@ namespace OrchardCore.Media.TagHelpers
         public ResizeMode ResizeMode { get; set; }
 
         [HtmlAttributeName(ImageSrcAttributeName)]
-        public string Src { get; set; }
+        public string MediaSrc { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            if (string.IsNullOrEmpty(Src))
+            if (string.IsNullOrEmpty(MediaSrc))
             {
                 return;
             }
 
-            var resolvedSrc = _mediaFileStore != null ? _mediaFileStore.MapPathToPublicUrl(Src) : Src;
+            var resolvedSrc = _mediaFileStore != null ? _mediaFileStore.MapPathToPublicUrl(MediaSrc) : MediaSrc;
+
+            if (!ImageWidth.HasValue && !ImageHeight.HasValue)
+            {
+                output.Attributes.SetAttribute("src", resolvedSrc);
+                return;
+            }
+
             var resizedSrc = ImageSharpUrlFormatter.GetMediaResizeUrl(resolvedSrc, ImageWidth, ImageHeight, ResizeMode);
 
             output.Attributes.SetAttribute("src", resizedSrc);
