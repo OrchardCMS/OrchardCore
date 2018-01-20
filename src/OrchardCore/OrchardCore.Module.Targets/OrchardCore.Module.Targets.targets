@@ -5,11 +5,24 @@
     It prevents VS from updating the project file e.g after copy / pasting an asset file.
     Note: Right now, doing the same in the related `.props` file doesn't work for razor files.
     It also includes in the VS project the 'Assets' files which are used by the gulp pipeline.
+    Note: We use here some msbuild props that would not be fully evaluated in the `.props` file.
   -->
+
+  <PropertyGroup>
+    <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\*$(DefaultLanguageSourceExtension);</ModuleDefaultAssetExcludes>
+    <ModuleNoneExcludes>$(BaseIntermediateOutputPath)**\*.props;$(BaseIntermediateOutputPath)**\*.targets</ModuleNoneExcludes>
+    <ModuleNoneIncludes>$(ModuleAssetExcludes)</ModuleNoneIncludes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AppDesignerFolder)' != ''">
+    <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);$(AppDesignerFolder)\**</ModuleDefaultAssetExcludes>
+    <ModuleNoneExcludes>$(ModuleNoneExcludes);$(AppDesignerFolder)\**\*$(DefaultLanguageSourceExtension)</ModuleNoneExcludes>
+    <ModuleNoneIncludes>$(ModuleNoneIncludes);$(AppDesignerFolder)\**</ModuleNoneIncludes>
+  </PropertyGroup>
 
   <ItemGroup>
     <None Remove="**\*" />
-    <None Include="$(ModuleAssetExcludes)" />
+    <None Include="$(ModuleNoneIncludes)" Exclude="$(ModuleNoneExcludes)" />
   </ItemGroup>
 
 </Project>
