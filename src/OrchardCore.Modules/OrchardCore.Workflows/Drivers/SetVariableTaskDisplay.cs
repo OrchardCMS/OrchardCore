@@ -10,13 +10,13 @@ namespace OrchardCore.Workflows.Drivers
         protected override void Map(SetPropertyTask source, SetPropertyTaskViewModel target)
         {
             target.PropertyName = source.PropertyName;
-            target.ScriptExpression = source.ScriptExpression.Expression;
+            target.Value = source.Value.Expression;
         }
 
         protected override void Map(SetPropertyTaskViewModel source, SetPropertyTask target)
         {
             target.PropertyName = source.PropertyName.Trim();
-            target.ScriptExpression = new WorkflowExpression<object>(source.ScriptExpression);
+            target.Value = new WorkflowExpression<object>(source.Value);
         }
     }
 }

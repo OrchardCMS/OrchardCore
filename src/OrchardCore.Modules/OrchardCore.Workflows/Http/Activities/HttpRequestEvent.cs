@@ -22,7 +22,6 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override string Name => EventName;
         public override LocalizedString Category => T["HTTP"];
-        public override LocalizedString Description => T["Executes when the specified HTTP request comes in."];
 
         public string HttpMethod
         {

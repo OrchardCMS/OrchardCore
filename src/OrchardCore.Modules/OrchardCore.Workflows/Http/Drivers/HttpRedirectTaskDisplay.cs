@@ -10,13 +10,13 @@ namespace OrchardCore.Workflows.Http.Drivers
         protected override void Map(HttpRedirectTask source, HttpRedirectTaskViewModel target)
         {
             target.Location = source.Location.Expression;
-            target.Permanent = source.Permanent.Expression;
+            target.Permanent = source.Permanent;
         }
 
         protected override void Map(HttpRedirectTaskViewModel source, HttpRedirectTask target)
         {
             target.Location = new WorkflowExpression<string>(source.Location?.Trim());
-            target.Permanent = new WorkflowExpression<bool>(source.Permanent?.Trim());
+            target.Permanent = source.Permanent;
         }
     }
 }

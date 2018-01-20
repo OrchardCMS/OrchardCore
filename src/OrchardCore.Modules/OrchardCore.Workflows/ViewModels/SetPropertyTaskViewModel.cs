@@ -7,6 +7,6 @@ namespace OrchardCore.Workflows.ViewModels
         [Required]
         public string PropertyName { get; set; }
 
-        public string ScriptExpression { get; set; }
+        public string Value { get; set; }
     }
 }

@@ -24,7 +24,6 @@ namespace OrchardCore.Workflows.Activities
 
         public override string Name => nameof(JoinTask);
         public override LocalizedString Category => T["Control Flow"];
-        public override LocalizedString Description => T["Joins forked workflow execution back into a single path of execution."];
 
         public JoinMode Mode
         {

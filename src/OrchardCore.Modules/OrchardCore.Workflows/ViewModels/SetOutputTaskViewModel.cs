@@ -7,6 +7,6 @@ namespace OrchardCore.Workflows.ViewModels
         [Required]
         public string OutputName { get; set; }
 
-        public string Expression { get; set; }
+        public string Value { get; set; }
     }
 }

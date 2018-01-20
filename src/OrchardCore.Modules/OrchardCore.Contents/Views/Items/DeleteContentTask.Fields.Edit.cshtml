@@ -3,6 +3,6 @@
 
 <fieldset class="form-group" asp-validation-class-for="Expression">
     <label asp-for="Expression">@T["Expression"] <span asp-validation-for="Expression"></span></label>
-    <input type="expression" asp-for="Expression" syntax="Script" autofocus />
-    <span class="hint">@T["Enter an expression that yields the content item to be deleted. For example: input(\"Content\"). If no expression is specified, the workflow's \"Content\" input will be used."]</span>
+    <input type="text" asp-for="Expression" class="form-control code" autofocus />
+    <span class="hint">@T["Enter a javaScript expression that evaluates to the content item to be deleted. For example: input(\"Content\"). If no expression is specified, the workflow's \"Content\" input variable will be used."]</span>
 </fieldset>

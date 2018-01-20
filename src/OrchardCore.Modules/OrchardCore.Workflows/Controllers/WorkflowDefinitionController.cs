@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -205,8 +204,7 @@ namespace OrchardCore.Workflows.Controllers
                 return View(new WorkflowDefinitionPropertiesViewModel
                 {
                     IsEnabled = true,
-                    ReturnUrl = returnUrl,
-                    AvailableScriptingEngines = GetAvailableScriptingEngines()
+                    ReturnUrl = returnUrl
                 });
             }
             else
@@ -218,9 +216,7 @@ namespace OrchardCore.Workflows.Controllers
                     Id = workflowDefinition.Id,
                     Name = workflowDefinition.Name,
                     IsEnabled = workflowDefinition.IsEnabled,
-                    ScriptingEngine = workflowDefinition.ScriptingEngine,
-                    ReturnUrl = returnUrl,
-                    AvailableScriptingEngines = GetAvailableScriptingEngines()
+                    ReturnUrl = returnUrl
                 });
             }
         }
@@ -236,7 +232,6 @@ namespace OrchardCore.Workflows.Controllers
 
             if (!ModelState.IsValid)
             {
-                viewModel.AvailableScriptingEngines = GetAvailableScriptingEngines();
                 return View(viewModel);
             }
 
@@ -249,15 +244,14 @@ namespace OrchardCore.Workflows.Controllers
 
             workflowDefinition.Name = viewModel.Name?.Trim();
             workflowDefinition.IsEnabled = viewModel.IsEnabled;
-            workflowDefinition.ScriptingEngine = viewModel.ScriptingEngine;
 
             await _workflowDefinitionRepository.SaveAsync(workflowDefinition);
 
-            return Url.IsLocalUrl(viewModel.ReturnUrl)
-                ? Redirect(viewModel.ReturnUrl)
-                : isNew
-                    ? (IActionResult)RedirectToAction("Edit", new { workflowDefinition.Id })
-                    : RedirectToAction("Index");
+            return isNew
+                ? RedirectToAction("Edit", new { workflowDefinition.Id })
+                : Url.IsLocalUrl(viewModel.ReturnUrl)
+                   ? (IActionResult)Redirect(viewModel.ReturnUrl)
+                   : RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Edit(int id, string localId)
@@ -405,11 +399,6 @@ namespace OrchardCore.Workflows.Controllers
             activityShape.Index = index;
             activityShape.ReturnUrl = Url.Action(nameof(Edit), new { id = workflowDefinitionId, localId = localId });
             return activityShape;
-        }
-
-        private IList<SelectListItem> GetAvailableScriptingEngines()
-        {
-            return _availableScriptingEngines.Select(x => new SelectListItem { Text = x.Name, Value = x.Prefix }).ToList();
         }
     }
 }

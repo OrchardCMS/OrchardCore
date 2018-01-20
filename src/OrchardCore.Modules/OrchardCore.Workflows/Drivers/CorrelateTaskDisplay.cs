@@ -9,12 +9,12 @@ namespace OrchardCore.Workflows.Drivers
     {
         protected override void Map(CorrelateTask source, CorrelateTaskViewModel target)
         {
-            target.Expression = source.Value.Expression;
+            target.Value = source.Value.Expression;
         }
 
         protected override void Map(CorrelateTaskViewModel source, CorrelateTask target)
         {
-            target.Value = new WorkflowExpression<string>(source.Expression);
+            target.Value = new WorkflowExpression<string>(source.Value);
         }
     }
 }

@@ -13,7 +13,6 @@ namespace OrchardCore.Workflows.Activities
     {
         string Name { get; }
         LocalizedString Category { get; }
-        LocalizedString Description { get; }
         new JObject Properties { get; set; }
         bool HasEditor { get; }
 

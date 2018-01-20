@@ -21,7 +21,6 @@ namespace OrchardCore.Workflows.Activities
 
         public override string Name => EventName;
         public override LocalizedString Category => T["Events"];
-        public override LocalizedString Description => T["Executes when the specified signal name is triggered."];
 
         public WorkflowExpression<string> SignalName
         {

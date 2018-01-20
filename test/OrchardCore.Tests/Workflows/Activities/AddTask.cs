@@ -17,7 +17,6 @@ namespace OrchardCore.Tests.Workflows.Activities
         private IStringLocalizer T { get; }
         public override string Name => nameof(AddTask);
         public override LocalizedString Category => T["Test"];
-        public override LocalizedString Description => T["Adds two numbers and pushes the result onto the stack."];
 
         public WorkflowExpression<double> A
         {

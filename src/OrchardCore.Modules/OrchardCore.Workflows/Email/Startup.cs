@@ -7,8 +7,7 @@ using OrchardCore.Workflows.Helpers;
 
 namespace OrchardCore.Workflows.Email
 {
-    [Feature("OrchardCore.Workflows.Email")]
-    [RequireFeatures("OrchardCore.Workflows")]
+    // TODO: Move this to the upcoming Email module.
     public class Startup : StartupBase
     {
         private readonly IConfiguration _configuration;

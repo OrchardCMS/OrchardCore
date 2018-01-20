@@ -17,7 +17,6 @@ namespace OrchardCore.Workflows.Activities
 
         public override string Name => nameof(IfElseTask);
         public override LocalizedString Category => T["Control Flow"];
-        public override LocalizedString Description => T["Evaluates the specified condition and continues execution based on the outcome."];
 
         /// <summary>
         /// A script evaluating to either true or false.

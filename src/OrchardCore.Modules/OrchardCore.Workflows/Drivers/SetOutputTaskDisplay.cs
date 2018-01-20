@@ -10,13 +10,13 @@ namespace OrchardCore.Workflows.Drivers
         protected override void Map(SetOutputTask source, SetOutputTaskViewModel target)
         {
             target.OutputName = source.OutputName;
-            target.Expression = source.ScriptExpression.Expression;
+            target.Value = source.Value.Expression;
         }
 
         protected override void Map(SetOutputTaskViewModel source, SetOutputTask target)
         {
             target.OutputName = source.OutputName.Trim();
-            target.ScriptExpression = new WorkflowExpression<object>(source.Expression);
+            target.Value = new WorkflowExpression<object>(source.Value);
         }
     }
 }

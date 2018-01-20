@@ -12,12 +12,6 @@
         <input asp-for="Name" class="form-control" autofocus />
     </fieldset>
 
-    <fieldset class="form-group" asp-validation-class-for="ScriptingEngine">
-        <label asp-for="ScriptingEngine">@T["Scripting Engine"]</label>
-        <span asp-validation-for="ScriptingEngine" class="text-danger"></span>
-        <select asp-for="ScriptingEngine" asp-items="Model.AvailableScriptingEngines" class="form-control"></select>
-    </fieldset>
-
     <fieldset class="form-group form-check">
         <label class="form-check-label" asp-for="IsEnabled">
             <input class="form-check-input" type="checkbox" asp-for="IsEnabled">

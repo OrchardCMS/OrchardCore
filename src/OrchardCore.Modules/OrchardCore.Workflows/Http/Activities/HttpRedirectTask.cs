@@ -5,7 +5,6 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities
 {
@@ -23,7 +22,6 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override string Name => nameof(HttpRedirectTask);
         public override LocalizedString Category => T["HTTP"];
-        public override LocalizedString Description => T["Redirects the user agent to the specified URL (301/302)."];
 
         public WorkflowExpression<string> Location
         {
@@ -31,9 +29,9 @@ namespace OrchardCore.Workflows.Http.Activities
             set => SetProperty(value);
         }
 
-        public WorkflowExpression<bool> Permanent
+        public bool Permanent
         {
-            get => GetProperty(() => new WorkflowExpression<bool>("false"));
+            get => GetProperty(() => false);
             set => SetProperty(value);
         }
 
@@ -44,12 +42,9 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var locationTask = workflowContext.EvaluateExpressionAsync(Location);
-            var permanentTask = workflowContext.EvaluateScriptAsync(Permanent);
+            var location = await workflowContext.EvaluateExpressionAsync(Location);
 
-            await Task.WhenAll(locationTask, permanentTask);
-
-            _httpContextAccessor.HttpContext.Response.Redirect(locationTask.Result, permanentTask.Result);
+            _httpContextAccessor.HttpContext.Response.Redirect(location, Permanent);
             return Outcomes("Done");
         }
     }

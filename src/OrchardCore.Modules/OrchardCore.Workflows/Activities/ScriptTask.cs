@@ -20,7 +20,6 @@ namespace OrchardCore.Workflows.Activities
 
         public override string Name => nameof(ScriptTask);
         public override LocalizedString Category => T["Control Flow"];
-        public override LocalizedString Description => T["Executes the specified script and continues execution based on any outcomes it sets."];
 
         public IList<string> AvailableOutcomes
         {

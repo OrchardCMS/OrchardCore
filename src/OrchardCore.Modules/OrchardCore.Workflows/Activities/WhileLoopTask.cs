@@ -17,7 +17,6 @@ namespace OrchardCore.Workflows.Activities
 
         public override string Name => nameof(WhileLoopTask);
         public override LocalizedString Category => T["Control Flow"];
-        public override LocalizedString Description => T["Iterates over a branch of execution while the specified condition is true."];
 
         /// <summary>
         /// An expression evaluating to true or false.

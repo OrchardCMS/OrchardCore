@@ -3,10 +3,12 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
+    /// <summary>
+    /// A replacement for when a referenced activity could not be found. This is a system-level activity that is not registered with WorkflowOptions.
+    /// </summary>
     public class MissingActivity : Activity
     {
         private readonly ILogger<MissingActivity> _logger;
@@ -22,7 +24,6 @@ namespace OrchardCore.Workflows.Activities
 
         public override string Name => nameof(MissingActivity);
         public override LocalizedString Category => T["Exceptions"];
-        public override LocalizedString Description => T["A replacement when a referenced activity could not be found."];
 
         public ActivityRecord MissingActivityRecord { get; }
 

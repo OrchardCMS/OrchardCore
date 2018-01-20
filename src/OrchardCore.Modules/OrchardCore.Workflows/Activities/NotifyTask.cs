@@ -24,7 +24,6 @@ namespace OrchardCore.Workflows.Activities
 
         public override string Name => nameof(NotifyTask);
         public override LocalizedString Category => S["UI"];
-        public override LocalizedString Description => S["Display a message."];
 
         public NotifyType NotificationType
         {

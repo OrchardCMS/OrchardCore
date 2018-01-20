@@ -17,7 +17,6 @@ namespace OrchardCore.Workflows.Activities
 
         public override string Name => nameof(ForkTask);
         public override LocalizedString Category => T["Control Flow"];
-        public override LocalizedString Description => T["Forks workflow execution into separate paths of execution."];
 
         public IList<string> Forks
         {

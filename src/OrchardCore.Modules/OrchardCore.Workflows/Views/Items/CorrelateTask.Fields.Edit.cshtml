@@ -1,8 +1,8 @@
 @using OrchardCore.Workflows.ViewModels;
 @model CorrelateTaskViewModel
 
-<fieldset class="form-group" asp-validation-class-for="Expression">
-    <label asp-for="Expression">@T["Expression"] <span asp-validation-for="Expression"></span></label>
-    <input type="expression" asp-for="Expression" syntax="Liquid" />
-    <span class="hint">@T["The expression to evaluate. The result will be assigned to the correlation ID of the running workflow."]</span>
+<fieldset class="form-group" asp-validation-class-for="Value">
+    <label asp-for="Value">@T["Value"] <span asp-validation-for="Value"></span></label>
+    <input type="text" asp-for="Value" class="form-control code" />
+    <span class="hint">@T["The value to correlate workflow instances with. With Liquid support."]</span>
 </fieldset>

@@ -17,7 +17,6 @@ namespace OrchardCore.Workflows.Activities
 
         public override string Name => nameof(SetOutputTask);
         public override LocalizedString Category => T["Primitives"];
-        public override LocalizedString Description => T["Evaluates a script expression and stores the result into the workflow's output."];
 
         public string OutputName
         {
@@ -25,7 +24,7 @@ namespace OrchardCore.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public WorkflowExpression<object> ScriptExpression
+        public WorkflowExpression<object> Value
         {
             get => GetProperty(() => new WorkflowExpression<object>());
             set => SetProperty(value);
@@ -38,7 +37,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var value = await workflowContext.EvaluateScriptAsync(ScriptExpression);
+            var value = await workflowContext.EvaluateScriptAsync(Value);
             workflowContext.Output[OutputName] = value;
 
             return Outcomes("Done");

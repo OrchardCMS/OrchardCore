@@ -18,7 +18,6 @@ namespace OrchardCore.Workflows.Activities
 
         public override string Name => nameof(ForLoopTask);
         public override LocalizedString Category => T["Control Flow"];
-        public override LocalizedString Description => T["Iterates over a branch of execution for N times."];
 
         /// <summary>
         /// An expression evaluating to the number of times to loop.

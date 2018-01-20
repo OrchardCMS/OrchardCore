@@ -10,6 +10,5 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public override string Name => nameof(ContentVersionedEvent);
-        public override LocalizedString Description => T["Content is versioned."];
     }
 }

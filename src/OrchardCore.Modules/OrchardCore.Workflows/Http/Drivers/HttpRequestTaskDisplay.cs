@@ -10,7 +10,7 @@ namespace OrchardCore.Workflows.Http.Drivers
         protected override void Map(HttpRequestTask source, HttpRequestTaskViewModel target)
         {
             target.Url = source.Url.Expression;
-            target.HttpMethod = source.HttpMethod.Expression;
+            target.HttpMethod = source.HttpMethod;
             target.Body = source.Body.Expression;
             target.ContentType = source.ContentType.Expression;
             target.Headers = source.Headers.Expression;
@@ -20,7 +20,7 @@ namespace OrchardCore.Workflows.Http.Drivers
         protected override void Map(HttpRequestTaskViewModel source, HttpRequestTask target)
         {
             target.Url = new WorkflowExpression<string>(source.Url?.Trim());
-            target.HttpMethod = new WorkflowExpression<string>(source.HttpMethod?.Trim());
+            target.HttpMethod = source.HttpMethod;
             target.Body = new WorkflowExpression<string>(source.Body);
             target.ContentType = new WorkflowExpression<string>(source.ContentType?.Trim());
             target.Headers = new WorkflowExpression<string>(source.Headers?.Trim());

@@ -11,19 +11,19 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Evaluators
 {
-    public class DefaultWorkflowScriptEvaluator : IWorkflowScriptEvaluator
+    public class JavaScriptWorkflowScriptEvaluator : IWorkflowScriptEvaluator
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IScriptingManager _scriptingManager;
         private readonly IEnumerable<IWorkflowExecutionContextHandler> _workflowContextHandlers;
-        private readonly ILogger<DefaultWorkflowScriptEvaluator> _logger;
+        private readonly ILogger<JavaScriptWorkflowScriptEvaluator> _logger;
 
-        public DefaultWorkflowScriptEvaluator(
+        public JavaScriptWorkflowScriptEvaluator(
             IServiceProvider serviceProvider,
             IScriptingManager scriptingManager,
             IEnumerable<IWorkflowExecutionContextHandler> workflowContextHandlers,
-            IStringLocalizer<DefaultWorkflowScriptEvaluator> localizer,
-            ILogger<DefaultWorkflowScriptEvaluator> logger
+            IStringLocalizer<JavaScriptWorkflowScriptEvaluator> localizer,
+            ILogger<JavaScriptWorkflowScriptEvaluator> logger
         )
         {
             _serviceProvider = serviceProvider;
@@ -38,8 +38,7 @@ namespace OrchardCore.Workflows.Evaluators
         public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, params IGlobalMethodProvider[] scopedMethodProviders)
         {
             var workflowDefinition = workflowContext.WorkflowDefinition;
-            var prefix = workflowDefinition.ScriptingEngine;
-            var directive = $"{prefix}:{expression}";
+            var directive = $"js:{expression}";
             var expressionContext = new WorkflowExecutionScriptContext(workflowContext);
 
             await _workflowContextHandlers.InvokeAsync(async x => await x.EvaluatingScriptAsync(expressionContext), _logger);

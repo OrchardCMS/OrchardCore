@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Http.Activities
@@ -27,7 +27,6 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override string Name => nameof(HttpRequestTask);
         public override LocalizedString Category => T["HTTP"];
-        public override LocalizedString Description => T["Makes a HTTP request to the specified URL."];
 
         public WorkflowExpression<string> Url
         {
@@ -35,9 +34,9 @@ namespace OrchardCore.Workflows.Http.Activities
             set => SetProperty(value);
         }
 
-        public WorkflowExpression<string> HttpMethod
+        public string HttpMethod
         {
-            get => GetProperty(() => new WorkflowExpression<string>(HttpMethods.Get));
+            get => GetProperty(() => HttpMethods.Get);
             set => SetProperty(value);
         }
 
@@ -67,7 +66,80 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var outcomes = !string.IsNullOrWhiteSpace(HttpResponseCodes) ? HttpResponseCodes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => new Outcome(T[x.Trim()])).ToList() : new List<Outcome>();
+            var httpStatusCodeDictionary = new Dictionary<int, string>
+            {
+                { 100, "Continue" },
+                { 101, " Switching Protocols" },
+                { 102 , "Processing" },
+                { 200 , "OK" },
+                { 201 , "Created" },
+                { 202 , "Accepted" },
+                { 203 , "Non-authoritative Information" },
+                { 204 , "No Content" },
+                { 205 , "Reset Content" },
+                { 206 , "Partial Content" },
+                { 207 , "Multi-Status" },
+                { 208 , "Already Reported" },
+                { 226 , "IM Used" },
+                { 300 , "Multiple Choices" },
+                { 301 , "Moved Permanently" },
+                { 302 , "Found" },
+                { 303 , "See Other" },
+                { 304 , "Not Modified" },
+                { 305 , "Use Proxy" },
+                { 307 , "Temporary Redirect" },
+                { 308 , "Permanent Redirect" },
+                { 400 , "Bad Request" },
+                { 401 , "Unauthorized" },
+                { 402 , "Payment Required" },
+                { 403 , "Forbidden" },
+                { 404 , "Not Found" },
+                { 405 , "Method Not Allowed" },
+                { 406 , "Not Acceptable" },
+                { 407 , "Proxy Authentication Required" },
+                { 408 , "Request Timeout" },
+                { 409 , "Conflict" },
+                { 410 , "Gone" },
+                { 411 , "Length Required" },
+                { 412 , "Precondition Failed" },
+                { 413 , "Payload Too Large" },
+                { 414 , "Request-URI Too Long" },
+                { 415 , "Unsupported Media Type" },
+                { 416 , "Requested Range Not Satisfiable" },
+                { 417 , "Expectation Failed" },
+                { 418 , "I'm a teapot" },
+                { 421 , "Misdirected Request" },
+                { 422 , "Unprocessable Entity" },
+                { 423 , "Locked" },
+                { 424 , "Failed Dependency" },
+                { 426 , "Upgrade Required" },
+                { 428 , "Precondition Required" },
+                { 429 , "Too Many Requests" },
+                { 431 , "Request Header Fields Too Large" },
+                { 444 , "Connection Closed Without Response" },
+                { 451 , "Unavailable For Legal Reasons" },
+                { 499 , "Client Closed Request" },
+                { 500 , "Internal Server Error" },
+                { 501 , "Not Implemented" },
+                { 502 , "Bad Gateway" },
+                { 503 , "Service Unavailable" },
+                { 504 , "Gateway Timeout" },
+                { 505 , "HTTP Version Not Supported" },
+                { 506 , "Variant Also Negotiates" },
+                { 507 , "Insufficient Storage" },
+                { 508 , "Loop Detected" },
+                { 510 , "Not Extended" },
+                { 511 , "Network Authentication Required" },
+                { 599 , "Network Connect Timeout Error" }
+            };
+            var outcomes = !string.IsNullOrWhiteSpace(HttpResponseCodes)
+                ? HttpResponseCodes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x =>
+                {
+                    var status = int.Parse(x.Trim());
+                    var description = httpStatusCodeDictionary.ContainsKey(status) ? $"{status} {httpStatusCodeDictionary[status]}" : status.ToString();
+                    return new Outcome(status.ToString(), T[description]);
+                }).ToList()
+                : new List<Outcome>();
             outcomes.Add(new Outcome("UnhandledHttpStatus", T["Unhandled Http Status"]));
 
             return outcomes;
@@ -85,7 +157,7 @@ namespace OrchardCore.Workflows.Http.Activities
                     httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
                 }
 
-                var httpMethod = await workflowContext.EvaluateExpressionAsync(HttpMethod);
+                var httpMethod = HttpMethod;
                 var url = await workflowContext.EvaluateExpressionAsync(Url);
                 var request = new HttpRequestMessage(new HttpMethod(httpMethod), url);
                 var postMethods = new[] { HttpMethods.Patch, HttpMethods.Post, HttpMethods.Put };

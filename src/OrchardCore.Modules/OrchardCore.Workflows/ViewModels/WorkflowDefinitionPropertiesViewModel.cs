@@ -12,7 +12,6 @@ namespace OrchardCore.Workflows.ViewModels
         public string Name { get; set; }
 
         public bool IsEnabled { get; set; }
-        public string ScriptingEngine { get; set; }
         public string ReturnUrl { get; set; }
         public IList<SelectListItem> AvailableScriptingEngines { get; set; }
     }
