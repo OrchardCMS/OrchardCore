@@ -6,7 +6,11 @@
     var activityEvent = activity as IEvent;
     var isBlocking = (bool)Model.IsBlocking;
     var cssClass = isBlocking ? "activity-blocking" : "";
+    var badgeClass = isBlocking ? "badge-light" : "badge-secondary";
 }
 <div class="activity @cssClass" style="left:@(activityRecord.X)px; top:@(activityRecord.Y)px;" id="@($"activity-{Model.WorkflowDefinitionId}-{activityRecord.Id}")" data-activity-id="@activityRecord.Id">
     @await DisplayAsync(Model.Content)
+    <div>
+        <div class="badge @badgeClass" title="Activity ID">@activityRecord.Id</div>
+    </div>
 </div>

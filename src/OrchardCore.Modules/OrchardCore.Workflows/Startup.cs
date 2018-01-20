@@ -52,8 +52,8 @@ namespace OrchardCore.Workflows
             services.AddActivity<SetPropertyTask, SetVariableTaskDisplay>();
             services.AddActivity<SetOutputTask, SetOutputTaskDisplay>();
             services.AddActivity<CorrelateTask, CorrelateTaskDisplay>();
-            services.AddActivity<BranchTask, BranchTaskDisplay>();
-            services.AddActivity<MergeTask, MergeTaskDisplay>();
+            services.AddActivity<ForkTask, ForkTaskDisplay>();
+            services.AddActivity<JoinTask, JoinTaskDisplay>();
             services.AddActivity<ForLoopTask, ForLoopTaskDisplay>();
             services.AddActivity<WhileLoopTask, WhileLoopTaskDisplay>();
             services.AddActivity<IfElseTask, IfElseTaskDisplay>();

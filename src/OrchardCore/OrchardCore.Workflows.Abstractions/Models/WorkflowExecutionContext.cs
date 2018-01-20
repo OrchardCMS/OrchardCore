@@ -113,5 +113,26 @@ namespace OrchardCore.Workflows.Models
         {
             return WorkflowDefinition.Transitions.Where(x => x.SourceActivityId == activityId).ToList();
         }
+
+        /// <summary>
+        /// Returns the full path of incoming activities.
+        /// </summary>
+        public IEnumerable<int> GetInboundActivityPath(int activityId)
+        {
+            return GetInboundActivityPathInternal(activityId).Distinct().ToList();
+        }
+
+        private IEnumerable<int> GetInboundActivityPathInternal(int activityId)
+        {
+            foreach (var transition in GetInboundTransitions(activityId))
+            {
+                yield return transition.SourceActivityId;
+
+                foreach (var parentActivityId in GetInboundActivityPath(transition.SourceActivityId))
+                {
+                    yield return parentActivityId;
+                }
+            }
+        }
     }
 }

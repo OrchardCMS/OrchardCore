@@ -7,19 +7,30 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class MergeTask : TaskActivity
+    public class JoinTask : TaskActivity
     {
-        public MergeTask(IStringLocalizer<MergeTask> localizer)
+        public enum JoinMode
+        {
+            WaitAll,
+            WaitAny
+        }
+
+        public JoinTask(IStringLocalizer<JoinTask> localizer)
         {
             T = localizer;
         }
 
         private IStringLocalizer T { get; }
 
-        public override string Name => nameof(MergeTask);
+        public override string Name => nameof(JoinTask);
         public override LocalizedString Category => T["Control Flow"];
-        public override LocalizedString Description => T["Merges workflow execution back into a single branch."];
-        public override bool HasEditor => false;
+        public override LocalizedString Description => T["Joins forked workflow execution back into a single path of execution."];
+
+        public JoinMode Mode
+        {
+            get => GetProperty(() => JoinMode.WaitAll);
+            set => SetProperty(value);
+        }
 
         private IList<string> Branches
         {
@@ -29,19 +40,41 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Merged"]);
+            return Outcomes(T["Joined"]);
         }
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             // Wait for all incoming branches to have executed their activity.
             var branches = Branches;
-            var inboundActivities = workflowContext.GetInboundTransitions(activityContext.ActivityRecord.Id);
-            var done = inboundActivities.All(x => branches.Contains(GetTransitionKey(x)));
+            var inboundTransitions = workflowContext.GetInboundTransitions(activityContext.ActivityRecord.Id);
+            var done = false;
+
+            switch (Mode)
+            {
+                case JoinMode.WaitAll:
+                    done = inboundTransitions.All(x => branches.Contains(GetTransitionKey(x)));
+                    break;
+                case JoinMode.WaitAny:
+                    done = inboundTransitions.Any(x => branches.Contains(GetTransitionKey(x)));
+
+                    if (done)
+                    {
+                        // Remove any inbound blocking activities.
+                        var ancestorActivityIds = workflowContext.GetInboundActivityPath(activityContext.ActivityRecord.Id).ToList();
+                        var blockingActivities = workflowContext.WorkflowInstance.AwaitingActivities.Where(x => ancestorActivityIds.Contains(x.ActivityId)).ToList();
+
+                        foreach (var blockingActivity in blockingActivities)
+                        {
+                            workflowContext.WorkflowInstance.AwaitingActivities.Remove(blockingActivity);
+                        }
+                    }
+                    break;
+            }
 
             if (done)
             {
-                return Outcomes("Merged");
+                return Outcomes("Joined");
             }
 
             return Noop();
@@ -62,7 +95,7 @@ namespace OrchardCore.Workflows.Activities
 
             foreach (var inboundTransition in inboundTransitions)
             {
-                var mergeActivity = (MergeTask)workflowContext.GetActivity(inboundTransition.DestinationActivityId).Activity;
+                var mergeActivity = (JoinTask)workflowContext.GetActivity(inboundTransition.DestinationActivityId).Activity;
                 var branches = mergeActivity.Branches;
                 mergeActivity.Branches = branches.Union(new[] { GetTransitionKey(inboundTransition) }).Distinct().ToList();
             }

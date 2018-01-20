@@ -6,20 +6,20 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class BranchTask : TaskActivity
+    public class ForkTask : TaskActivity
     {
-        public BranchTask(IStringLocalizer<BranchTask> localizer)
+        public ForkTask(IStringLocalizer<ForkTask> localizer)
         {
             T = localizer;
         }
 
         private IStringLocalizer T { get; }
 
-        public override string Name => nameof(BranchTask);
+        public override string Name => nameof(ForkTask);
         public override LocalizedString Category => T["Control Flow"];
-        public override LocalizedString Description => T["Splits workflow execution into branches."];
+        public override LocalizedString Description => T["Forks workflow execution into separate paths of execution."];
 
-        public IList<string> Branches
+        public IList<string> Forks
         {
             get => GetProperty(() => new List<string>());
             set => SetProperty(value);
@@ -27,12 +27,12 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Branches.Select(x => Outcome(T[x]));
+            return Forks.Select(x => Outcome(T[x]));
         }
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(Branches);
+            return Outcomes(Forks);
         }
     }
 }

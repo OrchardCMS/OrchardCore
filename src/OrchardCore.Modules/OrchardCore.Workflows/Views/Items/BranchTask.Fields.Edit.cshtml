@@ -1,8 +1,0 @@
-@using OrchardCore.Workflows.ViewModels;
-@model BranchTaskViewModel
-
-<fieldset class="form-group" asp-validation-class-for="Branches">
-    <label asp-for="Branches">@T["Branches"] <span asp-validation-for="Branches"></span></label>
-    <input asp-for="Branches" class="form-control" />
-    <span class="hint">@T["Enter one or more comma-separated branches."]</span>
-</fieldset>

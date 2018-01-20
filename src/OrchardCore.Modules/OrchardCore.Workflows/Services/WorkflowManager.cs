@@ -117,7 +117,12 @@ namespace OrchardCore.Workflows.Services
             // Resume pending workflows.
             foreach (var workflowInstance in awaitingWorkflowInstances)
             {
-                await ResumeWorkflowAsync(workflowInstance, input);
+                var blockingActivities = workflowInstance.AwaitingActivities.Where(x => x.Name == name);
+
+                foreach (var blockingActivity in blockingActivities)
+                {
+                    await ResumeWorkflowAsync(workflowInstance, blockingActivity, input);
+                }
             }
 
             // Start new workflows.
@@ -130,18 +135,6 @@ namespace OrchardCore.Workflows.Services
                     await StartWorkflowAsync(workflowToStart, startActivity, input, correlationId);
                 }
             }
-        }
-
-        public async Task<IList<WorkflowExecutionContext>> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance, IDictionary<string, object> input)
-        {
-            var workflowContexts = new List<WorkflowExecutionContext>();
-            foreach (var awaitingActivity in workflowInstance.AwaitingActivities.ToList())
-            {
-                var context = await ResumeWorkflowAsync(workflowInstance, awaitingActivity, input);
-                workflowContexts.Add(context);
-            }
-
-            return workflowContexts;
         }
 
         public async Task<WorkflowExecutionContext> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance, AwaitingActivityRecord awaitingActivity, IDictionary<string, object> input = null)

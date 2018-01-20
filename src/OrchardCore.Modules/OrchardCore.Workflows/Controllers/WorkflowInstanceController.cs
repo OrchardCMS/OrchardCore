@@ -12,7 +12,6 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
-using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;
@@ -27,7 +26,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IWorkflowDefinitionRepository _workflowDefinitionRepository;
         private readonly IWorkflowInstanceRepository _workflowInstanceRepository;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IDisplayManager<IActivity> _activityDisplayManager;
+        private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
         private readonly ILogger<WorkflowInstanceController> _logger;
 
@@ -37,7 +36,7 @@ namespace OrchardCore.Workflows.Controllers
             IWorkflowDefinitionRepository workflowDefinitionRepository,
             IWorkflowInstanceRepository workflowInstanceRepository,
             IAuthorizationService authorizationService,
-            IDisplayManager<IActivity> activityDisplayManager,
+            IActivityDisplayManager activityDisplayManager,
             IShapeFactory shapeFactory,
             INotifier notifier,
             IHtmlLocalizer<WorkflowInstanceController> localizer,
@@ -101,6 +100,12 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var workflowInstance = await _workflowInstanceRepository.GetAsync(id);
+
+            if (workflowInstance == null)
+            {
+                return NotFound();
+            }
+
             var workflowDefinitionRecord = await _workflowDefinitionRepository.GetAsync(workflowInstance.DefinitionId);
             var blockingActivities = workflowInstance.AwaitingActivities.ToDictionary(x => x.ActivityId);
             var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowDefinitionRecord, workflowInstance);
