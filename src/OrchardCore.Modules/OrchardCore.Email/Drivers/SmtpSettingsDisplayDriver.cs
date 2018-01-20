@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.DataProtection;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Models;
+using OrchardCore.Email.ViewModels;
 using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
@@ -23,7 +24,7 @@ namespace OrchardCore.Email.Drivers
 
         public override IDisplayResult Edit(SmtpSettings section)
         {
-            return Shape<SmtpSettings>( "SmtpSettings_Edit", model => {
+            return Shape<SmtpSettingsViewModel>( "SmtpSettings_Edit", model => {
                 model.DefaultSender = section.DefaultSender;
                 model.Host = section.Host;
                 model.Port = section.Port;

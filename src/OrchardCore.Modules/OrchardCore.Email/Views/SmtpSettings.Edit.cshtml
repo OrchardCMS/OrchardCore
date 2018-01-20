@@ -1,4 +1,4 @@
-@model OrchardCore.Email.Models.SmtpSettings
+@model OrchardCore.Email.ViewModels.SmtpSettingsViewModel
 
 
 <script asp-name="bootstrap" version="4.0.0" use-cdn="true" at="Foot"></script>
@@ -73,132 +73,64 @@
     </div>
     <div class="card-block collapse">
         <div class="form-group">
-            <label for="emailtestto">@T["To"]</label>
-            <input type="text" id="emailtestto" class="form-control" />
+            <fieldset class="form-group" asp-validation-class-for="To">
+                <label asp-for="To">@T["To"] <span asp-validation-for="To"></span></label>
+                <input asp-for="To" class="form-control" type="text" />
+            </fieldset>
         </div>
         <div class="form-group">
-            <label for="emailtestbcc">@T["Bcc"]</label>
-            <input type="text" id="emailtestbcc" class="form-control" />
+            <fieldset class="form-group" asp-validation-class-for="Bcc">
+                <label asp-for="Bcc">@T["Bcc"] <span asp-validation-for="Bcc"></span></label>
+                <input asp-for="Bcc" class="form-control" type="text" />
+            </fieldset>
         </div>
         <div class="form-group">
-            <label for="emailtestcc">@T["Cc"]</label>
-            <input type="text" id="emailtestcc" class="form-control" />
+            <fieldset class="form-group" asp-validation-class-for="Cc">
+                <label asp-for="Cc">@T["Cc"] <span asp-validation-for="Cc"></span></label>
+                <input asp-for="Cc" class="form-control" type="text" />
+            </fieldset>
         </div>
         <div class="form-group">
-            <label for="emailtestreplyto">@T["Reply To"]</label>
-            <input type="text" id="emailtestreplyto" class="form-control" />
+            <fieldset class="form-group" asp-validation-class-for="ReplyTo">
+                <label asp-for="ReplyTo">@T["Reply To"] <span asp-validation-for="ReplyTo"></span></label>
+                <input asp-for="ReplyTo" class="form-control" type="text" />
+            </fieldset>
         </div>
         <div class="form-group">
-            <label for="emailtestsubject">@T["Subject"]</label>
-            <input type="text" id="emailtestsubject" class="form-control" />
+             <fieldset class="form-group" asp-validation-class-for="Subject">
+                <label asp-for="Subject">@T["Subject"] <span asp-validation-for="Subject"></span></label>
+                <input asp-for="Subject" class="form-control" type="text" />
+            </fieldset>
         </div>
         <div class="form-group">
-            <label for="emailtestbody">@T["Body"]</label>
-            <textarea id="emailtestbody" class="form-control" rows="5"></textarea>
+            <fieldset class="form-group" asp-validation-class-for="Body">
+                <label asp-for="Body">@T["Body"] <span asp-validation-for="Body"></span></label>
+                <textarea asp-for="Body" class="form-control" rows="5"></textarea>
+            </fieldset>
         </div>
         <div>
-            <button type="button" id="emailtestsend" class="button grey">@T["Send with Above Settings"]</button>
-            <button type="button" id="emailtestsavedsend" class="button grey">@T["Send with Saved Settings"]</button>
+            <button type="button" id="emailtestsend" class="button grey">@T["Test with Above Settings"]</button>
+            <button type="button" id="emailtestsavedsend" class="button grey">@T["Test with Saved Settings"]</button>
         </div>
         <div id="emailtesterror" class="message-Error" style="display:none;"></div>
         <div id="emailtestinfo" class="message-Information" style="display:none;"></div>
     </div>
-
-
-    <script type="text/javascript" at="Foot">
-            $(function () {
-                var url = "@Url.Action( "SmtpSettingsTest", "Admin", new {area = "OrchardCore.Email"})",
-                    urlsaved = "@Url.Action( "SmtpSavedSettingsTest", "Admin", new {area = "OrchardCore.Email"})",
-                    error = $("#emailtesterror"),
-                    info = $("#emailtestinfo"),
-                    from = $("#@Html.IdFor(m => m.DefaultSender)"),
-                    host = $("#@Html.IdFor( m => m.Host)"),
-                    port = $("#@Html.IdFor( m => m.Port)"),
-                    enableSsl = $("#@Html.IdFor( m => m.EnableSsl)"),
-                    requireCredentials = $("#@Html.IdFor( m => m.RequireCredentials)"),
-                    useDefaultCredentials = $("input[name='@Html.NameFor(m => m.UseDefaultCredentials)']"),
-                    userName = $("#@Html.IdFor( m => m.UserName)"),
-                    password = $("#@Html.IdFor( m => m.Password)"),
-                    to = $("#emailtestto"),
-                    subject = $("#emailtestsubject"),
-                    body = $("#emailtestbody"),
-                    replyto = $("#emailtestreplyto"),
-                    bcc = $("#emailtestbcc"),
-                    cc = $("#emailtestcc");
-
-                $("#emailtestsend").click(function () {
-                    $.post(url, {
-                        defaultSender: from.val(),
-                        from: from.val(),
-                        host: host.val(),
-                        port: port.val(),
-                        enableSsl: enableSsl.prop("checked"),
-                        requireCredentials: requireCredentials.prop("checked"),
-                        useDefaultCredentials: useDefaultCredentials.filter(':checked').val(),
-                        userName: userName.val(),
-                        password: password.val(),
-                        to: to.val(),
-                        subject: subject.val(),
-                        body: body.val(),
-                        replyto: replyto.val(),
-                        bcc: bcc.val(),
-                        cc: cc.val(),
-                        __RequestVerificationToken: to.closest("form").find("input[name=__RequestVerificationToken]").val()
-                    })
-                    .fail(function (data) {
-                        error.html(data.statusText).show();
-                        info.hide();
-                    })
-                    .done(function (data) {
-                        if (data.error) {
-                            error.html(data.error).show();
-                            info.hide();
-                        } else {
-                            info.html(data.status).show();
-                            error.hide();
-                        }
-                    });
-                });
-
-                $("#emailtestsavedsend").click(function () {
-                    $.post(urlsaved, {
-                        defaultSender: from.val(),
-                        from: from.val(),
-                        host: host.val(),
-                        port: port.val(),
-                        enableSsl: enableSsl.prop("checked"),
-                        requireCredentials: requireCredentials.prop("checked"),
-                        useDefaultCredentials: useDefaultCredentials.filter(':checked').val(),
-                        userName: userName.val(),
-                        password: password.val(),
-                        to: to.val(),
-                        subject: subject.val(),
-                        body: body.val(),
-                        replyto: replyto.val(),
-                        bcc: bcc.val(),
-                        cc: cc.val(),
-                        __RequestVerificationToken: to.closest("form").find("input[name=__RequestVerificationToken]").val()
-                    })
-                    .fail(function (data) {
-                        error.html(data.statusText).show();
-                        info.hide();
-                    })
-                    .done(function (data) {
-                        if (data.error) {
-                            error.html(data.error).show();
-                            info.hide();
-                        } else {
-                            info.html(data.status).show();
-                            error.hide();
-                        }
-                    });
-                });
-            });
-    </script>
 </div>
 
 <script type="text/javascript" at="Foot">
     $(function() {
+        var url = "@Url.Action( "SmtpSettingsTest", "Admin", new {area = "OrchardCore.Email"})",
+            urlsaved = "@Url.Action( "SmtpSavedSettingsTest", "Admin", new {area = "OrchardCore.Email"})"
+            ;
+                    
+        $("#emailtestsend").click(function () {
+            $(this).parents("form").attr("action", url).submit();
+        });
+
+        $("#emailtestsavedsend").click(function () {
+            $(this).parents("form").attr("action", urlsaved).submit();
+        });
+
         // this is used in place of data-toggle=collapse because collpase take the
         // value of checkbox as show/hide, instead of just toggle.
         $(document).on("click", "[data-toggle='collapse-toggle']", function(event) {

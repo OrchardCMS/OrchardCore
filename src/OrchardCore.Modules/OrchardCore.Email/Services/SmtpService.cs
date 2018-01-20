@@ -23,13 +23,19 @@ namespace OrchardCore.Email.Services
             _logger = logger;
         }
 
+        public ISmtpService WithSettings(SmtpSettings settings) {
+            return new SmtpService(Options.Create(settings), _logger);
+        }
 
-        public Task SendAsync(EmailMessage emailMessage)
+
+        public async Task<SmtpResult> SendAsync(EmailMessage emailMessage)
         {
+            var result = new SmtpResult();
             if ( emailMessage.Recipients.Length == 0 )
             {
-                _logger.LogError( "Email message doesn't have any recipient" );
-                return Task.CompletedTask;
+                result.ErrorMessage = "Email message doesn't have any recipient";
+                _logger.LogError( result.ErrorMessage );
+                return result;
             }
 
             var mailMessage = new MailMessage
@@ -87,14 +93,17 @@ namespace OrchardCore.Email.Services
                     }
                 }
 
-                return GetClient().SendMailAsync( mailMessage );
+                await GetClient().SendMailAsync( mailMessage );
+                result.Success = true;
+
             }
             catch ( Exception e )
             {
+                result.ErrorMessage = e.Message;
                 _logger.LogError( e, "Could not send email" );
             }
 
-            return Task.CompletedTask;
+            return result;
 
         }
 
