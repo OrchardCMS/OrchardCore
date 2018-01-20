@@ -4,14 +4,24 @@
     var activityRecord = (ActivityRecord)Model.ActivityRecord;
     var activity = (IActivity)Model.Activity;
     var activityEvent = activity as IEvent;
+    var isEvent = activityEvent != null;
     var canStart = activityEvent?.CanStartWorkflow ?? false;
     var isStart = canStart && activityRecord.IsStart;
-    var cssClass = isStart ? "activity-start" : "";
+    var cssClass = isStart ? "activity-start" : isEvent ? "activity-event" : "activity-task";
     var hasEditor = activity.HasEditor;
+    var activityType = isEvent ? "Event" : "Task";
+    var activityTypeClass = isEvent ? "fa-bolt" : "fa-caret-right";
 }
-<div class="activity @cssClass" style="left:@(activityRecord.X)px; top:@(activityRecord.Y)px;" id="@($"activity-{Model.WorkflowDefinitionId}-{activityRecord.Id}")" data-activity-id="@activityRecord.Id" data-activity-start="@isStart.ToString().ToLower()" data-activity-has-editor="@hasEditor.ToString().ToLower()" data-placement="bottom">
+<div class="activity @cssClass" style="left:@(activityRecord.X)px; top:@(activityRecord.Y)px;" id="@($"activity-{Model.WorkflowDefinitionId}-{activityRecord.Id}")" data-activity-id="@activityRecord.Id" data-activity-start="@isStart.ToString().ToLower()" data-activity-type="@activityType" data-activity-has-editor="@hasEditor.ToString().ToLower()" data-placement="bottom">
     @await DisplayAsync(Model.Content)
-
+    @if (isEvent)
+    {
+        <div class="clearfix">
+            <div class="float-right">
+                <i class="fa @activityTypeClass"></i>
+            </div>
+        </div>
+    }
     <div class="activity-commands">
         @if (canStart)
         {

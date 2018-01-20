@@ -82,6 +82,10 @@ class WorkflowViewer extends WorkflowCanvas {
             this.jsPlumbInstance = plumber;
         });
     }
+
+    protected getEndpointColor = (activity: Workflows.Activity) => {
+        return activity.isBlocking ? '#7ab02c' : activity.isEvent ? '#3a8acd' : '#7ab02c';
+    }
 }
 
 $.fn.workflowViewer = function (this: JQuery): JQuery {

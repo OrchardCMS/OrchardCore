@@ -3,7 +3,8 @@
 @model dynamic
 @{
     var activity = (IActivity)Model.Activity;
-    var activityType = activity.IsEvent() ? "Event" : "Task";
+    var isEvent = activity.IsEvent();
+    var activityType = isEvent ? "Event" : "Task";
 }
 <div class="card activity" data-category="@activity.Category.Name.HtmlClassify()" data-activity-type="@activityType">
     <div class="card-body">

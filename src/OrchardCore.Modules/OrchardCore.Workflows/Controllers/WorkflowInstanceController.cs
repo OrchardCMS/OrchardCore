@@ -15,6 +15,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.ActionConstraints;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;
@@ -122,6 +123,8 @@ namespace OrchardCore.Workflows.Controllers
                 Y = x.ActivityRecord.Y,
                 Name = x.ActivityRecord.Name,
                 IsStart = x.ActivityRecord.IsStart,
+                IsEvent = x.Activity.IsEvent(),
+                IsBlocking = workflowInstance.AwaitingActivities.Any(a => a.ActivityId == x.ActivityRecord.Id),
                 Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray()
             });
             var workflowDefinitionData = new

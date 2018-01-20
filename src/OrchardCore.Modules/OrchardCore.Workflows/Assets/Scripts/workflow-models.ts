@@ -12,6 +12,8 @@ namespace Workflows {
         x: number;
         y: number;
         isStart: boolean;
+        isBlocking?: boolean;
+        isEvent: boolean;
         outcomes: Array<Outcome>;
     }
 

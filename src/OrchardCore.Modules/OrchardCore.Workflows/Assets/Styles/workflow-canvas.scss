@@ -45,18 +45,18 @@
         -o-transition: -o-box-shadow 0.15s ease-in;
         transition: box-shadow 0.15s ease-in;
 
-        &.activity-start {
-            background-color: #7ab02c;
-            color: #ffffff;
+        &.activity-task {
+            border: 1px solid #7ab02c;
         }
 
-        &.activity-blocking {
-            background-color: #7ab02c;
-            color: #ffffff;
+        &.activity-event {
+            border: 1px solid #3a8acd;
         }
 
-        &.jtk-connected {
-            border: 1px solid green;
+        &.activity-start, &.activity-blocking {
+            background-color: #7ab02c;
+            color: #ffffff;
+            border: 1px solid #507b11;
         }
 
         header {

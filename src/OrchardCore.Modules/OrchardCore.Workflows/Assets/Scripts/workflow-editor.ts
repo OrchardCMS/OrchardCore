@@ -138,7 +138,7 @@ class WorkflowEditor extends WorkflowCanvas {
                 this.updateCanvasHeight();
             });
 
-            // Initialize popovers.
+            // Initialize popovers. 
             activityElements.popover({
                 trigger: 'manual',
                 html: true,
@@ -247,12 +247,14 @@ class WorkflowEditor extends WorkflowCanvas {
             const $activityElement: JQuery = $($allActivityElements[i]);
             const activityId: number = $activityElement.data('activity-id');
             const activityIsStart: boolean = $activityElement.data('activity-start');
+            const activityIsEvent: boolean = $activityElement.data('activity-type') === 'Event';
             const activityPosition: JQuery.Coordinates = $activityElement.position();
             const activity: Workflows.Activity = this.getActivity(activityId);
 
             workflow.activities.push({
                 id: activityId,
                 isStart: activityIsStart,
+                isEvent: activityIsEvent,
                 outcomes: activity.outcomes,
                 x: activityPosition.left,
                 y: activityPosition.top

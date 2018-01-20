@@ -4,13 +4,20 @@
     var activityRecord = (ActivityRecord)Model.ActivityRecord;
     var activity = (IActivity)Model.Activity;
     var activityEvent = activity as IEvent;
+    var isEvent = activityEvent != null;
     var isBlocking = (bool)Model.IsBlocking;
-    var cssClass = isBlocking ? "activity-blocking" : "";
-    var badgeClass = isBlocking ? "badge-light" : "badge-secondary";
+    var activityType = isEvent ? "Event" : "Task";
+    var activityTypeClass = isEvent ? "fa-bolt" : "fa-caret-right";
+    var cssClass = isBlocking ? "activity-blocking" : isEvent ? "activity-event" : "activity-task";
 }
-<div class="activity @cssClass" style="left:@(activityRecord.X)px; top:@(activityRecord.Y)px;" id="@($"activity-{Model.WorkflowDefinitionId}-{activityRecord.Id}")" data-activity-id="@activityRecord.Id">
+<div class="activity @cssClass" style="left:@(activityRecord.X)px; top:@(activityRecord.Y)px;" id="@($"activity-{Model.WorkflowDefinitionId}-{activityRecord.Id}")" data-activity-id="@activityRecord.Id" data-activity-type="@activityType">
     @await DisplayAsync(Model.Content)
-    <div>
-        <div class="badge @badgeClass" title="Activity ID">@activityRecord.Id</div>
-    </div>
+    @if (isEvent)
+    {
+        <div class="clearfix">
+            <div class="float-right">
+                <i class="fa @activityTypeClass"></i>
+            </div>
+        </div>
+    }
 </div>

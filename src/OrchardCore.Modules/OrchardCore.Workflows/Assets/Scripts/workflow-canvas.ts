@@ -45,14 +45,19 @@ abstract class WorkflowCanvas {
         });
     };
 
+    protected getEndpointColor = (activity: Workflows.Activity) => {
+        return activity.isBlocking || activity.isStart ? '#7ab02c' : activity.isEvent ? '#3a8acd' : '#7ab02c';
+    }
+
     protected getSourceEndpointOptions = (activity: Workflows.Activity, outcome: Workflows.Outcome): EndpointOptions => {
         // The definition of source endpoints.
+        const paintColor = this.getEndpointColor(activity);
         return {
             endpoint: 'Dot',
             anchor: 'Continuous',
             paintStyle: {
-                stroke: '#7AB02C',
-                fill: '#7AB02C',
+                stroke: paintColor,
+                fill: paintColor,
                 radius: 7,
                 strokeWidth: 1
             },

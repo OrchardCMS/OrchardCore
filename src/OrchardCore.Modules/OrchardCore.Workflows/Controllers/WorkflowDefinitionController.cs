@@ -20,6 +20,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Scripting;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -286,6 +287,7 @@ namespace OrchardCore.Workflows.Controllers
                 Y = x.ActivityRecord.Y,
                 Name = x.ActivityRecord.Name,
                 IsStart = x.ActivityRecord.IsStart,
+                IsEvent = x.Activity.IsEvent(),
                 Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray()
             });
             var workflowDefinitionData = new
