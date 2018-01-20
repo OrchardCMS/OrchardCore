@@ -20,7 +20,7 @@ namespace OrchardCore.Media.Processing
     {
         public static string GetMediaResizeUrl(string path, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)
         {
-            if (string.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path) || (!width.HasValue && !height.HasValue))
             {
                 return path;
             }
