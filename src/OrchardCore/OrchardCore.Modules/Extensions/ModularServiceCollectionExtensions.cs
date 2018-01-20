@@ -1,14 +1,13 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.Modules;
-using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Descriptor.Settings;
+using OrchardCore.Modules;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -21,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddWebHost();
             services.AddManifestDefinition("Module.txt", "module");
-            services.AddExtensionLocation("Packages");
+            services.AddExtensionLocation(Application.ModulesPath);
 
             // ModularTenantRouterMiddleware which is configured with UseModules() calls UserRouter() which requires the routing services to be
             // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
@@ -41,22 +40,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton(_ => services);
 
             return services;
-        }
-
-        /// <summary>
-        /// Registers a <see cref="IConfiguration"/> object that can be used by the modules.
-        /// </summary>
-        /// <returns></returns>
-        public static ModularServiceCollection WithConfiguration(
-            this ModularServiceCollection modules, IConfiguration configuration)
-        {
-            // Register the configuration object for modules to register options with it
-            if (configuration != null)
-            {
-                modules.Configure(services => services.AddSingleton<IConfiguration>(configuration));
-            }
-
-            return modules;
         }
 
         /// <summary>
@@ -123,6 +106,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddLocalization();
             services.AddHostingShellServices();
             services.AddExtensionManagerHost();
+            services.AddWebEncoders();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IClock, Clock>();

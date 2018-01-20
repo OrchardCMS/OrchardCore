@@ -1,6 +1,6 @@
 # Queries (OrchardCore.Queries)
 
-The queries module provide a management UI and APIs for querying data.
+The queries module provides a management UI and APIs for querying data.
 
 ## Creating custom query sources
 
@@ -92,7 +92,7 @@ To access a named query, use the name as the input.
 
 
 ```
-{% assign recentBlogPosts = "RecentBlogPosts" | query }
+{% assign recentBlogPosts = "RecentBlogPosts" | query %}
 {% for item in recentBlogPosts %}
 {{ item | display_text }}
 {% endfor %}
@@ -101,3 +101,106 @@ To access a named query, use the name as the input.
 The example above will iterate over all the results of the query name `RecentBlogPosts` and display the text representing
 the content item. Any available property on the results of the queries can be used. This example assumes the results
 will be content items.
+
+# Razor Helpers
+
+The `QueryAsync` and `ContentQueryAsync` OrchardRazorHelper extension methods (in the `OrchardCore.Queries` and `OrchardCore.ContentManagement` namespaces respectively) allow you to run queries directly from razor pages.
+
+You can use the `DisplayAsync` extension method (also in `OrchardCore.ContentManagement`) to display the content items returned from `ContentQueryAsync`.
+
+For example, to run a query called LatestBlogPosts, and display the results:
+
+```
+@foreach (var contentItem in await OrchardCore.ContentQueryAsync("AllContent"))
+{
+    @await OrchardCore.DisplayAsync(contentItem)
+}
+```
+
+# Executing SQL Queries
+
+## RDBMS support
+Because RDMBS vendors support different SQL flavors this module will analyze the query you defined and render a specific one based on the RDBMS that is used.
+This also allows the queries to be exported and shared across website instances even if they run on different RDBMS.
+
+## Examples
+
+Here is an example of a query that returns all published Blog Posts:
+
+```sql
+    select DocumentId
+    from ContentItemIndex 
+    where Published = true and ContentType = 'BlogPost'
+```
+
+By selecting the "Return documents" options, the content items associated with the resulting `DocumentId` values are loaded.
+
+The example below returns a custom set of value instead of content items:
+
+```sql
+select 
+    month(CreatedUtc) as [Month], 
+    year(CreatedUtc) as [Year],
+    day(CreatedUtc) as [Day],
+    count(*) as [Count]
+from ContentItemIndex 
+where Published = true and ContentType = 'BlogPost'
+group by day(CreatedUtc), month(CreatedUtc), year(CreatedUtc)
+```
+
+## Parameters
+
+Parameters can be provided when running queries. Parameters are safe to use as they will always be parsed before 
+being included in a query. The syntax of a parameter is 
+
+`@name:default_value`
+
+Where `name` is the name of the parameter, and `default_value` an expression (usually a literal) to use in case
+the parameter is not defined.
+
+The following example load the document ids for a parameterized content type.
+
+```sql
+select DocumentId
+from ContentItemIndex 
+where Published = true and ContentType = @contenttype:'BlogPost'
+```
+
+If the `contenttype` parameter is not passed when the query is invoked, then the default value is used.
+
+Parameter names are case-sensitive.
+
+## Templates
+
+A sql query is actually a Liquid template. This allows your queries to be shaped based on the parameters it gets. 
+When injecting user provided value, be sure to encode these such that they can't be exploited. It is recommended
+ot use parameters to inject values in the queries, and only use Liquid templates to change the shape of the query.
+
+This example checks that a `limit` parameter is provided and if so uses it.
+
+```
+{% if limit > 0 %}
+    select ... limit @limit
+{% else %}
+    select ... 
+{% endif %}
+```
+
+## Paging
+
+Use `LIMIT [number]` and `OFFSET [number]` to define paged results.
+
+These statements will be converted automatically based on the actual RDBMS.
+
+## Helper functions
+
+The SQL parser is also able to convert some specific function and convert them to the intended dialect.
+
+| Name             | Description                        |
+| ---------------- |----------------------------------- |
+| `second(_date_)` | Returns the seconds part of a date |
+| `minute(_date_)` | Returns the minutes part of a date |
+| `hour(_date_)`   | Returns the hours part of a date   |
+| `day(_date_)`    | Returns the days part of a date    |
+| `month(_date_)`  | Returns the months part of a date  |
+| `year(_date_)`   | Returns the years part of a date   |

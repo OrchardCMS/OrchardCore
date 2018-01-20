@@ -10,7 +10,7 @@
 {
   "generateSourceMaps": false,
   "inputs": [
-      "../../OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/Js/tether.js",
+      "../../OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/Js/popper.js",
       "../../OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/Js/bootstrap.js",
       "Assets/js/*.js"
   ],

@@ -13,12 +13,12 @@ namespace OrchardCore.DisplayManagement.Views
     {
         private string _defaultLocation;
         private IDictionary<string,string> _otherLocations;
-        public string _differentiator;
+        private string _differentiator;
         private string _prefix;
         private string _cacheId;
         private readonly string _shapeType;
         private readonly Func<IBuildShapeContext, Task<IShape>> _shapeBuilder;
-        private readonly Func<dynamic, Task> _processing;
+        private readonly Func<IShape, Task> _processing;
         private Action<CacheContext> _cache;
         private string _groupId;
         private Action<ShapeDisplayContext> _displaying;
@@ -28,7 +28,7 @@ namespace OrchardCore.DisplayManagement.Views
         {
         }
 
-        public ShapeResult(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<dynamic, Task> processing)
+        public ShapeResult(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> processing)
         {
             // The shape type is necessary before the shape is created as it will drive the placement
             // resolution which itself can prevent the shape from being created.
@@ -50,11 +50,6 @@ namespace OrchardCore.DisplayManagement.Views
 
         private async Task ApplyImplementationAsync(BuildShapeContext context, string displayType)
         {
-            if (String.IsNullOrEmpty(_differentiator))
-            {
-                _differentiator = _prefix;
-            }
-
             // Look into specific implementations of placements (like placement.info files)
             var placement = context.FindPlacement(_shapeType, _differentiator, displayType, context);
 
@@ -105,6 +100,7 @@ namespace OrchardCore.DisplayManagement.Views
 
             ShapeMetadata newShapeMetadata = newShape.Metadata;
             newShapeMetadata.Prefix = _prefix;
+            newShapeMetadata.Name = _differentiator ?? _shapeType;
             newShapeMetadata.DisplayType = displayType;
             newShapeMetadata.PlacementSource = placement.Source;
             newShapeMetadata.Tab = placement.GetTab();
@@ -135,19 +131,16 @@ namespace OrchardCore.DisplayManagement.Views
                 newShapeMetadata.Wrappers.Clear();
             }
 
-            if (placement.Alternates != null)
+            if (placement != null)
             {
-                foreach (var alternate in placement?.Alternates)
+                if (placement.Alternates != null)
                 {
-                    newShapeMetadata.Alternates.Add(alternate);
+                    newShapeMetadata.Alternates.AddRange(placement.Alternates);
                 }
-            }
 
-            if (placement.Wrappers != null)
-            {
-                foreach (var wrapper in placement.Wrappers)
+                if (placement.Wrappers != null)
                 {
-                    newShapeMetadata.Wrappers.Add(wrapper);
+                    newShapeMetadata.Wrappers.AddRange(placement.Wrappers);
                 }
             }
 

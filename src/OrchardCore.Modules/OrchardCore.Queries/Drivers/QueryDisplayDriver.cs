@@ -4,16 +4,19 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Queries.ViewModels;
 
 namespace OrchardCore.Queries.Drivers
 {
     public class QueryDisplayDriver : DisplayDriver<Query>
     {
+        private readonly IQueryManager _queryManager;
         private readonly IStringLocalizer<QueryDisplayDriver> S;
 
-        public QueryDisplayDriver(IStringLocalizer<QueryDisplayDriver> stringLocalizer)
+        public QueryDisplayDriver(IQueryManager queryManager, IStringLocalizer<QueryDisplayDriver> stringLocalizer)
         {
+            _queryManager = queryManager;
             S = stringLocalizer;
         }
 
@@ -60,6 +63,21 @@ namespace OrchardCore.Queries.Drivers
             if (String.IsNullOrEmpty(model.Name))
             {
                 updater.ModelState.AddModelError(nameof(model.Name), S["Name is required"]);
+            }
+
+            var safeName = model.Name.ToSafeName();
+            if (String.IsNullOrEmpty(safeName) || model.Name != safeName)
+            {
+                updater.ModelState.AddModelError(nameof(model.Name), S["Name contains illegal characters"]);
+            }
+            else
+            {
+                var existing = await _queryManager.GetQueryAsync(safeName);
+
+                if (existing != null && existing != model)
+                {
+                    updater.ModelState.AddModelError(nameof(model.Name), S["A query with the same name already exists"]);
+                }
             }
 
             return await EditAsync(model, updater);

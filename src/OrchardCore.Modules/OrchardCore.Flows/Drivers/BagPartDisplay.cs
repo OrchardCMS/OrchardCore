@@ -7,8 +7,8 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
@@ -34,10 +34,13 @@ namespace OrchardCore.Flows.Drivers
 
         public override IDisplayResult Display(BagPart bagPart, BuildPartDisplayContext context)
         {
-            return Shape<BagPartViewModel>("BagPart", m =>
+            var hasItems = bagPart.ContentItems.Any();
+
+            return Shape<BagPartViewModel>(hasItems ? "BagPart" : "BagPart_Empty", m =>
             {
                 m.BagPart = bagPart;
                 m.BuildPartDisplayContext = context;
+                m.Settings = context.TypePartDefinition.Settings.ToObject<BagPartSettings>();
             })
             .Location("Detail", "Content:5");
         }
@@ -55,7 +58,6 @@ namespace OrchardCore.Flows.Drivers
         public override async Task<IDisplayResult> UpdateAsync(BagPart part, BuildPartEditorContext context)
         {
             var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
-
             var model = new BagPartEditViewModel { BagPart = part };
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
@@ -64,9 +66,8 @@ namespace OrchardCore.Flows.Drivers
 
             for (var i = 0; i < model.Prefixes.Length; i++)
             {
-                var contentItem = _contentManager.New(model.ContentTypes[i]);
-
-                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, htmlFieldPrefix: model.Prefixes[i]);
+                var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
+                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
 
                 part.ContentItems.Add(contentItem);
             }
@@ -78,6 +79,6 @@ namespace OrchardCore.Flows.Drivers
         {
             var settings = typePartDefinition.Settings.ToObject<BagPartSettings>();
             return settings.ContainedContentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
-        }        
+        }
     }
 }

@@ -5,7 +5,7 @@
 Dynamic Cache extends Shape events to provide caching capabilities at the shapes level. Cached shapes can be composed of 
 other cached shapes.
 
-Cached shapes are stored using the `IDynamicCache` service. It's default implementation is based on `IDistributedCache` which is 
+Cached shapes are stored using the `IDynamicCache` service. Its default implementation is based on `IDistributedCache` which is 
 itself based on `IMemoryCache`.
 
 ### Example:
@@ -78,7 +78,7 @@ Example: `myShape.Cache("myshape")`
 | `RemoveTag(string)` | Removes the specified tag. |
 
 !!! note
-    `AddDependency` is different that `AddContext` as it doesn't store multiple values for each context, but invalidates
+    `AddDependency` differs from `AddContext` in that it doesn't store multiple values for each context, but invalidates
 the cached shape content when the value of the context varies. Internally they share the same implementation as the physical
 cache key will contain the dependency context value.
 

@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Display\OrchardCore.ContentManagement.Display.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Deployment.Abstractions\OrchardCore.Deployment.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Navigation\OrchardCore.Environment.Navigation.csproj" />
@@ -18,35 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="Irony.Core" Version="1.0.7" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Module.txt">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-      <Pack>true</Pack>
-    </None>
-    <None Update="Views\Admin\Edit.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-    <None Update="Views\Admin\Create.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-    <None Update="Views\Admin\Index.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-    <None Update="Views\SqlQuery.Edit.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-    <None Update="Views\Query - Copy.Summary.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-    <None Update="Views\Query-Sql.Link.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-    <None Update="Views\_ViewImports.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftExtensionsDependencyInjectionPackageVersion)" />
   </ItemGroup>
 
 </Project>

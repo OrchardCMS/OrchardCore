@@ -4,7 +4,7 @@
 
 The Resources module provides commonly used resources like JavaScript libraries and CSS files. It also enables the Resource Manager
 so any module can describe what resources are necessary on any page or component. When the full page is rendered all the required
-resources are computed and custom `<script>` and `<link>` tags are rendered accordingly. You can also regsiter custom `<meta>` tags.
+resources are computed and custom `<script>` and `<link>` tags are rendered accordingly. You can also register custom `<meta>` tags.
 
 ## Named Resources
 
@@ -15,10 +15,10 @@ and optionally a version. The __OrchardCore.Resources__ modules provides some co
 | ---- | ---- | -------- | ------------ |
 | jQuery | Script | 1.12.4 | - |
 | jQuery | Script | 2.2.4 | - |
-| jQuery | Script | 3.1.1 | - |
-| Bootstrap | Script | 3.3.7, 4.0.0 (4.0.0-alpha.5) | jQuery |
-| Bootstrap | Style | 3.3.7, 4.0.0 (4.0.0-alpha.5) | - |
-| jquery-ui | Script | 1.12.1 | jQuery |
+| jQuery | Script | 3.2.1 | - |
+| Bootstrap | Script | 3.3.7, 4.0.0 (4.0.0-beta) | jQuery |
+| Bootstrap | Style | 3.3.7, 4.0.0 (4.0.0-beta) | - |
+| jQuery-ui | Script | 1.12.1 | jQuery |
 | font-awesome | Style | 4.7.0 | - |
 
 ## Usage
@@ -54,7 +54,7 @@ settings.AtFoot();
 settings.UseVersion("3.3");
 ```
 
-This will use the latest availabe version between `3.3` and `3.4`. If the version is not available an exception is thrown.
+This will use the latest available version between `3.3` and `3.4`. If the version is not available an exception is thrown.
 
 #### Register custom script
 
@@ -108,7 +108,7 @@ You can force a resource to be used from its CDN. By default the behavior is def
 
 ##### Use specific version
 This example will use the latest available version with a Major version of `3`, like `3.3.7`. If the version is not specified
-the greatest one is always used.
+the latest one is always used.
 
 ```html
 <script asp-name="bootstrap" version="3"></script>

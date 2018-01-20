@@ -18,9 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNet.Security.OAuth.Validation" Version="2.0.0-rc1-0286" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="OpenIddict" Version="2.0.0-preview1-0657" />
+    <PackageReference Include="AspNet.Security.OAuth.Validation" Version="$(AspNetContribSecurityOAuthValidationPackageVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerPackageVersion)" />
+    <PackageReference Include="OpenIddict" Version="$(OpenIddictVersion)" />
   </ItemGroup>
 
 </Project>

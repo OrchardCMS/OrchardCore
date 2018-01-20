@@ -75,7 +75,7 @@ namespace OrchardCore.ContentPreview.Controllers
             }
 
             var contentItemType = Request.Form["ContentItemType"];
-            var contentItem = _contentManager.New(contentItemType);
+            var contentItem = await _contentManager.NewAsync(contentItemType);
 
             // Assign the ids from the currently edited item so that validation thinks
             // it's working on the same item. For instance if drivers are checking name unicity
@@ -92,7 +92,8 @@ namespace OrchardCore.ContentPreview.Controllers
             contentItem.ModifiedUtc = _clock.UtcNow;
             contentItem.PublishedUtc = _clock.UtcNow;
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this);
+            // TODO: we should probably get this value from the main editor as it might impact validators
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
 
             if (!ModelState.IsValid)
             {

@@ -11,7 +11,7 @@ namespace OrchardCore.Lists.Feeds
     {
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {
-            return Shape("ListPart_Feed", shape =>
+            return Shape("ListPartFeed", shape =>
             {
                 shape.ContentItem = listPart.ContentItem;
             })

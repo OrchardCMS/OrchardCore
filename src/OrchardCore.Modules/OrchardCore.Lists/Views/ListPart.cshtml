@@ -1,12 +1,14 @@
-﻿@{
-    IEnumerable<dynamic> contentItems = Model.ContentItems;
-}
+@model OrchardCore.Lists.ViewModels.ListPartViewModel
 
-@if (contentItems.Any())
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+@if (Model.ContentItems.Any())
 {
 <ul class="list-group">
-    @foreach (var contentItemSummary in contentItems)
+    @foreach (var contentItem in Model.ContentItems)
     {
+        var contentItemSummary = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "Summary", Model.Context.GroupId);
+
         <li class="list-group-item">
             @await DisplayAsync(contentItemSummary)
         </li>

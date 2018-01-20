@@ -15,6 +15,7 @@ namespace OrchardCore.DisplayManagement.Razor
     {
         private dynamic _displayHelper;
         private IShapeFactory _shapeFactory;
+        private OrchardRazorHelper _orchardHelper;
 
         private void EnsureDisplayHelper()
         {
@@ -30,6 +31,15 @@ namespace OrchardCore.DisplayManagement.Razor
             if (_shapeFactory == null)
             {
                 _shapeFactory = Context.RequestServices.GetService<IShapeFactory>();
+            }
+        }
+
+        private void EnsureOrchardHelper()
+        {
+            if (_orchardHelper == null)
+            {
+                EnsureDisplayHelper();
+                _orchardHelper = new OrchardRazorHelper(Context, _displayHelper);
             }
         }
 
@@ -72,6 +82,15 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             EnsureDisplayHelper();
             return (Task<IHtmlContent>)_displayHelper(shape);
+        }
+
+        public OrchardRazorHelper OrchardCore
+        {
+            get
+            {
+                EnsureOrchardHelper();
+                return _orchardHelper;
+            }
         }
 
         private dynamic _themeLayout;

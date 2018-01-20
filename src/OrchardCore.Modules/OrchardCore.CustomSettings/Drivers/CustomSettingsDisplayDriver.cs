@@ -27,7 +27,7 @@ namespace OrchardCore.Layers.Drivers
         private readonly Lazy<IList<ContentTypeDefinition>> _contentTypeDefinitions;
 
         public CustomSettingsDisplayDriver(
-            CustomSettingsService customSettingsService, 
+            CustomSettingsService customSettingsService,
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager)
         {
@@ -37,7 +37,7 @@ namespace OrchardCore.Layers.Drivers
             _contentTypeDefinitions = new Lazy<IList<ContentTypeDefinition>>(() => _customSettingsService.GetSettingsTypes());
         }
 
-        public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
             JToken property;
 
@@ -45,27 +45,30 @@ namespace OrchardCore.Layers.Drivers
 
             if (contentTypeDefinition == null)
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
             ContentItem contentItem;
+            bool isNew;
 
             if (!site.Properties.TryGetValue(contentTypeDefinition.Name, out property))
             {
-                contentItem = _contentManager.New(contentTypeDefinition.Name);
+                contentItem = await _contentManager.NewAsync(contentTypeDefinition.Name);
+                isNew = true;
             }
             else
             {
-                // create existing content item
+                // Create existing content item
                 contentItem = property.ToObject<ContentItem>();
+                isNew = false;
             }
 
             var shape = Shape<CustomSettingsEditViewModel>("CustomSettings", async ctx =>
             {
-                ctx.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater);
+                ctx.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
             }).Location("Content:3").OnGroup(contentTypeDefinition.Name);
 
-            return Task.FromResult<IDisplayResult>(shape);
+            return shape;
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
@@ -80,18 +83,21 @@ namespace OrchardCore.Layers.Drivers
             }
 
             ContentItem contentItem;
+            bool isNew;
 
             if (!site.Properties.TryGetValue(contentTypeDefinition.Name, out property))
             {
-                contentItem = _contentManager.New(contentTypeDefinition.Name);
+                contentItem = await _contentManager.NewAsync(contentTypeDefinition.Name);
+                isNew = true;
             }
             else
             {
-                // create existing content item
+                // Create existing content item
                 contentItem = property.ToObject<ContentItem>();
+                isNew = false;
             }
 
-            await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater);
+            await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew);
 
             site.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem);
 

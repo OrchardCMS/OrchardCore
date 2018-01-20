@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -17,7 +18,7 @@ namespace OrchardCore.Media.Filters
         public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var url = input.ToStringValue();
-            var imageUrl = _mediaFileStore.GetPublicUrl(url);
+            var imageUrl = _mediaFileStore.MapPathToPublicUrl(url);
 
             return Task.FromResult<FluidValue>(new StringValue(imageUrl ?? url));
         }
@@ -28,19 +29,12 @@ namespace OrchardCore.Media.Filters
         public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var url = input.ToStringValue();
-            var alt = arguments.At(0).Or(arguments["tag"]);
-            var css = arguments.At(1).Or(arguments["class"]);
 
             var imgTag = $"<img src=\"{url}\"";
 
-            if (!alt.IsNil())
+            foreach (var name in arguments.Names)
             {
-                imgTag += $" alt=\"{alt.ToStringValue()}\"";
-            }
-
-            if (!css.IsNil())
-            {
-                imgTag += $" class=\"{css.ToStringValue()}\"";
+                imgTag += $" {name.Replace("_", "-")}=\"{arguments[name].ToStringValue()}\"";
             }
 
             imgTag += " />";
@@ -60,9 +54,9 @@ namespace OrchardCore.Media.Filters
                 url += "?";
             }
 
-            var width = arguments.At(0).Or(arguments["width"]);
-            var height = arguments.At(1).Or(arguments["height"]);
-            var mode = arguments.At(2).Or(arguments["mode"]);
+            var width = arguments["width"].Or(arguments.At(0));
+            var height = arguments["height"].Or(arguments.At(1));
+            var mode = arguments["mode"];
 
             if (!width.IsNil())
             {

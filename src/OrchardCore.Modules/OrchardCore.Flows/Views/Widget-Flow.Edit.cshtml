@@ -23,7 +23,7 @@
                            class="dropdown-item insert-widget btn-sm" 
                            data-target-id="@Model.TargetId" 
                            data-prefixes-name="@Model.PrefixesName"
-                           data-flowmetadata="false"
+                           data-flowmetadata="true"
                            data-contenttypes-name="@Model.ContentTypesName"
                            data-widget-type="@type.Name" 
                            href="javascript:;">@type.DisplayName</a>
@@ -33,7 +33,7 @@
             <button type="button" class="btn btn-secondary widget-delete" itemprop="RemoveUrl"><i class="fa fa-trash" aria-hidden="true"></i></button>
         </div>
     </div>
-    <div class="widget-editor-body card-block">
+    <div class="widget-editor-body card-body">
         <div class="col-12">
         @if (Model.Content != null)
         {

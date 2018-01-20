@@ -37,21 +37,23 @@ namespace OrchardCore.Queries.Sql
             var sqlQuery = query as SqlQuery;
 
             var templateContext = new TemplateContext();
-            foreach (var parameter in parameters)
+
+            if (parameters != null)
             {
-                templateContext.SetValue(parameter.Key, parameter.Value);
+                foreach (var parameter in parameters)
+                {
+                    templateContext.SetValue(parameter.Key, parameter.Value);
+                }
             }
 
             var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, templateContext);
 
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             var dialect = SqlDialectFactory.For(connection);
-
-            var results = new List<JObject>();
-
-            if (!SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, out var rawQuery, out var rawParameters, out var messages))
+            
+            if (!SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
-                return results;
+                return new object[0];
             }
                         
             if (sqlQuery.ReturnDocuments)
@@ -61,15 +63,10 @@ namespace OrchardCore.Queries.Sql
                 using (connection)
                 {
                     connection.Open();
-                    documentIds = await connection.QueryAsync<int>(rawQuery, rawParameters);
+                    documentIds = await connection.QueryAsync<int>(rawQuery, parameters);
                 }
 
-                var documents = await _session.GetAsync<object>(documentIds.ToArray());
-
-                foreach (var document in documents)
-                {
-                    results.Add(JObject.FromObject(document));
-                }
+                return await _session.GetAsync<object>(documentIds.ToArray());
             }
             else
             {
@@ -78,16 +75,18 @@ namespace OrchardCore.Queries.Sql
                 using (connection)
                 {
                     connection.Open();
-                    queryResults = await connection.QueryAsync(rawQuery, rawParameters);
+                    queryResults = await connection.QueryAsync(rawQuery);
                 }
+
+                var results = new List<JObject>();
 
                 foreach (var document in queryResults)
                 {
                     results.Add(JObject.FromObject(document));
                 }
-            }
 
-            return results.ToArray();
+                return results;
+            }
         }
     }
 }

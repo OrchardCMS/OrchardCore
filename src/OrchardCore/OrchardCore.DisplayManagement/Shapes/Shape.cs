@@ -83,25 +83,23 @@ namespace OrchardCore.DisplayManagement.Shapes
 			return this;
 		}
 
-		public void Remove(string shapeType)
+		public void Remove(string shapeName)
 		{
-			for (var i = 0; i < _items.Count; i++)
+			for (var i = _items.Count - 1; i >= 0 ; i--)
 			{
-				var shape = _items[i] as IShape;
-				if (shape != null && shape.Metadata.Type == shapeType)
-				{
-					_items.RemoveAt(i);
+                if (_items[i] is IShape shape && shape.Metadata.Name == shapeName)
+                {
+                    _items.RemoveAt(i);
 					return;
 				}
 			}
 		}
 
-		public IShape Named(string shapeType)
+		public IShape Named(string shapeName)
 		{
 			for (var i = 0; i < _items.Count; i++)
 			{
-				var shape = _items[i] as IShape;
-				if (shape != null && shape.Metadata.Type == shapeType)
+                if (_items[i] is IShape shape && shape.Metadata.Name == shapeName)
 				{
 					return shape;
 				}

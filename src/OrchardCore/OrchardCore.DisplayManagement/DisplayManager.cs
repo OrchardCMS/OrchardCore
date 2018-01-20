@@ -38,7 +38,7 @@ namespace OrchardCore.DisplayManagement
 
         ILogger Logger { get; set; }
 
-        public async Task<dynamic> BuildDisplayAsync(TModel model, IUpdateModel updater, string displayType = null, string group = null)
+        public async Task<IShape> BuildDisplayAsync(TModel model, IUpdateModel updater, string displayType = null, string group = null)
         {
             var actualShapeType = typeof(TModel).Name;
 
@@ -78,7 +78,7 @@ namespace OrchardCore.DisplayManagement
             return shape;
         }
 
-        public async Task<dynamic> BuildEditorAsync(TModel model, IUpdateModel updater, string group = null)
+        public async Task<IShape> BuildEditorAsync(TModel model, IUpdateModel updater, bool isNew, string group = null)
         {
             var actualShapeType = typeof(TModel).Name + "_Edit";
 
@@ -91,6 +91,7 @@ namespace OrchardCore.DisplayManagement
             var context = new BuildEditorContext(
                 shape,
                 group ?? "",
+                isNew,
                 "",
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
@@ -111,7 +112,7 @@ namespace OrchardCore.DisplayManagement
             return shape;
         }
 
-        public async Task<dynamic> UpdateEditorAsync(TModel model, IUpdateModel updater, string group = null)
+        public async Task<IShape> UpdateEditorAsync(TModel model, IUpdateModel updater, bool isNew, string group = null)
         {
             var actualShapeType = typeof(TModel).Name + "_Edit";
 
@@ -124,6 +125,7 @@ namespace OrchardCore.DisplayManagement
             var context = new UpdateEditorContext(
                 shape,
                 group ?? "",
+                isNew,
                 "",
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),

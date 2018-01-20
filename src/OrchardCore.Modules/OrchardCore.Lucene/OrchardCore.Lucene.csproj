@@ -25,16 +25,7 @@
   <ItemGroup>
     <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00004" />
     <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-beta00004" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Views\LuceneQuery.Edit.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-    <None Update="Views\Query-Lucene.Link.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftExtensionsDependencyInjectionPackageVersion)" />
   </ItemGroup>
 
 </Project>

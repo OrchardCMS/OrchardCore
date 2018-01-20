@@ -10,7 +10,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Autoroute.Settings
 {
-    public class AutoroutePartSettingsDisplayDriver : ContentTypePartDisplayDriver
+    public class AutoroutePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {

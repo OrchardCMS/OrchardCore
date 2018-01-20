@@ -3,7 +3,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 
 namespace OrchardCore.Mvc.RazorPages
 {
@@ -30,8 +31,11 @@ namespace OrchardCore.Mvc.RazorPages
             {
                 if (_paths == null)
                 {
-                    var shellFeaturesManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IShellFeaturesManager>();
-                    _paths = shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
+                    var extensionManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IExtensionManager>();
+                    var shellDescriptor = _httpContextAccessor.HttpContext.RequestServices.GetService<ShellDescriptor>();
+
+                    // Pages paths of all available modules which are enabled in the current shell.
+                    _paths = extensionManager.GetFeatures().Where(f => shellDescriptor.Features.Any(sf => sf.Id == f.Id))
                         .Select(f => '/' + f.Extension.SubPath + "/Pages/").Distinct();
                 }
             }

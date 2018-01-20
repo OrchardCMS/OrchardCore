@@ -20,6 +20,6 @@
 
 <script at="Foot">
     $(function () {
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "text/x-sql", lineNumbers: true, viewportMargin: Infinity });
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "text/x-pgsql", lineNumbers: true, viewportMargin: Infinity });
     });
 </script>

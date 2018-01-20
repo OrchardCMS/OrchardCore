@@ -107,16 +107,20 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         private static Func<object, string, object> _getter => (o, n) =>
         {
-            if ((o as Shape).Properties.TryGetValue(n, out object result))
+            if (o is Shape shape)
             {
-                return result;
-            }
-
-            foreach (var item in (o as Shape).Items)
-            {
-                if (item is IShape && item.Metadata.Type == n)
+                if (shape.Properties.TryGetValue(n, out object result))
                 {
-                    return item;
+                    return result;
+                }
+
+                foreach (var item in shape.Items)
+                {
+                    // Resolve Model.Content.MyNamedPart
+                    if (item is IShape itemShape && itemShape.Metadata.Name == n)
+                    {
+                        return item;
+                    }
                 }
             }
 
@@ -198,8 +202,12 @@ namespace OrchardCore.DisplayManagement.Liquid
                 await handler.RenderingAsync(context);
             }
 
-            context.MemberAccessStrategy.Register(displayContext.Value.GetType());
-            context.LocalScope.SetValue("Model", displayContext.Value);
+            var model = displayContext.Value;
+            if (model != null)
+            {
+                context.MemberAccessStrategy.Register(model.GetType());
+                context.LocalScope.SetValue("Model", model);
+            }
         }
     }
 }

@@ -8,16 +8,15 @@ using AspNet.Security.OpenIdConnect.Primitives;
 using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OpenIddict.Core;
-using OrchardCore.Mvc.ActionConstraints;
-using OrchardCore.OpenId.Models;
 using OrchardCore.OpenId.Services;
+using OrchardCore.OpenId.Services.Managers;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Users;
@@ -27,7 +26,7 @@ namespace OrchardCore.OpenId.Controllers
     [Authorize]
     public class AccessController : Controller
     {
-        private readonly OpenIddictApplicationManager<OpenIdApplication> _applicationManager;
+        private readonly OpenIdApplicationManager _applicationManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
         private readonly SignInManager<IUser> _signInManager;
         private readonly IOpenIdService _openIdService;
@@ -36,7 +35,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IStringLocalizer<AccessController> T;
 
         public AccessController(
-            OpenIddictApplicationManager<OpenIdApplication> applicationManager,
+            OpenIdApplicationManager applicationManager,
             IOptions<IdentityOptions> identityOptions,
             IStringLocalizer<AccessController> localizer,
             IOpenIdService openIdService,
@@ -85,7 +84,8 @@ namespace OrchardCore.OpenId.Controllers
                 });
             }
 
-            if (request.HasScope(OpenIdConnectConstants.Scopes.OfflineAccess) && !application.AllowRefreshTokenFlow)
+            if (request.HasScope(OpenIdConnectConstants.Scopes.OfflineAccess) &&
+                !await _applicationManager.IsRefreshTokenFlowAllowedAsync(application, HttpContext.RequestAborted))
             {
                 return View("Error", new ErrorViewModel
                 {
@@ -94,7 +94,8 @@ namespace OrchardCore.OpenId.Controllers
                 });
             }
 
-            if (request.IsAuthorizationCodeFlow() && !application.AllowAuthorizationCodeFlow)
+            if (request.IsAuthorizationCodeFlow() &&
+                !await _applicationManager.IsAuthorizationCodeFlowAllowedAsync(application, HttpContext.RequestAborted))
             {
                 return View("Error", new ErrorViewModel
                 {
@@ -103,7 +104,8 @@ namespace OrchardCore.OpenId.Controllers
                 });
             }
 
-            if (request.IsImplicitFlow() && !application.AllowImplicitFlow)
+            if (request.IsImplicitFlow() &&
+                !await _applicationManager.IsImplicitFlowAllowedAsync(application, HttpContext.RequestAborted))
             {
                 return View("Error", new ErrorViewModel
                 {
@@ -112,7 +114,8 @@ namespace OrchardCore.OpenId.Controllers
                 });
             }
 
-            if (request.IsHybridFlow() && !application.AllowHybridFlow)
+            if (request.IsHybridFlow() &&
+                !await _applicationManager.IsHybridFlowAllowedAsync(application, HttpContext.RequestAborted))
             {
                 return View("Error", new ErrorViewModel
                 {
@@ -133,14 +136,14 @@ namespace OrchardCore.OpenId.Controllers
                 }
             }
 
-            if (application.SkipConsent)
+            if (await _applicationManager.IsConsentRequiredAsync(application, HttpContext.RequestAborted))
             {
                 return await IssueAccessIdentityTokensAsync(request);
             }
 
             return View(new AuthorizeViewModel
             {
-                ApplicationName = application.DisplayName,
+                ApplicationName = await _applicationManager.GetDisplayNameAsync(application, HttpContext.RequestAborted),
                 RequestId = request.RequestId,
                 Scope = request.Scope
             });
@@ -205,7 +208,8 @@ namespace OrchardCore.OpenId.Controllers
                 });
             }
 
-            if (request.HasScope(OpenIdConnectConstants.Scopes.OfflineAccess) && !application.AllowRefreshTokenFlow)
+            if (request.HasScope(OpenIdConnectConstants.Scopes.OfflineAccess) &&
+                !await _applicationManager.IsRefreshTokenFlowAllowedAsync(application, HttpContext.RequestAborted))
             {
                 return BadRequest(new OpenIdConnectResponse
                 {
@@ -216,7 +220,7 @@ namespace OrchardCore.OpenId.Controllers
 
             if (request.IsPasswordGrantType())
             {
-                if (!application.AllowPasswordFlow)
+                if (!await _applicationManager.IsPasswordFlowAllowedAsync(application, HttpContext.RequestAborted))
                 {
                     return BadRequest(new OpenIdConnectResponse
                     {
@@ -230,7 +234,7 @@ namespace OrchardCore.OpenId.Controllers
 
             if (request.IsClientCredentialsGrantType())
             {
-                if (!application.AllowClientCredentialsFlow)
+                if (!await _applicationManager.IsClientCredentialsFlowAllowedAsync(application, HttpContext.RequestAborted))
                 {
                     return BadRequest(new OpenIdConnectResponse
                     {
@@ -244,7 +248,7 @@ namespace OrchardCore.OpenId.Controllers
 
             if (request.IsAuthorizationCodeGrantType())
             {
-                if (!application.AllowAuthorizationCodeFlow)
+                if (!await _applicationManager.IsAuthorizationCodeFlowAllowedAsync(application, HttpContext.RequestAborted))
                 {
                     return BadRequest(new OpenIdConnectResponse
                     {
@@ -258,7 +262,7 @@ namespace OrchardCore.OpenId.Controllers
 
             if (request.IsRefreshTokenGrantType())
             {
-                if (!application.AllowRefreshTokenFlow)
+                if (!await _applicationManager.IsRefreshTokenFlowAllowedAsync(application, HttpContext.RequestAborted))
                 {
                     return BadRequest(new OpenIdConnectResponse
                     {
@@ -291,19 +295,19 @@ namespace OrchardCore.OpenId.Controllers
                 OpenIdConnectConstants.Claims.Name,
                 OpenIdConnectConstants.Claims.Role);
 
-            identity.AddClaim(OpenIdConnectConstants.Claims.Subject, application.ClientId);
+            identity.AddClaim(OpenIdConnectConstants.Claims.Subject, request.ClientId);
             identity.AddClaim(OpenIdConnectConstants.Claims.Name,
                 await _applicationManager.GetDisplayNameAsync(application, HttpContext.RequestAborted),
                 OpenIdConnectConstants.Destinations.AccessToken,
                 OpenIdConnectConstants.Destinations.IdentityToken);
 
-            foreach (var roleName in application.RoleNames)
+            foreach (var role in await _applicationManager.GetRolesAsync(application, HttpContext.RequestAborted))
             {
-                identity.AddClaim(identity.RoleClaimType, roleName,
+                identity.AddClaim(identity.RoleClaimType, role,
                     OpenIdConnectConstants.Destinations.AccessToken,
                     OpenIdConnectConstants.Destinations.IdentityToken);
 
-                foreach (var claim in await _roleManager.GetClaimsAsync(await _roleManager.FindByIdAsync(roleName)))
+                foreach (var claim in await _roleManager.GetClaimsAsync(await _roleManager.FindByIdAsync(role)))
                 {
                     identity.AddClaim(claim.Type, claim.Value, OpenIdConnectConstants.Destinations.AccessToken,
                                                                OpenIdConnectConstants.Destinations.IdentityToken);

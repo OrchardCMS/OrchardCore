@@ -1,9 +1,8 @@
-﻿Name: Resources
+Name: Resources
 AntiForgery: enabled
 Author: The Orchard Team
 Website: http://orchardproject.net
 Version: 2.0.x
 OrchardVersion: 2.0.x
-Description:
-FeatureDescription: Resources.
+Description: Resources.
 Category: Theming

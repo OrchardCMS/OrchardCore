@@ -1,11 +1,10 @@
-﻿Name: Contents
+Name: Contents
 AntiForgery: enabled
 Author: The Orchard Team
 Website: http://orchardproject.net
 Version: 2.0.x
 OrchardVersion: 2.0
-Description: The contents module enables the edition and redering of content items.
-FeatureDescription: Content items creation and management.
-Dependencies: OrchardCore.Settings
+Description: The contents module enables the edition and rendering of content items.
+Dependencies: OrchardCore.Settings, OrchardCore.Liquid
 Category: Content Management
 
