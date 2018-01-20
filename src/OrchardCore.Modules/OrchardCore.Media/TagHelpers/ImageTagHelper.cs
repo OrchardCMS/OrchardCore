@@ -4,6 +4,7 @@ using OrchardCore.Media.Processing;
 
 namespace OrchardCore.Media.TagHelpers
 {
+    [HtmlTargetElement("img", Attributes = ImageSrcAttributeName)]
     [HtmlTargetElement("img", Attributes = ImageSrcAttributeName + "," + ImageSizeWidthAttributeName)]
     [HtmlTargetElement("img", Attributes = ImageSrcAttributeName + "," + ImageSizeHeightAttributeName)]
     [HtmlTargetElement("img", Attributes = ImageSrcAttributeName + "," + ImageSizeWidthAttributeName + "," + ImageSizeModeAttributeName)]
