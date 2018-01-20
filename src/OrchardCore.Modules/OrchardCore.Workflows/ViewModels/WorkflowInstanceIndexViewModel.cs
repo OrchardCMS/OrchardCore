@@ -14,6 +14,7 @@ namespace OrchardCore.Workflows.ViewModels
     public class WorkflowInstanceEntry
     {
         public WorkflowInstanceRecord WorkflowInstance { get; set; }
+        public int Id { get; set; }
         public bool IsChecked { get; set; }
     }
 

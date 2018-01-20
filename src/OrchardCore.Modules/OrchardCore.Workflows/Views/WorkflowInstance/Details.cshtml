@@ -6,7 +6,7 @@
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a asp-action="Index">@T["Workflow Definitions"]</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowDefinition">@T["Workflow Definitions"]</a></li>
         <li class="breadcrumb-item"><a asp-action="Edit" asp-controller="WorkflowDefinition" asp-route-id="@Model.WorkflowDefinition.Id">@Model.WorkflowDefinition.Name</a></li>
         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowInstance" asp-route-workflowDefinitionId="@Model.WorkflowDefinition.Id">@T["Instances"]</a></li>
         <li class="breadcrumb-item active" aria-current="page">@Model.WorkflowInstance.Uid</li>

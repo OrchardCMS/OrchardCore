@@ -12,14 +12,30 @@
     </ol>
 </nav>
 
+<nav class="admin-toolbar">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <div class="btn-group" role="group">
+                <button id="bulk-actions-button" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    @T["Bulk Actions"]
+                </button>
+                <div class="dropdown-menu" aria-labelledby="bulk-actions-button">
+                    <button type="submit" name="BulkAction" value="@WorkflowInstanceBulkAction.Delete" form="workflow-instances-form" class="dropdown-item"> @T["Delete"]</a>
+                </div>
+            </div>
+        </li>
+    </ul>
+</nav>
+
 <div class="form-group">
     @if (Model.WorkflowInstances.Any())
     {
-        using (Html.BeginForm())
+        using (Html.BeginForm(FormMethod.Post, new { id = "workflow-instances-form" }))
         {
             <ul class="list-group">
-                @foreach (var entry in Model.WorkflowInstances)
+                @for (var i = 0; i < Model.WorkflowInstances.Count; i++)
                 {
+                    var entry = Model.WorkflowInstances[i];
                     var statusCss = "";
 
                     switch (entry.WorkflowInstance.Status)
@@ -51,6 +67,8 @@
                                 <a asp-action="Delete" asp-route-id="@entry.WorkflowInstance.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                             </div>
 
+                            <input type="checkbox" asp-for="@Model.WorkflowInstances[i].IsChecked" />
+                            <input type="hidden" asp-for="@Model.WorkflowInstances[i].Id" />
                             <a asp-action="Details" asp-route-id="@entry.WorkflowInstance.Id">@entry.WorkflowInstance.Uid</a>
                             <div>
                                 <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.WorkflowInstance.CreatedUtc)))]</span>

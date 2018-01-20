@@ -137,7 +137,8 @@ namespace OrchardCore.Workflows.Controllers
                 WorkflowDefinitions = workflowDefinitions
                     .Select(x => new WorkflowDefinitionEntry
                     {
-                        Definition = x,
+                        WorkflowDefinition = x,
+                        Id = x.Id,
                         WorkflowInstanceCount = workflowInstanceGroups.ContainsKey(x.Id) ? workflowInstanceGroups[x.Id].Count() : 0,
                         Name = x.Name
                     })
@@ -149,9 +150,10 @@ namespace OrchardCore.Workflows.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName(nameof(Index))]
-        [FormValueRequired("submit.BulkEdit")]
-        public async Task<IActionResult> BulkEdit(WorkflowDefinitionIndexOptions options, PagerParameters pagerParameters)
+        [HttpPost]
+        [ActionName(nameof(Index))]
+        [FormValueRequired("BulkAction")]
+        public async Task<IActionResult> BulkEdit(WorkflowDefinitionBulkAction bulkAction, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -166,24 +168,19 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var checkedEntries = viewModel.WorkflowDefinitions.Where(t => t.IsChecked);
-            switch (options.BulkAction)
+            switch (bulkAction)
             {
-                case WorkflowDefinitionBulk.None:
+                case WorkflowDefinitionBulkAction.None:
                     break;
-                case WorkflowDefinitionBulk.Delete:
-                    if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
-                    {
-                        return Unauthorized();
-                    }
-
+                case WorkflowDefinitionBulkAction.Delete:
                     foreach (var entry in checkedEntries)
                     {
-                        var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(entry.DefinitionId);
+                        var workflowDefinition = await _workflowDefinitionRepository.GetAsync(entry.Id);
 
                         if (workflowDefinition != null)
                         {
-                            _session.Delete(workflowDefinition);
-                            _notifier.Success(H["Workflow {0} deleted", workflowDefinition.Name]);
+                            await _workflowDefinitionRepository.DeleteAsync(workflowDefinition);
+                            _notifier.Success(H["Workflow {0} has been deleted.", workflowDefinition.Name]);
                         }
                     }
                     break;

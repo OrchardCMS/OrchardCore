@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +12,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.ActionConstraints;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Models;
@@ -84,6 +87,7 @@ namespace OrchardCore.Workflows.Controllers
                 WorkflowInstances = records.Select(x => new WorkflowInstanceEntry
                 {
                     WorkflowInstance = x,
+                    Id = x.Id
                 }).ToList(),
                 Pager = pagerShape,
                 ReturnUrl = returnUrl
@@ -162,6 +166,47 @@ namespace OrchardCore.Workflows.Controllers
                 _notifier.Success(T["Workflow instance {0} has been deleted.", id]);
                 return RedirectToAction("Index", new { workflowDefinitionId = workflowInstance.DefinitionId });
             }
+        }
+
+        [HttpPost]
+        [ActionName(nameof(Index))]
+        [FormValueRequired("BulkAction")]
+        public async Task<IActionResult> BulkEdit(WorkflowInstanceBulkAction bulkAction, PagerParameters pagerParameters, int workflowDefinitionId)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+            {
+                return Unauthorized();
+            }
+
+            var viewModel = new WorkflowInstanceIndexViewModel { WorkflowInstances = new List<WorkflowInstanceEntry>() };
+
+            if (!(await TryUpdateModelAsync(viewModel)))
+            {
+                return View(viewModel);
+            }
+
+            var checkedEntries = viewModel.WorkflowInstances.Where(t => t.IsChecked);
+            switch (bulkAction)
+            {
+                case WorkflowInstanceBulkAction.None:
+                    break;
+                case WorkflowInstanceBulkAction.Delete:
+                    foreach (var entry in checkedEntries)
+                    {
+                        var workflowInstance = await _workflowInstanceRepository.GetAsync(entry.Id);
+
+                        if (workflowInstance != null)
+                        {
+                            await _workflowInstanceRepository.DeleteAsync(workflowInstance);
+                            _notifier.Success(T["Workflow instance {0} has been deleted.", workflowInstance.Uid]);
+                        }
+                    }
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return RedirectToAction("Index", new { workflowDefinitionId, page = pagerParameters.Page, pageSize = pagerParameters.PageSize });
         }
 
         private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, int workflowDefinitionId, bool isBlocking, string displayType)

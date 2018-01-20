@@ -7,7 +7,15 @@
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-            <a asp-route-action="EditProperties" class="btn btn-primary" role="button">@T["Create new Workflow Definition"]</a>
+            <a asp-route-action="EditProperties" class="btn btn-primary" role="button"> @T["Create Workflow Definition"]</a>
+            <div class="btn-group" role="group">
+                <button id="bulk-actions-button" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    @T["Bulk Actions"]
+                </button>
+                <div class="dropdown-menu" aria-labelledby="bulk-actions-button">
+                    <button type="submit" name="BulkAction" value="@WorkflowDefinitionBulkAction.Delete" form="workflow-definitions-form" class="dropdown-item"> @T["Delete"]</a>
+                </div>
+            </div>
         </li>
     </ul>
     <form asp-action="Index" method="get" class="form-inline">
@@ -18,28 +26,33 @@
 
 @if (Model.WorkflowDefinitions.Any())
 {
-    using (Html.BeginForm())
+    using (Html.BeginForm(FormMethod.Post, new { id = "workflow-definitions-form" }))
     {
         <ul class="list-group">
-            @foreach (var entry in Model.WorkflowDefinitions)
+            @for (var i = 0; i < Model.WorkflowDefinitions.Count; i++)
             {
+                var entry = Model.WorkflowDefinitions[i];
                 <li class="list-group-item">
                     <div class="properties">
                         <div class="related">
-                            <a asp-action="Edit" asp-route-id="@entry.Definition.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="EditProperties" asp-route-id="@entry.Definition.Id" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary btn-sm">@T["Properties"]</a>
-                            <a asp-action="Delete" asp-route-id="@entry.Definition.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            <a asp-action="Edit" asp-route-id="@entry.WorkflowDefinition.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="EditProperties" asp-route-id="@entry.WorkflowDefinition.Id" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary btn-sm">@T["Properties"]</a>
+                            <a asp-action="Delete" asp-route-id="@entry.WorkflowDefinition.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
 
-                        <a asp-action="Edit" asp-route-id="@entry.Definition.Id">@entry.Name</a>
+                        <input type="checkbox" asp-for="@Model.WorkflowDefinitions[i].IsChecked" />
+                        <input type="hidden" asp-for="@Model.WorkflowDefinitions[i].Id" />
+                        <input type="hidden" asp-for="@Model.WorkflowDefinitions[i].Name" />
+                        <a asp-action="Edit" asp-route-id="@entry.WorkflowDefinition.Id">@entry.Name</a>
+
                         <div class="metadata">
-                            @if (!entry.Definition.IsEnabled)
+                            @if (!entry.WorkflowDefinition.IsEnabled)
                             {
                                 <span class="badge badge-secondary">@T["disabled"]</span>
                             }
                             @if (entry.WorkflowInstanceCount > 0)
                             {
-                                <a asp-action="Index" asp-controller="WorkflowInstance" asp-route-workflowDefinitionId="@entry.Definition.Id" class="badge badge-info">@T.Plural(entry.WorkflowInstanceCount, "1 instance", "{0} instances", entry.WorkflowInstanceCount)</a>
+                                <a asp-action="Index" asp-controller="WorkflowInstance" asp-route-workflowDefinitionId="@entry.WorkflowDefinition.Id" class="badge badge-info">@T.Plural(entry.WorkflowInstanceCount, "1 instance", "{0} instances", entry.WorkflowInstanceCount)</a>
                             }
                         </div>
                     </div>

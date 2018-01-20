@@ -13,10 +13,9 @@ namespace OrchardCore.Workflows.ViewModels
 
     public class WorkflowDefinitionEntry
     {
-        public WorkflowDefinitionRecord Definition { get; set; }
+        public WorkflowDefinitionRecord WorkflowDefinition { get; set; }
         public bool IsChecked { get; set; }
-
-        public int DefinitionId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public int WorkflowInstanceCount { get; set; }
     }
@@ -26,7 +25,6 @@ namespace OrchardCore.Workflows.ViewModels
         public string Search { get; set; }
         public WorkflowDefinitionOrder Order { get; set; }
         public WorkflowDefinitionFilter Filter { get; set; }
-        public WorkflowDefinitionBulk BulkAction { get; set; }
     }
 
     public enum WorkflowDefinitionOrder
@@ -40,7 +38,7 @@ namespace OrchardCore.Workflows.ViewModels
         All
     }
 
-    public enum WorkflowDefinitionBulk
+    public enum WorkflowDefinitionBulkAction
     {
         None,
         Delete
