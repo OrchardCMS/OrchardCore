@@ -1,17 +1,21 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 
 namespace OrchardCore.Mvc.LocationExpander
 {
     public class ModularViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
+        private readonly ShellDescriptor _shellDescriptor;
         private readonly IExtensionManager _extensionManager;
 
-        public ModularViewLocationExpanderProvider(IExtensionManager extensionManager)
+        public ModularViewLocationExpanderProvider(ShellDescriptor shellDescriptor, IExtensionManager extensionManager)
         {
+            _shellDescriptor = shellDescriptor;
             _extensionManager = extensionManager;
         }
 
@@ -54,7 +58,21 @@ namespace OrchardCore.Mvc.LocationExpander
 
             var extensionViewsPath = '/' + extension.SubPath + "/Views";
             result.Add(extensionViewsPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
-            result.Add(extensionViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
+
+            if (!context.ViewName.StartsWith("Components/"))
+            {
+                result.Add(extensionViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
+            }
+            else
+            {
+                var moduleViewsPaths = _extensionManager.GetFeatures()
+                    .Where(f => _shellDescriptor.Features.Any(sf => sf.Id == f.Id))
+                    .Select(f => f.Extension).Distinct().Reverse()
+                    .Where(e => e.Manifest?.Type?.Equals("module", StringComparison.OrdinalIgnoreCase) ?? false)
+                    .Select(e => '/' + e.SubPath + "/Views" + "/Shared/{0}" + RazorViewEngine.ViewExtension);
+
+                result.AddRange(moduleViewsPaths);
+            }
 
             result.AddRange(viewLocations);
 
