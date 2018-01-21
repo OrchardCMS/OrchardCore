@@ -77,7 +77,7 @@ namespace OrchardCore.Email.Controllers
             viewModel.GroupId = groupId;
             viewModel.Shape = await CreateSmtpSettingsShape(testSettings);
 
-            return View("/Packages/OrchardCore.Settings/Views/Admin/Index.cshtml", viewModel);
+            return View("Index", viewModel);
         }
 
         [HttpPost]
@@ -121,7 +121,7 @@ namespace OrchardCore.Email.Controllers
             viewModel.GroupId = groupId;
             viewModel.Shape = await CreateSmtpSettingsShape(testSettings);
 
-            return View("/Packages/OrchardCore.Settings/Views/Admin/Index.cshtml", viewModel);
+            return View("Index", viewModel);
         }
 
 
