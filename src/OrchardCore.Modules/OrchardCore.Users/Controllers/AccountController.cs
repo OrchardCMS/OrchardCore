@@ -1,3 +1,5 @@
+using System;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Authentication;
@@ -197,7 +199,7 @@ namespace OrchardCore.Users.Controllers
                 var user = (User)await _userService.GetForgotPasswordUserAsync(model.UserIdentifier);
                 if (user != null)
                 {
-                    user.ResetToken = HttpUtility.UrlEncode(user.ResetToken);
+                    user.ResetToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(user.ResetToken));
                     // send email with callback link
                 }
             }
@@ -222,16 +224,17 @@ namespace OrchardCore.Users.Controllers
             {
                 //"A code must be supplied for password reset.";
             }
-            return View(new ResetPasswordViewModel { ResetToken = HttpUtility.UrlEncode(HttpUtility.UrlDecode(code)) });
+            return View(new ResetPasswordViewModel { ResetToken = code });
         }
 
         [HttpPost]
         [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             if (ModelState.IsValid)
             {
-                if (await _userService.ResetPasswordAsync(model.Email, HttpUtility.UrlDecode(model.ResetToken), model.NewPassword, (key, message) => ModelState.AddModelError(key, message)))
+                if (await _userService.ResetPasswordAsync(model.Email, Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)), model.NewPassword, (key, message) => ModelState.AddModelError(key, message)))
                 {
                     return RedirectToLocal(Url.Action("ResetPasswordConfirmation"));
                 }
