@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Internal;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 
@@ -43,7 +44,7 @@ namespace OrchardCore.Workflows.Activities
             var text = await workflowContext.EvaluateExpressionAsync(Text);
             var logLevel = LogLevel;
 
-            _logger.Log(logLevel, 0, text, null, null);
+            _logger.Log(logLevel, 0, text, null, (state, error) => state.ToString());
             return Outcomes("Done");
         }
     }
