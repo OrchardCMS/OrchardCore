@@ -111,9 +111,9 @@ namespace OrchardCore.Workflows.Controllers
                 return NotFound();
             }
 
-            var workflowDefinitionRecord = await _workflowDefinitionRepository.GetAsync(workflowInstance.DefinitionId);
+            var workflowDefinitionRecord = workflowInstance.WorkflowDefinition;
             var blockingActivities = workflowInstance.AwaitingActivities.ToDictionary(x => x.ActivityId);
-            var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowDefinitionRecord, workflowInstance);
+            var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowInstance);
             var activityContexts = await Task.WhenAll(workflowDefinitionRecord.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x)));
             var activityDesignShapes = (await Task.WhenAll(activityContexts.Select(async x => await BuildActivityDisplayAsync(x, workflowDefinitionRecord.Id, blockingActivities.ContainsKey(x.ActivityRecord.Id), "Design")))).ToList();
             var activitiesDataQuery = activityContexts.Select(x => new
@@ -167,7 +167,7 @@ namespace OrchardCore.Workflows.Controllers
             {
                 await _workflowInstanceRepository.DeleteAsync(workflowInstance);
                 _notifier.Success(T["Workflow instance {0} has been deleted.", id]);
-                return RedirectToAction("Index", new { workflowDefinitionId = workflowInstance.DefinitionId });
+                return RedirectToAction("Index", new { workflowDefinitionId = workflowInstance.WorkflowDefinition.Id });
             }
         }
 

@@ -18,7 +18,6 @@ namespace OrchardCore.Workflows.Models
 
         public WorkflowExecutionContext
         (
-            WorkflowDefinitionRecord workflowDefinitionRecord,
             WorkflowInstanceRecord workflowInstanceRecord,
             IServiceProvider serviceProvider,
             IDictionary<string, object> input,
@@ -42,13 +41,12 @@ namespace OrchardCore.Workflows.Models
             Output = output ?? new Dictionary<string, object>();
             Properties = properties ?? new Dictionary<string, object>();
             LastResult = lastResult;
-            WorkflowDefinition = workflowDefinitionRecord;
             WorkflowInstance = workflowInstanceRecord;
             Activities = activities.ToDictionary(x => x.ActivityRecord.Id);
         }
 
-        public WorkflowDefinitionRecord WorkflowDefinition { get; }
         public WorkflowInstanceRecord WorkflowInstance { get; }
+        public WorkflowDefinitionRecord WorkflowDefinition => WorkflowInstance.WorkflowDefinition;
         public IDictionary<int, ActivityContext> Activities { get; }
 
         public string CorrelationId

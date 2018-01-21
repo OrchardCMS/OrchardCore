@@ -9,17 +9,10 @@ namespace OrchardCore.Workflows.Timers
 {
     public class TimerBackgroundTask : IBackgroundTask
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        public TimerBackgroundTask(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
         public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
         {
             var workflowManager = serviceProvider.GetRequiredService<IWorkflowManager>();
-            return workflowManager.TriggerEventAsync(TimerEvent.EventName);
+            return workflowManager.TriggerOnceAsync(TimerEvent.EventName);
         }
     }
 }

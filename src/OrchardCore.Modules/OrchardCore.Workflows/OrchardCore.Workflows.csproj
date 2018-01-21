@@ -53,6 +53,9 @@
     <None Remove="Views\Items\JoinTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\JoinTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\JoinTask.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\Items\LogTask.Fields.Design.cshtml" />
+    <None Remove="Views\Items\LogTask.Fields.Edit.cshtml" />
+    <None Remove="Views\Items\LogTask.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\MissingActivity.Fields.Design.cshtml" />
     <None Remove="Views\Items\ScriptTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\ScriptTask.Fields.Edit.cshtml" />

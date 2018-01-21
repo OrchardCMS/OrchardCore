@@ -65,7 +65,6 @@ namespace OrchardCore.Workflows.Controllers
                 return NotFound();
             }
 
-            var workflowDefinition = await _workflowDefinitionRepository.GetAsync(workflowInstance.DefinitionId);
             var activity = workflowInstance.AwaitingActivities.Single(x => x.ActivityId == activityId);
             await _workflowManager.ResumeWorkflowAsync(workflowInstance, activity);
 

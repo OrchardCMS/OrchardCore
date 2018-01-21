@@ -28,7 +28,7 @@ namespace OrchardCore.Workflows.Indexes
                 .Map(workflowInstance =>
                     new WorkflowInstanceIndex
                     {
-                        WorkflowDefinitionId = workflowInstance.DefinitionId,
+                        WorkflowDefinitionId = workflowInstance.WorkflowDefinition.Id,
                         WorkflowInstanceId = workflowInstance.Id
                     }
                 );
@@ -43,7 +43,7 @@ namespace OrchardCore.Workflows.Indexes
                         ActivityIsStart = x.IsStart,
                         WorkflowInstanceId = workflowInstance.Id,
                         WorkflowInstanceUid = workflowInstance.Uid,
-                        WorkflowInstanceCorrelationId = workflowInstance.CorrelationId
+                        WorkflowInstanceCorrelationId = workflowInstance.CorrelationId ?? "" // TODO: Can't compare NULL == NULL for some reason, so converting to empty string.
                     })
                 );
         }

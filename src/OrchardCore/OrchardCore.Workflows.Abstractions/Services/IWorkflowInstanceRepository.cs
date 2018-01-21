@@ -8,6 +8,7 @@ namespace OrchardCore.Workflows.Services
     {
         Task<int> CountAsync();
         Task<IEnumerable<WorkflowInstanceRecord>> ListAsync(int? skip = null, int? take = null);
+        Task<IEnumerable<WorkflowInstanceRecord>> ListByWorkflowDefinitionsAsync(IEnumerable<int> workflowDefinitionIds);
         Task<WorkflowInstanceRecord> GetAsync(int id);
         Task<WorkflowInstanceRecord> GetAsync(string uid);
         Task<IEnumerable<WorkflowInstanceRecord>> GetAsync(IEnumerable<int> ids);

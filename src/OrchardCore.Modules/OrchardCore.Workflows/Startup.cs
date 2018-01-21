@@ -58,6 +58,7 @@ namespace OrchardCore.Workflows
             services.AddActivity<WhileLoopTask, WhileLoopTaskDisplay>();
             services.AddActivity<IfElseTask, IfElseTaskDisplay>();
             services.AddActivity<ScriptTask, ScriptTaskDisplay>();
+            services.AddActivity<LogTask, LogTaskDisplay>();
             services.AddActivity<SignalEvent, SignalEventDisplay>();
 
             services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();

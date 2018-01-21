@@ -12,9 +12,9 @@ namespace OrchardCore.Workflows.Models
         public int Id { get; set; }
 
         /// <summary>
-        /// The ID of the workflow definition.
+        /// A snapshot of the workflow definition when this instance was created,
         /// </summary>
-        public int DefinitionId { get; set; }
+        public WorkflowDefinitionRecord WorkflowDefinition { get; set; }
 
         /// <summary>
         /// A unique identifier for this workflow instance.

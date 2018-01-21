@@ -11,7 +11,7 @@ namespace OrchardCore.Workflows.Services
         /// <summary>
         /// Creates a new <see cref="WorkflowExecutionContext"/>.
         /// </summary>
-        Task<WorkflowExecutionContext> CreateWorkflowExecutionContextAsync(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord, IDictionary<string, object> input = null);
+        Task<WorkflowExecutionContext> CreateWorkflowExecutionContextAsync(WorkflowInstanceRecord workflowInstanceRecord, IDictionary<string, object> input = null);
 
         /// <summary>
         /// Creates a new <see cref="ActivityContext"/>.
@@ -20,13 +20,20 @@ namespace OrchardCore.Workflows.Services
         Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord);
 
         /// <summary>
-        /// Triggers a specific <see cref="IEvent"/>, and provides context if the event is
-        /// actually executed.
+        /// Triggers a specific <see cref="IEvent"/>.
         /// </summary>
         /// <param name="name">The type of the event to trigger, e.g. ContentPublishedEvent.</param>
         /// <param name="input">An object containing context for the event.</param>
         /// <param name="correlationId">Optionally specify a application-specific value to associate the workflow instance with. For example, a content item ID.</param>
         Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null);
+
+        /// <summary>
+        /// Triggers a specific <see cref="IEvent"/>, while ensuring that only one instance executes at a time.
+        /// </summary>
+        /// <param name="name">The type of the event to trigger, e.g. TimerEvent.</param>
+        /// <param name="input">An object containing context for the event.</param>
+        /// <param name="correlationId">Optionally specify a application-specific value to associate the workflow instance with. For example, a content item ID.</param>
+        Task TriggerOnceAsync(string name, IDictionary<string, object> input = null, string correlationId = null);
 
         /// <summary>
         /// Starts a new workflow using the specified workflow definition.

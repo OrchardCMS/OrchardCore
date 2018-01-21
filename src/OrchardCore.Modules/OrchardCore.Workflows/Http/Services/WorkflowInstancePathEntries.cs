@@ -9,9 +9,10 @@ namespace OrchardCore.Workflows.Http.Services
 {
     public class WorkflowInstancePathEntries : WorkflowPathEntriesBase, IWorkflowInstancePathEntries
     {
-        public static IEnumerable<WorkflowPathEntry> GetWorkflowPathEntries(WorkflowInstanceRecord workflowInstance, WorkflowDefinitionRecord workflowDefinition, IActivityLibrary activityLibrary)
+        public static IEnumerable<WorkflowPathEntry> GetWorkflowPathEntries(WorkflowInstanceRecord workflowInstance, IActivityLibrary activityLibrary)
         {
             var awaitingActivityIds = workflowInstance.AwaitingActivities.Select(x => x.ActivityId).ToDictionary(x => x);
+            var workflowDefinition = workflowInstance.WorkflowDefinition;
             return workflowDefinition.Activities.Where(x => x.Name == HttpRequestEvent.EventName && awaitingActivityIds.ContainsKey(x.Id)).Select(x =>
             {
                 var activity = activityLibrary.InstantiateActivity<HttpRequestEvent>(x);

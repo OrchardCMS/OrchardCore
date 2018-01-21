@@ -11,33 +11,18 @@ using OrchardCore.Workflows.Display;
 
 namespace OrchardCore.Contents.Workflows.Drivers
 {
-    public abstract class ContentEventDisplayDriver<TActivity, TViewModel> : ActivityDisplayDriver<TActivity> where TActivity : ContentEvent where TViewModel : ContentEventViewModel<TActivity>
+    public abstract class ContentEventDisplayDriver<TActivity, TViewModel> : ActivityDisplayDriver<TActivity, TViewModel> where TActivity : ContentEvent where TViewModel : ContentEventViewModel<TActivity>, new()
     {
         protected ContentEventDisplayDriver(IContentDefinitionManager contentDefinitionManager)
         {
             ContentDefinitionManager = contentDefinitionManager;
         }
 
-        private string BaseShapeName => typeof(TActivity).Name;
-
         protected IContentDefinitionManager ContentDefinitionManager { get; }
-
-        public override IDisplayResult Display(TActivity activity)
-        {
-            return Combine(
-                Shape($"{BaseShapeName}_Fields_Thumbnail", activity).Location("Thumbnail", "Content"),
-                Shape($"{BaseShapeName}_Fields_Design", activity).Location("Design", "Content")
-            );
-        }
-
-        public override IDisplayResult Edit(TActivity activity)
-        {
-            return EditShape<TViewModel>($"{BaseShapeName}_Fields_Edit", activity).Location("Content");
-        }
 
         public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
         {
-            var viewModel = new ContentCreatedEventViewModel();
+            var viewModel = CreateViewModel();
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.SelectedContentTypeNames))
             {
                 model.ContentTypeFilter = FilterContentTypesQuery(viewModel.SelectedContentTypeNames).ToList();
