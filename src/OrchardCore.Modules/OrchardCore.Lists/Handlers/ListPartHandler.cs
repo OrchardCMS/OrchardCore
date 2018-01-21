@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Routing;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Lists.Models;
@@ -7,7 +8,7 @@ namespace OrchardCore.Lists.Drivers
 {
     public class ListPartHandler : ContentPartHandler<ListPart>
     {
-        public override void GetContentItemAspect(ContentItemAspectContext context, ListPart part)
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context, ListPart part)
         {
             context.For<ContentItemMetadata>(contentItemMetadata =>
             {
@@ -19,6 +20,8 @@ namespace OrchardCore.Lists.Drivers
                     {"ContentItemId", context.ContentItem.ContentItemId}
                 };
             });
+
+            return Task.CompletedTask;
         }
     }
 }

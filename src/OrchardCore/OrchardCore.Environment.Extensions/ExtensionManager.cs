@@ -241,7 +241,7 @@ namespace OrchardCore.Environment.Extensions
 
         private static string GetSourceFeatureNameForType(Type type, string extensionId)
         {
-            var attribute = type.GetTypeInfo().GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
+            var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
 
             return attribute?.FeatureName ?? extensionId;
         }
@@ -335,8 +335,7 @@ namespace OrchardCore.Environment.Extensions
 
         private bool IsComponentType(Type type)
         {
-            var typeInfo = type.GetTypeInfo();
-            return typeInfo.IsClass && !typeInfo.IsAbstract && typeInfo.IsPublic;
+            return type.IsClass && !type.IsAbstract && type.IsPublic;
         }
 
         private IFeatureInfo[] Order(IEnumerable<IFeatureInfo> featuresToOrder)

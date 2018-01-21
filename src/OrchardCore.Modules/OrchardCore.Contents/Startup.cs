@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +11,7 @@ using OrchardCore.Contents.Feeds.Builders;
 using OrchardCore.Contents.Filters;
 using OrchardCore.Contents.Handlers;
 using OrchardCore.Contents.Indexing;
+using OrchardCore.Contents.Liquid;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.Recipes;
 using OrchardCore.Contents.Services;
@@ -68,7 +68,7 @@ namespace OrchardCore.Contents
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            serviceProvider.AddTagHelpers(typeof(ContentLinkTagHelper).GetTypeInfo().Assembly);
+            serviceProvider.AddTagHelpers(typeof(ContentLinkTagHelper).Assembly);
 
             routes.MapAreaRoute(
                 name: "DisplayContentItem",
@@ -121,6 +121,15 @@ namespace OrchardCore.Contents
             );
 
 
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Liquid")]
+    public class LiquidStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddLiquidFilter<ContentFilter>("content");
         }
     }
 }

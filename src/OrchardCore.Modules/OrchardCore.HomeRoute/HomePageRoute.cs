@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -28,7 +28,7 @@ namespace OrchardCore.HomeRoute
                 {
                     context.RouteData.Values[entry.Key] = entry.Value;
                 }
-            }         
+            }
 
             await base.OnRouteMatched(context);
         }
@@ -64,7 +64,7 @@ namespace OrchardCore.HomeRoute
             }
 
             // Remove the values that should not be rendered in the query string
-            foreach(var key in tokens.Keys)
+            foreach (var key in tokens.Keys)
             {
                 context.Values.Remove(key);
             }

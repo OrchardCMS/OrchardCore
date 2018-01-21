@@ -1,11 +1,21 @@
 var editor;
 
-function storeTemplate(nameElement) {
-    var template = { "description": nameElement.value, "content": editor.getValue() };
-    localStorage.setItem('OrchardCore.templates', JSON.stringify(template));
-}
-
 function initializeTemplatePreview(nameElement, editorElement) {
+
+    var antiforgerytoken = $("[name='__RequestVerificationToken']").val();
+
+    sendFormData = function (nameElement) {
+
+        var formData = {
+            'Name': nameElement.value,
+            'Content': editor.getValue(),
+            '__RequestVerificationToken': antiforgerytoken
+        };
+
+        // store the form data to pass it in the event handler
+        localStorage.setItem('OrchardCore.templates', JSON.stringify($.param(formData)));
+    }
+
     editor = CodeMirror.fromTextArea(editorElement, {
         lineNumbers: true,
         styleActiveLine: true,
@@ -14,7 +24,7 @@ function initializeTemplatePreview(nameElement, editorElement) {
     });
 
     editor.on('change', function (cm) {
-        storeTemplate(nameElement);
+        sendFormData(nameElement);
     });
 
     window.addEventListener('storage', function (ev) {
@@ -22,17 +32,24 @@ function initializeTemplatePreview(nameElement, editorElement) {
 
         // triggered by the preview window the first time it is loaded in order
         // to pre-render the view even if no contentpreview:render is already sent
-        storeTemplate(nameElement);
+        sendFormData(nameElement);
     }, false);
 
     $(nameElement)
-        .on('input', function () { storeTemplate(nameElement); })
-        .on('propertychange', function () { storeTemplate(nameElement); })
-        .on('change', function () { storeTemplate(nameElement); })
+        .on('input', function () { sendFormData(nameElement); })
+        .on('propertychange', function () { sendFormData(nameElement); })
+        .on('change', function () { sendFormData(nameElement); })
         .on('keyup', function (event) {
             // handle backspace
             if (event.keyCode == 46 || event.ctrlKey) {
-                storeTemplate(nameElement);
+                sendFormData(nameElement);
             }
         });
+
+    $(window).on('unload', function () {
+        localStorage.removeItem('OrchardCore.templates');
+        // this will raise an event in the preview window to notify that the live preview is no longer active.
+        localStorage.setItem('OrchardCore.templates:not-connected', '');
+        localStorage.removeItem('OrchardCore.templates:not-connected');
+   });
 }

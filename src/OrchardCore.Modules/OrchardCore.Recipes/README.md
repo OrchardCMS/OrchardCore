@@ -6,7 +6,7 @@ Recipes can use script helpers like this:
 
 ```
 {
-    ContentItemId": "[js: uuid()]"
+    "ContentItemId": "[js: uuid()]"
 }
 ```
 

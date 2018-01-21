@@ -1,8 +1,7 @@
 using System;
-using System.Text;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using OrchardCore.Templates.Models;
+using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Services
 {
@@ -17,37 +16,25 @@ namespace OrchardCore.Templates.Services
         {
             _templatesDocument = new Lazy<TemplatesDocument>(() =>
             {
-
                 var httpContext = httpContextAccessor.HttpContext;
 
-                if (!httpContext.Request.Cookies.ContainsKey("orchard:templates:count"))
-                {
-                    return null;
-                }
-
-                var sb = new StringBuilder();
-                int.TryParse(httpContext.Request.Cookies["orchard:templates:count"], out int count);
-                for(var i = 0; i < count; i++)
-                {
-                    var chunk = httpContext.Request.Cookies["orchard:templates:" + i];
-                    sb.Append(chunk);
-                }
-
-                var content = Encoding.UTF8.GetString(Convert.FromBase64String(sb.ToString()));
-                var template = JsonConvert.DeserializeObject<Template>(content);
                 var templatesDocument = new TemplatesDocument();
 
-                if (template == null || template.Description == null)
+                if (httpContext.Items.TryGetValue("OrchardCore.PreviewTemplate", out var model))
                 {
-                    // An error occured while deserializing
-                    return templatesDocument;
-                }
+                    var viewModel = model as TemplateViewModel;
 
-                templatesDocument.Templates.Add(template.Description, template);
+                    if (viewModel == null || viewModel.Name == null)
+                    {
+                        return templatesDocument;
+                    }
+
+                    var template = new Template { Content = viewModel.Content };
+                    templatesDocument.Templates.Add(viewModel.Name, template);
+                }
 
                 return templatesDocument;
             });
-
         }
 
         public TemplatesDocument GetTemplates()

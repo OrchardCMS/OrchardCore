@@ -8,7 +8,6 @@
   <PropertyGroup>
     <ModuleManifest>Name: $(MSBuildProjectName)</ModuleManifest>
     <ModuleAssetExcludes>**\*.cs;*.csproj*;obj\**;bin\**;Assets.json;Assets\**;Properties\**;*.props;*.targets;**/.*/**</ModuleAssetExcludes>
-    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
     <ModuleType Condition="'$(ModuleType)' == ''">Module</ModuleType>
   </PropertyGroup>
 
@@ -16,7 +15,7 @@
     <EmbeddedResource Include="**\*" Exclude="$(ModuleAssetExcludes)" />
   </ItemGroup>
 
-  <Target Name="EmbeddModuleAssets" BeforeTargets="BeforeBuild">
+  <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
 
     <RemoveDuplicates Inputs="@(EmbeddedResource)">
       <Output TaskParameter="Filtered" ItemName="ModuleAssetFiles"/>
@@ -33,8 +32,6 @@
 
       <ModuleAssets Include=".Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')" />
     </ItemGroup>
-
-    <MakeDir Directories="$(IntermediateOutputPath)" ContinueOnError="True"/>
 
     <WriteLinesToFile
       File="$(IntermediateOutputPath)module.assets.map"

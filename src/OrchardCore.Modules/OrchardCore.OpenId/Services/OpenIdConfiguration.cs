@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenIddict;
 using OrchardCore.Environment.Shell;
-using OrchardCore.OpenId.Models;
+using OrchardCore.OpenId.Abstractions.Models;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 
@@ -91,7 +91,7 @@ namespace OrchardCore.OpenId
                 return;
             }
 
-            options.ProviderType = typeof(OpenIddictProvider<OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>);
+            options.ProviderType = typeof(OpenIddictProvider<IOpenIdApplication, IOpenIdAuthorization, IOpenIdScope, IOpenIdToken>);
             options.DataProtectionProvider = _dataProtectionProvider;
             options.RequireClientIdentification = true;
             options.EnableRequestCaching = true;
@@ -100,6 +100,8 @@ namespace OrchardCore.OpenId
             {
                 options.AccessTokenHandler = new JwtSecurityTokenHandler();
             }
+
+            options.UseRollingTokens = settings.UseRollingTokens;
 
             if (settings.TestingModeEnabled)
             {

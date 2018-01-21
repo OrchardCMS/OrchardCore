@@ -67,8 +67,8 @@
                             <div class="dropdown-menu">
                                 @foreach (var type in widgetContentTypes)
                                 {
-                                    var contentItem = ContentManager.New(type.Name);
-                                    var createRoute = ContentManager.PopulateAspect<ContentItemMetadata>(contentItem).CreateRouteValues;
+                                    var contentItem = await ContentManager.NewAsync(type.Name);
+                                    var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
                                     createRoute["returnUrl"] = Context.Request.Path;
                                     createRoute["LayerMetadata.Zone"] = zone;
                                     createRoute["LayerMetadata.Position"] = maxPosition + 1;
