@@ -19,3 +19,7 @@ Features:
         Name: Email Activities
         Description: Provides email-related services and activities.
         Dependencies: OrchardCore.Workflows
+    OrchardCore.Workflows.Timers:
+        Name: Timer Activities
+        Description: Provides timer-based services and activities.
+        Dependencies: OrchardCore.Workflows

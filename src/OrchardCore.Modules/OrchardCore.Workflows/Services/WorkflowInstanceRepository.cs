@@ -59,22 +59,7 @@ namespace OrchardCore.Workflows.Services
         public Task<IEnumerable<WorkflowInstanceRecord>> GetAsync(IEnumerable<string> uids)
         {
             var uidList = uids.ToList();
-
-            // TODO: Uncomment the following when I figured out how to select multiple documents directly.
             return _session.Query<WorkflowInstanceRecord, WorkflowInstanceByAwaitingActivitiesIndex>(x => x.WorkflowInstanceCorrelationId.IsIn(uidList)).ListAsync();
-
-            //var results = new Dictionary<string, WorkflowInstanceRecord>();
-
-            //foreach (var uid in uids)
-            //{
-            //    var workflowInstance = await _session.Query<WorkflowInstanceRecord, WorkflowInstanceByAwaitingActivitiesIndex>(x => x.WorkflowInstanceUid == uid).FirstOrDefaultAsync();
-            //    if (workflowInstance != null)
-            //    {
-            //        results[uid] = workflowInstance;
-            //    }
-            //}
-
-            //return results.Values;
         }
 
         public Task<IEnumerable<WorkflowInstanceRecord>> GetAsync(IEnumerable<int> ids)
@@ -87,8 +72,20 @@ namespace OrchardCore.Workflows.Services
             var query = await _session
                 .QueryIndex<WorkflowInstanceByAwaitingActivitiesIndex>(index =>
                     index.ActivityName == activityName &&
-                    index.ActivityIsStart == false &&
                     index.WorkflowInstanceCorrelationId == correlationId)
+                .ListAsync();
+
+            var query1 = await _session
+                .QueryIndex<WorkflowInstanceByAwaitingActivitiesIndex>().ListAsync();
+
+            var query2 = await _session
+                .QueryIndex<WorkflowInstanceByAwaitingActivitiesIndex>(index =>
+                    index.WorkflowInstanceCorrelationId == (correlationId ?? ""))
+                .ListAsync();
+
+            var query3 = await _session
+                .QueryIndex<WorkflowInstanceByAwaitingActivitiesIndex>(index =>
+                    index.ActivityName == activityName)
                 .ListAsync();
 
             var pendingWorkflowInstanceIndexes = query.ToList();

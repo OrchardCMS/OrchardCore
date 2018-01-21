@@ -66,6 +66,9 @@
     <None Remove="Views\Items\SignalEvent.Fields.Design.cshtml" />
     <None Remove="Views\Items\SignalEvent.Fields.Edit.cshtml" />
     <None Remove="Views\Items\SignalEvent.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\Items\TimerEvent.Fields.Design.cshtml" />
+    <None Remove="Views\Items\TimerEvent.Fields.Edit.cshtml" />
+    <None Remove="Views\Items\TimerEvent.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\WhileLoopTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\WhileLoopTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\WhileLoopTask.Fields.Thumbnail.cshtml" />
@@ -83,6 +86,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.BackgroundTasks.Abstractions\OrchardCore.BackgroundTasks.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement.Liquid\OrchardCore.DisplayManagement.Liquid.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
@@ -112,6 +116,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
+    <PackageReference Include="ncrontab" Version="3.3.0" />
   </ItemGroup>
 
   <ItemGroup>

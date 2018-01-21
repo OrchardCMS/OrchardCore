@@ -140,3 +140,8 @@ Orchard is built to be extended, and the Workflows module is no different. When 
 <https://github.com/jsplumb/jsplumb>
 Copyright (c) 2010 - 2014 jsPlumb, http://jsplumbtoolkit.com/
 License: dual-licensed under both MIT and GPLv
+
+### NCrontab
+<https://github.com/atifaziz/NCrontab>
+Copyright (C) Atif Aziz
+License: Apache License 2.0

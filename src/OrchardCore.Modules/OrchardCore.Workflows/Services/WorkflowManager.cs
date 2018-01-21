@@ -310,6 +310,12 @@ namespace OrchardCore.Workflows.Services
                             result = await activityContext.Activity.ResumeAsync(workflowContext, activityContext);
                             isFirstPass = false;
                             outcomes = result.Outcomes;
+
+                            if (result.IsHalted)
+                            {
+                                // Block on this activity.
+                                blocking.Add(activity);
+                            }
                         }
                         else
                         {
@@ -349,6 +355,7 @@ namespace OrchardCore.Workflows.Services
 
             // Apply Distinct() as two paths could block on the same activity.
             var blockingActivities = blocking.Distinct().ToList();
+
             workflowContext.Status = blockingActivities.Any() || workflowContext.WorkflowInstance.AwaitingActivities.Any() ? WorkflowStatus.Halted : WorkflowStatus.Finished;
 
             foreach (var blockingActivity in blockingActivities)
