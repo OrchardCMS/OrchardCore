@@ -20,12 +20,8 @@
 
   <ItemGroup>
     <None Remove="**\*.cshtml" />
-    <None Update="@(None)">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
-    <EmbeddedResource Update="@(EmbeddedResource)">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
+    <None Update="@(None)" CopyToPublishDirectory="Never" />
+    <EmbeddedResource Update="@(EmbeddedResource)" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
 </Project>
