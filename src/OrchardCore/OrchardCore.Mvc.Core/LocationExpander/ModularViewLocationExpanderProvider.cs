@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 
@@ -10,13 +11,20 @@ namespace OrchardCore.Mvc.LocationExpander
 {
     public class ModularViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
+        private const string CacheKey = nameof(ModularViewLocationExpanderProvider);
+
         private readonly ShellDescriptor _shellDescriptor;
         private readonly IExtensionManager _extensionManager;
+        private readonly IMemoryCache _memoryCache;
 
-        public ModularViewLocationExpanderProvider(ShellDescriptor shellDescriptor, IExtensionManager extensionManager)
+        public ModularViewLocationExpanderProvider(
+            ShellDescriptor shellDescriptor,
+            IExtensionManager extensionManager,
+            IMemoryCache memoryCache)
         {
             _shellDescriptor = shellDescriptor;
             _extensionManager = extensionManager;
+            _memoryCache = memoryCache;
         }
 
         public int Priority => 5;
@@ -65,11 +73,16 @@ namespace OrchardCore.Mvc.LocationExpander
             }
             else
             {
-                var moduleViewsPaths = _extensionManager.GetFeatures()
-                    .Where(f => _shellDescriptor.Features.Any(sf => sf.Id == f.Id))
-                    .Select(f => f.Extension).Distinct().Reverse()
-                    .Where(e => e.Manifest?.Type?.Equals("module", StringComparison.OrdinalIgnoreCase) ?? false)
-                    .Select(e => '/' + e.SubPath + "/Views" + "/Shared/{0}" + RazorViewEngine.ViewExtension);
+                if (!_memoryCache.TryGetValue(CacheKey, out IEnumerable<string>  moduleViewsPaths))
+                {
+                    moduleViewsPaths = _extensionManager.GetFeatures()
+                        .Where(f => f.Id == f.Extension.Id && _shellDescriptor.Features.Any(sf => sf.Id == f.Id))
+                        .Where(f => f.Extension.Manifest?.Type?.Equals("module", StringComparison.OrdinalIgnoreCase) ?? false)
+                        .Select(f => '/' + f.Extension.SubPath + "/Views" + "/Shared/{0}" + RazorViewEngine.ViewExtension)
+                        .Reverse();
+
+                    _memoryCache.Set(CacheKey, moduleViewsPaths);
+                }
 
                 result.AddRange(moduleViewsPaths);
             }
