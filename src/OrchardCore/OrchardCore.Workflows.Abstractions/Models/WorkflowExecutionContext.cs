@@ -23,6 +23,7 @@ namespace OrchardCore.Workflows.Models
             IDictionary<string, object> input,
             IDictionary<string, object> output,
             IDictionary<string, object> properties,
+            IList<int> executedActivities,
             object lastResult,
             IEnumerable<ActivityContext> activities,
             IEnumerable<IWorkflowExecutionContextHandler> handlers,
@@ -40,6 +41,7 @@ namespace OrchardCore.Workflows.Models
             Input = input ?? new Dictionary<string, object>();
             Output = output ?? new Dictionary<string, object>();
             Properties = properties ?? new Dictionary<string, object>();
+            ExecutedActivities = new Stack<int>(executedActivities ?? new List<int>());
             LastResult = lastResult;
             WorkflowInstance = workflowInstanceRecord;
             Activities = activities.ToDictionary(x => x.ActivityRecord.Id);
@@ -80,6 +82,11 @@ namespace OrchardCore.Workflows.Models
             get => WorkflowInstance.Status;
             set => WorkflowInstance.Status = value;
         }
+
+        /// <summary>
+        /// Keeps track of which activities executed in which order.
+        /// </summary>
+        public Stack<int> ExecutedActivities { get; set; }
 
         public ActivityContext GetActivity(int activityId)
         {

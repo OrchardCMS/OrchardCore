@@ -37,7 +37,7 @@ namespace OrchardCore.Workflows.Activities
 
         public virtual ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return ActivityExecutionResult.Noop();
+            return Noop();
         }
 
         public virtual Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -47,7 +47,17 @@ namespace OrchardCore.Workflows.Activities
 
         public virtual ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return ActivityExecutionResult.Noop();
+            return Noop();
+        }
+
+        public virtual Task<bool> HandleExceptionAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext, Exception exception)
+        {
+            return Task.FromResult(HandleException(workflowContext, activityContext, exception));
+        }
+
+        public virtual bool HandleException(WorkflowExecutionContext workflowContext, ActivityContext activityContext, Exception exception)
+        {
+            return false;
         }
 
         public virtual Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
@@ -126,7 +136,13 @@ namespace OrchardCore.Workflows.Activities
             return item != null ? item.ToObject<T>() : defaultValue != null ? defaultValue() : default(T);
         }
 
-        protected virtual void SetProperty<T>(T value, [CallerMemberName]string name = null)
+        protected virtual T GetProperty<T>(Type type, Func<T> defaultValue = null, [CallerMemberName]string name = null)
+        {
+            var item = Properties[name];
+            return item != null ? (T)item.ToObject(type) : defaultValue != null ? defaultValue() : default(T);
+        }
+
+        protected virtual void SetProperty(object value, [CallerMemberName]string name = null)
         {
             Properties[name] = JToken.FromObject(value);
         }

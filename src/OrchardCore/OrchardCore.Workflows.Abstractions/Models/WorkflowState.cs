@@ -27,5 +27,7 @@ namespace OrchardCore.Workflows.Models
         /// A dictionary of values that activities within a running workflow can read and write information from and to.
         /// </summary>
         public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
+
+        public IList<int> ExecutedActivities { get; set; } = new List<int>();
     }
 }

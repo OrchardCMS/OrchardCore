@@ -69,9 +69,15 @@
     <None Remove="Views\Items\SignalEvent.Fields.Design.cshtml" />
     <None Remove="Views\Items\SignalEvent.Fields.Edit.cshtml" />
     <None Remove="Views\Items\SignalEvent.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\Items\ThrowTask.Fields.Design.cshtml" />
+    <None Remove="Views\Items\ThrowTask.Fields.Edit.cshtml" />
+    <None Remove="Views\Items\ThrowTask.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\TimerEvent.Fields.Design.cshtml" />
     <None Remove="Views\Items\TimerEvent.Fields.Edit.cshtml" />
     <None Remove="Views\Items\TimerEvent.Fields.Thumbnail.cshtml" />
+    <None Remove="Views\Items\TryCatchTask.Fields.Design.cshtml" />
+    <None Remove="Views\Items\TryCatchTask.Fields.Edit.cshtml" />
+    <None Remove="Views\Items\TryCatchTask.Fields.Thumbnail.cshtml" />
     <None Remove="Views\Items\WhileLoopTask.Fields.Design.cshtml" />
     <None Remove="Views\Items\WhileLoopTask.Fields.Edit.cshtml" />
     <None Remove="Views\Items\WhileLoopTask.Fields.Thumbnail.cshtml" />

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -7,27 +8,27 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class LogTask : TaskActivity
+    public class ThrowTask : TaskActivity
     {
-        private readonly ILogger<LogTask> _logger;
+        private readonly ILogger<ThrowTask> _logger;
 
-        public LogTask(ILogger<LogTask> logger, IStringLocalizer<NotifyTask> localizer)
+        public ThrowTask(ILogger<ThrowTask> logger, IStringLocalizer<ThrowTask> localizer)
         {
             _logger = logger;
             T = localizer;
         }
 
         private IStringLocalizer T { get; }
-        public override string Name => nameof(LogTask);
+        public override string Name => nameof(ThrowTask);
         public override LocalizedString Category => T["Primitives"];
 
-        public LogLevel LogLevel
+        public string ExceptionType
         {
-            get => GetProperty(() => LogLevel.Information);
+            get => GetProperty(() => "System.Exception");
             set => SetProperty(value);
         }
 
-        public WorkflowExpression<string> Text
+        public WorkflowExpression<string> Message
         {
             get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
@@ -35,16 +36,18 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            yield break;
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var text = await workflowContext.EvaluateExpressionAsync(Text);
-            var logLevel = LogLevel;
+            var exceptionType = Type.GetType(ExceptionType);
+            var message = await workflowContext.EvaluateExpressionAsync(Message);
+            var hasMessage = string.IsNullOrWhiteSpace(message);
+            var exception = (Exception)(hasMessage ? Activator.CreateInstance(exceptionType, message) : Activator.CreateInstance(exceptionType));
 
-            _logger.Log(logLevel, 0, text, null, (state, error) => state.ToString());
-            return Outcomes("Done");
+            _logger.LogError(exception, message);
+            throw exception;
         }
     }
 }

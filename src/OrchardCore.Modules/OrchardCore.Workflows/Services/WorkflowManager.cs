@@ -70,7 +70,8 @@ namespace OrchardCore.Workflows.Services
             var properties = await DeserializeAsync(state.Properties);
             var output = await DeserializeAsync(state.Output);
             var lastResult = await DeserializeAsync(state.LastResult);
-            return new WorkflowExecutionContext(workflowInstanceRecord, _serviceProvider, mergedInput, output, properties, lastResult, activityQuery, _workflowContextHandlers.Resolve(), _expressionEvaluator, _scriptEvaluator, _workflowContextLogger);
+            var executedActivities = state.ExecutedActivities;
+            return new WorkflowExecutionContext(workflowInstanceRecord, _serviceProvider, mergedInput, output, properties, executedActivities, lastResult, activityQuery, _workflowContextHandlers.Resolve(), _expressionEvaluator, _scriptEvaluator, _workflowContextLogger);
         }
 
         public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord)
@@ -321,21 +322,23 @@ namespace OrchardCore.Workflows.Services
                     break;
                 }
 
-                // Execute the current activity.
-                IList<string> outcomes;
+                IList<string> outcomes = new List<string>(0);
 
                 try
                 {
                     ActivityExecutionResult result;
 
-                    if (isResuming)
+                    if (!isResuming)
                     {
-                        result = await activityContext.Activity.ResumeAsync(workflowContext, activityContext);
-                        isResuming = false;
+                        // Execute the current activity.
+                        result = await activityContext.Activity.ExecuteAsync(workflowContext, activityContext);
+                        workflowContext.ExecutedActivities.Push(activity.Id);
                     }
                     else
                     {
-                        result = await activityContext.Activity.ExecuteAsync(workflowContext, activityContext);
+                        // Resume the current activity.
+                        result = await activityContext.Activity.ResumeAsync(workflowContext, activityContext);
+                        isResuming = false;
                     }
 
                     if (result.IsHalted)
@@ -368,9 +371,28 @@ namespace OrchardCore.Workflows.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"An error occurred while executing an activity. Workflow ID: {definition.Id}. Activity: {activityContext.ActivityRecord.Id}, {activityContext.ActivityRecord.Name}");
-                    workflowContext.Fault(ex, activityContext);
-                    return blocking.Distinct();
+                    _logger.LogWarning($"An error occurred while executing an activity. Workflow ID: {definition.Id}. Activity: {activityContext.ActivityRecord.Id}, {activityContext.ActivityRecord.Name}. Giving the workflow a chance to heal.");
+                    // Give each executed activity a chance to handle the error.
+                    var handled = false;
+                    foreach (var executedActivityId in workflowContext.ExecutedActivities)
+                    {
+                        var executedActivity = workflowContext.GetActivity(executedActivityId);
+                        handled = await executedActivity.Activity.HandleExceptionAsync(workflowContext, activityContext, ex);
+
+                        if (handled)
+                        {
+                            scheduled.Push(executedActivity.ActivityRecord);
+                            // The exception will be handled, so exit this for loop.
+                            break;
+                        }
+                    }
+
+                    if (!handled)
+                    {
+                        _logger.LogError(ex, $"An unhandled error occurred while executing an activity. Workflow ID: {definition.Id}. Activity: {activityContext.ActivityRecord.Id}, {activityContext.ActivityRecord.Name}. Putting the workflow in the faulted state.");
+                        workflowContext.Fault(ex, activityContext);
+                        return blocking.Distinct();
+                    }
                 }
 
                 // Signal every activity that the activity is executed.
@@ -410,6 +432,7 @@ namespace OrchardCore.Workflows.Services
             state.Output = await SerializeAsync(workflowContext.Output);
             state.Properties = await SerializeAsync(workflowContext.Properties);
             state.LastResult = await SerializeAsync(workflowContext.LastResult);
+            state.ExecutedActivities = workflowContext.ExecutedActivities.ToList();
 
             workflowContext.WorkflowInstance.State = JObject.FromObject(state);
             await _workflowInstanceRepository.SaveAsync(workflowContext.WorkflowInstance);

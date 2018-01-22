@@ -1,11 +1,7 @@
-using System;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Liquid;
@@ -18,7 +14,6 @@ using OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Liquid;
-using OrchardCore.Workflows.Options;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
 using YesSql.Indexes;
@@ -59,6 +54,8 @@ namespace OrchardCore.Workflows
             services.AddActivity<IfElseTask, IfElseTaskDisplay>();
             services.AddActivity<ScriptTask, ScriptTaskDisplay>();
             services.AddActivity<LogTask, LogTaskDisplay>();
+            services.AddActivity<ThrowTask, ThrowTaskDisplay>();
+            services.AddActivity<TryCatchTask, TryCatchTaskDisplay>();
             services.AddActivity<SignalEvent, SignalEventDisplay>();
 
             services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();

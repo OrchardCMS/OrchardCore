@@ -1,0 +1,14 @@
+@using OrchardCore.Workflows.ViewModels;
+@model ThrowTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="ExceptionType">
+    <label asp-for="ExceptionType">@T["Exception Type"] <span asp-validation-for="ExceptionType"></span></label>
+    <input type="text" asp-for="ExceptionType" class="form-control" />
+    <span class="hint">@T["Enter the namespace-qualified type name of the exception to throw, or use the assembly-qualified name for exception types outside of mscorlib."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Message">
+    <label asp-for="Message">@T["Error Message"] <span asp-validation-for="Message"></span></label>
+    <input type="text" asp-for="Message" class="form-control code" />
+    <span class="hint">@T["Optionally enter an error message. With Liquid support."]</span>
+</fieldset>
