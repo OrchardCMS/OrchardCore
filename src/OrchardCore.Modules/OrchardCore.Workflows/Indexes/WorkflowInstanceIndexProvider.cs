@@ -6,8 +6,8 @@ namespace OrchardCore.Workflows.Indexes
 {
     public class WorkflowInstanceIndex : MapIndex
     {
-        public int WorkflowDefinitionId { get; set; }
-        public int WorkflowInstanceId { get; set; }
+        public string WorkflowDefinitionUid { get; set; }
+        public string WorkflowInstanceUid { get; set; }
     }
 
     public class WorkflowInstanceByAwaitingActivitiesIndex : MapIndex
@@ -15,7 +15,6 @@ namespace OrchardCore.Workflows.Indexes
         public int ActivityId { get; set; }
         public string ActivityName { get; set; }
         public bool ActivityIsStart { get; set; }
-        public int WorkflowInstanceId { get; set; }
         public string WorkflowInstanceUid { get; set; }
         public string WorkflowInstanceCorrelationId { get; set; }
     }
@@ -28,8 +27,8 @@ namespace OrchardCore.Workflows.Indexes
                 .Map(workflowInstance =>
                     new WorkflowInstanceIndex
                     {
-                        WorkflowDefinitionId = workflowInstance.WorkflowDefinition.Id,
-                        WorkflowInstanceId = workflowInstance.Id
+                        WorkflowDefinitionUid = workflowInstance.WorkflowDefinition.Uid,
+                        WorkflowInstanceUid = workflowInstance.Uid
                     }
                 );
 
@@ -41,9 +40,8 @@ namespace OrchardCore.Workflows.Indexes
                         ActivityId = x.ActivityId,
                         ActivityName = x.Name,
                         ActivityIsStart = x.IsStart,
-                        WorkflowInstanceId = workflowInstance.Id,
                         WorkflowInstanceUid = workflowInstance.Uid,
-                        WorkflowInstanceCorrelationId = workflowInstance.CorrelationId ?? "" // TODO: Can't compare NULL == NULL for some reason, so converting to empty string.
+                        WorkflowInstanceCorrelationId = workflowInstance.CorrelationId ?? "" // TODO: Can't compare NULL == NULL for some reason, so converting to empty string. See also https://github.com/sebastienros/yessql/issues/89
                     })
                 );
         }

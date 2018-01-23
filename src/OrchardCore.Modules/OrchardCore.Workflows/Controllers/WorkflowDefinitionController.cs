@@ -25,6 +25,7 @@ using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Workflows.Controllers
 {
@@ -91,7 +92,7 @@ namespace OrchardCore.Workflows.Controllers
                 options = new WorkflowDefinitionIndexOptions();
             }
 
-            var query = _session.Query<WorkflowDefinitionRecord, WorkflowDefinitionsIndex>();
+            var query = _session.Query<WorkflowDefinitionRecord, WorkflowDefinitionIndex>();
 
             switch (options.Filter)
             {
@@ -119,11 +120,8 @@ namespace OrchardCore.Workflows.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            var workflowDefinitionIds = workflowDefinitions.Select(x => x.Id).ToList();
-
-            // TODO: Figure out how to do a "list contains x" expression.
-            //var workflowInstanceGroups = (await _session.QueryIndex<WorkflowInstanceIndex>(x => workflowDefinitionIds.Contains(x.WorkflowDefinitionId)).ListAsync()).GroupBy(x => x.WorkflowDefinitionId).ToDictionary(x => x.Key);
-            var workflowInstanceGroups = (await _session.QueryIndex<WorkflowInstanceIndex>().ListAsync()).GroupBy(x => x.WorkflowDefinitionId).ToDictionary(x => x.Key);
+            var workflowDefinitionIds = workflowDefinitions.Select(x => x.Uid).ToList();
+            var workflowInstanceGroups = (await _session.QueryIndex<WorkflowInstanceIndex>(x => x.WorkflowDefinitionUid.IsIn(workflowDefinitionIds)).ListAsync()).GroupBy(x => x.WorkflowDefinitionUid).ToDictionary(x => x.Key);
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -139,7 +137,7 @@ namespace OrchardCore.Workflows.Controllers
                     {
                         WorkflowDefinition = x,
                         Id = x.Id,
-                        WorkflowInstanceCount = workflowInstanceGroups.ContainsKey(x.Id) ? workflowInstanceGroups[x.Id].Count() : 0,
+                        WorkflowInstanceCount = workflowInstanceGroups.ContainsKey(x.Uid) ? workflowInstanceGroups[x.Uid].Count() : 0,
                         Name = x.Name
                     })
                     .ToList(),
@@ -236,7 +234,9 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var isNew = id == null;
-            var workflowDefinition = isNew ? new WorkflowDefinitionRecord() : await _session.GetAsync<WorkflowDefinitionRecord>(id.Value);
+            var workflowDefinition = isNew
+                ? new WorkflowDefinitionRecord { Uid = Guid.NewGuid().ToString("N") }
+                : await _session.GetAsync<WorkflowDefinitionRecord>(id.Value);
             if (workflowDefinition == null)
             {
                 return NotFound();
@@ -268,7 +268,7 @@ namespace OrchardCore.Workflows.Controllers
             var activityContexts = await Task.WhenAll(workflowDefinitionRecord.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x)));
             var activityThumbnailDisplayTasks = availableActivities.Select(async (x, i) => await BuildActivityDisplay(x, i, id, newLocalId, "Thumbnail"));
             var activityDesignDisplayTasks = activityContexts.Select(async (x, i) => await BuildActivityDisplay(x, i, id, newLocalId, "Design"));
-            var workflowInstanceCount = await _session.QueryIndex<WorkflowInstanceIndex>(x => x.WorkflowDefinitionId == id).CountAsync();
+            var workflowInstanceCount = await _session.QueryIndex<WorkflowInstanceIndex>(x => x.WorkflowDefinitionUid == workflowDefinitionRecord.Uid).CountAsync();
 
             await Task.WhenAll(activityThumbnailDisplayTasks.Concat(activityDesignDisplayTasks));
 

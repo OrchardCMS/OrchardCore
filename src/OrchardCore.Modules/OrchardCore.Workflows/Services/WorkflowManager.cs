@@ -104,7 +104,7 @@ namespace OrchardCore.Workflows.Services
             }
 
             // Look for workflow definitions with a corresponding starting activity.
-            var workflowsToStart = await _workflowDefinitionRepository.GetWorkflowDefinitionsByStartActivityAsync(name);
+            var workflowsToStart = await _workflowDefinitionRepository.GetByStartActivityAsync(name);
 
             // And any running workflow paused on this kind of activity for the specified target.
             // When an activity is restarted, all the other ones of the same workflow are cancelled.
@@ -142,10 +142,10 @@ namespace OrchardCore.Workflows.Services
         public async Task TriggerOnceAsync(string name, IDictionary<string, object> input = null, string correlationId = null)
         {
             // Get all workflow definitions that start with the specified activity.
-            var workflowDefinitions = await _workflowDefinitionRepository.GetWorkflowDefinitionsByStartActivityAsync(name);
+            var workflowDefinitions = await _workflowDefinitionRepository.GetByStartActivityAsync(name);
 
             // Only start workflows for which there isn't already a halted workflow instance.
-            var workflowDefinitionIds = workflowDefinitions.Select(x => x.Id).ToList();
+            var workflowDefinitionIds = workflowDefinitions.Select(x => x.Uid).ToList();
             var startedWorkflowInstances = await _workflowInstanceRepository.ListByWorkflowDefinitionsAsync(workflowDefinitionIds);
 
             foreach (var workflowDefinition in workflowDefinitions)
@@ -174,7 +174,7 @@ namespace OrchardCore.Workflows.Services
 
         public async Task<WorkflowExecutionContext> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance, AwaitingActivityRecord awaitingActivity, IDictionary<string, object> input = null)
         {
-            var workflowDefinition = await _workflowDefinitionRepository.GetWorkflowDefinitionAsync(workflowInstance.WorkflowDefinition.Id);
+            var workflowDefinition = await _workflowDefinitionRepository.GetAsync(workflowInstance.WorkflowDefinition.Id);
             var activityRecord = workflowDefinition.Activities.SingleOrDefault(x => x.Id == awaitingActivity.ActivityId);
             var workflowContext = await CreateWorkflowExecutionContextAsync(workflowInstance, input);
 

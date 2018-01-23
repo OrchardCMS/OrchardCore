@@ -46,9 +46,9 @@ namespace OrchardCore.Workflows.Services
             return query.ListAsync();
         }
 
-        public Task<IEnumerable<WorkflowInstanceRecord>> ListByWorkflowDefinitionsAsync(IEnumerable<int> workflowDefinitionIds)
+        public Task<IEnumerable<WorkflowInstanceRecord>> ListByWorkflowDefinitionsAsync(IEnumerable<string> workflowDefinitionUids)
         {
-            return _session.Query<WorkflowInstanceRecord, WorkflowInstanceIndex>(x => x.WorkflowDefinitionId.IsIn(workflowDefinitionIds)).ListAsync();
+            return _session.Query<WorkflowInstanceRecord, WorkflowInstanceIndex>(x => x.WorkflowDefinitionUid.IsIn(workflowDefinitionUids)).ListAsync();
         }
 
         public Task<WorkflowInstanceRecord> GetAsync(int id)
@@ -81,8 +81,8 @@ namespace OrchardCore.Workflows.Services
                 .ListAsync();
 
             var pendingWorkflowInstanceIndexes = query.ToList();
-            var pendingWorkflowInstanceIds = pendingWorkflowInstanceIndexes.Select(x => x.WorkflowInstanceId).Distinct().ToArray();
-            var pendingWorkflowInstances = await _session.GetAsync<WorkflowInstanceRecord>(pendingWorkflowInstanceIds);
+            var pendingWorkflowInstanceIds = pendingWorkflowInstanceIndexes.Select(x => x.WorkflowInstanceUid).Distinct().ToArray();
+            var pendingWorkflowInstances = await _session.Query<WorkflowInstanceRecord, WorkflowInstanceIndex>(x => x.WorkflowInstanceUid.IsIn(pendingWorkflowInstanceIds)).ListAsync();
 
             return pendingWorkflowInstances.ToList();
         }

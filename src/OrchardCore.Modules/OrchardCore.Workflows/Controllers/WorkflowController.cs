@@ -37,7 +37,7 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowDefinition = await _workflowDefinitionRepository.GetWorkflowDefinitionAsync(workflowDefinitionId);
+            var workflowDefinition = await _workflowDefinitionRepository.GetAsync(workflowDefinitionId);
 
             if (workflowDefinition == null)
             {

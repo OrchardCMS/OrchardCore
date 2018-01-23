@@ -116,7 +116,7 @@ namespace OrchardCore.Tests.Workflows
                 activityLibrary.Setup(x => x.InstantiateActivity(activity.Name)).Returns(activity);
             }
 
-            workflowDefinitionRepository.Setup(x => x.GetWorkflowDefinitionAsync(workflowDefinition.Id)).Returns(Task.FromResult(workflowDefinition));
+            workflowDefinitionRepository.Setup(x => x.GetAsync(workflowDefinition.Id)).Returns(Task.FromResult(workflowDefinition));
 
             return workflowManager;
         }

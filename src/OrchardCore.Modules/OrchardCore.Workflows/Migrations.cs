@@ -7,13 +7,15 @@ namespace OrchardCore.Workflows
     {
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionsIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionIndex), table => table
+                .Column<string>("Uid")
                 .Column<string>("Name")
                 .Column<bool>("IsEnabled")
                 .Column<bool>("HasStart")
             );
 
             SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionStartActivitiesIndex), table => table
+                .Column<string>("Uid")
                 .Column<string>("Name")
                 .Column<bool>("IsEnabled")
                 .Column<int>("StartActivityId")
@@ -21,15 +23,14 @@ namespace OrchardCore.Workflows
             );
 
             SchemaBuilder.CreateMapIndexTable(nameof(WorkflowInstanceIndex), table => table
-                .Column<int>("WorkflowDefinitionId")
-                .Column<int>("WorkflowInstanceId")
+                .Column<string>("WorkflowDefinitionUid")
+                .Column<string>("WorkflowInstanceUid")
             );
 
             SchemaBuilder.CreateMapIndexTable(nameof(WorkflowInstanceByAwaitingActivitiesIndex), table => table
-                .Column<string>("ActivityId")
+                .Column<int>("ActivityId")
                 .Column<string>("ActivityName")
                 .Column<bool>("ActivityIsStart")
-                .Column<int>("WorkflowInstanceId")
                 .Column<string>("WorkflowInstanceUid")
                 .Column<string>("WorkflowInstanceCorrelationId")
             );

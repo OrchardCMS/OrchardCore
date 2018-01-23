@@ -27,22 +27,17 @@ namespace OrchardCore.Workflows.Services
             return _session.GetAsync<WorkflowDefinitionRecord>(id);
         }
 
-        public Task<IEnumerable<WorkflowDefinitionRecord>> ListAsync()
-        {
-            return _session.Query<WorkflowDefinitionRecord, WorkflowDefinitionsIndex>().ListAsync();
-        }
-
-        public Task<WorkflowDefinitionRecord> GetWorkflowDefinitionAsync(int id)
-        {
-            return _session.GetAsync<WorkflowDefinitionRecord>(id);
-        }
-
-        public Task<IEnumerable<WorkflowDefinitionRecord>> GetWorkflowDefinitionsAsync(IEnumerable<int> ids)
+        public Task<IEnumerable<WorkflowDefinitionRecord>> GetAsync(IEnumerable<int> ids)
         {
             return _session.GetAsync<WorkflowDefinitionRecord>(ids.ToArray());
         }
 
-        public async Task<IList<WorkflowDefinitionRecord>> GetWorkflowDefinitionsByStartActivityAsync(string activityName)
+        public Task<IEnumerable<WorkflowDefinitionRecord>> ListAsync()
+        {
+            return _session.Query<WorkflowDefinitionRecord, WorkflowDefinitionIndex>().ListAsync();
+        }
+
+        public async Task<IList<WorkflowDefinitionRecord>> GetByStartActivityAsync(string activityName)
         {
             var query = await _session
                 .Query<WorkflowDefinitionRecord, WorkflowDefinitionStartActivitiesIndex>(index =>
@@ -75,7 +70,7 @@ namespace OrchardCore.Workflows.Services
             // TODO: Remove this when versioning is implemented.
 
             // Delete workflow instances first.
-            var workflowInstances = await _session.Query<WorkflowInstanceRecord, WorkflowInstanceIndex>(x => x.WorkflowDefinitionId == workflowDefinition.Id).ListAsync();
+            var workflowInstances = await _session.Query<WorkflowInstanceRecord, WorkflowInstanceIndex>(x => x.WorkflowDefinitionUid == workflowDefinition.Uid).ListAsync();
 
             foreach (var workflowInstance in workflowInstances)
             {

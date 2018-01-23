@@ -40,7 +40,7 @@ namespace OrchardCore.Workflows.Http.Filters
             if (workflowDefinitionEntries.Any())
             {
                 var workflowDefinitionIds = workflowDefinitionEntries.Select(x => int.Parse(x.WorkflowId)).ToList();
-                var workflowDefinitions = (await _workflowDefinitionRepository.GetWorkflowDefinitionsAsync(workflowDefinitionIds)).ToDictionary(x => x.Id);
+                var workflowDefinitions = (await _workflowDefinitionRepository.GetAsync(workflowDefinitionIds)).ToDictionary(x => x.Id);
 
                 foreach (var entry in workflowDefinitionEntries)
                 {
