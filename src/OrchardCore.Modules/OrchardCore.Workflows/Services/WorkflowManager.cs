@@ -371,28 +371,9 @@ namespace OrchardCore.Workflows.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning($"An error occurred while executing an activity. Workflow ID: {definition.Id}. Activity: {activityContext.ActivityRecord.Id}, {activityContext.ActivityRecord.Name}. Giving the workflow a chance to heal.");
-                    // Give each executed activity a chance to handle the error.
-                    var handled = false;
-                    foreach (var executedActivityId in workflowContext.ExecutedActivities)
-                    {
-                        var executedActivity = workflowContext.GetActivity(executedActivityId);
-                        handled = await executedActivity.Activity.HandleExceptionAsync(workflowContext, activityContext, ex);
-
-                        if (handled)
-                        {
-                            scheduled.Push(executedActivity.ActivityRecord);
-                            // The exception will be handled, so exit this for loop.
-                            break;
-                        }
-                    }
-
-                    if (!handled)
-                    {
-                        _logger.LogError(ex, $"An unhandled error occurred while executing an activity. Workflow ID: {definition.Id}. Activity: {activityContext.ActivityRecord.Id}, {activityContext.ActivityRecord.Name}. Putting the workflow in the faulted state.");
-                        workflowContext.Fault(ex, activityContext);
-                        return blocking.Distinct();
-                    }
+                    _logger.LogError(ex, $"An unhandled error occurred while executing an activity. Workflow ID: {definition.Id}. Activity: {activityContext.ActivityRecord.Id}, {activityContext.ActivityRecord.Name}. Putting the workflow in the faulted state.");
+                    workflowContext.Fault(ex, activityContext);
+                    return blocking.Distinct();
                 }
 
                 // Signal every activity that the activity is executed.

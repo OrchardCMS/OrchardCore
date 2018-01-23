@@ -1,8 +1,0 @@
-@using OrchardCore.Workflows.ViewModels;
-@model TryCatchTaskViewModel
-
-<fieldset class="form-group" asp-validation-class-for="ExceptionTypes">
-    <label asp-for="ExceptionTypes">@T["Exception Types"] <span asp-validation-for="ExceptionTypes"></span></label>
-    <textarea asp-for="ExceptionTypes" class="form-control"></textarea>
-    <span class="hint">@T["Enter one or more exception types to handle, one per line. Use the assembly-qualified name for exception types outside of mscorlib."]</span>
-</fieldset>

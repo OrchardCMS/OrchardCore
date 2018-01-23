@@ -57,8 +57,6 @@ namespace OrchardCore.Workflows
             services.AddActivity<IfElseTask, IfElseTaskDisplay>();
             services.AddActivity<ScriptTask, ScriptTaskDisplay>();
             services.AddActivity<LogTask, LogTaskDisplay>();
-            services.AddActivity<ThrowTask, ThrowTaskDisplay>();
-            services.AddActivity<TryCatchTask, TryCatchTaskDisplay>();
             services.AddActivity<SignalEvent, SignalEventDisplay>();
 
             services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
