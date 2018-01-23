@@ -1,4 +1,7 @@
+using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
@@ -62,6 +65,37 @@ namespace OrchardCore.Workflows
 
             services.AddScoped<ILiquidTemplateEventHandler, SignalLiquidTemplateHandler>();
             services.AddLiquidFilter<SignalUrlFilter>("signal_url");
+        }
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaRoute(
+                name: "AddActivity",
+                areaName: "OrchardCore.Workflows",
+                template: "Admin/Workflows/Definitions/{workflowDefinitionId}/Activity/{activityName}/Add",
+                defaults: new { controller = "Activity", action = "Create" }
+            );
+
+            routes.MapAreaRoute(
+                name: "EditActivity",
+                areaName: "OrchardCore.Workflows",
+                template: "Admin/Workflows/Definitions/{workflowDefinitionId}/Activity/{activityId}/Edit",
+                defaults: new { controller = "Activity", action = "Edit" }
+            );
+
+            routes.MapAreaRoute(
+                name: "WorkflowInstances",
+                areaName: "OrchardCore.Workflows",
+                template: "Admin/Workflows/Definitions/{workflowDefinitionId}/Instances/{action}",
+                defaults: new { controller = "WorkflowInstance", action = "Index" }
+            );
+
+            routes.MapAreaRoute(
+                name: "WorkflowDefinitions",
+                areaName: "OrchardCore.Workflows",
+                template: "Admin/Workflows/Definitions/{action}/{id?}",
+                defaults: new { controller = "WorkflowDefinition", action = "Index" }
+            );
         }
     }
 }
