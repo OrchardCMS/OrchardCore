@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -50,9 +51,9 @@ namespace OrchardCore.Mvc.LocationExpander
 
                 IEnumerable<string> PageViewLocations()
                 {
-                    if (page.RelativePath.Contains("/Pages/") && !page.RelativePath.StartsWith("/Pages/"))
+                    if (page.RelativePath.Contains("/Pages/") && !page.RelativePath.StartsWith("/Pages/", StringComparison.Ordinal))
                     {
-                        yield return page.RelativePath.Substring(0, page.RelativePath.IndexOf("/Pages/"))
+                        yield return page.RelativePath.Substring(0, page.RelativePath.IndexOf("/Pages/", StringComparison.Ordinal))
                             + "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
                     }
                 }
@@ -71,7 +72,7 @@ namespace OrchardCore.Mvc.LocationExpander
             var extensionViewsPath = '/' + extension.SubPath + "/Views";
             result.Add(extensionViewsPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
 
-            if (!context.ViewName.StartsWith("Components/"))
+            if (!context.ViewName.StartsWith("Components/", StringComparison.Ordinal))
             {
                 result.Add(extensionViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
             }
