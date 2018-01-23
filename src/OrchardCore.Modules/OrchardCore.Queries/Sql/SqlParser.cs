@@ -397,7 +397,22 @@ namespace OrchardCore.Queries.Sql
                         }
                         else
                         {
-                            _parameters[name] = parseTreeNode.ChildNodes[3].Token.Value;
+                            if (parseTreeNode.ChildNodes[3].Token != null)
+                            {
+                                _parameters[name] = parseTreeNode.ChildNodes[3].Token.Value;
+                            }
+                            else
+                            {
+                                // example: true
+                                if (parseTreeNode.ChildNodes[3].ChildNodes[0].Token != null)
+                                {
+                                    _parameters[name] = parseTreeNode.ChildNodes[3].ChildNodes[0].Token.Value;
+                                }
+                                else
+                                {
+                                    throw new SqlParserException("Unsupported syntax for parameter: " + name);
+                                }
+                            }
                         }
                     }
 
