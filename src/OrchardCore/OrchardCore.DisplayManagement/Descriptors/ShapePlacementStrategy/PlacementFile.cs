@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
@@ -26,6 +26,9 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         [JsonProperty(PropertyName = "shape")]
         public string ShapeType { get; set; }
+
+        [JsonProperty(PropertyName = "matches")]
+        public IDictionary<string, string> Matches { get; set; } = new Dictionary<string, string>();
 
     }
 }

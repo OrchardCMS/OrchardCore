@@ -65,6 +65,8 @@ namespace OrchardCore.DisplayManagement
             services.AddScoped<IShapeTemplateHarvester, BasicShapeTemplateHarvester>();
             services.AddTransient<IShapeTableManager, DefaultShapeTableManager>();
 
+            services.AddScoped<IPlacementParseMatchProvider, ContentTypePlacementParseMatchProvider>();
+
             services.AddScoped<IShapeTableProvider, ShapeAttributeBindingStrategy>();
             services.AddScoped<IShapeTableProvider, ShapePlacementParsingStrategy>();
             services.AddScoped<IShapeTableProvider, ShapeTemplateBindingStrategy>();
