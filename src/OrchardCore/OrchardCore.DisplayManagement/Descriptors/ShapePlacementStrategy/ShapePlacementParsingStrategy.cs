@@ -77,13 +77,13 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
                 foreach (var filter in entry.Value)
                 {
-                    var matches = filter.Matches;
+                    var matches = filter.Match.ToList();
 
                     Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, filter);
                     
                     if (matches.Any())
                     {
-                        predicate = matches.ToList().Aggregate(predicate, BuildPredicate);
+                        predicate = matches.Aggregate(predicate, BuildPredicate);
                     }
 
                     var placement = new PlacementInfo();

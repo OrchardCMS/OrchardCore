@@ -27,8 +27,8 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         [JsonProperty(PropertyName = "shape")]
         public string ShapeType { get; set; }
 
-        [JsonProperty(PropertyName = "matches")]
-        public IDictionary<string, string> Matches { get; set; } = new Dictionary<string, string>();
+        [JsonProperty(PropertyName = "match")]
+        public IDictionary<string, string> Match { get; set; } = new Dictionary<string, string>();
 
     }
 }
