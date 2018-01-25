@@ -9,20 +9,19 @@ namespace OrchardCore.Workflows.Http.Services
 {
     public class WorkflowInstancePathEntries : WorkflowPathEntriesBase, IWorkflowInstancePathEntries
     {
-        public static IEnumerable<WorkflowPathEntry> GetWorkflowPathEntries(WorkflowInstanceRecord workflowInstance, IActivityLibrary activityLibrary)
+        public static IEnumerable<WorkflowPathEntry> GetWorkflowPathEntries(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord, IActivityLibrary activityLibrary)
         {
-            var awaitingActivityIds = workflowInstance.AwaitingActivities.Select(x => x.ActivityId).ToDictionary(x => x);
-            var workflowDefinition = workflowInstance.WorkflowDefinition;
-            return workflowDefinition.Activities.Where(x => x.Name == HttpRequestEvent.EventName && awaitingActivityIds.ContainsKey(x.Id)).Select(x =>
+            var awaitingActivityIds = workflowInstanceRecord.AwaitingActivities.Select(x => x.ActivityId).ToDictionary(x => x);
+            return workflowDefinitionRecord.Activities.Where(x => x.Name == HttpRequestEvent.EventName && awaitingActivityIds.ContainsKey(x.Id)).Select(x =>
             {
                 var activity = activityLibrary.InstantiateActivity<HttpRequestEvent>(x);
                 var entry = new WorkflowPathEntry
                 {
-                    WorkflowId = workflowInstance.Uid,
+                    WorkflowId = workflowInstanceRecord.Uid,
                     ActivityId = x.Id,
                     HttpMethod = activity.HttpMethod,
                     Path = activity.RequestPath,
-                    CorrelationId = workflowInstance.CorrelationId
+                    CorrelationId = workflowInstanceRecord.CorrelationId
                 };
 
                 return entry;

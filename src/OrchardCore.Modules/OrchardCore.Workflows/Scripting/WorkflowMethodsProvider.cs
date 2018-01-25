@@ -26,7 +26,7 @@ namespace OrchardCore.Workflows.Scripting
             _workflowUidMethod = new GlobalMethod
             {
                 Name = "workflowUid",
-                Method = serviceProvider => (Func<string>)(() => workflowContext.WorkflowInstance.Uid)
+                Method = serviceProvider => (Func<string>)(() => workflowContext.WorkflowInstanceRecord.Uid)
             };
 
             _inputMethod = new GlobalMethod
@@ -56,7 +56,7 @@ namespace OrchardCore.Workflows.Scripting
             _correlationIdMethod = new GlobalMethod
             {
                 Name = "correlationId",
-                Method = serviceProvider => (Func<string>)(() => workflowContext.WorkflowInstance.CorrelationId)
+                Method = serviceProvider => (Func<string>)(() => workflowContext.WorkflowInstanceRecord.CorrelationId)
             };
         }
 

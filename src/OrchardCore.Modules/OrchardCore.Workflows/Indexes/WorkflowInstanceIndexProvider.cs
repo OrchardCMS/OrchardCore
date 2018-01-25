@@ -27,7 +27,7 @@ namespace OrchardCore.Workflows.Indexes
                 .Map(workflowInstance =>
                     new WorkflowInstanceIndex
                     {
-                        WorkflowDefinitionUid = workflowInstance.WorkflowDefinition.Uid,
+                        WorkflowDefinitionUid = workflowInstance.WorkflowDefinitionUid,
                         WorkflowInstanceUid = workflowInstance.Uid
                     }
                 );
@@ -41,7 +41,7 @@ namespace OrchardCore.Workflows.Indexes
                         ActivityName = x.Name,
                         ActivityIsStart = x.IsStart,
                         WorkflowInstanceUid = workflowInstance.Uid,
-                        WorkflowInstanceCorrelationId = workflowInstance.CorrelationId ?? "" // TODO: Can't compare NULL == NULL for some reason, so converting to empty string. See also https://github.com/sebastienros/yessql/issues/89
+                        WorkflowInstanceCorrelationId = workflowInstance.CorrelationId
                     })
                 );
         }

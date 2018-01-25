@@ -62,16 +62,16 @@ namespace OrchardCore.Workflows.Services
             _clock = clock;
         }
 
-        public async Task<WorkflowExecutionContext> CreateWorkflowExecutionContextAsync(WorkflowInstanceRecord workflowInstanceRecord, IDictionary<string, object> input = null)
+        public async Task<WorkflowExecutionContext> CreateWorkflowExecutionContextAsync(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord, IDictionary<string, object> input = null)
         {
-            var activityQuery = await Task.WhenAll(workflowInstanceRecord.WorkflowDefinition.Activities.Select(async x => await CreateActivityExecutionContextAsync(x)));
+            var activityQuery = await Task.WhenAll(workflowDefinitionRecord.Activities.Select(async x => await CreateActivityExecutionContextAsync(x)));
             var state = workflowInstanceRecord.State.ToObject<WorkflowState>();
             var mergedInput = (await DeserializeAsync(state.Input)).Merge(input ?? new Dictionary<string, object>());
             var properties = await DeserializeAsync(state.Properties);
             var output = await DeserializeAsync(state.Output);
             var lastResult = await DeserializeAsync(state.LastResult);
             var executedActivities = state.ExecutedActivities;
-            return new WorkflowExecutionContext(workflowInstanceRecord, _serviceProvider, mergedInput, output, properties, executedActivities, lastResult, activityQuery, _workflowContextHandlers.Resolve(), _expressionEvaluator, _scriptEvaluator, _workflowContextLogger);
+            return new WorkflowExecutionContext(workflowDefinitionRecord, workflowInstanceRecord, _serviceProvider, mergedInput, output, properties, executedActivities, lastResult, activityQuery, _workflowContextHandlers.Resolve(), _expressionEvaluator, _scriptEvaluator, _workflowContextLogger);
         }
 
         public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord)
@@ -150,7 +150,7 @@ namespace OrchardCore.Workflows.Services
 
             foreach (var workflowDefinition in workflowDefinitions)
             {
-                var workflowInstance = startedWorkflowInstances.FirstOrDefault(x => x.WorkflowDefinition.Id == workflowDefinition.Id && x.AwaitingActivities.Any(a => a.Name == name && a.IsStart));
+                var workflowInstance = startedWorkflowInstances.FirstOrDefault(x => x.WorkflowDefinitionUid == workflowDefinition.Uid && x.AwaitingActivities.Any(a => a.Name == name && a.IsStart));
 
                 if (workflowInstance == null)
                 {
@@ -174,9 +174,9 @@ namespace OrchardCore.Workflows.Services
 
         public async Task<WorkflowExecutionContext> ResumeWorkflowAsync(WorkflowInstanceRecord workflowInstance, AwaitingActivityRecord awaitingActivity, IDictionary<string, object> input = null)
         {
-            var workflowDefinition = await _workflowDefinitionRepository.GetAsync(workflowInstance.WorkflowDefinition.Id);
+            var workflowDefinition = await _workflowDefinitionRepository.GetAsync(workflowInstance.WorkflowDefinitionUid);
             var activityRecord = workflowDefinition.Activities.SingleOrDefault(x => x.Id == awaitingActivity.ActivityId);
-            var workflowContext = await CreateWorkflowExecutionContextAsync(workflowInstance, input);
+            var workflowContext = await CreateWorkflowExecutionContextAsync(workflowDefinition, workflowInstance, input);
 
             workflowContext.Status = WorkflowStatus.Resuming;
 
@@ -201,7 +201,7 @@ namespace OrchardCore.Workflows.Services
                     await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowResumedAsync(workflowContext));
 
                     // Remove the blocking activity.
-                    workflowContext.WorkflowInstance.AwaitingActivities.Remove(awaitingActivity);
+                    workflowContext.WorkflowInstanceRecord.AwaitingActivities.Remove(awaitingActivity);
 
                     // Resume the workflow at the specified blocking activity.
                     await ExecuteWorkflowAsync(workflowContext, activityRecord);
@@ -215,7 +215,7 @@ namespace OrchardCore.Workflows.Services
 
             if (workflowContext.Status == WorkflowStatus.Finished)
             {
-                await _workflowInstanceRepository.DeleteAsync(workflowContext.WorkflowInstance);
+                await _workflowInstanceRepository.DeleteAsync(workflowContext.WorkflowInstanceRecord);
             }
             else
             {
@@ -240,9 +240,6 @@ namespace OrchardCore.Workflows.Services
             // Create a new workflow instance.
             var workflowInstance = new WorkflowInstanceRecord
             {
-                // Cloning the workflow definition allows the original workflow definition to be changed, as well as runtime activities to change their own state.
-                // Although a concern might be that a workflow instance becomes too "heavy", the overhead is minimal given the fact we still need to maintain runtime state for activities anyway.
-                WorkflowDefinition = JsonConvert.DeserializeObject<WorkflowDefinitionRecord>(JsonConvert.SerializeObject(workflowDefinition)),
                 Uid = Guid.NewGuid().ToString("N"),
                 State = JObject.FromObject(new WorkflowState()),
                 CorrelationId = correlationId,
@@ -250,7 +247,7 @@ namespace OrchardCore.Workflows.Services
             };
 
             // Create a workflow context.
-            var workflowContext = await CreateWorkflowExecutionContextAsync(workflowInstance, input);
+            var workflowContext = await CreateWorkflowExecutionContextAsync(workflowDefinition, workflowInstance, input);
             workflowContext.Status = WorkflowStatus.Starting;
 
             // Signal every activity about available input.
@@ -296,7 +293,7 @@ namespace OrchardCore.Workflows.Services
 
         public async Task<IEnumerable<ActivityRecord>> ExecuteWorkflowAsync(WorkflowExecutionContext workflowContext, ActivityRecord activity)
         {
-            var definition = workflowContext.WorkflowDefinition;
+            var definition = workflowContext.WorkflowDefinitionRecord;
             var scheduled = new Stack<ActivityRecord>();
             var blocking = new List<ActivityRecord>();
             var isResuming = workflowContext.Status == WorkflowStatus.Resuming;
@@ -386,7 +383,7 @@ namespace OrchardCore.Workflows.Services
 
                     if (transition != null)
                     {
-                        var destinationActivity = workflowContext.WorkflowDefinition.Activities.SingleOrDefault(x => x.Id == transition.DestinationActivityId);
+                        var destinationActivity = workflowContext.WorkflowDefinitionRecord.Activities.SingleOrDefault(x => x.Id == transition.DestinationActivityId);
                         scheduled.Push(destinationActivity);
                     }
                 }
@@ -395,11 +392,11 @@ namespace OrchardCore.Workflows.Services
             // Apply Distinct() as two paths could block on the same activity.
             var blockingActivities = blocking.Distinct().ToList();
 
-            workflowContext.Status = blockingActivities.Any() || workflowContext.WorkflowInstance.AwaitingActivities.Any() ? WorkflowStatus.Halted : WorkflowStatus.Finished;
+            workflowContext.Status = blockingActivities.Any() || workflowContext.WorkflowInstanceRecord.AwaitingActivities.Any() ? WorkflowStatus.Halted : WorkflowStatus.Finished;
 
             foreach (var blockingActivity in blockingActivities)
             {
-                workflowContext.WorkflowInstance.AwaitingActivities.Add(AwaitingActivityRecord.FromActivity(blockingActivity));
+                workflowContext.WorkflowInstanceRecord.AwaitingActivities.Add(AwaitingActivityRecord.FromActivity(blockingActivity));
             }
 
             return blockingActivities;
@@ -407,7 +404,7 @@ namespace OrchardCore.Workflows.Services
 
         private async Task PersistAsync(WorkflowExecutionContext workflowContext)
         {
-            var state = workflowContext.WorkflowInstance.State.ToObject<WorkflowState>();
+            var state = workflowContext.WorkflowInstanceRecord.State.ToObject<WorkflowState>();
 
             state.Input = await SerializeAsync(workflowContext.Input);
             state.Output = await SerializeAsync(workflowContext.Output);
@@ -415,8 +412,8 @@ namespace OrchardCore.Workflows.Services
             state.LastResult = await SerializeAsync(workflowContext.LastResult);
             state.ExecutedActivities = workflowContext.ExecutedActivities.ToList();
 
-            workflowContext.WorkflowInstance.State = JObject.FromObject(state);
-            await _workflowInstanceRepository.SaveAsync(workflowContext.WorkflowInstance);
+            workflowContext.WorkflowInstanceRecord.State = JObject.FromObject(state);
+            await _workflowInstanceRepository.SaveAsync(workflowContext.WorkflowInstanceRecord);
         }
 
         /// <summary>

@@ -25,39 +25,39 @@ namespace OrchardCore.Workflows.Http.Handlers
             _activityLibrary = activityLibrary;
         }
 
-        public override Task CreatedAsync(WorkflowInstanceCreatedContext context)
+        public async override Task CreatedAsync(WorkflowInstanceCreatedContext context)
         {
-            UpdateRouteEntries(context);
-            UpdatePathEntries(context);
-            return Task.CompletedTask;
+            await UpdateRouteEntriesAsync(context);
+            await UpdatePathEntriesAsync(context);
         }
 
-        public override Task UpdatedAsync(WorkflowInstanceUpdatedContext context)
+        public async override Task UpdatedAsync(WorkflowInstanceUpdatedContext context)
         {
-            UpdateRouteEntries(context);
-            UpdatePathEntries(context);
-            return Task.CompletedTask;
+            await UpdateRouteEntriesAsync(context);
+            await UpdatePathEntriesAsync(context);
         }
 
         public override Task DeletedAsync(WorkflowInstanceDeletedContext context)
         {
-            _workflowRouteEntries.RemoveEntries(context.WorkflowInstance.Uid);
-            _workflowPathEntries.RemoveEntries(context.WorkflowInstance.Uid);
+            _workflowRouteEntries.RemoveEntries(context.WorkflowInstanceRecord.Uid);
+            _workflowPathEntries.RemoveEntries(context.WorkflowInstanceRecord.Uid);
             return Task.CompletedTask;
         }
 
-        private void UpdateRouteEntries(WorkflowInstanceContext context)
+        private async Task UpdateRouteEntriesAsync(WorkflowInstanceContext context)
         {
-            var workflowInstance = context.WorkflowInstance;
-            var entries = WorkflowInstanceRouteEntries.GetWorkflowInstanceRoutesEntries(context.WorkflowInstance, _activityLibrary);
+            var workflowInstanceRecord = context.WorkflowInstanceRecord;
+            var workflowDefinitionRecord = await _workflowDefinitionRepository.GetAsync(workflowInstanceRecord.WorkflowDefinitionUid);
+            var entries = WorkflowInstanceRouteEntries.GetWorkflowInstanceRoutesEntries(workflowDefinitionRecord, context.WorkflowInstanceRecord, _activityLibrary);
 
             _workflowRouteEntries.AddEntries(entries);
         }
 
-        private void UpdatePathEntries(WorkflowInstanceContext context)
+        private async Task UpdatePathEntriesAsync(WorkflowInstanceContext context)
         {
-            var workflowInstance = context.WorkflowInstance;
-            var entries = WorkflowInstancePathEntries.GetWorkflowPathEntries(context.WorkflowInstance, _activityLibrary);
+            var workflowInstanceRecord = context.WorkflowInstanceRecord;
+            var workflowDefinitionRecord = await _workflowDefinitionRepository.GetAsync(workflowInstanceRecord.WorkflowDefinitionUid);
+            var entries = WorkflowInstancePathEntries.GetWorkflowPathEntries(workflowDefinitionRecord, context.WorkflowInstanceRecord, _activityLibrary);
 
             _workflowPathEntries.AddEntries(entries);
         }

@@ -7,6 +7,7 @@ namespace OrchardCore.Workflows.Services
     public interface IWorkflowDefinitionRepository
     {
         Task<WorkflowDefinitionRecord> GetAsync(int id);
+        Task<WorkflowDefinitionRecord> GetAsync(string uid);
         Task<IEnumerable<WorkflowDefinitionRecord>> GetAsync(IEnumerable<int> ids);
         Task<IEnumerable<WorkflowDefinitionRecord>> ListAsync();
         Task<IList<WorkflowDefinitionRecord>> GetByStartActivityAsync(string activityName);

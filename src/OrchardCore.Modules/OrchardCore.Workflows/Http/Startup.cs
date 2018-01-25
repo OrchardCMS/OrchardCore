@@ -50,7 +50,7 @@ namespace OrchardCore.Workflows.Http
         {
             var workflowDefinitionRepository = serviceProvider.GetRequiredService<IWorkflowDefinitionRepository>();
             var workflowInstanceRepository = serviceProvider.GetRequiredService<IWorkflowInstanceRepository>();
-            var workflowDefinitionDictionary = workflowDefinitionRepository.ListAsync().GetAwaiter().GetResult().ToDictionary(x => x.Id);
+            var workflowDefinitionDictionary = workflowDefinitionRepository.ListAsync().GetAwaiter().GetResult().ToDictionary(x => x.Uid);
             var workflowInstanceDictionary = workflowInstanceRepository.ListAsync().GetAwaiter().GetResult().ToDictionary(x => x.Id);
 
             ConfigureWorkflowRouteEntries(serviceProvider, workflowDefinitionDictionary, workflowInstanceDictionary);
@@ -58,7 +58,7 @@ namespace OrchardCore.Workflows.Http
             ConfigureWorkflowRoutes(routes);
         }
 
-        private void ConfigureWorkflowRouteEntries(IServiceProvider serviceProvider, IDictionary<int, WorkflowDefinitionRecord> workflowDefinitionDictionary, IDictionary<int, WorkflowInstanceRecord> workflowInstanceDictionary)
+        private void ConfigureWorkflowRouteEntries(IServiceProvider serviceProvider, IDictionary<string, WorkflowDefinitionRecord> workflowDefinitionDictionary, IDictionary<int, WorkflowInstanceRecord> workflowInstanceDictionary)
         {
             var activityLibrary = serviceProvider.GetRequiredService<IActivityLibrary>();
             var workflowDefinitionRouteEntries = serviceProvider.GetRequiredService<IWorkflowDefinitionRouteEntries>();
@@ -71,14 +71,14 @@ namespace OrchardCore.Workflows.Http
 
             var workflowInstanceRouteEntryQuery =
                 from workflowInstance in workflowInstanceDictionary.Values
-                from entry in WorkflowInstanceRouteEntries.GetWorkflowInstanceRoutesEntries(workflowInstance, activityLibrary)
+                from entry in WorkflowInstanceRouteEntries.GetWorkflowInstanceRoutesEntries(workflowDefinitionDictionary[workflowInstance.WorkflowDefinitionUid], workflowInstance, activityLibrary)
                 select entry;
 
             workflowDefinitionRouteEntries.AddEntries(workflowDefinitionRouteEntryQuery);
             workflowInstanceRouteEntries.AddEntries(workflowInstanceRouteEntryQuery);
         }
 
-        private void ConfigureWorkflowPathEntries(IServiceProvider serviceProvider, IDictionary<int, WorkflowDefinitionRecord> workflowDefinitionDictionary, IDictionary<int, WorkflowInstanceRecord> workflowInstanceDictionary)
+        private void ConfigureWorkflowPathEntries(IServiceProvider serviceProvider, IDictionary<string, WorkflowDefinitionRecord> workflowDefinitionDictionary, IDictionary<int, WorkflowInstanceRecord> workflowInstanceDictionary)
         {
             var activityLibrary = serviceProvider.GetRequiredService<IActivityLibrary>();
             var workflowDefinitionPathEntries = serviceProvider.GetRequiredService<IWorkflowDefinitionPathEntries>();
@@ -91,7 +91,7 @@ namespace OrchardCore.Workflows.Http
 
             var workflowInstancePathEntryQuery =
                 from workflowInstance in workflowInstanceDictionary.Values
-                from entry in WorkflowInstancePathEntries.GetWorkflowPathEntries(workflowInstance, activityLibrary)
+                from entry in WorkflowInstancePathEntries.GetWorkflowPathEntries(workflowDefinitionDictionary[workflowInstance.WorkflowDefinitionUid], workflowInstance, activityLibrary)
                 select entry;
 
             workflowDefinitionPathEntries.AddEntries(workflowDefinitionPathEntryQuery);

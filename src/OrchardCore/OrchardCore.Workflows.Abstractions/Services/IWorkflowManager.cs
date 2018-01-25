@@ -11,7 +11,7 @@ namespace OrchardCore.Workflows.Services
         /// <summary>
         /// Creates a new <see cref="WorkflowExecutionContext"/>.
         /// </summary>
-        Task<WorkflowExecutionContext> CreateWorkflowExecutionContextAsync(WorkflowInstanceRecord workflowInstanceRecord, IDictionary<string, object> input = null);
+        Task<WorkflowExecutionContext> CreateWorkflowExecutionContextAsync(WorkflowDefinitionRecord workflowDefinition, WorkflowInstanceRecord workflowInstanceRecord, IDictionary<string, object> input = null);
 
         /// <summary>
         /// Creates a new <see cref="ActivityContext"/>.

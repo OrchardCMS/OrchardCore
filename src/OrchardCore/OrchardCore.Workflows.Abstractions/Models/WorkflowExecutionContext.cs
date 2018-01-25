@@ -18,6 +18,7 @@ namespace OrchardCore.Workflows.Models
 
         public WorkflowExecutionContext
         (
+            WorkflowDefinitionRecord workflowDefinitionRecord,
             WorkflowInstanceRecord workflowInstanceRecord,
             IServiceProvider serviceProvider,
             IDictionary<string, object> input,
@@ -43,18 +44,19 @@ namespace OrchardCore.Workflows.Models
             Properties = properties ?? new Dictionary<string, object>();
             ExecutedActivities = new Stack<int>(executedActivities ?? new List<int>());
             LastResult = lastResult;
-            WorkflowInstance = workflowInstanceRecord;
+            WorkflowDefinitionRecord = workflowDefinitionRecord;
+            WorkflowInstanceRecord = workflowInstanceRecord;
             Activities = activities.ToDictionary(x => x.ActivityRecord.Id);
         }
 
-        public WorkflowInstanceRecord WorkflowInstance { get; }
-        public WorkflowDefinitionRecord WorkflowDefinition => WorkflowInstance.WorkflowDefinition;
+        public WorkflowInstanceRecord WorkflowInstanceRecord { get; }
+        public WorkflowDefinitionRecord WorkflowDefinitionRecord { get; }
         public IDictionary<int, ActivityContext> Activities { get; }
 
         public string CorrelationId
         {
-            get => WorkflowInstance.CorrelationId;
-            set => WorkflowInstance.CorrelationId = value;
+            get => WorkflowInstanceRecord.CorrelationId;
+            set => WorkflowInstanceRecord.CorrelationId = value;
         }
 
         /// <summary>
@@ -79,8 +81,8 @@ namespace OrchardCore.Workflows.Models
 
         public WorkflowStatus Status
         {
-            get => WorkflowInstance.Status;
-            set => WorkflowInstance.Status = value;
+            get => WorkflowInstanceRecord.Status;
+            set => WorkflowInstanceRecord.Status = value;
         }
 
         /// <summary>
@@ -105,18 +107,18 @@ namespace OrchardCore.Workflows.Models
 
         public void Fault(Exception exception, ActivityContext activityContext)
         {
-            WorkflowInstance.Status = WorkflowStatus.Faulted;
-            WorkflowInstance.FaultMessage = exception.Message;
+            WorkflowInstanceRecord.Status = WorkflowStatus.Faulted;
+            WorkflowInstanceRecord.FaultMessage = exception.Message;
         }
 
         public IEnumerable<TransitionRecord> GetInboundTransitions(int activityId)
         {
-            return WorkflowDefinition.Transitions.Where(x => x.DestinationActivityId == activityId).ToList();
+            return WorkflowDefinitionRecord.Transitions.Where(x => x.DestinationActivityId == activityId).ToList();
         }
 
         public IEnumerable<TransitionRecord> GetOutboundTransitions(int activityId)
         {
-            return WorkflowDefinition.Transitions.Where(x => x.SourceActivityId == activityId).ToList();
+            return WorkflowDefinitionRecord.Transitions.Where(x => x.SourceActivityId == activityId).ToList();
         }
 
         /// <summary>

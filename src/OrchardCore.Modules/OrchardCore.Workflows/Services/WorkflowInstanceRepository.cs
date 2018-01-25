@@ -77,7 +77,7 @@ namespace OrchardCore.Workflows.Services
             var query = await _session
                 .QueryIndex<WorkflowInstanceByAwaitingActivitiesIndex>(index =>
                     index.ActivityName == activityName &&
-                    index.WorkflowInstanceCorrelationId == (correlationId ?? "")) // TODO: Can't compare NULL == NULL for some reason, so converting to empty string.
+                    index.WorkflowInstanceCorrelationId == correlationId)
                 .ListAsync();
 
             var pendingWorkflowInstanceIndexes = query.ToList();

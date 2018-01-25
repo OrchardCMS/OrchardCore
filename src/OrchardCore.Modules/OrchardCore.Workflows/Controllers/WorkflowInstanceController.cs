@@ -104,16 +104,16 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowInstance = await _workflowInstanceRepository.GetAsync(id);
+            var workflowInstanceRecord = await _workflowInstanceRepository.GetAsync(id);
 
-            if (workflowInstance == null)
+            if (workflowInstanceRecord == null)
             {
                 return NotFound();
             }
 
-            var workflowDefinitionRecord = workflowInstance.WorkflowDefinition;
-            var blockingActivities = workflowInstance.AwaitingActivities.ToDictionary(x => x.ActivityId);
-            var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowInstance);
+            var workflowDefinitionRecord = await _workflowDefinitionRepository.GetAsync(workflowInstanceRecord.WorkflowDefinitionUid);
+            var blockingActivities = workflowInstanceRecord.AwaitingActivities.ToDictionary(x => x.ActivityId);
+            var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowDefinitionRecord, workflowInstanceRecord);
             var activityContexts = await Task.WhenAll(workflowDefinitionRecord.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x)));
             var activityDesignShapes = (await Task.WhenAll(activityContexts.Select(async x => await BuildActivityDisplayAsync(x, workflowDefinitionRecord.Id, blockingActivities.ContainsKey(x.ActivityRecord.Id), "Design")))).ToList();
             var activitiesDataQuery = activityContexts.Select(x => new
@@ -124,7 +124,7 @@ namespace OrchardCore.Workflows.Controllers
                 Name = x.ActivityRecord.Name,
                 IsStart = x.ActivityRecord.IsStart,
                 IsEvent = x.Activity.IsEvent(),
-                IsBlocking = workflowInstance.AwaitingActivities.Any(a => a.ActivityId == x.ActivityRecord.Id),
+                IsBlocking = workflowInstanceRecord.AwaitingActivities.Any(a => a.ActivityId == x.ActivityRecord.Id),
                 Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray()
             });
             var workflowDefinitionData = new
@@ -139,10 +139,10 @@ namespace OrchardCore.Workflows.Controllers
             var jsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
             var viewModel = new WorkflowInstanceViewModel
             {
-                WorkflowInstance = workflowInstance,
+                WorkflowInstance = workflowInstanceRecord,
                 WorkflowDefinition = workflowDefinitionRecord,
                 WorkflowDefinitionJson = JsonConvert.SerializeObject(workflowDefinitionData, Formatting.None, jsonSerializerSettings),
-                WorkflowInstanceJson = JsonConvert.SerializeObject(workflowInstance, Formatting.Indented, jsonSerializerSettings),
+                WorkflowInstanceJson = JsonConvert.SerializeObject(workflowInstanceRecord, Formatting.Indented, jsonSerializerSettings),
                 ActivityDesignShapes = activityDesignShapes
             };
             return View(viewModel);
@@ -156,18 +156,18 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowInstance = await _workflowInstanceRepository.GetAsync(id);
+            var workflowInstanceRecord = await _workflowInstanceRepository.GetAsync(id);
 
-            if (workflowInstance == null)
+            if (workflowInstanceRecord == null)
             {
-                _notifier.Information(T["Workflow instance {0} no longer exists.", id]);
-                return RedirectToAction("Index", "WorkflowDefinition");
+                return NotFound();
             }
             else
             {
-                await _workflowInstanceRepository.DeleteAsync(workflowInstance);
+                var workflowDefinitionRecord = await _workflowDefinitionRepository.GetAsync(workflowInstanceRecord.WorkflowDefinitionUid);
+                await _workflowInstanceRepository.DeleteAsync(workflowInstanceRecord);
                 _notifier.Success(T["Workflow instance {0} has been deleted.", id]);
-                return RedirectToAction("Index", new { workflowDefinitionId = workflowInstance.WorkflowDefinition.Id });
+                return RedirectToAction("Index", new { workflowDefinitionId = workflowDefinitionRecord.Id });
             }
         }
 
