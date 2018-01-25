@@ -22,6 +22,7 @@
     <WriteLinesToFile
       File="$(IntermediateOutputPath)module.names.map"
       Lines="@(ModuleNames)"
+      WriteOnlyWhenDifferent="true"
       Condition="'@(ModuleNames)' != ''"
       Overwrite="true"
       Encoding="utf-8"

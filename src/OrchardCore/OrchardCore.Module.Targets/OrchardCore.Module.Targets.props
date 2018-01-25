@@ -1,22 +1,26 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!-- 
+  <!--
     This file is packaged with "OrchardCore.Module.Targets.nupkg" in "./build" such that any
     Module that references it will embedd in its assembly all its static assets.
   -->
 
   <PropertyGroup>
     <ModuleManifest>Name: $(MSBuildProjectName)</ModuleManifest>
-    <ModuleAssetExcludes>**\*.cs;*.csproj*;obj\**;bin\**;Assets.json;Assets\**;Properties\**;*.props;*.targets;**/.*/**</ModuleAssetExcludes>
-    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+    <ModuleAssetExcludes>Assets.*;Assets\**;**\*.props;**\*.targets</ModuleAssetExcludes>
+    <ModuleDefaultAssetExcludes>$(ModuleAssetExcludes);**\node_modules\**;node_modules\**</ModuleDefaultAssetExcludes>
+    <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\jspm_packages\**;jspm_packages\**</ModuleDefaultAssetExcludes>
+    <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\bower_components\**;bower_components\**</ModuleDefaultAssetExcludes>
     <ModuleType Condition="'$(ModuleType)' == ''">Module</ModuleType>
+    <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="**\*" Exclude="$(ModuleAssetExcludes)" />
+    <None Include="$(ModuleNoneIncludes)" Exclude="$(ModuleNoneExcludes)" />
+    <EmbeddedResource Include="**\*" Exclude="$(ModuleDefaultAssetExcludes);$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
   </ItemGroup>
 
-  <Target Name="EmbeddModuleAssets" BeforeTargets="BeforeBuild">
+  <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
 
     <RemoveDuplicates Inputs="@(EmbeddedResource)">
       <Output TaskParameter="Filtered" ItemName="ModuleAssetFiles"/>
@@ -34,11 +38,10 @@
       <ModuleAssets Include=".Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')" />
     </ItemGroup>
 
-    <MakeDir Directories="$(IntermediateOutputPath)" ContinueOnError="True"/>
-
     <WriteLinesToFile
       File="$(IntermediateOutputPath)module.assets.map"
       Lines="@(ModuleAssets)"
+      WriteOnlyWhenDifferent="true"
       Condition="'@(ModuleAssets)' != ''"
       Overwrite="true"
       Encoding="utf-8"
@@ -49,6 +52,7 @@
     <WriteLinesToFile
       File="obj\$(ModuleType).txt"
       Lines="$(ModuleManifest)"
+      WriteOnlyWhenDifferent="true"
       Condition="!Exists('$(ModuleType).txt')"
       Overwrite="true"
       Encoding="utf-8"

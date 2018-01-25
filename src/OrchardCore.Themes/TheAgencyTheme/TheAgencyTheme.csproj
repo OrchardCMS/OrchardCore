@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Remove="gulpfile.js;**\*.less;**\*.scss;**\node_modules\**" />
+    <EmbeddedResource Remove="gulpfile.js;**\*.less;**\*.scss;" />
   </ItemGroup>
 
   <ItemGroup>
