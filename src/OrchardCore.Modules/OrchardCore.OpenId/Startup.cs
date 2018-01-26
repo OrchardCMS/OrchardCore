@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OpenIddict;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
@@ -59,6 +60,7 @@ namespace OrchardCore.OpenId
             services.AddSingleton<IIndexProvider, OpenIdAuthorizationIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdScopeIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdTokenIndexProvider>();
+            services.AddSingleton<IBackgroundTask, OpenIdBackgroundTask>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<IDisplayDriver<ISite>, OpenIdSiteSettingsDisplayDriver>();
