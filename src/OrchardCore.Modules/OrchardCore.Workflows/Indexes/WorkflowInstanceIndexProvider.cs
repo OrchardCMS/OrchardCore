@@ -41,7 +41,7 @@ namespace OrchardCore.Workflows.Indexes
                         ActivityName = x.Name,
                         ActivityIsStart = x.IsStart,
                         WorkflowInstanceUid = workflowInstance.Uid,
-                        WorkflowInstanceCorrelationId = workflowInstance.CorrelationId
+                        WorkflowInstanceCorrelationId = workflowInstance.CorrelationId ?? ""
                     })
                 );
         }
