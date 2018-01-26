@@ -1,9 +1,22 @@
-@model OrchardCore.Settings.ViewModels.AdminIndexViewModel
-<!--a copy of the same view in OrchardCore.Settings-->
+@model OrchardCore.Email.SmtpSettingsViewModel
+
+@{
+    ViewData.TemplateInfo.HtmlFieldPrefix = "ISite";
+
+    var groupid = "SmtpSettings";
+}
+
 <h1>@RenderTitleSegments(T["Settings"])</h1>
 
 <form asp-action="Index" asp-controller="Admin" asp-area="OrchardCore.Settings" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
-      <input asp-for="GroupId" type="hidden" />
+    <input type="hidden" name="GroupId" value="@groupid" />
     @Html.ValidationSummary()
-    @await DisplayAsync(Model.Shape)
+
+    @await Html.PartialAsync("../SmtpSettings.Edit.cshtml", Model)
+
+    <div class="edit-item-secondary group">
+        <div class="edit-item-actions form-group">
+            <button class="primaryAction btn btn-primary" type="submit">Save</button>
+        </div>
+    </div>
 </form>

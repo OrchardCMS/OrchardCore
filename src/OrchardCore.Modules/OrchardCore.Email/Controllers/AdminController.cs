@@ -5,10 +5,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Email.Drivers;
-using OrchardCore.Email.ViewModels;
 using OrchardCore.Settings;
-using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Email.Controllers
 {
@@ -42,8 +39,6 @@ namespace OrchardCore.Email.Controllers
                 return Unauthorized();
             }
 
-            var groupId = SmtpSettingsDisplayDriver.GroupId;
-
             // bind the model again for the test options
             var testSettings = new SmtpSettingsViewModel();
             if (await TryUpdateModelAsync(testSettings, nameof(ISite)))
@@ -70,12 +65,7 @@ namespace OrchardCore.Email.Controllers
                 }
             }
 
-            var viewModel = new AdminIndexViewModel();
-
-            viewModel.GroupId = groupId;
-            viewModel.Shape = await CreateSmtpSettingsShape(testSettings);
-
-            return View("Index", viewModel);
+            return View("Index", testSettings);
         }
 
         [HttpPost]
@@ -85,8 +75,6 @@ namespace OrchardCore.Email.Controllers
             {
                 return Unauthorized();
             }
-
-            var groupId = SmtpSettingsDisplayDriver.GroupId;
 
             // bind the model for the test options
             var testSettings = new SmtpSettingsViewModel();
@@ -115,37 +103,7 @@ namespace OrchardCore.Email.Controllers
                 }
             }
 
-            var viewModel = new AdminIndexViewModel();
-            viewModel.GroupId = groupId;
-            viewModel.Shape = await CreateSmtpSettingsShape(testSettings);
-
-            return View("Index", viewModel);
-        }
-
-
-        private async Task<IShape> CreateSmtpSettingsShape(SmtpSettingsViewModel viewModel)
-        {
-            var shape = await New.CreateAsync<SmtpSettingsViewModel>("SmtpSettings_Edit", model =>
-            {
-                model.DefaultSender = viewModel.DefaultSender;
-                model.Host = viewModel.Host;
-                model.Port = viewModel.Port;
-                model.EnableSsl = viewModel.EnableSsl;
-                model.RequireCredentials = viewModel.RequireCredentials;
-                model.UseDefaultCredentials = viewModel.UseDefaultCredentials;
-                model.UserName = viewModel.UserName;
-                model.Password = viewModel.Password;
-                model.To = viewModel.To;
-                model.Bcc = viewModel.Bcc;
-                model.Cc = viewModel.Cc;
-                model.ReplyTo = viewModel.ReplyTo;
-                model.Subject = viewModel.Subject;
-                model.Body = viewModel.Body;
-            });
-
-            shape.Metadata.Prefix = nameof(ISite);
-
-            return shape;
+            return View("Index", testSettings);
         }
 
     }
