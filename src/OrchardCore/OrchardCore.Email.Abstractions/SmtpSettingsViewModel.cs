@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using OrchardCore.Email.Models;
 
 namespace OrchardCore.Email.ViewModels
 {

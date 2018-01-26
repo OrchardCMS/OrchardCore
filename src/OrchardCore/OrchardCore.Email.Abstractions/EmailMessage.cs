@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Mail;
 
-namespace OrchardCore.Email.Models
+namespace OrchardCore.Email
 {
     public class EmailMessage
     {

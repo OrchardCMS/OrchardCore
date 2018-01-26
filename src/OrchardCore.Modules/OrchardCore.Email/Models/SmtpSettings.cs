@@ -1,30 +1,12 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Email.Models
+namespace OrchardCore.Email
 {
-    public class SmtpSettings
-    {
-        [Required( AllowEmptyStrings = false ), EmailAddress]
-
-        public string DefaultSender { get; set; }
-        [Required( AllowEmptyStrings = false )]
-        public string Host { get; set; }
-        [Range( 0, 65535 )]
-        public int Port { get; set; } = 25;
-        public bool EnableSsl { get; set; }
-        public bool RequireCredentials { get; set; }
-        public bool UseDefaultCredentials { get; set; }
-
-        public string UserName { get; set; }
-        public string Password { get; set; }
-    }
-
     public class SmtpSettingsConfiguration : IConfigureOptions<SmtpSettings>
     {
         private readonly ISiteService _site;

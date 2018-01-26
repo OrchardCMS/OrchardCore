@@ -1,4 +1,4 @@
-namespace OrchardCore.Email.Models
+namespace OrchardCore.Email
 {
     public class SmtpResult
     {

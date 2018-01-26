@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
-using OrchardCore.Email.Models;
 
-namespace OrchardCore.Email.Services
+namespace OrchardCore.Email
 {
     public interface ISmtpService
     {

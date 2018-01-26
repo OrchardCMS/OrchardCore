@@ -6,8 +6,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email.Drivers;
-using OrchardCore.Email.Models;
-using OrchardCore.Email.Services;
 using OrchardCore.Email.ViewModels;
 using OrchardCore.Settings;
 using OrchardCore.Settings.ViewModels;

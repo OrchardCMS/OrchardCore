@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Email.Drivers;
-using OrchardCore.Email.Models;
 using OrchardCore.Email.Services;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Modules;
