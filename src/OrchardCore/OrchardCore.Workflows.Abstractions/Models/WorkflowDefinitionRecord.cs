@@ -21,6 +21,16 @@ namespace OrchardCore.Workflows.Models
         public bool IsEnabled { get; set; }
 
         /// <summary>
+        /// Controls whether this workflow can spawn one or multiple instances.
+        /// </summary>
+        public bool IsSingleton { get; set; }
+
+        /// <summary>
+        /// Controls whether workflow instances will be deleted upon completion.
+        /// </summary>
+        public bool DeleteFinishedWorkflows { get; set; }
+
+        /// <summary>
         /// A complete list of all activities that are part of this workflow.
         /// </summary>
         public IList<ActivityRecord> Activities { get; set; } = new List<ActivityRecord>();

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Workflows.Models
 {
@@ -28,6 +29,14 @@ namespace OrchardCore.Workflows.Models
         /// </summary>
         public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
 
-        public IList<int> ExecutedActivities { get; set; } = new List<int>();
+        /// <summary>
+        /// A dictionary of activity states. Each entry contains runtime state for a particular activity.
+        /// </summary>
+        public IDictionary<int, JObject> ActivityStates { get; set; } = new Dictionary<int, JObject>();
+
+        /// <summary>
+        /// The list of executed activities.
+        /// </summary>
+        public IList<ExecutedActivity> ExecutedActivities { get; set; } = new List<ExecutedActivity>();
     }
 }

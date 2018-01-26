@@ -214,6 +214,8 @@ namespace OrchardCore.Workflows.Controllers
                     Id = workflowDefinition.Id,
                     Name = workflowDefinition.Name,
                     IsEnabled = workflowDefinition.IsEnabled,
+                    IsSingleton = workflowDefinition.IsSingleton,
+                    DeleteFinishedWorkflows = workflowDefinition.DeleteFinishedWorkflows,
                     ReturnUrl = returnUrl
                 });
             }
@@ -244,6 +246,8 @@ namespace OrchardCore.Workflows.Controllers
 
             workflowDefinition.Name = viewModel.Name?.Trim();
             workflowDefinition.IsEnabled = viewModel.IsEnabled;
+            workflowDefinition.IsSingleton = viewModel.IsSingleton;
+            workflowDefinition.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
 
             await _workflowDefinitionRepository.SaveAsync(workflowDefinition);
 
@@ -264,8 +268,9 @@ namespace OrchardCore.Workflows.Controllers
             var newLocalId = string.IsNullOrWhiteSpace(localId) ? Guid.NewGuid().ToString() : localId;
             var availableActivities = _activityLibrary.ListActivities();
             var workflowDefinitionRecord = await _session.GetAsync<WorkflowDefinitionRecord>(id);
-            var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowDefinitionRecord, new WorkflowInstanceRecord { WorkflowDefinitionUid = workflowDefinitionRecord.Uid });
-            var activityContexts = await Task.WhenAll(workflowDefinitionRecord.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x)));
+            var workflowInstance = _workflowManager.NewWorkflowInstance(workflowDefinitionRecord);
+            var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowDefinitionRecord, workflowInstance);
+            var activityContexts = await Task.WhenAll(workflowDefinitionRecord.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x, x.Properties)));
             var activityThumbnailDisplayTasks = availableActivities.Select(async (x, i) => await BuildActivityDisplay(x, i, id, newLocalId, "Thumbnail"));
             var activityDesignDisplayTasks = activityContexts.Select(async (x, i) => await BuildActivityDisplay(x, i, id, newLocalId, "Design"));
             var workflowInstanceCount = await _session.QueryIndex<WorkflowInstanceIndex>(x => x.WorkflowDefinitionUid == workflowDefinitionRecord.Uid).CountAsync();

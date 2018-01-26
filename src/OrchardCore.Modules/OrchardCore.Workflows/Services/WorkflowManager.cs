@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Activities;
@@ -62,10 +61,26 @@ namespace OrchardCore.Workflows.Services
             _clock = clock;
         }
 
+        public WorkflowInstanceRecord NewWorkflowInstance(WorkflowDefinitionRecord workflowDefinitionRecord, string correlationId = null)
+        {
+            return new WorkflowInstanceRecord
+            {
+                Uid = Guid.NewGuid().ToString("N"),
+                WorkflowDefinitionUid = workflowDefinitionRecord.Uid,
+                Status = WorkflowStatus.Idle,
+                State = JObject.FromObject(new WorkflowState
+                {
+                    ActivityStates = workflowDefinitionRecord.Activities.Select(x => x).ToDictionary(x => x.Id, x => x.Properties)
+                }),
+                CorrelationId = correlationId,
+                CreatedUtc = _clock.UtcNow
+            };
+        }
+
         public async Task<WorkflowExecutionContext> CreateWorkflowExecutionContextAsync(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord, IDictionary<string, object> input = null)
         {
-            var activityQuery = await Task.WhenAll(workflowDefinitionRecord.Activities.Select(async x => await CreateActivityExecutionContextAsync(x)));
             var state = workflowInstanceRecord.State.ToObject<WorkflowState>();
+            var activityQuery = await Task.WhenAll(workflowDefinitionRecord.Activities.Select(async x => await CreateActivityExecutionContextAsync(x, state.ActivityStates[x.Id])));
             var mergedInput = (await DeserializeAsync(state.Input)).Merge(input ?? new Dictionary<string, object>());
             var properties = await DeserializeAsync(state.Properties);
             var output = await DeserializeAsync(state.Output);
@@ -74,9 +89,9 @@ namespace OrchardCore.Workflows.Services
             return new WorkflowExecutionContext(workflowDefinitionRecord, workflowInstanceRecord, _serviceProvider, mergedInput, output, properties, executedActivities, lastResult, activityQuery, _workflowContextHandlers.Resolve(), _expressionEvaluator, _scriptEvaluator, _workflowContextLogger);
         }
 
-        public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord)
+        public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JObject properties)
         {
-            var activity = _activityLibrary.InstantiateActivity<IActivity>(activityRecord.Name, activityRecord.Properties);
+            var activity = _activityLibrary.InstantiateActivity<IActivity>(activityRecord.Name, properties);
 
             if (activity == null)
             {
@@ -107,29 +122,23 @@ namespace OrchardCore.Workflows.Services
             var workflowsToStart = await _workflowDefinitionRepository.GetByStartActivityAsync(name);
 
             // And any running workflow paused on this kind of activity for the specified target.
-            // When an activity is restarted, all the other ones of the same workflow are cancelled.
-            var awaitingWorkflowInstances = await _workflowInstanceRepository.GetWaitingWorkflowInstancesAsync(name, correlationId);
+            var workflowInstances = await _workflowInstanceRepository.GetWaitingWorkflowInstancesAsync(name, correlationId);
 
             // If no activity record is matching the event, do nothing.
-            if (!workflowsToStart.Any() && !awaitingWorkflowInstances.Any())
+            if (!workflowsToStart.Any() && !workflowInstances.Any())
             {
                 return;
-            }
-
-            // Resume pending workflows.
-            foreach (var workflowInstance in awaitingWorkflowInstances)
-            {
-                var blockingActivities = workflowInstance.AwaitingActivities.Where(x => x.Name == name).ToList();
-
-                foreach (var blockingActivity in blockingActivities)
-                {
-                    await ResumeWorkflowAsync(workflowInstance, blockingActivity, input);
-                }
             }
 
             // Start new workflows.
             foreach (var workflowToStart in workflowsToStart)
             {
+                // If this is a singleton workflow and there's already an instance, then skip.
+                if (workflowToStart.IsSingleton && workflowInstances.Any(x => x.WorkflowDefinitionUid == workflowToStart.Uid))
+                {
+                    continue;
+                }
+
                 var startActivity = workflowToStart.Activities.FirstOrDefault(x => x.IsStart && string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
                 if (startActivity != null)
@@ -137,37 +146,15 @@ namespace OrchardCore.Workflows.Services
                     await StartWorkflowAsync(workflowToStart, startActivity, input, correlationId);
                 }
             }
-        }
 
-        public async Task TriggerOnceAsync(string name, IDictionary<string, object> input = null, string correlationId = null)
-        {
-            // Get all workflow definitions that start with the specified activity.
-            var workflowDefinitions = await _workflowDefinitionRepository.GetByStartActivityAsync(name);
-
-            // Only start workflows for which there isn't already a halted workflow instance.
-            var workflowDefinitionIds = workflowDefinitions.Select(x => x.Uid).ToList();
-            var startedWorkflowInstances = await _workflowInstanceRepository.ListByWorkflowDefinitionsAsync(workflowDefinitionIds);
-
-            foreach (var workflowDefinition in workflowDefinitions)
-            {
-                var workflowInstance = startedWorkflowInstances.FirstOrDefault(x => x.WorkflowDefinitionUid == workflowDefinition.Uid && x.AwaitingActivities.Any(a => a.Name == name && a.IsStart));
-
-                if (workflowInstance == null)
-                {
-                    var startActivity = workflowDefinition.Activities.First(x => x.IsStart && x.Name == name);
-                    await StartWorkflowAsync(workflowDefinition, startActivity);
-                }
-            }
-
-            // Resume any halted workflow instances that are blocked.
-            var haltedWorkflowInstances = await _workflowInstanceRepository.GetWaitingWorkflowInstancesAsync(name);
-
-            foreach (var workflowInstance in haltedWorkflowInstances)
+            // Resume pending workflows.
+            foreach (var workflowInstance in workflowInstances)
             {
                 var blockingActivities = workflowInstance.AwaitingActivities.Where(x => x.Name == name).ToList();
+
                 foreach (var blockingActivity in blockingActivities)
                 {
-                    await ResumeWorkflowAsync(workflowInstance, blockingActivity);
+                    await ResumeWorkflowAsync(workflowInstance, blockingActivity, input);
                 }
             }
         }
@@ -213,7 +200,7 @@ namespace OrchardCore.Workflows.Services
                 }
             }
 
-            if (workflowContext.Status == WorkflowStatus.Finished)
+            if (workflowContext.Status == WorkflowStatus.Finished && workflowDefinition.DeleteFinishedWorkflows)
             {
                 await _workflowInstanceRepository.DeleteAsync(workflowContext.WorkflowInstanceRecord);
             }
@@ -225,29 +212,23 @@ namespace OrchardCore.Workflows.Services
             return workflowContext;
         }
 
-        public async Task<WorkflowExecutionContext> StartWorkflowAsync(WorkflowDefinitionRecord workflowDefinition, ActivityRecord startActivity = null, IDictionary<string, object> input = null, string correlationId = null)
+        public async Task<WorkflowExecutionContext> StartWorkflowAsync(WorkflowDefinitionRecord workflowDefinitionRecord, ActivityRecord startActivity = null, IDictionary<string, object> input = null, string correlationId = null)
         {
             if (startActivity == null)
             {
-                startActivity = workflowDefinition.Activities.FirstOrDefault(x => x.IsStart);
+                startActivity = workflowDefinitionRecord.Activities.FirstOrDefault(x => x.IsStart);
 
                 if (startActivity == null)
                 {
-                    throw new InvalidOperationException($"Workflow with ID {workflowDefinition.Id} does not have a start activity.");
+                    throw new InvalidOperationException($"Workflow with ID {workflowDefinitionRecord.Id} does not have a start activity.");
                 }
             }
 
             // Create a new workflow instance.
-            var workflowInstance = new WorkflowInstanceRecord
-            {
-                Uid = Guid.NewGuid().ToString("N"),
-                State = JObject.FromObject(new WorkflowState()),
-                CorrelationId = correlationId,
-                CreatedUtc = _clock.UtcNow
-            };
+            var workflowInstanceRecord = NewWorkflowInstance(workflowDefinitionRecord, correlationId);
 
             // Create a workflow context.
-            var workflowContext = await CreateWorkflowExecutionContextAsync(workflowDefinition, workflowInstance, input);
+            var workflowContext = await CreateWorkflowExecutionContextAsync(workflowDefinitionRecord, workflowInstanceRecord, input);
             workflowContext.Status = WorkflowStatus.Starting;
 
             // Signal every activity about available input.
@@ -329,7 +310,6 @@ namespace OrchardCore.Workflows.Services
                     {
                         // Execute the current activity.
                         result = await activityContext.Activity.ExecuteAsync(workflowContext, activityContext);
-                        workflowContext.ExecutedActivities.Push(activity.Id);
                     }
                     else
                     {
@@ -411,6 +391,7 @@ namespace OrchardCore.Workflows.Services
             state.Properties = await SerializeAsync(workflowContext.Properties);
             state.LastResult = await SerializeAsync(workflowContext.LastResult);
             state.ExecutedActivities = workflowContext.ExecutedActivities.ToList();
+            state.ActivityStates = workflowContext.Activities.ToDictionary(x => x.Key, x => x.Value.Activity.Properties);
 
             workflowContext.WorkflowInstanceRecord.State = JObject.FromObject(state);
             await _workflowInstanceRepository.SaveAsync(workflowContext.WorkflowInstanceRecord);

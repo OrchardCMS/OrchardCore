@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.Workflows.ViewModels
 {
@@ -12,7 +10,8 @@ namespace OrchardCore.Workflows.ViewModels
         public string Name { get; set; }
 
         public bool IsEnabled { get; set; }
+        public bool IsSingleton { get; set; }
+        public bool DeleteFinishedWorkflows { get; set; }
         public string ReturnUrl { get; set; }
-        public IList<SelectListItem> AvailableScriptingEngines { get; set; }
     }
 }

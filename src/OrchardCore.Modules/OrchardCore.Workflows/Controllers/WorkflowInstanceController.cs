@@ -114,7 +114,7 @@ namespace OrchardCore.Workflows.Controllers
             var workflowDefinitionRecord = await _workflowDefinitionRepository.GetAsync(workflowInstanceRecord.WorkflowDefinitionUid);
             var blockingActivities = workflowInstanceRecord.AwaitingActivities.ToDictionary(x => x.ActivityId);
             var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowDefinitionRecord, workflowInstanceRecord);
-            var activityContexts = await Task.WhenAll(workflowDefinitionRecord.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x)));
+            var activityContexts = await Task.WhenAll(workflowDefinitionRecord.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x, x.Properties)));
             var activityDesignShapes = (await Task.WhenAll(activityContexts.Select(async x => await BuildActivityDisplayAsync(x, workflowDefinitionRecord.Id, blockingActivities.ContainsKey(x.ActivityRecord.Id), "Design")))).ToList();
             var activitiesDataQuery = activityContexts.Select(x => new
             {
