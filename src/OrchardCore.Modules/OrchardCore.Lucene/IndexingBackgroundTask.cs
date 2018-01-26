@@ -12,7 +12,6 @@ namespace OrchardCore.Lucene
     /// <remarks>
     /// This services is only registered from OrchardCore.Lucene.Worker feature.
     /// </remarks>
-    [BackgroundTask(Group = "OrchardCore", Minutes = 1)]
     public class IndexingBackgroundTask : IBackgroundTask
     {
         public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)

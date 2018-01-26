@@ -14,11 +14,5 @@ namespace OrchardCore.BackgroundTasks
         /// run sequentially within the group.
         /// </summary>
         public string Group { get; set; }
-
-        /// <summary>
-        /// The minimum period of the parent group. All tasks which are part of the same group may
-        /// provide a value but only the maximun is retained, the default value being of 1 minute.
-        /// </summary>
-        public int Minutes { get; set; }
     }
 }

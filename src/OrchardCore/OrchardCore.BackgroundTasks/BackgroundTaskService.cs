@@ -37,7 +37,7 @@ namespace OrchardCore.BackgroundTasks
             _tasks = tasks.GroupBy(GetGroupName).ToDictionary(x => x.Key, x => x.Select(i => i));
             _states = tasks.ToDictionary(x => x, x => BackgroundTaskState.Idle);
             _timers = _tasks.Keys.ToDictionary(x => x, x => new Timer(DoWorkAsync, x, Timeout.Infinite, Timeout.Infinite));
-            _periods = _tasks.ToDictionary(x => x.Key, x => TimeSpan.FromMinutes(x.Value.Select(GetMinutes).Max()));
+            _periods = _tasks.Keys.ToDictionary(x => x, x => TimeSpan.FromMinutes(1));
             Logger = logger;
         }
 
@@ -151,19 +151,6 @@ namespace OrchardCore.BackgroundTasks
             }
 
             return attributes.First().Group ?? "";
-        }
-
-        private int GetMinutes(IBackgroundTask task)
-        {
-            var attributes = task.GetType().GetCustomAttributes<BackgroundTaskAttribute>().ToList();
-
-            if (attributes.Count == 0)
-            {
-                return 1;
-            }
-
-            var minutes = attributes.First().Minutes;
-            return minutes > 0 ? minutes : 1;
         }
 
         public IDictionary<IBackgroundTask, BackgroundTaskState> GetTasks()
