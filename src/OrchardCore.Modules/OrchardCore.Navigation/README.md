@@ -5,6 +5,17 @@
 Provides the `Navigation`, `Pager` and `PagerSlim` shapes.
 
 ## Theming
+Navigation can be themed by adding the appropriate partial view files to your theme's views folder.
+A good example can be found in TheAdmin theme project located here:
+https://github.com/OrchardCMS/OrchardCore/tree/dev/src/OrchardCore.Themes/TheAdmin
+
+That theme creates the standard, vertical navigation menu that is found on the admin  dashboard of any OrchardCore application.
+TheAdmin theme provides the following alternates to the default ones provided in the Navigation module:
+Navigation-admin.cshtml
+NavigationItem-admin.cshtml
+NavigationItemLink-admin.cshtml
+
+The theme developer has full control over how and where navigation is displayed on their OrchardCore application.
 
 ### Pager
 
@@ -83,3 +94,46 @@ A slim pager can be further customized by defining templates for the following s
 Each of these shapes are ultimately morphed into `Pager_Link`
 Alternates for each of these shapes are created using the _PagerId_ like `Pager_Previous__[PagerId]` which
 would in turn look for the template `Pager-MainBlog.Previous.cshtml`.
+
+## Extending Navigation
+Navigation can be extended, through code, by implementing INavigationProvider and registering it in the extending module (or theme) Startup.cs file.
+
+Below is a sample implementation of an INavigationProvider used to extend the "main" navigation section of the site.
+
+```csharp
+public class MainMenu : INavigationProvider
+    {
+        public MainMenu(IStringLocalizer<MainMenu> localizer)
+        {
+            T = localizer;
+        }
+
+        public IStringLocalizer T { get; set; }
+
+        public void BuildNavigation(string name, NavigationBuilder builder)
+        {
+            //Only interact with the "main" navigation menu here.
+            if (!String.Equals(name, "main", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            builder
+                .Add(T["Notifications"], T["Notifications"], layers => layers
+                    .Action("Index", "Template", new { area = "CRT.Client.OrchardModules.CommunicationTemplates", groupId = 1 })
+                    .LocalNav()
+                );
+        }
+    }
+```    
+
+This provider will be called as long as the site is using a theme that includes a line similar to the following which causes the navigation menu to be rendered by your theme at the location specified:
+@await DisplayAsync(await New.Navigation(MenuName: "main", RouteData: @ViewContext.RouteData))
+
+Examples of extending the admin navigation can be found in various OrchardCore modules.Searching the repository for "AdminMenu" will locate various settings. Below is a partial list:
+OrchardCore.Modules/OrchardCore.Admin/AdminFilter.cs
+OrchardCore.Modules/OrchardCore.Media/AdminMenu.cs
+
+At this time, the Admin Menu is the only navigation with code dynamically adding items in the OrchardCore git repository. However, as the example above shows, the pattern can be used to control any named navigation.
+
+

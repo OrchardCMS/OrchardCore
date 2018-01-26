@@ -164,7 +164,7 @@
 
                 <div class="input-group mb-2 mb-sm-0">
                     <input asp-for="ConnectionString" class="form-control pwd" type="password" />
-                    <div class="input-group-addon reveal" title="@T["Show/hide connection string"]"><i class="fa fa-eye-slash" aria-hidden="true"></i></div>
+                    <div class="input-group-prepend reveal" title="@T["Show/hide connection string"]"><button class="fa fa-eye-slash" aria-hidden="true"></button></div>
                 </div>
 
                 <span asp-validation-for="ConnectionString" class="text-danger"></span>
@@ -230,8 +230,10 @@
             var $pwd = $(".pwd");
             if ($pwd.attr('type') === 'password') {
                 $pwd.attr('type', 'text');
+                $(this).find('button').toggleClass('fa-eye-slash fa-eye');
             } else {
                 $pwd.attr('type', 'password');
+                $(this).find('button').toggleClass('fa-eye fa-eye-slash');
             }
         });
     })
