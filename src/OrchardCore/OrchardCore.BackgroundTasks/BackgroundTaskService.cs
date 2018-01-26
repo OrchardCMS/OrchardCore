@@ -51,7 +51,7 @@ namespace OrchardCore.BackgroundTasks
                 {
                     var timer = _timers[group];
                     var period = _periods[group];
-                    timer.Change(period, period);
+                    timer.Change(TimeSpan.FromSeconds(1), period);
                 }
             }
         }
