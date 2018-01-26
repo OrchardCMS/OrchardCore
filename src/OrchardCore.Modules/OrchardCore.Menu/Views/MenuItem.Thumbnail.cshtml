@@ -2,7 +2,15 @@
 
 <div class="card">
     <div class="card-body">
-        @await DisplayAsync(Model.Content)
+        @if(Model.Content != null)
+        {
+            @await DisplayAsync(Model.Content)
+        }
+        else
+        {
+            <h4 class="card-title">@Model.MenuItemType</h4>
+            <p>@Model.MenuItemTypeDisplayName</p>
+        }
     </div>
     <div class="card-footer text-muted text-xs-right">
         <a class="btn btn-primary btn-sm thumbnail-link-create" asp-route-action="Create" asp-route-controller="Admin" asp-route-id="@Model.MenuItemType" asp-route-menuContentItemId="@Model.MenuContentItemId" asp-route-area="OrchardCore.Menu">@T["Add"]</a>

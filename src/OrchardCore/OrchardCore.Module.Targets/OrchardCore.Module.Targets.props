@@ -41,6 +41,7 @@
     <WriteLinesToFile
       File="$(IntermediateOutputPath)module.assets.map"
       Lines="@(ModuleAssets)"
+      WriteOnlyWhenDifferent="true"
       Condition="'@(ModuleAssets)' != ''"
       Overwrite="true"
       Encoding="utf-8"
@@ -51,6 +52,7 @@
     <WriteLinesToFile
       File="obj\$(ModuleType).txt"
       Lines="$(ModuleManifest)"
+      WriteOnlyWhenDifferent="true"
       Condition="!Exists('$(ModuleType).txt')"
       Overwrite="true"
       Encoding="utf-8"
