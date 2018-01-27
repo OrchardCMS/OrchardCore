@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace OrchardCore.Environment.Extensions
 {
-    public static class ModulesExtensions
+    public static class ExtensionManagerExtensions
     {
         public static IEnumerable<IExtensionInfo> GetOrderedExtensions(this IExtensionManager extensionManager)
         {

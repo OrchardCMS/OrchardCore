@@ -5,7 +5,7 @@ using OrchardCore.Environment.Extensions;
 
 namespace OrchardCore.Environment.Shell
 {
-    public static class ModulesExtensions
+    public static class ShellFeaturesManagerExtensions
     {
         public static IEnumerable<IExtensionInfo> GetEnabledExtensions(this IShellFeaturesManager shellFeaturesManager)
         {
