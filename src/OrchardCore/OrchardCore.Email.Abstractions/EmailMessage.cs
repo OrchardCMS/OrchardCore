@@ -24,5 +24,5 @@ namespace OrchardCore.Email
 
         public List<Attachment> Attachments { get; set; }
     }
-    
+
 }

@@ -4,12 +4,12 @@ namespace OrchardCore.Email
 {
     public class SmtpSettings
     {
-        [Required( AllowEmptyStrings = false ), EmailAddress]
+        [Required(AllowEmptyStrings = false), EmailAddress]
 
         public string DefaultSender { get; set; }
-        [Required( AllowEmptyStrings = false )]
+        [Required(AllowEmptyStrings = false)]
         public string Host { get; set; }
-        [Range( 0, 65535 )]
+        [Range(0, 65535)]
         public int Port { get; set; } = 25;
         public bool EnableSsl { get; set; }
         public bool RequireCredentials { get; set; }

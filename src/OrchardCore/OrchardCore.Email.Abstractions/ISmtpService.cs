@@ -10,6 +10,6 @@ namespace OrchardCore.Email
         /// </summary>
         /// <returns>The settings.</returns>
         ISmtpService WithSettings(SmtpSettings settings);
-        Task<SmtpResult> SendAsync (EmailMessage emailMessage);
+        Task<SmtpResult> SendAsync(EmailMessage emailMessage);
     }
 }

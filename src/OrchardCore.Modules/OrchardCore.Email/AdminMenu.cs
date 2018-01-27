@@ -16,16 +16,16 @@ namespace OrchardCore.Email
 
         public void BuildNavigation(string name, NavigationBuilder builder)
         {
-            if ( !String.Equals( name, "admin", StringComparison.OrdinalIgnoreCase ) )
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
                 return;
 
             builder
-                .Add( T["Design"], design => design
-                    .Add( T["Smtp Settings"], "1", p => p
-                        .Permission( Permissions.ManageEmailSettings )
-                        .Action( "Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId } )
-                        .LocalNav()
-                    )
+                .Add(T["Design"], design => design
+                   .Add(T["Smtp Settings"], "1", p => p
+                      .Permission(Permissions.ManageEmailSettings)
+                      .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId })
+                      .LocalNav()
+                   )
                 );
         }
     }

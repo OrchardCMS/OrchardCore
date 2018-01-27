@@ -22,7 +22,8 @@ namespace OrchardCore.Email.Drivers
 
         public override IDisplayResult Edit(SmtpSettings section)
         {
-            return Shape<SmtpSettingsViewModel>( "SmtpSettings_Edit", model => {
+            return Shape<SmtpSettingsViewModel>("SmtpSettings_Edit", model =>
+            {
                 model.DefaultSender = section.DefaultSender;
                 model.Host = section.Host;
                 model.Port = section.Port;
@@ -31,29 +32,30 @@ namespace OrchardCore.Email.Drivers
                 model.UseDefaultCredentials = section.UseDefaultCredentials;
                 model.UserName = section.UserName;
                 model.Password = section.Password;
-            } ).Location( "Content:5" ).OnGroup( GroupId );
+            }).Location("Content:5").OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SmtpSettings section, IUpdateModel updater, string groupId)
         {
-            if ( groupId == GroupId )
+            if (groupId == GroupId)
             {
                 var previousPassword = section.Password;
-                await updater.TryUpdateModelAsync( section, Prefix );
+                await updater.TryUpdateModelAsync(section, Prefix);
 
                 // Restore password if the input is empty, meaning that it has not been reset.
-                if ( string.IsNullOrWhiteSpace(section.Password))
+                if (string.IsNullOrWhiteSpace(section.Password))
                 {
                     section.Password = previousPassword;
-                } else
+                }
+                else
                 {
                     // encrypt the password
-                    var protector = _dataProtectionProvider.CreateProtector( nameof( SmtpSettingsConfiguration ), _shellSettings.Name );
-                    section.Password = protector.Protect( section.Password );
+                    var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration), _shellSettings.Name);
+                    section.Password = protector.Protect(section.Password);
                 }
             }
 
-            return Edit( section );
+            return Edit(section);
         }
     }
 }

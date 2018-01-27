@@ -36,10 +36,10 @@ namespace OrchardCore.Email
             options.UseDefaultCredentials = settings.UseDefaultCredentials;
             options.UserName = settings.UserName;
             // decrypt the password
-            if ( !String.IsNullOrWhiteSpace( settings.Password ) )
+            if (!String.IsNullOrWhiteSpace(settings.Password))
             {
-                var protector = _dataProtectionProvider.CreateProtector( nameof( SmtpSettingsConfiguration ), _shellSettings.Name );
-                options.Password = protector.Unprotect( settings.Password );
+                var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration), _shellSettings.Name);
+                options.Password = protector.Unprotect(settings.Password);
             }
         }
     }
