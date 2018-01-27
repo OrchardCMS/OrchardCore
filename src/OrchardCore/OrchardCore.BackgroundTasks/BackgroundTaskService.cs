@@ -66,12 +66,6 @@ namespace OrchardCore.BackgroundTasks
 
             var groupName = group as string ?? "";
 
-            // Check if any task of this group is not idle
-            if (_tasks[groupName].Any(task => _states[task] != BackgroundTaskState.Idle))
-            {
-                return;
-            }
-
             foreach (var task in _tasks[groupName])
             {
                 var taskName = task.GetType().FullName;
