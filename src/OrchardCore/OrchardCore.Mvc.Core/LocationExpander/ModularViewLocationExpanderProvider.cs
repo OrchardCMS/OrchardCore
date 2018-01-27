@@ -41,7 +41,7 @@ namespace OrchardCore.Mvc.LocationExpander
                 if (_modulesWithComponentViews == null)
                 {
                     var modulesWithComponentViews = new List<IExtensionInfo>();
-                    var orderedModules = _extensionManager.GetModules().Reverse();
+                    var orderedModules = _extensionManager.GetOrderedModules().Reverse();
 
                     foreach (var module in orderedModules)
                     {
@@ -108,7 +108,7 @@ namespace OrchardCore.Mvc.LocationExpander
             {
                 if (!_memoryCache.TryGetValue(CacheKey, out IEnumerable<string> moduleComponentViewLocations))
                 {
-                    var enabledModules = _shellFeaturesManager.GetModules();
+                    var enabledModules = _shellFeaturesManager.GetEnabledModules();
 
                     moduleComponentViewLocations = _modulesWithComponentViews
                         .Where(m => enabledModules.Any(em => em.Id == m.Id))

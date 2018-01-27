@@ -11,7 +11,7 @@ namespace OrchardCore.Environment.Extensions
                 .Where(f => f.Id == f.Extension.Features.First().Id)
                 .Select(f => f.Extension);
         }
-        public static IEnumerable<IExtensionInfo> GetModules(this IExtensionManager extensionManager)
+        public static IEnumerable<IExtensionInfo> GetOrderedModules(this IExtensionManager extensionManager)
         {
             return extensionManager.GetFeatures()
                 .Where(f => f.Id == f.Extension.Features.First().Id)
@@ -19,7 +19,7 @@ namespace OrchardCore.Environment.Extensions
                 .Select(f => f.Extension);
         }
 
-        public static IEnumerable<IExtensionInfo> GetThemes(this IExtensionManager extensionManager)
+        public static IEnumerable<IExtensionInfo> GetOrderedThemes(this IExtensionManager extensionManager)
         {
             return extensionManager.GetFeatures()
                 .Where(f => f.Id == f.Extension.Features.First().Id)
