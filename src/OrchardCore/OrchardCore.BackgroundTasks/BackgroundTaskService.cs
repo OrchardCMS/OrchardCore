@@ -14,7 +14,7 @@ namespace OrchardCore.BackgroundTasks
     public class BackgroundTaskService : IBackgroundTaskService, IDisposable
     {
         private static TimeSpan DontStart = TimeSpan.FromMilliseconds(-1);
-        private static TimeSpan StartNow = TimeSpan.FromMilliseconds(0);
+        private static TimeSpan Delay = TimeSpan.FromSeconds(1);
 
         private readonly Dictionary<string, IEnumerable<IBackgroundTask>> _tasks;
         private readonly IApplicationLifetime _applicationLifetime;
@@ -51,7 +51,7 @@ namespace OrchardCore.BackgroundTasks
                 {
                     var timer = _timers[group];
                     var period = _periods[group];
-                    timer.Change(TimeSpan.FromSeconds(1), period);
+                    timer.Change(Delay, period);
                 }
             }
         }
