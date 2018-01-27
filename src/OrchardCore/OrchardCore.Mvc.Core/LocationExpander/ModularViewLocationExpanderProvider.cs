@@ -108,12 +108,16 @@ namespace OrchardCore.Mvc.LocationExpander
             {
                 if (!_memoryCache.TryGetValue(CacheKey, out IEnumerable<string> moduleComponentViewLocations))
                 {
+                    // Here there is no way to tie ViewComponent views to features, only to modules.
+                    // And there is no modules ordering, only features are ordered by deps and priority,
+                    // unless the module has a main feature with the same id, which is not always the case.
+                    // So, here we preserve some module ordering but which may depend on the enabled features.
+
                     moduleComponentViewLocations = _extensionManager.GetFeatures()
-                        .Where(f => f.Id == f.Extension.Id &&
-                            _modulesWithComponentViews.Any(m => m.Id == f.Id) &&
-                            _shellDescriptor.Features.Any(sf => sf.Id == f.Id))
-                        .Select(f => '/' + f.Extension.SubPath + "/Views" + "/Shared/{0}" + RazorViewEngine.ViewExtension)
-                        .Reverse();
+                        .Where(f => _shellDescriptor.Features.Any(sf => sf.Id == f.Id))
+                        .Select(f => f.Extension).Reverse().Distinct()
+                        .Where(e => _modulesWithComponentViews.Any(m => m.Id == e.Id))
+                        .Select(e => '/' + e.SubPath + "/Views" + "/Shared/{0}" + RazorViewEngine.ViewExtension);
 
                     _memoryCache.Set(CacheKey, moduleComponentViewLocations);
                 }
