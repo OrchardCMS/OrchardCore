@@ -1,6 +1,7 @@
-﻿using OrchardCore.DisplayManagement.Extensions;
-using OrchardCore.Environment.Extensions.Features;
 using System.Linq;
+using OrchardCore.DisplayManagement.Extensions;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.DisplayManagement.Events
 {

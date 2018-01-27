@@ -41,7 +41,7 @@ namespace OrchardCore.Localization
             var poFileName = cultureName + PoFileExtension;
 
             // Load .po files in each extension folder first, based on the extensions order
-            foreach (var extension in _extensionsManager.GetExtensions())
+            foreach (var extension in _extensionsManager.GetOrderedExtensions())
             {
                 yield return _fileProvider.GetFileInfo(Path.Combine(extension.SubPath, ExtensionDataFolder, _resourcesContainer, poFileName));
             }
