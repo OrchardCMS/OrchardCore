@@ -47,6 +47,7 @@ namespace OrchardCore.Mvc.LocationExpander
 
                     foreach (var module in modules)
                     {
+                        // Harvest modules which provide and share 'ViewComponent' views files.
                         var moduleComponentsViewFilePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
                             module.SubPath + "/Views/Shared/Components", new[] { RazorViewEngine.ViewExtension },
                             viewsFolder: null, inViewsFolder: true, inDepth: true);
@@ -111,7 +112,7 @@ namespace OrchardCore.Mvc.LocationExpander
                     // Here there is no way to tie ViewComponent views to features, only to modules.
                     // And there is no modules ordering, only features are ordered by deps and priority,
                     // unless the module has a main feature with the same id, which is not always the case.
-                    // So, here we preserve some module ordering but which may depend on the enabled features.
+                    // So, here we preserve some module ordering which may depend on the enabled features.
 
                     moduleComponentViewLocations = _extensionManager.GetFeatures()
                         .Where(f => _shellDescriptor.Features.Any(sf => sf.Id == f.Id))
