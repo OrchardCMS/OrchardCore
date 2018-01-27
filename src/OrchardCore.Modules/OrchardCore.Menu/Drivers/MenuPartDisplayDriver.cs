@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -35,7 +35,6 @@ namespace OrchardCore.Lists.Drivers
             return Shape<MenuPartEditViewModel>("MenuPart_Edit", model =>
             {
                 model.MenuPart = part;
-                return Task.CompletedTask;
             });
         }
 

@@ -1,4 +1,4 @@
-﻿@model EditTenantViewModel
+@model EditTenantViewModel
 @inject IEnumerable<OrchardCore.Data.DatabaseProvider> DatabaseProviders
 
 <h1>@RenderTitleSegments(T["Edit Tenant"])</h1>
@@ -41,7 +41,7 @@
                     <option value="" data-connection-string="false">@T["None"]</option>
                     @foreach (var provider in DatabaseProviders)
                     {
-                        <option value="@provider.Value" data-connection-string="@provider.HasConnectionString">@provider.Name</option>
+                        <option value="@provider.Value" data-connection-string="@provider.HasConnectionString.ToString().ToLower()">@provider.Name</option>
                     }
                 </select>
             </div>
@@ -53,7 +53,7 @@
         </div>
 
         <fieldset class="row connectionString" asp-validation-class-for="ConnectionString">
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label asp-for="ConnectionString">@T["Connection string"]</label>
                 <span asp-validation-for="ConnectionString" class="text-danger"></span>
                 <input asp-for="ConnectionString" class="form-control" />
@@ -69,3 +69,5 @@
         </div>
     </fieldset>
 </form>
+
+<script at="Foot" type="text/javascript" asp-src="/OrchardCore.Tenants/Scripts/tenant.js" depends-on="jquery"></script>

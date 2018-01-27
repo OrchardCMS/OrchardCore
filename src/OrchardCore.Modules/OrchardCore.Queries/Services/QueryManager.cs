@@ -70,7 +70,7 @@ namespace OrchardCore.Queries.Services
             return (await GetDocumentAsync()).Queries.Values.ToList();
         }
 
-        public async Task SaveQueryAsync(Query query)
+        public async Task SaveQueryAsync(string name, Query query)
         {
             // Ensure QueriesDocument exists 
             await GetDocumentAsync();
@@ -81,6 +81,7 @@ namespace OrchardCore.Queries.Services
 
             var existing = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
 
+            existing.Queries.Remove(name);
             existing.Queries[query.Name] = query;
 
             _session.Save(existing);

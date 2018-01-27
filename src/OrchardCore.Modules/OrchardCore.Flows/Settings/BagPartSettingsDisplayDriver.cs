@@ -12,7 +12,7 @@ using OrchardCore.Flows.ViewModels;
 
 namespace OrchardCore.Flows.Settings
 {
-    public class BagPartSettingsDisplayDriver : ContentTypePartDisplayDriver
+    public class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -37,14 +37,13 @@ namespace OrchardCore.Flows.Settings
             {
                 model.BagPartSettings = contentTypePartDefinition.Settings.ToObject<BagPartSettings>();
                 model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
+                model.DisplayType = model.BagPartSettings.DisplayType;
                 model.ContentTypes = new NameValueCollection();
 
-                foreach(var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
+                foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
                 }
-
-                return Task.CompletedTask;
             }).Location("Content");
         }
 
@@ -57,7 +56,7 @@ namespace OrchardCore.Flows.Settings
 
             var model = new BagPartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.DisplayType);
 
             if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
             {
@@ -65,7 +64,8 @@ namespace OrchardCore.Flows.Settings
             }
             else
             {
-                context.Builder.ContainedContentTypes(model.ContainedContentTypes);
+                context.Builder.WithSetting(nameof(BagPartSettings.ContainedContentTypes), model.ContainedContentTypes);
+                context.Builder.WithSetting(nameof(BagPartSettings.DisplayType), model.DisplayType);
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

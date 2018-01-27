@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,8 +14,8 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public ShapeMetadata()
         {
-            Wrappers = new List<string>();
-            Alternates = new List<string>();
+            Wrappers = new AlternatesCollection();
+            Alternates = new AlternatesCollection();
             BindingSources = new List<string>();
             Displaying = Enumerable.Empty<Action<ShapeDisplayContext>>();
             Displayed = Enumerable.Empty<Action<ShapeDisplayContext>>();
@@ -28,8 +28,9 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string Tab { get; set; }
         public string PlacementSource { get; set; }
         public string Prefix { get; set; }
-        public IList<string> Wrappers { get; set; }
-        public IList<string> Alternates { get; set; }
+        public string Name { get; set; }
+        public AlternatesCollection Wrappers { get; set; }
+        public AlternatesCollection Alternates { get; set; }
         public bool IsCached => _cacheContext != null;
         public bool WasExecuted { get; set; }
         public IHtmlContent ChildContent { get; set; }
@@ -42,7 +43,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         /// <summary>
         /// Event use for a specific shape instance.
         /// </summary>
-        public IEnumerable<Func<dynamic, Task>> ProcessingAsync { get; private set; }
+        public IEnumerable<Func<IShape, Task>> ProcessingAsync { get; private set; }
 
         /// <summary>
         /// Event use for a specific shape instance.
@@ -57,7 +58,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             Displaying = Displaying.Concat(new[] { context });
         }
 
-        public void OnProcessing(Func<dynamic, Task> context)
+        public void OnProcessing(Func<IShape, Task> context)
         {
             ProcessingAsync = ProcessingAsync.Concat(new[] { context });
         }

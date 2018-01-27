@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.ContentManagement
@@ -30,6 +30,7 @@ namespace OrchardCore.ContentManagement
         {
             _contentDefinitionManager = contentDefinitionManager;
             Handlers = handlers;
+            ReversedHandlers = handlers.Reverse().ToArray();
             _session = session;
             _idGenerator = idGenerator;
             _contentManagerSession = new DefaultContentManagerSession();
@@ -37,6 +38,7 @@ namespace OrchardCore.ContentManagement
         }
 
         public IEnumerable<IContentHandler> Handlers { get; private set; }
+        public IEnumerable<IContentHandler> ReversedHandlers { get; private set; }
 
         public ContentItem New(string contentType)
         {
@@ -62,12 +64,12 @@ namespace OrchardCore.ContentManagement
             context2.ContentItem.ContentItemId = _idGenerator.GenerateUniqueId(context2.ContentItem);
             context2.ContentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(context2.ContentItem);
 
-            Handlers.Reverse().Invoke(handler => handler.Activated(context2), _logger);
+            ReversedHandlers.Invoke(handler => handler.Activated(context2), _logger);
 
             var context3 = new InitializingContentContext(context2.ContentItem);
 
             Handlers.Invoke(handler => handler.Initializing(context3), _logger);
-            Handlers.Reverse().Invoke(handler => handler.Initialized(context3), _logger);
+            ReversedHandlers.Invoke(handler => handler.Initialized(context3), _logger);
 
             // composite result is returned
             return context3.ContentItem;
@@ -150,7 +152,7 @@ namespace OrchardCore.ContentManagement
 
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
                 Handlers.Invoke(handler => handler.Loading(context), _logger);
-                Handlers.Reverse().Invoke(handler => handler.Loaded(context), _logger);
+                ReversedHandlers.Invoke(handler => handler.Loaded(context), _logger);
 
                 contentItem = context.ContentItem;
             }
@@ -198,7 +200,7 @@ namespace OrchardCore.ContentManagement
 
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
                 Handlers.Invoke(handler => handler.Loading(context), _logger);
-                Handlers.Reverse().Invoke(handler => handler.Loaded(context), _logger);
+                ReversedHandlers.Invoke(handler => handler.Loaded(context), _logger);
 
                 contentItem = context.ContentItem;
             }
@@ -241,7 +243,7 @@ namespace OrchardCore.ContentManagement
 
             _session.Save(contentItem);
 
-            Handlers.Reverse().Invoke(handler => handler.Published(context), _logger);
+            ReversedHandlers.Invoke(handler => handler.Published(context), _logger);
         }
 
         public async Task UnpublishAsync(ContentItem contentItem)
@@ -284,7 +286,7 @@ namespace OrchardCore.ContentManagement
             
             _session.Save(publishedItem);
 
-            Handlers.Reverse().Invoke(handler => handler.Unpublished(context), _logger);
+            ReversedHandlers.Invoke(handler => handler.Unpublished(context), _logger);
         }
 
         protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
@@ -324,7 +326,7 @@ namespace OrchardCore.ContentManagement
             var context = new VersionContentContext(existingContentItem, buildingContentItem);
 
             Handlers.Invoke(handler => handler.Versioning(context), _logger);
-            Handlers.Reverse().Invoke(handler => handler.Versioned(context), _logger);
+            ReversedHandlers.Invoke(handler => handler.Versioned(context), _logger);
 
             return context.BuildingContentItem;
         }
@@ -360,7 +362,7 @@ namespace OrchardCore.ContentManagement
             // invoke handlers to add information to persistent stores
             Handlers.Invoke(handler => handler.Creating(context), _logger);
 
-            Handlers.Reverse().Invoke(handler => handler.Created(context), _logger);
+            ReversedHandlers.Invoke(handler => handler.Created(context), _logger);
 
             _session.Save(contentItem);
             _contentManagerSession.Store(contentItem);
@@ -373,7 +375,7 @@ namespace OrchardCore.ContentManagement
                 Handlers.Invoke(handler => handler.Publishing(publishContext), _logger);
 
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
-                Handlers.Reverse().Invoke(handler => handler.Published(publishContext), _logger);
+                ReversedHandlers.Invoke(handler => handler.Published(publishContext), _logger);
             }
         }
 
@@ -408,7 +410,7 @@ namespace OrchardCore.ContentManagement
                 _session.Save(version);
             }
 
-            Handlers.Reverse().Invoke(handler => handler.Removed(context), _logger);
+            ReversedHandlers.Invoke(handler => handler.Removed(context), _logger);
         }
 
         public async Task DiscardDraftAsync(ContentItem contentItem)
@@ -425,7 +427,7 @@ namespace OrchardCore.ContentManagement
             contentItem.Latest = false;
             _session.Save(contentItem);
 
-            Handlers.Reverse().Invoke(handler => handler.Removed(context), _logger);
+            ReversedHandlers.Invoke(handler => handler.Removed(context), _logger);
 
             var publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
 

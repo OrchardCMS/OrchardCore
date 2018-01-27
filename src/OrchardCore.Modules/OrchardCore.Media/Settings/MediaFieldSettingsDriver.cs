@@ -6,7 +6,7 @@ using OrchardCore.Media.Fields;
 
 namespace OrchardCore.Media.Settings
 {
-    public class MediaFieldSettingsDriver : ContentPartFieldDisplayDriver<MediaField>
+    public class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MediaField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {

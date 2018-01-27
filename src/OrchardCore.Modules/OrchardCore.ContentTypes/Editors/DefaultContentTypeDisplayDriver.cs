@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Editors
 {
-    public class DefaultContentTypeDisplayDriver : ContentTypeDisplayDriver
+    public class DefaultContentTypeDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -27,7 +27,6 @@ namespace OrchardCore.ContentTypes.Editors
             return Shape<ContentTypeViewModel>("ContentType_Edit", model =>
             {
                 model.DisplayName = contentTypeDefinition.DisplayName;
-                return Task.CompletedTask;
             }).Location("Content");
         }
 

@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Editors
 {
-    public class ContentPartSettingsDisplayDriver : ContentPartDisplayDriver
+    public class ContentPartSettingsDisplayDriver : ContentPartDefinitionDisplayDriver
     {
 
         public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition)
@@ -18,8 +18,8 @@ namespace OrchardCore.ContentTypes.Editors
                 model.Attachable = settings.Attachable;
                 model.Reusable = settings.Reusable;
                 model.Description = settings.Description;
-
-                return Task.CompletedTask;
+                model.DisplayName = settings.DisplayName;
+                model.ContentPartDefinition = contentPartDefinition;
             }).Location("Content");
         }
 
@@ -32,6 +32,7 @@ namespace OrchardCore.ContentTypes.Editors
                 context.Builder.Attachable(model.Attachable);
                 context.Builder.Reusable(model.Reusable);
                 context.Builder.WithDescription(model.Description);
+                context.Builder.WithDisplayName(model.DisplayName);
             }
 
             return Edit(contentPartDefinition, context.Updater);

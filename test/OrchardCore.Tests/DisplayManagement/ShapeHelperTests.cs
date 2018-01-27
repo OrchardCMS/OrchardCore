@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
@@ -40,21 +41,21 @@ namespace OrchardCore.Tests.DisplayManagement
         }
 
         [Fact]
-        public void CreatingNewShapeTypeByName()
+        public async Task CreatingNewShapeTypeByName()
         {
             dynamic shape = _serviceProvider.GetService<IShapeFactory>();
 
-            var alpha = shape.Alpha();
+            var alpha = await shape.Alpha();
 
             Assert.Equal("Alpha", alpha.Metadata.Type);
         }
 
         [Fact]
-        public void CreatingShapeWithAdditionalNamedParameters()
+        public async Task CreatingShapeWithAdditionalNamedParameters()
         {
             dynamic shape = _serviceProvider.GetService<IShapeFactory>();
 
-            var alpha = shape.Alpha(one: 1, two: "dos");
+            var alpha = await shape.Alpha(one: 1, two: "dos");
 
             Assert.Equal("Alpha", alpha.Metadata.Type);
             Assert.Equal(1, alpha.one);
@@ -62,11 +63,11 @@ namespace OrchardCore.Tests.DisplayManagement
         }
 
         [Fact]
-        public void WithPropertyBearingObjectInsteadOfNamedParameters()
+        public async Task WithPropertyBearingObjectInsteadOfNamedParameters()
         {
             dynamic shape = _serviceProvider.GetService<IShapeFactory>();
 
-            var alpha = shape.Alpha(new { one = 1, two = "dos" });
+            var alpha = await shape.Alpha(new { one = 1, two = "dos" });
 
             Assert.Equal("Alpha", alpha.Metadata.Type);
             Assert.Equal(1, alpha.one);

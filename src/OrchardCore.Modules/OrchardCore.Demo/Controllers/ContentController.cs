@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -47,7 +47,7 @@ namespace OrchardCore.Demo.Controllers
                 return NotFound();
             }
 
-            var shape = await _contentDisplay.BuildEditorAsync(contentItem, this);
+            var shape = await _contentDisplay.BuildEditorAsync(contentItem, this, false);
             return View(shape);
         }
 
@@ -61,7 +61,7 @@ namespace OrchardCore.Demo.Controllers
                 return NotFound();
             }
 
-            var shape = await _contentDisplay.UpdateEditorAsync(contentItem, this);
+            var shape = await _contentDisplay.UpdateEditorAsync(contentItem, this, false);
 
             if (!ModelState.IsValid)
             {

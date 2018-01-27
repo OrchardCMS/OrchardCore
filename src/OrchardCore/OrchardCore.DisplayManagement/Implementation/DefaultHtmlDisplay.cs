@@ -84,7 +84,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             ShapeBinding shapeBinding;
             if (TryGetDescriptorBinding(shapeMetadata.Type, Enumerable.Empty<string>(), shapeTable, out shapeBinding))
             {
-                shapeBinding.ShapeDescriptor.Displaying.Invoke(action => action(displayContext), _logger);
+                await shapeBinding.ShapeDescriptor.DisplayingAsync.InvokeAsync(action => action(displayContext), _logger);
 
                 // copy all binding sources (all templates for this shape) in order to use them as Localization scopes
                 shapeMetadata.BindingSources = shapeBinding.ShapeDescriptor.BindingSources.Where(x => x != null).ToList();
@@ -153,13 +153,17 @@ namespace OrchardCore.DisplayManagement.Implementation
 
             if (shapeBinding != null)
             {
-                shapeBinding.ShapeDescriptor.Displayed.Invoke(action =>
+                await shapeBinding.ShapeDescriptor.DisplayedAsync.InvokeAsync(async action =>
                 {
                     var prior = displayContext.ChildContent = displayContext.ShapeMetadata.ChildContent;
-                    action(displayContext);
+
+                    await action(displayContext);
+
                     // update the child content if the context variable has been reassigned
                     if (prior != displayContext.ChildContent)
+                    {
                         displayContext.ShapeMetadata.ChildContent = displayContext.ChildContent;
+                    }
                 }, _logger);
             }
 

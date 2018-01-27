@@ -30,6 +30,7 @@ namespace OrchardCore.Layers
                         )))
                 .Add(T["Content"], content => content
                     .Add(T["Layers"], "5", layers => layers
+                        .Permission(Permissions.ManageLayers)
                         .Action("Index", "Admin", new { area = "OrchardCore.Layers" })
                         .LocalNav()
                     ));

@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Environment.Shell;
@@ -18,7 +20,9 @@ using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
+using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Indexes;
+using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using YesSql.Indexes;
 
@@ -145,6 +149,10 @@ namespace OrchardCore.Users
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
+
+            services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
+            services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
+            services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
         }
     }
 }

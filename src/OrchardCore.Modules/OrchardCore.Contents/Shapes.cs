@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -41,7 +41,7 @@ namespace OrchardCore.Contents
 
             // This shapes provides a way to lazily load a content item render it in any display type.
             builder.Describe("ContentItem")
-                .OnProcessingAsync(async context =>
+                .OnProcessing(async context =>
                 {
                     var content = context.Shape;
                     string alias = content.Alias;
@@ -58,9 +58,9 @@ namespace OrchardCore.Contents
                     var displayManager = context.ServiceProvider.GetRequiredService<IContentItemDisplayManager>();
                     var updateModelAccessor = context.ServiceProvider.GetRequiredService<IUpdateModelAccessor>();
 
-                    string contentItemId = await aliasManager.GetContentItemIdAsync(alias);
+                    var contentItemId = await aliasManager.GetContentItemIdAsync(alias);
 
-                    ContentItem contentItem = await contentManager.GetAsync(contentItemId);
+                    var contentItem = await contentManager.GetAsync(contentItemId);
 
                     if (contentItem == null)
                     {
@@ -73,7 +73,7 @@ namespace OrchardCore.Contents
 
                     if (!String.IsNullOrEmpty(alternate))
                     {
-                        ((IShape)displayShape).Metadata.Alternates.Add(displayShape);
+                        displayShape.Metadata.Alternates.Add(alternate);
                     }
 
                     content.Add(displayShape);

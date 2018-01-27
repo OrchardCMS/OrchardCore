@@ -2,22 +2,36 @@
 
 ## Theming
 
-These shapes are available for theming
+### Shapes
 
-### MarkdownPart
+The following shapes are rendered when the **BodyPMarkdownPartart** is attached to a content type
 
-This shape is rendered when a `MarkdownPart` is attached to a content item.
-The shape based class is of type `MarkdownPartViewModel`.
+| Name | Display Type | Default Location | Model Type |
+| ------| ------------ |----------------- | ---------- |
+| `MarkdownPart` | `Detail` | `Content:5` | `MarkdownPartViewModel` |
+| `MarkdownPart` | `Summary` | `Content:10` | `MarkdownPartViewModel` |
+
+### BodyPartViewModel
 
 The following properties are available on the `MarkdownPartViewModel` class.
 
 | Property | Type | Description |
 | --------- | ---- |------------ |
 | `Markdown` | `string` | The Markdown value once all tokens have been processed |
-| `ContentItem` | `ContentItem` | The content item of the part |
 | `Html` | `string` | The HTML content resulting from the Mardkown source |
+| `ContentItem` | `ContentItem` | The content item of the part |
 | `MarkdownPart` | `MarkdownPart` | The `MarkdownPart` instance|
 | `TypePartSettings` | `MarkdownPartSettings` | The settings of the part |
+
+### MarkdownPart
+
+The following properties are available on `MarkdownPart`
+
+| Name | Type | Description |
+| -----| ---- |------------ |
+| `Markdown` | The Markdown content. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `MarkdownPart` shape instead |
+| `Content` | The raw content of the part |
+| `ContentItem` | The content item containing this part |
 
 ### MarkdownField
 

@@ -38,7 +38,7 @@ namespace OrchardCore.DisplayManagement
 
         ILogger Logger { get; set; }
 
-        public async Task<dynamic> BuildDisplayAsync(TModel model, IUpdateModel updater, string displayType = null, string group = null)
+        public async Task<IShape> BuildDisplayAsync(TModel model, IUpdateModel updater, string displayType = null, string group = null)
         {
             var actualShapeType = typeof(TModel).Name;
 
@@ -50,7 +50,7 @@ namespace OrchardCore.DisplayManagement
                 actualShapeType = actualShapeType + "_" + actualDisplayType;
             }
 
-            var shape = CreateContentShape(actualShapeType);
+            var shape = await CreateContentShapeAsync(actualShapeType);
 
             // This provides a way to default a safe default and customize for each model type
             shape.Metadata.Alternates.Add($"{actualShapeType}__{model.GetType().Name}");
@@ -60,7 +60,7 @@ namespace OrchardCore.DisplayManagement
                 actualDisplayType,
                 group ?? "",
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 
@@ -70,17 +70,19 @@ namespace OrchardCore.DisplayManagement
             {
                 var result = await driver.BuildDisplayAsync(model, context);
                 if (result != null)
-                    result.Apply(context);
+                {
+                    await result.ApplyAsync(context);
+                }
             }, Logger);
 
             return shape;
         }
 
-        public async Task<dynamic> BuildEditorAsync(TModel model, IUpdateModel updater, string group = null)
+        public async Task<IShape> BuildEditorAsync(TModel model, IUpdateModel updater, bool isNew, string group = null)
         {
             var actualShapeType = typeof(TModel).Name + "_Edit";
 
-            var shape = CreateContentShape(actualShapeType);
+            var shape = await CreateContentShapeAsync(actualShapeType);
 
             // This provides a way to default a safe default and customize for each model type
             shape.Metadata.Alternates.Add($"{model.GetType().Name}_Edit");
@@ -89,9 +91,10 @@ namespace OrchardCore.DisplayManagement
             var context = new BuildEditorContext(
                 shape,
                 group ?? "",
+                isNew,
                 "",
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 
@@ -102,18 +105,18 @@ namespace OrchardCore.DisplayManagement
                 var result = await driver.BuildEditorAsync(model, context);
                 if (result != null)
                 {
-                    result.Apply(context);
+                    await result.ApplyAsync(context);
                 }
             }, Logger);
 
             return shape;
         }
 
-        public async Task<dynamic> UpdateEditorAsync(TModel model, IUpdateModel updater, string group = null)
+        public async Task<IShape> UpdateEditorAsync(TModel model, IUpdateModel updater, bool isNew, string group = null)
         {
             var actualShapeType = typeof(TModel).Name + "_Edit";
 
-            var shape = CreateContentShape(actualShapeType);
+            var shape = await CreateContentShapeAsync(actualShapeType);
 
             // This provides a way to default a safe default and customize for each model type
             shape.Metadata.Alternates.Add($"{model.GetType().Name}_Edit");
@@ -122,9 +125,10 @@ namespace OrchardCore.DisplayManagement
             var context = new UpdateEditorContext(
                 shape,
                 group ?? "",
+                isNew,
                 "",
                 _shapeFactory,
-                _layoutAccessor.GetLayout(),
+                await _layoutAccessor.GetLayoutAsync(),
                 updater
             );
 
@@ -135,7 +139,7 @@ namespace OrchardCore.DisplayManagement
                 var result = await driver.UpdateEditorAsync(model, context);
                 if (result != null)
                 {
-                    result.Apply(context);
+                    await result.ApplyAsync(context);
                 }
             }, Logger);
 

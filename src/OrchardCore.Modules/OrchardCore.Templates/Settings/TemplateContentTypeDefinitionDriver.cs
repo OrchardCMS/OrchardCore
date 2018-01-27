@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -8,11 +7,11 @@ using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Settings
 {
-    public class TemplateContentTypeSettingsDriver : ContentTypeDisplayDriver
+    public class TemplateContentTypeDefinitionDriver : ContentTypeDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer<TemplateContentPartSettingsDriver> S;
+        private readonly IStringLocalizer<TemplateContentPartDefinitionDriver> S;
 
-        public TemplateContentTypeSettingsDriver(IStringLocalizer<TemplateContentPartSettingsDriver> localizer)
+        public TemplateContentTypeDefinitionDriver(IStringLocalizer<TemplateContentPartDefinitionDriver> localizer)
         {
             S = localizer;
         }
@@ -42,7 +41,6 @@ namespace OrchardCore.Templates.Settings
                         Description = S["Template for a {0} content item in summary views", contentTypeDefinition.DisplayName]
                     });
 
-                return Task.CompletedTask;
             }).Location("Content");
         }
     }

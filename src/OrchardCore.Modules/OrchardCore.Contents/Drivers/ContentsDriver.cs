@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
@@ -20,7 +20,7 @@ namespace OrchardCore.Contents.Drivers
         public override IDisplayResult Display(ContentItem model, IUpdateModel updater)
         {
             return Combine(
-                Shape("Contents__Metadata", model).Location("Detail", "Content:before"),
+                Shape("ContentsMetadata", model).Location("Detail", "Content:before"),
                 Shape("Contents_SummaryAdmin__Tags", model).Location("SummaryAdmin", "Meta:10"),
                 Shape("Contents_SummaryAdmin__Meta", model).Location("SummaryAdmin", "Meta:20"),
                 Shape("Contents_SummaryAdmin__Button__Edit", model).Location("SummaryAdmin", "Actions:10"),

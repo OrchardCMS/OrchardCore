@@ -1,11 +1,14 @@
-﻿@* This page compares the performance of View Components and shapes *@
+@* This page compares the performance of View Components and shapes *@
+
 
 @using OrchardCore.DisplayManagement
 
 @{ 
     var iterations = 100;
-
 }
+
+<h4>Rendering a "Fake" shape @iterations times using different ways to instantiate the shapes</h4>
+
 VIEW COMPONENTS
 @{
     var sw = new System.Diagnostics.Stopwatch();
@@ -31,7 +34,7 @@ SHAPES (Arguments)
 
 @for (int i = 0; i < iterations; i++)
 {
-    buffer.AppendHtml(await DisplayAsync(New.Fake(Value: i.ToString())));
+    buffer.AppendHtml(await DisplayAsync(await New.Fake(Value: i.ToString())));
 }
 
 @sw.Elapsed.TotalMilliseconds ms
@@ -46,14 +49,14 @@ SHAPES (Method call)
 
 @for (int i = 0; i < iterations; i++)
 {
-    buffer.AppendHtml(await DisplayAsync(New.Fake().Value(i.ToString())));
+    buffer.AppendHtml(await DisplayAsync((await New.Fake()).Value(i.ToString())));
 }
 
 @sw.Elapsed.TotalMilliseconds ms
 
 
 <br />
-SHAPES (Dynamic Proxy)
+SHAPES (Dynamic Proxy - Dynamic View Model)
 
 @{
     buffer = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
@@ -62,8 +65,25 @@ SHAPES (Dynamic Proxy)
 
 @for (int i = 0; i < iterations; i++)
 {
-    var proxy = Factory.Create<OrchardCore.Demo.Models.FakeShape>("Fake", f => f.Value = "666");
+    var proxy = await Factory.CreateAsync<OrchardCore.Demo.Models.FakeShape>("Fake", f => f.Value = "666");
     
+    buffer.AppendHtml(await DisplayAsync(proxy));
+}
+
+@sw.Elapsed.TotalMilliseconds ms
+
+<br />
+SHAPES (Dynamic Proxy - Strong Typed View Model)
+
+@{
+    buffer = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
+    sw.Restart();
+}
+
+@for (int i = 0; i < iterations; i++)
+{
+    var proxy = await Factory.CreateAsync<OrchardCore.Demo.Models.FakeShape>("Fake__Typed", f => f.Value = "666");
+
     buffer.AppendHtml(await DisplayAsync(proxy));
 }
 
@@ -76,7 +96,7 @@ SHAPES (Reuse instance)
     buffer = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
     sw.Restart();
 
-    var shape = New.Fake().Value("666");
+    var shape = (await New.Fake()).Value("666");
 
 }
 
@@ -99,7 +119,7 @@ SHAPES (Just instantiation)
 
 @for (int i = 0; i < iterations; i++)
 {
-    shape = New.Fake().Value(i.ToString());
+    shape = (await New.Fake()).Value(i.ToString());
     buffer.AppendHtml("666");
 }
 
@@ -116,7 +136,7 @@ SHAPES (Cached)
 
 @for (int i = 0; i < iterations; i++)
 {
-    shape = New.Fake().Value(i.ToString());
+    shape = (await New.Fake()).Value(i.ToString());
     shape.Metadata.Cache("fake");
 
     buffer.AppendHtml(await DisplayAsync(shape));

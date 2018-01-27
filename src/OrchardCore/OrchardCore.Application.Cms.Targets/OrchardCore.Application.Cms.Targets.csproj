@@ -7,8 +7,8 @@
 
   <!-- Add a ".props" file in the package specific to the "Cms" bundle -->
   <ItemGroup>
-    <None Include="OrchardCore.Application.Cms.props" Pack="true">
-      <PackagePath>build\netstandard2.0\OrchardCore.Application.Cms.props</PackagePath>
+    <None Include="OrchardCore.Application.Cms.Targets.props" Pack="true">
+      <PackagePath>build\netstandard2.0\OrchardCore.Application.Cms.Targets.props</PackagePath>
     </None>
   </ItemGroup>
 
@@ -37,7 +37,6 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Contents\OrchardCore.Contents.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentTypes\OrchardCore.ContentTypes.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.CustomSettings\OrchardCore.CustomSettings.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Demo\OrchardCore.Demo.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Deployment\OrchardCore.Deployment.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Deployment.Remote\OrchardCore.Deployment.Remote.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Diagnostics\OrchardCore.Diagnostics.csproj" PrivateAssets="none" />

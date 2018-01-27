@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.Handlers;
@@ -13,13 +14,20 @@ namespace OrchardCore.Layers.Drivers
 	public class LayerMetadataWelder : ContentDisplayDriver
     {
 		private readonly ILayerService _layerService;
+        private readonly IStringLocalizer<LayerMetadataWelder> S;
 
-		public LayerMetadataWelder(ILayerService layerService)
+        public LayerMetadataWelder(ILayerService layerService, IStringLocalizer<LayerMetadataWelder> stringLocalizer)
 		{
 			_layerService = layerService;
-		}
+            S = stringLocalizer;
+        }
 
-		public override async Task<IDisplayResult> EditAsync(ContentItem model, BuildEditorContext context)
+        protected override void BuildPrefix(ContentItem model, string htmlFieldPrefix)
+        {
+            Prefix = "LayerMetadata";
+        }
+
+        public override async Task<IDisplayResult> EditAsync(ContentItem model, BuildEditorContext context)
 		{
 			var layerMetadata = model.As<LayerMetadata>();
 
@@ -28,7 +36,7 @@ namespace OrchardCore.Layers.Drivers
 				layerMetadata = new LayerMetadata();
 
 				// Are we loading an editor that requires layer metadata?
-				if (await context.Updater.TryUpdateModelAsync(layerMetadata, "LayerMetadata", m => m.Zone, m => m.Position)
+				if (await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position)
 					&& !String.IsNullOrEmpty(layerMetadata.Zone))
 				{
 					model.Weld(layerMetadata);
@@ -49,14 +57,24 @@ namespace OrchardCore.Layers.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ContentItem model, UpdateEditorContext context)
         {
-            var layerMetadata = new LayerMetadata();
+            var viewModel = new LayerMetadataEditViewModel();
 
-            if (!await context.Updater.TryUpdateModelAsync(layerMetadata, "LayerMetadata", m => m.Zone, m => m.Position, m => m.RenderTitle, m => m.Title, m => m.Layer)
-            || String.IsNullOrEmpty(layerMetadata.Zone)) {
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+
+            if (viewModel.LayerMetadata == null)
+            {
                 return null;
             }
 
-			model.Apply(layerMetadata);
+            if (String.IsNullOrEmpty(viewModel.LayerMetadata.Zone))
+            {
+                context.Updater.ModelState.AddModelError("LayerMetadata.Zone", S["Zone is missing"]);
+            }
+
+            if (context.Updater.ModelState.IsValid)
+            {
+                model.Apply(viewModel.LayerMetadata);
+            }
 
 			return await EditAsync(model, context);
         }
