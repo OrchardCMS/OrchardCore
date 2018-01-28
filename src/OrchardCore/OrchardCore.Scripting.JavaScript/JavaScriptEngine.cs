@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using Esprima;
 using Jint;
-using Jint.Parser;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 
@@ -53,8 +53,8 @@ namespace OrchardCore.Scripting.JavaScript
 
 			var parsedAst = _memoryCache.GetOrCreate(script, entry =>
 			{
-				var parser = new JavaScriptParser();
-				return parser.Parse(script);
+				var parser = new JavaScriptParser(script);
+				return parser.ParseProgram();
 			});
 
 			var result = jsScope.Engine.Execute(parsedAst).GetCompletionValue()?.ToObject();

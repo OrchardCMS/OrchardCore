@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -18,7 +19,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         public string Name { get; set; }
 
         [HtmlAttributeName(SrcAttributeName)]
-        public string Src { get; set; }
+        public string Source { get; set; }
 
         public string CdnSrc { get; set; }
         public string DebugSrc { get; set; }
@@ -41,28 +42,28 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             _resourceManager = resourceManager;
         }
 
-        public override void Process(TagHelperContext context, TagHelperOutput output)
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             output.SuppressOutput();
 
-            if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
+            if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Source))
             {
                 RequireSettings setting;
 
                 if (String.IsNullOrEmpty(DependsOn))
                 {
                     // Include custom script url
-                    setting = _resourceManager.Include("script", Src, DebugSrc);
+                    setting = _resourceManager.Include("script", Source, DebugSrc);
                 }
                 else
                 {
                     // Anonymous declaration with dependencies, then display
 
                     // Using the source as the name to prevent duplicate references to the same file
-                    var name = Src.ToLowerInvariant();
+                    var name = Source.ToLowerInvariant();
 
                     var definition = _resourceManager.InlineManifest.DefineScript(name);
-                    definition.SetUrl(Src, DebugSrc);
+                    definition.SetUrl(Source, DebugSrc);
 
                     if (!String.IsNullOrEmpty(Version))
                     {
@@ -114,7 +115,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.SetAttribute(attribute.Name, attribute.Value.ToString());
                 }
             }
-            else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
+            else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Source))
             {
                 // Resource required
 
@@ -144,12 +145,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseVersion(Version);
                 }
             }
-            else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
+            else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Source))
             {
                 // Inline declaration
 
                 var definition = _resourceManager.InlineManifest.DefineScript(Name);
-                definition.SetUrl(Src, DebugSrc);
+                definition.SetUrl(Source, DebugSrc);
 
                 if (!String.IsNullOrEmpty(Version))
                 {
@@ -175,7 +176,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     definition.SetVersion(Version);
                 }
-                
+
                 // If At is specified then we also render it
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -201,11 +202,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     }
                 }
             }
-            else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
+            else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Source))
             {
                 // Custom script content
 
-                var childContent = output.GetChildContentAsync().GetAwaiter().GetResult();
+                var childContent = await output.GetChildContentAsync();
 
                 var builder = new TagBuilder("script");
                 builder.InnerHtml.AppendHtml(childContent);

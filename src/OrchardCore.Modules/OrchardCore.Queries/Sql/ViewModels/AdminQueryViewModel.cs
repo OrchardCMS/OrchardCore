@@ -14,12 +14,12 @@ namespace OrchardCore.Queries.Sql.ViewModels
         public string RawSql { get; set; }
 
         [BindNever]
-        public string RawParameters{ get; set; }
-
-        [BindNever]
         public TimeSpan Elapsed { get; set; } = TimeSpan.Zero;
 
         [BindNever]
         public IEnumerable<dynamic> Documents { get; set; } = Enumerable.Empty<dynamic>();
+
+        [BindNever]
+        public string FactoryName { get; set; }
     }
 }

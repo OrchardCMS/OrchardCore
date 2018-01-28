@@ -1,10 +1,9 @@
-﻿Name: Themes
+Name: Themes
 AntiForgery: enabled
 Author: The Orchard Team
 Website: http://orchardproject.net
 Version: 2.0.x
 OrchardVersion: 2.0.x
-Description:
-FeatureDescription: Themes.
+Description: Themes.
 Category: Theming
 Dependencies: OrchardCore.Settings, OrchardCore.Admin

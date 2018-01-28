@@ -31,6 +31,7 @@ pages:
     - CMS Modules:
         - Title: OrchardCore.Modules/OrchardCore.Title/README.md
         - Body: OrchardCore.Modules/OrchardCore.Body/README.md
+        - Contents: OrchardCore.Modules/OrchardCore.Contents/README.md
         - Content Fields: OrchardCore.Modules/OrchardCore.ContentFields/README.md
         - Content Preview: OrchardCore.Modules/OrchardCore.ContentPreview/README.md
         - Content Types: OrchardCore.Modules/OrchardCore.ContentTypes/README.md

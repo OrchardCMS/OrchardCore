@@ -1,24 +1,23 @@
 using System.Threading.Tasks;
+using OrchardCore.OpenId.Services.Managers;
 using OrchardCore.Security;
 
 namespace OrchardCore.OpenId.Services
 {
     public class OpenIdApplicationRoleRemovedEventHandler : IRoleRemovedEventHandler
     {
-        private readonly OpenIdApplicationStore _store;
+        private readonly OpenIdApplicationManager _manager;
 
-        public OpenIdApplicationRoleRemovedEventHandler(OpenIdApplicationStore store)
+        public OpenIdApplicationRoleRemovedEventHandler(OpenIdApplicationManager manager)
         {
-            _store = store;
+            _manager = manager;
         }
 
         public async Task RoleRemovedAsync(string roleName)
         {
-            var apps = await _store.GetAppsInRoleAsync(roleName);
-
-            foreach (var app in apps)
+            foreach (var application in await _manager.ListInRoleAsync(roleName))
             {
-                await _store.RemoveFromRoleAsync(app, roleName);
+                await _manager.RemoveFromRoleAsync(application, roleName);
             }
         }
     }

@@ -56,7 +56,7 @@ namespace OrchardCore.Menu.Controllers
                 return Unauthorized();
             }
 
-            var contentItem = _contentManager.New(id);
+            var contentItem = await _contentManager.NewAsync(id);
 
             dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true);
 
@@ -93,7 +93,7 @@ namespace OrchardCore.Menu.Controllers
                 return NotFound();
             }
 
-            var contentItem = _contentManager.New(id);
+            var contentItem = await _contentManager.NewAsync(id);
 
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
 
@@ -112,7 +112,7 @@ namespace OrchardCore.Menu.Controllers
                 // Look for the target menu item in the hierarchy
                 var parentMenuItem = FindMenuItem(menu.Content, menuItemId);
 
-                // Couldn't find targetted menu item
+                // Couldn't find targeted menu item
                 if (parentMenuItem == null)
                 {
                     return NotFound();
@@ -213,7 +213,7 @@ namespace OrchardCore.Menu.Controllers
                 return View(model);
             }
 
-            menuItem.Merge(contentItem.Content, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union });
+            menuItem.Merge(contentItem.Content, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
 
             _session.Save(menu);
 
@@ -275,11 +275,11 @@ namespace OrchardCore.Menu.Controllers
                 return null;
             }
 
-            var menuItems = (JArray) contentItem["MenuItemsListPart"]["MenuItems"];
+            var menuItems = (JArray)contentItem["MenuItemsListPart"]["MenuItems"];
 
             JObject result;
 
-            foreach(JObject menuItem in menuItems)
+            foreach (JObject menuItem in menuItems)
             {
                 // Search in inner menu items
                 result = FindMenuItem(menuItem, menuItemId);

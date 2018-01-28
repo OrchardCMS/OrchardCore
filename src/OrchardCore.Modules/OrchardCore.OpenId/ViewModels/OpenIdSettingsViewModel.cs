@@ -1,4 +1,4 @@
-﻿using OrchardCore.OpenId.Models;
+using OrchardCore.OpenId.Models;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using static OrchardCore.OpenId.Settings.OpenIdSettings;
@@ -26,5 +26,6 @@ namespace OrchardCore.OpenId.ViewModels
         public bool AllowRefreshTokenFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
         public bool AllowHybridFlow { get; set; }
+        public bool UseRollingTokens { get; set; }
     }
 }

@@ -478,7 +478,7 @@ body.trumbowyg-body-fullscreen {
     background: #111; }
   .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor *, .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor::before {
     text-shadow: 0 0 7px #ccc; }
-    @media screen and (min-width: 0 \0 ) {
+    @media screen and (min-width: 0 \0 ) {
       .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor *, .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor::before {
         color: rgba(20, 20, 20, 0.6) !important; } }
     @supports (-ms-accelerator: true) {

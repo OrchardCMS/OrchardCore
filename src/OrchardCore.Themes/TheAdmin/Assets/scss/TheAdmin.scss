@@ -196,7 +196,7 @@ $link-padding-left: 16px !default;
 }
 
 .field-validation-error {
-    @extend small, .form-control-feedback;
+    @extend small, .invalid-feedback;
 }
 
 .input-validation-error {

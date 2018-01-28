@@ -44,7 +44,9 @@ namespace OrchardCore.Queries.Recipes
 
                 if (sample == null)
                 {
-                    _logger.LogError("Could not find query source: " + sourceName);
+                    _logger.LogError("Could not find query source: {0}. The query '{1}' will not be imported.", sourceName, token[nameof(Query.Name)].ToString());
+
+                    continue;
                 }
 
                 var query = token.ToObject(sample.GetType()) as Query;
