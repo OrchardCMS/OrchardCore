@@ -33,9 +33,9 @@ namespace OrchardCore.Mvc.RazorPages
                 if (folder.StartsWith(path, StringComparison.Ordinal))
                 {
                     if (folder.Length == path.Length ||
-                        folder.Contains("/Pages/") || folder.Contains("/Components/") ||
-                        folder.EndsWith("/Pages") || folder.EndsWith("/Components") ||
-                        folder.Substring(path.Length + 1).IndexOf('/') == -1)
+                        folder.Contains("/Pages/") || folder.EndsWith("/Pages") ||
+                        folder.Contains("/Components/") || folder.EndsWith("/Components") ||
+                        (folder[path.Length] == '/' && folder.Substring(path.Length + 1).IndexOf('/') == -1))
                     {
                         return _fileProvider.GetDirectoryContents(subpath);
                     }
