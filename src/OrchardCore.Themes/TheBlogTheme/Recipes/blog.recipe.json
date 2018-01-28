@@ -54,6 +54,7 @@
         "OrchardCore.Lucene",
         "OrchardCore.Lists",
         "OrchardCore.Liquid",
+        "OrchardCore.Liquid.LiquidPart",
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
