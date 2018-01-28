@@ -10,7 +10,7 @@ The following filters allow for media manipulation:
 
 ### asset_url
 
-Returns the url of a media based on its location in the media library.
+Returns the URL of a media based on its location in the media library.
 
 #### Input
 
@@ -42,7 +42,7 @@ The alternate text attribute value
 
 ### resize_url
 
-Convert the input url to create a dynamic image with the specified size arguments. 
+Convert the input URL to create a dynamic image with the specified size arguments. 
 
 #### Input
 
@@ -73,18 +73,19 @@ The resize mode.
 ##### pad
 
 Pads the resized image to fit the bounds of its container.
-If only one dimension is passed, will maintain the original aspect ratio.
+If only one dimension is passed, the original aspect ratio will be maintained.
 
 ##### boxpad
 
-Pads the image to fit the bound of the container without resizing theoriginal source. When downscaling, performs the same functionality as `pad`.
+Pads the image to fit the bounds of the container without resizing the original source.
+When downscaling, performs the same functionality as `pad`.
 
 ##### max (Default)
 
 Constrains the resized image to fit the bounds of its container maintaining the original aspect ratio.
 
 ##### min
-Resizes the image until the shortest side reaches the set given dimension. Upscaling is disabled in this mode and the original image will be returned if attempted.
+Resizes the image until the shortest side reaches the given dimension. Upscaling is disabled in this mode and the original image will be returned if attempted.
 
 ##### stretch
 
