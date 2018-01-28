@@ -9,24 +9,31 @@ namespace OrchardCore.Environment.Shell
     {
         public static IEnumerable<IExtensionInfo> GetEnabledExtensions(this IShellFeaturesManager shellFeaturesManager)
         {
-            return shellFeaturesManager.GetEnabledExtensionsAsync().GetAwaiter().GetResult();
+            return shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
+                .Where(f => f == f.Extension.Features.First())
+                .Select(f => f.Extension);
         }
 
         public static IEnumerable<IExtensionInfo> GetEnabledModules(this IShellFeaturesManager shellFeaturesManager)
         {
-            return shellFeaturesManager.GetEnabledModulesAsync().GetAwaiter().GetResult();
+            return shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
+                .Where(f => f == f.Extension.Features.First())
+                .Where(f => f.Extension.Manifest.IsModule())
+                .Select(f => f.Extension);
         }
 
         public static IEnumerable<IExtensionInfo> GetEnabledThemes(this IShellFeaturesManager shellFeaturesManager)
         {
-            return shellFeaturesManager.GetEnabledThemesAsync().GetAwaiter().GetResult();
+            return shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
+                .Where(f => f == f.Extension.Features.First())
+                .Where(f => f.Extension.Manifest.IsTheme())
+                .Select(f => f.Extension);
         }
 
         public static async Task<IEnumerable<IExtensionInfo>> GetEnabledExtensionsAsync(this IShellFeaturesManager shellFeaturesManager)
         {
             return (await shellFeaturesManager.GetEnabledFeaturesAsync())
                 .Where(f => f == f.Extension.Features.First())
-                .Where(f => f.Extension.Manifest.IsModule())
                 .Select(f => f.Extension);
         }
 
