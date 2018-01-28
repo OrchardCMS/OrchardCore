@@ -7,17 +7,19 @@ For more information about the Liquid syntax, please refer to this site: https:/
 
 ### HTML escaping
 
-All outputs are encoded into HTML by default. It means that any string that returns some HTML reserved chars will
-be converted to the corresponding HTML entities. If you need to render some raw HTML chars you can use the `Raw` filter.
+All outputs are encoded into HTML by default.
+This means that any HTML reserved chars will be converted to the corresponding HTML entities.
+If you need to render some raw HTML chars you can use the `Raw` filter.
 
 ## Content Item Filters
 
-All the default filters that are available in the standard Liquid syntax are available in OrchardCore. On top of that each Orchard module can
-provide custom filters for their own purpose. Here is a list of common filters that apply to content items.
+All the default filters that are available in the standard Liquid syntax are available in OrchardCore.
+On top of that each Orchard module can provide custom filters for their own purpose.
+Here is a list of common filters that apply to content items.
 
 ### display_url
 
-Returns the url of the content item
+Returns the URL of the content item
 
 Input
 ```
@@ -45,7 +47,7 @@ My Blog Post
 
 ### slugify
 
-Convert a text into a string that can be used in a url.
+Convert a text into a string that can be used in a URL.
 
 Input
 ```
@@ -60,7 +62,6 @@ this-is-some-text
 ### container
 
 Returns the container content item of another content item.
-
 
 Input
 ```
@@ -80,7 +81,9 @@ Converts a UTC date and time to the local date and time based on the site settin
 Input
 ```
 {{ "now" | local | date: "%c" }}
+```
 or
+```
 {{ Model.ContentItem.CreatedUtc | local | date: "%c" }}
 ```
 
@@ -105,7 +108,7 @@ Bonjour!
 
 ### html_class
 
-Converts a string into a friendly html class.
+Converts a string into a friendly HTML class.
 
 Input
 ```
@@ -170,7 +173,7 @@ The convention is that each Part is exposed by its name as the first level.
 If the content item has custom fields, they will be available under a part whose name will match the content type.
 
 For example, assuming the type `Product` has a Text field named `Size`, access the value of this field for a 
-content item would be:
+content item as follows:
 
 ```
 {{ Model.ContentItem.Content.Product.Size.Text }}
@@ -194,7 +197,7 @@ The following properties are available on the `User` object.
 
 ### Site
 
-Gives access to the current site settings, e.g Site.SiteName
+Gives access to the current site settings, e.g `Site.SiteName`
 
 ## Shape Filters
 
@@ -297,6 +300,7 @@ Input
 ### shape_tab
 
 Replaces the tab of an input shape.
+
 Input
 ```
 {{ my_shape | shape_tab: "properties" }}
@@ -305,7 +309,7 @@ Input
 
 ### remove_item
 
-Removes a named shape from an input shape items.
+Removes a named shape from an input shape's items.
 
 Input
 ```
@@ -407,7 +411,7 @@ The content of this block can then be reused from the Layout using the `{% displ
 
 ## Tag Helper tags
 
-ASP.NET Core MVC provides a set of tag helpers to render predefined html outputs. The Liquid module provides a way to call into these Tag Helpers using custom liquid tags.
+ASP.NET Core MVC provides a set of tag helpers to render predefined HTML outputs. The Liquid module provides a way to call into these Tag Helpers using custom liquid tags.
 
 ### link
 
