@@ -1,7 +1,7 @@
 # CONFIGURATION
 Roles can be configured through the roles menu in admin dashboard but also through a recipe step.
 
-A sample of roles configuration step:
+A sample of a roles configuration step:
 ```
 {
     "name": "roles",
@@ -11,7 +11,7 @@ A sample of roles configuration step:
             "Permissions": [ "PublishContent", "EditContent" ]
         },
         {
-            "Name": "Suscriptor",
+            "Name": "Suscriber",
             "Permissions": [ ]
         },
     ]
