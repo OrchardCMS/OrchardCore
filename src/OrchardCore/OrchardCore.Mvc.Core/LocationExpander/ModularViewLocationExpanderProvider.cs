@@ -109,10 +109,11 @@ namespace OrchardCore.Mvc.LocationExpander
                 if (!_memoryCache.TryGetValue(CacheKey, out IEnumerable<string> moduleComponentViewLocations))
                 {
                     var enabledModules = _shellFeaturesManager.GetEnabledModules();
+                    var sharedViewsPath = "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
 
                     moduleComponentViewLocations = _modulesWithComponentViews
                         .Where(m => enabledModules.Any(em => em.Id == m.Id))
-                        .Select(m => '/' + m.SubPath + "/Views/Shared/{0}" + RazorViewEngine.ViewExtension);
+                        .Select(m => '/' + m.SubPath + sharedViewsPath);
 
                     _memoryCache.Set(CacheKey, moduleComponentViewLocations);
                 }
