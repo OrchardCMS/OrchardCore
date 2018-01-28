@@ -25,7 +25,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             Arguments = new QueryArguments(
                 new QueryArgument<BooleanGraphType> { Name = "published", Description = "is the content item published", DefaultValue = true },
                 new QueryArgument<BooleanGraphType> { Name = "latest", Description = "is the content item the latest version", DefaultValue = false },
-                new QueryArgument<IntGraphType> { Name = "number", Description = "version number, 1,2,3 etc" },
                 new QueryArgument<StringGraphType> { Name = "contentType", Description = "type of content item" },
                 new QueryArgument<StringGraphType> { Name = "contentItemId", Description = "content item id" },
                 new QueryArgument<StringGraphType> { Name = "contentItemVersionId", Description = "the id of the version" }
@@ -68,12 +67,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 if (versionOptions.IsLatest)
                 {
                     query = query.Where(q => q.Latest == true);
-                }
-
-                if (context.HasPopulatedArgument("number"))
-                {
-                    var value = context.GetArgument<int>("number");
-                    query = query.Where(q => q.Number == value);
                 }
 
                 if (context.HasPopulatedArgument("contentType"))

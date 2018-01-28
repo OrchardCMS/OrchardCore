@@ -11,7 +11,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field(ci => ci.ContentItemId);
             Field(ci => ci.ContentItemVersionId);
             Field(ci => ci.ContentType);
-            Field(ci => ci.Number);
             Field(ci => ci.Published);
             Field(ci => ci.Latest);
             Field("ModifiedUtc", ci => ci.ModifiedUtc.Value);

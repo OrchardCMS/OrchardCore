@@ -35,7 +35,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations
                 
                 var contentParts = JObject.FromObject(contentItemFabrication.ContentParts);
 
-                var contentItem = contentManager.New(contentItemFabrication.ContentType);
+                var contentItem = await contentManager.NewAsync(contentItemFabrication.ContentType);
 
                 contentItem.Author = contentItemFabrication.Author;
                 contentItem.Owner = contentItemFabrication.Owner;
@@ -52,7 +52,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations
                 }
                 else
                 {
-                    contentManager.Create(contentItem, VersionOptions.Latest);
+                    await contentManager.CreateAsync(contentItem, VersionOptions.Latest);
                 }
 
                 return contentItem;

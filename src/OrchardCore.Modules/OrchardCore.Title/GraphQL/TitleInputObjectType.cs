@@ -1,15 +1,16 @@
 using GraphQL.Types;
+using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Title.Model;
 
 namespace OrchardCore.Title.GraphQL
 {
-    public class TitleInputObjectType : InputObjectGraphType<TitlePart>
+    public class TitleInputObjectType : QueryArgumentObjectGraphType<TitlePart>
     {
         public TitleInputObjectType()
         {
             Name = "TitlePartInput";
 
-            this.AddInputField("title", x => x.Title, true);
+            AddInputField("title", x => x.Title, true);
         }
     }
 }
