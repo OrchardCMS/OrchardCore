@@ -25,7 +25,7 @@ namespace OrchardCore.Environment.Shell
         public static async Task<IEnumerable<IExtensionInfo>> GetEnabledExtensionsAsync(this IShellFeaturesManager shellFeaturesManager)
         {
             return (await shellFeaturesManager.GetEnabledFeaturesAsync())
-                .Where(f => f.Id == f.Extension.Features.First().Id)
+                .Where(f => f == f.Extension.Features.First())
                 .Where(f => f.Extension.Manifest.IsModule())
                 .Select(f => f.Extension);
         }
@@ -33,7 +33,7 @@ namespace OrchardCore.Environment.Shell
         public static async Task<IEnumerable<IExtensionInfo>> GetEnabledModulesAsync(this IShellFeaturesManager shellFeaturesManager)
         {
             return (await shellFeaturesManager.GetEnabledFeaturesAsync())
-                .Where(f => f.Id == f.Extension.Features.First().Id)
+                .Where(f => f == f.Extension.Features.First())
                 .Where(f => f.Extension.Manifest.IsModule())
                 .Select(f => f.Extension);
         }
@@ -41,7 +41,7 @@ namespace OrchardCore.Environment.Shell
         public static async Task<IEnumerable<IExtensionInfo>> GetEnabledThemesAsync(this IShellFeaturesManager shellFeaturesManager)
         {
             return (await shellFeaturesManager.GetEnabledFeaturesAsync())
-                .Where(f => f.Id == f.Extension.Features.First().Id)
+                .Where(f => f == f.Extension.Features.First())
                 .Where(f => f.Extension.Manifest.IsTheme())
                 .Select(f => f.Extension);
         }
