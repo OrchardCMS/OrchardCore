@@ -1,6 +1,7 @@
 using System;
+using OrchardCore.Environment.Extensions;
 
-namespace OrchardCore.Environment.Extensions
+namespace OrchardCore.DisplayManagement
 {
     public static class ManifestExtensions
     {
