@@ -1,11 +1,11 @@
 # Localization (OrchardCore.Localization)
 
-This modules provides the infrastructure necessary to support the PO (Portable Object) localization file format.
+This module provides the infrastructure necessary to support the PO (Portable Object) localization file format.
 It also supports plural forms.
 
 ## PO files locations
 
-PO files are found with the following steps:
+PO files are found via the following steps:
 
 - For each module and theme all files matching `[ModuleLocation]/App_Data/Localization/[CultureName].po`
 - Then all files matching `/App_Data/Localization/[CultureName].po`
