@@ -1,7 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <Import Project="..\..\src\OrchardCore.Build\Dependencies.AspNetCore.props" />
-  <Import Project="..\..\src\OrchardCore.Build\Dependencies.AspNetContrib.props" />
 
   <PropertyGroup>
     <!-- This value is deprecated and will be deleted in beta2 -->
@@ -19,7 +18,8 @@
     <YesSqlVersion>2.0.0-beta-1174</YesSqlVersion>
     <YesSqlProvidersVersion>1.0.0-beta-1174</YesSqlProvidersVersion>
     <NewtonsoftJsonVersion>10.0.3</NewtonsoftJsonVersion>
-    <OpenIddictVersion>2.0.0-rc2-0789</OpenIddictVersion>
+    <OAuthValidationPackageVersion>2.0.0-rc1-final</OAuthValidationPackageVersion>
+    <OpenIddictVersion>2.0.0-rc2-0802</OpenIddictVersion>
   </PropertyGroup>
 
 </Project>

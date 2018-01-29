@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using OpenIddict.Core;
 using OrchardCore.OpenId.Abstractions.Models;
 using OrchardCore.OpenId.Abstractions.Stores;
@@ -245,6 +245,25 @@ namespace OrchardCore.OpenId.YesSql.Services
         }
 
         /// <summary>
+        /// Retrieves the additional properties associated with an authorization.
+        /// </summary>
+        /// <param name="authorization">The authorization.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose
+        /// result returns all the additional properties associated with the authorization.
+        /// </returns>
+        public virtual Task<JObject> GetPropertiesAsync(OpenIdAuthorization authorization, CancellationToken cancellationToken)
+        {
+            if (authorization == null)
+            {
+                throw new ArgumentNullException(nameof(authorization));
+            }
+
+            return Task.FromResult(authorization.Properties ?? new JObject());
+        }
+
+        /// <summary>
         /// Retrieves the scopes associated with an authorization.
         /// </summary>
         /// <param name="authorization">The authorization.</param>
@@ -260,7 +279,7 @@ namespace OrchardCore.OpenId.YesSql.Services
                 throw new ArgumentNullException(nameof(authorization));
             }
 
-            return Task.FromResult(ImmutableArray.CreateRange(authorization.Scopes));
+            return Task.FromResult(authorization.Scopes);
         }
 
         /// <summary>
@@ -438,6 +457,27 @@ namespace OrchardCore.OpenId.YesSql.Services
         }
 
         /// <summary>
+        /// Sets the additional properties associated with an authorization.
+        /// </summary>
+        /// <param name="authorization">The authorization.</param>
+        /// <param name="properties">The additional properties associated with the authorization </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// </returns>
+        public virtual Task SetPropertiesAsync(OpenIdAuthorization authorization, JObject properties, CancellationToken cancellationToken)
+        {
+            if (authorization == null)
+            {
+                throw new ArgumentNullException(nameof(authorization));
+            }
+
+            authorization.Properties = properties;
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         /// Sets the scopes associated with an authorization.
         /// </summary>
         /// <param name="authorization">The authorization.</param>
@@ -454,7 +494,7 @@ namespace OrchardCore.OpenId.YesSql.Services
                 throw new ArgumentNullException(nameof(authorization));
             }
 
-            authorization.Scopes = new HashSet<string>(scopes);
+            authorization.Scopes = scopes;
 
             return Task.CompletedTask;
         }
@@ -584,6 +624,9 @@ namespace OrchardCore.OpenId.YesSql.Services
         Task<string> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.GetIdAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
             => GetIdAsync((OpenIdAuthorization) authorization, cancellationToken);
 
+        Task<JObject> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.GetPropertiesAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
+            => GetPropertiesAsync((OpenIdAuthorization) authorization, cancellationToken);
+
         Task<ImmutableArray<string>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.GetScopesAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
             => GetScopesAsync((OpenIdAuthorization) authorization, cancellationToken);
 
@@ -613,6 +656,9 @@ namespace OrchardCore.OpenId.YesSql.Services
         Task IOpenIddictAuthorizationStore<IOpenIdAuthorization>.SetApplicationIdAsync(IOpenIdAuthorization authorization,
             string identifier, CancellationToken cancellationToken)
             => SetApplicationIdAsync((OpenIdAuthorization) authorization, identifier, cancellationToken);
+
+        Task IOpenIddictAuthorizationStore<IOpenIdAuthorization>.SetPropertiesAsync(IOpenIdAuthorization authorization, JObject properties, CancellationToken cancellationToken)
+            => SetPropertiesAsync((OpenIdAuthorization) authorization, properties, cancellationToken);
 
         Task IOpenIddictAuthorizationStore<IOpenIdAuthorization>.SetScopesAsync(IOpenIdAuthorization authorization,
             ImmutableArray<string> scopes, CancellationToken cancellationToken)

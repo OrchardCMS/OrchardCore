@@ -132,8 +132,8 @@ namespace OrchardCore.OpenId.Controllers
                 Id = await _applicationManager.GetPhysicalIdAsync(application, HttpContext.RequestAborted),
                 LogoutRedirectUri = (await _applicationManager.GetPostLogoutRedirectUrisAsync(application, HttpContext.RequestAborted)).FirstOrDefault(),
                 RedirectUri = (await _applicationManager.GetRedirectUrisAsync(application, HttpContext.RequestAborted)).FirstOrDefault(),
-                SkipConsent = await _applicationManager.IsConsentRequiredAsync(application, HttpContext.RequestAborted),
-                Type = await _applicationManager.GetClientTypeAsync(application, HttpContext.RequestAborted)
+                SkipConsent = !await _applicationManager.IsConsentRequiredAsync(application, HttpContext.RequestAborted),
+                Type = (ClientType) Enum.Parse(typeof(ClientType), await _applicationManager.GetClientTypeAsync(application, HttpContext.RequestAborted), ignoreCase: true)
             };
 
             foreach (var role in await _roleProvider.GetRoleNamesAsync())

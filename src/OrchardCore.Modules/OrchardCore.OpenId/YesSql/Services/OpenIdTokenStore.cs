@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using OpenIddict.Core;
 using OrchardCore.OpenId.Abstractions.Models;
 using OrchardCore.OpenId.Abstractions.Stores;
@@ -375,6 +376,25 @@ namespace OrchardCore.OpenId.YesSql.Services
         }
 
         /// <summary>
+        /// Retrieves the additional properties associated with a token.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose
+        /// result returns all the additional properties associated with the token.
+        /// </returns>
+        public virtual Task<JObject> GetPropertiesAsync(OpenIdToken token, CancellationToken cancellationToken)
+        {
+            if (token == null)
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
+            return Task.FromResult(token.Properties ?? new JObject());
+        }
+
+        /// <summary>
         /// Retrieves the reference identifier associated with a token.
         /// Note: depending on the manager used to create the token,
         /// the reference identifier may be hashed for security reasons.
@@ -657,6 +677,27 @@ namespace OrchardCore.OpenId.YesSql.Services
         }
 
         /// <summary>
+        /// Sets the additional properties associated with a token.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <param name="properties">The additional properties associated with the token </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// </returns>
+        public virtual Task SetPropertiesAsync(OpenIdToken token, JObject properties, CancellationToken cancellationToken)
+        {
+            if (token == null)
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
+            token.Properties = properties;
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         /// Sets the reference identifier associated with a token.
         /// Note: depending on the manager used to create the token,
         /// the reference identifier may be hashed for security reasons.
@@ -837,6 +878,9 @@ namespace OrchardCore.OpenId.YesSql.Services
         Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetPayloadAsync(IOpenIdToken token, CancellationToken cancellationToken)
             => GetPayloadAsync((OpenIdToken) token, cancellationToken);
 
+        Task<JObject> IOpenIddictTokenStore<IOpenIdToken>.GetPropertiesAsync(IOpenIdToken token, CancellationToken cancellationToken)
+            => GetPropertiesAsync((OpenIdToken) token, cancellationToken);
+
         Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetReferenceIdAsync(IOpenIdToken token, CancellationToken cancellationToken)
             => GetReferenceIdAsync((OpenIdToken) token, cancellationToken);
 
@@ -877,6 +921,9 @@ namespace OrchardCore.OpenId.YesSql.Services
 
         Task IOpenIddictTokenStore<IOpenIdToken>.SetPayloadAsync(IOpenIdToken token, string payload, CancellationToken cancellationToken)
             => SetPayloadAsync((OpenIdToken) token, payload, cancellationToken);
+
+        Task IOpenIddictTokenStore<IOpenIdToken>.SetPropertiesAsync(IOpenIdToken token, JObject properties, CancellationToken cancellationToken)
+            => SetPropertiesAsync((OpenIdToken) token, properties, cancellationToken);
 
         Task IOpenIddictTokenStore<IOpenIdToken>.SetReferenceIdAsync(IOpenIdToken token, string identifier, CancellationToken cancellationToken)
             => SetReferenceIdAsync((OpenIdToken) token, identifier, cancellationToken);
