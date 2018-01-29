@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,7 @@ namespace OrchardCore.Workflows.Http.Scripting
         private readonly GlobalMethod _queryStringMethod;
         private readonly GlobalMethod _writeMethod;
         private readonly GlobalMethod _absoluteUrlMethod;
+        private readonly GlobalMethod _readBodyMethod;
 
         public HttpContextMethodProvider(IHttpContextAccessor httpContextAccessor)
         {
@@ -45,11 +47,22 @@ namespace OrchardCore.Workflows.Http.Scripting
                     return urlHelper.ToAbsoluteUrl(relativePath);
                 })
             };
+
+            _readBodyMethod = new GlobalMethod
+            {
+                Name = "readBody",
+                Method = serviceProvider => (Func<string>)(() =>
+                {
+                    var stream = httpContextAccessor.HttpContext.Request.Body;
+                    var body = new StreamReader(stream).ReadToEnd();
+                    return body;
+                })
+            };
         }
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new[] { _httpContextMethod, _queryStringMethod, _writeMethod, _absoluteUrlMethod };
+            return new[] { _httpContextMethod, _queryStringMethod, _writeMethod, _absoluteUrlMethod, _readBodyMethod };
         }
     }
 }

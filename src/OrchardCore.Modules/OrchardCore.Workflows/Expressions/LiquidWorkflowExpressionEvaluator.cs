@@ -58,7 +58,7 @@ namespace OrchardCore.Workflows.Expressions
 
             // Set WorkflowContext as the model.
             context.MemberAccessStrategy.Register<WorkflowExecutionContext>();
-            context.SetValue("WorkflowContext", workflowContext);
+            context.SetValue(nameof(WorkflowExecutionContext), workflowContext);
             context.SetValue("CorrelationId", workflowContext.CorrelationId);
 
             // TODO: Add Liquid filters to easily access values from Input and Properties.

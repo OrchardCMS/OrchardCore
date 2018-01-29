@@ -23,12 +23,6 @@ namespace OrchardCore.Contents.Workflows.Activities
         protected IStringLocalizer T { get; }
         public override LocalizedString Category => T["Content"];
 
-        public IList<string> ContentTypeFilter
-        {
-            get => GetProperty<IList<string>>(defaultValue: () => new List<string>());
-            set => SetProperty(value);
-        }
-
         /// <summary>
         /// An expression that evaluates to either a <see cref="IContent"/> item.
         /// </summary>
@@ -36,21 +30,6 @@ namespace OrchardCore.Contents.Workflows.Activities
         {
             get => GetProperty(() => new WorkflowExpression<IContent>());
             set => SetProperty(value);
-        }
-
-        public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            var content = await GetContentAsync(workflowContext);
-
-            if (content == null)
-            {
-                return false;
-            }
-
-            var contentTypes = ContentTypeFilter.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-
-            // "" means 'any'.
-            return !contentTypes.Any() || contentTypes.Any(contentType => content.ContentItem.ContentType == contentType);
         }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -71,8 +50,8 @@ namespace OrchardCore.Contents.Workflows.Activities
                 return await workflowContext.EvaluateScriptAsync(Content);
             }
 
-            // If no expression was provided, see if the content item was provided as an input using the "Content" key.
-            var content = workflowContext.Input.GetValue<IContent>("Content");
+            // If no expression was provided, see if the content item was provided as an input or as a property using the "Content" key.
+            var content = workflowContext.Input.GetValue<IContent>("Content") ?? workflowContext.Properties.GetValue<IContent>("Content");
 
             if (content != null)
             {

@@ -20,7 +20,8 @@ namespace OrchardCore.Workflows.Controllers
             IWorkflowManager workflowManager,
             IWorkflowDefinitionRepository workflowDefinitionRepository,
             IWorkflowInstanceRepository workflowInstanceRepository,
-            ILogger<WorkflowController> logger)
+            ILogger<WorkflowController> logger
+        )
         {
             _authorizationService = authorizationService;
             _workflowManager = workflowManager;
@@ -29,7 +30,7 @@ namespace OrchardCore.Workflows.Controllers
             _logger = logger;
         }
 
-        [HttpPost]
+        [IgnoreAntiforgeryToken]
         public async Task<IActionResult> Start(int workflowDefinitionId, int activityId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ExecuteWorkflows))
@@ -50,7 +51,7 @@ namespace OrchardCore.Workflows.Controllers
             return new EmptyResult();
         }
 
-        [HttpPost]
+        [IgnoreAntiforgeryToken]
         public async Task<IActionResult> Resume(string uid, int activityId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ExecuteWorkflows))

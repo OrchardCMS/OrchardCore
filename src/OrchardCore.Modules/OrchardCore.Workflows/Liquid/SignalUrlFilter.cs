@@ -31,7 +31,7 @@ namespace OrchardCore.Workflows.Liquid
 
                 if (workflowContextValue.IsNil())
                 {
-                    throw new ArgumentException("WorkflowContext missing and no correlation ID provided while invoking 'signal_url'");
+                    throw new ArgumentException("WorkflowExecutionContext missing and no correlation ID provided while invoking 'signal_url'");
                 }
 
                 var workflowContext = (WorkflowExecutionContext)workflowContextValue.ToObjectValue();

@@ -10,7 +10,7 @@ Features:
     OrchardCore.Workflows:
         Name: Workflows
         Description: Provides tools to create custom workflows.
-        Dependencies: OrchardCore.Liquid
+        Dependencies: OrchardCore.Liquid, OrchardCore.Scripting
     OrchardCore.Workflows.Http:
         Name: HTTP Activities
         Description: Provides HTTP-related services and activities.
