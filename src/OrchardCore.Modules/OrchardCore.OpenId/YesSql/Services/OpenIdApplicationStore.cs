@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AspNet.Security.OpenIdConnect.Primitives;
+using Newtonsoft.Json.Linq;
 using OpenIddict.Core;
 using OrchardCore.OpenId.Abstractions.Models;
 using OrchardCore.OpenId.Abstractions.Stores;
@@ -332,6 +332,25 @@ namespace OrchardCore.OpenId.YesSql.Services
         }
 
         /// <summary>
+        /// Retrieves the permissions associated with an application.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns all the permissions associated with the application.
+        /// </returns>
+        public virtual Task<ImmutableArray<string>> GetPermissionsAsync(OpenIdApplication application, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            return Task.FromResult(application.Permissions);
+        }
+
+        /// <summary>
         /// Retrieves the physical identifier associated with an application.
         /// </summary>
         /// <param name="application">The application.</param>
@@ -366,7 +385,26 @@ namespace OrchardCore.OpenId.YesSql.Services
                 throw new ArgumentNullException(nameof(application));
             }
 
-            return Task.FromResult(ImmutableArray.CreateRange(application.PostLogoutRedirectUris));
+            return Task.FromResult(application.PostLogoutRedirectUris);
+        }
+
+        /// <summary>
+        /// Retrieves the additional properties associated with an application.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose
+        /// result returns all the additional properties associated with the application.
+        /// </returns>
+        public virtual Task<JObject> GetPropertiesAsync(OpenIdApplication application, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            return Task.FromResult(application.Properties ?? new JObject());
         }
 
         /// <summary>
@@ -385,7 +423,7 @@ namespace OrchardCore.OpenId.YesSql.Services
                 throw new ArgumentNullException(nameof(application));
             }
 
-            return Task.FromResult(ImmutableArray.CreateRange(application.RedirectUris));
+            return Task.FromResult(application.RedirectUris);
         }
 
         /// <summary>
@@ -504,7 +542,7 @@ namespace OrchardCore.OpenId.YesSql.Services
                 throw new ArgumentNullException(nameof(application));
             }
 
-            if (!Enum.TryParse(type, out ClientType value))
+            if (!Enum.TryParse(type, ignoreCase: true, result: out ClientType value))
             {
                 throw new ArgumentException("The specified client type is not valid.");
             }
@@ -536,6 +574,27 @@ namespace OrchardCore.OpenId.YesSql.Services
         }
 
         /// <summary>
+        /// Sets the permissions associated with an application.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="permissions">The permissions associated with the application </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// </returns>
+        public virtual Task SetPermissionsAsync(OpenIdApplication application, ImmutableArray<string> permissions, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            application.Permissions = permissions;
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         /// Sets the logout callback addresses associated with an application.
         /// </summary>
         /// <param name="application">The application.</param>
@@ -552,7 +611,28 @@ namespace OrchardCore.OpenId.YesSql.Services
                 throw new ArgumentNullException(nameof(application));
             }
 
-            application.PostLogoutRedirectUris = new HashSet<string>(addresses);
+            application.PostLogoutRedirectUris = addresses;
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Sets the additional properties associated with an application.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="properties">The additional properties associated with the application </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// </returns>
+        public virtual Task SetPropertiesAsync(OpenIdApplication application, JObject properties, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            application.Properties = properties;
 
             return Task.CompletedTask;
         }
@@ -574,7 +654,7 @@ namespace OrchardCore.OpenId.YesSql.Services
                 throw new ArgumentNullException(nameof(application));
             }
 
-            application.RedirectUris = new HashSet<string>(addresses);
+            application.RedirectUris = addresses;
 
             return Task.CompletedTask;
         }
@@ -601,60 +681,6 @@ namespace OrchardCore.OpenId.YesSql.Services
             return _session.CommitAsync();
         }
 
-        // TODO: remove these methods once per-application grant type limitation is added to OpenIddict.
-        public virtual Task<ImmutableArray<string>> GetGrantTypesAsync(OpenIdApplication application, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            var builder = ImmutableArray.CreateBuilder<string>();
-
-            if (application.AllowAuthorizationCodeFlow)
-            {
-                builder.Add(OpenIdConnectConstants.GrantTypes.AuthorizationCode);
-            }
-
-            if (application.AllowClientCredentialsFlow)
-            {
-                builder.Add(OpenIdConnectConstants.GrantTypes.ClientCredentials);
-            }
-
-            if (application.AllowImplicitFlow)
-            {
-                builder.Add(OpenIdConnectConstants.GrantTypes.Implicit);
-            }
-
-            if (application.AllowPasswordFlow)
-            {
-                builder.Add(OpenIdConnectConstants.GrantTypes.Password);
-            }
-
-            if (application.AllowRefreshTokenFlow)
-            {
-                builder.Add(OpenIdConnectConstants.GrantTypes.RefreshToken);
-            }
-
-            return Task.FromResult(builder.ToImmutable());
-        }
-
-        public virtual Task SetGrantTypesAsync(OpenIdApplication application, ImmutableArray<string> types, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            application.AllowAuthorizationCodeFlow = types.Contains(OpenIdConnectConstants.GrantTypes.AuthorizationCode);
-            application.AllowClientCredentialsFlow = types.Contains(OpenIdConnectConstants.GrantTypes.ClientCredentials);
-            application.AllowImplicitFlow = types.Contains(OpenIdConnectConstants.GrantTypes.Implicit);
-            application.AllowPasswordFlow = types.Contains(OpenIdConnectConstants.GrantTypes.Password);
-            application.AllowRefreshTokenFlow = types.Contains(OpenIdConnectConstants.GrantTypes.RefreshToken);
-
-            return Task.CompletedTask;
-        }
-
         public virtual Task<bool> IsConsentRequiredAsync(OpenIdApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
@@ -662,7 +688,7 @@ namespace OrchardCore.OpenId.YesSql.Services
                 throw new ArgumentNullException(nameof(application));
             }
 
-            return Task.FromResult(!application.SkipConsent);
+            return Task.FromResult(application.RequireConsent);
         }
 
         public virtual Task SetConsentRequiredAsync(OpenIdApplication application, bool value, CancellationToken cancellationToken)
@@ -672,7 +698,7 @@ namespace OrchardCore.OpenId.YesSql.Services
                 throw new ArgumentNullException(nameof(application));
             }
 
-            application.SkipConsent = !value;
+            application.RequireConsent = value;
 
             return Task.CompletedTask;
         }
@@ -684,7 +710,7 @@ namespace OrchardCore.OpenId.YesSql.Services
                 throw new ArgumentNullException(nameof(application));
             }
 
-            return Task.FromResult(ImmutableArray.CreateRange(application.RoleNames));
+            return Task.FromResult(application.Roles);
         }
 
         public virtual async Task<ImmutableArray<OpenIdApplication>> ListInRoleAsync(string role, CancellationToken cancellationToken)
@@ -704,7 +730,7 @@ namespace OrchardCore.OpenId.YesSql.Services
                 throw new ArgumentNullException(nameof(application));
             }
 
-            application.RoleNames = new HashSet<string>(roles);
+            application.Roles = roles;
             _session.Save(application);
 
             return Task.CompletedTask;
@@ -762,8 +788,14 @@ namespace OrchardCore.OpenId.YesSql.Services
         Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetIdAsync(IOpenIdApplication application, CancellationToken cancellationToken)
             => GetIdAsync((OpenIdApplication) application, cancellationToken);
 
+        Task<ImmutableArray<string>> IOpenIddictApplicationStore<IOpenIdApplication>.GetPermissionsAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetPermissionsAsync((OpenIdApplication) application, cancellationToken);
+
         Task<ImmutableArray<string>> IOpenIddictApplicationStore<IOpenIdApplication>.GetPostLogoutRedirectUrisAsync(IOpenIdApplication application, CancellationToken cancellationToken)
             => GetPostLogoutRedirectUrisAsync((OpenIdApplication) application, cancellationToken);
+
+        Task<JObject> IOpenIddictApplicationStore<IOpenIdApplication>.GetPropertiesAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetPropertiesAsync((OpenIdApplication) application, cancellationToken);
 
         Task<ImmutableArray<string>> IOpenIddictApplicationStore<IOpenIdApplication>.GetRedirectUrisAsync(IOpenIdApplication application, CancellationToken cancellationToken)
             => GetRedirectUrisAsync((OpenIdApplication) application, cancellationToken);
@@ -792,9 +824,15 @@ namespace OrchardCore.OpenId.YesSql.Services
         Task IOpenIddictApplicationStore<IOpenIdApplication>.SetDisplayNameAsync(IOpenIdApplication application, string name, CancellationToken cancellationToken)
             => SetDisplayNameAsync((OpenIdApplication) application, name, cancellationToken);
 
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetPermissionsAsync(IOpenIdApplication application, ImmutableArray<string> permissions, CancellationToken cancellationToken)
+            => SetPermissionsAsync((OpenIdApplication) application, permissions, cancellationToken);
+
         Task IOpenIddictApplicationStore<IOpenIdApplication>.SetPostLogoutRedirectUrisAsync(IOpenIdApplication application,
             ImmutableArray<string> addresses, CancellationToken cancellationToken)
             => SetPostLogoutRedirectUrisAsync((OpenIdApplication) application, addresses, cancellationToken);
+
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetPropertiesAsync(IOpenIdApplication application, JObject properties, CancellationToken cancellationToken)
+            => SetPropertiesAsync((OpenIdApplication) application, properties, cancellationToken);
 
         Task IOpenIddictApplicationStore<IOpenIdApplication>.SetRedirectUrisAsync(IOpenIdApplication application,
             ImmutableArray<string> addresses, CancellationToken cancellationToken)
@@ -810,9 +848,6 @@ namespace OrchardCore.OpenId.YesSql.Services
         async Task<IOpenIdApplication> IOpenIdApplicationStore.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
             => await FindByPhysicalIdAsync(identifier, cancellationToken);
 
-        Task<ImmutableArray<string>> IOpenIdApplicationStore.GetGrantTypesAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => GetGrantTypesAsync((OpenIdApplication) application, cancellationToken);
-
         Task<string> IOpenIdApplicationStore.GetPhysicalIdAsync(IOpenIdApplication application, CancellationToken cancellationToken)
             => GetPhysicalIdAsync((OpenIdApplication) application, cancellationToken);
 
@@ -827,9 +862,6 @@ namespace OrchardCore.OpenId.YesSql.Services
 
         Task IOpenIdApplicationStore.SetConsentRequiredAsync(IOpenIdApplication application, bool value, CancellationToken cancellationToken)
             => SetConsentRequiredAsync((OpenIdApplication) application, value, cancellationToken);
-
-        Task IOpenIdApplicationStore.SetGrantTypesAsync(IOpenIdApplication application, ImmutableArray<string> types, CancellationToken cancellationToken)
-            => SetGrantTypesAsync((OpenIdApplication) application, types, cancellationToken);
 
         Task IOpenIdApplicationStore.SetRolesAsync(IOpenIdApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken)
             => SetRolesAsync((OpenIdApplication) application, roles, cancellationToken);

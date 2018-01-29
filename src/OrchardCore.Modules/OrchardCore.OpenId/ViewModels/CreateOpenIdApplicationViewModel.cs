@@ -27,7 +27,6 @@ namespace OrchardCore.OpenId.ViewModels
         public bool AllowAuthorizationCodeFlow { get; set; }
         public bool AllowRefreshTokenFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
-        public bool AllowHybridFlow { get; set; }
     }
 
     public class RoleEntry
@@ -35,5 +34,4 @@ namespace OrchardCore.OpenId.ViewModels
         public string Name { get; set; }
         public bool Selected { get; set; }
     }
-
 }

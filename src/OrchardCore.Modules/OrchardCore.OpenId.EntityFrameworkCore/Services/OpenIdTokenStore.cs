@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore;
 using OrchardCore.OpenId.Abstractions.Models;
@@ -125,6 +126,9 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetPayloadAsync(IOpenIdToken token, CancellationToken cancellationToken)
             => GetPayloadAsync((TToken) token, cancellationToken);
 
+        Task<JObject> IOpenIddictTokenStore<IOpenIdToken>.GetPropertiesAsync(IOpenIdToken token, CancellationToken cancellationToken)
+            => GetPropertiesAsync((TToken) token, cancellationToken);
+
         Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetReferenceIdAsync(IOpenIdToken token, CancellationToken cancellationToken)
             => GetReferenceIdAsync((TToken) token, cancellationToken);
 
@@ -165,6 +169,9 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
 
         Task IOpenIddictTokenStore<IOpenIdToken>.SetPayloadAsync(IOpenIdToken token, string payload, CancellationToken cancellationToken)
             => SetPayloadAsync((TToken) token, payload, cancellationToken);
+
+        Task IOpenIddictTokenStore<IOpenIdToken>.SetPropertiesAsync(IOpenIdToken token, JObject properties, CancellationToken cancellationToken)
+            => SetPropertiesAsync((TToken) token, properties, cancellationToken);
 
         Task IOpenIddictTokenStore<IOpenIdToken>.SetReferenceIdAsync(IOpenIdToken token, string identifier, CancellationToken cancellationToken)
             => SetReferenceIdAsync((TToken) token, identifier, cancellationToken);
