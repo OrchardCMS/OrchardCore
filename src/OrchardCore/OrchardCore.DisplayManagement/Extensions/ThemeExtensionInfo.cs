@@ -5,7 +5,7 @@ using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.DisplayManagement.Extensions
 {
-    public class ThemeExtensionInfo : IExtensionInfo
+    public class ThemeExtensionInfo : IThemeExtensionInfo
     {
         private readonly IExtensionInfo _extensionInfo;
 
