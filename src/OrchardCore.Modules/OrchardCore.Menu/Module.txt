@@ -1,9 +1,9 @@
-﻿Name: Menu
+Name: Menu
 AntiForgery: enabled
 Author: The Orchard Team
 Website: http://orchardproject.net
 Version: 2.0.x
 OrchardVersion: 2.0.x
 Description: The Menu module provides menu management features.
-Dependencies: OrchardCore.Contents, OrchardCore.Title, OrchardCore.Alias
+Dependencies: OrchardCore.Title, OrchardCore.Alias
 Category: Navigation

@@ -7,7 +7,7 @@ OrchardVersion: 2.0.x
 Features:
     OrchardCore.Media:
         Name: Media
-        Dependencies: OrchardCore.Contents, OrchardCore.ContentTypes, OrchardCore.Title, OrchardCore.Liquid
+        Dependencies: OrchardCore.ContentTypes, OrchardCore.Title, OrchardCore.Liquid
         Description: The media module adds media management support.
         Category: Content Management
 

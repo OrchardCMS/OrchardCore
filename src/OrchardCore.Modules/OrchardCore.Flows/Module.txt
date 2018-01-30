@@ -8,4 +8,4 @@ Features:
     OrchardCore.Flows:
         Category: Content
         Description: Provides a content part allowing users to edit their content based on Widgets.
-        Dependencies: OrchardCore.Contents, OrchardCore.Widgets
+        Dependencies: OrchardCore.Widgets

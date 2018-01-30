@@ -84,9 +84,9 @@
                             var featureName = feature.Descriptor.Name;
                             var featureState = feature.IsEnabled ? "enabled" : "disabled";
 
-                            var dependencies = (from d in feature.Descriptor.Dependencies
+                            var dependencies = (from d in feature.Dependencies
                                                 select (from f in Model.Features where f.Descriptor.Id == d select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
-                            var missingDependencies = feature.Descriptor.Dependencies
+                            var missingDependencies = feature.Dependencies
                                 .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d));
                             var showDisable = true; // categoryName.ToString() != "Core";
                             var showEnable = Model.IsAllowed(feature.Descriptor.Extension) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup";
@@ -113,7 +113,7 @@
 
                                         <p class="text-muted">@feature.Descriptor.Description</p>
                                         <div>
-                                            @if (feature.Descriptor.Dependencies != null && feature.Descriptor.Dependencies.Any())
+                                            @if (feature.Dependencies != null && feature.Dependencies.Any())
                                             {
                                                 @foreach (var d in dependencies)
                                                 {

@@ -8,4 +8,4 @@ Features:
     OrchardCore.Layers:
         Category: Content
         Description: Enables users to render Widgets across pages of the site based on conditions.
-        Dependencies: OrchardCore.Contents, OrchardCore.Widgets, OrchardCore.Scripting
+        Dependencies: OrchardCore.Widgets, OrchardCore.Scripting
