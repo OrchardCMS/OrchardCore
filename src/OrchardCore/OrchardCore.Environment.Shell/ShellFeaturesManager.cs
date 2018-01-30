@@ -59,7 +59,7 @@ namespace OrchardCore.Environment.Shell
                 .Select(f => f.Extension.Id).Distinct();
 
             // Extensions are still ordered according to the weight of their first features.
-            return Task.FromResult(_extensionManager.GetExtensions().Where(e => enabledIds.Any(id => id == e.Id)));
+            return Task.FromResult(_extensionManager.GetExtensions().Where(e => enabledIds.Contains(e.Id)));
         }
     }
 }
