@@ -8,4 +8,4 @@ Features:
     OrchardCore.Widgets:
         Category: Content
         Description: Provides a part allowing content items to render Widgets in theme zones.
-        Dependencies: OrchardCore.ContentTypes
+        Dependencies: OrchardCore.Contents
