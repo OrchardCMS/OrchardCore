@@ -137,3 +137,13 @@ You can also do the same for a stylesheet:
 ```html
 <style asp-src="bar.min.css" debug-src="bar.css"></style>
 ```
+
+#### Custom scripts
+
+The following example demonstrates how to inject a custom script in the footer section.
+
+```html
+<script at="Foot">
+    document.write('<!-- some script -->');
+</script>
+```
