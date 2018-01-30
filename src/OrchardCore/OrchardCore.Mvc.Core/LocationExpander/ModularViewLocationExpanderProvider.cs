@@ -42,7 +42,7 @@ namespace OrchardCore.Mvc.LocationExpander
                 {
                     var modulesWithComponentViews = new List<IExtensionInfo>();
 
-                    var orderedModules = _extensionManager.GetOrderedExtensions()
+                    var orderedModules = _extensionManager.GetExtensions()
                         .Where(e => !(e is IThemeExtensionInfo)).Reverse();
 
                     foreach (var module in orderedModules)
@@ -110,7 +110,7 @@ namespace OrchardCore.Mvc.LocationExpander
             {
                 if (!_memoryCache.TryGetValue(CacheKey, out IEnumerable<string> moduleComponentViewLocations))
                 {
-                    var enabledExtensions = _shellFeaturesManager.GetEnabledExtensions();
+                    var enabledExtensions = _shellFeaturesManager.GetEnabledExtensionsAsync().GetAwaiter().GetResult();
                     var sharedViewsPath = "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
 
                     moduleComponentViewLocations = _modulesWithComponentViews

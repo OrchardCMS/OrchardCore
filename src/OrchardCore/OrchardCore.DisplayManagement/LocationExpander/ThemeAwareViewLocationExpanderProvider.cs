@@ -54,7 +54,7 @@ namespace OrchardCore.DisplayManagement.LocationExpander
 
             var currentThemeAndBaseThemesOrdered = _extensionManager
                 .GetFeatures(new[] { currentThemeId })
-                .Where(x => x.Extension.Manifest.IsTheme())
+                .Where(x => x.Extension is IThemeExtensionInfo)
                 .Reverse();
 
             if (context.ActionContext.ActionDescriptor is PageActionDescriptor page)

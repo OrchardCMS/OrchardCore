@@ -32,15 +32,15 @@ namespace OrchardCore.Environment.Extensions
         private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         private IDictionary<string, ExtensionEntry> _extensions;
+        private IEnumerable<IExtensionInfo> _extensionsInfos;
         private IDictionary<string, FeatureEntry> _features;
+        private IFeatureInfo[] _featureInfos;
 
         private ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies
             = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
 
         private ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures
             = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
-
-        private IFeatureInfo[] _allOrderedFeatureInfos;
 
         private static Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]> GetDependantFeaturesFunc =
             new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
@@ -85,6 +85,7 @@ namespace OrchardCore.Environment.Extensions
             L = logger;
             T = localizer;
         }
+
         public ILogger L { get; set; }
         public IStringLocalizer T { get; set; }
 
@@ -105,7 +106,7 @@ namespace OrchardCore.Environment.Extensions
         {
             EnsureInitialized();
 
-            return _extensions.Values.Select(ex => ex.ExtensionInfo);
+            return _extensionsInfos;
         }
 
         public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
@@ -116,10 +117,9 @@ namespace OrchardCore.Environment.Extensions
                 .SelectMany(featureId => GetFeatureDependencies(featureId))
                 .Distinct();
 
-            return _allOrderedFeatureInfos
+            return _featureInfos
                 .Where(f => allDependencies.Any(d => d.Id == f.Id));
         }
-
 
         public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
         {
@@ -136,25 +136,20 @@ namespace OrchardCore.Environment.Extensions
 
         public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
         {
-            var orderedFeaturesIds = GetFeatures().Select(f => f.Id).ToList();
-
-            var loadedFeatures = _features.Values
-                .OrderBy(f => orderedFeaturesIds.IndexOf(f.FeatureInfo.Id));
-
-            return Task.FromResult<IEnumerable<FeatureEntry>>(loadedFeatures);
+            EnsureInitialized();
+            return Task.FromResult<IEnumerable<FeatureEntry>>(_features.Values);
         }
 
         public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
         {
             EnsureInitialized();
 
-            var orderedFeaturesIds = GetFeatures(featureIdsToLoad).Select(f => f.Id).ToList();
+            var features = GetFeatures(featureIdsToLoad).Select(f => f.Id).ToList();
 
             var loadedFeatures = _features.Values
-                .Where(f => orderedFeaturesIds.Contains(f.FeatureInfo.Id))
-                .OrderBy(f => orderedFeaturesIds.IndexOf(f.FeatureInfo.Id));
+                .Where(f => features.Contains(f.FeatureInfo.Id));
 
-            return Task.FromResult<IEnumerable<FeatureEntry>>(loadedFeatures);
+            return Task.FromResult(loadedFeatures);
         }
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
@@ -173,7 +168,7 @@ namespace OrchardCore.Environment.Extensions
                 var dependencies = new HashSet<IFeatureInfo>() { feature };
                 var stack = new Stack<IFeatureInfo[]>();
 
-                stack.Push(GetFeatureDependenciesFunc(feature, _allOrderedFeatureInfos));
+                stack.Push(GetFeatureDependenciesFunc(feature, _featureInfos));
 
                 while (stack.Count > 0)
                 {
@@ -181,7 +176,7 @@ namespace OrchardCore.Environment.Extensions
                     foreach (var dependency in next.Where(dependency => !dependencies.Contains(dependency)))
                     {
                         dependencies.Add(dependency);
-                        stack.Push(GetFeatureDependenciesFunc(dependency, _allOrderedFeatureInfos));
+                        stack.Push(GetFeatureDependenciesFunc(dependency, _featureInfos));
                     }
                 }
 
@@ -206,7 +201,7 @@ namespace OrchardCore.Environment.Extensions
                     return Enumerable.Empty<IFeatureInfo>();
                 }
 
-                return GetDependentFeatures(feature, _allOrderedFeatureInfos);
+                return GetDependentFeatures(feature, _featureInfos);
             })).Value;
         }
 
@@ -236,7 +231,7 @@ namespace OrchardCore.Environment.Extensions
         {
             EnsureInitialized();
 
-            return _allOrderedFeatureInfos;
+            return _featureInfos;
         }
 
         private static string GetSourceFeatureNameForType(Type type, string extensionId)
@@ -295,7 +290,7 @@ namespace OrchardCore.Environment.Extensions
 
                 var typesByFeature = allTypesByExtension
                     .GroupBy(typeByExtension => GetSourceFeatureNameForType(
-                        typeByExtension.Type, 
+                        typeByExtension.Type,
                         typeByExtension.ExtensionEntry.ExtensionInfo.Id))
                     .ToDictionary(
                         group => group.Key,
@@ -324,11 +319,16 @@ namespace OrchardCore.Environment.Extensions
                     }
                 };
 
-                _extensions = loadedExtensions;
+                // Feature entries are also ordered by priority and dependencies.
+                _featureInfos = Order(loadedFeatures.Values.Select(x => x.FeatureInfo));
+                _features = _featureInfos.ToDictionary(x => x.Id, x => loadedFeatures[x.Id]);
 
-                // Could we get rid of _allOrderedFeatureInfos and just have _features?
-                _features = loadedFeatures;
-                _allOrderedFeatureInfos = Order(loadedFeatures.Values.Select(x => x.FeatureInfo));
+                // Extensions are also ordered according to the weight of their first features.
+                _extensionsInfos = _featureInfos.Where(f => f.Id == f.Extension.Features.First().Id)
+                    .Select(f => f.Extension);
+
+                _extensions = _extensionsInfos.ToDictionary(x => x.Id, x => loadedExtensions[x.Id]);
+
                 _isInitialized = true;
             }
         }

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Admin;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
@@ -61,7 +60,7 @@ namespace OrchardCore.Features.Controllers
             var moduleFeatures = new List<ModuleFeature>();
             foreach (var moduleFeatureInfo in _extensionManager
                 .GetFeatures()
-                .Where(f => !f.Extension.Manifest.IsTheme()))
+                .Where(f => !(f.Extension is IThemeExtensionInfo)))
             {
                 var dependentFeatures = _extensionManager
                     .GetDependentFeatures(moduleFeatureInfo.Id);
