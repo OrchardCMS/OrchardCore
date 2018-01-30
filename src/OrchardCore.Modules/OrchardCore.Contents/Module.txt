@@ -5,6 +5,6 @@ Website: http://orchardproject.net
 Version: 2.0.x
 OrchardVersion: 2.0
 Description: The contents module enables the edition and rendering of content items.
-Dependencies: OrchardCore.Settings, OrchardCore.Liquid
+Dependencies: OrchardCore.Settings
 Category: Content Management
 

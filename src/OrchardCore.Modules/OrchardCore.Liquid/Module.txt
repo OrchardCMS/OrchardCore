@@ -8,9 +8,5 @@ Features:
     OrchardCore.Liquid:
         Name: Liquid
         Description: The liquid module enables content items to have liquid syntax.
+        Dependencies: OrchardCore.Contents, OrchardCore.ContentTypes
         Category: Content Management
-    OrchardCore.Liquid.LiquidPart:
-        Name: LiquidPart
-        Description: Provides a Liquid formatted body for your content item.
-        Category: Content Management
-        Dependencies: OrchardCore.Contents, OrchardCore.ContentTypes, OrchardCore.Liquid
