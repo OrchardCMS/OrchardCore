@@ -107,6 +107,10 @@ To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to _ViewIm
 
 `<img media-src="Model.Field.Paths[0]" alt="..." media-width="100" media-height="240" media-resize-mode="Crop" />`
 
+Alternatively the Asset Url can be resolved independently and the `src` attribute used:
+
+`<img src="@OrchardCore.AssetUrl(Model.Field.Paths[0])" alt="..." media-width="100" media-height="240" media-resize-mode="Crop" />`
+
 
 ## CREDITS
 
