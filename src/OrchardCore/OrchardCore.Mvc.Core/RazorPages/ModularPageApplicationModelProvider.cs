@@ -36,7 +36,7 @@ namespace OrchardCore.Mvc.RazorPages
 
                     // Pages paths of all available modules which are enabled in the current shell.
                     _paths = extensionManager.GetFeatures().Where(f => shellDescriptor.Features.Any(sf => sf.Id == f.Id))
-                        .Select(f => f.Extension).Select(e => '/' + e.SubPath + "/Pages/").Distinct();
+                        .Select(f => '/' + f.Extension.SubPath + "/Pages/").Distinct();
                 }
             }
         }
