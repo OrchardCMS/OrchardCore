@@ -48,7 +48,7 @@ namespace OrchardCore.Liquid
         }
     }
 
-    [RequireFeatures("OrchardCore.ContentTypes")]
+    [RequireFeatures("OrchardCore.Contents")]
     public class LiquidPartStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
