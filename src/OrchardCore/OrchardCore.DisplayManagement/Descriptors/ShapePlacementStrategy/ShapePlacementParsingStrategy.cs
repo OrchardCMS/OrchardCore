@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -168,13 +169,13 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         }
 
         private Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-              KeyValuePair<string, string> term)
+              KeyValuePair<string, JToken> term)
         {
             return BuildPredicate(predicate, term, _placementParseMatchProviders);
         }
 
         public static Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-                KeyValuePair<string, string> term, IEnumerable<IPlacementParseMatchProvider> placementMatchProviders)
+                KeyValuePair<string, JToken> term, IEnumerable<IPlacementParseMatchProvider> placementMatchProviders)
         {
 
             if (placementMatchProviders != null)

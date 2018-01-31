@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
@@ -28,7 +29,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         public string ShapeType { get; set; }
 
         [JsonProperty(PropertyName = "match")]
-        public IDictionary<string, string> Match { get; set; } = new Dictionary<string, string>();
+        public IDictionary<string, JToken> Match { get; set; } = new Dictionary<string, JToken>();
 
     }
 }
