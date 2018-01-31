@@ -71,7 +71,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             public bool Exists => true;
         }
 
-        private class TestThemeExtensionInfo : IExtensionInfo
+        private class TestThemeExtensionInfo : IThemeExtensionInfo
         {
             public TestThemeExtensionInfo(string name)
             {
