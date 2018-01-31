@@ -36,14 +36,6 @@ namespace OrchardCore.Liquid
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            // Liquid Part
-            services.AddScoped<IContentPartDisplayDriver, LiquidPartDisplay>();
-            services.AddScoped<IShapeTableProvider, LiquidShapes>();
-            services.AddSingleton<ContentPart, LiquidPart>();
-            services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
-            services.AddScoped<IContentPartHandler, LiquidPartHandler>();
-
             services.AddScoped<ISlugService, SlugService>();
             services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
 
@@ -53,6 +45,21 @@ namespace OrchardCore.Liquid
             services.AddLiquidFilter<DisplayTextFilter>("display_text");
             services.AddLiquidFilter<DisplayUrlFilter>("display_url");
             services.AddLiquidFilter<ContentUrlFilter>("href");
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Contents")]
+    public class LiquidPartStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Liquid Part
+            services.AddScoped<IContentPartDisplayDriver, LiquidPartDisplay>();
+            services.AddScoped<IShapeTableProvider, LiquidShapes>();
+            services.AddSingleton<ContentPart, LiquidPart>();
+            services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
+            services.AddScoped<IContentPartHandler, LiquidPartHandler>();
         }
     }
 }
