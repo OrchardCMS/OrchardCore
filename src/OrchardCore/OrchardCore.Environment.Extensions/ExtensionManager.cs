@@ -203,7 +203,8 @@ namespace OrchardCore.Environment.Extensions
                 }
             }
 
-            return dependencies;
+            // Preserve the underlying order of feature infos.
+            return _featureInfos.Where(f => dependencies.Any(d => d.Id == f.Id));
         }
 
         private IEnumerable<IFeatureInfo> GetDependentFeatures(
@@ -225,7 +226,8 @@ namespace OrchardCore.Environment.Extensions
                 }
             }
 
-            return dependencies;
+            // Preserve the underlying order of feature infos.
+            return _featureInfos.Where(f => dependencies.Any(d => d.Id == f.Id));
         }
 
         public IEnumerable<IFeatureInfo> GetFeatures()
