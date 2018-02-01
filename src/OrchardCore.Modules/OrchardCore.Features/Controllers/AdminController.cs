@@ -65,8 +65,7 @@ namespace OrchardCore.Features.Controllers
                 //var dependentFeatures = _extensionManager
                 //    .GetDependentFeatures(moduleFeatureInfo.Id);
 
-                var dependencies = _extensionManager.GetFeatureDependencies(moduleFeatureInfo.Id)
-                    .Select(f => f.Id);
+                var dependencies = _extensionManager.GetFeatureDependencies(moduleFeatureInfo.Id);
 
                 var moduleFeature = new ModuleFeature
                 {
@@ -75,7 +74,7 @@ namespace OrchardCore.Features.Controllers
                     //IsRecentlyInstalled = _moduleService.IsRecentlyInstalled(f.Extension),
                     //NeedsUpdate = featuresThatNeedUpdate.Contains(f.Id),
                     //DependentFeatures = dependentFeatures.Where(f => f.Id != moduleFeatureInfo.Id).ToList(),
-                    Dependencies = dependencies.Where(id => id != moduleFeatureInfo.Id).ToList()
+                    FeatureDependencies = dependencies.Where(d => d.Id != moduleFeatureInfo.Id).ToList()
                 };
 
                 moduleFeatures.Add(moduleFeature);

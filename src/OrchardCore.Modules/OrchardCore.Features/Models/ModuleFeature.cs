@@ -42,6 +42,6 @@ namespace OrchardCore.Features.Models
         /// <summary>
         /// List of features that this feature depends on .
         /// </summary>
-        public IEnumerable<String> Dependencies { get; set; }
+        public IEnumerable<IFeatureInfo> FeatureDependencies { get; set; }
     }
 }
