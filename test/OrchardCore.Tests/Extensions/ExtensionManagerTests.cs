@@ -113,9 +113,9 @@ namespace OrchardCore.Tests.Extensions
             var features = ModuleScopedExtensionManager.GetFeatureDependencies("Sample3");
 
             Assert.Equal(3, features.Count());
-            Assert.Equal("Sample1", features.ElementAt(0).Id);
-            Assert.Equal("Sample2", features.ElementAt(1).Id);
-            Assert.Equal("Sample3", features.ElementAt(2).Id);
+            Assert.Contains("Sample1", features.Select(f => f.Id));
+            Assert.Contains("Sample2", features.Select(f => f.Id));
+            Assert.Contains("Sample3", features.Select(f => f.Id));
         }
 
         [Fact]
@@ -124,8 +124,8 @@ namespace OrchardCore.Tests.Extensions
             var features = ModuleScopedExtensionManager.GetFeatureDependencies("Sample2");
 
             Assert.Equal(2, features.Count());
-            Assert.Equal("Sample1", features.ElementAt(0).Id);
-            Assert.Equal("Sample2", features.ElementAt(1).Id);
+            Assert.Contains("Sample1", features.Select(f => f.Id));
+            Assert.Contains("Sample2", features.Select(f => f.Id));
         }
 
         [Fact]
