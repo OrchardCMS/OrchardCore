@@ -7,7 +7,7 @@
   -->
 
   <PropertyGroup>
-    <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\*$(DefaultLanguageSourceExtension);</ModuleDefaultAssetExcludes>
+    <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\*$(DefaultLanguageSourceExtension);**\*.resx</ModuleDefaultAssetExcludes>
     <ModuleNoneExcludes>$(BaseIntermediateOutputPath)**\*.props;$(BaseIntermediateOutputPath)**\*.targets</ModuleNoneExcludes>
     <ModuleNoneIncludes>$(ModuleAssetExcludes)</ModuleNoneIncludes>
   </PropertyGroup>
@@ -15,6 +15,7 @@
   <PropertyGroup Condition="'$(AppDesignerFolder)' != ''">
     <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);$(AppDesignerFolder)\**</ModuleDefaultAssetExcludes>
     <ModuleNoneExcludes>$(ModuleNoneExcludes);$(AppDesignerFolder)\**\*$(DefaultLanguageSourceExtension)</ModuleNoneExcludes>
+    <ModuleNoneExcludes>$(ModuleNoneExcludes);$(AppDesignerFolder)\**\*.resx</ModuleNoneExcludes>
     <ModuleNoneIncludes>$(ModuleNoneIncludes);$(AppDesignerFolder)\**</ModuleNoneIncludes>
   </PropertyGroup>
 
