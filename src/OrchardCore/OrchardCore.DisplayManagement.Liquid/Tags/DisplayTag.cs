@@ -11,8 +11,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class DisplayTag : ExpressionTag
     {
-        public Expression Shape { get; }
-
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression)
         {
             if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))

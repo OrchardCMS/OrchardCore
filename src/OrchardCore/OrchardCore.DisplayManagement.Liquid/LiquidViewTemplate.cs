@@ -43,6 +43,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterTag<RenderTitleSegmentsTag>("page_title");
             Factory.RegisterTag<NoRenderTag>("no_render");
             Factory.RegisterTag<DisplayTag>("display");
+            Factory.RegisterTag<LayoutTag>("layout");
 
             Factory.RegisterTag<HelperTag>("helper");
             Factory.RegisterTag<NamedHelperTag>("shape");

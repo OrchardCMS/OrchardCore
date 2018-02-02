@@ -9,8 +9,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class NoRenderTag : ExpressionTag
     {
-        public Expression Value { get; }
-
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression)
         {
             (await expression.EvaluateAsync(context)).ToObjectValue();
