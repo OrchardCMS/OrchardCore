@@ -41,6 +41,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterTag<RenderBodyTag>("render_body");
             Factory.RegisterTag<RenderSectionTag>("render_section");
             Factory.RegisterTag<RenderTitleSegmentsTag>("page_title");
+            Factory.RegisterTag<NoRenderTag>("no_render");
             Factory.RegisterTag<DisplayTag>("display");
 
             Factory.RegisterTag<HelperTag>("helper");
@@ -194,6 +195,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             var layout = await layoutAccessor.GetLayoutAsync();
             context.AmbientValues.Add("ThemeLayout", layout);
+            context.LocalScope.SetValue("ThemeLayout", layout);
 
             // TODO: Extract the request culture
 
