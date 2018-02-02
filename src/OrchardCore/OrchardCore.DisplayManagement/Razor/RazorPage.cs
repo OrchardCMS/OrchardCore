@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -116,6 +117,31 @@ namespace OrchardCore.DisplayManagement.Razor
             set
             {
                 _themeLayout = value;
+            }
+        }
+
+        public string ViewLayout
+        {
+            get
+            {
+                if (ThemeLayout is IShape layout && layout.Metadata.Alternates.Count > 0)
+                {
+                    return layout.Metadata.Alternates.First();
+                }
+
+                return "Layout";
+            }
+
+            set
+            {
+                if (ThemeLayout is IShape layout)
+                {
+                    var alternates = layout.Metadata.Alternates.ToList();
+
+                    alternates.Insert(0, value);
+
+                    layout.Metadata.Alternates = new AlternatesCollection(alternates.ToArray());
+                }
             }
         }
 

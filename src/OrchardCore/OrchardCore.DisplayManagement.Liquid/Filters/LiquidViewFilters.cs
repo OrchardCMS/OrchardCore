@@ -22,6 +22,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             filters.AddAsyncFilter("shape_string", ShapeString);
             filters.AddAsyncFilter("clear_alternates", ClearAlternates);
             filters.AddAsyncFilter("add_alternates", AddAlternates);
+            filters.AddAsyncFilter("clear_wrappers", ClearWrappers);
+            filters.AddAsyncFilter("add_wrappers", AddWrappers);
             filters.AddAsyncFilter("clear_classes", ClearClasses);
             filters.AddAsyncFilter("add_classes", AddClasses);
             filters.AddAsyncFilter("shape_type", ShapeType);
@@ -116,6 +118,43 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                     foreach (var value in alternates.Enumerate())
                     {
                         shape.Metadata.Alternates.Add(value.ToStringValue());
+                    }
+                }
+            }
+
+            return Task.FromResult(input);
+        }
+
+        public static Task<FluidValue> ClearWrappers(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            if (input.ToObjectValue() is IShape shape && shape.Metadata.Alternates.Count > 0)
+            {
+                shape.Metadata.Wrappers.Clear();
+            }
+
+            return Task.FromResult(input);
+        }
+
+        public static Task<FluidValue> AddWrappers(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            if (input.ToObjectValue() is IShape shape)
+            {
+                var alternates = arguments["wrappers"].Or(arguments.At(0));
+
+                if (alternates.Type == FluidValues.String)
+                {
+                    var values = alternates.ToStringValue().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (var value in values)
+                    {
+                        shape.Metadata.Wrappers.Add(value);
+                    }
+                }
+                else if (alternates.Type == FluidValues.Array)
+                {
+                    foreach (var value in alternates.Enumerate())
+                    {
+                        shape.Metadata.Wrappers.Add(value.ToStringValue());
                     }
                 }
             }

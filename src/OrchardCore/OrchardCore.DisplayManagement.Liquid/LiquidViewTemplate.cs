@@ -198,6 +198,12 @@ namespace OrchardCore.DisplayManagement.Liquid
             context.AmbientValues.Add("ThemeLayout", layout);
             context.LocalScope.SetValue("ThemeLayout", layout);
 
+            var view = displayContext.ViewContext.View;
+            if (view is RazorView razorView)
+            {
+                context.AmbientValues.Add("LiquidPage", razorView.RazorPage);
+            }
+
             // TODO: Extract the request culture
 
             foreach (var handler in services.GetServices<ILiquidTemplateEventHandler>())
