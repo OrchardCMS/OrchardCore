@@ -1,12 +1,12 @@
 using System;
 using System.IO;
-using System.Linq;
+//using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
-using OrchardCore.DisplayManagement.Shapes;
+//using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
@@ -30,14 +30,19 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             //    layout.Metadata.Alternates = new AlternatesCollection(alternates.ToArray());
             //}
 
-            if (!context.AmbientValues.TryGetValue("LiquidPage", out dynamic liquidPage))
+            if (!context.AmbientValues.TryGetValue("LiquidPage", out dynamic page))
             {
                 throw new ArgumentException("LiquidPage missing while invoking 'layout'");
             }
 
-            if (liquidPage is LiquidPage page && !string.IsNullOrWhiteSpace(name))
+            //May be a 'LiquidPage' or a generic 'RazorPage<>'.
+            if (page != null && !string.IsNullOrWhiteSpace(name))
             {
-                page.ViewLayout = name;
+                // So we only check if the page has a 'ViewLayout' property.
+                if (((object)page).GetType().GetProperty("ViewLayout") != null)
+                {
+                    page.ViewLayout = name;
+                }
             }
 
             return Completion.Normal;
