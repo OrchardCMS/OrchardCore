@@ -67,6 +67,7 @@ namespace OrchardCore.Demo
 
             services.Configure<RazorPagesOptions>(options =>
             {
+                options.Conventions.AddModularFolderRoute("/OrchardCore.Demo/Pages", "Demo");
                 options.Conventions.AddModularPageRoute("/OrchardCore.Demo/Pages/Hello", "Hello");
             });
         }

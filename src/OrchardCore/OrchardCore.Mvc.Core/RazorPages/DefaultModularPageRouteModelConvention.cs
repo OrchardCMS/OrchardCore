@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace OrchardCore.Mvc.RazorPages
@@ -7,21 +9,49 @@ namespace OrchardCore.Mvc.RazorPages
     {
         public void Apply(PageRouteModel model)
         {
+            var pageName = model.ViewEnginePath.TrimStart('/');
+            var pagesIndex = pageName.LastIndexOf("/Pages/", StringComparison.Ordinal);
+
+            if (pagesIndex == -1)
+            {
+                return;
+            }
+
+            var moduleFolder = pageName.Substring(0, pagesIndex);
+            var moduleIndex = moduleFolder.LastIndexOf('/');
+
+            if (moduleIndex == -1)
+            {
+                return;
+            }
+
             foreach (var selector in model.Selectors)
             {
-                var template = selector.AttributeRouteModel.Template;
-
-                if (template.Contains("/Pages/") && !template.StartsWith("/Pages/"))
-                {
-                    var pageIndex = template.LastIndexOf("/Pages/", StringComparison.Ordinal);
-                    var moduleFolder = template.Substring(0, pageIndex);
-                    var moduleId = moduleFolder.Substring(moduleFolder.LastIndexOf('/') + 1);
-
-                    template = moduleId + template.Replace("/Pages/", "/").Substring(pageIndex);
-                    selector.AttributeRouteModel.Name = template.Replace('/', '.');
-                    selector.AttributeRouteModel.Template = template;
-                }
+                selector.AttributeRouteModel.SuppressLinkGeneration = true;
             }
+
+            var template = pageName.Substring(moduleIndex + 1);
+
+            model.Selectors.Add(new SelectorModel
+            {
+                AttributeRouteModel = new AttributeRouteModel
+                {
+                    Template = template,
+                    Name = template.Replace('/', '.')
+                }
+            });
+
+            template = template.Replace("/Pages/", "/");
+
+            model.Selectors.Add(new SelectorModel
+            {
+                AttributeRouteModel = new AttributeRouteModel
+                {
+                    Template = template,
+                    Name = template.Replace('/', '.')
+                }
+            });
+
         }
     }
 }
