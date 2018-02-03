@@ -124,12 +124,17 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             get
             {
-                if (ThemeLayout is IShape layout && layout.Metadata.Alternates.Count > 0)
+                if (ThemeLayout is IShape layout)
                 {
-                    return layout.Metadata.Alternates.First();
+                    if (layout.Metadata.Alternates.Count > 0)
+                    {
+                        return layout.Metadata.Alternates.First();
+                    }
+
+                    return layout.Metadata.Type;
                 }
 
-                return "Layout";
+                return String.Empty;
             }
 
             set

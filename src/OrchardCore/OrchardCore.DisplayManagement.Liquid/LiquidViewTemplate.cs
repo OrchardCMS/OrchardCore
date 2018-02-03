@@ -196,7 +196,6 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             var layout = await layoutAccessor.GetLayoutAsync();
             context.AmbientValues.Add("ThemeLayout", layout);
-            context.LocalScope.SetValue("ThemeLayout", layout);
 
             var view = displayContext.ViewContext.View;
             if (view is RazorView razorView)
