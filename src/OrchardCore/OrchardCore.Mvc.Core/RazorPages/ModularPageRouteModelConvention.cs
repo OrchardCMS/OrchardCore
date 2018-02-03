@@ -11,7 +11,7 @@ namespace OrchardCore.Mvc.RazorPages
         {
             if (!string.IsNullOrEmpty(pageName))
             {
-                _pageName = pageName.TrimStart('/');
+                _pageName = pageName.Trim('/');
                 _route = route.Trim('/');
             }
         }
@@ -23,7 +23,9 @@ namespace OrchardCore.Mvc.RazorPages
                 return;
             }
 
-            if (model.ViewEnginePath.EndsWith('/' + _pageName))
+            var pageName = model.ViewEnginePath.Trim('/');
+
+            if (pageName.EndsWith('/' + _pageName))
             {
                 foreach (var selector in model.Selectors)
                 {

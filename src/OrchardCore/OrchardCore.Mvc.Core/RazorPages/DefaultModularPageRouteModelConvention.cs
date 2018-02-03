@@ -9,7 +9,7 @@ namespace OrchardCore.Mvc.RazorPages
     {
         public void Apply(PageRouteModel model)
         {
-            var pageName = model.ViewEnginePath.TrimStart('/');
+            var pageName = model.ViewEnginePath.Trim('/');
             var pagesIndex = pageName.LastIndexOf("/Pages/", StringComparison.Ordinal);
 
             if (pagesIndex == -1)

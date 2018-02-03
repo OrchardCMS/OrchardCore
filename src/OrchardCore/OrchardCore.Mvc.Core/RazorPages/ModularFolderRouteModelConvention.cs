@@ -23,17 +23,17 @@ namespace OrchardCore.Mvc.RazorPages
                 return;
             }
 
-            var index = model.ViewEnginePath.LastIndexOf('/');
+            var pageName = model.ViewEnginePath.Trim('/');
+            var fileIndex = pageName.LastIndexOf('/');
 
-            if (index == -1)
+            if (fileIndex == -1)
             {
                 return;
             }
 
-            var fileName = model.ViewEnginePath.Substring(index + 1);
-            var pageName = _folderPath + '/' + fileName;
+            var fileName = pageName.Substring(fileIndex + 1);
 
-            if (model.ViewEnginePath.EndsWith('/' + pageName))
+            if (pageName.EndsWith('/' + _folderPath + '/' + fileName))
             {
                 foreach (var selector in model.Selectors)
                 {
