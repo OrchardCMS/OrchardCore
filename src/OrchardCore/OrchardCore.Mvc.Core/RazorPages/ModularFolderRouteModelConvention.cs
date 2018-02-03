@@ -40,7 +40,7 @@ namespace OrchardCore.Mvc.RazorPages
                     selector.AttributeRouteModel.SuppressLinkGeneration = true;
                 }
 
-                var template = _route + '/' + fileName;
+                var template = _route.Length > 0 ? _route + '/' + fileName : fileName;
 
                 model.Selectors.Add(new SelectorModel
                 {
