@@ -7,9 +7,9 @@ namespace OrchardCore.Workflows.WorkflowContextProviders
 {
     public class SignalWorkflowExecutionContextHandler : WorkflowExecutionContextHandlerBase
     {
-        private readonly ISignalService _signalService;
+        private readonly ISecurityTokenService _signalService;
 
-        public SignalWorkflowExecutionContextHandler(ISignalService signalService)
+        public SignalWorkflowExecutionContextHandler(ISecurityTokenService signalService)
         {
             _signalService = signalService;
         }

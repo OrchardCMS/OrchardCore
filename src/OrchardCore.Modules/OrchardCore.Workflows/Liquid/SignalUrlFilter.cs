@@ -23,43 +23,22 @@ namespace OrchardCore.Workflows.Liquid
                 throw new ArgumentException("SignalService missing while invoking 'signal_url'");
             }
 
-            var correlationId = default(string);
-            var correlationIdValue = arguments.At(0);
-            if (correlationIdValue.IsNil())
-            {
-                var workflowContextValue = context.GetValue(nameof(WorkflowExecutionContext));
+            var workflowContextValue = context.GetValue(nameof(WorkflowExecutionContext));
 
-                if (workflowContextValue.IsNil())
-                {
-                    throw new ArgumentException("WorkflowExecutionContext missing and no correlation ID provided while invoking 'signal_url'");
-                }
-
-                var workflowContext = (WorkflowExecutionContext)workflowContextValue.ToObjectValue();
-                correlationId = workflowContext.CorrelationId;
-            }
-            else
+            if (workflowContextValue.IsNil())
             {
-                correlationId = correlationIdValue.ToStringValue();
+                throw new ArgumentException("WorkflowExecutionContext missing while invoking 'signal_url'");
             }
+
+            var workflowContext = (WorkflowExecutionContext)workflowContextValue.ToObjectValue();
+            var signalName = input.ToStringValue();
+            var payload = string.IsNullOrWhiteSpace(workflowContext.CorrelationId)
+                ? SignalPayload.ForWorkflowInstance(signalName, workflowContext.WorkflowInstanceId)
+                : SignalPayload.ForCorrelation(signalName, workflowContext.CorrelationId);
 
             var urlHelper = (IUrlHelper)urlHelperObj;
-            var signalService = (ISignalService)signalServiceObj;
-            var signalName = input.ToStringValue();
-
-            if (string.IsNullOrWhiteSpace(correlationId))
-            {
-                var workflowContextValue = context.GetValue(nameof(WorkflowExecutionContext));
-
-                if (workflowContextValue.IsNil())
-                {
-                    throw new ArgumentException("WorkflowContext missing and no correlation ID provided while invoking 'signal_url'");
-                }
-
-                var workflowContext = (WorkflowExecutionContext)workflowContextValue.ToObjectValue();
-                correlationId = workflowContext.CorrelationId;
-            }
-
-            var token = signalService.CreateToken(correlationId, signalName);
+            var signalService = (ISecurityTokenService)signalServiceObj;
+            var token = signalService.CreateToken(payload);
             var urlValue = new StringValue(urlHelper.Action("Trigger", "Signal", new { area = "OrchardCore.Workflows", token }));
             return Task.FromResult<FluidValue>(urlValue);
         }

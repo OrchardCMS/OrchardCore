@@ -18,6 +18,11 @@ namespace OrchardCore.Workflows.Activities
         bool HasEditor { get; }
 
         /// <summary>
+        /// Returns a value whether the event can cause a workflow to start.
+        /// </summary>
+        bool CanStartWorkflow { get; }
+
+        /// <summary>
         /// List of possible outcomes when the activity is executed.
         /// </summary>
         IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext);

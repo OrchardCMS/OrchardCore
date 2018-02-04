@@ -7,9 +7,9 @@ namespace OrchardCore.Workflows.WorkflowContextProviders
 {
     public class SignalLiquidTemplateHandler : ILiquidTemplateEventHandler
     {
-        private readonly ISignalService _signalService;
+        private readonly ISecurityTokenService _signalService;
 
-        public SignalLiquidTemplateHandler(ISignalService signalService)
+        public SignalLiquidTemplateHandler(ISecurityTokenService signalService)
         {
             _signalService = signalService;
         }

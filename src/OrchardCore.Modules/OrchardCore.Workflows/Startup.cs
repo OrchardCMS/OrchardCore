@@ -29,7 +29,7 @@ namespace OrchardCore.Workflows
         {
             services.AddDataProtection();
             services.AddScoped(typeof(Resolver<>));
-            services.AddScoped<ISignalService, SignalService>();
+            services.AddScoped<ISecurityTokenService, SecurityTokenService>();
             services.AddScoped<IActivityLibrary, ActivityLibrary>();
             services.AddScoped<IWorkflowDefinitionRepository, WorkflowDefinitionRepository>();
             services.AddScoped<IWorkflowInstanceRepository, WorkflowInstanceRepository>();
@@ -67,6 +67,20 @@ namespace OrchardCore.Workflows
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            routes.MapAreaRoute(
+                name: "ExecuteWorkflow",
+                areaName: "OrchardCore.Workflows",
+                template: "Workflows/{action}",
+                defaults: new { controller = "Workflow" }
+            );
+
+            routes.MapAreaRoute(
+                name: "SignalWorkflow",
+                areaName: "OrchardCore.Workflows",
+                template: "Workflows/Trigger",
+                defaults: new { controller = "Signal", action = "Trigger" }
+            );
+
             routes.MapAreaRoute(
                 name: "AddActivity",
                 areaName: "OrchardCore.Workflows",

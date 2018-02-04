@@ -20,6 +20,7 @@
   <ItemGroup>
     <None Remove="Assets\Scripts\activity-picker.ts" />
     <None Remove="Assets\Scripts\workflow-canvas.ts" />
+    <None Remove="Assets\Scripts\workflow-url-generator.ts" />
     <None Remove="Assets\Scripts\workflow-viewer.ts" />
     <None Remove="README.md" />
     <None Remove="Views\Activity.DesignReadonly.cshtml" />
@@ -80,6 +81,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Assets\Scripts\workflow-url-generator.ts" />
     <Content Include="Assets\Scripts\workflow-canvas.ts" />
     <Content Include="Assets\Scripts\activity-picker.ts" />
     <Content Include="Assets\Scripts\workflow-viewer.ts" />

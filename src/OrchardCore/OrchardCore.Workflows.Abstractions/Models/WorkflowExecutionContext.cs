@@ -53,6 +53,11 @@ namespace OrchardCore.Workflows.Models
         public WorkflowDefinitionRecord WorkflowDefinitionRecord { get; }
         public IDictionary<int, ActivityContext> Activities { get; }
 
+        public string WorkflowInstanceId
+        {
+            get => WorkflowInstanceRecord.Uid;
+        }
+
         public string CorrelationId
         {
             get => WorkflowInstanceRecord.CorrelationId;

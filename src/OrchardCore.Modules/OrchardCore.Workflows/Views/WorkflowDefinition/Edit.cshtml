@@ -1,5 +1,7 @@
 @model WorkflowDefinitionViewModel
+@using Microsoft.AspNetCore.Antiforgery;
 @using OrchardCore.Workflows.ViewModels;
+@inject IAntiforgery antiforgery
 
 <h1>@RenderTitleSegments(Model.WorkflowDefinition.Name)</h1>
 
@@ -25,11 +27,20 @@
         <li class="nav-item">
             <a class="btn btn-secondary btn-sm" asp-action="EditProperties" asp-route-id="@Model.WorkflowDefinition.Id" asp-route-returnUrl="@Context.Request.Path">@T["Properties"]</a>
             <a class="btn btn-secondary btn-sm" asp-action="Index" asp-controller="WorkflowInstance" asp-route-workflowDefinitionId="@Model.WorkflowDefinition.Id" asp-route-returnUrl="@Context.Request.Path">@T["Instances"] <span class="badge badge-light">@Model.WorkflowInstanceCount</span></a>
+            <div class="btn-group" role="group">
+                <button id="workflow-actions-button" type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    @T["Actions"]
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="workflow-actions-button">
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#workflow-url-generator-modal">@T["Generate URL"]</a>
+                </div>
+            </div>
         </li>
     </ul>
 </nav>
 
 <div asp-validation-summary="ModelOnly"></div>
+
 <form asp-action="Edit" method="post" id="workflowEditorForm">
     <fieldset class="form-group">
         <div class="workflow-container">
@@ -52,7 +63,7 @@
     </fieldset>
 </form>
 
-<!-- Modal -->
+<!-- Activity Picker Modal -->
 <div class="modal fade modal-activities" id="activity-picker" tabindex="-1" role="dialog" aria-labelledby="activity-picker-label" aria-hidden="true" data-activity-type="Event|Task">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -92,6 +103,36 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Workflow URL Generator Modal -->
+@{
+    var antiforgeryTokenSet = antiforgery.GetTokens(Context);
+}
+<div class="modal fade modal-workflow-url-generator" id="workflow-url-generator-modal" tabindex="-1" role="dialog" aria-labelledby="workflow-url-generator-label" aria-hidden="true" data-generate-url="@Url.Action("GenerateUrl", "WorkflowDefinition", new { id = Model.WorkflowDefinition.Id })" data-antiforgery-token="@antiforgeryTokenSet.RequestToken" data-antiforgery-header-name="@antiforgeryTokenSet.HeaderName">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="workflow-url-generator-label">@T["Workflow URL Generator"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <input type="text" id="workflow-url-text" class="form-control" />
+                    <div class="input-group-append">
+                        <button class="btn btn-link" type="button" id="copy-workflow-url-button" title="@T["Copy to clipboard"]" data-copied-title="@T["Copied!"]">@T["Copy"]</button>
+                    </div>
+                </div>
+                <span class="hint"><i class="fa fa-exclamation-triangle"></i> @T["Anyone that invokes this URL will trigger this workflow. Keep it secure if you do not intend to allow others to trigger this workflow."]</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+                <button type="button" class="btn btn-primary" id="generate-workflow-url-button">@T["Regenerate"]</button>
             </div>
         </div>
     </div>

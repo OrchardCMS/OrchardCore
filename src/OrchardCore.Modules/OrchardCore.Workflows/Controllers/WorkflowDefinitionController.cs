@@ -15,6 +15,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.ActionConstraints;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Scripting;
 using OrchardCore.Settings;
@@ -40,7 +41,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
-        private readonly IEnumerable<IScriptingEngine> _availableScriptingEngines;
+        private readonly ISecurityTokenService _securityTokenService;
 
         private dynamic New { get; }
         private IStringLocalizer S { get; }
@@ -57,7 +58,7 @@ namespace OrchardCore.Workflows.Controllers
             IActivityDisplayManager activityDisplayManager,
             IShapeFactory shapeFactory,
             INotifier notifier,
-            IEnumerable<IScriptingEngine> availableScriptingEngines,
+            ISecurityTokenService securityTokenService,
             IStringLocalizer<WorkflowDefinitionController> s,
             IHtmlLocalizer<WorkflowDefinitionController> h
         )
@@ -70,7 +71,7 @@ namespace OrchardCore.Workflows.Controllers
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
-            _availableScriptingEngines = availableScriptingEngines;
+            _securityTokenService = securityTokenService;
 
             New = shapeFactory;
             S = s;
@@ -374,13 +375,36 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowDefinition = await _workflowDefinitionRepository.GetAsync(id);
 
-            if (workflowDefinition != null)
+            if (workflowDefinition == null)
             {
-                await _workflowDefinitionRepository.DeleteAsync(workflowDefinition);
-                _notifier.Success(H["Workflow definition {0} deleted", workflowDefinition.Name]);
+                return NotFound();
             }
 
+            await _workflowDefinitionRepository.DeleteAsync(workflowDefinition);
+            _notifier.Success(H["Workflow definition {0} deleted", workflowDefinition.Name]);
+
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GenerateUrl(int id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+            {
+                return Unauthorized();
+            }
+
+            var workflowDefinition = await _workflowDefinitionRepository.GetAsync(id);
+
+            if (workflowDefinition == null)
+            {
+                return NotFound();
+            }
+
+            var token = _securityTokenService.CreateToken(new StartResumeWorkflowPayload(workflowDefinition.Uid));
+            var url = Url.ToAbsoluteUrl(Url.Action("Start", "Workflow", new { token = token }));
+
+            return Ok(url);
         }
 
         private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, int workflowDefinitionId, string localId, string displayType)

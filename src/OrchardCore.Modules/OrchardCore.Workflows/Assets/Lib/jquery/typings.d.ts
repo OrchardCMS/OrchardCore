@@ -4,4 +4,5 @@
 interface JQuery {
     workflowEditor(): JQuery;
     workflowViewer(): JQuery;
+    tooltip(): JQuery;
 }

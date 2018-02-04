@@ -367,6 +367,8 @@ namespace OrchardCore.Workflows.Services
                         scheduled.Push(destinationActivity);
                     }
                 }
+
+                isFirstPass = false;
             }
 
             // Apply Distinct() as two paths could block on the same activity.

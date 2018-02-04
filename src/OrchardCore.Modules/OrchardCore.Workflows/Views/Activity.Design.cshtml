@@ -5,7 +5,7 @@
     var activity = (IActivity)Model.Activity;
     var activityEvent = activity as IEvent;
     var isEvent = activityEvent != null;
-    var canStart = activityEvent?.CanStartWorkflow ?? false;
+    var canStart = activity.CanStartWorkflow;
     var isStart = canStart && activityRecord.IsStart;
     var cssClass = isStart ? "activity-start" : isEvent ? "activity-event" : "activity-task";
     var hasEditor = activity.HasEditor;

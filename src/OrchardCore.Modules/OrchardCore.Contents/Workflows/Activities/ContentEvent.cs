@@ -14,8 +14,6 @@ namespace OrchardCore.Contents.Workflows.Activities
         {
         }
 
-        public virtual bool CanStartWorkflow => true;
-
         public IList<string> ContentTypeFilter
         {
             get => GetProperty<IList<string>>(defaultValue: () => new List<string>());
