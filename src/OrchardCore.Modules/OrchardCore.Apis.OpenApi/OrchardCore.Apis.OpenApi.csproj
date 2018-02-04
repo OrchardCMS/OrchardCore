@@ -7,9 +7,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.OpenApi" Version="1.0.0-beta010" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="$(MicrosoftAspNetCoreMvcCorePackageVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ApiExplorer" Version="$(MicrosoftAspNetCoreMvcApiExplorerPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Shell.Abstractions\OrchardCore.Environment.Shell.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
   </ItemGroup>
 
