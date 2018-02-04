@@ -172,8 +172,8 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         Task<long> IOpenIddictApplicationStore<IOpenIdApplication>.CountAsync<TResult>(Func<IQueryable<IOpenIdApplication>, IQueryable<TResult>> query, CancellationToken cancellationToken)
             => CountAsync(query, cancellationToken);
 
-        async Task<IOpenIdApplication> IOpenIddictApplicationStore<IOpenIdApplication>.CreateAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => await CreateAsync((TApplication) application, cancellationToken);
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.CreateAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => CreateAsync((TApplication) application, cancellationToken);
 
         Task IOpenIddictApplicationStore<IOpenIdApplication>.DeleteAsync(IOpenIdApplication application, CancellationToken cancellationToken)
             => DeleteAsync((TApplication) application, cancellationToken);

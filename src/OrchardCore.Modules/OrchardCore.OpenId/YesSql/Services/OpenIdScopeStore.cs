@@ -57,9 +57,9 @@ namespace OrchardCore.OpenId.YesSql.Services
         /// <param name="scope">The scope to create.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose result returns the scope.
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual async Task<OpenIdScope> CreateAsync(OpenIdScope scope, CancellationToken cancellationToken)
+        public virtual Task CreateAsync(OpenIdScope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
@@ -69,9 +69,7 @@ namespace OrchardCore.OpenId.YesSql.Services
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Save(scope);
-            await _session.CommitAsync();
-
-            return scope;
+            return _session.CommitAsync();
         }
 
         /// <summary>
@@ -404,8 +402,8 @@ namespace OrchardCore.OpenId.YesSql.Services
         Task<long> IOpenIddictScopeStore<IOpenIdScope>.CountAsync<TResult>(Func<IQueryable<IOpenIdScope>, IQueryable<TResult>> query, CancellationToken cancellationToken)
             => CountAsync(query, cancellationToken);
 
-        async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.CreateAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => await CreateAsync((OpenIdScope) scope, cancellationToken);
+        Task IOpenIddictScopeStore<IOpenIdScope>.CreateAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+            => CreateAsync((OpenIdScope) scope, cancellationToken);
 
         Task IOpenIddictScopeStore<IOpenIdScope>.DeleteAsync(IOpenIdScope scope, CancellationToken cancellationToken)
             => DeleteAsync((OpenIdScope) scope, cancellationToken);

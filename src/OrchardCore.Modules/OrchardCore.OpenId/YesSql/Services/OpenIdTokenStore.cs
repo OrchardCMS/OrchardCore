@@ -57,9 +57,9 @@ namespace OrchardCore.OpenId.YesSql.Services
         /// <param name="token">The token to create.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose result returns the token.
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual async Task<OpenIdToken> CreateAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual Task CreateAsync(OpenIdToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -69,9 +69,7 @@ namespace OrchardCore.OpenId.YesSql.Services
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Save(token);
-            await _session.CommitAsync();
-
-            return token;
+            return _session.CommitAsync();
         }
 
         /// <summary>
@@ -834,8 +832,8 @@ namespace OrchardCore.OpenId.YesSql.Services
         Task<long> IOpenIddictTokenStore<IOpenIdToken>.CountAsync<TResult>(Func<IQueryable<IOpenIdToken>, IQueryable<TResult>> query, CancellationToken cancellationToken)
             => CountAsync(query, cancellationToken);
 
-        async Task<IOpenIdToken> IOpenIddictTokenStore<IOpenIdToken>.CreateAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => await CreateAsync((OpenIdToken) token, cancellationToken);
+        Task IOpenIddictTokenStore<IOpenIdToken>.CreateAsync(IOpenIdToken token, CancellationToken cancellationToken)
+            => CreateAsync((OpenIdToken) token, cancellationToken);
 
         Task IOpenIddictTokenStore<IOpenIdToken>.DeleteAsync(IOpenIdToken token, CancellationToken cancellationToken)
             => DeleteAsync((OpenIdToken) token, cancellationToken);

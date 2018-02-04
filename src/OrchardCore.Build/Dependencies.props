@@ -19,7 +19,7 @@
     <YesSqlProvidersVersion>1.0.0-beta-1174</YesSqlProvidersVersion>
     <NewtonsoftJsonVersion>10.0.3</NewtonsoftJsonVersion>
     <OAuthValidationPackageVersion>2.0.0-rc1-final</OAuthValidationPackageVersion>
-    <OpenIddictVersion>2.0.0-rc2-0802</OpenIddictVersion>
+    <OpenIddictVersion>2.0.0-rc2-0810</OpenIddictVersion>
   </PropertyGroup>
 
 </Project>
