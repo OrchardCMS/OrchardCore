@@ -9,16 +9,13 @@ namespace OrchardCore.Mvc.RazorPages
 
         public ModularFolderRouteModelConvention(string folderPath, string route)
         {
-            if (!string.IsNullOrEmpty(folderPath))
-            {
-                _folderPath = folderPath.Trim('/');
-                _route = route.Trim('/');
-            }
+             _folderPath = folderPath?.Trim('/');
+            _route = route?.Trim('/');
         }
 
         public void Apply(PageRouteModel model)
         {
-            if (_folderPath == null)
+            if (_folderPath == null || _route == null)
             {
                 return;
             }

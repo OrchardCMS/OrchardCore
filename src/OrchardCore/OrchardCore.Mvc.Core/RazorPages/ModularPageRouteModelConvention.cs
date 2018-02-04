@@ -9,16 +9,13 @@ namespace OrchardCore.Mvc.RazorPages
 
         public ModularPageRouteModelConvention(string pageName, string route)
         {
-            if (!string.IsNullOrEmpty(pageName))
-            {
-                _pageName = pageName.Trim('/');
-                _route = route.Trim('/');
-            }
+            _pageName = pageName?.Trim('/');
+            _route = route?.Trim('/');
         }
 
         public void Apply(PageRouteModel model)
         {
-            if (_pageName == null)
+            if (_pageName == null || _route == null)
             {
                 return;
             }

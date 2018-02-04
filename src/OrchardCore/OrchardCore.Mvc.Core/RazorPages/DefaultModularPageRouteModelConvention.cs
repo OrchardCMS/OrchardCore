@@ -1,5 +1,6 @@
-using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Mvc.RazorPages
 {
@@ -8,48 +9,53 @@ namespace OrchardCore.Mvc.RazorPages
         public void Apply(PageRouteModel model)
         {
             var pageName = model.ViewEnginePath.Trim('/');
-            var pagesIndex = pageName.LastIndexOf("/Pages/", StringComparison.Ordinal);
+            var tokenizer = new StringTokenizer(pageName, new[] { '/' });
+            int count = tokenizer.Count(), pathIndex = 0;
 
-            if (pagesIndex == -1)
+            for (var i = 0; i < count; i++)
             {
-                return;
-            }
+                var segment = tokenizer.ElementAt(i);
 
-            var moduleFolder = pageName.Substring(0, pagesIndex);
-            var moduleIndex = moduleFolder.LastIndexOf('/');
-
-            if (moduleIndex == -1)
-            {
-                return;
-            }
-
-            foreach (var selector in model.Selectors)
-            {
-                selector.AttributeRouteModel.SuppressLinkGeneration = true;
-            }
-
-            var template = pageName.Substring(moduleIndex + 1);
-
-            model.Selectors.Add(new SelectorModel
-            {
-                AttributeRouteModel = new AttributeRouteModel
+                if ("Pages" == segment)
                 {
-                    Template = template,
-                    Name = template.Replace('/', '.')
+                    if (i < 2 || i == count - 1)
+                    {
+                        return;
+                    }
+
+                    foreach (var selector in model.Selectors)
+                    {
+                        selector.AttributeRouteModel.SuppressLinkGeneration = true;
+                    }
+
+                    var module = tokenizer.ElementAt(i - 1).Value;
+                    var template = pageName.Substring(pathIndex - (module.Length + 1));
+
+                    model.Selectors.Add(new SelectorModel
+                    {
+                        AttributeRouteModel = new AttributeRouteModel
+                        {
+                            Template = template,
+                            Name = template.Replace('/', '.')
+                        }
+                    });
+
+                    template = module + pageName.Substring(pathIndex + "Pages".Length);
+
+                    model.Selectors.Add(new SelectorModel
+                    {
+                        AttributeRouteModel = new AttributeRouteModel
+                        {
+                            Template = template,
+                            Name = template.Replace('/', '.')
+                        }
+                    });
+
+                    break;
                 }
-            });
 
-            template = template.Replace("/Pages/", "/");
-
-            model.Selectors.Add(new SelectorModel
-            {
-                AttributeRouteModel = new AttributeRouteModel
-                {
-                    Template = template,
-                    Name = template.Replace('/', '.')
-                }
-            });
-
+                pathIndex += segment.Length + 1;
+            }
         }
     }
 }
