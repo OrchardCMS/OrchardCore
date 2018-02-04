@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore;
 using OrchardCore.OpenId.Abstractions.Models;
@@ -81,14 +82,17 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         Task<long> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.CountAsync<TResult>(Func<IQueryable<IOpenIdAuthorization>, IQueryable<TResult>> query, CancellationToken cancellationToken)
             => CountAsync(query, cancellationToken);
 
-        async Task<IOpenIdAuthorization> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.CreateAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
-            => await CreateAsync((TAuthorization) authorization, cancellationToken);
+        Task IOpenIddictAuthorizationStore<IOpenIdAuthorization>.CreateAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
+            => CreateAsync((TAuthorization) authorization, cancellationToken);
 
         Task IOpenIddictAuthorizationStore<IOpenIdAuthorization>.DeleteAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
             => DeleteAsync((TAuthorization) authorization, cancellationToken);
 
         async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindAsync(string subject, string client, CancellationToken cancellationToken)
             => (await FindAsync(subject, client, cancellationToken)).CastArray<IOpenIdAuthorization>();
+
+        async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindAsync(string subject, string client, ImmutableArray<string> scopes, CancellationToken cancellationToken)
+            => (await FindAsync(subject, client, scopes, cancellationToken)).CastArray<IOpenIdAuthorization>();
 
         async Task<IOpenIdAuthorization> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
             => await FindByIdAsync(identifier, cancellationToken);
@@ -103,6 +107,9 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
 
         Task<string> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.GetIdAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
             => GetIdAsync((TAuthorization) authorization, cancellationToken);
+
+        Task<JObject> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.GetPropertiesAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
+            => GetPropertiesAsync((TAuthorization) authorization, cancellationToken);
 
         Task<ImmutableArray<string>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.GetScopesAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
             => GetScopesAsync((TAuthorization) authorization, cancellationToken);
@@ -133,6 +140,9 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         Task IOpenIddictAuthorizationStore<IOpenIdAuthorization>.SetApplicationIdAsync(IOpenIdAuthorization authorization,
             string identifier, CancellationToken cancellationToken)
             => SetApplicationIdAsync((TAuthorization) authorization, identifier, cancellationToken);
+
+        Task IOpenIddictAuthorizationStore<IOpenIdAuthorization>.SetPropertiesAsync(IOpenIdAuthorization authorization, JObject properties, CancellationToken cancellationToken)
+            => SetPropertiesAsync((TAuthorization) authorization, properties, cancellationToken);
 
         Task IOpenIddictAuthorizationStore<IOpenIdAuthorization>.SetScopesAsync(IOpenIdAuthorization authorization,
             ImmutableArray<string> scopes, CancellationToken cancellationToken)

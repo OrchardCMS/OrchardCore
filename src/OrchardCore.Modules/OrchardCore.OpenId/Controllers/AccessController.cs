@@ -84,46 +84,6 @@ namespace OrchardCore.OpenId.Controllers
                 });
             }
 
-            if (request.HasScope(OpenIdConnectConstants.Scopes.OfflineAccess) &&
-                !await _applicationManager.IsRefreshTokenFlowAllowedAsync(application, HttpContext.RequestAborted))
-            {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = OpenIdConnectConstants.Errors.InvalidClient,
-                    ErrorDescription = T["Offline scope is not allowed for this OpenID Connect Application"]
-                });
-            }
-
-            if (request.IsAuthorizationCodeFlow() &&
-                !await _applicationManager.IsAuthorizationCodeFlowAllowedAsync(application, HttpContext.RequestAborted))
-            {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = OpenIdConnectConstants.Errors.UnauthorizedClient,
-                    ErrorDescription = T["Authorization Code Flow is not allowed for this OpenID Connect Application"]
-                });
-            }
-
-            if (request.IsImplicitFlow() &&
-                !await _applicationManager.IsImplicitFlowAllowedAsync(application, HttpContext.RequestAborted))
-            {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = OpenIdConnectConstants.Errors.UnauthorizedClient,
-                    ErrorDescription = T["Implicit Flow is not allowed for this OpenID Connect Application"]
-                });
-            }
-
-            if (request.IsHybridFlow() &&
-                !await _applicationManager.IsHybridFlowAllowedAsync(application, HttpContext.RequestAborted))
-            {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = OpenIdConnectConstants.Errors.UnauthorizedClient,
-                    ErrorDescription = T["Hybrid Flow is not allowed for this OpenID Connect Application"]
-                });
-            }
-
             if (Request.HasFormContentType)
             {
                 if (!string.IsNullOrEmpty(Request.Form["submit.Accept"]))
@@ -136,7 +96,7 @@ namespace OrchardCore.OpenId.Controllers
                 }
             }
 
-            if (await _applicationManager.IsConsentRequiredAsync(application, HttpContext.RequestAborted))
+            if (!await _applicationManager.IsConsentRequiredAsync(application, HttpContext.RequestAborted))
             {
                 return await IssueAccessIdentityTokensAsync(request);
             }
@@ -198,79 +158,18 @@ namespace OrchardCore.OpenId.Controllers
                 return NotFound();
             }
 
-            var application = await _applicationManager.FindByClientIdAsync(request.ClientId, HttpContext.RequestAborted);
-            if (application == null)
-            {
-                return BadRequest(new OpenIdConnectResponse
-                {
-                    Error = OpenIdConnectConstants.Errors.InvalidClient,
-                    ErrorDescription = T["Details concerning the calling client application cannot be found in the database"]
-                });
-            }
-
-            if (request.HasScope(OpenIdConnectConstants.Scopes.OfflineAccess) &&
-                !await _applicationManager.IsRefreshTokenFlowAllowedAsync(application, HttpContext.RequestAborted))
-            {
-                return BadRequest(new OpenIdConnectResponse
-                {
-                    Error = OpenIdConnectConstants.Errors.InvalidRequest,
-                    ErrorDescription = T["Offline scope is not allowed for this OpenID Connect Application"]
-                });
-            }
-
             if (request.IsPasswordGrantType())
             {
-                if (!await _applicationManager.IsPasswordFlowAllowedAsync(application, HttpContext.RequestAborted))
-                {
-                    return BadRequest(new OpenIdConnectResponse
-                    {
-                        Error = OpenIdConnectConstants.Errors.UnauthorizedClient,
-                        ErrorDescription = T["Password Flow is not allowed for this OpenID Connect Application"]
-                    });
-                }
-
                 return await ExchangePasswordGrantType(request);
             }
 
             if (request.IsClientCredentialsGrantType())
             {
-                if (!await _applicationManager.IsClientCredentialsFlowAllowedAsync(application, HttpContext.RequestAborted))
-                {
-                    return BadRequest(new OpenIdConnectResponse
-                    {
-                        Error = OpenIdConnectConstants.Errors.UnauthorizedClient,
-                        ErrorDescription = T["Client Credentials Flow is not allowed for this OpenID Connect Application"]
-                    });
-                }
-
                 return await ExchangeClientCredentialsGrantType(request);
             }
 
-            if (request.IsAuthorizationCodeGrantType())
+            if (request.IsAuthorizationCodeGrantType() || request.IsRefreshTokenGrantType())
             {
-                if (!await _applicationManager.IsAuthorizationCodeFlowAllowedAsync(application, HttpContext.RequestAborted))
-                {
-                    return BadRequest(new OpenIdConnectResponse
-                    {
-                        Error = OpenIdConnectConstants.Errors.UnauthorizedClient,
-                        ErrorDescription = T["Authorization Code Flow is not allowed for this OpenID Connect Application"]
-                    });
-                }
-
-                return await ExchangeAuthorizationCodeOrRefreshTokenGrantType(request);
-            }
-
-            if (request.IsRefreshTokenGrantType())
-            {
-                if (!await _applicationManager.IsRefreshTokenFlowAllowedAsync(application, HttpContext.RequestAborted))
-                {
-                    return BadRequest(new OpenIdConnectResponse
-                    {
-                        Error = OpenIdConnectConstants.Errors.UnauthorizedClient,
-                        ErrorDescription = T["Refresh Token Flow is not allowed for this OpenID Connect Application"]
-                    });
-                }
-
                 return await ExchangeAuthorizationCodeOrRefreshTokenGrantType(request);
             }
 
