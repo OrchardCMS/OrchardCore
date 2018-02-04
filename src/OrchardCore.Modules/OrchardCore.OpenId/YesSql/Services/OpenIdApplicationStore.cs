@@ -59,9 +59,9 @@ namespace OrchardCore.OpenId.YesSql.Services
         /// <param name="application">The application to create.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose result returns the application.
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual async Task<OpenIdApplication> CreateAsync(OpenIdApplication application, CancellationToken cancellationToken)
+        public virtual Task CreateAsync(OpenIdApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -71,9 +71,7 @@ namespace OrchardCore.OpenId.YesSql.Services
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Save(application);
-            await _session.CommitAsync();
-
-            return application;
+            return _session.CommitAsync();
         }
 
         /// <summary>
@@ -750,8 +748,8 @@ namespace OrchardCore.OpenId.YesSql.Services
         Task<long> IOpenIddictApplicationStore<IOpenIdApplication>.CountAsync<TResult>(Func<IQueryable<IOpenIdApplication>, IQueryable<TResult>> query, CancellationToken cancellationToken)
             => CountAsync(query, cancellationToken);
 
-        async Task<IOpenIdApplication> IOpenIddictApplicationStore<IOpenIdApplication>.CreateAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => await CreateAsync((OpenIdApplication) application, cancellationToken);
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.CreateAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => CreateAsync((OpenIdApplication) application, cancellationToken);
 
         Task IOpenIddictApplicationStore<IOpenIdApplication>.DeleteAsync(IOpenIdApplication application, CancellationToken cancellationToken)
             => DeleteAsync((OpenIdApplication) application, cancellationToken);

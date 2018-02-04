@@ -23,7 +23,8 @@ namespace OrchardCore.OpenId.Services.Managers
 
         protected new IOpenIdApplicationStore Store => (IOpenIdApplicationStore) base.Store;
 
-        public virtual async Task<IOpenIdApplication> CreateAsync(CreateOpenIdApplicationViewModel model, CancellationToken cancellationToken)
+        public virtual async Task<IOpenIdApplication> CreateAsync(
+            CreateOpenIdApplicationViewModel model, CancellationToken cancellationToken = default)
         {
             if (model == null)
             {
@@ -101,10 +102,14 @@ namespace OrchardCore.OpenId.Services.Managers
             if (!string.IsNullOrEmpty(secret))
             {
                 await Store.SetClientSecretAsync(application, /* secret: */ null, cancellationToken);
-                return await CreateAsync(application, secret, cancellationToken);
+                await CreateAsync(application, secret, cancellationToken);
+            }
+            else
+            {
+                await CreateAsync(application, cancellationToken);
             }
 
-            return await CreateAsync(application, cancellationToken);
+            return application;
         }
 
         /// <summary>
@@ -116,7 +121,7 @@ namespace OrchardCore.OpenId.Services.Managers
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the client application corresponding to the identifier.
         /// </returns>
-        public virtual Task<IOpenIdApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual Task<IOpenIdApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -135,7 +140,7 @@ namespace OrchardCore.OpenId.Services.Managers
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the physical identifier associated with the application.
         /// </returns>
-        public virtual Task<string> GetPhysicalIdAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+        public virtual Task<string> GetPhysicalIdAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
         {
             if (application == null)
             {
@@ -145,22 +150,22 @@ namespace OrchardCore.OpenId.Services.Managers
             return Store.GetPhysicalIdAsync(application, cancellationToken);
         }
 
-        public Task<bool> IsAuthorizationCodeFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+        public Task<bool> IsAuthorizationCodeFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
             => HasPermissionAsync(application, OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode, cancellationToken);
 
-        public Task<bool> IsClientCredentialsFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+        public Task<bool> IsClientCredentialsFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
             => HasPermissionAsync(application, OpenIddictConstants.Permissions.GrantTypes.ClientCredentials, cancellationToken);
 
-        public Task<bool> IsImplicitFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+        public Task<bool> IsImplicitFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
             => HasPermissionAsync(application, OpenIddictConstants.Permissions.GrantTypes.Implicit, cancellationToken);
 
-        public Task<bool> IsPasswordFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+        public Task<bool> IsPasswordFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
             => HasPermissionAsync(application, OpenIddictConstants.Permissions.GrantTypes.Password, cancellationToken);
 
-        public Task<bool> IsRefreshTokenFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+        public Task<bool> IsRefreshTokenFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
             => HasPermissionAsync(application, OpenIddictConstants.Permissions.GrantTypes.RefreshToken, cancellationToken);
 
-        public virtual Task<bool> IsConsentRequiredAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+        public virtual Task<bool> IsConsentRequiredAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
         {
             if (application == null)
             {
@@ -170,7 +175,8 @@ namespace OrchardCore.OpenId.Services.Managers
             return Store.IsConsentRequiredAsync(application, cancellationToken);
         }
 
-        public virtual async Task AddToRoleAsync(IOpenIdApplication application, string role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task AddToRoleAsync(IOpenIdApplication application,
+            string role, CancellationToken cancellationToken = default)
         {
             if (application == null)
             {
@@ -182,7 +188,8 @@ namespace OrchardCore.OpenId.Services.Managers
             await UpdateAsync(application, cancellationToken);
         }
 
-        public virtual Task<ImmutableArray<string>> GetRolesAsync(IOpenIdApplication application, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<ImmutableArray<string>> GetRolesAsync(
+            IOpenIdApplication application, CancellationToken cancellationToken = default)
         {
             if (application == null)
             {
@@ -192,7 +199,8 @@ namespace OrchardCore.OpenId.Services.Managers
             return Store.GetRolesAsync(application, cancellationToken);
         }
 
-        public virtual async Task<bool> IsInRoleAsync(IOpenIdApplication application, string role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<bool> IsInRoleAsync(IOpenIdApplication application,
+            string role, CancellationToken cancellationToken = default)
         {
             if (application == null)
             {
@@ -207,7 +215,8 @@ namespace OrchardCore.OpenId.Services.Managers
             return (await Store.GetRolesAsync(application, cancellationToken)).Contains(role, StringComparer.OrdinalIgnoreCase);
         }
 
-        public virtual Task<ImmutableArray<IOpenIdApplication>> ListInRoleAsync(string role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<ImmutableArray<IOpenIdApplication>> ListInRoleAsync(
+            string role, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(role))
             {
@@ -217,7 +226,8 @@ namespace OrchardCore.OpenId.Services.Managers
             return Store.ListInRoleAsync(role, cancellationToken);
         }
 
-        public virtual async Task RemoveFromRoleAsync(IOpenIdApplication application, string role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task RemoveFromRoleAsync(IOpenIdApplication application,
+            string role, CancellationToken cancellationToken = default)
         {
             if (application == null)
             {
@@ -234,7 +244,8 @@ namespace OrchardCore.OpenId.Services.Managers
             await UpdateAsync(application, cancellationToken);
         }
 
-        public virtual async Task UpdateAsync(IOpenIdApplication application, EditOpenIdApplicationViewModel model, CancellationToken cancellationToken)
+        public virtual async Task UpdateAsync(IOpenIdApplication application,
+            EditOpenIdApplicationViewModel model, CancellationToken cancellationToken = default)
         {
             if (application == null)
             {

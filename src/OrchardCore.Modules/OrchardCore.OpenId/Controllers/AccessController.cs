@@ -96,7 +96,7 @@ namespace OrchardCore.OpenId.Controllers
                 }
             }
 
-            if (await _applicationManager.IsConsentRequiredAsync(application, HttpContext.RequestAborted))
+            if (!await _applicationManager.IsConsentRequiredAsync(application, HttpContext.RequestAborted))
             {
                 return await IssueAccessIdentityTokensAsync(request);
             }
