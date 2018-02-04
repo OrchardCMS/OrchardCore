@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace OrchardCore.Apis.JsonApi
 {
-    public class MvcJsonApiMvcOptionsSetup : IConfigureOptions<MvcOptions>
+    public class JsonApiMvcOptionsSetup : IConfigureOptions<MvcOptions>
     {
         private readonly ILoggerFactory _loggerFactory;
         private readonly JsonSerializerSettings _jsonSerializerSettings;
@@ -19,7 +19,7 @@ namespace OrchardCore.Apis.JsonApi
         private readonly IUrlHelperFactory _factory;
         private readonly IActionContextAccessor _actionContextAccessor;
 
-        public MvcJsonApiMvcOptionsSetup(
+        public JsonApiMvcOptionsSetup(
             ILoggerFactory loggerFactory,
             IOptions<MvcJsonOptions> jsonOptions,
             ArrayPool<char> charPool,

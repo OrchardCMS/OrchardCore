@@ -10,6 +10,7 @@ using YesSql;
 namespace OrchardCore.Content.Controllers
 {
     [Route("api")]
+    [ApiExplorerSettings(IgnoreApi = false, GroupName = nameof(ApiController))]
     public class ApiController : Controller
     {
         private readonly IContentManager _contentManager;
@@ -27,6 +28,7 @@ namespace OrchardCore.Content.Controllers
         }
 
         [Route("contentitems/{contentItemId}", Name = RouteHelpers.ContentItems.ApiRouteByIdName)]
+        [HttpGet]
         public async Task<IActionResult> GetById(string contentItemId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApiViewContent))
@@ -50,6 +52,7 @@ namespace OrchardCore.Content.Controllers
         }
 
         [Route("contentitems/version/{contentItemVersionId}", Name = RouteHelpers.ContentItems.ApiRouteByVersionName)]
+        [HttpGet]
         public async Task<IActionResult> GetByVersion(string contentItemVersionId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApiViewContent))
@@ -73,6 +76,7 @@ namespace OrchardCore.Content.Controllers
         }
 
         [Route("contentitems/type/{contentType}", Name = RouteHelpers.ContentItems.ApiRouteByTypeName)]
+        [HttpGet]
         public async Task<IActionResult> GetByType(string contentType)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApiViewContent))

@@ -13,7 +13,7 @@ namespace OrchardCore.Apis.JsonApi
             services.AddScoped<IJsonApiResultManager, JsonApiResultManager>();
 
             services.TryAddEnumerable(
-               ServiceDescriptor.Transient<IConfigureOptions<MvcOptions>, MvcJsonApiMvcOptionsSetup>());
+               ServiceDescriptor.Transient<IConfigureOptions<MvcOptions>, JsonApiMvcOptionsSetup>());
         }
     }
 }
