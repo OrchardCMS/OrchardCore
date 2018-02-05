@@ -1,0 +1,14 @@
+@using OrchardCore.Workflows.ViewModels;
+@model SetOutputTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="OutputName">
+    <label asp-for="OutputName">@T["Name"] <span asp-validation-for="OutputName"></span></label>
+    <input asp-for="OutputName" class="form-control" autofocus="autofocus" />
+    <span class="hint">@T["The name to output to."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Value">
+    <label asp-for="Value">@T["Value"] <span asp-validation-for="Value"></span></label>
+    <input type="text" asp-for="Value" class="form-control code" />
+    <span class="hint">@T["The value to store in the specified output variable. With JavaScript support."]</span>
+</fieldset>

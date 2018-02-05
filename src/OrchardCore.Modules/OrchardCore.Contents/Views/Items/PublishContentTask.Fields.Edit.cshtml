@@ -1,0 +1,8 @@
+@using OrchardCore.Contents.Workflows.ViewModels
+@model PublishContentTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="Expression">
+    <label asp-for="Expression">@T["Expression"] <span asp-validation-for="Expression"></span></label>
+    <input type="text" asp-for="Expression" class="form-control code" autofocus />
+    <span class="hint">@T["Enter a JavaScript expression that evaluates to the content item to be published. For example: input(\"Content\"). If no expression is specified, the workflow's \"Content\" input variable or \"Content\" property will be used."]</span>
+</fieldset>

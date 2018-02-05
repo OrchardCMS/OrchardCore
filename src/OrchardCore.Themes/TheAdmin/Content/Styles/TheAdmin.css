@@ -6197,11 +6197,24 @@ a.text-dark:hover, a.text-dark:focus {
 .validation-summary-errors {
   padding-bottom: 0; }
 
+.inline-form {
+  display: inline; }
+
+.code, .form-control.code {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 87.5%;
+  padding: 0.2rem 0.4rem;
+  color: #212529;
+  border-radius: 0.25rem; }
+
 label .field-validation-error::before {
   content: "- "; }
 
 .field-validation-valid {
   display: none; }
+
+select[multiple] {
+  min-height: 300px; }
 
 .admin-toolbar {
   margin-bottom: 1em; }

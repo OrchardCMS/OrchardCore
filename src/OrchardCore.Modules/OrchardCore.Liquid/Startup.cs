@@ -54,6 +54,7 @@ namespace OrchardCore.Liquid
             services.AddLiquidFilter<DisplayTextFilter>("display_text");
             services.AddLiquidFilter<DisplayUrlFilter>("display_url");
             services.AddLiquidFilter<ContentUrlFilter>("href");
+            services.AddLiquidFilter<AbsoluteUrlFilter>("absolute_url");
         }
     }
 }

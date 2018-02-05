@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentTypes.ViewModels;
+using System.Collections.Generic;
 
 namespace OrchardCore.ContentTypes.ViewComponents
 {
@@ -16,7 +17,7 @@ namespace OrchardCore.ContentTypes.ViewComponents
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public IViewComponentResult Invoke(string[] selectedContentTypes, string htmlName, string stereotype)
+        public IViewComponentResult Invoke(IEnumerable<string> selectedContentTypes, string htmlName, string stereotype)
         {
             if (selectedContentTypes == null)
             {
@@ -38,7 +39,8 @@ namespace OrchardCore.ContentTypes.ViewComponents
                 ContentTypeSelections = contentTypes
             };
 
-            return View(model);
+            // Need to provide full path to the view in order for the view engine to be able to find the view when this component is called from another module.
+            return View("/.Modules/OrchardCore.ContentTypes/Views/Shared/Components/SelectContentTypes/Default.cshtml", model);
         }
     }
 }

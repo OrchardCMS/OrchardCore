@@ -207,6 +207,18 @@ $link-padding-left: 16px !default;
     @extend .text-danger;
 }
 
+.inline-form {
+    display: inline;
+}
+
+.code, .form-control.code {
+    font-family: $font-family-monospace;
+    font-size: $code-font-size;
+    padding: $kbd-padding-y $kbd-padding-x;
+    color: $pre-color;
+    @include border-radius($border-radius);
+}
+
 // When the validation message in inside the label, add a separator
 label .field-validation-error::before {
     content: "- ";
@@ -220,9 +232,12 @@ label .field-validation-error::before {
     display: none;
 }
 
+select[multiple] {
+    min-height: 300px;
+}
+
 // Toolbar
 // ------------------------------
-
 .admin-toolbar {
     @extend .navbar, .navbar-expand-md, .navbar-light, .bg-light;
     margin-bottom: 1em;
@@ -371,4 +386,3 @@ ul.pager li a {
     /* preventing last bottom item is not visible when scrolling to bottom */
     padding-bottom: 100px;
 }
-

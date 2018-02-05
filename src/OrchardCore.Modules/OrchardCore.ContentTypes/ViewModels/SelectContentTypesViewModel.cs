@@ -1,6 +1,7 @@
-﻿using System.Linq;
+using System.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata;
+using System.Collections.Generic;
 
 namespace OrchardCore.ContentTypes.ViewModels
 {
@@ -15,7 +16,7 @@ namespace OrchardCore.ContentTypes.ViewModels
         public bool IsSelected { get; set; }
         public ContentTypeDefinition ContentTypeDefinition { get; set; }
 
-        public static ContentTypeSelection[] Build(IContentDefinitionManager contentDefinitionManager, string[] selectedContentTypes)
+        public static ContentTypeSelection[] Build(IContentDefinitionManager contentDefinitionManager, IEnumerable<string> selectedContentTypes)
         {
             var contentTypes = contentDefinitionManager
                 .ListTypeDefinitions()

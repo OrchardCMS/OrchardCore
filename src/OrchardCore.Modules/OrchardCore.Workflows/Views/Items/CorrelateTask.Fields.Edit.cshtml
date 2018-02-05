@@ -1,0 +1,8 @@
+@using OrchardCore.Workflows.ViewModels;
+@model CorrelateTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="Value">
+    <label asp-for="Value">@T["Value"] <span asp-validation-for="Value"></span></label>
+    <input type="text" asp-for="Value" class="form-control code" />
+    <span class="hint">@T["The value to correlate workflow instances with. With Liquid support."]</span>
+</fieldset>

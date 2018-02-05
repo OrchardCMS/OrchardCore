@@ -1,0 +1,8 @@
+@using OrchardCore.Workflows.ViewModels;
+@model ForLoopTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="CountExpression">
+    <label asp-for="CountExpression">@T["Count Expression"] <span asp-validation-for="CountExpression"></span></label>
+    <input type="text" asp-for="CountExpression" class="form-control code" />
+    <span class="hint">@T["The number of times to loop. With JavaScript support."]</span>
+</fieldset>

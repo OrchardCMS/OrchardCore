@@ -1,0 +1,15 @@
+@using OrchardCore.Contents.Workflows.Activities
+@{
+    var activity = (ContentTask)Model.Activity;
+}
+<header>
+    <h4><i class="fa fa-trash"></i>@T["Delete Content"]</h4>
+</header>
+@if (string.IsNullOrWhiteSpace(activity.Content?.Expression))
+{
+    <span>@T["Delete content provided via the <em>Content</em> input argument"]</span>
+}
+else
+{
+    <span>@T["Delete content using expression: <em>{0}</em>", activity.Content.Expression]</span>
+}

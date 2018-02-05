@@ -1,0 +1,8 @@
+@using OrchardCore.Workflows.ViewModels;
+@model JoinTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="Mode">
+    <label asp-for="Mode">@T["Mode"] <span asp-validation-for="Mode"></span></label>
+    <select asp-for="Mode" asp-items="@Html.GetEnumSelectList(Model.Mode.GetType())" class="form-control"></select>
+    <span class="hint">@T["Controls whether the Join task should wait for all or any inbound activity to be completed."]</span>
+</fieldset>

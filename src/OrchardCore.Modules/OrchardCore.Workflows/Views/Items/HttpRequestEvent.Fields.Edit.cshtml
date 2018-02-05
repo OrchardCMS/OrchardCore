@@ -1,0 +1,14 @@
+@using OrchardCore.Workflows.Http.ViewModels;
+@model HttpRequestEventViewModel
+
+<fieldset class="form-group" asp-validation-class-for="HttpMethod">
+    <label asp-for="HttpMethod">@T["HTTP Method"] <span asp-validation-for="HttpMethod"></span></label>
+    <select asp-for="HttpMethod" class="form-control" asp-items="Model.AvailableHttpMethods"></select>
+    <span class="hint">@T["The HTTP method to match."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="RequestPath">
+    <label asp-for="RequestPath">@T["Request Path"] <span asp-validation-for="RequestPath"></span></label>
+    <input asp-for="RequestPath" class="form-control" />
+    <span class="hint">@T["The HTTP request path to match. E.g. /my-workflow-handler"]</span>
+</fieldset>
