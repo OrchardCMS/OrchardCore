@@ -1,8 +1,8 @@
-﻿.widget-editor.collapsed .card-block, .widget-editor.collapsed .card-footer {
+.widget-editor.collapsed .card-body, .widget-editor.collapsed .card-footer {
     display: none;
 }
 
-.widget-editor .card-block, widget-editor .card-footer {
+.widget-editor .card-body, widget-editor .card-footer {
     display: inherit;
 }
 

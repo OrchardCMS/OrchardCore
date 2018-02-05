@@ -17,8 +17,8 @@ The following properties are available on the `MarkdownPartViewModel` class.
 
 | Property | Type | Description |
 | --------- | ---- |------------ |
-| `Markdown` | `string` | The Markdown value once all tokens have been processed |
-| `Html` | `string` | The HTML content resulting from the Mardkown source |
+| `Markdown` | `string` | The Markdown value after all tokens have been processed |
+| `Html` | `string` | The HTML content resulting from the Markdown source |
 | `ContentItem` | `ContentItem` | The content item of the part |
 | `MarkdownPart` | `MarkdownPart` | The `MarkdownPart` instance|
 | `TypePartSettings` | `MarkdownPartSettings` | The settings of the part |
@@ -36,7 +36,7 @@ The following properties are available on `MarkdownPart`
 ### MarkdownField
 
 This shape is rendered when a `MarkdownField` is attached to a content part.
-The shape based class is of type `MarkdownFieldViewModel`.
+The shape base class is of type `MarkdownFieldViewModel`.
 
 The following properties are available on the `MarkdownFieldViewModel` class.
 
@@ -63,7 +63,7 @@ Customizing the editor can mean to replace the predefined one with different exp
 new options for the user to choose from.
 
 To create a new custom editor, it is required to provide two shape templates, one to provide
-the name of the editor (optional if you want to override and existing one), and a shape to
+the name of the editor (optional if you want to override an existing one), and a shape to
 render the actual HTML for the editor.
 
 #### Declaration

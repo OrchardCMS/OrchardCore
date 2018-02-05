@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -47,9 +46,8 @@ namespace OrchardCore.Media.Processing
         {
             // Path has already been correctly parsed before here.
 
-            var file = await _mediaStore.MapFileAsync(context.Request.Path);
-
-            byte[] buffer;
+            var filePath = _mediaStore.MapPublicUrlToPath(context.Request.PathBase + context.Request.Path.Value);
+            var file = await _mediaStore.GetFileInfoAsync(filePath);
 
             // Check to see if the file exists.
             if (file == null)
@@ -57,7 +55,9 @@ namespace OrchardCore.Media.Processing
                 return null;
             }
 
-            using (Stream stream = file.CreateReadStream())
+            byte[] buffer;
+
+            using (var stream = await _mediaStore.GetFileStreamAsync(filePath))
             {
                 // Buffer is returned to the pool in the middleware
                 buffer = BufferDataPool.Rent((int)stream.Length);

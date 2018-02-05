@@ -1,8 +1,12 @@
-﻿@using System.Collections.Generic
-@using Microsoft.AspNetCore.Http
-@using Microsoft.AspNetCore.Http.Authentication
+@using OrchardCore.Entities
+@using OrchardCore.Settings
+@using OrchardCore.Users.Models
 @model OrchardCore.Users.ViewModels.LoginViewModel
-@*@inject SignInManager<ApplicationUser> SignInManager*@
+@inject ISiteService _settings
+
+@{
+    var userCanRegister = (await _settings.GetSiteSettingsAsync()).As<RegistrationSettings>()?.UsersCanRegister ?? false;
+}
 
 <div class="row">
     <div class="col-md-8">
@@ -40,9 +44,11 @@
                         <button type="submit" class="btn btn-default">@T["Log in"]</button>
                     </div>
                 </div>
-                <p>
-                    <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">@T["Register as a new user?"]</a>
-                </p>
+                @if (userCanRegister) {
+                    <p>
+                        <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">@T["Register as a new user?"]</a>
+                    </p>
+                }
                 @*<p>
                         <a asp-action="ForgotPassword">@T["Forgot your password?"]</a>
                     </p>*@

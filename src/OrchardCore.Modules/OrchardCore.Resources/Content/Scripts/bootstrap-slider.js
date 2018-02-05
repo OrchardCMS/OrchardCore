@@ -1,5 +1,5 @@
 /*! =======================================================
-                      VERSION  9.9.0              
+                      VERSION  10.0.0              
 ========================================================= */
 "use strict";
 
@@ -637,9 +637,6 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 					this._removeProperty(tooltip, 'left');
 					this._removeProperty(tooltip, 'right');
 					this._removeProperty(tooltip, 'top');
-					this._removeProperty(tooltip, 'margin-left');
-					this._removeProperty(tooltip, 'margin-right');
-					this._removeProperty(tooltip, 'margin-top');
 
 					this._removeClass(tooltip, 'right');
 					this._removeClass(tooltip, 'left');
@@ -1116,11 +1113,6 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 				this._setText(this.tooltipInner, formattedTooltipVal);
 
 				this.tooltip.style[this.stylePos] = positionPercentages[0] + "%";
-				if (this.options.orientation === 'vertical') {
-					this._css(this.tooltip, "margin-" + this.stylePos, -this.tooltip.offsetHeight / 2 + "px");
-				} else {
-					this._css(this.tooltip, "margin-" + this.stylePos, -this.tooltip.offsetWidth / 2 + "px");
-				}
 
 				function getPositionPercentages(state, reversed) {
 					if (reversed) {
@@ -1290,12 +1282,6 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 					this._setText(this.tooltipInner, formattedTooltipVal);
 					this.tooltip.style[this.stylePos] = (positionPercentages[1] + positionPercentages[0]) / 2 + "%";
 
-					if (this.options.orientation === 'vertical') {
-						this._css(this.tooltip, "margin-" + this.stylePos, -this.tooltip.offsetHeight / 2 + "px");
-					} else {
-						this._css(this.tooltip, "margin-" + this.stylePos, -this.tooltip.offsetWidth / 2 + "px");
-					}
-
 					var innerTooltipMinText = this.options.formatter(this._state.value[0]);
 					this._setText(this.tooltipInner_min, innerTooltipMinText);
 
@@ -1304,29 +1290,12 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 
 					this.tooltip_min.style[this.stylePos] = positionPercentages[0] + "%";
 
-					if (this.options.orientation === 'vertical') {
-						this._css(this.tooltip_min, "margin-" + this.stylePos, -this.tooltip_min.offsetHeight / 2 + "px");
-					} else {
-						this._css(this.tooltip_min, "margin-" + this.stylePos, -this.tooltip_min.offsetWidth / 2 + "px");
-					}
-
 					this.tooltip_max.style[this.stylePos] = positionPercentages[1] + "%";
-
-					if (this.options.orientation === 'vertical') {
-						this._css(this.tooltip_max, "margin-" + this.stylePos, -this.tooltip_max.offsetHeight / 2 + "px");
-					} else {
-						this._css(this.tooltip_max, "margin-" + this.stylePos, -this.tooltip_max.offsetWidth / 2 + "px");
-					}
 				} else {
 					formattedTooltipVal = this.options.formatter(this._state.value[0]);
 					this._setText(this.tooltipInner, formattedTooltipVal);
 
 					this.tooltip.style[this.stylePos] = positionPercentages[0] + "%";
-					if (this.options.orientation === 'vertical') {
-						this._css(this.tooltip, "margin-" + this.stylePos, -this.tooltip.offsetHeight / 2 + "px");
-					} else {
-						this._css(this.tooltip, "margin-" + this.stylePos, -this.tooltip.offsetWidth / 2 + "px");
-					}
 				}
 
 				if (this.options.orientation === 'vertical') {

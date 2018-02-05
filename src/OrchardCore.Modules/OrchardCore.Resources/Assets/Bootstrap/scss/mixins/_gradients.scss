@@ -1,5 +1,13 @@
 // Gradients
 
+@mixin gradient-bg($color) {
+  @if $enable-gradients {
+    background: $color linear-gradient(180deg, mix($body-bg, $color, 15%), $color) repeat-x;
+  } @else {
+    background-color: $color;
+  }
+}
+
 // Horizontal gradient, from left to right
 //
 // Creates two color stops, start and end, by specifying a color and position for each color stop.
@@ -17,8 +25,8 @@
 }
 
 @mixin gradient-directional($start-color: #555, $end-color: #333, $deg: 45deg) {
-  background-repeat: repeat-x;
   background-image: linear-gradient($deg, $start-color, $end-color);
+  background-repeat: repeat-x;
 }
 @mixin gradient-x-three-colors($start-color: #00b3ee, $mid-color: #7a43b6, $color-stop: 50%, $end-color: #c3325f) {
   background-image: linear-gradient(to right, $start-color, $mid-color $color-stop, $end-color);

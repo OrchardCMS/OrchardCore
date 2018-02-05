@@ -1,0 +1,28 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--
+    This file is packaged with "OrchardCore.Module.Targets.nupkg" in "./build".
+    Here we use some msbuild properties that would not be evaluated in the `.props` file.
+    It also prevents VS from adding / keeping some unnecessary lines in the project file.
+  -->
+
+  <PropertyGroup>
+    <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\*$(DefaultLanguageSourceExtension);**\*.resx</ModuleDefaultAssetExcludes>
+    <ModuleNoneExcludes>$(BaseIntermediateOutputPath)**\*.props;$(BaseIntermediateOutputPath)**\*.targets</ModuleNoneExcludes>
+    <ModuleNoneIncludes>$(ModuleAssetExcludes)</ModuleNoneIncludes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AppDesignerFolder)' != ''">
+    <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);$(AppDesignerFolder)\**</ModuleDefaultAssetExcludes>
+    <ModuleNoneExcludes>$(ModuleNoneExcludes);$(AppDesignerFolder)\**\*$(DefaultLanguageSourceExtension)</ModuleNoneExcludes>
+    <ModuleNoneExcludes>$(ModuleNoneExcludes);$(AppDesignerFolder)\**\*.resx</ModuleNoneExcludes>
+    <ModuleNoneIncludes>$(ModuleNoneIncludes);$(AppDesignerFolder)\**</ModuleNoneIncludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="**\*.cshtml" />
+    <None Update="@(None)" CopyToPublishDirectory="Never" />
+    <EmbeddedResource Update="@(EmbeddedResource)" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
+</Project>

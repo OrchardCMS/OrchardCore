@@ -46,6 +46,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Liquid\OrchardCore.Liquid.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Queries\OrchardCore.Queries.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Users\OrchardCore.Users.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Data\OrchardCore.Data.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />

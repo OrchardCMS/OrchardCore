@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using OrchardCore.DisplayManagement.Descriptors;
 using Xunit;
 
@@ -6,61 +6,96 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 {
     public class LocationParserTests
     {
-        [Fact]
-        public void ZoneShouldBeParsed()
+        [Theory]
+        [InlineData("Content")]
+        [InlineData("Content:5")]
+        [InlineData("Content:5#Tab1")]
+        [InlineData("Content:5@Group1")]
+        [InlineData("Content:5@Group1#Tab1")]
+        [InlineData("/Content")]
+        [InlineData("/Content:5")]
+        [InlineData("/Content:5#Tab1")]
+        [InlineData("/Content:5@Group1")]
+        [InlineData("/Content:5@Group1#Tab1")]
+        public void ZoneShouldBeParsed(string location)
         {
-            Assert.Equal("Content", new PlacementInfo { Location = "/Content" }.GetZones().FirstOrDefault());
-            Assert.Equal("Content", new PlacementInfo { Location = "Content" }.GetZones().FirstOrDefault());
-            Assert.Equal("Content", new PlacementInfo { Location = "Content:5" }.GetZones().FirstOrDefault());
-            Assert.Equal("Content", new PlacementInfo { Location = "Content:5#Tab1" }.GetZones().FirstOrDefault());
-            Assert.Equal("Content", new PlacementInfo { Location = "Content:5@Group1" }.GetZones().FirstOrDefault());
-            Assert.Equal("Content", new PlacementInfo { Location = "Content:5@Group1#Tab1" }.GetZones().FirstOrDefault());
+            Assert.Equal("Content", new PlacementInfo { Location = location }.GetZones().FirstOrDefault());
         }
 
-        [Fact]
-        public void PositionShouldBeParsed()
+        [Theory]
+        [InlineData("Content", "")]
+        [InlineData("Content:5", "5")]
+        [InlineData("Content:5#Tab1", "5")]
+        [InlineData("Content:5.1#Tab1", "5.1")]
+        [InlineData("Content:5@Group1", "5")]
+        [InlineData("Content:5@Group1#Tab1", "5")]
+        [InlineData("/Content", "")]
+        [InlineData("/Content:5", "5")]
+        [InlineData("/Content:5#Tab1", "5")]
+        [InlineData("/Content:5.1#Tab1", "5.1")]
+        [InlineData("/Content:5@Group1", "5")]
+        [InlineData("/Content:5@Group1#Tab1", "5")]
+        public void PositionShouldBeParsed(string location, string expectedPosition)
         {
-            Assert.Equal("", new PlacementInfo { Location = "Content" }.GetPosition());
-            Assert.Equal("5", new PlacementInfo { Location = "Content:5" }.GetPosition());
-            Assert.Equal("5", new PlacementInfo { Location = "Content:5#Tab1" }.GetPosition());
-            Assert.Equal("5.1", new PlacementInfo { Location = "Content:5.1#Tab1" }.GetPosition());
-            Assert.Equal("5", new PlacementInfo { Location = "Content:5@Group1" }.GetPosition());
-            Assert.Equal("5", new PlacementInfo { Location = "Content:5@Group1#Tab1" }.GetPosition());
+            Assert.Equal(expectedPosition, new PlacementInfo { Location = location }.GetPosition());
         }
 
-        [Fact]
-        public void LayoutZoneShouldBeParsed()
+        [Theory]
+        [InlineData("Content", false)]
+        [InlineData("Content:5", false)]
+        [InlineData("Content:5#Tab1", false)]
+        [InlineData("Content:5.1#Tab1", false)]
+        [InlineData("Content:5@Group1", false)]
+        [InlineData("Content:5@Group1#Tab1", false)]
+        [InlineData("/Content", true)]
+        [InlineData("/Content:5", true)]
+        [InlineData("/Content:5#Tab1", true)]
+        [InlineData("/Content:5.1#Tab1", true)]
+        [InlineData("/Content:5@Group1", true)]
+        [InlineData("/Content:5@Group1#Tab1", true)]
+        public void LayoutZoneShouldBeParsed(string location, bool expectedIsLayoutZone)
         {
-            Assert.True(new PlacementInfo { Location = "/Content" }.IsLayoutZone());
-            Assert.True(new PlacementInfo { Location = "/Content:5" }.IsLayoutZone());
-            Assert.False(new PlacementInfo { Location = "Content:5#Tab1" }.IsLayoutZone());
-            Assert.False(new PlacementInfo { Location = "Content:5.1#Tab1" }.IsLayoutZone());
-            Assert.False(new PlacementInfo { Location = "Content:5@Group1" }.IsLayoutZone());
-            Assert.False(new PlacementInfo { Location = "Content:5@Group1#Tab1" }.IsLayoutZone());
+            Assert.Equal(expectedIsLayoutZone, new PlacementInfo { Location = location }.IsLayoutZone());
         }
 
-        [Fact]
-        public void TabShouldBeParsed()
+        [Theory]
+        [InlineData("Content", "")]
+        [InlineData("Content:5", "")]
+        [InlineData("Content:5#Tab1", "Tab1")]
+        [InlineData("Content:5.1#Tab1", "Tab1")]
+        [InlineData("Content:5@Group1", "")]
+        [InlineData("Content:5@Group1#Tab1", "Tab1")]
+        [InlineData("Content:5#Tab1@Group1", "Tab1")]
+        [InlineData("/Content", "")]
+        [InlineData("/Content:5", "")]
+        [InlineData("/Content:5#Tab1", "Tab1")]
+        [InlineData("/Content:5.1#Tab1", "Tab1")]
+        [InlineData("/Content:5@Group1", "")]
+        [InlineData("/Content:5@Group1#Tab1", "Tab1")]
+        [InlineData("/Content:5#Tab1@Group1", "Tab1")]
+        public void TabShouldBeParsed(string location, string expectedTab)
         {
-            Assert.Equal("", new PlacementInfo { Location = "Content" }.GetTab());
-            Assert.Equal("", new PlacementInfo { Location = "Content:5" }.GetTab());
-            Assert.Equal("Tab1", new PlacementInfo { Location = "Content:5#Tab1" }.GetTab());
-            Assert.Equal("Tab1", new PlacementInfo { Location = "Content:5.1#Tab1" }.GetTab());
-            Assert.Equal("", new PlacementInfo { Location = "Content:5@Group1" }.GetTab());
-            Assert.Equal("Tab1", new PlacementInfo { Location = "Content:5@Group1#Tab1" }.GetTab());
-            Assert.Equal("Tab1", new PlacementInfo { Location = "Content:5#Tab1@Group1" }.GetTab());
+            Assert.Equal(expectedTab, new PlacementInfo { Location = location }.GetTab());
         }
 
-        [Fact]
-        public void GroupShouldBeParsed()
+        [Theory]
+        [InlineData("Content", null)]
+        [InlineData("Content:5", null)]
+        [InlineData("Content:5#Tab1", null)]
+        [InlineData("Content:5.1#Tab1", null)]
+        [InlineData("Content:5@Group1", "Group1")]
+        [InlineData("Content:5@Group1#Tab1", "Group1")]
+        [InlineData("Content:5#Tab1@Group1", "Group1")]
+        [InlineData("/Content", null)]
+        [InlineData("/Content:5", null)]
+        [InlineData("/Content:5#Tab1", null)]
+        [InlineData("/Content:5.1#Tab1", null)]
+        [InlineData("/Content:5@Group1", "Group1")]
+        [InlineData("/Content:5@Group1#Tab1", "Group1")]
+        [InlineData("/Content:5#Tab1@Group1", "Group1")]
+        public void GroupShouldBeParsed(string location, string expectedGroup)
         {
-            Assert.Null(new PlacementInfo { Location = "Content" }.GetGroup());
-            Assert.Null(new PlacementInfo { Location = "Content:5" }.GetGroup());
-            Assert.Null(new PlacementInfo { Location = "Content:5#Tab1" }.GetGroup());
-            Assert.Null(new PlacementInfo { Location = "Content:5.1#Tab1" }.GetGroup());
-            Assert.Equal("Group1", new PlacementInfo { Location = "Content:5@Group1" }.GetGroup());
-            Assert.Equal("Group1", new PlacementInfo { Location = "Content:5@Group1#Tab1" }.GetGroup());
-            Assert.Equal("Group1", new PlacementInfo { Location = "Content:5#Tab1@Group1" }.GetGroup());
+            Assert.Equal(expectedGroup, new PlacementInfo { Location = location }.GetGroup());
         }
     }
 }

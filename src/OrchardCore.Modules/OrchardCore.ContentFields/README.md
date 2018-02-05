@@ -8,20 +8,19 @@ This modules provides common content fields.
 
 | Name | Properties | Shape Type |
 | --- | --- | --- |
-| TextField | `Text (string)` | `TextField` |
-| BooleanField | `Value (bool)` | `BooleanField` |
-| HtmlField | `Html (string)` | `HtmlField` |
-| NumericField | `Value (decimal?)` | `NumericField` |
+| `TextField` | `Text (string)` | `TextField` |
+| `BooleanField` | `Value (bool)` | `BooleanField` |
+| `HtmlField` | `Html (string)` | `HtmlField` |
+| `NumericField` | `Value (decimal?)` | `NumericField` |
 
 ## Usage
 
-From a `Content` template, you can reference a field's value like this:
+From a `Content` template, you can reference a field's value like this
+(if the content type is `Article` and has a Text Field named `MyField`):
 
 ```csharp
 var fieldValue = contentItem.Content.Article.MyField.Text;
 ```
-
-If the content type is `Article` and has a Text Field named `MyField`.
 
 ## Creating Custom Fields
 
@@ -31,14 +30,15 @@ instead.
 
 A field should represent some specific physical data and logical data. The same field can be customized
 to be edited and rendered differently using both Editors and Formatters. Editors are shapes that can
-be used to edit a field differently, for instance th Wysiwyg Html editor is a custom editor for the Html
+be used to edit a field differently, for instance the WYSIWYG HTML editor is a custom editor for the HTML
 field. Formatters are alternate shapes that can be used to render a field on the front end, for instance
 a Link field could be rendered as a Youtube video player. 
 
 ### Model Class
 
-Create a class inheriting from `ContentField` that will represent the state of your field. Its content will be serialized as part of
-the content item. Json.NET classes can be used to customize the serialization.
+Create a class inheriting from `ContentField` that will represent the state of your field.
+Its content will be serialized as part of the content item.
+Json.NET classes can be used to customize the serialization.
 
 Example:
 ```csharp
@@ -84,7 +84,7 @@ Html Field:
 ```
 
 Then you can create the editor shape by adding a file named `{FIELDTYPE}_Editor__{EDITORNAME}` which is
-represented by a template file named `{FIELDTYPE}-{EDITORNAME}Editor.cshtml`. 
+represented by a template file named `{FIELDTYPE}-{EDITORNAME}.Editor.cshtml`. 
 
 For instance the filename for the Wysiwyg editor on the Html Field is named `HtmlField-Wysiwyg.Editor.cshtml`.
 

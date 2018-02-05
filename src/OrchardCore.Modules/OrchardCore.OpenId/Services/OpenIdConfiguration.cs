@@ -5,13 +5,13 @@ using AspNet.Security.OpenIdConnect.Primitives;
 using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenIddict;
 using OrchardCore.Environment.Shell;
-using OrchardCore.OpenId.Models;
+using OrchardCore.OpenId.Abstractions.Models;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 
@@ -91,7 +91,7 @@ namespace OrchardCore.OpenId
                 return;
             }
 
-            options.ProviderType = typeof(OpenIddictProvider<OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>);
+            options.ProviderType = typeof(OpenIddictProvider<IOpenIdApplication, IOpenIdAuthorization, IOpenIdScope, IOpenIdToken>);
             options.DataProtectionProvider = _dataProtectionProvider;
             options.RequireClientIdentification = true;
             options.EnableRequestCaching = true;
@@ -100,6 +100,8 @@ namespace OrchardCore.OpenId
             {
                 options.AccessTokenHandler = new JwtSecurityTokenHandler();
             }
+
+            options.UseRollingTokens = settings.UseRollingTokens;
 
             if (settings.TestingModeEnabled)
             {
@@ -137,25 +139,25 @@ namespace OrchardCore.OpenId
             {
                 options.UserinfoEndpointPath = "/OrchardCore.OpenId/UserInfo/Me";
             }
-            if (settings.AllowPasswordFlow)
+            if (settings.AllowAuthorizationCodeFlow)
             {
-                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.Password);
+                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.AuthorizationCode);
             }
             if (settings.AllowClientCredentialsFlow)
             {
                 options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.ClientCredentials);
             }
-            if (settings.AllowAuthorizationCodeFlow || settings.AllowHybridFlow)
+            if (settings.AllowImplicitFlow)
             {
-                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.AuthorizationCode);
+                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.Implicit);
+            }
+            if (settings.AllowPasswordFlow)
+            {
+                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.Password);
             }
             if (settings.AllowRefreshTokenFlow)
             {
                 options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.RefreshToken);
-            }
-            if (settings.AllowImplicitFlow || settings.AllowHybridFlow)
-            {
-                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.Implicit);
             }
         }
 

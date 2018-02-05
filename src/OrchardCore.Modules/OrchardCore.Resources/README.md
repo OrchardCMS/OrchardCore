@@ -4,21 +4,21 @@
 
 The Resources module provides commonly used resources like JavaScript libraries and CSS files. It also enables the Resource Manager
 so any module can describe what resources are necessary on any page or component. When the full page is rendered all the required
-resources are computed and custom `<script>` and `<link>` tags are rendered accordingly. You can also regsiter custom `<meta>` tags.
+resources are computed and custom `<script>` and `<link>` tags are rendered accordingly. You can also register custom `<meta>` tags.
 
 ## Named Resources
 
 Named resources are well-known scripts and stylesheets that are described in a module. They have a name, a type (script, stylesheet) 
-and optionally a version. The __OrchardCore.Resources__ modules provides some commonly used ones:
+and optionally a version. The `OrchardCore.Resources` modules provides some commonly used ones:
 
 | Name | Type | Versions | Dependencies |
 | ---- | ---- | -------- | ------------ |
 | jQuery | Script | 1.12.4 | - |
 | jQuery | Script | 2.2.4 | - |
-| jQuery | Script | 3.1.1 | - |
-| Bootstrap | Script | 3.3.7, 4.0.0 (4.0.0-alpha.5) | jQuery |
-| Bootstrap | Style | 3.3.7, 4.0.0 (4.0.0-alpha.5) | - |
-| jquery-ui | Script | 1.12.1 | jQuery |
+| jQuery | Script | 3.2.1 | - |
+| Bootstrap | Script | 3.3.7, 4.0.0 (4.0.0-beta) | jQuery |
+| Bootstrap | Style | 3.3.7, 4.0.0 (4.0.0-beta) | - |
+| jQuery-ui | Script | 1.12.1 | jQuery |
 | font-awesome | Style | 4.7.0 | - |
 
 ## Usage
@@ -54,7 +54,7 @@ settings.AtFoot();
 settings.UseVersion("3.3");
 ```
 
-This will use the latest availabe version between `3.3` and `3.4`. If the version is not available an exception is thrown.
+This will use the latest available version between `3.3` and `3.4`. If the version is not available an exception is thrown.
 
 #### Register custom script
 
@@ -108,7 +108,7 @@ You can force a resource to be used from its CDN. By default the behavior is def
 
 ##### Use specific version
 This example will use the latest available version with a Major version of `3`, like `3.3.7`. If the version is not specified
-the greatest one is always used.
+the latest one is always used.
 
 ```html
 <script asp-name="bootstrap" version="3"></script>
@@ -120,7 +120,7 @@ By default all scripts are rendered in the footer. You can override it like this
 <script asp-name="bootstrap" at="Head"></script>
 ```
 
-Styles on the opposite are always injected in the header section of the HTML document.
+Styles, however, are always injected in the header section of the HTML document.
 
 #### Inline definition
 You can declare a new resource directly from a view, and it will be injected only once even if the view is called multiple time.
@@ -130,10 +130,20 @@ You can declare a new resource directly from a view, and it will be injected onl
 ```
 
 In this example we also define a dependency on the script named `baz` with the version `1.0`. If the version was not set
-the one with the highest number would be used.
+the one with the highest number will be used.
 
 You can also do the same for a stylesheet:
 
 ```html
 <style asp-src="bar.min.css" debug-src="bar.css"></style>
+```
+
+#### Custom scripts
+
+The following example demonstrates how to inject a custom script in the footer section.
+
+```html
+<script at="Foot">
+    document.write('<!-- some script -->');
+</script>
 ```
