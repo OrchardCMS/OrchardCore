@@ -186,6 +186,14 @@ namespace OrchardCore.OpenId.Controllers
                 {
                     ModelState.AddModelError(nameof(model.UpdateClientSecret), T["Setting a new client secret is required"]);
                 }
+
+                var other = await _applicationManager.FindByClientIdAsync(model.ClientId);
+                if (other != null && !string.Equals(
+                    await _applicationManager.GetIdAsync(other),
+                    await _applicationManager.GetIdAsync(application), StringComparison.Ordinal))
+                {
+                    ModelState.AddModelError(nameof(model.ClientId), T["The client identifier is already taken by another application."]);
+                }
             }
 
             if (!ModelState.IsValid)
@@ -253,6 +261,11 @@ namespace OrchardCore.OpenId.Controllers
             else if (model.Type == ClientType.Public && !string.IsNullOrEmpty(model.ClientSecret))
             {
                 ModelState.AddModelError(nameof(model.ClientSecret), T["No client secret can be set for public applications."]);
+            }
+
+            if (await _applicationManager.FindByClientIdAsync(model.ClientId) != null)
+            {
+                ModelState.AddModelError(nameof(model.ClientId), T["The client identifier is already taken by another application."]);
             }
 
             if (!ModelState.IsValid)
