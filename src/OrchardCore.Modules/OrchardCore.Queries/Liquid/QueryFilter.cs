@@ -28,7 +28,7 @@ namespace OrchardCore.Queries.Liquid
 
             foreach (var name in arguments.Names)
             {
-                parameters.Add(name, arguments[name]);
+                parameters.Add(name, arguments[name].ToObjectValue());
             }
 
             var result = await _queryManager.ExecuteQueryAsync(query, parameters);
