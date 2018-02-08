@@ -21,6 +21,7 @@
       "disable": [],
       "enable": [
         // SaaS
+        "OrchardCore.Authentication",
         "OrchardCore.Mvc",
         "OrchardCore.HomeRoute",
         "OrchardCore.Admin",
