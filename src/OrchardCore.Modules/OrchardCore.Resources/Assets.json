@@ -2,19 +2,19 @@
   {
     "generateSourceMaps": false,
     "inputs": [ "Assets/Bootstrap/scss/bootstrap.scss" ],
-    "output": "Content/Styles/bootstrap.css"
+    "output": "wwwroot/Styles/bootstrap.css"
   },
   {
     "inputs": [
       "Assets/Bootstrap/js/bootstrap.js"
     ],
-    "output": "Content/Scripts/bootstrap.js"
+    "output": "wwwroot/Scripts/bootstrap.js"
   },
   {
     "inputs": [
       "Assets/Bootstrap/js/popper.js"
     ],
-    "output": "Content/Scripts/popper.js"
+    "output": "wwwroot/Scripts/popper.js"
   },
   {
     "generateSourceMaps": false,
@@ -22,13 +22,13 @@
       "Assets/trumbowyg/scss/trumbowyg.scss",
       "Assets/trumbowyg/plugins/*/ui/sass/*.scss"
     ],
-    "output": "Content/Styles/trumbowyg.css"
+    "output": "wwwroot/Styles/trumbowyg.css"
   },
   {
     "inputs": [
       "Assets/trumbowyg/js/trumbowyg.js",
       "Assets/trumbowyg/plugins/*/*.js"
     ],
-    "output": "Content/Scripts/trumbowyg.js"
+    "output": "wwwroot/Scripts/trumbowyg.js"
   }
 ]
