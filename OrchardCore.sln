@@ -296,7 +296,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{184139CF
 	ProjectSection(SolutionItems) = preProject
 		.travis.yml = .travis.yml
 		appveyor.yml = appveyor.yml
-		src\OrchardCore.Build\Dependencies.AspNetContrib.props = src\OrchardCore.Build\Dependencies.AspNetContrib.props
 		src\OrchardCore.Build\Dependencies.AspNetCore.props = src\OrchardCore.Build\Dependencies.AspNetCore.props
 		src\OrchardCore.Build\Dependencies.props = src\OrchardCore.Build\Dependencies.props
 		NuGet.config = NuGet.config
