@@ -1,21 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.FileProviders;
+using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.Environment.Extensions.Manifests
 {
     public class NotFoundManifestInfo : IManifestInfo
     {
-        private readonly IFileInfo _fileInfo;
-
         public NotFoundManifestInfo(string subPath)
         {
-            _fileInfo = new NotFoundFileInfo(subPath);
         }
 
-        public IFileInfo Manifest { get { return _fileInfo; } }
         public bool Exists => false;
         public string Name => null;
         public string Description => null;
@@ -24,6 +19,6 @@ namespace OrchardCore.Environment.Extensions.Manifests
         public string Website => null;
         public Version Version => null;
         public IEnumerable<string> Tags => Enumerable.Empty<string>();
-        public IConfigurationRoot ConfigurationRoot => null;
+        public ModuleAttribute ModuleInfo => null;
     }
 }

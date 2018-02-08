@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddModules(this IServiceCollection services, Action<ModularServiceCollection> configure = null)
         {
             services.AddWebHost();
-            services.AddManifestDefinition("Module.txt", "module");
+            services.AddManifestDefinition("module");
             services.AddExtensionLocation(Application.ModulesPath);
 
             // ModularTenantRouterMiddleware which is configured with UseModules() calls UserRouter() which requires the routing services to be

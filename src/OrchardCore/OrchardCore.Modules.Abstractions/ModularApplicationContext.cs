@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Embedded;
 using OrchardCore.Modules.FileProviders;
+using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.Modules
 {
@@ -87,16 +88,35 @@ namespace OrchardCore.Modules
             if (!string.IsNullOrWhiteSpace(name))
             {
                 Name = name;
-                Root = Application.ModulesRoot + Name + '/';
+                SubPath = Application.ModulesRoot + Name;
+                Root = SubPath + '/';
+
                 Assembly = Assembly.Load(new AssemblyName(name));
                 Assets = new EmbeddedFileProvider(Assembly).GetFileInfo(ModuleAssetsMap).ReadAllLines().Select(a => new Asset(a));
                 AssetPaths = Assets.Select(a => a.ModuleAssetPath);
+
+                var module = Assembly.GetCustomAttribute<ModuleAttribute>();
+                var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>();
+
+
+                if (module != null)
+                {
+                    module.Feature.Id = Name;
+                    module.Features.AddRange(features);
+                    ModuleInfo = module;
+                }
+                else
+                {
+                    ModuleInfo = new ModuleAttribute(name: Name);
+                    ModuleInfo.Feature.Id = Name;
+                }
             }
             else
             {
-                Name = Root = string.Empty;
+                Name = Root = SubPath = String.Empty;
                 Assets = Enumerable.Empty<Asset>();
                 AssetPaths = Enumerable.Empty<string>();
+                ModuleInfo = new ModuleAttribute(name: Name);
             }
 
             _baseNamespace = Name + '.';
@@ -105,9 +125,11 @@ namespace OrchardCore.Modules
 
         public string Name { get; }
         public string Root { get; }
+        public string SubPath { get; }
         public Assembly Assembly { get; }
         public IEnumerable<Asset> Assets { get; }
         public IEnumerable<string> AssetPaths { get; }
+        public ModuleAttribute ModuleInfo { get; }
 
         public IFileInfo GetFileInfo(string subpath)
         {

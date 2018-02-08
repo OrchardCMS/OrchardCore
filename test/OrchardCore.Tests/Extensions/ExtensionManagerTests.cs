@@ -22,18 +22,18 @@ namespace OrchardCore.Tests.Extensions
 
         private static IOptions<ManifestOptions> ModuleManifestOptions =
             new StubManifestOptions(
-                new ManifestOption { ManifestFileName = "Module.txt", Type = "module" }
+                new ManifestOption { Type = "module" }
                 );
 
         private static IOptions<ManifestOptions> ThemeManifestOptions =
             new StubManifestOptions(
-                new ManifestOption { ManifestFileName = "Theme.txt", Type = "theme" }
+                new ManifestOption { Type = "theme" }
                 );
 
         private static IOptions<ManifestOptions> ModuleAndThemeManifestOptions =
             new StubManifestOptions(
-                new ManifestOption { ManifestFileName = "Module.txt", Type = "module" },
-                new ManifestOption { ManifestFileName = "Theme.txt", Type = "theme" }
+                new ManifestOption { Type = "module" },
+                new ManifestOption { Type = "theme" }
                 );
 
         private static IEnumerable<IManifestProvider> ManifestProviders =

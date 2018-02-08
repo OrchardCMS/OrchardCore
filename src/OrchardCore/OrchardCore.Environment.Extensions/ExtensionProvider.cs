@@ -1,26 +1,19 @@
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.FileProviders;
 using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.Environment.Extensions
 {
     public class ExtensionProvider : IExtensionProvider
     {
-        private readonly IFileProvider _fileProvider;
         private readonly IFeaturesProvider _featuresProvider;
 
         /// <summary>
         /// Initializes a new instance of a ExtensionProvider at the given root directory.
         /// </summary>
-        /// <param name="hostingEnvironment">hostingEnvironment containing the fileproviders.</param>
         /// <param name="featureManager">The feature manager.</param>
         public ExtensionProvider(
-            IHostingEnvironment hostingEnvironment,
             IEnumerable<IFeaturesProvider> featureProviders)
         {
-            _fileProvider = hostingEnvironment.ContentRootFileProvider;
             _featuresProvider = new CompositeFeaturesProvider(featureProviders);
         }
 
@@ -33,14 +26,7 @@ namespace OrchardCore.Environment.Extensions
         /// <returns>The extension information. null returned if extension does not exist</returns>
         public IExtensionInfo GetExtensionInfo(IManifestInfo manifestInfo, string subPath)
         {
-            var path = System.IO.Path.GetDirectoryName(subPath);
-            var name = System.IO.Path.GetFileName(subPath);
-
-            var extension = _fileProvider
-                .GetDirectoryContents(path)
-                .First(content => content.Name == name);
-
-            return new ExtensionInfo(extension.Name, extension, subPath, manifestInfo, (mi, ei) => {
+            return new ExtensionInfo(subPath, manifestInfo, (mi, ei) => {
                 return _featuresProvider.GetFeatures(ei, mi);
             });
         }

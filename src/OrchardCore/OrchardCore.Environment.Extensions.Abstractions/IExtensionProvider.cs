@@ -1,4 +1,6 @@
-﻿namespace OrchardCore.Environment.Extensions
+using OrchardCore.Modules;
+
+namespace OrchardCore.Environment.Extensions
 {
     public interface IExtensionProvider
     {

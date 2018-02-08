@@ -1,5 +1,5 @@
-﻿using OrchardCore.Environment.Extensions;
 using System;
+using OrchardCore.Environment.Extensions;
 
 namespace OrchardCore.Features
 {

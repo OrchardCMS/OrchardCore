@@ -7,11 +7,19 @@
 
   <Target Name="EmbeddModuleNames" AfterTargets="AfterResolveReferences">
 
+    <MSBuild
+      Targets="GetModuleProject"
+      BuildInParallel="$(BuildInParallel)"
+      Projects="@(_MSBuildProjectReferenceExistent)"
+      Condition="'@(_MSBuildProjectReferenceExistent)' != ''"
+      SkipNonexistentTargets="true"
+      ContinueOnError="true">
+
+      <Output ItemName="ModuleProjects" TaskParameter="TargetOutputs" />
+    </MSBuild>
+
     <ItemGroup>
-      <ModuleProjectReferences
-        Include="@(_MSBuildProjectReferenceExistent)"
-        Condition="Exists('%(RootDir)%(Directory)Module.txt') Or Exists('%(RootDir)%(Directory)obj\Module.txt') Or
-                   Exists('%(RootDir)%(Directory)Theme.txt') Or Exists('%(RootDir)%(Directory)obj\Theme.txt')" />
+      <ModuleProjectReferences Include="@(ModuleProjects)" />
     </ItemGroup>
 
     <ItemGroup>
@@ -33,6 +41,26 @@
         <Link>module.names.map</Link>
       </EmbeddedResource>
     </ItemGroup>
+
+  </Target>
+
+  <Target Name="CompileModuleRazorFiles" BeforeTargets="_ResolveInputArguments">
+
+    <ItemGroup>
+      <ModuleProjectRazorFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml">
+        <ProjectName>%(Filename)</ProjectName>
+      </ModuleProjectRazorFiles>
+    </ItemGroup>
+
+    <MSBuild
+      Targets="GetModuleLinkedRazorFiles"
+      BuildInParallel="$(BuildInParallel)"
+      Projects="@(ModuleProjectReferences)"
+      Condition="'@(ModuleProjectReferences)' != ''"
+      ContinueOnError="true">
+
+      <Output ItemName="Test" TaskParameter="TargetOutputs" />
+    </MSBuild>
 
   </Target>
 

@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
+using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.Environment.Extensions
 {
@@ -14,6 +14,6 @@ namespace OrchardCore.Environment.Extensions
         string Website { get; }
         Version Version { get; }
         IEnumerable<string> Tags { get; }
-        IConfigurationRoot ConfigurationRoot { get; }
+        ModuleAttribute ModuleInfo { get; }
     }
 }
