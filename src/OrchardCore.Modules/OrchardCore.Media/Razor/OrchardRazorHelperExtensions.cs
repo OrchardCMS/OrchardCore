@@ -21,12 +21,12 @@ namespace OrchardCore.DisplayManagement.Razor
         public static string AssetUrl(this OrchardRazorHelper razorHelper, string assetPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)
         {
             var resolvedAssetPath = razorHelper.AssetUrl(assetPath);
-            return razorHelper.MediaResizeUrl(resolvedAssetPath, width, height, resizeMode);
+            return razorHelper.ImageResizeUrl(resolvedAssetPath, width, height, resizeMode);
         }
 
-        public static string MediaResizeUrl(this OrchardRazorHelper razorHelper, string mediaPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)
+        public static string ImageResizeUrl(this OrchardRazorHelper razorHelper, string imagePath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)
         {
-            return ImageSharpUrlFormatter.GetMediaResizeUrl(mediaPath, width, height, resizeMode);
+            return ImageSharpUrlFormatter.GetImageResizeUrl(imagePath, width, height, resizeMode);
         }
     }
 }

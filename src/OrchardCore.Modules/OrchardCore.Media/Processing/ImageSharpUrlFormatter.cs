@@ -18,7 +18,7 @@ namespace OrchardCore.Media.Processing
 
     internal class ImageSharpUrlFormatter
     {
-        public static string GetMediaResizeUrl(string path, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)
+        public static string GetImageResizeUrl(string path, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)
         {
             if (string.IsNullOrEmpty(path) || (!width.HasValue && !height.HasValue))
             {

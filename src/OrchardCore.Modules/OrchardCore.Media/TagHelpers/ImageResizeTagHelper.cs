@@ -10,7 +10,7 @@ namespace OrchardCore.Media.TagHelpers
     [HtmlTargetElement("img", Attributes = ImageSizeHeightAttributeName + "," + ImageSizeModeAttributeName)]
     public class ImageResizeTagHelper : TagHelper
     {
-        private const string ImageSizeAttributePrefix = "media-";
+        private const string ImageSizeAttributePrefix = "img-";
 
         private const string ImageSizeWidthAttributeName = ImageSizeAttributePrefix + "width";
         private const string ImageSizeHeightAttributeName = ImageSizeAttributePrefix + "height";
@@ -35,14 +35,14 @@ namespace OrchardCore.Media.TagHelpers
                 return;
             }
 
-            var mediaSrc = Src ?? output.Attributes["src"]?.Value.ToString();
+            var imgSrc = output.Attributes["src"]?.Value.ToString() ?? Src;
 
-            if (string.IsNullOrEmpty(mediaSrc))
+            if (string.IsNullOrEmpty(imgSrc))
             {
                 return;
             }
 
-            var resizedSrc = ImageSharpUrlFormatter.GetMediaResizeUrl(mediaSrc, ImageWidth, ImageHeight, ResizeMode);
+            var resizedSrc = ImageSharpUrlFormatter.GetImageResizeUrl(imgSrc, ImageWidth, ImageHeight, ResizeMode);
             output.Attributes.SetAttribute("src", resizedSrc);
         }
     }

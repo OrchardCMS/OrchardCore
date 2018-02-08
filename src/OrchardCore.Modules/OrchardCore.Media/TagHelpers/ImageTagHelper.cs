@@ -4,18 +4,17 @@ using OrchardCore.Media.Processing;
 
 namespace OrchardCore.Media.TagHelpers
 {
-    [HtmlTargetElement("img", Attributes = ImageSrcAttributeName)]
+    [HtmlTargetElement("img", Attributes = AssetSrcAttributeName)]
     public class ImageTagHelper : TagHelper
     {
-        private const string ImageSizeAttributePrefix = "media-";
-        private const string ImageSrcAttributeName = ImageSizeAttributePrefix + "src";
+        private const string AssetSrcAttributeName = "asset-src";
 
         private readonly IMediaFileStore _mediaFileStore;
 
         public override int Order => -10;
 
-        [HtmlAttributeName(ImageSrcAttributeName)]
-        public string MediaSrc { get; set; }
+        [HtmlAttributeName(AssetSrcAttributeName)]
+        public string AssetSrc { get; set; }
 
         public ImageTagHelper(IMediaFileStore mediaFileStore)
         {
@@ -24,12 +23,12 @@ namespace OrchardCore.Media.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            if (string.IsNullOrEmpty(MediaSrc))
+            if (string.IsNullOrEmpty(AssetSrc))
             {
                 return;
             }
 
-            var resolvedSrc = _mediaFileStore != null ? _mediaFileStore.MapPathToPublicUrl(MediaSrc) : MediaSrc;
+            var resolvedSrc = _mediaFileStore != null ? _mediaFileStore.MapPathToPublicUrl(AssetSrc) : AssetSrc;
             output.Attributes.SetAttribute("src", resolvedSrc);
         }
     }
