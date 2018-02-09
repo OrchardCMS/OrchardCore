@@ -1,11 +1,22 @@
+using System;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Environment.Extensions;
 
 namespace OrchardCore.Mvc.RazorPages
 {
     public class DefaultModularPageRouteModelConvention : IPageRouteModelConvention
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public DefaultModularPageRouteModelConvention(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
         public void Apply(PageRouteModel model)
         {
             var pageName = model.ViewEnginePath.Trim('/');
@@ -29,6 +40,7 @@ namespace OrchardCore.Mvc.RazorPages
                     }
 
                     var module = tokenizer.ElementAt(i - 1).Value;
+
                     var template = pageName.Substring(pathIndex - (module.Length + 1));
 
                     model.Selectors.Add(new SelectorModel
@@ -39,6 +51,14 @@ namespace OrchardCore.Mvc.RazorPages
                             Name = template.Replace('/', '.')
                         }
                     });
+
+                    var extensionManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IExtensionManager>();
+                    var name = extensionManager.GetExtension(module).Manifest.Name;
+
+                    if (!String.IsNullOrWhiteSpace(name))
+                    {
+                        module = name;
+                    }
 
                     template = module + pageName.Substring(pathIndex + "Pages".Length);
 
