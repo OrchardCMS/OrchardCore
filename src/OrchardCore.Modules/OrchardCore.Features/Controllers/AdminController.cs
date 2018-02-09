@@ -62,9 +62,6 @@ namespace OrchardCore.Features.Controllers
                 .GetFeatures()
                 .Where(f => !f.Extension.Manifest.IsTheme()))
             {
-                //var dependentFeatures = _extensionManager
-                //    .GetDependentFeatures(moduleFeatureInfo.Id);
-
                 var featureDependencies = _extensionManager.GetFeatureDependencies(moduleFeatureInfo.Id);
 
                 var moduleFeature = new ModuleFeature
