@@ -70,7 +70,7 @@ namespace OrchardCore.BackgroundTasks
             {
                 var taskName = task.GetType().FullName;
 
-                using (var scope = shellContext.EnterServiceScope())
+                using (var scope = shellContext.EnterServiceScope(newHttpContext: true))
                 {
                     try
                     {
