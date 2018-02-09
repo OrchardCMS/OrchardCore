@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
+using OrchardCore.DisplayManagement.Razor;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
@@ -19,14 +20,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 throw new ArgumentException("LiquidPage missing while invoking 'layout'");
             }
 
-            //May be a 'LiquidPage' or a generic 'RazorPage<>'.
-            if (page != null && !string.IsNullOrWhiteSpace(name))
+            if (page is IRazorPage razorPage)
             {
-                // So we only check if the page has a 'ViewLayout' property.
-                if (((object)page).GetType().GetProperty("ViewLayout") != null)
-                {
-                    page.ViewLayout = name;
-                }
+                razorPage.ViewLayout = name;
             }
 
             return Completion.Normal;

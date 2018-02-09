@@ -12,7 +12,27 @@ using OrchardCore.DisplayManagement.Title;
 
 namespace OrchardCore.DisplayManagement.Razor
 {
-    public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>
+    public interface IRazorPage
+    {
+        dynamic New { get; }
+        IShapeFactory Factory { get; }
+        Task<IHtmlContent> DisplayAsync(dynamic shape);
+        OrchardRazorHelper OrchardCore { get; }
+        dynamic ThemeLayout { get; set; }
+        string ViewLayout { get; set; }
+        IPageTitleBuilder Title { get; }
+        IViewLocalizer T { get; }
+        IHtmlContent RenderTitleSegments(IHtmlContent segment, string position = "0", IHtmlContent separator = null);
+        IHtmlContent RenderTitleSegments(string segment, string position = "0", IHtmlContent separator = null);
+        IHtmlContent RenderLayoutBody();
+        TagBuilder Tag(dynamic shape);
+        Task<IHtmlContent> RenderBodyAsync();
+        Task<IHtmlContent> RenderSectionAsync(string name, bool required);
+        object OrDefault(object text, object other);
+        string FullRequestPath { get; }
+    }
+
+    public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>, IRazorPage
     {
         private dynamic _displayHelper;
         private IShapeFactory _shapeFactory;
@@ -141,11 +161,7 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 if (ThemeLayout is IShape layout)
                 {
-                    var alternates = layout.Metadata.Alternates.ToList();
-
-                    alternates.Insert(0, value);
-
-                    layout.Metadata.Alternates = new AlternatesCollection(alternates.ToArray());
+                    layout.Metadata.Alternates.Insert(0, value);
                 }
             }
         }
