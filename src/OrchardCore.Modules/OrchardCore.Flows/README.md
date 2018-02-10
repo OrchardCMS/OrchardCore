@@ -8,7 +8,7 @@ A good example of this would be a page with a FAQ section in it. A FAQ content t
 
 Flows and Bags that do not contain any content items will be displayed with a different shape name. For empty Flows, the shape name name is `FlowPart_Empty`; for empty Bags, it's `BagPart_Empty`. 
 
-This allows you to conditionally show or hide empty Flows or Bags. For example- to hide a Flow part that has no items, you can add this to your placement file:
+This allows you to conditionally show or hide empty Flows or Bags. For example, to hide a Flow part that has no items, you can add this to your placement file:
 
 ```
   "FlowPart_Empty": [

@@ -82,7 +82,6 @@
     <MicrosoftAspNetCoreNodeServicesPackageVersion>2.0.1</MicrosoftAspNetCoreNodeServicesPackageVersion>
     <MicrosoftAspNetCoreNodeServicesSocketsPackageVersion>2.0.1</MicrosoftAspNetCoreNodeServicesSocketsPackageVersion>
     <MicrosoftAspNetCoreOwinPackageVersion>2.0.1</MicrosoftAspNetCoreOwinPackageVersion>
-    <MicrosoftAspNetCorePackageVersion>2.0.1</MicrosoftAspNetCorePackageVersion>
     <MicrosoftAspNetCoreProxyPackageVersion>0.3.1</MicrosoftAspNetCoreProxyPackageVersion>
     <MicrosoftAspNetCoreRazorLanguagePackageVersion>2.0.1</MicrosoftAspNetCoreRazorLanguagePackageVersion>
     <MicrosoftAspNetCoreRazorPackageVersion>2.0.1</MicrosoftAspNetCoreRazorPackageVersion>

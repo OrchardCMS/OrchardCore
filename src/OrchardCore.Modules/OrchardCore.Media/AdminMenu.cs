@@ -12,7 +12,7 @@ namespace OrchardCore.Media
         }
 
         public IStringLocalizer S { get; set; }
-        
+
         public void BuildNavigation(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
@@ -21,7 +21,7 @@ namespace OrchardCore.Media
             }
 
             builder
-                .Add(S["Content"], design => design
+                .Add(S["Content"], content => content
                     .Add(S["Assets"], "3", layers => layers
                         .Permission(Permissions.ManageOwnMedia)
                         .Action("Index", "Admin", new { area = "OrchardCore.Media" })

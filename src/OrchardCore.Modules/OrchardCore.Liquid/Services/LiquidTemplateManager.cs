@@ -37,24 +37,18 @@ namespace OrchardCore.Liquid.Services
 
             var result = _memoryCache.GetOrCreate(source, (ICacheEntry e) =>
             {
-                if (LiquidViewTemplate.TryParse(source, out var parsed, out errors))
+                if (!LiquidViewTemplate.TryParse(source, out var parsed, out errors))
                 {
-                    // Define a default sliding expiration to prevent the 
-                    // cache from being filled and still apply some micro-caching
-                    // in case the template is use commonly
-                    e.SetSlidingExpiration(TimeSpan.FromSeconds(30));
-                    return parsed;
+                    // If the source string cannot be parsed, create a template that contains the parser errors
+                    LiquidViewTemplate.TryParse(String.Join(System.Environment.NewLine, errors), out parsed, out errors);
                 }
-                else
-                {
-                    return null;
-                }
-            });
 
-            if (result == null)
-            {
-                LiquidViewTemplate.TryParse(String.Join(System.Environment.NewLine, errors), out result, out errors);
-            }
+                // Define a default sliding expiration to prevent the 
+                // cache from being filled and still apply some micro-caching
+                // in case the template is use commonly
+                e.SetSlidingExpiration(TimeSpan.FromSeconds(30));
+                return parsed;
+            });
 
             return result.RenderAsync(_liquidOptions, _serviceProvider, textWriter, encoder, context);
         }

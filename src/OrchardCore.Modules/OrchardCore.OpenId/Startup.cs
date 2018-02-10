@@ -4,11 +4,13 @@ using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OpenIddict;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
@@ -59,6 +61,7 @@ namespace OrchardCore.OpenId
             services.AddSingleton<IIndexProvider, OpenIdAuthorizationIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdScopeIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdTokenIndexProvider>();
+            services.AddSingleton<IBackgroundTask, OpenIdBackgroundTask>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<IDisplayDriver<ISite>, OpenIdSiteSettingsDisplayDriver>();
@@ -98,6 +101,9 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictOptions>, OpenIddictInitializer>(),
                 ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictOptions>, OpenIdConnectServerInitializer>()
             });
+
+            // Disabling same-site is required for OpenID's module prompt=none support to work correctly.
+            services.ConfigureApplicationCookie(options => options.Cookie.SameSite = SameSiteMode.None);
         }
     }
 }
