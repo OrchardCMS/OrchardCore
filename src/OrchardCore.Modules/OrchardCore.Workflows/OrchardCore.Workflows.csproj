@@ -108,8 +108,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Content\Scripts\" />
-    <Folder Include="Content\Styles\" />
     <Folder Include="docs\" />
   </ItemGroup>
 

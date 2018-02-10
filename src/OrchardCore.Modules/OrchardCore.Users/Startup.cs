@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
@@ -47,8 +45,6 @@ namespace OrchardCore.Users
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            builder.UseAuthentication();
-
             routes.MapAreaRoute(
                 name: "Login",
                 areaName: "OrchardCore.Users",
@@ -64,10 +60,6 @@ namespace OrchardCore.Users
             // Adds the default token providers used to generate tokens for reset passwords, change email
             // and change telephone number operations, and for two factor authentication token generation.
             new IdentityBuilder(typeof(IUser), typeof(IRole), services).AddDefaultTokenProviders();
-
-            // 'IAuthenticationSchemeProvider' is already registered at the host level.
-            // We need to register it again so it is taken into account at the tenant level.
-            services.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
 
             services.AddAuthentication(o =>
             {
