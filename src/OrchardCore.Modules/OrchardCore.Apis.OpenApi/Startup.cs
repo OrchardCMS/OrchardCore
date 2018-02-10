@@ -1,8 +1,10 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Apis.OpenApi
@@ -11,6 +13,10 @@ namespace OrchardCore.Apis.OpenApi
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.TryAddSingleton<IApiDescriptionGroupCollectionProvider, ApiDescriptionGroupCollectionProvider>();
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IApiDescriptionProvider, DefaultApiDescriptionProvider>());
+
             services.Configure<OpenApiOptions>(options => {
                 options.Path = "/api.json";
             });

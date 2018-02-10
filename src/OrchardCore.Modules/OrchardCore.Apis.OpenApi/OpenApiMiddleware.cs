@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,7 +45,7 @@ namespace OrchardCore.Apis.OpenApi
                 && String.Equals(context.Request.Method, "GET", StringComparison.OrdinalIgnoreCase);
         }
 
-        private Task ExecuteAsync(HttpContext context)
+        private async Task ExecuteAsync(HttpContext context)
         {
             var descriptionProvider = context
                 .RequestServices
@@ -71,22 +72,29 @@ namespace OrchardCore.Apis.OpenApi
                 {
                     // [ProducesResponseType()]
 
+                    var responses = new OpenApiResponses();
+
+                    foreach (var rt in description.SupportedResponseTypes)
+                    {
+                        responses[rt.StatusCode.ToString()] = new OpenApiResponse { };
+                    }
+
                     document.Paths.Add(
                         description.RelativePath,
                         new OpenApiPathItem
                         {
                             Operations = new Dictionary<OperationType, OpenApiOperation>
                             {
-                                [(OperationType)Enum.Parse(typeof(OperationType), description.HttpMethod)] = new OpenApiOperation {
-                                     
+                                [(OperationType)Enum.Parse(typeof(OperationType), description.HttpMethod, true)] = new OpenApiOperation {
+                                     Responses = responses
                                 } 
                             }
                         }
                     );
                 }
             }
-            
-            return Task.FromResult(document);
+
+            await context.WriteModelAsync(document);
         }
     }
 }

@@ -63,6 +63,7 @@
         "OrchardCore.Widgets",
         "OrchardCore.Apis.GraphQL",
         "OrchardCore.Apis.JsonApi",
+        "OrchardCore.Apis.OpenApi",
 
         // Themes
         "TheBlogTheme",
