@@ -11,7 +11,9 @@ namespace OrchardCore.Apis.OpenApi
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<OpenApiSettings>();
+            services.Configure<OpenApiOptions>(options => {
+                options.Path = "/api.json";
+            });
 
             services.Configure<MvcOptions>(options =>
             {

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using OrchardCore.Environment.Shell;
 
@@ -12,16 +13,16 @@ namespace OrchardCore.Apis.OpenApi
     public class OpenApiMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly OpenApiSettings _settings;
+        private readonly OpenApiOptions _settings;
         private readonly ShellSettings _shellSettings;
 
         public OpenApiMiddleware(
             RequestDelegate next,
-            OpenApiSettings settings,
+            IOptions<OpenApiOptions> settings,
             ShellSettings shellSettings)
         {
             _next = next;
-            _settings = settings;
+            _settings = settings.Value;
             _shellSettings = shellSettings;
         }
 
@@ -62,14 +63,14 @@ namespace OrchardCore.Apis.OpenApi
                 new OpenApiServer { Url = context.Request.Path }
             };
 
-            document.Paths = new OpenApiPaths
-            {
-            };
+            document.Paths = new OpenApiPaths();
 
             foreach (var group in descriptionProvider.ApiDescriptionGroups.Items)
             {
                 foreach (var description in group.Items)
                 {
+                    // [ProducesResponseType()]
+
                     document.Paths.Add(
                         description.RelativePath,
                         new OpenApiPathItem
@@ -77,7 +78,7 @@ namespace OrchardCore.Apis.OpenApi
                             Operations = new Dictionary<OperationType, OpenApiOperation>
                             {
                                 [(OperationType)Enum.Parse(typeof(OperationType), description.HttpMethod)] = new OpenApiOperation {
-                                    
+                                     
                                 } 
                             }
                         }

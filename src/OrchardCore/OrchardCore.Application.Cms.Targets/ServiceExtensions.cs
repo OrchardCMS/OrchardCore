@@ -1,8 +1,6 @@
 using System;
-using Microsoft.Extensions.Configuration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Commands;
-using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell.Data;
 using OrchardCore.Modules;
@@ -30,7 +28,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     "OrchardCore.Recipes", 
                     "OrchardCore.Commons", 
                     "OrchardCore.Apis.GraphQL",
-                    "OrchardCore.Apis.JsonApi");
+                    "OrchardCore.Apis.JsonApi",
+                    "OrchardCore.Apis.OpenApi");
             });
 
             return services;

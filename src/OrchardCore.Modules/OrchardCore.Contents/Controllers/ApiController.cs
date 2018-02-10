@@ -29,6 +29,7 @@ namespace OrchardCore.Content.Controllers
 
         [Route("contentitems/{contentItemId}", Name = RouteHelpers.ContentItems.ApiRouteByIdName)]
         [HttpGet]
+        [ProducesResponseType(200)]
         public async Task<IActionResult> GetById(string contentItemId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApiViewContent))
