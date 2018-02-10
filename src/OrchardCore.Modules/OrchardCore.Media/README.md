@@ -96,7 +96,21 @@ Stretches the resized image to fit the bounds of its container.
 
 To obtain the correct URL for an asset, use the `AssetUrl` helper extension method on the view's base `OrchardCore` property, e.g.:
 
-`<img src="@OrchardCore.AssetUrl(Model.Field.Paths[0])" alt="..." />`
+`@OrchardCore.AssetUrl(Model.Field.Paths[0])`
+
+To obtain the correct URL for a resized asset use `AssetUrl` with the optional width, height and resizeMode parameters, e.g.:
+
+`@OrchardCore.AssetUrl(Model.Field.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop)`
+
+### Razor image resizing tag helpers
+
+To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to _ViewImports. `asset-src` is used to obtain the correct URL for the asset and set the `src` attribute. Width, height and resize mode can be set using `img-width`, `img-height` and `img-resize-mode` respectively. e.g.:
+
+`<img asset-src="Model.Field.Paths[0]" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" />`
+
+Alternatively the Asset Url can be resolved independently and the `src` attribute used:
+
+`<img src="@OrchardCore.AssetUrl(Model.Field.Paths[0])" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" />`
 
 
 ## CREDITS

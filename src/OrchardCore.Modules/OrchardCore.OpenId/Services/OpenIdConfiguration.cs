@@ -93,8 +93,9 @@ namespace OrchardCore.OpenId
 
             options.ProviderType = typeof(OpenIddictProvider<IOpenIdApplication, IOpenIdAuthorization, IOpenIdScope, IOpenIdToken>);
             options.DataProtectionProvider = _dataProtectionProvider;
-            options.RequireClientIdentification = true;
+            options.ApplicationCanDisplayErrors = true;
             options.EnableRequestCaching = true;
+            options.RequireClientIdentification = true;
 
             if (settings.AccessTokenFormat == OpenIdSettings.TokenFormat.JWT)
             {

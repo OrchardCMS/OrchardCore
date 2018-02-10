@@ -129,45 +129,6 @@ namespace OrchardCore.OpenId.YesSql.Services
         }
 
         /// <summary>
-        /// Retrieves the authorizations corresponding to the specified subject, associated with
-        /// the application identifier and for which the specified scopes have been granted.
-        /// </summary>
-        /// <param name="subject">The subject associated with the authorization.</param>
-        /// <param name="client">The client associated with the authorization.</param>
-        /// <param name="scopes">The minimal scopes associated with the authorization.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
-        /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose result
-        /// returns the authorizations corresponding to the specified subject/client/scopes.
-        /// </returns>
-        public virtual async Task<ImmutableArray<OpenIdAuthorization>> FindAsync(
-            string subject, string client, ImmutableArray<string> scopes, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrEmpty(subject))
-            {
-                throw new ArgumentException("The subject cannot be null or empty.", nameof(subject));
-            }
-
-            if (string.IsNullOrEmpty(client))
-            {
-                throw new ArgumentException("The client cannot be null or empty.", nameof(client));
-            }
-
-            var builder = ImmutableArray.CreateBuilder<OpenIdAuthorization>();
-
-            foreach (var authorization in await FindAsync(subject, client, cancellationToken))
-            {
-                var set = new HashSet<string>(await GetScopesAsync(authorization, cancellationToken), StringComparer.Ordinal);
-                if (set.IsSupersetOf(scopes))
-                {
-                    builder.Add(authorization);
-                }
-            }
-
-            return builder.ToImmutable();
-        }
-
-        /// <summary>
         /// Retrieves an authorization using its unique identifier.
         /// </summary>
         /// <param name="identifier">The unique identifier associated with the authorization.</param>
@@ -648,9 +609,6 @@ namespace OrchardCore.OpenId.YesSql.Services
 
         async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindAsync(string subject, string client, CancellationToken cancellationToken)
             => (await FindAsync(subject, client, cancellationToken)).CastArray<IOpenIdAuthorization>();
-
-        async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindAsync(string subject, string client, ImmutableArray<string> scopes, CancellationToken cancellationToken)
-            => (await FindAsync(subject, client, scopes, cancellationToken)).CastArray<IOpenIdAuthorization>();
 
         async Task<IOpenIdAuthorization> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
             => await FindByIdAsync(identifier, cancellationToken);

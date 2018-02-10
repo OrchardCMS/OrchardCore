@@ -91,9 +91,6 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindAsync(string subject, string client, CancellationToken cancellationToken)
             => (await FindAsync(subject, client, cancellationToken)).CastArray<IOpenIdAuthorization>();
 
-        async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindAsync(string subject, string client, ImmutableArray<string> scopes, CancellationToken cancellationToken)
-            => (await FindAsync(subject, client, scopes, cancellationToken)).CastArray<IOpenIdAuthorization>();
-
         async Task<IOpenIdAuthorization> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
             => await FindByIdAsync(identifier, cancellationToken);
 

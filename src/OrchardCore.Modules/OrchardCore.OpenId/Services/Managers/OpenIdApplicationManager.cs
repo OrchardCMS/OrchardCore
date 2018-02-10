@@ -150,21 +150,6 @@ namespace OrchardCore.OpenId.Services.Managers
             return Store.GetPhysicalIdAsync(application, cancellationToken);
         }
 
-        public Task<bool> IsAuthorizationCodeFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
-            => HasPermissionAsync(application, OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode, cancellationToken);
-
-        public Task<bool> IsClientCredentialsFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
-            => HasPermissionAsync(application, OpenIddictConstants.Permissions.GrantTypes.ClientCredentials, cancellationToken);
-
-        public Task<bool> IsImplicitFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
-            => HasPermissionAsync(application, OpenIddictConstants.Permissions.GrantTypes.Implicit, cancellationToken);
-
-        public Task<bool> IsPasswordFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
-            => HasPermissionAsync(application, OpenIddictConstants.Permissions.GrantTypes.Password, cancellationToken);
-
-        public Task<bool> IsRefreshTokenFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
-            => HasPermissionAsync(application, OpenIddictConstants.Permissions.GrantTypes.RefreshToken, cancellationToken);
-
         public virtual Task<bool> IsConsentRequiredAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
         {
             if (application == null)
