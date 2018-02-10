@@ -18,10 +18,17 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement.Abstractions\OrchardCore.ResourceManagement.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Users.Core\OrchardCore.Users.Core.csproj" />
     <ProjectReference Include="..\OrchardCore.Contents\OrchardCore.Contents.csproj" />
+    <ProjectReference Include="..\OrchardCore.Users.EntityFrameworkCore\OrchardCore.Users.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsConfigurationJsonPackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(MicrosoftAspNetCoreIdentityPackageVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(MicrosoftEntityFrameworkCoreSqlServerPackageVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(MicrosoftEntityFrameworkCoreSqlitePackageVersion)" />
   </ItemGroup>
 
 </Project>

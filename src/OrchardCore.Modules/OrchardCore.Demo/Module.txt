@@ -6,3 +6,9 @@ Version: 2.0.x
 OrchardVersion: 2.0.x
 Description: Test
 Category: Samples
+Features:
+    OrchardCore.Demo.Users.EntityFrameworkCore:
+        Name: Users Demo (Entity Framework Store)
+        Description: Use Entity Framework Core ORM in order to store User data
+        Category: Samples
+        Dependencies: OrchardCore.Users.EntityFrameworkCore
