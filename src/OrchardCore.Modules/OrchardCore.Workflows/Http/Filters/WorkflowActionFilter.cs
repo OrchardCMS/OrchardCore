@@ -12,15 +12,15 @@ namespace OrchardCore.Workflows.Http.Filters
         private readonly IWorkflowManager _workflowManager;
         private readonly IWorkflowDefinitionRouteEntries _workflowDefinitionRouteEntries;
         private readonly IWorkflowInstanceRouteEntries _workflowInstanceRouteEntries;
-        private readonly IWorkflowDefinitionRepository _workflowDefinitionRepository;
-        private readonly IWorkflowInstanceRepository _workflowInstanceRepository;
+        private readonly IWorkflowDefinitionStore _workflowDefinitionRepository;
+        private readonly IWorkflowInstanceStore _workflowInstanceRepository;
 
         public WorkflowActionFilter(
             IWorkflowManager workflowManager,
             IWorkflowDefinitionRouteEntries workflowDefinitionRouteEntries,
             IWorkflowInstanceRouteEntries workflowInstanceRouteEntries,
-            IWorkflowDefinitionRepository workflowDefinitionRepository,
-            IWorkflowInstanceRepository workflowinstanceRepository
+            IWorkflowDefinitionStore workflowDefinitionRepository,
+            IWorkflowInstanceStore workflowinstanceRepository
         )
         {
             _workflowManager = workflowManager;
@@ -45,14 +45,14 @@ namespace OrchardCore.Workflows.Http.Filters
                 foreach (var entry in workflowDefinitionEntries)
                 {
                     var workflowDefinition = workflowDefinitions[int.Parse(entry.WorkflowId)];
-                    var activity = workflowDefinition.Activities.Single(x => x.Id == entry.ActivityId);
+                    var activity = workflowDefinition.Activities.Single(x => x.ActivityId == entry.ActivityId);
                     await _workflowManager.StartWorkflowAsync(workflowDefinition, activity);
                 }
             }
 
             if (workflowInstanceEntries.Any())
             {
-                var workflowInstanceUid = context.HttpContext.Request.Query["uid"];
+                var workflowInstanceUid = context.HttpContext.Request.Query["workflowInstanceId"];
                 var correlationId = context.HttpContext.Request.Query["correlationId"];
                 var query = workflowInstanceEntries;
 
@@ -68,12 +68,12 @@ namespace OrchardCore.Workflows.Http.Filters
 
                 var filteredWorkflowInstanceEntries = query.ToList();
                 var workflowInstanceUids = filteredWorkflowInstanceEntries.Select(x => x.WorkflowId).ToList();
-                var workflowInstances = (await _workflowInstanceRepository.GetAsync(workflowInstanceUids)).ToDictionary(x => x.Uid);
+                var workflowInstances = (await _workflowInstanceRepository.GetAsync(workflowInstanceUids)).ToDictionary(x => x.WorkflowInstanceId);
 
                 foreach (var entry in filteredWorkflowInstanceEntries)
                 {
                     var workflowInstance = workflowInstances[entry.WorkflowId];
-                    var awaitingActivity = workflowInstance.AwaitingActivities.First(x => x.ActivityId == entry.ActivityId);
+                    var awaitingActivity = workflowInstance.BlockingActivities.First(x => x.ActivityId == entry.ActivityId);
                     await _workflowManager.ResumeWorkflowAsync(workflowInstance, awaitingActivity);
                 }
             }

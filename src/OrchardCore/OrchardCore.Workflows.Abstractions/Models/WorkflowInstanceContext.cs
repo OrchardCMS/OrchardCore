@@ -2,11 +2,11 @@ namespace OrchardCore.Workflows.Models
 {
     public class WorkflowInstanceContext
     {
-        public WorkflowInstanceContext(WorkflowInstanceRecord workflowInstance)
+        public WorkflowInstanceContext(WorkflowInstance workflowInstance)
         {
             WorkflowInstanceRecord = workflowInstance;
         }
 
-        public WorkflowInstanceRecord WorkflowInstanceRecord { get; }
+        public WorkflowInstance WorkflowInstanceRecord { get; }
     }
 }

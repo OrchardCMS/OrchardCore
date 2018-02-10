@@ -19,11 +19,9 @@ namespace OrchardCore.Mvc.Core.Utilities
 
         public static string ToAbsoluteUrl(this IUrlHelper url, string virtualPath)
         {
-            var request = url.ActionContext.HttpContext.Request;
-            var scheme = request.Scheme;
-            var host = request.Host.ToUriComponent();
+            var baseUrl = url.GetBaseUrl();
             var path = url.Content(virtualPath);
-            return $"{scheme}://{host}{path}";
+            return $"{baseUrl}{path}";
         }
     }
 }

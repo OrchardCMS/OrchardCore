@@ -9,16 +9,16 @@ namespace OrchardCore.Workflows.Http.Services
 {
     public class WorkflowInstanceRouteEntries : WorkflowRouteEntriesBase, IWorkflowInstanceRouteEntries
     {
-        public static IEnumerable<WorkflowRoutesEntry> GetWorkflowInstanceRoutesEntries(WorkflowDefinitionRecord workflowDefinitionRecord, WorkflowInstanceRecord workflowInstanceRecord, IActivityLibrary activityLibrary)
+        public static IEnumerable<WorkflowRoutesEntry> GetWorkflowInstanceRoutesEntries(WorkflowDefinition workflowDefinitionRecord, WorkflowInstance workflowInstanceRecord, IActivityLibrary activityLibrary)
         {
-            var awaitingActivityIds = workflowInstanceRecord.AwaitingActivities.Select(x => x.ActivityId).ToDictionary(x => x);
-            return workflowDefinitionRecord.Activities.Where(x => x.Name == HttpRequestFilterEvent.EventName && awaitingActivityIds.ContainsKey(x.Id)).Select(x =>
+            var awaitingActivityIds = workflowInstanceRecord.BlockingActivities.Select(x => x.ActivityId).ToDictionary(x => x);
+            return workflowDefinitionRecord.Activities.Where(x => x.Name == HttpRequestFilterEvent.EventName && awaitingActivityIds.ContainsKey(x.ActivityId)).Select(x =>
             {
                 var activity = activityLibrary.InstantiateActivity<HttpRequestFilterEvent>(x);
                 var entry = new WorkflowRoutesEntry
                 {
-                    WorkflowId = workflowInstanceRecord.Uid,
-                    ActivityId = x.Id,
+                    WorkflowId = workflowInstanceRecord.WorkflowInstanceId,
+                    ActivityId = x.ActivityId,
                     HttpMethod = activity.HttpMethod,
                     RouteValues = activity.RouteValues,
                     CorrelationId = workflowInstanceRecord.CorrelationId

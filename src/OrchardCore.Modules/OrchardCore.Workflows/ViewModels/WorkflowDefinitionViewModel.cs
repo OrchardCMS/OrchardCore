@@ -7,7 +7,7 @@ namespace OrchardCore.Workflows.ViewModels
 {
     public class WorkflowDefinitionViewModel
     {
-        public WorkflowDefinitionRecord WorkflowDefinition { get; set; }
+        public WorkflowDefinition WorkflowDefinition { get; set; }
         public IList<dynamic> ActivityThumbnailShapes { get; set; }
         public IList<dynamic> ActivityDesignShapes { get; set; }
         public IList<LocalizedString> ActivityCategories { get; set; }

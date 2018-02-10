@@ -6,41 +6,43 @@ namespace OrchardCore.Workflows.Indexes
 {
     public class WorkflowInstanceIndex : MapIndex
     {
-        public string WorkflowDefinitionUid { get; set; }
-        public string WorkflowInstanceUid { get; set; }
+        public string WorkflowDefinitionId { get; set; }
+        public string WorkflowInstanceId { get; set; }
     }
 
-    public class WorkflowInstanceByAwaitingActivitiesIndex : MapIndex
+    public class WorkflowInstanceBlockingActivitiesIndex : MapIndex
     {
-        public int ActivityId { get; set; }
+        public string ActivityId { get; set; }
         public string ActivityName { get; set; }
         public bool ActivityIsStart { get; set; }
-        public string WorkflowInstanceUid { get; set; }
+        public string WorkflowDefinitionId { get; set; }
+        public string WorkflowInstanceId { get; set; }
         public string WorkflowInstanceCorrelationId { get; set; }
     }
 
-    public class WorkflowInstanceIndexProvider : IndexProvider<WorkflowInstanceRecord>
+    public class WorkflowInstanceIndexProvider : IndexProvider<WorkflowInstance>
     {
-        public override void Describe(DescribeContext<WorkflowInstanceRecord> context)
+        public override void Describe(DescribeContext<WorkflowInstance> context)
         {
             context.For<WorkflowInstanceIndex>()
                 .Map(workflowInstance =>
                     new WorkflowInstanceIndex
                     {
-                        WorkflowDefinitionUid = workflowInstance.WorkflowDefinitionUid,
-                        WorkflowInstanceUid = workflowInstance.Uid
+                        WorkflowDefinitionId = workflowInstance.WorkflowDefinitionId,
+                        WorkflowInstanceId = workflowInstance.WorkflowInstanceId
                     }
                 );
 
-            context.For<WorkflowInstanceByAwaitingActivitiesIndex>()
+            context.For<WorkflowInstanceBlockingActivitiesIndex>()
                 .Map(workflowInstance =>
-                    workflowInstance.AwaitingActivities.Select(x =>
-                    new WorkflowInstanceByAwaitingActivitiesIndex
+                    workflowInstance.BlockingActivities.Select(x =>
+                    new WorkflowInstanceBlockingActivitiesIndex
                     {
                         ActivityId = x.ActivityId,
                         ActivityName = x.Name,
                         ActivityIsStart = x.IsStart,
-                        WorkflowInstanceUid = workflowInstance.Uid,
+                        WorkflowDefinitionId = workflowInstance.WorkflowDefinitionId,
+                        WorkflowInstanceId = workflowInstance.WorkflowInstanceId,
                         WorkflowInstanceCorrelationId = workflowInstance.CorrelationId ?? ""
                     })
                 );

@@ -9,13 +9,13 @@ namespace OrchardCore.Workflows.Http.Drivers
         protected override void Map(HttpRequestEvent source, HttpRequestEventViewModel target)
         {
             target.HttpMethod = source.HttpMethod;
-            target.RequestPath = source.RequestPath;
+            target.Url = source.Url;
         }
 
         protected override void Map(HttpRequestEventViewModel source, HttpRequestEvent target)
         {
             target.HttpMethod = source.HttpMethod?.Trim();
-            target.RequestPath = source.RequestPath?.Trim();
+            target.Url = source.Url?.Trim();
         }
     }
 }

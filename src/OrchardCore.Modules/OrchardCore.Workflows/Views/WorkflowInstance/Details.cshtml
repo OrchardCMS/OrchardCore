@@ -9,7 +9,7 @@
         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowDefinition">@T["Workflow Definitions"]</a></li>
         <li class="breadcrumb-item"><a asp-action="Edit" asp-controller="WorkflowDefinition" asp-route-id="@Model.WorkflowDefinition.Id">@Model.WorkflowDefinition.Name</a></li>
         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowInstance" asp-route-workflowDefinitionId="@Model.WorkflowDefinition.Id">@T["Instances"]</a></li>
-        <li class="breadcrumb-item active" aria-current="page">@Model.WorkflowInstance.Uid</li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.WorkflowInstance.WorkflowInstanceId</li>
     </ol>
 </nav>
 
@@ -33,8 +33,8 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col">
-                        <label>@T["UID"]</label>
-                        <span>@Model.WorkflowInstance.Uid</span>
+                        <label>@T["Workflow Instance ID"]</label>
+                        <span>@Model.WorkflowInstance.WorkflowInstanceId</span>
                     </div>
                     <div class="col">
                         <label>@T["Created"]</label>

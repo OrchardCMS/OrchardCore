@@ -18,8 +18,8 @@ namespace OrchardCore.Workflows.Models
 
         public WorkflowExecutionContext
         (
-            WorkflowDefinitionRecord workflowDefinitionRecord,
-            WorkflowInstanceRecord workflowInstanceRecord,
+            WorkflowDefinition workflowDefinitionRecord,
+            WorkflowInstance workflowInstanceRecord,
             IServiceProvider serviceProvider,
             IDictionary<string, object> input,
             IDictionary<string, object> output,
@@ -46,16 +46,16 @@ namespace OrchardCore.Workflows.Models
             LastResult = lastResult;
             WorkflowDefinitionRecord = workflowDefinitionRecord;
             WorkflowInstanceRecord = workflowInstanceRecord;
-            Activities = activities.ToDictionary(x => x.ActivityRecord.Id);
+            Activities = activities.ToDictionary(x => x.ActivityRecord.ActivityId);
         }
 
-        public WorkflowInstanceRecord WorkflowInstanceRecord { get; }
-        public WorkflowDefinitionRecord WorkflowDefinitionRecord { get; }
-        public IDictionary<int, ActivityContext> Activities { get; }
+        public WorkflowInstance WorkflowInstanceRecord { get; }
+        public WorkflowDefinition WorkflowDefinitionRecord { get; }
+        public IDictionary<string, ActivityContext> Activities { get; }
 
         public string WorkflowInstanceId
         {
-            get => WorkflowInstanceRecord.Uid;
+            get => WorkflowInstanceRecord.WorkflowInstanceId;
         }
 
         public string CorrelationId
@@ -95,7 +95,7 @@ namespace OrchardCore.Workflows.Models
         /// </summary>
         public Stack<ExecutedActivity> ExecutedActivities { get; set; }
 
-        public ActivityContext GetActivity(int activityId)
+        public ActivityContext GetActivity(string activityId)
         {
             return Activities[activityId];
         }
@@ -116,12 +116,12 @@ namespace OrchardCore.Workflows.Models
             WorkflowInstanceRecord.FaultMessage = exception.Message;
         }
 
-        public IEnumerable<TransitionRecord> GetInboundTransitions(int activityId)
+        public IEnumerable<Transition> GetInboundTransitions(string activityId)
         {
             return WorkflowDefinitionRecord.Transitions.Where(x => x.DestinationActivityId == activityId).ToList();
         }
 
-        public IEnumerable<TransitionRecord> GetOutboundTransitions(int activityId)
+        public IEnumerable<Transition> GetOutboundTransitions(string activityId)
         {
             return WorkflowDefinitionRecord.Transitions.Where(x => x.SourceActivityId == activityId).ToList();
         }
@@ -129,12 +129,12 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// Returns the full path of incoming activities.
         /// </summary>
-        public IEnumerable<int> GetInboundActivityPath(int activityId)
+        public IEnumerable<string> GetInboundActivityPath(string activityId)
         {
             return GetInboundActivityPathInternal(activityId).Distinct().ToList();
         }
 
-        private IEnumerable<int> GetInboundActivityPathInternal(int activityId)
+        private IEnumerable<string> GetInboundActivityPathInternal(string activityId)
         {
             foreach (var transition in GetInboundTransitions(activityId))
             {

@@ -1,5 +1,4 @@
 using OrchardCore.Workflows.Activities;
-using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.ViewModels
 {
@@ -7,7 +6,7 @@ namespace OrchardCore.Workflows.ViewModels
     {
         public dynamic ActivityEditor { get; set; }
         public IActivity Activity { get; set; }
-        public int? ActivityId { get; set; }
+        public string ActivityId { get; set; }
         public int WorkflowDefinitionId { get; set; }
         public string ReturnUrl { get; set; }
     }

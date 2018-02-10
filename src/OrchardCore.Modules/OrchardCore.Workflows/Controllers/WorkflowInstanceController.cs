@@ -27,8 +27,8 @@ namespace OrchardCore.Workflows.Controllers
     {
         private readonly ISiteService _siteService;
         private readonly IWorkflowManager _workflowManager;
-        private readonly IWorkflowDefinitionRepository _workflowDefinitionRepository;
-        private readonly IWorkflowInstanceRepository _workflowInstanceRepository;
+        private readonly IWorkflowDefinitionStore _workflowDefinitionStore;
+        private readonly IWorkflowInstanceStore _workflowInstanceStore;
         private readonly IAuthorizationService _authorizationService;
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
@@ -37,8 +37,8 @@ namespace OrchardCore.Workflows.Controllers
         public WorkflowInstanceController(
             ISiteService siteService,
             IWorkflowManager workflowManager,
-            IWorkflowDefinitionRepository workflowDefinitionRepository,
-            IWorkflowInstanceRepository workflowInstanceRepository,
+            IWorkflowDefinitionStore workflowDefinitionStore,
+            IWorkflowInstanceStore workflowInstanceStore,
             IAuthorizationService authorizationService,
             IActivityDisplayManager activityDisplayManager,
             IShapeFactory shapeFactory,
@@ -49,8 +49,8 @@ namespace OrchardCore.Workflows.Controllers
         {
             _siteService = siteService;
             _workflowManager = workflowManager;
-            _workflowDefinitionRepository = workflowDefinitionRepository;
-            _workflowInstanceRepository = workflowInstanceRepository;
+            _workflowDefinitionStore = workflowDefinitionStore;
+            _workflowInstanceStore = workflowInstanceStore;
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
@@ -75,11 +75,11 @@ namespace OrchardCore.Workflows.Controllers
                 returnUrl = Url.Action(nameof(Index), "WorkflowDefinition");
             }
 
-            var workflowDefinition = await _workflowDefinitionRepository.GetAsync(workflowDefinitionId);
+            var workflowDefinition = await _workflowDefinitionStore.GetAsync(workflowDefinitionId);
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var count = await _workflowInstanceRepository.CountAsync();
+            var count = await _workflowInstanceStore.CountAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-            var records = await _workflowInstanceRepository.ListAsync(pager.GetStartIndex(), pager.PageSize);
+            var records = await _workflowInstanceStore.ListAsync(pager.GetStartIndex(), pager.PageSize);
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
 
             var viewModel = new WorkflowInstanceIndexViewModel
@@ -104,27 +104,27 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowInstanceRecord = await _workflowInstanceRepository.GetAsync(id);
+            var workflowInstanceRecord = await _workflowInstanceStore.GetAsync(id);
 
             if (workflowInstanceRecord == null)
             {
                 return NotFound();
             }
 
-            var workflowDefinitionRecord = await _workflowDefinitionRepository.GetAsync(workflowInstanceRecord.WorkflowDefinitionUid);
-            var blockingActivities = workflowInstanceRecord.AwaitingActivities.ToDictionary(x => x.ActivityId);
+            var workflowDefinitionRecord = await _workflowDefinitionStore.GetAsync(workflowInstanceRecord.WorkflowDefinitionId);
+            var blockingActivities = workflowInstanceRecord.BlockingActivities.ToDictionary(x => x.ActivityId);
             var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowDefinitionRecord, workflowInstanceRecord);
             var activityContexts = await Task.WhenAll(workflowDefinitionRecord.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x, x.Properties)));
-            var activityDesignShapes = (await Task.WhenAll(activityContexts.Select(async x => await BuildActivityDisplayAsync(x, workflowDefinitionRecord.Id, blockingActivities.ContainsKey(x.ActivityRecord.Id), "Design")))).ToList();
+            var activityDesignShapes = (await Task.WhenAll(activityContexts.Select(async x => await BuildActivityDisplayAsync(x, workflowDefinitionRecord.Id, blockingActivities.ContainsKey(x.ActivityRecord.ActivityId), "Design")))).ToList();
             var activitiesDataQuery = activityContexts.Select(x => new
             {
-                Id = x.ActivityRecord.Id,
+                Id = x.ActivityRecord.ActivityId,
                 X = x.ActivityRecord.X,
                 Y = x.ActivityRecord.Y,
                 Name = x.ActivityRecord.Name,
                 IsStart = x.ActivityRecord.IsStart,
                 IsEvent = x.Activity.IsEvent(),
-                IsBlocking = workflowInstanceRecord.AwaitingActivities.Any(a => a.ActivityId == x.ActivityRecord.Id),
+                IsBlocking = workflowInstanceRecord.BlockingActivities.Any(a => a.ActivityId == x.ActivityRecord.ActivityId),
                 Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray()
             });
             var workflowDefinitionData = new
@@ -156,7 +156,7 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowInstanceRecord = await _workflowInstanceRepository.GetAsync(id);
+            var workflowInstanceRecord = await _workflowInstanceStore.GetAsync(id);
 
             if (workflowInstanceRecord == null)
             {
@@ -164,8 +164,8 @@ namespace OrchardCore.Workflows.Controllers
             }
             else
             {
-                var workflowDefinitionRecord = await _workflowDefinitionRepository.GetAsync(workflowInstanceRecord.WorkflowDefinitionUid);
-                await _workflowInstanceRepository.DeleteAsync(workflowInstanceRecord);
+                var workflowDefinitionRecord = await _workflowDefinitionStore.GetAsync(workflowInstanceRecord.WorkflowDefinitionId);
+                await _workflowInstanceStore.DeleteAsync(workflowInstanceRecord);
                 _notifier.Success(T["Workflow instance {0} has been deleted.", id]);
                 return RedirectToAction("Index", new { workflowDefinitionId = workflowDefinitionRecord.Id });
             }
@@ -196,12 +196,12 @@ namespace OrchardCore.Workflows.Controllers
                 case WorkflowInstanceBulkAction.Delete:
                     foreach (var entry in checkedEntries)
                     {
-                        var workflowInstance = await _workflowInstanceRepository.GetAsync(entry.Id);
+                        var workflowInstance = await _workflowInstanceStore.GetAsync(entry.Id);
 
                         if (workflowInstance != null)
                         {
-                            await _workflowInstanceRepository.DeleteAsync(workflowInstance);
-                            _notifier.Success(T["Workflow instance {0} has been deleted.", workflowInstance.Uid]);
+                            await _workflowInstanceStore.DeleteAsync(workflowInstance);
+                            _notifier.Success(T["Workflow instance {0} has been deleted.", workflowInstance.WorkflowInstanceId]);
                         }
                     }
                     break;

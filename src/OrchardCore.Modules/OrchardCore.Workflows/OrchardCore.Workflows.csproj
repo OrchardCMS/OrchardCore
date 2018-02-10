@@ -81,7 +81,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\Scripts\workflow-url-generator.ts" />
+    <Content Include="Http\Assets\Scripts\workflow-url-generator.ts" />
     <Content Include="Assets\Scripts\workflow-canvas.ts" />
     <Content Include="Assets\Scripts\activity-picker.ts" />
     <Content Include="Assets\Scripts\workflow-viewer.ts" />

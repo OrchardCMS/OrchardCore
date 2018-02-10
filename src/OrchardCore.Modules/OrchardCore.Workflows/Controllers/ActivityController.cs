@@ -23,6 +23,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly ISession _session;
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowManager _workflowManager;
+        private readonly IActivityIdGenerator _activityIdGenerator;
         private readonly IAuthorizationService _authorizationService;
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
@@ -37,6 +38,7 @@ namespace OrchardCore.Workflows.Controllers
             ISession session,
             IActivityLibrary activityLibrary,
             IWorkflowManager workflowManager,
+            IActivityIdGenerator activityIdGenerator,
             IAuthorizationService authorizationService,
             IActivityDisplayManager activityDisplayManager,
             IShapeFactory shapeFactory,
@@ -49,6 +51,7 @@ namespace OrchardCore.Workflows.Controllers
             _session = session;
             _activityLibrary = activityLibrary;
             _workflowManager = workflowManager;
+            _activityIdGenerator = activityIdGenerator;
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
@@ -66,7 +69,8 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var activity = _activityLibrary.InstantiateActivity(activityName);
-            var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(workflowDefinitionId);
+            var workflowDefinition = await _session.GetAsync<WorkflowDefinition>(workflowDefinitionId);
+            var activityId = _activityIdGenerator.GenerateUniqueId(new ActivityRecord());
             var activityEditor = await _activityDisplayManager.BuildEditorAsync(activity, this, isNew: true);
 
             activityEditor.Metadata.Type = "Activity_Edit";
@@ -74,7 +78,7 @@ namespace OrchardCore.Workflows.Controllers
             var viewModel = new ActivityEditViewModel
             {
                 Activity = activity,
-                ActivityId = null,
+                ActivityId = activityId,
                 ActivityEditor = activityEditor,
                 WorkflowDefinitionId = workflowDefinitionId,
                 ReturnUrl = returnUrl
@@ -82,7 +86,7 @@ namespace OrchardCore.Workflows.Controllers
 
             if (!activity.HasEditor)
             {
-                // No editor to show; short-circuit straight to the "POST" action.
+                // No editor to show; short-circuit to the "POST" action.
                 return await Create(activityName, viewModel);
             }
 
@@ -97,7 +101,7 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(model.WorkflowDefinitionId);
+            var workflowDefinition = await _session.GetAsync<WorkflowDefinition>(model.WorkflowDefinitionId);
             var activity = _activityLibrary.InstantiateActivity(activityName);
             var activityEditor = await _activityDisplayManager.UpdateEditorAsync(activity, this, isNew: true);
 
@@ -109,12 +113,13 @@ namespace OrchardCore.Workflows.Controllers
                 return View(model);
             }
 
-            workflowDefinition.Activities.Add(new ActivityRecord
+            var activityRecord = new ActivityRecord
             {
+                ActivityId = model.ActivityId,
                 Name = activity.Name,
                 Properties = activity.Properties,
-                Id = workflowDefinition.Activities.Select(x => x.Id).OrderByDescending(x => x).FirstOrDefault() + 1
-            });
+            };
+            workflowDefinition.Activities.Add(activityRecord);
 
             _session.Save(workflowDefinition);
             _notifier.Success(H["Activity added successfully"]);
@@ -122,15 +127,15 @@ namespace OrchardCore.Workflows.Controllers
             return Url.IsLocalUrl(model.ReturnUrl) ? (IActionResult)Redirect(model.ReturnUrl) : RedirectToAction("Edit", "WorkflowDefinition", new { id = model.WorkflowDefinitionId });
         }
 
-        public async Task<IActionResult> Edit(int workflowDefinitionId, int activityId, string returnUrl)
+        public async Task<IActionResult> Edit(int workflowDefinitionId, string activityId, string returnUrl)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
                 return Unauthorized();
             }
 
-            var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(workflowDefinitionId);
-            var activityRecord = workflowDefinition.Activities.Single(x => x.Id == activityId);
+            var workflowDefinition = await _session.GetAsync<WorkflowDefinition>(workflowDefinitionId);
+            var activityRecord = workflowDefinition.Activities.Single(x => x.ActivityId == activityId);
             var activityContext = await _workflowManager.CreateActivityExecutionContextAsync(activityRecord, activityRecord.Properties);
             var activityEditor = await _activityDisplayManager.BuildEditorAsync(activityContext.Activity, this, isNew: false);
 
@@ -156,8 +161,8 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowDefinition = await _session.GetAsync<WorkflowDefinitionRecord>(model.WorkflowDefinitionId);
-            var activityRecord = workflowDefinition.Activities.Single(x => x.Id == model.ActivityId.Value);
+            var workflowDefinition = await _session.GetAsync<WorkflowDefinition>(model.WorkflowDefinitionId);
+            var activityRecord = workflowDefinition.Activities.Single(x => x.ActivityId == model.ActivityId);
             var activityContext = await _workflowManager.CreateActivityExecutionContextAsync(activityRecord, activityRecord.Properties);
             var activityEditor = await _activityDisplayManager.UpdateEditorAsync(activityContext.Activity, this, isNew: false);
 

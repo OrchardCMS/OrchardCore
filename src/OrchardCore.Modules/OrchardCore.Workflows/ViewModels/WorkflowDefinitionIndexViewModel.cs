@@ -13,7 +13,7 @@ namespace OrchardCore.Workflows.ViewModels
 
     public class WorkflowDefinitionEntry
     {
-        public WorkflowDefinitionRecord WorkflowDefinition { get; set; }
+        public WorkflowDefinition WorkflowDefinition { get; set; }
         public bool IsChecked { get; set; }
         public int Id { get; set; }
         public string Name { get; set; }

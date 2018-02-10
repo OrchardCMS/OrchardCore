@@ -9,43 +9,43 @@ using YesSql;
 
 namespace OrchardCore.Workflows.Services
 {
-    public class WorkflowDefinitionRepository : IWorkflowDefinitionRepository
+    public class WorkflowDefinitionStore : IWorkflowDefinitionStore
     {
         private readonly ISession _session;
         private readonly IEnumerable<IWorkflowDefinitionEventHandler> _handlers;
-        readonly ILogger<WorkflowDefinitionRepository> _logger;
+        private readonly ILogger<WorkflowDefinitionStore> _logger;
 
-        public WorkflowDefinitionRepository(ISession session, IEnumerable<IWorkflowDefinitionEventHandler> handlers, ILogger<WorkflowDefinitionRepository> logger)
+        public WorkflowDefinitionStore(ISession session, IEnumerable<IWorkflowDefinitionEventHandler> handlers, ILogger<WorkflowDefinitionStore> logger)
         {
             _session = session;
             _handlers = handlers;
             _logger = logger;
         }
 
-        public Task<WorkflowDefinitionRecord> GetAsync(int id)
+        public Task<WorkflowDefinition> GetAsync(int id)
         {
-            return _session.GetAsync<WorkflowDefinitionRecord>(id);
+            return _session.GetAsync<WorkflowDefinition>(id);
         }
 
-        public Task<IEnumerable<WorkflowDefinitionRecord>> GetAsync(IEnumerable<int> ids)
+        public async Task<IEnumerable<WorkflowDefinition>> GetAsync(IEnumerable<int> ids)
         {
-            return _session.GetAsync<WorkflowDefinitionRecord>(ids.ToArray());
+            return await _session.GetAsync<WorkflowDefinition>(ids.ToArray());
         }
 
-        public Task<WorkflowDefinitionRecord> GetAsync(string uid)
+        public async Task<WorkflowDefinition> GetAsync(string workflowDefinitionId)
         {
-            return _session.Query<WorkflowDefinitionRecord, WorkflowDefinitionIndex>(x => x.Uid == uid).FirstOrDefaultAsync();
+            return await _session.Query<WorkflowDefinition, WorkflowDefinitionIndex>(x => x.WorkflowDefinitionId == workflowDefinitionId).FirstOrDefaultAsync();
         }
 
-        public Task<IEnumerable<WorkflowDefinitionRecord>> ListAsync()
+        public async Task<IEnumerable<WorkflowDefinition>> ListAsync()
         {
-            return _session.Query<WorkflowDefinitionRecord, WorkflowDefinitionIndex>().ListAsync();
+            return await _session.Query<WorkflowDefinition, WorkflowDefinitionIndex>().ListAsync();
         }
 
-        public async Task<IList<WorkflowDefinitionRecord>> GetByStartActivityAsync(string activityName)
+        public async Task<IList<WorkflowDefinition>> GetByStartActivityAsync(string activityName)
         {
             var query = await _session
-                .Query<WorkflowDefinitionRecord, WorkflowDefinitionStartActivitiesIndex>(index =>
+                .Query<WorkflowDefinition, WorkflowDefinitionStartActivitiesIndex>(index =>
                     index.StartActivityName == activityName &&
                     index.IsEnabled)
                 .ListAsync();
@@ -53,7 +53,7 @@ namespace OrchardCore.Workflows.Services
             return query.ToList();
         }
 
-        public async Task SaveAsync(WorkflowDefinitionRecord workflowDefinition)
+        public async Task SaveAsync(WorkflowDefinition workflowDefinition)
         {
             var isNew = workflowDefinition.Id == 0;
             _session.Save(workflowDefinition);
@@ -70,12 +70,12 @@ namespace OrchardCore.Workflows.Services
             }
         }
 
-        public async Task DeleteAsync(WorkflowDefinitionRecord workflowDefinition)
+        public async Task DeleteAsync(WorkflowDefinition workflowDefinition)
         {
             // TODO: Remove this when versioning is implemented.
 
             // Delete workflow instances first.
-            var workflowInstances = await _session.Query<WorkflowInstanceRecord, WorkflowInstanceIndex>(x => x.WorkflowDefinitionUid == workflowDefinition.Uid).ListAsync();
+            var workflowInstances = await _session.Query<WorkflowInstance, WorkflowInstanceIndex>(x => x.WorkflowDefinitionId == workflowDefinition.WorkflowDefinitionId).ListAsync();
 
             foreach (var workflowInstance in workflowInstances)
             {

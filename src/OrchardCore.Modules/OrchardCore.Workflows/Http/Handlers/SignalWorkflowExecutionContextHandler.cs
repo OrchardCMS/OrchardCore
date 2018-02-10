@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
+using OrchardCore.Workflows.Http.Scripting;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.Scripting;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Workflows.WorkflowContextProviders
+namespace OrchardCore.Workflows.Http.WorkflowContextProviders
 {
     public class SignalWorkflowExecutionContextHandler : WorkflowExecutionContextHandlerBase
     {

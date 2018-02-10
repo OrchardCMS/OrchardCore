@@ -89,7 +89,7 @@ abstract class WorkflowCanvas {
         };
     };
 
-    protected getActivity = function (id: number, activities: Array<Workflows.Activity> = null): Workflows.Activity {
+    protected getActivity = function (id: string, activities: Array<Workflows.Activity> = null): Workflows.Activity {
         if (!activities) {
             activities = this.workflowDefinition.activities;
         }

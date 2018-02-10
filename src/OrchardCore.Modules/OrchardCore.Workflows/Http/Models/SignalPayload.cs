@@ -1,4 +1,4 @@
-namespace OrchardCore.Workflows.Models
+namespace OrchardCore.Workflows.Http.Models
 {
     public class SignalPayload
     {

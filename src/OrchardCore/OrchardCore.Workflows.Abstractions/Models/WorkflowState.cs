@@ -32,7 +32,7 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// A dictionary of activity states. Each entry contains runtime state for a particular activity.
         /// </summary>
-        public IDictionary<int, JObject> ActivityStates { get; set; } = new Dictionary<int, JObject>();
+        public IDictionary<string, JObject> ActivityStates { get; set; } = new Dictionary<string, JObject>();
 
         /// <summary>
         /// The list of executed activities.

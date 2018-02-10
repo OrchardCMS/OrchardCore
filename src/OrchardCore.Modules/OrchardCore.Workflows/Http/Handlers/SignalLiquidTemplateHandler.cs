@@ -3,7 +3,7 @@ using Fluid;
 using OrchardCore.Liquid;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Workflows.WorkflowContextProviders
+namespace OrchardCore.Workflows.Http.WorkflowContextProviders
 {
     public class SignalLiquidTemplateHandler : ILiquidTemplateEventHandler
     {

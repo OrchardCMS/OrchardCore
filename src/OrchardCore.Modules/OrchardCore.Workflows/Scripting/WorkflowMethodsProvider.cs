@@ -26,7 +26,7 @@ namespace OrchardCore.Workflows.Scripting
             _workflowUidMethod = new GlobalMethod
             {
                 Name = "workflowUid",
-                Method = serviceProvider => (Func<string>)(() => workflowContext.WorkflowInstanceRecord.Uid)
+                Method = serviceProvider => (Func<string>)(() => workflowContext.WorkflowInstanceRecord.WorkflowInstanceId)
             };
 
             _inputMethod = new GlobalMethod

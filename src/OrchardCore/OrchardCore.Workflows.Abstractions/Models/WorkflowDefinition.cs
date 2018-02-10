@@ -5,10 +5,10 @@ namespace OrchardCore.Workflows.Models
     /// <summary>
     /// Represents a workflow definition.
     /// </summary>
-    public class WorkflowDefinitionRecord
+    public class WorkflowDefinition
     {
         public int Id { get; set; }
-        public string Uid { get; set; }
+        public string WorkflowDefinitionId { get; set; }
 
         /// <summary>
         /// The name of this workflow.
@@ -38,6 +38,6 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// A complete list of the transitions between the activities on this workflow.
         /// </summary>
-        public IList<TransitionRecord> Transitions { get; set; } = new List<TransitionRecord>();
+        public IList<Transition> Transitions { get; set; } = new List<Transition>();
     }
 }

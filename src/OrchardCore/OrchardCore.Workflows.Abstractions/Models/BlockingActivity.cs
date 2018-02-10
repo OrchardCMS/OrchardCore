@@ -1,18 +1,18 @@
 namespace OrchardCore.Workflows.Models
 {
-    public class AwaitingActivityRecord
+    public class BlockingActivity
     {
-        public static AwaitingActivityRecord FromActivity(ActivityRecord activity)
+        public static BlockingActivity FromActivity(ActivityRecord activity)
         {
-            return new AwaitingActivityRecord
+            return new BlockingActivity
             {
-                ActivityId = activity.Id,
+                ActivityId = activity.ActivityId,
                 IsStart = activity.IsStart,
                 Name = activity.Name
             };
         }
 
-        public int ActivityId { get; set; }
+        public string ActivityId { get; set; }
         public bool IsStart { get; set; }
         public string Name { get; set; }
     }

@@ -4,7 +4,7 @@ namespace OrchardCore.Workflows.Models
 {
     public class ActivityRecord : Entity
     {
-        public int Id { get; set; }
+        public string ActivityId { get; set; }
 
         /// <summary>
         /// The type of the activity.

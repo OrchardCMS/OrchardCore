@@ -4,10 +4,11 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Liquid;
+using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Workflows.Liquid
+namespace OrchardCore.Workflows.Http.Liquid
 {
     public class SignalUrlFilter : ILiquidFilter
     {
@@ -39,7 +40,7 @@ namespace OrchardCore.Workflows.Liquid
             var urlHelper = (IUrlHelper)urlHelperObj;
             var signalService = (ISecurityTokenService)signalServiceObj;
             var token = signalService.CreateToken(payload);
-            var urlValue = new StringValue(urlHelper.Action("Trigger", "Signal", new { area = "OrchardCore.Workflows", token }));
+            var urlValue = new StringValue(urlHelper.Action("Trigger", "Workflow", new { area = "OrchardCore.Workflows", token }));
             return Task.FromResult<FluidValue>(urlValue);
         }
     }

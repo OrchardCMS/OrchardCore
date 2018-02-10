@@ -8,7 +8,7 @@ namespace Workflows {
     }
 
     export interface Activity {
-        id: number;
+        id: string;
         x: number;
         y: number;
         isStart: boolean;
@@ -23,8 +23,8 @@ namespace Workflows {
     }
 
     export interface Transition {
-        sourceActivityId: number;
-        destinationActivityId: number;
+        sourceActivityId: string;
+        destinationActivityId: string;
         sourceOutcomeName: string;
     }
 }

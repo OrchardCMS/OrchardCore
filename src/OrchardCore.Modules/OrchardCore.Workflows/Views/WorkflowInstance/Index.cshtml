@@ -69,7 +69,7 @@
 
                             <input type="checkbox" asp-for="@Model.WorkflowInstances[i].IsChecked" />
                             <input type="hidden" asp-for="@Model.WorkflowInstances[i].Id" />
-                            <a asp-action="Details" asp-route-id="@entry.WorkflowInstance.Id">@entry.WorkflowInstance.Uid</a>
+                            <a asp-action="Details" asp-route-id="@entry.WorkflowInstance.Id">@entry.WorkflowInstance.WorkflowInstanceId</a>
                             <div>
                                 <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.WorkflowInstance.CreatedUtc)))]</span>
                                 <div class="info">

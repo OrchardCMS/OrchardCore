@@ -3,14 +3,14 @@ namespace OrchardCore.Workflows.Models
     /// <summary>
     /// Represents a transition between two activities.
     /// </summary>
-    public class TransitionRecord
+    public class Transition
     {
         public int Id { get; set; }
 
         /// <summary>
-        /// The source <see cref="ActivityRecord.Id"/>
+        /// The source <see cref="ActivityRecord.ActivityId"/>
         /// </summary>
-        public int SourceActivityId { get; set; }
+        public string SourceActivityId { get; set; }
 
         /// <summary>
         /// The name of the outcome on the source <see cref="ActivityRecord"/>
@@ -18,8 +18,8 @@ namespace OrchardCore.Workflows.Models
         public string SourceOutcomeName { get; set; }
 
         /// <summary>
-        /// The destination <see cref="ActivityRecord.Id"/>
+        /// The destination <see cref="ActivityRecord.ActivityId"/>
         /// </summary>
-        public int DestinationActivityId { get; set; }
+        public string DestinationActivityId { get; set; }
     }
 }

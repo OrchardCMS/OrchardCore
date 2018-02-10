@@ -7,16 +7,16 @@ namespace OrchardCore.Workflows.Models
     /// <summary>
     /// Represents a workflow instance.
     /// </summary>
-    public class WorkflowInstanceRecord
+    public class WorkflowInstance
     {
         public int Id { get; set; }
 
         /// <summary>
         /// A unique identifier for this workflow instance.
         /// </summary>
-        public string Uid { get; set; }
+        public string WorkflowInstanceId { get; set; }
 
-        public string WorkflowDefinitionUid { get; set; }
+        public string WorkflowDefinitionId { get; set; }
 
         /// <summary>
         /// The correlation ID can be used to resume workflow instances that sre associated with specific objects, such as content items.
@@ -35,7 +35,7 @@ namespace OrchardCore.Workflows.Models
         /// List of activities the current workflow instance is waiting on 
         /// for continuing its process.
         /// </summary>
-        public IList<AwaitingActivityRecord> AwaitingActivities { get; } = new List<AwaitingActivityRecord>();
+        public IList<BlockingActivity> BlockingActivities { get; } = new List<BlockingActivity>();
 
         public DateTime CreatedUtc { get; set; }
     }

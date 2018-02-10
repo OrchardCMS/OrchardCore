@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Workflows.Activities
+namespace OrchardCore.Workflows.Http.Activities
 {
     public class SignalEvent : EventActivity
     {
@@ -20,7 +21,7 @@ namespace OrchardCore.Workflows.Activities
         private IStringLocalizer T { get; }
 
         public override string Name => EventName;
-        public override LocalizedString Category => T["Events"];
+        public override LocalizedString Category => T["HTTP"];
 
         public WorkflowExpression<string> SignalName
         {

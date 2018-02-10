@@ -46,7 +46,7 @@ namespace OrchardCore.Workflows.Activities
         {
             // Wait for all incoming branches to have executed their activity.
             var branches = Branches;
-            var inboundTransitions = workflowContext.GetInboundTransitions(activityContext.ActivityRecord.Id);
+            var inboundTransitions = workflowContext.GetInboundTransitions(activityContext.ActivityRecord.ActivityId);
             var done = false;
 
             switch (Mode)
@@ -60,12 +60,12 @@ namespace OrchardCore.Workflows.Activities
                     if (done)
                     {
                         // Remove any inbound blocking activities.
-                        var ancestorActivityIds = workflowContext.GetInboundActivityPath(activityContext.ActivityRecord.Id).ToList();
-                        var blockingActivities = workflowContext.WorkflowInstanceRecord.AwaitingActivities.Where(x => ancestorActivityIds.Contains(x.ActivityId)).ToList();
+                        var ancestorActivityIds = workflowContext.GetInboundActivityPath(activityContext.ActivityRecord.ActivityId).ToList();
+                        var blockingActivities = workflowContext.WorkflowInstanceRecord.BlockingActivities.Where(x => ancestorActivityIds.Contains(x.ActivityId)).ToList();
 
                         foreach (var blockingActivity in blockingActivities)
                         {
-                            workflowContext.WorkflowInstanceRecord.AwaitingActivities.Remove(blockingActivity);
+                            workflowContext.WorkflowInstanceRecord.BlockingActivities.Remove(blockingActivity);
                         }
                     }
                     break;
@@ -81,7 +81,7 @@ namespace OrchardCore.Workflows.Activities
         public override Task OnActivityExecutedAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             // Get outbound transitions of the executing activity.
-            var outboundTransitions = workflowContext.GetOutboundTransitions(activityContext.ActivityRecord.Id);
+            var outboundTransitions = workflowContext.GetOutboundTransitions(activityContext.ActivityRecord.ActivityId);
 
             // Get any transition that is pointing to this activity.
             var inboundTransitionsQuery =
@@ -102,7 +102,7 @@ namespace OrchardCore.Workflows.Activities
             return Task.CompletedTask;
         }
 
-        private string GetTransitionKey(TransitionRecord transition)
+        private string GetTransitionKey(Transition transition)
         {
             var sourceActivityId = transition.SourceActivityId;
             var sourceOutcomeName = transition.SourceOutcomeName;

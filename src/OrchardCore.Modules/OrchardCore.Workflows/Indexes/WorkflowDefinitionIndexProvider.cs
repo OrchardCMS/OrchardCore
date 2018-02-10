@@ -6,7 +6,7 @@ namespace OrchardCore.Workflows.Indexes
 {
     public class WorkflowDefinitionIndex : MapIndex
     {
-        public string Uid { get; set; }
+        public string WorkflowDefinitionId { get; set; }
         public string Name { get; set; }
         public bool IsEnabled { get; set; }
         public bool HasStart { get; set; }
@@ -14,37 +14,37 @@ namespace OrchardCore.Workflows.Indexes
 
     public class WorkflowDefinitionStartActivitiesIndex : MapIndex
     {
-        public string Uid { get; set; }
+        public string WorkflowDefinitionId { get; set; }
         public string Name { get; set; }
         public bool IsEnabled { get; set; }
-        public int StartActivityId { get; set; }
+        public string StartActivityId { get; set; }
         public string StartActivityName { get; set; }
     }
 
-    public class WorkflowDefinitionIndexProvider : IndexProvider<WorkflowDefinitionRecord>
+    public class WorkflowDefinitionIndexProvider : IndexProvider<WorkflowDefinition>
     {
-        public override void Describe(DescribeContext<WorkflowDefinitionRecord> context)
+        public override void Describe(DescribeContext<WorkflowDefinition> context)
         {
             context.For<WorkflowDefinitionIndex>()
-                .Map(workflowDefinition =>
+                .Map(workflowDefinitionRecord =>
                         new WorkflowDefinitionIndex
                         {
-                            Uid = workflowDefinition.Uid,
-                            Name = workflowDefinition.Name,
-                            IsEnabled = workflowDefinition.IsEnabled,
-                            HasStart = workflowDefinition.Activities.Any(x => x.IsStart)
+                            WorkflowDefinitionId = workflowDefinitionRecord.WorkflowDefinitionId,
+                            Name = workflowDefinitionRecord.Name,
+                            IsEnabled = workflowDefinitionRecord.IsEnabled,
+                            HasStart = workflowDefinitionRecord.Activities.Any(x => x.IsStart)
                         }
                 );
 
             context.For<WorkflowDefinitionStartActivitiesIndex>()
-                .Map(workflowDefinition =>
-                    workflowDefinition.Activities.Where(x => x.IsStart).Select(x =>
+                .Map(workflowDefinitionRecord =>
+                    workflowDefinitionRecord.Activities.Where(x => x.IsStart).Select(x =>
                         new WorkflowDefinitionStartActivitiesIndex
                         {
-                            Uid = workflowDefinition.Uid,
-                            Name = workflowDefinition.Name,
-                            IsEnabled = workflowDefinition.IsEnabled,
-                            StartActivityId = x.Id,
+                            WorkflowDefinitionId = workflowDefinitionRecord.WorkflowDefinitionId,
+                            Name = workflowDefinitionRecord.Name,
+                            IsEnabled = workflowDefinitionRecord.IsEnabled,
+                            StartActivityId = x.ActivityId,
                             StartActivityName = x.Name
                         })
                 );

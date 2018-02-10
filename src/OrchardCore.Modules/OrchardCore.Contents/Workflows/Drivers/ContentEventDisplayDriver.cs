@@ -20,6 +20,11 @@ namespace OrchardCore.Contents.Workflows.Drivers
 
         protected IContentDefinitionManager ContentDefinitionManager { get; }
 
+        protected override void Map(TActivity source, TViewModel target)
+        {
+            target.SelectedContentTypeNames = source.ContentTypeFilter;
+        }
+
         public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
         {
             var viewModel = CreateViewModel();
@@ -42,15 +47,6 @@ namespace OrchardCore.Contents.Workflows.Drivers
                     shape.ContentTypeFilter = selectedContentTypeDefinitions;
                 }
                 shape.Activity = activity;
-            });
-        }
-
-        protected ShapeResult EditShape<TModel>(string shapeType, TActivity activity) where TModel : ContentEventViewModel<TActivity>
-        {
-            return Shape<TModel>(shapeType, model =>
-            {
-                model.Activity = activity;
-                model.SelectedContentTypeNames = activity.ContentTypeFilter;
             });
         }
 

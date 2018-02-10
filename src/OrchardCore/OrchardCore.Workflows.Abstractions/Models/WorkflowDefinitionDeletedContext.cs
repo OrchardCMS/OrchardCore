@@ -2,7 +2,7 @@ namespace OrchardCore.Workflows.Models
 {
     public class WorkflowDefinitionDeletedContext : WorkflowDefinitionContext
     {
-        public WorkflowDefinitionDeletedContext(WorkflowDefinitionRecord workflowDefinition) : base(workflowDefinition)
+        public WorkflowDefinitionDeletedContext(WorkflowDefinition workflowDefinition) : base(workflowDefinition)
         {
         }
     }

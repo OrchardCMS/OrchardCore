@@ -39,21 +39,21 @@ namespace OrchardCore.Tests.Workflows
             var output = new StringWriter(stringBuilder);
             var addTask = new AddTask(localizer.Object);
             var writeLineTask = new WriteLineTask(localizer.Object, output);
-            var workflowDefinition = new WorkflowDefinitionRecord
+            var workflowDefinition = new WorkflowDefinition
             {
                 Id = 1,
                 Activities = new List<ActivityRecord>
                 {
-                    new ActivityRecord { Id = 1, IsStart = true, Name = addTask.Name, Properties = JObject.FromObject( new
+                    new ActivityRecord { ActivityId = "1", IsStart = true, Name = addTask.Name, Properties = JObject.FromObject( new
                     {
                         A = new WorkflowExpression<double>("input(\"A\")"),
                         B = new WorkflowExpression<double>("input(\"B\")"),
                     }) },
-                    new ActivityRecord { Id = 2, Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>("lastResult().toString()") }) }
+                    new ActivityRecord { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>("lastResult().toString()") }) }
                 },
-                Transitions = new List<TransitionRecord>
+                Transitions = new List<Transition>
                 {
-                    new TransitionRecord{ SourceActivityId = 1, SourceOutcomeName = "Done", DestinationActivityId = 2 }
+                    new Transition{ SourceActivityId = "1", SourceOutcomeName = "Done", DestinationActivityId = "2" }
                 }
             };
 
@@ -68,7 +68,7 @@ namespace OrchardCore.Tests.Workflows
             Assert.Equal(expectedResult, actualResult);
         }
 
-        private WorkflowManager CreateWorkflowManager(IEnumerable<IActivity> activities, WorkflowDefinitionRecord workflowDefinition)
+        private WorkflowManager CreateWorkflowManager(IEnumerable<IActivity> activities, WorkflowDefinition workflowDefinition)
         {
             var services = new ServiceCollection();
             services.AddScoped(typeof(Resolver<>));
@@ -89,8 +89,9 @@ namespace OrchardCore.Tests.Workflows
             var liquidTemplateManager = new LiquidTemplateManager(memoryCache, liquidOptions.Object, serviceProvider);
             var liquidEvaluator = new LiquidWorkflowExpressionEvaluator(serviceProvider, liquidTemplateManager, new Mock<IStringLocalizer<LiquidWorkflowExpressionEvaluator>>().Object, workflowContextHandlers.Resolve(), new Mock<ILogger<LiquidWorkflowExpressionEvaluator>>().Object);
             var activityLibrary = new Mock<IActivityLibrary>();
-            var workflowDefinitionRepository = new Mock<IWorkflowDefinitionRepository>();
-            var workflowInstanceRepository = new Mock<IWorkflowInstanceRepository>();
+            var workflowDefinitionStore = new Mock<IWorkflowDefinitionStore>();
+            var workflowInstanceStore = new Mock<IWorkflowInstanceStore>();
+            var workflowInstanceIdGenerator = new Mock<IWorkflowInstanceIdGenerator>();
             var workflowManagerLogger = new Mock<ILogger<WorkflowManager>>();
             var workflowContextLogger = new Mock<ILogger<WorkflowExecutionContext>>();
             var missingActivityLogger = new Mock<ILogger<MissingActivity>>();
@@ -99,8 +100,9 @@ namespace OrchardCore.Tests.Workflows
             var workflowManager = new WorkflowManager(
                 serviceProvider,
                 activityLibrary.Object,
-                workflowDefinitionRepository.Object,
-                workflowInstanceRepository.Object,
+                workflowDefinitionStore.Object,
+                workflowInstanceStore.Object,
+                workflowInstanceIdGenerator.Object,
                 liquidEvaluator,
                 scriptEvaluator,
                 workflowContextHandlers,
@@ -116,7 +118,7 @@ namespace OrchardCore.Tests.Workflows
                 activityLibrary.Setup(x => x.InstantiateActivity(activity.Name)).Returns(activity);
             }
 
-            workflowDefinitionRepository.Setup(x => x.GetAsync(workflowDefinition.Id)).Returns(Task.FromResult(workflowDefinition));
+            workflowDefinitionStore.Setup(x => x.GetAsync(workflowDefinition.Id)).Returns(Task.FromResult(workflowDefinition));
 
             return workflowManager;
         }

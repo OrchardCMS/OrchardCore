@@ -245,7 +245,7 @@ class WorkflowEditor extends WorkflowCanvas {
         // Collect activities.
         for (let i = 0; i < $allActivityElements.length; i++) {
             const $activityElement: JQuery = $($allActivityElements[i]);
-            const activityId: number = $activityElement.data('activity-id');
+            const activityId: string = $activityElement.data('activity-id');
             const activityIsStart: boolean = $activityElement.data('activity-start');
             const activityIsEvent: boolean = $activityElement.data('activity-type') === 'Event';
             const activityPosition: JQuery.Coordinates = $activityElement.position();
@@ -268,8 +268,8 @@ class WorkflowEditor extends WorkflowCanvas {
             var connection = allConnections[i];
             var sourceEndpoint: Endpoint = connection.endpoints[0];
             var sourceOutcomeName = sourceEndpoint.getParameters().outcome.name;
-            var sourceActivityId: number = $(connection.source).data('activity-id');
-            var destinationActivityId: number = $(connection.target).data('activity-id');
+            var sourceActivityId: string = $(connection.source).data('activity-id');
+            var destinationActivityId: string = $(connection.target).data('activity-id');
 
             workflow.transitions.push({
                 sourceActivityId: sourceActivityId,

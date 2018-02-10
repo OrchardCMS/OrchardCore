@@ -29,7 +29,7 @@ namespace OrchardCore.Workflows.Http.Activities
             set => SetProperty(value);
         }
 
-        public string RequestPath
+        public string Url
         {
             get => GetProperty<string>();
             set => SetProperty(value);
@@ -39,23 +39,19 @@ namespace OrchardCore.Workflows.Http.Activities
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var httpRequest = httpContext.Request;
-
-            var isMatch =
-                string.Equals(HttpMethod, httpRequest.Method, System.StringComparison.OrdinalIgnoreCase)
-                && string.Equals(RequestPath, httpRequest.Path.Value, System.StringComparison.OrdinalIgnoreCase);
+            var isMatch = string.Equals(HttpMethod, httpRequest.Method, System.StringComparison.OrdinalIgnoreCase);
 
             return isMatch;
-
         }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Matched"]);
+            return Outcomes(T["Done"]);
         }
 
         public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes("Matched");
+            return Outcomes("Done");
         }
     }
 }

@@ -2,7 +2,7 @@ namespace OrchardCore.Workflows.Models
 {
     public class WorkflowDefinitionUpdatedContext : WorkflowDefinitionContext
     {
-        public WorkflowDefinitionUpdatedContext(WorkflowDefinitionRecord workflowDefinition) : base(workflowDefinition)
+        public WorkflowDefinitionUpdatedContext(WorkflowDefinition workflowDefinition) : base(workflowDefinition)
         {
         }
     }

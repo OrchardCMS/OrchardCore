@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
-using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
@@ -16,7 +15,6 @@ using OrchardCore.Workflows.Evaluators;
 using OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
-using OrchardCore.Workflows.Liquid;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
 using YesSql.Indexes;
@@ -28,11 +26,16 @@ namespace OrchardCore.Workflows
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddDataProtection();
+            services.AddSingleton<IIdGenerator, IdGenerator>();
+            services.AddSingleton<IWorkflowDefinitionIdGenerator, WorkflowDefinitionIdGenerator>();
+            services.AddSingleton<IWorkflowInstanceIdGenerator, WorkflowInstanceIdGenerator>();
+            services.AddSingleton<IActivityIdGenerator, ActivityIdGenerator>();
+
             services.AddScoped(typeof(Resolver<>));
             services.AddScoped<ISecurityTokenService, SecurityTokenService>();
             services.AddScoped<IActivityLibrary, ActivityLibrary>();
-            services.AddScoped<IWorkflowDefinitionRepository, WorkflowDefinitionRepository>();
-            services.AddScoped<IWorkflowInstanceRepository, WorkflowInstanceRepository>();
+            services.AddScoped<IWorkflowDefinitionStore, WorkflowDefinitionStore>();
+            services.AddScoped<IWorkflowInstanceStore, WorkflowInstanceStore>();
             services.AddScoped<IWorkflowManager, WorkflowManager>();
             services.AddScoped<IActivityDisplayManager, ActivityDisplayManager>();
             services.AddScoped<IDataMigration, Migrations>();
@@ -42,7 +45,6 @@ namespace OrchardCore.Workflows
             services.AddSingleton<IIndexProvider, WorkflowDefinitionIndexProvider>();
             services.AddSingleton<IIndexProvider, WorkflowInstanceIndexProvider>();
             services.AddScoped<IWorkflowExecutionContextHandler, DefaultWorkflowExecutionContextHandler>();
-            services.AddScoped<IWorkflowExecutionContextHandler, SignalWorkflowExecutionContextHandler>();
             services.AddScoped<IWorkflowExpressionEvaluator, LiquidWorkflowExpressionEvaluator>();
             services.AddScoped<IWorkflowScriptEvaluator, JavaScriptWorkflowScriptEvaluator>();
 
@@ -57,23 +59,12 @@ namespace OrchardCore.Workflows
             services.AddActivity<IfElseTask, IfElseTaskDisplay>();
             services.AddActivity<ScriptTask, ScriptTaskDisplay>();
             services.AddActivity<LogTask, LogTaskDisplay>();
-            services.AddActivity<SignalEvent, SignalEventDisplay>();
 
             services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
-
-            services.AddScoped<ILiquidTemplateEventHandler, SignalLiquidTemplateHandler>();
-            services.AddLiquidFilter<SignalUrlFilter>("signal_url");
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
-                name: "ExecuteWorkflow",
-                areaName: "OrchardCore.Workflows",
-                template: "Workflows/{action}",
-                defaults: new { controller = "Workflow" }
-            );
-
             routes.MapAreaRoute(
                 name: "SignalWorkflow",
                 areaName: "OrchardCore.Workflows",
