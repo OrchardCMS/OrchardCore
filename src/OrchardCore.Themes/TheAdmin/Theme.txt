@@ -1,6 +1,0 @@
-Name: TheAdmin Theme
-AntiForgery: enabled
-Author: The Orchard Team
-Website: http://orchardproject.net
-Description: The default Admin theme.
-Tags: admin

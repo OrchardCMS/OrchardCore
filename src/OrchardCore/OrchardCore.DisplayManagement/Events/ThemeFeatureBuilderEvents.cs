@@ -1,6 +1,7 @@
-﻿using OrchardCore.DisplayManagement.Extensions;
-using OrchardCore.Environment.Extensions.Features;
 using System.Linq;
+using OrchardCore.DisplayManagement.Extensions;
+using OrchardCore.DisplayManagement.Manifest;
+using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.DisplayManagement.Events
 {
@@ -8,7 +9,7 @@ namespace OrchardCore.DisplayManagement.Events
     {
         public override void Building(FeatureBuildingContext context)
         {
-            if (context.ExtensionInfo.Manifest.IsTheme())
+            if (context.ExtensionInfo.Manifest.ModuleInfo is ThemeAttribute)
             {
                 var extensionInfo = new ThemeExtensionInfo(context.ExtensionInfo);
 

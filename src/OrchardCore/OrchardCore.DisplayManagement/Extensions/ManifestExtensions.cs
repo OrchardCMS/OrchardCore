@@ -1,18 +1,12 @@
-using System;
 using OrchardCore.Environment.Extensions;
 
-namespace OrchardCore.DisplayManagement
+namespace OrchardCore.DisplayManagement.Extensions
 {
-    public static class ManifestExtensions
+    public static class ExtensionInfoExtensions
     {
-        public static bool IsModule(this IManifestInfo manifestInfo)
+        public static bool IsTheme(this IExtensionInfo extensionInfo)
         {
-            return manifestInfo?.Type?.Equals("module", StringComparison.OrdinalIgnoreCase) ?? false;
-        }
-
-        public static bool IsTheme(this IManifestInfo manifestInfo)
-        {
-            return manifestInfo?.Type?.Equals("theme", StringComparison.OrdinalIgnoreCase) ?? false;
+            return extensionInfo is IThemeExtensionInfo;
         }
     }
 }

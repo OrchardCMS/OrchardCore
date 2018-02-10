@@ -1,5 +1,0 @@
-Name: The Blog Theme
-AntiForgery: enabled
-Author: The Orchard Team
-Website: http://orchardproject.net
-Description: A theme adapted for blogs.

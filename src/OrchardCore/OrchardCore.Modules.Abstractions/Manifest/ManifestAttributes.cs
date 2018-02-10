@@ -7,31 +7,31 @@ namespace OrchardCore.Modules.Manifest
     public class ModuleAttribute : Attribute
     {
         public ModuleAttribute(
-            string name = null,
-            string author = "",
-            string website = "",
-            string version = "0.0",
-            string tags = "",
-            string description = "",
-            string dependencies = "",
-            string priority = "0",
-            string category = null)
+            string Name = null,
+            string Author = "",
+            string Website = "",
+            string Version = "0.0",
+            string Tags = "",
+            string Description = "",
+            string Dependencies = "",
+            string Priority = "0",
+            string Category = null)
         {
-            Author = author;
-            Website = website;
-            Version = version;
-            Tags = tags;
+            author = Author;
+            website = Website;
+            version = Version;
+            tags = Tags;
 
-            Feature = new FeatureAttribute(id: null, name, description, dependencies, priority, category);
+            Feature = new FeatureAttribute(Id: null, Name, Description, Dependencies, Priority, Category);
         }
 
         public virtual string Type => "Module";
-        public bool Exists => Feature.Id != null;
+        public bool Exists => Feature.id != null;
 
-        public string Author { get; }
-        public string Website { get; }
-        public string Version { get; }
-        public string Tags { get; }
+        public string author { get; }
+        public string website { get; }
+        public string version { get; }
+        public string tags { get; }
 
         public FeatureAttribute Feature { get; }
         public List<FeatureAttribute> Features { get; } = new List<FeatureAttribute>();
@@ -41,25 +41,26 @@ namespace OrchardCore.Modules.Manifest
     public class FeatureAttribute : Attribute
     {
         public FeatureAttribute(
-            string id = null,
-            string name = "",
-            string description = "",
-            string dependencies = "",
-            string priority = "0",
-            string category = null)
+            string Id = null,
+            string Name = null,
+            string Description = "",
+            string Dependencies = "",
+            string Priority = "0",
+            string Category = null)
         {
-            Id = id;
-            Description = description;
-            Dependencies = dependencies;
-            Priority = priority;
-            Category = category;
+            id = Id;
+            name = Name;
+            description = Description;
+            dependencies = Dependencies;
+            priority = Priority;
+            category = Category;
         }
 
-        public string Id { get; set; }
-        public string Name { get; }
-        public string Description { get; }
-        public string Dependencies { get; }
-        public string Category { get; }
-        public string Priority { get; }
+        public string id { get; set; }
+        public string name { get; }
+        public string description { get; }
+        public string dependencies { get; }
+        public string category { get; }
+        public string priority { get; }
     }
 }

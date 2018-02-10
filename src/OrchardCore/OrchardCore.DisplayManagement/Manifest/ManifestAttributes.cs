@@ -7,22 +7,22 @@ namespace OrchardCore.DisplayManagement.Manifest
     public class ThemeAttribute : ModuleAttribute
     {
         public ThemeAttribute(
-            string name = null,
-            string author = "",
-            string website = "",
-            string version = "0.0",
-            string tags = "",
-            string description = "",
-            string dependencies = "",
-            string priority = "0",
-            string category = null,
-            string baseTheme = "")
-            : base(name, author, website, version, tags, description, dependencies, priority, category)
+            string Name = null,
+            string Author = "",
+            string Website = "",
+            string Version = "0.0",
+            string Tags = "",
+            string Description = "",
+            string Dependencies = "",
+            string Priority = "0",
+            string Category = null,
+            string BaseTheme = "")
+            : base(Name, Author, Website, Version, Tags, Description, Dependencies, Priority, Category)
         {
-            BaseTheme = baseTheme;
+            baseTheme = BaseTheme;
         }
 
         public override string Type => "Theme";
-        public string BaseTheme { get; }
+        public string baseTheme { get; }
     }
 }

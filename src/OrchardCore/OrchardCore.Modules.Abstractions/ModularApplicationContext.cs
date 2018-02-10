@@ -98,17 +98,16 @@ namespace OrchardCore.Modules
                 var module = Assembly.GetCustomAttribute<ModuleAttribute>();
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>();
 
-
                 if (module != null)
                 {
-                    module.Feature.Id = Name;
+                    module.Feature.id = Name;
                     module.Features.AddRange(features);
                     ModuleInfo = module;
                 }
                 else
                 {
-                    ModuleInfo = new ModuleAttribute(name: Name);
-                    ModuleInfo.Feature.Id = Name;
+                    ModuleInfo = new ModuleAttribute(Name: Name);
+                    ModuleInfo.Feature.id = Name;
                 }
             }
             else
@@ -116,7 +115,7 @@ namespace OrchardCore.Modules
                 Name = Root = SubPath = String.Empty;
                 Assets = Enumerable.Empty<Asset>();
                 AssetPaths = Enumerable.Empty<string>();
-                ModuleInfo = new ModuleAttribute(name: Name);
+                ModuleInfo = new ModuleAttribute();
             }
 
             _baseNamespace = Name + '.';

@@ -49,10 +49,6 @@ namespace Microsoft.AspNetCore.Builder
                 var availableExtensions = extensionManager.GetExtensions();
                 foreach (var extension in availableExtensions)
                 {
-                    var contentPath = extension.ExtensionFileInfo.PhysicalPath != null
-                        ? Path.Combine(extension.ExtensionFileInfo.PhysicalPath, "wwwroot")
-                        : null;
-
                     var contentSubPath = Path.Combine(extension.SubPath, "wwwroot");
 
                     if (env.ContentRootFileProvider.GetDirectoryContents(contentSubPath).Exists)

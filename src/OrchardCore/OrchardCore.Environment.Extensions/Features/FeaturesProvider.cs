@@ -33,25 +33,21 @@ namespace OrchardCore.Environment.Extensions.Features
             {
                 foreach (var feature in features)
                 {
-                    var featureId = feature.Id;
-                    var featureName = feature.Name ?? feature.Id;
+                    var featureId = feature.id;
+                    var featureName = feature.name ?? feature.id;
 
-                    var featureDependencyIds = feature.Dependencies
+                    var featureDependencyIds = feature.dependencies
                             .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                             .Select(e => e.Trim())
                             .ToArray();
 
-                    if (!int.TryParse(feature.Priority ??
-                        manifestInfo.ModuleInfo.Feature.Priority, out int featurePriority))
+                    if (!int.TryParse(feature.priority ?? manifestInfo.ModuleInfo.Feature.priority, out int featurePriority))
                     {
                         featurePriority = 0;
                     }
 
-                    var featureCategory = feature.Category ??
-                        manifestInfo.ModuleInfo.Feature.Category;
-
-                    var featureDescription = feature.Description ??
-                        manifestInfo.ModuleInfo.Feature.Description;
+                    var featureCategory = feature.category ?? manifestInfo.ModuleInfo.Feature.category;
+                    var featureDescription = feature.description ?? manifestInfo.ModuleInfo.Feature.description;
 
                     var context = new FeatureBuildingContext
                     {
@@ -93,18 +89,18 @@ namespace OrchardCore.Environment.Extensions.Features
                 var featureId = extensionInfo.Id;
                 var featureName = manifestInfo.Name;
 
-                var featureDependencyIds = manifestInfo.ModuleInfo.Feature.Dependencies
+                var featureDependencyIds = manifestInfo.ModuleInfo.Feature.dependencies
                         .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                         .Select(e => e.Trim())
                         .ToArray();
 
-                if (!int.TryParse(manifestInfo.ModuleInfo.Feature.Priority, out int featurePriority))
+                if (!int.TryParse(manifestInfo.ModuleInfo.Feature.priority, out int featurePriority))
                 {
                     featurePriority = 0;
                 }
 
-                var featureCategory = manifestInfo.ModuleInfo.Feature.Category;
-                var featureDescription = manifestInfo.ModuleInfo.Feature.Description;
+                var featureCategory = manifestInfo.ModuleInfo.Feature.category;
+                var featureDescription = manifestInfo.ModuleInfo.Feature.description;
 
                 var context = new FeatureBuildingContext
                 {

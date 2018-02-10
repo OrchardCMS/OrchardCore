@@ -1,9 +1,9 @@
 using OrchardCore.DisplayManagement.Manifest;
 
 [assembly: Theme(
-    name: "The Agency Theme",
-    author: "The Orchard Team",
-    website: "http://orchardproject.net",
-    version: "2.0.0",
-    description: "A theme adapted for agency websites."
+    Name: "The Agency Theme",
+    Author: "The Orchard Team",
+    Website: "http://orchardproject.net",
+    Version: "2.0.0",
+    Description: "A theme adapted for agency websites."
 )]
