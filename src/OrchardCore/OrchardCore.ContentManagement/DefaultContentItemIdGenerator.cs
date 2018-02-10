@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using OrchardCore.IdGeneration;
 
 namespace OrchardCore.ContentManagement
 {

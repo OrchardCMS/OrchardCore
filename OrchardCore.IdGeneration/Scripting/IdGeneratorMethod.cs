@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Scripting;
 
-namespace OrchardCore.ContentManagement
+namespace OrchardCore.IdGeneration.Scripting
 {
     public class IdGeneratorMethod : IGlobalMethodProvider
     {
