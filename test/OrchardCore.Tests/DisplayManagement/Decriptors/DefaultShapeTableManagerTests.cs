@@ -7,12 +7,15 @@ using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Manifest;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Loaders;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules.Manifest;
 using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement.Decriptors
@@ -51,7 +54,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var configurationBuilder = new ConfigurationBuilder();
                 configurationBuilder.Add(memConfigSrc1);
 
-                Manifest = new ManifestInfo(configurationBuilder.Build(), "module");
+                Manifest = new ManifestInfo(new ModuleAttribute());
 
                 var features =
                     new List<IFeatureInfo>()
@@ -70,7 +73,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             public bool Exists => true;
         }
 
-        private class TestThemeExtensionInfo : IExtensionInfo
+        private class TestThemeExtensionInfo : IThemeExtensionInfo
         {
             public TestThemeExtensionInfo(string name)
             {
@@ -85,7 +88,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var configurationBuilder = new ConfigurationBuilder();
                 configurationBuilder.Add(memConfigSrc1);
 
-                Manifest = new ManifestInfo(configurationBuilder.Build(), "theme");
+                Manifest = new ManifestInfo(new ThemeAttribute());
 
                 var features =
                     new List<IFeatureInfo>()
@@ -112,7 +115,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var configurationBuilder = new ConfigurationBuilder();
                 configurationBuilder.Add(memConfigSrc1);
 
-                Manifest = new ManifestInfo(configurationBuilder.Build(), "theme");
+                Manifest = new ManifestInfo(new ThemeAttribute());
 
                 Features =
                     new List<IFeatureInfo>()
@@ -218,6 +221,11 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.DisableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force)
             {
                 throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<IExtensionInfo>> GetEnabledExtensionsAsync()
+            {
+                return Task.FromResult(_extensionManager.GetExtensions());
             }
         }
 

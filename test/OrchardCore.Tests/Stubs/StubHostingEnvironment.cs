@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Tests.Stubs
@@ -12,6 +12,7 @@ namespace OrchardCore.Tests.Stubs
         {
             _rootPath = root;
             _contentRootFileProvider = new PhysicalFileProvider(root);
+            ApplicationName = "OrchardCore.Tests";
         }
 
         public string EnvironmentName { get; set; } = "Stub";
