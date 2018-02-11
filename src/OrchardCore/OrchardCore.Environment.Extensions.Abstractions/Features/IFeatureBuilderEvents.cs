@@ -1,5 +1,3 @@
-using OrchardCore.Modules;
-
 namespace OrchardCore.Environment.Extensions.Features
 {
     public interface IFeatureBuilderEvents

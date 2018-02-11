@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
@@ -8,8 +7,6 @@ using OrchardCore.DisplayManagement.Events;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Environment.Extensions.Loaders;
-using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Tests.Stubs;
 using Xunit;
 
@@ -36,22 +33,11 @@ namespace OrchardCore.Tests.Extensions
                 new ManifestOption { Type = "theme" }
                 );
 
-        private static IEnumerable<IManifestProvider> ManifestProviders =
-            new[] { new ManifestProvider(HostingEnvironment) };
+        private static IFeaturesProvider ModuleFeatureProvider =
+            new FeaturesProvider(Enumerable.Empty<IFeatureBuilderEvents>(), new NullLogger<FeaturesProvider>());
 
-        private static IExtensionProvider ModuleProvider
-            = new ExtensionProvider(
-                HostingEnvironment,
-                new[] { new FeaturesProvider(Enumerable.Empty<IFeatureBuilderEvents>(), new NullLogger<FeaturesProvider>()) });
-
-        private static IExtensionProvider ThemeProvider
-            = new ExtensionProvider(
-                HostingEnvironment,
-                new[] { new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() }, new NullLogger<FeaturesProvider>()) });
-
-        private static IOptions<ExtensionExpanderOptions> ExtensionExpanderOptions =
-            new StubExtensionExpanderOptions(
-                new ExtensionExpanderOption { SearchPath = "TestDependencyModules" });
+        private static IFeaturesProvider ThemeFeatureProvider =
+            new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() }, new NullLogger<FeaturesProvider>());
 
         private IExtensionManager ModuleScopedExtensionManager;
         private IExtensionManager ThemeScopedExtensionManager;
@@ -60,41 +46,32 @@ namespace OrchardCore.Tests.Extensions
         public ExtensionManagerTests()
         {
             ModuleScopedExtensionManager = new ExtensionManager(
-                ExtensionExpanderOptions,
-                ModuleManifestOptions,
                 HostingEnvironment,
-                ManifestProviders,
-                new[] { ModuleProvider },
-                Enumerable.Empty<IExtensionLoader>(),
+                ModuleManifestOptions,
                 new[] { new ExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
                 null,
+                ModuleFeatureProvider,
                 new NullLogger<ExtensionManager>(),
                 null);
 
             ThemeScopedExtensionManager = new ExtensionManager(
-                ExtensionExpanderOptions,
-                ThemeManifestOptions,
                 HostingEnvironment,
-                ManifestProviders,
-                new[] { ThemeProvider },
-                Enumerable.Empty<IExtensionLoader>(),
+                ThemeManifestOptions,
                 new[] { new ExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
                 null,
+                ThemeFeatureProvider,
                 new NullLogger<ExtensionManager>(),
                 null);
 
             ModuleThemeScopedExtensionManager = new ExtensionManager(
-                ExtensionExpanderOptions,
-                ModuleAndThemeManifestOptions,
                 HostingEnvironment,
-                ManifestProviders,
-                new[] { ThemeProvider, ModuleProvider },
-                Enumerable.Empty<IExtensionLoader>(),
+                ModuleAndThemeManifestOptions,
                 new IExtensionDependencyStrategy[] { new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
                 null,
+                ThemeFeatureProvider,
                 new NullLogger<ExtensionManager>(),
                 null);
         }

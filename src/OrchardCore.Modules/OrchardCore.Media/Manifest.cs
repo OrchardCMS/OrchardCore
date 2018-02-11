@@ -10,7 +10,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id: "OrchardCore.Media",
     Name: "Media",
-    Description: "The Features module enables the administrator of the site to manage the installed modules as well as activate and de-activate features.",
+    Description: "The media module adds media management support.",
     Dependencies: "OrchardCore.ContentTypes, OrchardCore.Title",
     Category: "Content Management"
 )]

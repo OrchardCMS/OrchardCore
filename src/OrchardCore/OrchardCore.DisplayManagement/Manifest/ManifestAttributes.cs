@@ -4,7 +4,8 @@ using OrchardCore.Modules.Manifest;
 namespace OrchardCore.DisplayManagement.Manifest
 {
     /// <summary>
-    /// Defines a Theme
+    /// Defines a Theme which is a dedicated Module for theming purposes.
+    /// If the Theme has only one default feature, it may be defined there.
     /// </summary>
 
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]

@@ -4,7 +4,8 @@ using System.Collections.Generic;
 namespace OrchardCore.Modules.Manifest
 {
     /// <summary>
-    /// Defines a Module
+    /// Defines a Module which is composed of features.
+    /// If the Module has only one default feature, it may be defined there.
     /// </summary>
 
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
@@ -63,7 +64,8 @@ namespace OrchardCore.Modules.Manifest
     }
 
     /// <summary>
-    /// Defines a Feature in a Module
+    /// Defines a Feature in a Module, can be used multiple times.
+    /// If at least one Feature is defined, the Module default feature is ignored.
     /// </summary>
 
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]

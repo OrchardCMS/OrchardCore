@@ -20,7 +20,6 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddWebHost();
             services.AddManifestDefinition("module");
-            services.AddExtensionLocation(Application.ModulesPath);
 
             // ModularTenantRouterMiddleware which is configured with UseModules() calls UserRouter() which requires the routing services to be
             // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
