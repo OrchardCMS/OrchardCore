@@ -1,4 +1,0 @@
-﻿Name: Base Theme Sample 2
-Author: Nicholas Mayne
-Description: Base Theme
-Version: 1.0.0

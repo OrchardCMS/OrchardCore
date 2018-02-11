@@ -59,26 +59,6 @@
       Condition="'@(ModuleProjectReferences)' != ''"
       ContinueOnError="true">
 
-      <Output ItemName="Test" TaskParameter="TargetOutputs" />
-    </MSBuild>
-
-  </Target>
-
-  <Target Name="CompileModuleRazorFiles" BeforeTargets="_ResolveInputArguments">
-
-    <ItemGroup>
-      <ModuleProjectRazorFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml">
-        <ProjectName>%(Filename)</ProjectName>
-      </ModuleProjectRazorFiles>
-    </ItemGroup>
-
-    <MSBuild
-      Targets="GetModuleLinkedRazorFiles"
-      BuildInParallel="$(BuildInParallel)"
-      Projects="@(ModuleProjectReferences)"
-      Condition="'@(ModuleProjectReferences)' != ''"
-      ContinueOnError="true">
-
       <Output ItemName="ModuleLinkedRazorFiles" TaskParameter="TargetOutputs" />
     </MSBuild>
 
