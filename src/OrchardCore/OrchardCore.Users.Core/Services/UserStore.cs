@@ -16,7 +16,8 @@ namespace OrchardCore.Users.Services
         IUserRoleStore<IUser>,
         IUserPasswordStore<IUser>,
         IUserEmailStore<IUser>,
-        IUserSecurityStampStore<IUser>
+        IUserSecurityStampStore<IUser>,
+        IUserLoginStore<IUser>
     {
         private readonly ISession _session;
         private readonly IRoleProvider _roleProvider;
@@ -372,6 +373,66 @@ namespace OrchardCore.Users.Services
             var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync();
             return users == null ? new List<IUser>() : users.ToList<IUser>();
         }
+        #endregion
+
+        #region IUserLoginStore<IUser>
+        public Task AddLoginAsync(IUser user, UserLoginInfo login, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (login == null)
+            {
+                throw new ArgumentNullException(nameof(login));
+            }
+
+            if (((User)user).LoginInfos.Any(i=>i.LoginProvider == login.LoginProvider))
+                throw new InvalidOperationException($"Provider {login.LoginProvider} is already linked for {user.UserName}");
+
+            ((User)user).LoginInfos.Add(login);
+
+            _session.Save(user);
+
+            return Task.CompletedTask;
+        }
+
+        public async Task<IUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
+        {
+            return await _session.Query<User, UserByLoginInfoIndex>(u => u.LoginProvider == loginProvider && u.ProviderKey == providerKey).FirstOrDefaultAsync();
+        }
+
+        public Task<IList<UserLoginInfo>> GetLoginsAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult<IList<UserLoginInfo>>(((User)user).LoginInfos);
+        }
+
+        public Task RemoveLoginAsync(IUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            var externalLogins = ((User)user).LoginInfos;
+            if (externalLogins != null)
+            {
+                var item = externalLogins.FirstOrDefault(c => c.LoginProvider == loginProvider && c.ProviderKey == providerKey);
+                if (item != null)
+                {
+                    externalLogins.Remove(item);
+                    _session.Save(user);
+                }
+            }
+            return Task.CompletedTask;
+        }
+
         #endregion
     }
 }
