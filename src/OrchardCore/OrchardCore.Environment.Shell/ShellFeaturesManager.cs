@@ -55,8 +55,8 @@ namespace OrchardCore.Environment.Shell
 
         public Task<IEnumerable<IExtensionInfo>> GetEnabledExtensionsAsync()
         {
-            var enabledIds = _extensionManager.GetFeatures().Where(f =>
-                _shellDescriptor.Features.Any(sf => sf.Id == f.Id)).Select(f => f.Extension.Id);
+            var enabledIds = _extensionManager.GetFeatures().Where(f => _shellDescriptor
+                .Features.Any(sf => sf.Id == f.Id)).Select(f => f.Extension.Id).Distinct();
 
             // Extensions are still ordered according to the weight of their first features.
             return Task.FromResult(_extensionManager.GetExtensions().Where(e => enabledIds.Contains(e.Id)));
