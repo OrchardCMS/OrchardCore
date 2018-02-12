@@ -22,11 +22,9 @@ namespace OrchardCore.Users
 
         public int UpdateFrom1()
         {
-            SchemaBuilder.CreateReduceIndexTable(nameof(UserByLoginInfoIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(nameof(UserByLoginInfoIndex), table => table
                 .Column<string>("LoginProvider")
-                .Column<string>("ProviderKey")
-                .Column<int>("Count"));
-
+                .Column<string>("ProviderKey"));
             return 2;
         }
     }
