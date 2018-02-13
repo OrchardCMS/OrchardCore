@@ -22,8 +22,8 @@ namespace OrchardCore.Environment.Extensions.Manifests
         }
 
         public bool Exists => _moduleInfo.Exists;
-        public string Name => _moduleInfo.Feature.name ?? _moduleInfo.Feature.id;
-        public string Description => _moduleInfo.Feature.description;
+        public string Name => _moduleInfo.name ?? _moduleInfo.id;
+        public string Description => _moduleInfo.description;
         public string Type => _moduleInfo.Type;
         public string Author => _moduleInfo.author;
         public string Website => _moduleInfo.website;

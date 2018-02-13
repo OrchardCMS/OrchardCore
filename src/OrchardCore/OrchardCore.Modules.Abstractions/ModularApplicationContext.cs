@@ -102,7 +102,8 @@ namespace OrchardCore.Modules
                 AssetPaths = Assets.Select(a => a.ModuleAssetPath);
 
                 var module = Assembly.GetCustomAttribute<ModuleAttribute>();
-                var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>();
+                var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
+                    .Where(f => !(f is ModuleAttribute));
 
                 if (module != null)
                 {
@@ -114,7 +115,7 @@ namespace OrchardCore.Modules
                     ModuleInfo = new ModuleAttribute(Name: Name);
                 }
 
-                ModuleInfo.Feature.id = Name;
+                ModuleInfo.id = Name;
             }
             else
             {

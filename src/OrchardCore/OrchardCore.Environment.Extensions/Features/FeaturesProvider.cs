@@ -41,13 +41,13 @@ namespace OrchardCore.Environment.Extensions.Features
                             .Select(e => e.Trim())
                             .ToArray();
 
-                    if (!int.TryParse(feature.priority ?? manifestInfo.ModuleInfo.Feature.priority, out int featurePriority))
+                    if (!int.TryParse(feature.priority ?? manifestInfo.ModuleInfo.priority, out int featurePriority))
                     {
                         featurePriority = 0;
                     }
 
-                    var featureCategory = feature.category ?? manifestInfo.ModuleInfo.Feature.category;
-                    var featureDescription = feature.description ?? manifestInfo.ModuleInfo.Feature.description;
+                    var featureCategory = feature.category ?? manifestInfo.ModuleInfo.category;
+                    var featureDescription = feature.description ?? manifestInfo.ModuleInfo.description;
 
                     var context = new FeatureBuildingContext
                     {
@@ -89,18 +89,18 @@ namespace OrchardCore.Environment.Extensions.Features
                 var featureId = extensionInfo.Id;
                 var featureName = manifestInfo.Name;
 
-                var featureDependencyIds = manifestInfo.ModuleInfo.Feature.dependencies
+                var featureDependencyIds = manifestInfo.ModuleInfo.dependencies
                         .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                         .Select(e => e.Trim())
                         .ToArray();
 
-                if (!int.TryParse(manifestInfo.ModuleInfo.Feature.priority, out int featurePriority))
+                if (!int.TryParse(manifestInfo.ModuleInfo.priority, out int featurePriority))
                 {
                     featurePriority = 0;
                 }
 
-                var featureCategory = manifestInfo.ModuleInfo.Feature.category;
-                var featureDescription = manifestInfo.ModuleInfo.Feature.description;
+                var featureCategory = manifestInfo.ModuleInfo.category;
+                var featureDescription = manifestInfo.ModuleInfo.description;
 
                 var context = new FeatureBuildingContext
                 {
