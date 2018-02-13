@@ -8,10 +8,8 @@ namespace OrchardCore.Tests.Stubs
         private string _rootPath;
         private IFileProvider _contentRootFileProvider;
 
-        public StubHostingEnvironment(string root)
+        public StubHostingEnvironment()
         {
-            _rootPath = root;
-            _contentRootFileProvider = new PhysicalFileProvider(root);
             ApplicationName = "OrchardCore.Tests";
         }
 

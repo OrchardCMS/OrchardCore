@@ -15,7 +15,7 @@ namespace OrchardCore.Tests.Extensions
     public class ExtensionManagerTests
     {
         private static IHostingEnvironment HostingEnvironment
-            = new StubHostingEnvironment(Path.Combine(AppContext.BaseDirectory, "Extensions"));
+            = new StubHostingEnvironment();
 
         private static IOptions<ManifestOptions> ModuleManifestOptions =
             new StubManifestOptions(
