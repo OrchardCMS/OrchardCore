@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Embedded;
 using OrchardCore.Modules.FileProviders;
@@ -66,6 +67,11 @@ namespace OrchardCore.Modules
             Name = application;
             Assembly = Assembly.Load(new AssemblyName(application));
             ModuleNames = new EmbeddedFileProvider(Assembly).GetFileInfo(ModuleNamesMap).ReadAllLines();
+
+            //ModuleNames = DependencyContext.Default.RuntimeLibraries
+            //    .Where(lib => !lib.Name.EndsWith(".Targets") && lib.Dependencies.Any(dep =>
+            //        dep.Name == "OrchardCore.Module.Targets" || dep.Name == "OrchardCore.Theme.Targets"))
+            //    .Select(lib => lib.Name);
         }
 
         public string Name { get; }
@@ -100,15 +106,15 @@ namespace OrchardCore.Modules
 
                 if (module != null)
                 {
-                    module.Feature.id = Name;
-                    module.Features.AddRange(features);
                     ModuleInfo = module;
+                    ModuleInfo.Features.AddRange(features);
                 }
                 else
                 {
                     ModuleInfo = new ModuleAttribute(Name: Name);
-                    ModuleInfo.Feature.id = Name;
                 }
+
+                ModuleInfo.Feature.id = Name;
             }
             else
             {

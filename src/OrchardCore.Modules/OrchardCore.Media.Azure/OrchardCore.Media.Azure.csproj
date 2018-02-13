@@ -5,20 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.FileStorage.AzureBlob\OrchardCore.FileStorage.AzureBlob.csproj" />
     <ProjectReference Include="..\OrchardCore.Admin\OrchardCore.Admin.csproj" />
     <ProjectReference Include="..\OrchardCore.Media\OrchardCore.Media.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Module.txt">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-      <Pack>true</Pack>
-    </None>
-    <None Update="README.md">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-      <Pack>true</Pack>
-    </None>
   </ItemGroup>
 
 </Project>
