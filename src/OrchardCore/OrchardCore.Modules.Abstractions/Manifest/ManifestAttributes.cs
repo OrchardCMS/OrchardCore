@@ -42,7 +42,7 @@ namespace OrchardCore.Modules.Manifest
             string Dependencies = "",
             string Priority = "0",
             string Category = null)
-            :base(Id: null, Name, Description, Dependencies, Priority, Category)
+            :base(null, Name, Description, Dependencies, Priority, Category)
         {
             author = Author;
             website = Website;
