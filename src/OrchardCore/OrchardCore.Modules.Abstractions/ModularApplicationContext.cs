@@ -112,10 +112,10 @@ namespace OrchardCore.Modules
                 }
                 else
                 {
-                    ModuleInfo = new ModuleAttribute(Name: Name);
+                    ModuleInfo = new ModuleAttribute { Name = Name };
                 }
 
-                ModuleInfo.id = Name;
+                ModuleInfo.Id = Name;
             }
             else
             {

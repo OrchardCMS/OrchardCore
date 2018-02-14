@@ -22,18 +22,18 @@ namespace OrchardCore.Environment.Extensions.Manifests
         }
 
         public bool Exists => _moduleInfo.Exists;
-        public string Name => _moduleInfo.name ?? _moduleInfo.id;
-        public string Description => _moduleInfo.description;
+        public string Name => _moduleInfo.Name ?? _moduleInfo.Id;
+        public string Description => _moduleInfo.Description;
         public string Type => _moduleInfo.Type;
-        public string Author => _moduleInfo.author;
-        public string Website => _moduleInfo.website;
+        public string Author => _moduleInfo.Author;
+        public string Website => _moduleInfo.Website;
         public Version Version => _version.Value;
         public IEnumerable<string> Tags => _tags.Value;
         public ModuleAttribute ModuleInfo => _moduleInfo;
 
         private IEnumerable<string> ParseTags()
         {
-            var tags = _moduleInfo.tags;
+            var tags = _moduleInfo.Tags;
 
             if (string.IsNullOrWhiteSpace(tags))
             {
@@ -45,7 +45,7 @@ namespace OrchardCore.Environment.Extensions.Manifests
 
         private Version ParseVersion()
         {
-            var value = _moduleInfo.version;
+            var value = _moduleInfo.Version;
 
             if (!Version.TryParse(value, out Version version))
             {

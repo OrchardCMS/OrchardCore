@@ -80,7 +80,7 @@ namespace OrchardCore.Tests.Extensions
         public void ShouldReturnExtension()
         {
             var extensions = ModuleThemeScopedExtensionManager.GetExtensions()
-                .Where(e => e.Manifest.ModuleInfo.category == "Test");
+                .Where(e => e.Manifest.ModuleInfo.Category == "Test");
 
             Assert.Equal(5, extensions.Count());
         }

@@ -18,7 +18,7 @@ namespace OrchardCore.DisplayManagement.Extensions
             _extensionInfo = extensionInfo;
 
             var themeInfo = _extensionInfo.Manifest.ModuleInfo as ThemeAttribute;
-            var baseTheme = themeInfo?.baseTheme;
+            var baseTheme = themeInfo?.BaseTheme;
 
             if (baseTheme != null && baseTheme.Length != 0) {
                 _baseTheme = baseTheme.Trim().ToString();

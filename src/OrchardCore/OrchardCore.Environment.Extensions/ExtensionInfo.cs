@@ -20,7 +20,7 @@ namespace OrchardCore.Environment.Extensions
             _features = features(manifestInfo, this);
         }
 
-        public string Id => _manifestInfo.ModuleInfo.id;
+        public string Id => _manifestInfo.ModuleInfo.Id;
         public string SubPath => _subPath;
         public IManifestInfo Manifest => _manifestInfo;
         public IEnumerable<IFeatureInfo> Features => _features;
