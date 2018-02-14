@@ -31,7 +31,7 @@ namespace OrchardCore.Environment.Extensions.Features
             var features = manifestInfo.ModuleInfo.Features.ToList();
             if (features.Count > 0)
             {
-                foreach (var feature in features)
+                foreach (var feature in features.Where(f => f.Exists))
                 {
                     var featureId = feature.Id;
                     var featureName = feature.Name ?? feature.Id;

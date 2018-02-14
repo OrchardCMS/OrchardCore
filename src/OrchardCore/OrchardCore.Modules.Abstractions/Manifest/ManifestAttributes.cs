@@ -16,7 +16,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         public virtual string Type => "Module";
-        public bool Exists => Id != null;
+        public new bool Exists => Id != null;
 
         /// <Summary>
         /// This identifier is overridden at runtime by the assembly name
@@ -49,6 +49,8 @@ namespace OrchardCore.Modules.Manifest
         public FeatureAttribute()
         {
         }
+
+        public bool Exists => Id != null;
 
         /// <Summary>The identifier of the feature.</Summary>
         public string Id { get; set; } = null;
