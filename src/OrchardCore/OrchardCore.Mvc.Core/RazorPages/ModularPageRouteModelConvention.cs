@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace OrchardCore.Mvc.RazorPages
@@ -10,34 +9,39 @@ namespace OrchardCore.Mvc.RazorPages
 
         public ModularPageRouteModelConvention(string pageName, string route)
         {
-            _pageName = pageName;
-            _route = route;
+            _pageName = pageName?.Trim('/');
+            _route = route?.Trim('/');
         }
 
         public void Apply(PageRouteModel model)
         {
-            if (!String.IsNullOrEmpty(_pageName) && model.ViewEnginePath.EndsWith(_pageName))
+            if (_pageName == null || _route == null)
             {
-                if (_pageName[0] == '/' && _pageName.Contains("/Pages/") && !_pageName.StartsWith("/Pages/"))
-                {
-                    foreach (var selector in model.Selectors)
-                    {
-                        selector.AttributeRouteModel.SuppressLinkGeneration = true;
-                    }
+                return;
+            }
 
-                    model.Selectors.Add(new SelectorModel
-                    {
-                        AttributeRouteModel = new AttributeRouteModel
-                        {
-                            Template = _route
-                        }
-                    });
+            var pageName = model.ViewEnginePath.Trim('/');
+
+            if (pageName.EndsWith('/' + _pageName))
+            {
+                foreach (var selector in model.Selectors)
+                {
+                    selector.AttributeRouteModel.SuppressLinkGeneration = true;
                 }
+
+                model.Selectors.Add(new SelectorModel
+                {
+                    AttributeRouteModel = new AttributeRouteModel
+                    {
+                        Template = _route,
+                        Name = _route.Replace('/', '.')
+                    }
+                });
             }
         }
     }
 
-    public static class PageConventionCollectionExtensions
+    public static partial class PageConventionCollectionExtensions
     {
         public static PageConventionCollection AddModularPageRoute(this PageConventionCollection conventions, string pageName, string route)
         {
