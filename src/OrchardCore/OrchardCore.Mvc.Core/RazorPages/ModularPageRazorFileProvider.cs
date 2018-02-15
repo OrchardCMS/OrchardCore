@@ -30,10 +30,20 @@ namespace OrchardCore.Mvc.RazorPages
 
             foreach (var path in _paths)
             {
-                if (folder.StartsWith(path, StringComparison.Ordinal))
+                if (folder == path)
                 {
-                    if (folder.Length == path.Length || folder.Contains("/Pages") ||
-                        folder.Substring(path.Length + 1).IndexOf('/') == -1)
+                    return _fileProvider.GetDirectoryContents(subpath);
+                }
+
+                if (folder.StartsWith(path + '/', StringComparison.Ordinal))
+                {
+                    if (folder.Substring(path.Length + 1).IndexOf('/') == -1)
+                    {
+                        return _fileProvider.GetDirectoryContents(subpath);
+                    }
+
+                    var tokenizer = new StringTokenizer(folder, new char[] { '/' });
+                    if (tokenizer.Any(s => s == "Pages" || s == "Components"))
                     {
                         return _fileProvider.GetDirectoryContents(subpath);
                     }

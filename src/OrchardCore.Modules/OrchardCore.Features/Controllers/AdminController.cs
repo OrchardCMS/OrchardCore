@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -9,10 +13,6 @@ using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Features.Models;
 using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Mvc.ActionConstraints;
 
 namespace OrchardCore.Features.Controllers
@@ -60,7 +60,7 @@ namespace OrchardCore.Features.Controllers
             var moduleFeatures = new List<ModuleFeature>();
             foreach (var moduleFeatureInfo in _extensionManager
                 .GetFeatures()
-                .Where(f => !f.Extension.Manifest.IsTheme()))
+                .Where(f => !(f.Extension is IThemeExtensionInfo)))
             {
                 var featureDependencies = _extensionManager.GetFeatureDependencies(moduleFeatureInfo.Id);
 

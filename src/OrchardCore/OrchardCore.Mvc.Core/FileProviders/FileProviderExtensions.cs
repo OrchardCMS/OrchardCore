@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.FileProviders;
 
-namespace OrchardCore.DisplayManagement.FileProviders
+namespace OrchardCore.Mvc.FileProviders
 {
     public static class FileProviderExtensions
     {
