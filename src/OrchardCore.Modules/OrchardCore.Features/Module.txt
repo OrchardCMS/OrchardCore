@@ -4,10 +4,8 @@ Author: The Orchard Team
 Website: http://orchardproject.net
 Version: 2.0.x
 OrchardVersion: 2.0.x
-Description: The Features module enables the administrator of the site to manage the installed modules as well as activate and de-activate features.
-Category: Infrastructure
 Features:
     OrchardCore.Features:
-        Description: Standard module and feature management.
+        Description: The Features module enables the administrator of the site to manage the installed modules as well as activate and de-activate features.
         Dependencies: OrchardCore.Resources
         Category: Infrastructure

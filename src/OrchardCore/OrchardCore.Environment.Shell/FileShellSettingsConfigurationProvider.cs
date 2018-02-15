@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
@@ -33,7 +33,7 @@ namespace OrchardCore.Environment.Shell
         {
             Features = shellSettings
                 .Configuration
-                .Where(xd => xd.Key.StartsWith("Features:")).Select(xa => xa.Value).ToArray();
+                .Where(x => x.Key.StartsWith("Features") && x.Value != null).Select(x => x.Value).ToArray();
         }
 
         public string[] Features { get; set; }

@@ -21,13 +21,13 @@ In the following example, we describe the placement for the `TextField` and `Par
 A placement rule contains two sets of data:
 
 - Filters
-  - Defines what specific shapes are targetted.
+  - Defines what specific shapes are targeted.
 - Placement information
   - The placement information to apply when the filter is matched.
 
 Currently you can filter shapes by:
 
-- Their original type, which is the property name of the placement rule, like 'TextField'.
+- Their original type, which is the property name of the placement rule, like `TextField`.
 - `display-type` (Optional): The display type, like `Summary` and `Detail` for the most common ones.
 - `differentiator` (Optional): The differentiator which is used to distinguish shape types that are reused for multiple elements, like field names.
 

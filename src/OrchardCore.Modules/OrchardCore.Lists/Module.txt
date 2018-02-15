@@ -4,10 +4,9 @@ Author: The Orchard Team
 Website: http://orchardproject.net
 Version: 2.0.x
 OrchardVersion: 2.0
-Description: Introduces a preconfigured container-enabled content type.
 Features:
     OrchardCore.Lists:
         Name: Lists
         Description: Introduces a preconfigured container-enabled content type.
         Category: Content Management
-        Dependencies: OrchardCore.Contents, OrchardCore.ContentTypes
+        Dependencies: OrchardCore.ContentTypes

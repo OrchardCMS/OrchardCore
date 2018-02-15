@@ -20,7 +20,7 @@ namespace OrchardCore.Settings
                 return;
             }
 
-            builder.Add(T["Design"], design => design
+            builder.Add(T["Configuration"], configuration => configuration
                 .Add(T["Settings"], "1", settings => settings
                     .Add(T["General"], T["General"], entry => entry
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })

@@ -10,7 +10,7 @@ namespace OrchardCore.OpenId
         {
             SchemaBuilder.CreateMapIndexTable(nameof(OpenIdApplicationIndex), table => table
                 .Column<string>(nameof(OpenIdApplicationIndex.ApplicationId), column => column.WithLength(48))
-                .Column<string>(nameof(OpenIdApplicationIndex.ClientId)));
+                .Column<string>(nameof(OpenIdApplicationIndex.ClientId), column => column.Unique()));
 
             SchemaBuilder.CreateReduceIndexTable(nameof(OpenIdApplicationByPostLogoutRedirectUriIndex), table => table
                 .Column<string>(nameof(OpenIdApplicationByPostLogoutRedirectUriIndex.PostLogoutRedirectUri))
@@ -40,7 +40,7 @@ namespace OrchardCore.OpenId
                 .Column<string>(nameof(OpenIdTokenIndex.ApplicationId), column => column.WithLength(48))
                 .Column<string>(nameof(OpenIdTokenIndex.AuthorizationId), column => column.WithLength(48))
                 .Column<DateTimeOffset>(nameof(OpenIdTokenIndex.ExpirationDate))
-                .Column<string>(nameof(OpenIdTokenIndex.ReferenceId))
+                .Column<string>(nameof(OpenIdTokenIndex.ReferenceId), column => column.Unique())
                 .Column<string>(nameof(OpenIdTokenIndex.Status))
                 .Column<string>(nameof(OpenIdTokenIndex.Subject)));
 
