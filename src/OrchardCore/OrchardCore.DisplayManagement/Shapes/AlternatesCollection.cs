@@ -18,21 +18,6 @@ namespace OrchardCore.DisplayManagement.Shapes
             AddRange(alternates);
         }
 
-        public void Insert(int index, string alternate)
-        {
-            if (alternate == null)
-            {
-                throw new ArgumentNullException(nameof(alternate));
-            }
-
-            EnsureCollection();
-
-            if (!_collection.Contains(alternate))
-            {
-                _collection.Insert(index, alternate);
-            }
-        }
-
         public void Add(string alternate)
         {
             if (alternate == null)

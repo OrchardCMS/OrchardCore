@@ -161,7 +161,7 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 if (ThemeLayout is IShape layout)
                 {
-                    layout.Metadata.Alternates.Insert(0, value);
+                    layout.Metadata.Alternates.Add(value);
                 }
             }
         }
