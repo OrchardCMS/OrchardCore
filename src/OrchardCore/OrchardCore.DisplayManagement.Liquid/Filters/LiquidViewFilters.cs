@@ -20,12 +20,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             filters.AddAsyncFilter("html_class", HtmlClass);
             filters.AddAsyncFilter("new_shape", NewShape);
             filters.AddAsyncFilter("shape_string", ShapeString);
-            filters.AddAsyncFilter("clear_alternates", ClearAlternates);
-            filters.AddAsyncFilter("add_alternates", AddAlternates);
-            filters.AddAsyncFilter("clear_wrappers", ClearWrappers);
-            filters.AddAsyncFilter("add_wrappers", AddWrappers);
-            filters.AddAsyncFilter("clear_classes", ClearClasses);
-            filters.AddAsyncFilter("add_classes", AddClasses);
+
             filters.AddAsyncFilter("shape_type", ShapeType);
             filters.AddAsyncFilter("display_type", DisplayType);
             filters.AddAsyncFilter("shape_position", ShapePosition);
@@ -86,117 +81,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
             var shape = input.ToObjectValue() as IShape;
             return new StringValue((await (Task<IHtmlContent>)displayHelper(shape)).ToString());
-        }
-
-        public static Task<FluidValue> ClearAlternates(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            if(input.ToObjectValue() is IShape shape && shape.Metadata.Alternates.Count > 0)
-            {
-                shape.Metadata.Alternates.Clear();
-            }
-
-            return Task.FromResult(input);
-        }
-
-        public static Task<FluidValue> AddAlternates(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            if (input.ToObjectValue() is IShape shape)
-            {
-                var alternates = arguments["alternates"].Or(arguments.At(0));
-
-                if (alternates.Type == FluidValues.String)
-                {
-                    var values = alternates.ToStringValue().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    foreach (var value in values)
-                    {
-                        shape.Metadata.Alternates.Add(value);
-                    }
-                }
-                else if (alternates.Type == FluidValues.Array)
-                {
-                    foreach (var value in alternates.Enumerate())
-                    {
-                        shape.Metadata.Alternates.Add(value.ToStringValue());
-                    }
-                }
-            }
-
-            return Task.FromResult(input);
-        }
-
-        public static Task<FluidValue> ClearWrappers(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            if (input.ToObjectValue() is IShape shape && shape.Metadata.Alternates.Count > 0)
-            {
-                shape.Metadata.Wrappers.Clear();
-            }
-
-            return Task.FromResult(input);
-        }
-
-        public static Task<FluidValue> AddWrappers(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            if (input.ToObjectValue() is IShape shape)
-            {
-                var alternates = arguments["wrappers"].Or(arguments.At(0));
-
-                if (alternates.Type == FluidValues.String)
-                {
-                    var values = alternates.ToStringValue().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    foreach (var value in values)
-                    {
-                        shape.Metadata.Wrappers.Add(value);
-                    }
-                }
-                else if (alternates.Type == FluidValues.Array)
-                {
-                    foreach (var value in alternates.Enumerate())
-                    {
-                        shape.Metadata.Wrappers.Add(value.ToStringValue());
-                    }
-                }
-            }
-
-            return Task.FromResult(input);
-        }
-
-        public static Task<FluidValue> ClearClasses(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            if (input.ToObjectValue() is IShape shape && shape.Classes.Count > 0)
-            {
-                shape.Classes.Clear();
-            }
-
-            return Task.FromResult(input);
-        }
-
-        public static Task<FluidValue> AddClasses(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            if (input.ToObjectValue() is IShape shape)
-            {
-                var classes = arguments["classes"].Or(arguments.At(0));
-
-                if (classes.Type == FluidValues.String)
-                {
-                    var values = classes.ToStringValue().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    foreach (var value in values)
-                    {
-                        shape.Classes.Add(value);
-                    }
-                }
-                else if (classes.Type == FluidValues.Array)
-                {
-                    foreach (var value in classes.Enumerate())
-                    {
-                        shape.Classes.Add(value.ToStringValue());
-                    }
-                }
-            }
-
-            return Task.FromResult(input);
         }
 
         public static Task<FluidValue> ShapeType(FluidValue input, FilterArguments arguments, TemplateContext context)
