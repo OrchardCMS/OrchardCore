@@ -304,10 +304,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{184139CF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Authentication", "src\OrchardCore.Modules\OrchardCore.Authentication\OrchardCore.Authentication.csproj", "{EBF17F69-89F2-42C3-85CA-49504E0409B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.IdGeneration.Abstractions", "src\OrchardCore\OrchardCore.IdGeneration.Abstractions\OrchardCore.IdGeneration.Abstractions.csproj", "{9C0AE707-368D-4641-B4D2-E3949024EF91}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.IdGeneration", "OrchardCore.IdGeneration\OrchardCore.IdGeneration.csproj", "{8600042B-5AC8-4393-AE1A-ED8AA9B470FD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -842,14 +838,6 @@ Global
 		{EBF17F69-89F2-42C3-85CA-49504E0409B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBF17F69-89F2-42C3-85CA-49504E0409B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBF17F69-89F2-42C3-85CA-49504E0409B8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9C0AE707-368D-4641-B4D2-E3949024EF91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9C0AE707-368D-4641-B4D2-E3949024EF91}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9C0AE707-368D-4641-B4D2-E3949024EF91}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9C0AE707-368D-4641-B4D2-E3949024EF91}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8600042B-5AC8-4393-AE1A-ED8AA9B470FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8600042B-5AC8-4393-AE1A-ED8AA9B470FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8600042B-5AC8-4393-AE1A-ED8AA9B470FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8600042B-5AC8-4393-AE1A-ED8AA9B470FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -999,8 +987,6 @@ Global
 		{5C795749-3907-4F12-A1EF-A7C4AFA0B92F} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{12C4BD5B-207C-4A90-9F9F-E41EABBCD157} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{EBF17F69-89F2-42C3-85CA-49504E0409B8} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
-		{9C0AE707-368D-4641-B4D2-E3949024EF91} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
-		{8600042B-5AC8-4393-AE1A-ED8AA9B470FD} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

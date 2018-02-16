@@ -7,7 +7,6 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Cache;
-using OrchardCore.IdGeneration;
 using YesSql.Indexes;
 
 namespace OrchardCore.ContentManagement

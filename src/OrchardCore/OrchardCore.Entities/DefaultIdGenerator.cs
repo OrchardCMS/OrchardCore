@@ -1,6 +1,6 @@
 using System;
 
-namespace OrchardCore.IdGeneration
+namespace OrchardCore.Entities
 {
     public class DefaultIdGenerator : IIdGenerator
     {

@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using OrchardCore.IdGeneration.Scripting;
+using OrchardCore.Entities.Scripting;
 using OrchardCore.Scripting;
 
-namespace OrchardCore.IdGeneration
+namespace OrchardCore.Entities
 {
     public static class ServiceCollectionExtensions
     {

@@ -1,4 +1,4 @@
-namespace OrchardCore.IdGeneration
+namespace OrchardCore.Entities
 {
     public interface IIdGenerator
     {

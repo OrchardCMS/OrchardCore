@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Scripting;
 
-namespace OrchardCore.IdGeneration.Scripting
+namespace OrchardCore.Entities.Scripting
 {
     public class IdGeneratorMethod : IGlobalMethodProvider
     {
