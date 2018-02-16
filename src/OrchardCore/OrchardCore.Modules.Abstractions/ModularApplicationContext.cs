@@ -66,11 +66,6 @@ namespace OrchardCore.Modules
             Name = application;
             Assembly = Assembly.Load(new AssemblyName(application));
             ModuleNames = new EmbeddedFileProvider(Assembly).GetFileInfo(ModuleNamesMap).ReadAllLines();
-
-            //ModuleNames = DependencyContext.Default.RuntimeLibraries
-            //    .Where(lib => !lib.Name.EndsWith(".Targets") && lib.Dependencies.Any(dep =>
-            //        dep.Name == "OrchardCore.Module.Targets" || dep.Name == "OrchardCore.Theme.Targets"))
-            //    .Select(lib => lib.Name);
         }
 
         public string Name { get; }
