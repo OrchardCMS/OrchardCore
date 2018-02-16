@@ -13,7 +13,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
         {
             var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
 
-            if (objectValue is IShape shape)
+            if (objectValue is IShape shape && shape.Metadata.Alternates.Count > 0)
             {
                 shape.Metadata.Alternates.Clear();
             }

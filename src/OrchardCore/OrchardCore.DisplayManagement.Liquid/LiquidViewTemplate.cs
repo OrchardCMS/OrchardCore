@@ -50,6 +50,12 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterTag<AddWrappersTag>("add_wrappers");
             Factory.RegisterTag<ClearClassesTag>("clear_classes");
             Factory.RegisterTag<AddClassesTag>("add_classes");
+            Factory.RegisterTag<ShapeTypeTag>("shape_type");
+            Factory.RegisterTag<DisplayTypeTag>("display_type");
+            Factory.RegisterTag<ShapePositionTag>("shape_position");
+            Factory.RegisterTag<ShapeTabTag>("shape_tab");
+            Factory.RegisterTag<RemoveItemTag>("remove_item");
+            Factory.RegisterTag<SetPropertiesTag>("set_properties");
 
             Factory.RegisterTag<HelperTag>("helper");
             Factory.RegisterTag<NamedHelperTag>("shape");

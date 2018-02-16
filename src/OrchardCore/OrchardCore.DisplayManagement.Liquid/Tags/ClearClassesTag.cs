@@ -7,13 +7,13 @@ using Fluid.Tags;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class ClearClasses : ExpressionTag
+    public class ClearClassesTag : ExpressionTag
     {
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression)
         {
             var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
 
-            if (objectValue is IShape shape)
+            if (objectValue is IShape shape && shape.Classes.Count > 0)
             {
                 shape.Classes.Clear();
             }

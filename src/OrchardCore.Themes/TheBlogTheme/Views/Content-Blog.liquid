@@ -16,4 +16,5 @@
     </header>
 {% endzone %}
 
-{% display Model.Content | remove_item: "BodyPart" %}
+{% remove_item Model "BodyPart" %}
+{% display Model.Content %}

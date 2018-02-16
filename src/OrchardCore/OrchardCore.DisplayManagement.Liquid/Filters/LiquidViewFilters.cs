@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
@@ -20,13 +18,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             filters.AddAsyncFilter("html_class", HtmlClass);
             filters.AddAsyncFilter("new_shape", NewShape);
             filters.AddAsyncFilter("shape_string", ShapeString);
-
-            filters.AddAsyncFilter("shape_type", ShapeType);
-            filters.AddAsyncFilter("display_type", DisplayType);
-            filters.AddAsyncFilter("shape_position", ShapePosition);
-            filters.AddAsyncFilter("shape_tab", ShapeTab);
-            filters.AddAsyncFilter("remove_item", RemoveItem);
-            filters.AddAsyncFilter("set_properties", SetProperties);
 
             return filters;
         }
@@ -83,98 +74,11 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             return new StringValue((await (Task<IHtmlContent>)displayHelper(shape)).ToString());
         }
 
-        public static Task<FluidValue> ShapeType(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            if (input.ToObjectValue() is IShape shape)
-            {
-                shape.Metadata.Type = arguments["type"].Or(arguments.At(0)).ToStringValue();
-            }
-
-            return Task.FromResult(input);
-        }
-
-        public static Task<FluidValue> DisplayType(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            if (input.ToObjectValue() is IShape shape)
-            {
-                shape.Metadata.DisplayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
-            }
-
-            return Task.FromResult(input);
-        }
-
-        public static Task<FluidValue> ShapePosition(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            if (input.ToObjectValue() is IShape shape)
-            {
-                shape.Metadata.Position = arguments["position"].Or(arguments.At(0)).ToStringValue();
-            }
-
-            return Task.FromResult(input);
-        }
-
         public static Task<FluidValue> ShapeTab(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             if (input.ToObjectValue() is IShape shape)
             {
                 shape.Metadata.Tab = arguments["tab"].Or(arguments.At(0)).ToStringValue();
-            }
-
-            return Task.FromResult(input);
-        }
-
-        public static Task<FluidValue> RemoveItem(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            if (input.ToObjectValue() is Shape shape && shape.Items != null)
-            {
-                shape.Remove(arguments["item"].Or(arguments.At(0)).ToStringValue());
-            }
-
-            return Task.FromResult(input);
-        }
-
-        public static Task<FluidValue> SetProperties(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            var obj = input.ToObjectValue() as dynamic;
-
-            if (obj != null)
-            {
-                foreach (var name in arguments.Names)
-                {
-                    var argument = arguments[name];
-                    var propertyName = LowerKebabToPascalCase(name);
-
-                    if (argument.Type == FluidValues.Array)
-                    {
-                        var values = argument.Enumerate();
-
-                        if (values.Count() > 0)
-                        {
-                            var type = values.First().Type;
-
-                            if (type == FluidValues.String)
-                            {
-                                obj[propertyName] = values.Select(v => v.ToStringValue());
-                            }
-                            else if (type == FluidValues.Number)
-                            {
-                                obj[propertyName] = values.Select(v => v.ToNumberValue());
-                            }
-                            else if (type == FluidValues.Boolean)
-                            {
-                                obj[propertyName] = values.Select(v => v.ToBooleanValue());
-                            }
-                            else
-                            {
-                                obj[propertyName] = values.Select(v => v.ToObjectValue());
-                            }
-                        }
-                    }
-                    else
-                    {
-                        obj[propertyName] = argument.ToObjectValue();
-                    }
-                }
             }
 
             return Task.FromResult(input);
