@@ -148,7 +148,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 {
                     if (layout.Metadata.Alternates.Count > 0)
                     {
-                        return layout.Metadata.Alternates.First();
+                        return layout.Metadata.Alternates.Last();
                     }
 
                     return layout.Metadata.Type;
@@ -161,6 +161,16 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 if (ThemeLayout is IShape layout)
                 {
+                    if (layout.Metadata.Alternates.Contains(value))
+                    {
+                        if (layout.Metadata.Alternates.Last() == value)
+                        {
+                            return;
+                        }
+
+                        layout.Metadata.Alternates.Remove(value);
+                    }
+
                     layout.Metadata.Alternates.Add(value);
                 }
             }
