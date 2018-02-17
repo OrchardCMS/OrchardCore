@@ -33,7 +33,7 @@ namespace OrchardCore.Hosting.ShellBuilders
         /// <remarks>
         /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
         /// </remarks>
-        public IServiceScope EnterServiceScope(bool newHttpContext = false)
+        public IServiceScope EnterServiceScope()
         {
             if (_disposed)
             {
@@ -45,7 +45,7 @@ namespace OrchardCore.Hosting.ShellBuilders
                 throw new InvalidOperationException("Can't use EnterServiceScope on a released context");
             }
 
-            return new ServiceScopeWrapper(ServiceProvider.CreateScope(), newHttpContext);
+            return new ServiceScopeWrapper(ServiceProvider.CreateScope());
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace OrchardCore.Hosting.ShellBuilders
                 _disposed = true;
             }
         }
-        
+
         ~ShellContext()
         {
             Dispose(false);
@@ -124,14 +124,14 @@ namespace OrchardCore.Hosting.ShellBuilders
             private readonly IServiceProvider _existingServices;
             private readonly HttpContext _httpContext;
 
-            public ServiceScopeWrapper(IServiceScope serviceScope, bool newHttpContext = false)
+            public ServiceScopeWrapper(IServiceScope serviceScope)
             {
                 ServiceProvider = serviceScope.ServiceProvider;
                 _serviceScope = serviceScope;
 
                 var httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
 
-                if (newHttpContext)
+                if (httpContextAccessor.HttpContext == null)
                 {
                     httpContextAccessor.HttpContext = new DefaultHttpContext();
                 }
