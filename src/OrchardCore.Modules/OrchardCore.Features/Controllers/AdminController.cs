@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Admin;
@@ -9,10 +13,6 @@ using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Features.Models;
 using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Mvc.ActionConstraints;
 
 namespace OrchardCore.Features.Controllers
@@ -60,10 +60,9 @@ namespace OrchardCore.Features.Controllers
             var moduleFeatures = new List<ModuleFeature>();
             foreach (var moduleFeatureInfo in _extensionManager
                 .GetFeatures()
-                .Where(f => !f.Extension.Manifest.IsTheme()))
+                .Where(f => !(f.Extension is IThemeExtensionInfo)))
             {
-                var dependentFeatures = _extensionManager
-                    .GetDependentFeatures(moduleFeatureInfo.Id);
+                var featureDependencies = _extensionManager.GetFeatureDependencies(moduleFeatureInfo.Id);
 
                 var moduleFeature = new ModuleFeature
                 {
@@ -71,7 +70,8 @@ namespace OrchardCore.Features.Controllers
                     IsEnabled = enabledFeatures.Contains(moduleFeatureInfo),
                     //IsRecentlyInstalled = _moduleService.IsRecentlyInstalled(f.Extension),
                     //NeedsUpdate = featuresThatNeedUpdate.Contains(f.Id),
-                    DependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id).ToList()
+                    //DependentFeatures = dependentFeatures.Where(f => f.Id != moduleFeatureInfo.Id).ToList(),
+                    FeatureDependencies = featureDependencies.Where(d => d.Id != moduleFeatureInfo.Id).ToList()
                 };
 
                 moduleFeatures.Add(moduleFeature);

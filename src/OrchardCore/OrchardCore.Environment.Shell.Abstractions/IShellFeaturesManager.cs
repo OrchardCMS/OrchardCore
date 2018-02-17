@@ -1,6 +1,7 @@
-﻿using OrchardCore.Environment.Extensions.Features;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -12,5 +13,6 @@ namespace OrchardCore.Environment.Shell
         Task<IEnumerable<IFeatureInfo>> GetDisabledFeaturesAsync();
         Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(IEnumerable<IFeatureInfo> features);
         Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force);
+        Task<IEnumerable<IExtensionInfo>> GetEnabledExtensionsAsync();
     }
 }
