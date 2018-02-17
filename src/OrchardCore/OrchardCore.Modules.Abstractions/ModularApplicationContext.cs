@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Embedded;
 using OrchardCore.Modules.FileProviders;
-using OrchardCore.Modules.Internal;
 using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.Modules
@@ -65,7 +65,11 @@ namespace OrchardCore.Modules
         {
             Name = application;
             Assembly = Assembly.Load(new AssemblyName(application));
-            ModuleNames = ModuleAssemblyNamesProvider.GetModuleAssemblyNames(Assembly).Select(a => a.Name);
+
+            ModuleNames = DependencyContext.Default
+                .GetCandidateLibraries(new[] { application, "OrchardCore.Module.Targets" })
+                .Where(lib => !lib.Name.EndsWith(".Targets", StringComparison.OrdinalIgnoreCase))
+                .Select(a => a.Name);
         }
 
         public string Name { get; }

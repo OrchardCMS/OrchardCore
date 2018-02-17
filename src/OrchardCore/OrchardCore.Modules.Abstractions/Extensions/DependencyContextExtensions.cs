@@ -1,70 +1,51 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Microsoft.Extensions.DependencyModel;
 
-namespace OrchardCore.Modules.Internal
+namespace OrchardCore.Modules
 {
-    // Discovers module assembly names that are part of the application using the DependencyContext.
-    public static class ModuleAssemblyNamesProvider
+    public static class DependencyContextExtensions
     {
-        internal static HashSet<string> ReferenceAssemblies { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        /// <summary>
+        /// Returns libraries which depend on one of the 'references'/>.
+        /// </summary>
+        public static IEnumerable<RuntimeLibrary> GetCandidateLibraries(
+            this DependencyContext dependencyContext, IEnumerable<string> references)
         {
-            "OrchardCore.Module.Targets"
-        };
-
-        internal static IEnumerable<AssemblyName> GetModuleAssemblyNames(Assembly application)
-        {
-            if (DependencyContext.Default == null)
-            {
-                return Enumerable.Empty<AssemblyName>();
-            }
-
-            var applicationName = application.GetName().Name;
-
-            return GetCandidateLibraries(DependencyContext.Default)
-                .SelectMany(lib => lib.GetDefaultAssemblyNames(DependencyContext.Default))
-                .Where(lib => !applicationName.Equals(lib.Name, StringComparison.OrdinalIgnoreCase) &&
-                    !lib.Name.EndsWith(".Targets", StringComparison.OrdinalIgnoreCase));
-        }
-
-        // Returns a list of libraries that references the assemblies in <see cref="ReferenceAssemblies"/>.
-        internal static IEnumerable<RuntimeLibrary> GetCandidateLibraries(DependencyContext dependencyContext)
-        {
-            if (ReferenceAssemblies == null)
+            if (references == null)
             {
                 return Enumerable.Empty<RuntimeLibrary>();
             }
 
-            var candidatesResolver = new CandidateResolver(dependencyContext.RuntimeLibraries, ReferenceAssemblies);
-            return candidatesResolver.GetCandidates();
+            return new CandidateResolver(dependencyContext.RuntimeLibraries,
+                new HashSet<string>(references)).GetCandidates();
         }
 
         private class CandidateResolver
         {
             private readonly IDictionary<string, Dependency> _runtimeDependencies;
 
-            public CandidateResolver(IReadOnlyList<RuntimeLibrary> runtimeDependencies, ISet<string> referenceAssemblies)
+            public CandidateResolver(IReadOnlyList<RuntimeLibrary> runtimeDependencies, ISet<string> references)
             {
                 var dependenciesWithNoDuplicates = new Dictionary<string, Dependency>(StringComparer.OrdinalIgnoreCase);
                 foreach (var dependency in runtimeDependencies)
                 {
                     if (dependenciesWithNoDuplicates.ContainsKey(dependency.Name))
                     {
-                        throw new InvalidOperationException(
-                            $"A duplicate entry for library reference { dependency.Name } was found.");
+                        throw new InvalidOperationException($"A duplicate entry for library reference {dependency.Name} was found.");
                     }
-                    dependenciesWithNoDuplicates.Add(dependency.Name, CreateDependency(dependency, referenceAssemblies));
+
+                    dependenciesWithNoDuplicates.Add(dependency.Name, CreateDependency(dependency, references));
                 }
 
                 _runtimeDependencies = dependenciesWithNoDuplicates;
             }
 
-            private Dependency CreateDependency(RuntimeLibrary library, ISet<string> referenceAssemblies)
+            private Dependency CreateDependency(RuntimeLibrary library, ISet<string> references)
             {
                 var classification = DependencyClassification.Unknown;
-                if (referenceAssemblies.Contains(library.Name))
+                if (references.Contains(library.Name))
                 {
                     classification = DependencyClassification.Reference;
                 }
@@ -140,19 +121,17 @@ namespace OrchardCore.Modules.Internal
                 Unknown = 0,
 
                 /// <summary>
-                /// References (directly or transitively) one of the packages listed in
-                /// <see cref="ReferenceAssemblies"/>.
+                /// References (directly or transitively).
                 /// </summary>
                 References = 1,
 
                 /// <summary>
-                /// Does not reference (directly or transitively) one of the packages listed by
-                /// <see cref="ReferenceAssemblies"/>.
+                /// Does not reference (directly or transitively).
                 /// </summary>
                 DoesNotReference = 2,
 
                 /// <summary>
-                /// One of the references listed in <see cref="ReferenceAssemblies"/>.
+                /// One of the references.
                 /// </summary>
                 Reference = 3,
             }
