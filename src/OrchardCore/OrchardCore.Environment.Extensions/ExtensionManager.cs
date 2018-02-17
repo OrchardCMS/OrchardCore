@@ -352,7 +352,6 @@ namespace OrchardCore.Environment.Extensions
         {
             return featuresToOrder
                 .OrderBy(x => x.Id)
-                .Distinct()
                 .OrderByDependenciesAndPriorities(HasDependency, GetPriority)
                 .ToArray();
         }
