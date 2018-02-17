@@ -8,7 +8,6 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;
-using OrchardCore.Contents.Filters;
 using OrchardCore.Contents.Handlers;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Contents.Liquid;

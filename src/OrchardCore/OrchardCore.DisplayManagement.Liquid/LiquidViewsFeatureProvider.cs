@@ -4,9 +4,9 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
-using OrchardCore.DisplayManagement.FileProviders;
 using OrchardCore.DisplayManagement.Liquid.Internal;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.FileProviders;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {

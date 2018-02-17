@@ -8,7 +8,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.Contents.Filters
+namespace OrchardCore.Contents.Liquid
 {
     public class BuildDisplayFilter : ILiquidFilter
     {

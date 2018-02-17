@@ -43,7 +43,8 @@ namespace OrchardCore.Mvc.LocationExpander
                     var modulesWithComponentViews = new List<IExtensionInfo>();
 
                     var orderedModules = _extensionManager.GetExtensions()
-                        .Where(e => !(e is IThemeExtensionInfo)).Reverse();
+                        .Where(e => e.Manifest.Type.Equals("module", StringComparison.OrdinalIgnoreCase))
+                        .Reverse();
 
                     foreach (var module in orderedModules)
                     {
