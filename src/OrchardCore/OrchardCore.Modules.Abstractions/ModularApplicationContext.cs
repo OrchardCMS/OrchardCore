@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Embedded;
 using OrchardCore.Modules.FileProviders;
+using OrchardCore.Modules.Internal;
 using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.Modules
@@ -59,13 +60,12 @@ namespace OrchardCore.Modules
     {
         public const string ModulesPath = ".Modules";
         public static string ModulesRoot = ModulesPath + "/";
-        private const string ModuleNamesMap = "module.names.map";
 
         public Application(string application)
         {
             Name = application;
             Assembly = Assembly.Load(new AssemblyName(application));
-            ModuleNames = new EmbeddedFileProvider(Assembly).GetFileInfo(ModuleNamesMap).ReadAllLines();
+            ModuleNames = ModuleAssemblyNamesProvider.GetModuleAssemblyNames(Assembly).Select(a => a.Name);
         }
 
         public string Name { get; }

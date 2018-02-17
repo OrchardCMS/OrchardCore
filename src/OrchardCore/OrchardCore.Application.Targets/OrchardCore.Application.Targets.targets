@@ -2,10 +2,10 @@
 
   <!-- 
     This file is packaged with "OrchardCore.Application.Targets.nupkg" in "./build" such that any
-    Application that references it will embedd in its assembly a list of the referenced modules.
+    Application that references it can resolve all modules references used for view precompilation.
   -->
 
-  <Target Name="EmbeddModuleNames" AfterTargets="AfterResolveReferences">
+  <Target Name="ResolveModuleProjectReferences" AfterTargets="AfterResolveReferences">
 
     <MSBuild
       Targets="GetModuleProject"
@@ -20,26 +20,6 @@
 
     <ItemGroup>
       <ModuleProjectReferences Include="@(ModuleProjects)" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ModuleProjectNames Include="%(ModuleProjectReferences.FileName)" />
-      <ModuleNames Include="@(ModulePackageNames);@(ModuleProjectNames)" />
-    </ItemGroup>
-
-    <WriteLinesToFile
-      File="$(IntermediateOutputPath)module.names.map"
-      Lines="@(ModuleNames)"
-      WriteOnlyWhenDifferent="true"
-      Condition="'@(ModuleNames)' != ''"
-      Overwrite="true"
-      Encoding="utf-8"
-      ContinueOnError="true" />
-
-    <ItemGroup>
-      <EmbeddedResource Include="$(IntermediateOutputPath)module.names.map">
-        <Link>module.names.map</Link>
-      </EmbeddedResource>
     </ItemGroup>
 
   </Target>
