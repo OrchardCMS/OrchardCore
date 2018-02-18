@@ -25,6 +25,13 @@
     <EmbeddedResource Update="@(EmbeddedResource)" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
+  <Target Name="GetModuleAttributes" BeforeTargets="BeforeBuild">
+    <ItemGroup>
+      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleMarkerAttribute">
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
+
   <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
 
     <RemoveDuplicates Inputs="@(EmbeddedResource)">

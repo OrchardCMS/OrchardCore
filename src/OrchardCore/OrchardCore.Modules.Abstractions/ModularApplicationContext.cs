@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.FileProviders;
@@ -26,7 +27,29 @@ namespace OrchardCore.Modules
                 {
                     if (_application == null)
                     {
-                        _application = new Application(environment.ApplicationName);
+                        var application = environment.ApplicationName;
+
+                        var candidateAssemblies = DependencyContext.Default
+                            .GetCandidateLibraries(new[] { application, "OrchardCore.Module.Targets" })
+                            .Select(lib => new AssemblyName(lib.Name)).ToArray();
+
+                        // Preload candidate assemblies
+                        Parallel.ForEach(candidateAssemblies, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (a) =>
+                        {
+                            Assembly.Load(a);
+                        });
+
+                        // Keep candidates marked as modules
+                        var moduleNames = candidateAssemblies
+                            .Where(a => Assembly.Load(a).GetCustomAttribute<ModuleMarkerAttribute>() != null)
+                            .Select(a => a.Name).ToArray();
+
+                        _application = new Application()
+                        {
+                            Name = application,
+                            Assembly = Assembly.Load(application),
+                            ModuleNames = moduleNames
+                        };
                     }
                 }
             }
@@ -61,21 +84,13 @@ namespace OrchardCore.Modules
         public const string ModulesPath = ".Modules";
         public static string ModulesRoot = ModulesPath + "/";
 
-        public Application(string application)
+        public Application()
         {
-            Name = application;
-            Assembly = Assembly.Load(new AssemblyName(application));
-
-            ModuleNames = DependencyContext.Default
-                .GetCandidateLibraries(new[] { application, "OrchardCore.Module.Targets" })
-                .Where(lib => !lib.Name.EndsWith(".Targets", StringComparison.OrdinalIgnoreCase))
-                .Select(a => a.Name)
-                .ToArray();
         }
 
-        public string Name { get; }
-        public Assembly Assembly { get; }
-        public IEnumerable<string> ModuleNames { get; }
+        public string Name { get; internal set; }
+        public Assembly Assembly { get; internal set; }
+        public IEnumerable<string> ModuleNames { get; internal set; }
     }
 
     public class Module

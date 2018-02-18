@@ -4,6 +4,18 @@ using System.Collections.Generic;
 namespace OrchardCore.Modules.Manifest
 {
     /// <summary>
+    /// Marks an assembly as a module.
+    /// </summary>
+
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
+    public class ModuleMarkerAttribute : Attribute
+    {
+        public ModuleMarkerAttribute()
+        {
+        }
+    }
+
+    /// <summary>
     /// Defines a Module which is composed of features.
     /// If the Module has only one default feature, it may be defined there.
     /// </summary>
