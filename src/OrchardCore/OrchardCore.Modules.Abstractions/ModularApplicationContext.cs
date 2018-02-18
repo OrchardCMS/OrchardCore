@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Embedded;
-using OrchardCore.Modules.FileProviders;
 using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.Modules
@@ -27,29 +24,7 @@ namespace OrchardCore.Modules
                 {
                     if (_application == null)
                     {
-                        var application = environment.ApplicationName;
-
-                        var candidateAssemblies = DependencyContext.Default
-                            .GetCandidateLibraries(new[] { application, "OrchardCore.Module.Targets" })
-                            .Select(lib => new AssemblyName(lib.Name)).ToArray();
-
-                        // Preload candidate assemblies
-                        Parallel.ForEach(candidateAssemblies, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (a) =>
-                        {
-                            Assembly.Load(a);
-                        });
-
-                        // Keep candidates marked as modules
-                        var moduleNames = candidateAssemblies
-                            .Where(a => Assembly.Load(a).GetCustomAttribute<ModuleMarkerAttribute>() != null)
-                            .Select(a => a.Name).ToArray();
-
-                        _application = new Application()
-                        {
-                            Name = application,
-                            Assembly = Assembly.Load(application),
-                            ModuleNames = moduleNames
-                        };
+                        _application = new Application(environment.ApplicationName);
                     }
                 }
             }
@@ -84,13 +59,19 @@ namespace OrchardCore.Modules
         public const string ModulesPath = ".Modules";
         public static string ModulesRoot = ModulesPath + "/";
 
-        public Application()
+        public Application(string application)
         {
+            Name = application;
+            Assembly = Assembly.Load(new AssemblyName(application));
+
+            ModuleNames = Assembly.GetCustomAttribute<ModuleNamesAttribute>()?.Names
+                .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                .ToArray() ?? Enumerable.Empty<string>();
         }
 
-        public string Name { get; internal set; }
-        public Assembly Assembly { get; internal set; }
-        public IEnumerable<string> ModuleNames { get; internal set; }
+        public string Name { get; }
+        public Assembly Assembly { get; }
+        public IEnumerable<string> ModuleNames { get; }
     }
 
     public class Module
@@ -111,42 +92,41 @@ namespace OrchardCore.Modules
                 Root = SubPath + '/';
 
                 Assembly = Assembly.Load(new AssemblyName(name));
-                var module = Assembly.GetCustomAttribute<ModuleAttribute>();
+
+                Assets = Assembly.GetCustomAttribute<ModuleAssetsMapAttribute>()?.Assets
+                    .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(a => new Asset(a)).ToArray() ?? Enumerable.Empty<Asset>();
+
+                AssetPaths = Assets.Select(a => a.ModuleAssetPath).ToArray();
+
+                ModuleInfo = Assembly.GetCustomAttribute<ModuleAttribute>() ??
+                    new ModuleAttribute { Name = Name };
+
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
                     .Where(f => !(f is ModuleAttribute));
 
-                if (module != null)
-                {
-                    ModuleInfo = module;
-                    ModuleInfo.Features.AddRange(features);
-
-                    var assetsMap = Assembly.GetCustomAttribute<ModuleAssetsMapAttribute>();
-
-                    if (assetsMap != null)
-                    {
-                        Assets = assetsMap.Assets.Select(a => new Asset(a)).ToArray();
-                        AssetPaths = Assets.Select(a => a.ModuleAssetPath).ToArray();
-                    }
-                }
-                else
-                {
-                    ModuleInfo = new ModuleAttribute { Name = Name };
-                }
-
+                ModuleInfo.Features.AddRange(features);
                 ModuleInfo.Id = Name;
+            }
+            else
+            {
+                Name = Root = SubPath = String.Empty;
+                Assets = Enumerable.Empty<Asset>();
+                AssetPaths = Enumerable.Empty<string>();
+                ModuleInfo = new ModuleAttribute();
             }
 
             _baseNamespace = Name + '.';
             _lastModified = DateTimeOffset.UtcNow;
         }
 
-        public string Name { get; } = String.Empty;
-        public string Root { get; } = String.Empty;
-        public string SubPath { get; } = String.Empty;
+        public string Name { get; }
+        public string Root { get; }
+        public string SubPath { get; }
         public Assembly Assembly { get; }
-        public IEnumerable<Asset> Assets { get; } = Enumerable.Empty<Asset>();
-        public IEnumerable<string> AssetPaths { get; } = Enumerable.Empty<string>();
-        public ModuleAttribute ModuleInfo { get; } = new ModuleAttribute();
+        public IEnumerable<Asset> Assets { get; }
+        public IEnumerable<string> AssetPaths { get; }
+        public ModuleAttribute ModuleInfo { get; }
 
         public IFileInfo GetFileInfo(string subpath)
         {
@@ -188,7 +168,7 @@ namespace OrchardCore.Modules
 
             if (index == -1)
             {
-                ModuleAssetPath = asset;
+                ModuleAssetPath = string.Empty;
                 ProjectAssetPath = string.Empty;
             }
             else

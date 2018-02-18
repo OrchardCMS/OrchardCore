@@ -1,7 +1,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!--
-    This file is packaged with "OrchardCore.Module.Targets.nupkg" in "./build".
+    This file is packaged with "OrchardCore.Module.Targets.nupkg" in "./build" such that any
+    Module that references it will embedd in its assembly all assets files and mapping infos.
     Here we use some msbuild properties that would not be evaluated in the `.props` file.
     It also prevents VS from adding / keeping some unnecessary lines in the project file.
   -->
@@ -25,8 +26,7 @@
     <EmbeddedResource Update="@(EmbeddedResource)" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
-  <Target Name="EmbeddModuleAssets" BeforeTargets="BeforeBuild">
-
+  <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
     <RemoveDuplicates Inputs="@(EmbeddedResource)">
       <Output TaskParameter="Filtered" ItemName="ModuleAssetFiles"/>
     </RemoveDuplicates>

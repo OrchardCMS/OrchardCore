@@ -93,19 +93,36 @@ namespace OrchardCore.Modules.Manifest
     }
 
     /// <summary>
-    /// Maps module assets to their project locations while in debug mode, auto generated on building.
+    /// Names of modules referenced by the application, auto generated on building.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
+    public class ModuleNamesAttribute : Attribute
+    {
+        public ModuleNamesAttribute(string names)
+        {
+            Names = names ?? String.Empty;
+        }
+
+        /// <Summary>
+        /// A semicolon-separated list of module names.
+        /// </Summary>
+        public string Names { get; }
+    }
+
+    /// <summary>
+    /// Maps module assets to their project location while in debug mode, auto generated on building.
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
     public class ModuleAssetsMapAttribute : Attribute
     {
         public ModuleAssetsMapAttribute(string assets)
         {
-            Assets = assets.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            Assets = assets ?? String.Empty;
         }
 
         /// <Summary>
-        /// Module assets in the form of '{ModuleAssetPath}|{ProjectAssetPath}'.
+        /// A semicolon-separated list of module assets in the form of '{ModuleAssetPath}|{ProjectAssetPath}'.
         /// </Summary>
-        public IEnumerable<string> Assets { get; }
+        public string Assets { get; }
     }
 }

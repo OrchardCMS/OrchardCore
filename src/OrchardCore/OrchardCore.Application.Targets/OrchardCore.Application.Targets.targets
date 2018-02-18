@@ -2,11 +2,10 @@
 
   <!-- 
     This file is packaged with "OrchardCore.Application.Targets.nupkg" in "./build" such that any
-    Application that references it can resolve all modules references used for view precompilation.
+    Application that references it will embedd in its assembly a list of the referenced modules.
   -->
 
   <Target Name="ResolveModuleProjectReferences" AfterTargets="AfterResolveReferences">
-
     <MSBuild
       Targets="GetModuleProject"
       BuildInParallel="$(BuildInParallel)"
@@ -22,10 +21,19 @@
       <ModuleProjectReferences Include="@(ModuleProjects)" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ModuleProjectNames Include="%(ModuleProjectReferences.FileName)" />
+      <ModuleNames Include="@(ModulePackageNames);@(ModuleProjectNames)" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleNamesAttribute">
+        <_Parameter1>@(ModuleNames)</_Parameter1>
+      </AssemblyAttribute>
+    </ItemGroup>
   </Target>
 
   <Target Name="CompileModuleRazorFiles" BeforeTargets="_ResolveInputArguments">
-
     <ItemGroup>
       <ModuleProjectRazorFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml">
         <ProjectName>%(Filename)</ProjectName>

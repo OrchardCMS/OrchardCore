@@ -2,7 +2,7 @@
 
   <!--
     This file is packaged with "OrchardCore.Module.Targets.nupkg" in "./build" such that any
-    Module that references it will embedd in its assembly all its static assets.
+    Module that references it will embedd in its assembly all assets files and mapping infos.
   -->
 
   <PropertyGroup>
