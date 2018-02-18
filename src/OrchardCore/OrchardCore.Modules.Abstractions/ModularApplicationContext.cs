@@ -69,7 +69,8 @@ namespace OrchardCore.Modules
             ModuleNames = DependencyContext.Default
                 .GetCandidateLibraries(new[] { application, "OrchardCore.Module.Targets" })
                 .Where(lib => !lib.Name.EndsWith(".Targets", StringComparison.OrdinalIgnoreCase))
-                .Select(a => a.Name);
+                .Select(a => a.Name)
+                .ToArray();
         }
 
         public string Name { get; }
@@ -96,8 +97,10 @@ namespace OrchardCore.Modules
                 Root = SubPath + '/';
 
                 Assembly = Assembly.Load(new AssemblyName(name));
-                Assets = new EmbeddedFileProvider(Assembly).GetFileInfo(ModuleAssetsMap).ReadAllLines().Select(a => new Asset(a));
-                AssetPaths = Assets.Select(a => a.ModuleAssetPath);
+                Assets = new EmbeddedFileProvider(Assembly).GetFileInfo(ModuleAssetsMap)
+                    .ReadAllLines().Select(a => new Asset(a)).ToArray();
+
+                AssetPaths = Assets.Select(a => a.ModuleAssetPath).ToArray();
 
                 var module = Assembly.GetCustomAttribute<ModuleAttribute>();
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()

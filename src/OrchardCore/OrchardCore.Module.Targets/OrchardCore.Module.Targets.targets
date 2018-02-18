@@ -34,11 +34,11 @@
     <ItemGroup>
       <ModuleAssets
         Include=".Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)|%(ModuleAssetFiles.FullPath)"
-        Condition="'%(ModuleAssetFiles.Link)' == ''"/>
+        Condition="'%(ModuleAssetFiles.Link)' == '' and '%(ModuleAssetFiles.Filename)' != ''"/>
 
       <ModuleAssets
         Include=".Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.Link)|%(ModuleAssetFiles.FullPath)"
-        Condition="'%(ModuleAssetFiles.Link)' != ''" />
+        Condition="'%(ModuleAssetFiles.Link)' != '' and '%(ModuleAssetFiles.Filename)' != ''" />
     </ItemGroup>
 
     <WriteLinesToFile
@@ -59,7 +59,7 @@
       <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' != '' and '%(Extension)' != '.resx'">
         <LogicalName>$([System.String]::new('$(MSBuildProjectName).%(EmbeddedResource.Link)').Replace('\', '>').Replace('/', '>'))</LogicalName>
       </EmbeddedResource>
-      <EmbeddedResource Include="$(IntermediateOutputPath)module.assets.map">
+      <EmbeddedResource Include="$(IntermediateOutputPath)module.assets.map" Condition="'@(ModuleAssets)' != ''">
         <Link>module.assets.map</Link>
       </EmbeddedResource>
     </ItemGroup>

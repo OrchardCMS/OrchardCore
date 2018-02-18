@@ -8,7 +8,7 @@ namespace OrchardCore.Modules
     public static class DependencyContextExtensions
     {
         /// <summary>
-        /// Returns libraries which depend on one of the 'references'/>.
+        /// Returns libraries which are not included in 'references' but depend on one of them.
         /// </summary>
         public static IEnumerable<RuntimeLibrary> GetCandidateLibraries(
             this DependencyContext dependencyContext, IEnumerable<string> references)
