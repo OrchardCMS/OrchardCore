@@ -97,7 +97,6 @@ namespace OrchardCore.Modules
     {
         public const string ContentPath = "wwwroot";
         public static string ContentRoot = ContentPath + "/";
-        private const string ModuleAssetsMap = "module.assets.map";
 
         private readonly string _baseNamespace;
         private readonly DateTimeOffset _lastModified;
@@ -112,11 +111,6 @@ namespace OrchardCore.Modules
                 Root = SubPath + '/';
 
                 Assembly = Assembly.Load(new AssemblyName(name));
-                Assets = new EmbeddedFileProvider(Assembly).GetFileInfo(ModuleAssetsMap)
-                    .ReadAllLines().Select(a => new Asset(a)).ToArray();
-
-                AssetPaths = Assets.Select(a => a.ModuleAssetPath).ToArray();
-
                 var module = Assembly.GetCustomAttribute<ModuleAttribute>();
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
                     .Where(f => !(f is ModuleAttribute));
@@ -125,6 +119,14 @@ namespace OrchardCore.Modules
                 {
                     ModuleInfo = module;
                     ModuleInfo.Features.AddRange(features);
+
+                    var assetsMap = Assembly.GetCustomAttribute<ModuleAssetsMapAttribute>();
+
+                    if (assetsMap != null)
+                    {
+                        Assets = assetsMap.Assets.Select(a => new Asset(a)).ToArray();
+                        AssetPaths = Assets.Select(a => a.ModuleAssetPath).ToArray();
+                    }
                 }
                 else
                 {
@@ -133,25 +135,18 @@ namespace OrchardCore.Modules
 
                 ModuleInfo.Id = Name;
             }
-            else
-            {
-                Name = Root = SubPath = String.Empty;
-                Assets = Enumerable.Empty<Asset>();
-                AssetPaths = Enumerable.Empty<string>();
-                ModuleInfo = new ModuleAttribute();
-            }
 
             _baseNamespace = Name + '.';
             _lastModified = DateTimeOffset.UtcNow;
         }
 
-        public string Name { get; }
-        public string Root { get; }
-        public string SubPath { get; }
+        public string Name { get; } = String.Empty;
+        public string Root { get; } = String.Empty;
+        public string SubPath { get; } = String.Empty;
         public Assembly Assembly { get; }
-        public IEnumerable<Asset> Assets { get; }
-        public IEnumerable<string> AssetPaths { get; }
-        public ModuleAttribute ModuleInfo { get; }
+        public IEnumerable<Asset> Assets { get; } = Enumerable.Empty<Asset>();
+        public IEnumerable<string> AssetPaths { get; } = Enumerable.Empty<string>();
+        public ModuleAttribute ModuleInfo { get; } = new ModuleAttribute();
 
         public IFileInfo GetFileInfo(string subpath)
         {

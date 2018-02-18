@@ -18,6 +18,6 @@ namespace OrchardCore.DisplayManagement.Manifest
         public override string Type => "Theme";
 
         /// <Summary>The base theme if the theme is derived from an existing one.</Summary>
-        public string BaseTheme { get; set; } = null;
+        public string BaseTheme { get; set; }
     }
 }

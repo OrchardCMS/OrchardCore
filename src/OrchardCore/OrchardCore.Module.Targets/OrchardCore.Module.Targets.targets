@@ -25,14 +25,7 @@
     <EmbeddedResource Update="@(EmbeddedResource)" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
-  <Target Name="GetModuleAttributes" BeforeTargets="BeforeBuild">
-    <ItemGroup>
-      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleMarkerAttribute">
-      </AssemblyAttribute>
-    </ItemGroup>
-  </Target>
-
-  <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
+  <Target Name="EmbeddModuleAssets" BeforeTargets="BeforeBuild">
 
     <RemoveDuplicates Inputs="@(EmbeddedResource)">
       <Output TaskParameter="Filtered" ItemName="ModuleAssetFiles"/>
@@ -48,15 +41,6 @@
         Condition="'%(ModuleAssetFiles.Link)' != '' and '%(ModuleAssetFiles.Filename)' != ''" />
     </ItemGroup>
 
-    <WriteLinesToFile
-      File="$(IntermediateOutputPath)module.assets.map"
-      Lines="@(ModuleAssets)"
-      WriteOnlyWhenDifferent="true"
-      Condition="'@(ModuleAssets)' != ''"
-      Overwrite="true"
-      Encoding="utf-8"
-      ContinueOnError="true" />
-
     <ItemGroup>
       <EmbeddedResource Remove="@(EmbeddedResource)" />
       <EmbeddedResource Include="@(ModuleAssetFiles)" />
@@ -66,9 +50,13 @@
       <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' != '' and '%(Extension)' != '.resx'">
         <LogicalName>$([System.String]::new('$(MSBuildProjectName).%(EmbeddedResource.Link)').Replace('\', '>').Replace('/', '>'))</LogicalName>
       </EmbeddedResource>
-      <EmbeddedResource Include="$(IntermediateOutputPath)module.assets.map" Condition="'@(ModuleAssets)' != ''">
-        <Link>module.assets.map</Link>
-      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleMarkerAttribute" />
+      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleAssetsMapAttribute">
+        <_Parameter1>@(ModuleAssets)</_Parameter1>
+      </AssemblyAttribute>
     </ItemGroup>
   </Target>
 

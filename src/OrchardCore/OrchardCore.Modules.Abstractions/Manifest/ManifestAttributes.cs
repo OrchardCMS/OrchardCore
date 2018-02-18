@@ -1,25 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.Modules.Manifest
 {
     /// <summary>
-    /// Marks an assembly as a module.
-    /// </summary>
-
-    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
-    public class ModuleMarkerAttribute : Attribute
-    {
-        public ModuleMarkerAttribute()
-        {
-        }
-    }
-
-    /// <summary>
     /// Defines a Module which is composed of features.
     /// If the Module has only one default feature, it may be defined there.
     /// </summary>
-
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
     public class ModuleAttribute : FeatureAttribute
     {
@@ -33,19 +21,19 @@ namespace OrchardCore.Modules.Manifest
         /// <Summary>
         /// This identifier is overridden at runtime by the assembly name
         /// </Summary>
-        public new string Id { get; internal set; } = null;
+        public new string Id { get; internal set; }
 
         /// <Summary>The name of the developer.</Summary>
-        public string Author { get; set; } = "";
+        public string Author { get; set; } = String.Empty;
 
         /// <Summary>The URL for the website of the developer.</Summary>
-        public string Website { get; set; } = "";
+        public string Website { get; set; } = String.Empty;
 
         /// <Summary>The version number in SemVer format.</Summary>
         public string Version { get; set; } = "0.0";
 
         /// <Summary>A comma-separated lists of tags.</Summary>
-        public string Tags { get; set; } = "";
+        public string Tags { get; set; } = String.Empty;
 
         public List<FeatureAttribute> Features { get; } = new List<FeatureAttribute>();
     }
@@ -54,7 +42,6 @@ namespace OrchardCore.Modules.Manifest
     /// Defines a Feature in a Module, can be used multiple times.
     /// If at least one Feature is defined, the Module default feature is ignored.
     /// </summary>
-
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
     public class FeatureAttribute : Attribute
     {
@@ -65,21 +52,21 @@ namespace OrchardCore.Modules.Manifest
         public bool Exists => Id != null;
 
         /// <Summary>The identifier of the feature.</Summary>
-        public string Id { get; set; } = null;
+        public string Id { get; set; }
 
         /// <Summary>
         /// Human-readable name of the feature. If not provided, the identifier will be used.
         /// </Summary>
-        public string Name { get; set; } = null;
+        public string Name { get; set; }
 
         /// <Summary>A brief summary of what the feature does.</Summary>
-        public string Description { get; set; } = "";
+        public string Description { get; set; } = String.Empty;
 
         /// <Summary>
         /// A comma-separated list of features that the feature depends on.
         /// So that its drivers / handlers are invoked after those of dependencies.
         /// </Summary>
-        public string Dependencies { get; set; } = "";
+        public string Dependencies { get; set; } = String.Empty;
 
         /// <Summary>
         /// The priority of the feature without breaking the dependencies order.
@@ -91,6 +78,34 @@ namespace OrchardCore.Modules.Manifest
         /// The group (by category) that the feature belongs.
         /// If not provided, defaults to 'Uncategorized'.
         /// </Summary>
-        public string Category { get; set; } = null;
+        public string Category { get; set; }
+    }
+
+    /// <summary>
+    /// Marks an assembly as a module, auto generated on building.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
+    public class ModuleMarkerAttribute : Attribute
+    {
+        public ModuleMarkerAttribute()
+        {
+        }
+    }
+
+    /// <summary>
+    /// Maps module assets to their project locations while in debug mode, auto generated on building.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
+    public class ModuleAssetsMapAttribute : Attribute
+    {
+        public ModuleAssetsMapAttribute(string assets)
+        {
+            Assets = assets.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+        }
+
+        /// <Summary>
+        /// Module assets in the form of '{ModuleAssetPath}|{ProjectAssetPath}'.
+        /// </Summary>
+        public IEnumerable<string> Assets { get; }
     }
 }
