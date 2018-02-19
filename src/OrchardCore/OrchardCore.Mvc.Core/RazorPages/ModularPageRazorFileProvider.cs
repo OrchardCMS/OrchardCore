@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Modules;
@@ -23,10 +24,20 @@ namespace OrchardCore.Mvc.RazorPages
                 return _fileProvider.GetDirectoryContents(subpath);
             }
 
-            if (folder.StartsWith(Application.ModulesPath, StringComparison.Ordinal))
+            if (folder == Application.ModulesPath)
             {
-                if (folder.Length == Application.ModulesPath.Length || folder.Contains("/Pages") ||
-                    folder.Substring(Application.ModulesPath.Length + 1).IndexOf('/') == -1)
+                return _fileProvider.GetDirectoryContents(subpath);
+            }
+
+            if (folder.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
+            {
+                if (folder.Substring(Application.ModulesRoot.Length).IndexOf('/') == -1)
+                {
+                    return _fileProvider.GetDirectoryContents(subpath);
+                }
+
+                var tokenizer = new StringTokenizer(folder, new char[] { '/' });
+                if (tokenizer.Any(s => s == "Pages" || s == "Components"))
                 {
                     return _fileProvider.GetDirectoryContents(subpath);
                 }

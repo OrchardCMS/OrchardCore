@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.Stubs
 
         public StubHostingEnvironment()
         {
-            ApplicationName = "OrchardCore.Tests";
+            ApplicationName = GetType().Assembly.GetName().Name;
         }
 
         public string EnvironmentName { get; set; } = "Stub";

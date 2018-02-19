@@ -23,7 +23,6 @@ namespace OrchardCore.Mvc.LocationExpander
 
         public ModularViewLocationExpanderProvider(
             IRazorViewEngineFileProviderAccessor fileProviderAccessor,
-            //IShellFeaturesManager shellFeaturesManager,
             IExtensionManager extensionManager,
             ShellDescriptor shellDescriptor,
             IMemoryCache memoryCache)
