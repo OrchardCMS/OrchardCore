@@ -189,3 +189,5 @@ node_modules/*
 wwwroot
 !src/OrchardCore.Modules/**/wwwroot
 !src/OrchardCore.Themes/**/wwwroot
+
+/OrchardCore/src/OrchardCore.Cms.Web/App_Data/*
