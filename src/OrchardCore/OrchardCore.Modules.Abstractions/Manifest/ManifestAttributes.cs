@@ -112,9 +112,9 @@ namespace OrchardCore.Modules.Manifest
     /// Maps module assets to their project location while in debug mode, auto generated on building.
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
-    public class ModuleAssetsMapAttribute : Attribute
+    public class ModuleAssetsAttribute : Attribute
     {
-        public ModuleAssetsMapAttribute(string assets)
+        public ModuleAssetsAttribute(string assets)
         {
             Assets = assets ?? String.Empty;
         }

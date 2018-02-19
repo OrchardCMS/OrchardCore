@@ -93,7 +93,7 @@ namespace OrchardCore.Modules
 
                 Assembly = Assembly.Load(new AssemblyName(name));
 
-                Assets = Assembly.GetCustomAttribute<ModuleAssetsMapAttribute>()?.Assets
+                Assets = Assembly.GetCustomAttribute<ModuleAssetsAttribute>()?.Assets
                     .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(a => new Asset(a)).ToArray() ?? Enumerable.Empty<Asset>();
 
