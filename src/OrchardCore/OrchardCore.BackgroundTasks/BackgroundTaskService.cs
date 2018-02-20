@@ -52,7 +52,7 @@ namespace OrchardCore.BackgroundTasks
                 {
                     var timer = _timers[group];
                     var period = _periods[group];
-                    timer.Change(Delay, period);
+                    timer.Change(TimeSpan.FromMilliseconds(0), period);
                 }
             }
         }
@@ -176,21 +176,22 @@ namespace OrchardCore.BackgroundTasks
             // elements like the HTTP context of the initiating request are not flowed and accessible
             // from background tasks, which would prevent the HTTP context instance from being GCed.
 
-            AsyncFlowControl asyncFlowControl;
+            var restore = false;
             try
             {
                 if (!ExecutionContext.IsFlowSuppressed())
                 {
-                    asyncFlowControl = ExecutionContext.SuppressFlow();
+                    ExecutionContext.SuppressFlow();
+                    restore = true;
                 }
 
                 return new Timer(callback, name, Timeout.Infinite, Timeout.Infinite);
             }
             finally
             {
-                if (asyncFlowControl != null)
+                if (restore)
                 {
-                    asyncFlowControl.Undo();
+                    ExecutionContext.RestoreFlow();
                 }
             }
         }
