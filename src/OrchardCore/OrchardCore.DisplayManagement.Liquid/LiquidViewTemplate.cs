@@ -52,7 +52,6 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterTag<ClearClassesTag>("clear_classes");
             Factory.RegisterTag<AddClassesTag>("add_classes");
             Factory.RegisterTag<ShapeTypeTag>("shape_type");
-            Factory.RegisterTag<DisplayTypeTag>("display_type");
             Factory.RegisterTag<ShapePositionTag>("shape_position");
             Factory.RegisterTag<ShapeTabTag>("shape_tab");
             Factory.RegisterTag<RemoveItemTag>("remove_item");

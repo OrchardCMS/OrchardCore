@@ -87,7 +87,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         public static string LowerKebabToPascalCase(string attribute)
         {
             attribute = attribute.Trim();
-            bool nextIsUpper = true;
+            var nextIsUpper = true;
             var result = new StringBuilder();
             for (int i = 0; i < attribute.Length; i++)
             {

@@ -277,16 +277,6 @@ Input
 
 ```
 
-### display_type
-
-Replaces the display type of an input shape.
-
-Input
-```
-{{ my_shape | display_type: "Summary" }}
-
-```
-
 ### shape_position
 
 Replaces the position of an input shape.
