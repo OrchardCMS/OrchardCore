@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json.Linq;
 using OrchardCore.OpenId.Abstractions.Models;
 
 namespace OrchardCore.OpenId.YesSql.Models
@@ -49,6 +50,12 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// and may be encrypted for security reasons.
         /// </summary>
         public string Payload { get; set; }
+
+        /// <summary>
+        /// Gets or sets the additional properties
+        /// associated with the current token.
+        /// </summary>
+        public virtual JObject Properties { get; set; }
 
         /// <summary>
         /// Gets or sets the reference identifier associated

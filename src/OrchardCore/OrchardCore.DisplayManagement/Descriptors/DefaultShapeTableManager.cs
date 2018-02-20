@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -139,7 +139,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         private bool IsModuleOrRequestedTheme(IFeatureInfo feature, string themeId)
         {
-            if (!feature.Extension.Manifest.IsTheme())
+            if (!(feature.Extension is IThemeExtensionInfo))
             {
                 return true;
             }

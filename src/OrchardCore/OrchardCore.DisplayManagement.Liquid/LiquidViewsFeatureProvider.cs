@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.FileProviders;
 using OrchardCore.DisplayManagement.Liquid.Internal;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Mvc.FileProviders;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {

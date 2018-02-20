@@ -200,11 +200,11 @@ $link-padding-left: 16px !default;
 }
 
 .input-validation-error {
-    @extend .text-danger;
+    @extend .is-invalid;
 }
 
 .has-validation-error {
-    @extend .text-danger;
+    @extend .is-invalid;
 }
 
 // When the validation message in inside the label, add a separator

@@ -53,7 +53,7 @@ namespace OrchardCore.OpenId.Services
             }
 
             if (!settings.AllowAuthorizationCodeFlow && !settings.AllowClientCredentialsFlow 
-                && !settings.AllowHybridFlow && !settings.AllowImplicitFlow && !settings.AllowPasswordFlow)
+                && !settings.AllowImplicitFlow && !settings.AllowPasswordFlow)
             {
                 modelState.AddModelError("", T["At least one OpenID Connect flow must be enabled."]);
                 return false;
@@ -118,11 +118,6 @@ namespace OrchardCore.OpenId.Services
                 modelState.AddModelError("AllowAuthorizationCodeFlow", T["Authorization Code Flow cannot be enabled if Authorization Endpoint and Token Endpoint are disabled"]);
                 return false;
             }
-            if (settings.AllowHybridFlow && (!settings.EnableAuthorizationEndpoint || !settings.EnableTokenEndpoint))
-            {
-                modelState.AddModelError("AllowAuthorizationHybridFlow", T["Authorization Hybrid cannot be enabled if Authorization Endpoint and Token Endpoint are disabled"]);
-                return false;
-            }
             if (settings.AllowRefreshTokenFlow)
             {
                 if (!settings.EnableTokenEndpoint)
@@ -130,7 +125,7 @@ namespace OrchardCore.OpenId.Services
                     modelState.AddModelError("AllowRefreshTokenFlow", T["Refresh Token Flow cannot be enabled if Token Endpoint is disabled"]);
                     return false;
                 }
-                if (!settings.AllowPasswordFlow && !settings.AllowAuthorizationCodeFlow && !settings.AllowHybridFlow)
+                if (!settings.AllowPasswordFlow && !settings.AllowAuthorizationCodeFlow)
                 {
                     modelState.AddModelError("AllowRefreshTokenFlow", T["Refresh Token Flow only can be enabled if Password Flow, Authorization Code Flow or Hybrid Flow are enabled"]);
                     return false;

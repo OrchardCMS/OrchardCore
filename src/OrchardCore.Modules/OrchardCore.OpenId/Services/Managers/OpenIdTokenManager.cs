@@ -28,7 +28,7 @@ namespace OrchardCore.OpenId.Services.Managers
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the token corresponding to the physical identifier.
         /// </returns>
-        public virtual Task<IOpenIdToken> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual Task<IOpenIdToken> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -47,7 +47,7 @@ namespace OrchardCore.OpenId.Services.Managers
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the physical identifier associated with the token.
         /// </returns>
-        public virtual Task<string> GetPhysicalIdAsync(IOpenIdToken token, CancellationToken cancellationToken)
+        public virtual Task<string> GetPhysicalIdAsync(IOpenIdToken token, CancellationToken cancellationToken = default)
         {
             if (token == null)
             {

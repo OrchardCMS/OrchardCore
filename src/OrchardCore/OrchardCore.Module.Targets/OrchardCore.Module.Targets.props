@@ -91,7 +91,7 @@
 
   <Target Name="GetModuleLinkedRazorFiles" Returns="@(ModuleLinkedRazorFiles)">
     <ItemGroup>
-      <ModuleLinkedRazorFiles Include="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' != ''">
+      <ModuleLinkedRazorFiles Include="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' != '' and '%(Extension)' == '.cshtml'">
         <ToRelativePath>$(MSBuildProjectName)\%(EmbeddedResource.Link)</ToRelativePath>
         <FromFullPath>%(EmbeddedResource.FullPath)</FromFullPath>
       </ModuleLinkedRazorFiles>

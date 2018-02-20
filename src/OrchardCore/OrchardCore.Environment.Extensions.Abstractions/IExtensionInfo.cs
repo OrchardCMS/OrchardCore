@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.Environment.Extensions
 {
+    public interface IThemeExtensionInfo : IExtensionInfo { }
+
     public interface IExtensionInfo
     {
         /// <summary>

@@ -28,7 +28,7 @@ namespace OrchardCore.OpenId.EntityFrameworkCore
             try
             {
                 Type contextType = GetConfigurationNodeAsType("Modules:OrchardCore.OpenId:EntityFrameworkCore:ContextType"),
-                     keyType     = GetConfigurationNodeAsType("Modules:OrchardCore.OpenId:EntityFrameworkCore:KeyType") ?? typeof(long);
+                     keyType     = GetConfigurationNodeAsType("Modules:OrchardCore.OpenId:EntityFrameworkCore:KeyType") ?? typeof(string);
 
                 if (contextType == null)
                 {

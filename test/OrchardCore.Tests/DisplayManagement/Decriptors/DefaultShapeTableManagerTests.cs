@@ -71,7 +71,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             public bool Exists => true;
         }
 
-        private class TestThemeExtensionInfo : IExtensionInfo
+        private class TestThemeExtensionInfo : IThemeExtensionInfo
         {
             public TestThemeExtensionInfo(string name)
             {
@@ -219,6 +219,11 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.DisableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force)
             {
                 throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<IExtensionInfo>> GetEnabledExtensionsAsync()
+            {
+                return Task.FromResult(_extensionManager.GetExtensions());
             }
         }
 

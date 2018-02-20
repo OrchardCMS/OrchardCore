@@ -5,4 +5,4 @@ Website: http://orchardproject.net
 Version: 2.0.x
 OrchardVersion: 2.0.x
 Category: Navigation
-Dependencies: OrchardCore.Contents, OrchardCore.Liquid
+Dependencies: OrchardCore.ContentTypes

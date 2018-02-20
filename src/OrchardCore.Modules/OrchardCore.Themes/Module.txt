@@ -6,4 +6,4 @@ Version: 2.0.x
 OrchardVersion: 2.0.x
 Description: Themes.
 Category: Theming
-Dependencies: OrchardCore.Settings, OrchardCore.Admin
+Dependencies: OrchardCore.Admin

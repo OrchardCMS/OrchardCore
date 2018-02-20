@@ -7,4 +7,3 @@ OrchardVersion: 2.0.x
 Description: This module will ensure HTTPS is used when accessing the website.
 FeatureName: HTTPS
 Category: Security
-FeatureDescription: Use HTTPS to access the website

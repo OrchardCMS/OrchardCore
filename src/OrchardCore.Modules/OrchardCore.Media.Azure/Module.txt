@@ -4,7 +4,6 @@ Author: The Orchard Team
 Website: http://orchardproject.net
 Version: 2.0.x
 OrchardVersion: 2.0.x
-Description: Provides integration of Orchard Core media features with Microsoft Azure.
 Features:
     OrchardCore.Media.Azure.Storage:
         Name: Azure Media Storage

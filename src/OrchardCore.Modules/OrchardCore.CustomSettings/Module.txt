@@ -5,5 +5,5 @@ Website: http://orchardproject.net
 Version: 2.0.x
 OrchardVersion: 2.0.x
 Description: The custom settings modules enables content types to become custom site settings.
-Dependencies: OrchardCore.Contents, OrchardCore.Settings
+Dependencies: OrchardCore.Contents
 Category: Settings

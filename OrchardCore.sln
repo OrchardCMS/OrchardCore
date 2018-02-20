@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.0
+VisualStudioVersion = 15.0.27110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules.Cms", "OrchardCore.Modules.Cms", "{90030E85-0C4F-456F-B879-443E8A3F220D}"
 EndProject
@@ -296,12 +296,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{184139CF
 	ProjectSection(SolutionItems) = preProject
 		.travis.yml = .travis.yml
 		appveyor.yml = appveyor.yml
-		src\OrchardCore.Build\Dependencies.AspNetContrib.props = src\OrchardCore.Build\Dependencies.AspNetContrib.props
 		src\OrchardCore.Build\Dependencies.AspNetCore.props = src\OrchardCore.Build\Dependencies.AspNetCore.props
 		src\OrchardCore.Build\Dependencies.props = src\OrchardCore.Build\Dependencies.props
 		NuGet.config = NuGet.config
 		src\OrchardCore.Build\OrchardCore.Commons.props = src\OrchardCore.Build\OrchardCore.Commons.props
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Authentication", "src\OrchardCore.Modules\OrchardCore.Authentication\OrchardCore.Authentication.csproj", "{EBF17F69-89F2-42C3-85CA-49504E0409B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -833,6 +834,10 @@ Global
 		{12C4BD5B-207C-4A90-9F9F-E41EABBCD157}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12C4BD5B-207C-4A90-9F9F-E41EABBCD157}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12C4BD5B-207C-4A90-9F9F-E41EABBCD157}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBF17F69-89F2-42C3-85CA-49504E0409B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBF17F69-89F2-42C3-85CA-49504E0409B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBF17F69-89F2-42C3-85CA-49504E0409B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBF17F69-89F2-42C3-85CA-49504E0409B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -981,6 +986,7 @@ Global
 		{7BB7DDE2-5C66-4E0B-81A8-C0CBE6D3B4A2} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{5C795749-3907-4F12-A1EF-A7C4AFA0B92F} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{12C4BD5B-207C-4A90-9F9F-E41EABBCD157} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
+		{EBF17F69-89F2-42C3-85CA-49504E0409B8} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

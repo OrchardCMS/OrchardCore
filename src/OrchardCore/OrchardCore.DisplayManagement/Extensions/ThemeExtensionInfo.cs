@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.DisplayManagement.Extensions
 {
-    public class ThemeExtensionInfo : IExtensionInfo
+    public class ThemeExtensionInfo : IThemeExtensionInfo
     {
         private readonly IExtensionInfo _extensionInfo;
 

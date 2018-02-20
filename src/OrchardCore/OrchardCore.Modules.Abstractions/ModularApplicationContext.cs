@@ -74,7 +74,7 @@ namespace OrchardCore.Modules
 
     public class Module
     {
-        public const string ContentPath = "Content";
+        public const string ContentPath = "wwwroot";
         public static string ContentRoot = ContentPath + "/";
         private const string ModuleAssetsMap = "module.assets.map";
 

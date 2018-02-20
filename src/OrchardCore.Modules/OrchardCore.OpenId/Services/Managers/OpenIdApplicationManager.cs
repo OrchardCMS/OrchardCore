@@ -1,14 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.Extensions.Logging;
 using OpenIddict.Core;
 using OrchardCore.OpenId.Abstractions.Models;
 using OrchardCore.OpenId.Abstractions.Stores;
-using OrchardCore.OpenId.Models;
 using OrchardCore.OpenId.ViewModels;
 
 namespace OrchardCore.OpenId.Services.Managers
@@ -24,7 +23,8 @@ namespace OrchardCore.OpenId.Services.Managers
 
         protected new IOpenIdApplicationStore Store => (IOpenIdApplicationStore) base.Store;
 
-        public virtual async Task<IOpenIdApplication> CreateAsync(CreateOpenIdApplicationViewModel model, CancellationToken cancellationToken)
+        public virtual async Task<IOpenIdApplication> CreateAsync(
+            CreateOpenIdApplicationViewModel model, CancellationToken cancellationToken = default)
         {
             if (model == null)
             {
@@ -39,9 +39,9 @@ namespace OrchardCore.OpenId.Services.Managers
 
             await Store.SetClientIdAsync(application, model.ClientId, cancellationToken);
             await Store.SetClientSecretAsync(application, model.ClientSecret, cancellationToken);
-            await Store.SetClientTypeAsync(application, model.Type.ToString(), cancellationToken);
+            await Store.SetClientTypeAsync(application, model.Type.ToString().ToLowerInvariant(), cancellationToken);
+            await Store.SetConsentRequiredAsync(application, !model.SkipConsent, cancellationToken);
             await Store.SetDisplayNameAsync(application, model.DisplayName, cancellationToken);
-            await Store.SetRolesAsync(application, model.RoleEntries.Select(role => role.Name).ToImmutableArray(), cancellationToken);
 
             if (!string.IsNullOrEmpty(model.LogoutRedirectUri))
             {
@@ -53,43 +53,63 @@ namespace OrchardCore.OpenId.Services.Managers
                 await Store.SetRedirectUrisAsync(application, ImmutableArray.Create(model.RedirectUri), cancellationToken);
             }
 
-            var builder = ImmutableArray.CreateBuilder<string>();
+            var permissions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             if (model.AllowAuthorizationCodeFlow)
             {
-                builder.Add(OpenIdConnectConstants.GrantTypes.AuthorizationCode);
+                permissions.Add(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode);
             }
 
             if (model.AllowClientCredentialsFlow)
             {
-                builder.Add(OpenIdConnectConstants.GrantTypes.ClientCredentials);
+                permissions.Add(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials);
             }
 
             if (model.AllowImplicitFlow)
             {
-                builder.Add(OpenIdConnectConstants.GrantTypes.Implicit);
+                permissions.Add(OpenIddictConstants.Permissions.GrantTypes.Implicit);
             }
 
             if (model.AllowPasswordFlow)
             {
-                builder.Add(OpenIdConnectConstants.GrantTypes.Password);
+                permissions.Add(OpenIddictConstants.Permissions.GrantTypes.Password);
             }
 
             if (model.AllowRefreshTokenFlow)
             {
-                builder.Add(OpenIdConnectConstants.GrantTypes.RefreshToken);
+                permissions.Add(OpenIddictConstants.Permissions.GrantTypes.RefreshToken);
             }
 
-            await Store.SetGrantTypesAsync(application, builder.ToImmutable(), cancellationToken);
+            if (model.AllowAuthorizationCodeFlow || model.AllowImplicitFlow)
+            {
+                permissions.Add(OpenIddictConstants.Permissions.Endpoints.Authorization);
+            }
+
+            if (model.AllowAuthorizationCodeFlow || model.AllowClientCredentialsFlow ||
+                model.AllowPasswordFlow || model.AllowRefreshTokenFlow)
+            {
+                permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
+            }
+
+            await Store.SetPermissionsAsync(application, permissions.ToImmutableArray(), cancellationToken);
+
+            await Store.SetRolesAsync(application, model.RoleEntries
+                .Where(role => role.Selected)
+                .Select(role => role.Name)
+                .ToImmutableArray(), cancellationToken);
 
             var secret = await Store.GetClientSecretAsync(application, cancellationToken);
             if (!string.IsNullOrEmpty(secret))
             {
                 await Store.SetClientSecretAsync(application, /* secret: */ null, cancellationToken);
-                return await CreateAsync(application, secret, cancellationToken);
+                await CreateAsync(application, secret, cancellationToken);
+            }
+            else
+            {
+                await CreateAsync(application, cancellationToken);
             }
 
-            return await CreateAsync(application, cancellationToken);
+            return application;
         }
 
         /// <summary>
@@ -101,7 +121,7 @@ namespace OrchardCore.OpenId.Services.Managers
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the client application corresponding to the identifier.
         /// </returns>
-        public virtual Task<IOpenIdApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual Task<IOpenIdApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -109,32 +129,6 @@ namespace OrchardCore.OpenId.Services.Managers
             }
 
             return Store.FindByPhysicalIdAsync(identifier, cancellationToken);
-        }
-
-        public virtual new async Task<ClientType> GetClientTypeAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            if (!Enum.TryParse(await Store.GetClientTypeAsync(application, cancellationToken), /* ignoreCase: */ true, out ClientType type))
-            {
-                throw new InvalidOperationException("The client type associated with the application is not supported.");
-            }
-
-            return type;
-        }
-
-        // TODO: remove these methods once per-application grant type limitation is added to OpenIddict.
-        public virtual Task<ImmutableArray<string>> GetGrantTypesAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            return Store.GetGrantTypesAsync(application, cancellationToken);
         }
 
         /// <summary>
@@ -146,7 +140,7 @@ namespace OrchardCore.OpenId.Services.Managers
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the physical identifier associated with the application.
         /// </returns>
-        public virtual Task<string> GetPhysicalIdAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+        public virtual Task<string> GetPhysicalIdAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
         {
             if (application == null)
             {
@@ -156,36 +150,7 @@ namespace OrchardCore.OpenId.Services.Managers
             return Store.GetPhysicalIdAsync(application, cancellationToken);
         }
 
-        public virtual async Task<bool> IsGrantTypeAllowedAsync(IOpenIdApplication application, string type, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            return (await Store.GetGrantTypesAsync(application, cancellationToken)).Contains(type, StringComparer.OrdinalIgnoreCase);
-        }
-
-        public Task<bool> IsAuthorizationCodeFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => IsGrantTypeAllowedAsync(application, OpenIdConnectConstants.GrantTypes.AuthorizationCode, cancellationToken);
-
-        public Task<bool> IsClientCredentialsFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => IsGrantTypeAllowedAsync(application, OpenIdConnectConstants.GrantTypes.ClientCredentials, cancellationToken);
-
-        public async Task<bool> IsHybridFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => await IsAuthorizationCodeFlowAllowedAsync(application, cancellationToken) &&
-               await IsImplicitFlowAllowedAsync(application, cancellationToken);
-
-        public Task<bool> IsImplicitFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => IsGrantTypeAllowedAsync(application, OpenIdConnectConstants.GrantTypes.Implicit, cancellationToken);
-
-        public Task<bool> IsPasswordFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => IsGrantTypeAllowedAsync(application, OpenIdConnectConstants.GrantTypes.Password, cancellationToken);
-
-        public Task<bool> IsRefreshTokenFlowAllowedAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => IsGrantTypeAllowedAsync(application, OpenIdConnectConstants.GrantTypes.RefreshToken, cancellationToken);
-
-        public virtual Task<bool> IsConsentRequiredAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+        public virtual Task<bool> IsConsentRequiredAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
         {
             if (application == null)
             {
@@ -195,7 +160,8 @@ namespace OrchardCore.OpenId.Services.Managers
             return Store.IsConsentRequiredAsync(application, cancellationToken);
         }
 
-        public virtual async Task AddToRoleAsync(IOpenIdApplication application, string role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task AddToRoleAsync(IOpenIdApplication application,
+            string role, CancellationToken cancellationToken = default)
         {
             if (application == null)
             {
@@ -207,7 +173,8 @@ namespace OrchardCore.OpenId.Services.Managers
             await UpdateAsync(application, cancellationToken);
         }
 
-        public virtual Task<ImmutableArray<string>> GetRolesAsync(IOpenIdApplication application, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<ImmutableArray<string>> GetRolesAsync(
+            IOpenIdApplication application, CancellationToken cancellationToken = default)
         {
             if (application == null)
             {
@@ -217,7 +184,8 @@ namespace OrchardCore.OpenId.Services.Managers
             return Store.GetRolesAsync(application, cancellationToken);
         }
 
-        public virtual async Task<bool> IsInRoleAsync(IOpenIdApplication application, string role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<bool> IsInRoleAsync(IOpenIdApplication application,
+            string role, CancellationToken cancellationToken = default)
         {
             if (application == null)
             {
@@ -232,7 +200,8 @@ namespace OrchardCore.OpenId.Services.Managers
             return (await Store.GetRolesAsync(application, cancellationToken)).Contains(role, StringComparer.OrdinalIgnoreCase);
         }
 
-        public virtual Task<ImmutableArray<IOpenIdApplication>> ListInRoleAsync(string role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<ImmutableArray<IOpenIdApplication>> ListInRoleAsync(
+            string role, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(role))
             {
@@ -242,7 +211,8 @@ namespace OrchardCore.OpenId.Services.Managers
             return Store.ListInRoleAsync(role, cancellationToken);
         }
 
-        public virtual async Task RemoveFromRoleAsync(IOpenIdApplication application, string role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task RemoveFromRoleAsync(IOpenIdApplication application,
+            string role, CancellationToken cancellationToken = default)
         {
             if (application == null)
             {
@@ -259,7 +229,8 @@ namespace OrchardCore.OpenId.Services.Managers
             await UpdateAsync(application, cancellationToken);
         }
 
-        public virtual async Task UpdateAsync(IOpenIdApplication application, EditOpenIdApplicationViewModel model, CancellationToken cancellationToken)
+        public virtual async Task UpdateAsync(IOpenIdApplication application,
+            EditOpenIdApplicationViewModel model, CancellationToken cancellationToken = default)
         {
             if (application == null)
             {
@@ -272,47 +243,99 @@ namespace OrchardCore.OpenId.Services.Managers
             }
 
             await Store.SetClientIdAsync(application, model.ClientId, cancellationToken);
-            await Store.SetClientTypeAsync(application, model.Type.ToString(), cancellationToken);
+            await Store.SetClientTypeAsync(application, model.Type.ToString().ToLowerInvariant(), cancellationToken);
+            await Store.SetConsentRequiredAsync(application, !model.SkipConsent, cancellationToken);
             await Store.SetDisplayNameAsync(application, model.DisplayName, cancellationToken);
-            await Store.SetRolesAsync(application, model.RoleEntries.Select(role => role.Name).ToImmutableArray(), cancellationToken);
 
-            var builder = ImmutableArray.CreateBuilder<string>();
+            var permissions = new HashSet<string>(await Store.GetPermissionsAsync(application, cancellationToken), StringComparer.OrdinalIgnoreCase);
 
             if (model.AllowAuthorizationCodeFlow)
             {
-                builder.Add(OpenIdConnectConstants.GrantTypes.AuthorizationCode);
+                permissions.Add(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode);
+            }
+            else
+            {
+                permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode);
             }
 
             if (model.AllowClientCredentialsFlow)
             {
-                builder.Add(OpenIdConnectConstants.GrantTypes.ClientCredentials);
+                permissions.Add(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials);
+            }
+            else
+            {
+                permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials);
             }
 
             if (model.AllowImplicitFlow)
             {
-                builder.Add(OpenIdConnectConstants.GrantTypes.Implicit);
+                permissions.Add(OpenIddictConstants.Permissions.GrantTypes.Implicit);
+            }
+            else
+            {
+                permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.Implicit);
             }
 
             if (model.AllowPasswordFlow)
             {
-                builder.Add(OpenIdConnectConstants.GrantTypes.Password);
+                permissions.Add(OpenIddictConstants.Permissions.GrantTypes.Password);
+            }
+            else
+            {
+                permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.Password);
             }
 
             if (model.AllowRefreshTokenFlow)
             {
-                builder.Add(OpenIdConnectConstants.GrantTypes.RefreshToken);
+                permissions.Add(OpenIddictConstants.Permissions.GrantTypes.RefreshToken);
+            }
+            else
+            {
+                permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.RefreshToken);
             }
 
-            await Store.SetGrantTypesAsync(application, builder.ToImmutable(), cancellationToken);
+            if (model.AllowAuthorizationCodeFlow || model.AllowImplicitFlow)
+            {
+                permissions.Add(OpenIddictConstants.Permissions.Endpoints.Authorization);
+            }
+            else
+            {
+                permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Authorization);
+            }
+
+            if (model.AllowAuthorizationCodeFlow || model.AllowClientCredentialsFlow ||
+                model.AllowPasswordFlow || model.AllowRefreshTokenFlow)
+            {
+                permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
+            }
+            else
+            {
+                permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Token);
+            }
+
+            await Store.SetPermissionsAsync(application, permissions.ToImmutableArray(), cancellationToken);
+
+            await Store.SetRolesAsync(application, model.RoleEntries
+                .Where(role => role.Selected)
+                .Select(role => role.Name)
+                .ToImmutableArray(), cancellationToken);
 
             if (!string.IsNullOrEmpty(model.LogoutRedirectUri))
             {
                 await Store.SetPostLogoutRedirectUrisAsync(application, ImmutableArray.Create(model.LogoutRedirectUri), cancellationToken);
             }
+            else
+            {
+                await Store.SetPostLogoutRedirectUrisAsync(application, ImmutableArray.Create<string>(), cancellationToken);
+            }
 
             if (!string.IsNullOrEmpty(model.RedirectUri))
             {
                 await Store.SetRedirectUrisAsync(application, ImmutableArray.Create(model.RedirectUri), cancellationToken);
+            }
+            else
+            {
+                await Store.SetRedirectUrisAsync(application, ImmutableArray.Create<string>(), cancellationToken);
             }
 
             if (model.UpdateClientSecret)

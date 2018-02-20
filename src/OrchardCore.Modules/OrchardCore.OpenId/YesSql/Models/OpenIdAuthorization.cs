@@ -1,5 +1,5 @@
-using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
+using Newtonsoft.Json.Linq;
 using OrchardCore.OpenId.Abstractions.Models;
 
 namespace OrchardCore.OpenId.YesSql.Models
@@ -25,9 +25,16 @@ namespace OrchardCore.OpenId.YesSql.Models
         public int Id { get; set; }
 
         /// <summary>
+        /// Gets or sets the additional properties
+        /// associated with the current authorization.
+        /// </summary>
+        public virtual JObject Properties { get; set; }
+
+        /// <summary>
         /// Gets or sets the scopes associated with the current authorization.
         /// </summary>
-        public ISet<string> Scopes { get; set; } = new HashSet<string>(StringComparer.Ordinal);
+        public ImmutableArray<string> Scopes { get; set; }
+            = ImmutableArray.Create<string>();
 
         /// <summary>
         /// Gets or sets the status of the current authorization.

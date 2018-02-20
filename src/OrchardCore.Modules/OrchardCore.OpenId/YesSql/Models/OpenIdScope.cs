@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using OrchardCore.OpenId.Abstractions.Models;
 
 namespace OrchardCore.OpenId.YesSql.Models
@@ -27,5 +28,11 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// associated with the current scope.
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the additional properties
+        /// associated with the current scope.
+        /// </summary>
+        public virtual JObject Properties { get; set; }
     }
 }

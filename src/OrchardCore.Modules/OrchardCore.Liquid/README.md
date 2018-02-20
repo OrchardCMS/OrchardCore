@@ -437,6 +437,15 @@ Invokes the `style` tag helper from the **Orchard.ResourceManagement** package.
 
 Invokes the `a` tag helper from the MVC package.
 
+### antiforgerytoken
+
+Renders a `<hidden>` element (antiforgery token) that will be validated when the containing `<form>` is submitted.
+
+Example
+```liquid
+{% antiforgerytoken %}
+```
+
 ## CREDITS
 
 ### Fluid

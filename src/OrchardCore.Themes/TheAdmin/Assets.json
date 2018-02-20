@@ -5,15 +5,15 @@
       "Assets/scss/TheAdmin.scss",
       "Assets/scss/codemirror.scss"
     ],
-    "output": "Content/Styles/TheAdmin.css"
+    "output": "wwwroot/Styles/TheAdmin.css"
   },
-{
-  "generateSourceMaps": false,
-  "inputs": [
+  {
+    "generateSourceMaps": false,
+    "inputs": [
       "../../OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/Js/popper.js",
       "../../OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/Js/bootstrap.js",
       "Assets/js/*.js"
-  ],
-  "output": "Content/Scripts/TheAdmin.js"
-}
+    ],
+    "output": "wwwroot/Scripts/TheAdmin.js"
+  }
 ]

@@ -29,7 +29,6 @@ Available settings are:
 + Allow Client Credentials Flow: It requires Token Endpoint is enabled. More info at https://tools.ietf.org/html/rfc6749#section-1.3.4
 + Allow Authorization Code Flow: It requires Authorization and Token Endpoints are enabled. More info at http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth
 + Allow Implicit Flow: It requires Authorization Endpoint is enabled. More info at http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth
-+ Allow Hybrid Flow: It requires Authorization and Token Endpoints. More info at http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth
 + Allow Refresh Token Flow: It allows to refresh access token using a refresh token. It can be used in combination with Password Flow, Authorization Code Flow and Hybrid Flow. More info at http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens
 
 A sample of OpenID Connect Settings recipe step:
@@ -51,8 +50,7 @@ A sample of OpenID Connect Settings recipe step:
       "AllowClientCredentialsFlow": false,
       "AllowAuthorizationCodeFlow": false,
       "AllowRefreshTokenFlow": false,
-      "AllowImplicitFlow": false,
-      "AllowHybridFlow": false
+      "AllowImplicitFlow": false
 }
 ```
 
@@ -75,7 +73,6 @@ OpenID Connect apps require the following configuration.
   + Allow Client Credentials Flow: It requires Token Endpoint is enabled. More info at https://tools.ietf.org/html/rfc6749#section-1.3.4
   + Allow Authorization Code Flow: It requires Authorization and Token Endpoints are enabled. More info at http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth
   + Allow Implicit Flow: It requires Authorization Endpoint is enabled. More info at http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth
-  + Allow Hybrid Flow: It requires Authorization and Token Endpoints. More info at http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth
   + Allow Refresh Token Flow: It allows to refresh access token using a refresh token. It can be used in combination with Password Flow, Authorization Code Flow and Hybrid Flow. More info at http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens
   + Normalized RoleNames: This configuration is only required if Client Credentials Flow is enabled. It determines the roles assigned to the app when it is authenticated using that flow.
   + Redirect Options: Those options are only required when Implicit Flow, Authorization Code Flow or Allow Hybrid Flow is required:
@@ -99,8 +96,7 @@ OpenID Connect apps require the following configuration.
       "AllowClientCredentialsFlow": false,
       "AllowAuthorizationCodeFlow": false,
       "AllowRefreshTokenFlow": false,
-      "AllowImplicitFlow": false,
-      "AllowHybridFlow": false
+      "AllowImplicitFlow": false
 }
 ```
 

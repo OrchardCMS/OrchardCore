@@ -1,4 +1,4 @@
-﻿@model CreateOpenIdApplicationViewModel
+@model CreateOpenIdApplicationViewModel
 @using OrchardCore.OpenId.ViewModels;
 @using OrchardCore.OpenId.Models;
 @using OrchardCore.OpenId.Settings;
@@ -50,17 +50,6 @@
         <div id="AllowAuthorizationCodeFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] grant_type = 'code', client_id, client_secret, resource = '@openIdSettings.Authority', scope ('openid, profile, roles)')</div>
     </fieldset>
 
-    <fieldset id="AllowHybridFlowFieldSet" class="form-group collapse" asp-validation-class-for="AllowHybridFlow">
-        <div class="form-check">
-            <label class="form-check-label">
-                <input asp-for="AllowHybridFlow" type="checkbox" data-toggle="collapse" data-target="#AllowHybridFlowRecommendedHint" class="form-check-input" checked="@Model.AllowHybridFlow" />
-                @T["Allow Hybrid Flow"]
-            </label>
-        </div>
-        <div class="hint">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth</a></div>
-        <div id="AllowHybridFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] grant_type = 'code id_token', client_id, client_secret, resource = '@openIdSettings.Authority', scope ('openid, profile, roles)')</div>
-    </fieldset>
-
     <fieldset id="AllowImplicitFlowFieldSet" class="form-group collapse" asp-validation-class-for="AllowImplicitFlow">
         <div class="form-check">
             <label class="form-check-label">
@@ -97,7 +86,7 @@
     <fieldset id="AllowRefreshTokenFlowFieldSet" class="form-group collapse" asp-validation-class-for="AllowRefreshTokenFlow">
         <div class="form-check">
             <label class="form-check-label">
-                <input asp-for="AllowRefreshTokenFlow" type="checkbox" data-toggle="collapse" data-target="#AllowRefreshTokenFlowRecommendedHint" class="form-check-input" checked="@Model.AllowRefreshTokenFlow" disabled=@((Model.AllowPasswordFlow || Model.AllowAuthorizationCodeFlow || Model.AllowHybridFlow) ? null : "") />
+                <input asp-for="AllowRefreshTokenFlow" type="checkbox" data-toggle="collapse" data-target="#AllowRefreshTokenFlowRecommendedHint" class="form-check-input" checked="@Model.AllowRefreshTokenFlow" disabled=@((Model.AllowPasswordFlow || Model.AllowAuthorizationCodeFlow) ? null : "") />
                 @T["Allow Refresh Token Flow"]
             </label>
         </div>
@@ -163,14 +152,6 @@
                 $("#AllowAuthorizationCodeFlow").prop("checked", false);
             }
 
-            if (@(openIdSettings.AllowHybridFlow.ToString().ToLower()) == true) {
-                $("#AllowHybridFlowFieldSet").collapse("show");
-            }
-            else {
-                $("#AllowHybridFlowFieldSet").collapse("hide");
-                $("#AllowHybridFlow").prop("checked", false);
-            }
-
             if (@(openIdSettings.AllowImplicitFlow.ToString().ToLower()) == true) {
                 $("#AllowImplicitFlowFieldSet").collapse("show");
             }
@@ -223,7 +204,7 @@
                 allowClientCredentialsFlow.prop("checked", false);
             }
 
-            var clientSecretHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowHybridFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint");
+            var clientSecretHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint");
 
             if (defaultType === $("#Type").val())
                 return;
@@ -242,7 +223,7 @@
         });
 
         function refreshOfflineAccessTip(defaultValue) {
-            var offlineAccessHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowHybridFlowRecommendedHint");
+            var offlineAccessHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint");
             var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
             if (defaultValue === allowRefreshTokenFlow.prop('checked'))
                 return;
@@ -255,7 +236,7 @@
             }
         }
 
-        $("#AllowClientCredentialsFlow, #AllowPasswordFlow, #AllowAuthorizationCodeFlow, #AllowHybridFlow, #AllowImplicitFlow, #AllowRefreshTokenFlow").change(function () {
+        $("#AllowClientCredentialsFlow, #AllowPasswordFlow, #AllowAuthorizationCodeFlow, #AllowImplicitFlow, #AllowRefreshTokenFlow").change(function () {
             refreshFlows();
         });
 
@@ -270,7 +251,7 @@
         function refreshAllowRefreshTokenFlowVisibility() {
             var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
 
-            if (($("#AllowPasswordFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked') || $("#AllowHybridFlow").prop('checked'))) {
+            if ($("#AllowPasswordFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked')) {
                 allowRefreshTokenFlow.removeAttr("disabled");
             }
             else {
@@ -284,7 +265,7 @@
             var redirectSection = $("#RedirectSection");
             var skipConsent = $("#SkipConsent");
 
-            if (($("#AllowImplicitFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked') || $("#AllowHybridFlow").prop('checked'))) {
+            if ($("#AllowImplicitFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked')) {
                 redirectSection.collapse("show");
             }
             else {
