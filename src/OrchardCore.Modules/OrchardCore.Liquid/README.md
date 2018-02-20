@@ -203,22 +203,22 @@ Gives access to the current site settings, e.g `Site.SiteName`
 
 These filters let you create, filter and display shapes.
 
-### new_shape
+### shape_new
 
 Returns a shape with the specified name as input.
 
 Input
 ```liquid
-{% assign date_time = "DateTime" | new_shape %}
+{% assign date_time = "DateTime" | shape_new %}
 ```
 
-### shape_string
+### shape_stringify
 
-Renders a shape to a string value.
+Converts a shape to its string representation.
 
 Input
 ```liquid
-{{ "DateTime" | new_shape | shape_string }}
+{{ "DateTime" | shape_new | shape_stringify }}
 
 ```
 
@@ -229,44 +229,64 @@ Monday, September 11, 2017 3:29:26 PM
 
 ## Shape Tags
 
-### clear_alternates
+### shape_clear_alternates
 
 Removes any alternates from a shape.
 
 Input
 ```liquid
-{% clear_alternates my_shape %}
+{% shape_clear_alternates my_shape %}
 
 ```
 
-### add_alternates
+### shape_add_alternates
 
 Adds alternates to a shape.
 
 Input
 ```liquid
-{% add_alternates my_shape "alternate1", "alternate2" %}
-{% add_alternates my_shape "alternate1 alternate2" %}
+{% shape_add_alternates my_shape "alternate1", "alternate2" %}
+{% shape_add_alternates my_shape "alternate1 alternate2" %}
 ```
 
-### clear_classes
+### shape_clear_wrappers
+
+Removes any wrappers from a shape.
+
+Input
+```liquid
+{% shape_clear_wrappers my_shape %}
+
+```
+
+### shape_add_wrappers
+
+Adds wrappers to a shape.
+
+Input
+```liquid
+{% shape_add_wrappers my_shape "wrapper1", "wrapper2" %}
+{% shape_add_wrappers my_shape "wrapper1 wrapper2" %}
+```
+
+### shape_clear_classes
 
 Removes any classes from a shape.
 
 Input
 ```liquid
-{% clear_classes my_shape %}
+{% shape_clear_classes my_shape %}
 
 ```
 
-### add_classes
+### shape_add_classes
 
 Adds classes to a shape.
 
 Input
 ```liquid
-{% add_classes my_shape "class1 class2" %}
-{% add_classes my_shape "class1", "class2" %}
+{% shape_add_classes my_shape "class1 class2" %}
+{% shape_add_classes my_shape "class1", "class2" %}
 ```
 
 ### shape_type
@@ -278,7 +298,7 @@ Input
 {% shape_type my_shape "Summary" %}
 ```
 
-Whenever the type is changed, it is recommended to clear the shape alternates before using the `clear_alternates` tag.
+Whenever the type is changed, it is recommended to clear the shape alternates before using the `shape_clear_alternates` tag.
 
 ### shape_position
 
@@ -300,14 +320,14 @@ Input
 
 ```
 
-### remove_item
+### shape_remove_item
 
 Removes a shape by its name in a Zone.
 
 Input
 ```liquid
-{% remove_item Model.Content "BodyPart" %}
-{% display Model.Content %}
+{% shape_remove_item Model.Content "BodyPart" %}
+{% shape_display Model.Content %}
 ```
 
 In this example, the `Model.Content` property evaluates to a zone shape, typically from a Content Item shape template, which contains the `BodyPart` shape
@@ -368,14 +388,14 @@ The default parameter is a text that is appended to the current value of the tit
 
 ## Shape Tags
 
-### display
+### shape_display
 
-Renders a shape. Similar to the `shape_string` filter.
+Renders a shape. Similar to the `shape_stringify` filter.
 
 Input
 ```liquid
-{% assign date_time = "DateTime" | new_shape %}
-{% display date_time %}
+{% assign date_time = "DateTime" | shape_new %}
+{% shape_display date_time %}
 ```
 
 Output
@@ -390,7 +410,7 @@ to render a content item.
 
 Input
 ```liquid
-{% display mycontentitem | build_display: "Detail"  %}
+{% shape_display mycontentitem | build_display: "Detail"  %}
 ```
 
 ### shape
@@ -413,7 +433,7 @@ Input
 {% endzone %}
 ```
 
-The content of this block can then be reused from the Layout using the `{% display Model.Header %}` code.
+The content of this block can then be reused from the Layout using the `{% shape_display Model.Header %}` code.
 
 ## Tag Helper tags
 

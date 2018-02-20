@@ -8,7 +8,7 @@
                     <div class="site-heading">
                         <h1>{{ Model.ContentItem.Content.TitlePart.Title }}</h1>
                         <hr class="small" />
-                        <span class="subheading">{% display Model.Content.BodyPart %}</span>
+                        <span class="subheading">{% shape_display Model.Content.BodyPart %}</span>
                     </div>
                 </div>
             </div>
@@ -16,5 +16,5 @@
     </header>
 {% endzone %}
 
-{% remove_item Model.Content "BodyPart" %}
-{% display Model.Content %}
+{% shape_remove_item Model.Content "BodyPart" %}
+{% shape_display Model.Content %}

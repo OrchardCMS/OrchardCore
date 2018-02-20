@@ -41,20 +41,20 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterTag<RenderBodyTag>("render_body");
             Factory.RegisterTag<RenderSectionTag>("render_section");
             Factory.RegisterTag<RenderTitleSegmentsTag>("page_title");
-            Factory.RegisterTag<DisplayTag>("display");
+            Factory.RegisterTag<DisplayTag>("shape_display");
             Factory.RegisterTag<AntiForgeryTokenTag>("antiforgerytoken");
             Factory.RegisterTag<LayoutTag>("layout");
 
-            Factory.RegisterTag<ClearAlternatesTag>("clear_alternates");
-            Factory.RegisterTag<AddAlternatesTag>("add_alternates");
-            Factory.RegisterTag<ClearWrappers>("clear_wrappers");
-            Factory.RegisterTag<AddWrappersTag>("add_wrappers");
-            Factory.RegisterTag<ClearClassesTag>("clear_classes");
-            Factory.RegisterTag<AddClassesTag>("add_classes");
+            Factory.RegisterTag<ClearAlternatesTag>("shape_clear_alternates");
+            Factory.RegisterTag<AddAlternatesTag>("shape_add_alternates");
+            Factory.RegisterTag<ClearWrappers>("shape_clear_wrappers");
+            Factory.RegisterTag<AddWrappersTag>("shape_add_wrappers");
+            Factory.RegisterTag<ClearClassesTag>("shape_clear_classes");
+            Factory.RegisterTag<AddClassesTag>("shape_add_classes");
             Factory.RegisterTag<ShapeTypeTag>("shape_type");
             Factory.RegisterTag<ShapePositionTag>("shape_position");
             Factory.RegisterTag<ShapeTabTag>("shape_tab");
-            Factory.RegisterTag<RemoveItemTag>("remove_item");
+            Factory.RegisterTag<RemoveItemTag>("shape_remove_item");
             Factory.RegisterTag<SetPropertiesTag>("set_properties");
 
             Factory.RegisterTag<HelperTag>("helper");

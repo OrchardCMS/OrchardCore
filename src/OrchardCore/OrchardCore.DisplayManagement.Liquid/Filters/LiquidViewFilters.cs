@@ -16,8 +16,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         {
             filters.AddAsyncFilter("t", Localize);
             filters.AddAsyncFilter("html_class", HtmlClass);
-            filters.AddAsyncFilter("new_shape", NewShape);
-            filters.AddAsyncFilter("shape_string", ShapeString);
+            filters.AddAsyncFilter("shape_new", NewShape);
+            filters.AddAsyncFilter("shape_stringify", ShapeString);
 
             return filters;
         }
@@ -49,7 +49,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         {
             if (!context.AmbientValues.TryGetValue("ShapeFactory", out dynamic shapeFactory))
             {
-                throw new ArgumentException("ShapeFactory missing while invoking 'new_shape'");
+                throw new ArgumentException("ShapeFactory missing while invoking 'shape_new'");
             }
 
             var type = input.ToStringValue();
@@ -67,7 +67,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         {
             if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
             {
-                throw new ArgumentException("DisplayHelper missing while invoking 'shape_string'");
+                throw new ArgumentException("DisplayHelper missing while invoking 'shape_stringify'");
             }
 
             var shape = input.ToObjectValue() as IShape;
