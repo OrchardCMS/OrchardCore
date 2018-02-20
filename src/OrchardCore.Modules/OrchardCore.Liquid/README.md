@@ -22,7 +22,7 @@ Here is a list of common filters that apply to content items.
 Returns the URL of the content item
 
 Input
-```
+```liquid
 {{ Model.ContentItem | display_url }}
 ```
 
@@ -36,7 +36,7 @@ Output
 Returns the title of the content item
 
 Input
-```
+```liquid
 {{ Model.ContentItem | display_text }}
 ```
 
@@ -50,7 +50,7 @@ My Blog Post
 Convert a text into a string that can be used in a URL.
 
 Input
-```
+```liquid
 {{ "This is some text" | slugify }}
 ```
 
@@ -64,7 +64,7 @@ this-is-some-text
 Returns the container content item of another content item.
 
 Input
-```
+```liquid
 {{ Model.ContentItem | container | display_text }}
 ```
 In this example we assume `ContentItem` represents a blog post.
@@ -79,11 +79,11 @@ Blog
 Converts a UTC date and time to the local date and time based on the site settings.
 
 Input
-```
+```liquid
 {{ "now" | local | date: "%c" }}
 ```
 or
-```
+```liquid
 {{ Model.ContentItem.CreatedUtc | local | date: "%c" }}
 ```
 
@@ -97,7 +97,7 @@ Wednesday, 02 August 2017 11:54:48
 Localizes a string using the current culture.
 
 Input
-```
+```liquid
 {{ "Hello!" | t }}
 ```
 
@@ -111,7 +111,7 @@ Bonjour!
 Converts a string into a friendly HTML class.
 
 Input
-```
+```liquid
 {{ "LandingPage" | html_class }}
 ```
 
@@ -125,7 +125,7 @@ landing-page
 Converts a Markdown string to HTML.
 
 Input
-```
+```liquid
 {{ "### Services" | markdownify }}
 ```
 
@@ -175,13 +175,13 @@ If the content item has custom fields, they will be available under a part whose
 For example, assuming the type `Product` has a Text field named `Size`, access the value of this field for a 
 content item as follows:
 
-```
+```liquid
 {{ Model.ContentItem.Content.Product.Size.Text }}
 ```
 
 Similarly, if the content item has a `Title` part, we can access it like this:
 
-```
+```liquid
 {{ Model.ContentItem.Content.TitlePart.Title }}
 ```
 
@@ -208,7 +208,7 @@ These filters let you create, filter and display shapes.
 Returns a shape with the specified name as input.
 
 Input
-```
+```liquid
 {% assign date_time = "DateTime" | new_shape %}
 ```
 
@@ -217,7 +217,7 @@ Input
 Renders a shape to a string value.
 
 Input
-```
+```liquid
 {{ "DateTime" | new_shape | shape_string }}
 
 ```
@@ -227,83 +227,87 @@ Output
 Monday, September 11, 2017 3:29:26 PM
 ```
 
+## Shape Tags
+
 ### clear_alternates
 
-Removes any alternates from an input shape.
+Removes any alternates from a shape.
 
 Input
-```
-{{ my_shape | clear_alternates }}
+```liquid
+{% clear_alternates my_shape %}
 
 ```
 
 ### add_alternates
 
-Adds alternates to an input shape.
+Adds alternates to a shape.
 
 Input
-```
-{{ my_shape | add_alternates: "alternate1 alternate2" }}
-
+```liquid
+{% add_alternates my_shape "alternate1", "alternate2" %}
+{% add_alternates my_shape "alternate1 alternate2" %}
 ```
 
 ### clear_classes
 
-Removes any classes from an input shape.
+Removes any classes from a shape.
 
 Input
-```
-{{ my_shape | clear_classes }}
+```liquid
+{% clear_classes my_shape %}
 
 ```
 
 ### add_classes
 
-Adds classes to an input shape.
+Adds classes to a shape.
 
 Input
-```
-{{ my_shape | add_classes: "class1 class2" }}
-
+```liquid
+{% add_classes my_shape "class1 class2" %}
+{% add_classes my_shape "class1", "class2" %}
 ```
 
 ### shape_type
 
-Replaces the shape type of an input shape.
+Sets the type of a shape.
 
 Input
+```liquid
+{% shape_type my_shape "Summary" %}
 ```
-{{ my_shape | shape_type: "OtherShapeType" }}
 
-```
+Whenever the type is changed, it is recommended to clear the shape alternates before using the `clear_alternates` tag.
 
 ### shape_position
 
-Replaces the position of an input shape.
+Sets the position of a shape.
 
 Input
-```
-{{ my_shape | shape_position: "Content:before" }}
+```liquid
+{% shape_position my_shape "Content:before" %}
 
 ```
 
 ### shape_tab
 
-Replaces the tab of an input shape.
+Sets the tab of a shape.
 
 Input
-```
-{{ my_shape | shape_tab: "properties" }}
+```liquid
+{% shape_tab my_shape "properties" %}
 
 ```
 
 ### remove_item
 
-Removes a named shape from an input shape's items.
+Removes a shape by its name in a Zone.
 
 Input
-```
-{% display Model.Content | remove_item: "BodyPart" %}
+```liquid
+{% remove_item Model.Content "BodyPart" %}
+{% display Model.Content %}
 ```
 
 In this example, the `Model.Content` property evaluates to a zone shape, typically from a Content Item shape template, which contains the `BodyPart` shape
@@ -313,18 +317,30 @@ rendered for the Body Part element. This call will remove the specific shape nam
 
 Replaces a property of an input shape.
 
-```
-{{ Model.Pager | set_properties: next_class: 'next', next_text: '>>' }}
+Input
+```liquid
+{% set_properties Model.Pager next_class: 'next', next_text: '>>' %}
 ```
 
 ## Layout Tags
+
+### layout
+
+Sets the layout of a view.
+
+Input
+```liquid
+{% layout "CustomLayout" %}
+```
+
+Internally an alternate is added to the current theme `Layout` shape.
 
 ### render_body
 
 In a layout, renders the body of the current view.
 
 Input
-```
+```liquid
 {% render_body %}
 ```
 
@@ -333,7 +349,7 @@ Input
 In a layout, renders the section with the specified name.
 
 Input
-```
+```liquid
 {% render_section "Header", required: false %}
 ```
 
@@ -342,7 +358,7 @@ Input
 Alters and renders the title of the current page.
 
 Input
-```
+```liquid
 {% page_title Site.SiteName, position: "before", separator: " - " %}
 ```
 
@@ -357,7 +373,7 @@ The default parameter is a text that is appended to the current value of the tit
 Renders a shape. Similar to the `shape_string` filter.
 
 Input
-```
+```liquid
 {% assign date_time = "DateTime" | new_shape %}
 {% display date_time %}
 ```
@@ -373,7 +389,7 @@ Creates the display shape for a content item. It can be used in conjunction with
 to render a content item.
 
 Input
-```
+```liquid
 {% display mycontentitem | build_display: "Detail"  %}
 ```
 
@@ -382,7 +398,7 @@ Input
 Renders a specific named tag with its properties
 
 Input
-```
+```liquid
 {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_duration: "00:05:00", cache_tag: "alias:main-menu" %}
 ```
 
@@ -391,7 +407,7 @@ Input
 Renders some HTML content in the specified zone.
 
 Input
-```
+```liquid
 {% zone "Header" %}
     <!-- some content goes here -->
 {% endzone %}
