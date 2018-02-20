@@ -38,7 +38,7 @@ namespace OrchardCore.OpenId.Services
             }
             catch (Exception exception)
             {
-                _logger.LogDebug(exception, "An error occurred while pruning authorizations from the database.");
+                _logger.LogError(exception, "An error occurred while pruning authorizations from the database.");
             }
 
             try
@@ -51,7 +51,7 @@ namespace OrchardCore.OpenId.Services
             }
             catch (Exception exception)
             {
-                _logger.LogDebug(exception, "An error occurred while pruning tokens from the database.");
+                _logger.LogError(exception, "An error occurred while pruning tokens from the database.");
             }
         }
     }
