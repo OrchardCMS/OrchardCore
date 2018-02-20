@@ -129,6 +129,86 @@ namespace OrchardCore.OpenId.YesSql.Services
         }
 
         /// <summary>
+        /// Retrieves the authorizations matching the specified parameters.
+        /// </summary>
+        /// <param name="subject">The subject associated with the authorization.</param>
+        /// <param name="client">The client associated with the authorization.</param>
+        /// <param name="status">The status associated with the authorization.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the authorizations corresponding to the subject/client.
+        /// </returns>
+        public virtual async Task<ImmutableArray<OpenIdAuthorization>> FindAsync(
+            string subject, string client, string status, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(subject))
+            {
+                throw new ArgumentException("The subject cannot be null or empty.", nameof(subject));
+            }
+
+            if (string.IsNullOrEmpty(client))
+            {
+                throw new ArgumentException("The client identifier cannot be null or empty.", nameof(client));
+            }
+
+            if (string.IsNullOrEmpty(status))
+            {
+                throw new ArgumentException("The status cannot be null or empty.", nameof(client));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return ImmutableArray.CreateRange(
+                await _session.Query<OpenIdAuthorization, OpenIdAuthorizationIndex>(
+                    index => index.ApplicationId == client && index.Subject == subject && index.Status == status).ListAsync());
+        }
+
+        /// <summary>
+        /// Retrieves the authorizations matching the specified parameters.
+        /// </summary>
+        /// <param name="subject">The subject associated with the authorization.</param>
+        /// <param name="client">The client associated with the authorization.</param>
+        /// <param name="status">The status associated with the authorization.</param>
+        /// <param name="type">The type associated with the authorization.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the authorizations corresponding to the subject/client.
+        /// </returns>
+        public virtual async Task<ImmutableArray<OpenIdAuthorization>> FindAsync(
+            string subject, string client,
+            string status, string type, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(subject))
+            {
+                throw new ArgumentException("The subject cannot be null or empty.", nameof(subject));
+            }
+
+            if (string.IsNullOrEmpty(client))
+            {
+                throw new ArgumentException("The client identifier cannot be null or empty.", nameof(client));
+            }
+
+            if (string.IsNullOrEmpty(status))
+            {
+                throw new ArgumentException("The status cannot be null or empty.", nameof(client));
+            }
+
+            if (string.IsNullOrEmpty(type))
+            {
+                throw new ArgumentException("The type cannot be null or empty.", nameof(client));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return ImmutableArray.CreateRange(
+                await _session.Query<OpenIdAuthorization, OpenIdAuthorizationIndex>(
+                    index => index.ApplicationId == client && index.Subject == subject &&
+                             index.Status == status && index.Type == type).ListAsync());
+        }
+
+        /// <summary>
         /// Retrieves an authorization using its unique identifier.
         /// </summary>
         /// <param name="identifier">The unique identifier associated with the authorization.</param>
@@ -168,6 +248,29 @@ namespace OrchardCore.OpenId.YesSql.Services
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.GetAsync<OpenIdAuthorization>(int.Parse(identifier, CultureInfo.InvariantCulture));
+        }
+
+        /// <summary>
+        /// Retrieves all the authorizations corresponding to the specified subject.
+        /// </summary>
+        /// <param name="subject">The subject associated with the authorization.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the authorizations corresponding to the specified subject.
+        /// </returns>
+        public virtual async Task<ImmutableArray<OpenIdAuthorization>> FindBySubjectAsync(
+            string subject, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(subject))
+            {
+                throw new ArgumentException("The subject cannot be null or empty.", nameof(subject));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return (await _session.Query<OpenIdAuthorization, OpenIdAuthorizationIndex>(
+                index => index.Subject == subject).ListAsync()).ToImmutableArray();
         }
 
         /// <summary>
@@ -610,8 +713,18 @@ namespace OrchardCore.OpenId.YesSql.Services
         async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindAsync(string subject, string client, CancellationToken cancellationToken)
             => (await FindAsync(subject, client, cancellationToken)).CastArray<IOpenIdAuthorization>();
 
+        async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindAsync(string subject, string client, string status, CancellationToken cancellationToken)
+            => (await FindAsync(subject, client, status, cancellationToken)).CastArray<IOpenIdAuthorization>();
+
+        async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindAsync(
+            string subject, string client, string status, string type, CancellationToken cancellationToken)
+            => (await FindAsync(subject, client, status, type, cancellationToken)).CastArray<IOpenIdAuthorization>();
+
         async Task<IOpenIdAuthorization> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
             => await FindByIdAsync(identifier, cancellationToken);
+
+        async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindBySubjectAsync(string subject, CancellationToken cancellationToken)
+            => (await FindBySubjectAsync(subject, cancellationToken)).CastArray<IOpenIdAuthorization>();
 
         Task<string> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.GetApplicationIdAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
             => GetApplicationIdAsync((OpenIdAuthorization) authorization, cancellationToken);
