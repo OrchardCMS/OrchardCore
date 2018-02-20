@@ -27,7 +27,7 @@ Input
 ```
 
 Output
-```
+```text
 /blog/my-blog-post
 ```
 
@@ -41,7 +41,7 @@ Input
 ```
 
 Output
-```
+```text
 My Blog Post
 ```
 
@@ -55,7 +55,7 @@ Input
 ```
 
 Output
-```
+```text
 this-is-some-text
 ```
 
@@ -70,7 +70,7 @@ Input
 In this example we assume `ContentItem` represents a blog post.
 
 Output
-```
+```text
 Blog
 ```
 
@@ -88,7 +88,7 @@ or
 ```
 
 Output
-```
+```text
 Wednesday, 02 August 2017 11:54:48
 ```
 
@@ -102,7 +102,7 @@ Input
 ```
 
 Output
-```
+```text
 Bonjour!
 ```
 
@@ -116,7 +116,7 @@ Input
 ```
 
 Output
-```
+```text
 landing-page
 ```
 
@@ -218,7 +218,7 @@ The following properties are available on the `Request` object.
 | `Path` | `/OrchardCore.ContentPreview/Preview/Render` | The path of the request, unescaped |
 | `PathBase` | `/mytenant` | The base path of the request, unescaped |
 | `Host` | `localhost:44300` | The `Host` header. May contain the port |
-| `IsHttps` | `true` | True if the scheme of the request os `https` |
+| `IsHttps` | `true` | True if the scheme of the request is `https` |
 | `Scheme` | `https` | The scheme of the request |
 | `Method` | `GET` | The HTTP method  |
 
@@ -246,7 +246,7 @@ Input
 ```
 
 Output
-```
+```text
 Monday, September 11, 2017 3:29:26 PM
 ```
 
@@ -396,7 +396,7 @@ Input
 ```
 
 Output
-```
+```text
 Monday, September 11, 2017 3:29:26 PM
 ```
 
