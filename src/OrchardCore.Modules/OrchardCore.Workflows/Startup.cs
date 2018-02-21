@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
@@ -26,7 +27,7 @@ namespace OrchardCore.Workflows
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddDataProtection();
-            services.AddSingleton<IIdGenerator, IdGenerator>();
+            services.AddIdGeneration();
             services.AddSingleton<IWorkflowDefinitionIdGenerator, WorkflowDefinitionIdGenerator>();
             services.AddSingleton<IWorkflowInstanceIdGenerator, WorkflowInstanceIdGenerator>();
             services.AddSingleton<IActivityIdGenerator, ActivityIdGenerator>();

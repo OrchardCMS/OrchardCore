@@ -10,7 +10,7 @@ using OrchardCore.Scripting;
 namespace OrchardCore.Workflows.Http.Scripting
 {
     // TODO: Consider moving this to a more common package so that it's available without a dependency on Workflows.
-    public class HttpContextMethodProvider : IGlobalMethodProvider
+    public class HttpMethodsProvider : IGlobalMethodProvider
     {
         private readonly GlobalMethod _httpContextMethod;
         private readonly GlobalMethod _queryStringMethod;
@@ -18,7 +18,7 @@ namespace OrchardCore.Workflows.Http.Scripting
         private readonly GlobalMethod _absoluteUrlMethod;
         private readonly GlobalMethod _readBodyMethod;
 
-        public HttpContextMethodProvider(IHttpContextAccessor httpContextAccessor)
+        public HttpMethodsProvider(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextMethod = new GlobalMethod
             {

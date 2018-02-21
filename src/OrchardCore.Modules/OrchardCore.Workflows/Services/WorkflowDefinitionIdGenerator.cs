@@ -1,3 +1,4 @@
+using OrchardCore.Entities;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services

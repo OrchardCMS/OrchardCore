@@ -38,7 +38,7 @@ namespace OrchardCore.Workflows.Http
 
             services.AddSingleton<IWorkflowDefinitionRouteEntries, WorkflowDefinitionRouteEntries>();
             services.AddSingleton<IWorkflowInstanceRouteEntries, WorkflowInstanceRouteEntries>();
-            services.AddSingleton<IGlobalMethodProvider, HttpContextMethodProvider>();
+            services.AddSingleton<IGlobalMethodProvider, HttpMethodsProvider>();
             services.AddScoped<IWorkflowExecutionContextHandler, SignalWorkflowExecutionContextHandler>();
 
             services.AddActivity<HttpRequestEvent, HttpRequestEventDisplay>();
