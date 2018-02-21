@@ -18,6 +18,7 @@ using OrchardCore.Contents.TagHelpers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
@@ -26,7 +27,6 @@ using OrchardCore.Lists.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Mvc;
 using OrchardCore.Recipes;
-using OrchardCore.Scripting;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents
@@ -49,7 +49,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentAliasProvider, ContentItemIdAliasProvider>();
             services.AddScoped<IContentItemIndexHandler, ContentItemIndexCoordinator>();
 
-            services.AddSingleton<IGlobalMethodProvider, IdGeneratorMethod>();
+            services.AddIdGeneration();
             services.AddScoped<IDataMigration, Migrations>();
 
             // Common Part

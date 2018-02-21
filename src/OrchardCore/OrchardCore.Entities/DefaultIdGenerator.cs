@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
-namespace OrchardCore.ContentManagement
+namespace OrchardCore.Entities
 {
-    public class IdGenerator : IIdGenerator
+    public class DefaultIdGenerator : IIdGenerator
     {
         // Some confusing chars are ignored: http://www.crockford.com/wrmg/base32.html
         private static readonly string _encode32Chars = "0123456789abcdefghjkmnpqrstvwxyz";
