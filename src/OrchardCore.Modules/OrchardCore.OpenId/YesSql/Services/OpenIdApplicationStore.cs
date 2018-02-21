@@ -292,6 +292,25 @@ namespace OrchardCore.OpenId.YesSql.Services
         }
 
         /// <summary>
+        /// Retrieves the consent type associated with an application.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns the consent type of the application (by default, "explicit").
+        /// </returns>
+        public virtual Task<string> GetConsentTypeAsync(OpenIdApplication application, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            return Task.FromResult(application.ConsentType);
+        }
+
+        /// <summary>
         /// Retrieves the display name associated with an application.
         /// </summary>
         /// <param name="application">The application.</param>
@@ -551,6 +570,27 @@ namespace OrchardCore.OpenId.YesSql.Services
         }
 
         /// <summary>
+        /// Sets the consent type associated with an application.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="type">The consent type associated with the application.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// </returns>
+        public virtual Task SetConsentTypeAsync(OpenIdApplication application, string type, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            application.ConsentType = type;
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         /// Sets the display name associated with an application.
         /// </summary>
         /// <param name="application">The application.</param>
@@ -679,28 +719,6 @@ namespace OrchardCore.OpenId.YesSql.Services
             return _session.CommitAsync();
         }
 
-        public virtual Task<bool> IsConsentRequiredAsync(OpenIdApplication application, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            return Task.FromResult(application.RequireConsent);
-        }
-
-        public virtual Task SetConsentRequiredAsync(OpenIdApplication application, bool value, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            application.RequireConsent = value;
-
-            return Task.CompletedTask;
-        }
-
         public virtual Task<ImmutableArray<string>> GetRolesAsync(OpenIdApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
@@ -780,6 +798,9 @@ namespace OrchardCore.OpenId.YesSql.Services
         Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetClientTypeAsync(IOpenIdApplication application, CancellationToken cancellationToken)
             => GetClientTypeAsync((OpenIdApplication) application, cancellationToken);
 
+        Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetConsentTypeAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetConsentTypeAsync((OpenIdApplication) application, cancellationToken);
+
         Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetDisplayNameAsync(IOpenIdApplication application, CancellationToken cancellationToken)
             => GetDisplayNameAsync((OpenIdApplication) application, cancellationToken);
 
@@ -819,6 +840,9 @@ namespace OrchardCore.OpenId.YesSql.Services
         Task IOpenIddictApplicationStore<IOpenIdApplication>.SetClientTypeAsync(IOpenIdApplication application, string type, CancellationToken cancellationToken)
             => SetClientTypeAsync((OpenIdApplication) application, type, cancellationToken);
 
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetConsentTypeAsync(IOpenIdApplication application, string type, CancellationToken cancellationToken)
+            => SetConsentTypeAsync((OpenIdApplication) application, type, cancellationToken);
+
         Task IOpenIddictApplicationStore<IOpenIdApplication>.SetDisplayNameAsync(IOpenIdApplication application, string name, CancellationToken cancellationToken)
             => SetDisplayNameAsync((OpenIdApplication) application, name, cancellationToken);
 
@@ -852,14 +876,8 @@ namespace OrchardCore.OpenId.YesSql.Services
         Task<ImmutableArray<string>> IOpenIdApplicationStore.GetRolesAsync(IOpenIdApplication application, CancellationToken cancellationToken)
             => GetRolesAsync((OpenIdApplication) application, cancellationToken);
 
-        Task<bool> IOpenIdApplicationStore.IsConsentRequiredAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => IsConsentRequiredAsync((OpenIdApplication) application, cancellationToken);
-
         async Task<ImmutableArray<IOpenIdApplication>> IOpenIdApplicationStore.ListInRoleAsync(string role, CancellationToken cancellationToken)
             => (await ListInRoleAsync(role, cancellationToken)).CastArray<IOpenIdApplication>();
-
-        Task IOpenIdApplicationStore.SetConsentRequiredAsync(IOpenIdApplication application, bool value, CancellationToken cancellationToken)
-            => SetConsentRequiredAsync((OpenIdApplication) application, value, cancellationToken);
 
         Task IOpenIdApplicationStore.SetRolesAsync(IOpenIdApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken)
             => SetRolesAsync((OpenIdApplication) application, roles, cancellationToken);

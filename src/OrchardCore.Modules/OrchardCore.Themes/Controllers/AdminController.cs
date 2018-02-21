@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Admin;
-using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
@@ -70,18 +70,15 @@ namespace OrchardCore.Themes.Controllers
             var currentSiteTheme = currentSiteThemeExtensionInfo != null ? new ThemeEntry(currentSiteThemeExtensionInfo) : default(ThemeEntry);
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
 
-            // TODO: Cast the IExtensionInfo objects to ThemeExtensionInfo objects once Nick fixes the issue where both Modules and Themes are constructed as ExtensionInfos.
-            // var themes = _extensionManager.GetExtensions().OfType<ThemeExtensionInfo>().Where(extensionDescriptor =>
-            var themes = _extensionManager.GetExtensions().Where(extensionDescriptor =>
+            var themes = _extensionManager.GetExtensions().OfType<IThemeExtensionInfo>().Where(extensionDescriptor =>
             {
-                var isTheme = extensionDescriptor.Manifest.IsTheme();
                 var tags = extensionDescriptor.Manifest.Tags.ToArray();
                 var isHidden = tags.Any(x => string.Equals(x, "hidden", StringComparison.OrdinalIgnoreCase));
                 
                 /// is the theme allowed for this tenant ?
                 // allowed = _shellSettings.Themes.Length == 0 || _shellSettings.Themes.Contains(extensionDescriptor.Id);
 
-                return isTheme && !isHidden;
+                return !isHidden;
             })
             .Select(extensionDescriptor =>
             {
@@ -129,7 +126,7 @@ namespace OrchardCore.Themes.Controllers
                 return Unauthorized();
             }
 
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.Manifest.IsTheme() && f.Id == id);
+            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
 
             if (feature == null)
             {
@@ -168,7 +165,7 @@ namespace OrchardCore.Themes.Controllers
                 return Unauthorized();
             }
 
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.Manifest.IsTheme() && f.Id == id);
+            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
 
             if (feature == null)
             {
@@ -190,7 +187,7 @@ namespace OrchardCore.Themes.Controllers
                 return Unauthorized();
             }
 
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.Manifest.IsTheme() && f.Id == id);
+            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
 
             if (feature == null)
             {

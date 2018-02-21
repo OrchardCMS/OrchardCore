@@ -112,7 +112,7 @@ namespace OrchardCore.Hosting.ShellBuilders
                 _disposed = true;
             }
         }
-        
+
         ~ShellContext()
         {
             Dispose(false);
@@ -127,9 +127,16 @@ namespace OrchardCore.Hosting.ShellBuilders
             public ServiceScopeWrapper(IServiceScope serviceScope)
             {
                 ServiceProvider = serviceScope.ServiceProvider;
-
                 _serviceScope = serviceScope;
-                _httpContext = ServiceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+
+                var httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+
+                if (httpContextAccessor.HttpContext == null)
+                {
+                    httpContextAccessor.HttpContext = new DefaultHttpContext();
+                }
+
+                _httpContext = httpContextAccessor.HttpContext;
                 _existingServices = _httpContext.RequestServices;
                 _httpContext.RequestServices = ServiceProvider;
             }

@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Immutable;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.Extensions.Logging;
 using OpenIddict.Core;
 using OrchardCore.OpenId.Abstractions.Models;
@@ -58,102 +55,6 @@ namespace OrchardCore.OpenId.Services.Managers
             }
 
             return Store.GetPhysicalIdAsync(authorization, cancellationToken);
-        }
-
-        public virtual async Task<bool> IsConsentRequired(ClaimsPrincipal principal, string client,
-            ImmutableArray<string> scopes, CancellationToken cancellationToken = default)
-        {
-            if (principal == null)
-            {
-                throw new ArgumentNullException(nameof(principal));
-            }
-
-            if (string.IsNullOrEmpty(client))
-            {
-                throw new ArgumentException("The client cannot be null or empty.", nameof(client));
-            }
-
-            var subject = principal.FindFirstValue(OpenIdConnectConstants.Claims.Subject) ??
-                          principal.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(subject))
-            {
-                throw new InvalidOperationException("The subject claim cannot be extracted from the principal.");
-            }
-
-            // Retrieve the authorizations associated with the logged in user
-            // and the client application and that contain the requested scopes.
-            // If at least one matching authorization can be found, return false
-            // to indicate that explicit user consent is not required.
-            foreach (var authorization in await FindAsync(subject, client, cancellationToken))
-            {
-                if (await IsValidAsync(authorization, cancellationToken) &&
-                    await IsPermanentAsync(authorization, cancellationToken) &&
-                    await HasScopesAsync(authorization, scopes, cancellationToken))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public virtual async Task<IOpenIdAuthorization> ReplaceAsync(ClaimsPrincipal principal, string client,
-            ImmutableArray<string> scopes, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken = default)
-        {
-            if (principal == null)
-            {
-                throw new ArgumentNullException(nameof(principal));
-            }
-
-            if (string.IsNullOrEmpty(client))
-            {
-                throw new ArgumentException("The client cannot be null or empty.", nameof(client));
-            }
-
-            var subject = principal.FindFirstValue(OpenIdConnectConstants.Claims.Subject) ??
-                          principal.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(subject))
-            {
-                throw new InvalidOperationException("The subject claim cannot be extracted from the principal.");
-            }
-
-            // Remove all the existing authorizations associated with the user and the client application.
-            foreach (var authorization in await FindAsync(subject, client, cancellationToken))
-            {
-                // If the authorization exactly matches the requested scopes,
-                // use it as-is instead of creating a fresh new authorization.
-                if (await IsValidAsync(authorization, cancellationToken) &&
-                    await IsPermanentAsync(authorization, cancellationToken) &&
-                    await HasScopesAsync(authorization, scopes, cancellationToken))
-                {
-                    return authorization;
-                }
-
-                await DeleteAsync(authorization, cancellationToken);
-            }
-
-            var descriptor = new OpenIddictAuthorizationDescriptor
-            {
-                ApplicationId = client,
-                Principal = principal,
-                Status = OpenIddictConstants.Statuses.Valid,
-                Subject = subject,
-                Type = OpenIddictConstants.AuthorizationTypes.Permanent
-            };
-
-            foreach (var scope in scopes)
-            {
-                descriptor.Scopes.Add(scope);
-            }
-
-            foreach (var property in properties)
-            {
-                descriptor.Properties.Add(property);
-            }
-
-            return await CreateAsync(descriptor, cancellationToken);
         }
     }
 }

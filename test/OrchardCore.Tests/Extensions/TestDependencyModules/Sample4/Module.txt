@@ -1,5 +1,0 @@
-﻿Name: Sample4
-Author: Nicholas Mayne
-Description: Module with dependency on Sample2
-Version: 1.0.0
-Dependencies: Sample2
