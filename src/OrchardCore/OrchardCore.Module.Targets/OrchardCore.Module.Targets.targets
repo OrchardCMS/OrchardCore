@@ -54,8 +54,8 @@
 
     <ItemGroup>
       <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleMarkerAttribute" />
-      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleAssetsAttribute">
-        <_Parameter1>@(ModuleAssets)</_Parameter1>
+      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleAssetAttribute">
+        <_Parameter1>%(ModuleAssets.Identity)</_Parameter1>
       </AssemblyAttribute>
     </ItemGroup>
   </Target>

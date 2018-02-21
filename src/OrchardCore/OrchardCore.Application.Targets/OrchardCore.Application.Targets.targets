@@ -27,8 +27,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleNamesAttribute">
-        <_Parameter1>@(ModuleNames)</_Parameter1>
+      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleNameAttribute">
+        <_Parameter1>%(ModuleNames.Identity)</_Parameter1>
       </AssemblyAttribute>
     </ItemGroup>
   </Target>
