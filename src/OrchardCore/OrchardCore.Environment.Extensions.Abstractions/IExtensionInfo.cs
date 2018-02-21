@@ -1,19 +1,14 @@
 using System.Collections.Generic;
-using Microsoft.Extensions.FileProviders;
 using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.Environment.Extensions
 {
-    public interface IThemeExtensionInfo : IExtensionInfo { }
-
     public interface IExtensionInfo
     {
         /// <summary>
         /// The id of the extension
         /// </summary>
         string Id { get; }
-
-        IFileInfo ExtensionFileInfo { get; }
 
         /// <summary>
         /// The path to the extension
@@ -23,7 +18,7 @@ namespace OrchardCore.Environment.Extensions
         bool Exists { get; }
 
         /// <summary>
-        /// The manifest file of the extension
+        /// The manifest info of the extension
         /// </summary>
         IManifestInfo Manifest { get; }
 

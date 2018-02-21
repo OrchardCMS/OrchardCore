@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
@@ -139,7 +140,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         private bool IsModuleOrRequestedTheme(IFeatureInfo feature, string themeId)
         {
-            if (!(feature.Extension is IThemeExtensionInfo))
+            if (!feature.Extension.IsTheme())
             {
                 return true;
             }

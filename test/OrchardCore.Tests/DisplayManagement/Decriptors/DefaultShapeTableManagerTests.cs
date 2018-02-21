@@ -1,19 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Manifest;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Loaders;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules.Manifest;
 using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement.Decriptors
@@ -52,7 +54,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var configurationBuilder = new ConfigurationBuilder();
                 configurationBuilder.Add(memConfigSrc1);
 
-                Manifest = new ManifestInfo(configurationBuilder.Build(), "module");
+                Manifest = new ManifestInfo(new ModuleAttribute());
 
                 var features =
                     new List<IFeatureInfo>()
@@ -86,7 +88,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var configurationBuilder = new ConfigurationBuilder();
                 configurationBuilder.Add(memConfigSrc1);
 
-                Manifest = new ManifestInfo(configurationBuilder.Build(), "theme");
+                Manifest = new ManifestInfo(new ThemeAttribute());
 
                 var features =
                     new List<IFeatureInfo>()
@@ -113,7 +115,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var configurationBuilder = new ConfigurationBuilder();
                 configurationBuilder.Add(memConfigSrc1);
 
-                Manifest = new ManifestInfo(configurationBuilder.Build(), "theme");
+                Manifest = new ManifestInfo(new ThemeAttribute());
 
                 Features =
                     new List<IFeatureInfo>()

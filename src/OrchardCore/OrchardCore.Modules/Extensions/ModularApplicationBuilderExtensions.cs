@@ -49,10 +49,6 @@ namespace Microsoft.AspNetCore.Builder
                 var availableExtensions = extensionManager.GetExtensions();
                 foreach (var extension in availableExtensions)
                 {
-                    var contentPath = extension.ExtensionFileInfo.PhysicalPath != null
-                        ? Path.Combine(extension.ExtensionFileInfo.PhysicalPath, "wwwroot")
-                        : null;
-
                     var contentSubPath = Path.Combine(extension.SubPath, "wwwroot");
 
                     if (env.ContentRootFileProvider.GetDirectoryContents(contentSubPath).Exists)
@@ -62,28 +58,12 @@ namespace Microsoft.AspNetCore.Builder
                         {
                             var fileProviders = new List<IFileProvider>();
                             fileProviders.Add(new ModuleProjectContentFileProvider(env, contentSubPath));
-
-                            if (contentPath != null)
-                            {
-                                fileProviders.Add(new PhysicalFileProvider(contentPath));
-                            }
-                            else
-                            {
-                                fileProviders.Add(new ModuleEmbeddedFileProvider(env, contentSubPath));
-                            }
-
+                            fileProviders.Add(new ModuleEmbeddedFileProvider(env, contentSubPath));
                             fileProvider = new CompositeFileProvider(fileProviders);
                         }
                         else
                         {
-                            if (contentPath != null)
-                            {
-                                fileProvider = new PhysicalFileProvider(contentPath);
-                            }
-                            else
-                            {
-                                fileProvider = new ModuleEmbeddedFileProvider(env, contentSubPath);
-                            }
+                            fileProvider = new ModuleEmbeddedFileProvider(env, contentSubPath);
                         }
 
                         app.UseStaticFiles(new StaticFileOptions
