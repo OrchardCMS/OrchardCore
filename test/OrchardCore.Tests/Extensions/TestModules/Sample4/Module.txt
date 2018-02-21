@@ -1,2 +1,0 @@
-﻿Path: ThisIs.Sample4
-Author: Bertrand Le Roy
