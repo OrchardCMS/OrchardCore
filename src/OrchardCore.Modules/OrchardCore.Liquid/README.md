@@ -276,7 +276,6 @@ Removes any classes from a shape.
 Input
 ```liquid
 {% shape_clear_classes my_shape %}
-
 ```
 
 ### shape_add_classes
@@ -287,6 +286,24 @@ Input
 ```liquid
 {% shape_add_classes my_shape "class1 class2" %}
 {% shape_add_classes my_shape "class1", "class2" %}
+```
+
+### shape_clear_attributes
+
+Removes any attributes from a shape.
+
+Input
+```liquid
+{% shape_clear_attributes my_shape %}
+```
+
+### shape_add_attributes
+
+Adds attributes to a shape.
+
+Input
+```liquid
+{% shape_add_attributes my_shape attr_name1: "value1", attr_name2: "value2" ... %}
 ```
 
 ### shape_type
