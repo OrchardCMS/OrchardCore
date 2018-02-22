@@ -7,7 +7,7 @@
 {% assign previousClass = "previous" | t %}
 {% assign nextClass = "next" | t %}
 
-{% set_properties Model.Pager previous_text: previousText, next_text: nextText,
+{% shape_pager Model.Pager previous_text: previousText, next_text: nextText,
     previous_class: previousClass, next_class: nextClass %}
 
 {% shape_display Model.Pager %}

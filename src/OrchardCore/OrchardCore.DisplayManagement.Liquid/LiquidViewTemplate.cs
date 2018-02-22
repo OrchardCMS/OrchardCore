@@ -55,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterTag<ShapePositionTag>("shape_position");
             Factory.RegisterTag<ShapeTabTag>("shape_tab");
             Factory.RegisterTag<RemoveItemTag>("shape_remove_item");
-            Factory.RegisterTag<SetPropertiesTag>("set_properties");
+            Factory.RegisterTag<ShapePagerTag>("shape_pager");
 
             Factory.RegisterTag<HelperTag>("helper");
             Factory.RegisterTag<NamedHelperTag>("shape");
