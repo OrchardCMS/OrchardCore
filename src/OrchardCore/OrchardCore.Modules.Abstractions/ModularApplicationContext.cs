@@ -64,9 +64,8 @@ namespace OrchardCore.Modules
             Name = application;
             Assembly = Assembly.Load(new AssemblyName(application));
 
-            ModuleNames = Assembly.GetCustomAttribute<ModuleNamesAttribute>()?.Names
-                .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-                .ToArray() ?? Enumerable.Empty<string>();
+            ModuleNames = Assembly.GetCustomAttributes<ModuleNameAttribute>()
+                .Select(m => m.Name).ToArray();
         }
 
         public string Name { get; }
@@ -93,9 +92,8 @@ namespace OrchardCore.Modules
 
                 Assembly = Assembly.Load(new AssemblyName(name));
 
-                Assets = Assembly.GetCustomAttribute<ModuleAssetsAttribute>()?.Assets
-                    .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(a => new Asset(a)).ToArray() ?? Enumerable.Empty<Asset>();
+                Assets = Assembly.GetCustomAttributes<ModuleAssetAttribute>()
+                    .Select(a => new Asset(a.Asset)).ToArray();
 
                 AssetPaths = Assets.Select(a => a.ModuleAssetPath).ToArray();
 

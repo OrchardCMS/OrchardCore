@@ -92,36 +92,36 @@ namespace OrchardCore.Modules.Manifest
     }
 
     /// <summary>
-    /// Names of modules referenced by the application, auto generated on building.
+    /// Enlists the package or project name of a referenced module, auto generated on building.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
-    public class ModuleNamesAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
+    public class ModuleNameAttribute : Attribute
     {
-        public ModuleNamesAttribute(string names)
+        public ModuleNameAttribute(string name)
         {
-            Names = names ?? String.Empty;
+            Name = name ?? String.Empty;
         }
 
         /// <Summary>
-        /// A semicolon-separated list of module names.
+        /// The package or project name of the referenced module.
         /// </Summary>
-        public string Names { get; }
+        public string Name { get; }
     }
 
     /// <summary>
-    /// Maps module assets to their project location while in debug mode, auto generated on building.
+    /// Maps a module asset to its project location while in debug mode, auto generated on building.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
-    public class ModuleAssetsAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
+    public class ModuleAssetAttribute : Attribute
     {
-        public ModuleAssetsAttribute(string assets)
+        public ModuleAssetAttribute(string asset)
         {
-            Assets = assets ?? String.Empty;
+            Asset = asset ?? String.Empty;
         }
 
         /// <Summary>
-        /// A semicolon-separated list of module assets in the form of '{ModuleAssetPath}|{ProjectAssetPath}'.
+        /// A module asset in the form of '{ModuleAssetPath}|{ProjectAssetPath}'.
         /// </Summary>
-        public string Assets { get; }
+        public string Asset { get; }
     }
 }
