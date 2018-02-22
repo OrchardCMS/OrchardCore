@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -8,12 +8,6 @@ namespace OrchardCore.Environment.Extensions.Features
     public class FeaturesProvider : IFeaturesProvider
     {
         public const string FeatureProviderCacheKey = "FeatureProvider:Features";
-
-        private static string NameKey = "Name";
-        private static string PriorityKey = "Priority";
-        private static string DependenciesKey = "Dependencies";
-        private static string CategoryKey = "Category";
-        private static string DescriptionKey = "Description";
 
         private readonly IEnumerable<IFeatureBuilderEvents> _featureBuilderEvents;
 
@@ -31,44 +25,29 @@ namespace OrchardCore.Environment.Extensions.Features
             IExtensionInfo extensionInfo,
             IManifestInfo manifestInfo)
         {
-            var features = new List<IFeatureInfo>();
+            var featuresInfos = new List<IFeatureInfo>();
 
             // Features and Dependencies live within this section
-            var featuresSectionChildren = manifestInfo.ConfigurationRoot.GetSection("Features").GetChildren().ToList();
-            if (featuresSectionChildren.Count > 0)
+            var features = manifestInfo.ModuleInfo.Features.ToList();
+            if (features.Count > 0)
             {
-                foreach (var featureSection in featuresSectionChildren)
+                foreach (var feature in features.Where(f => f.Exists))
                 {
-                    var featureId = featureSection.Key;
+                    var featureId = feature.Id;
+                    var featureName = feature.Name ?? feature.Id;
 
-                    var featureDetails = featureSection.GetChildren().ToDictionary(x => x.Key, v => v.Value);
-
-                    var featureName =
-                        featureDetails.ContainsKey(NameKey) ?
-                            featureDetails[NameKey] : manifestInfo.Name;
-
-                    var featureDependencyIds = featureDetails.ContainsKey(DependenciesKey) ?
-                        featureDetails[DependenciesKey]
+                    var featureDependencyIds = feature.Dependencies
                             .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                             .Select(e => e.Trim())
-                            .ToArray() : new string[0];
+                            .ToArray();
 
-                    var manifestFeatureDetails = manifestInfo
-                        .ConfigurationRoot.GetChildren().ToDictionary(x => x.Key, v => v.Value);
+                    if (!int.TryParse(feature.Priority ?? manifestInfo.ModuleInfo.Priority, out int featurePriority))
+                    {
+                        featurePriority = 0;
+                    }
 
-                    var featurePriority = featureDetails.ContainsKey(PriorityKey) ?
-                            int.Parse(featureDetails[PriorityKey]) :
-                            (manifestFeatureDetails.ContainsKey(PriorityKey) ? int.Parse(manifestFeatureDetails[PriorityKey]) : 0);
-
-                    var featureCategory =
-                        featureDetails.ContainsKey(CategoryKey) ?
-                            featureDetails[CategoryKey] :
-                            (manifestFeatureDetails.ContainsKey(CategoryKey) ? manifestFeatureDetails[CategoryKey] : null);
-
-                    var featureDescription =
-                        featureDetails.ContainsKey(DescriptionKey) ?
-                            featureDetails[DescriptionKey] :
-                            (manifestFeatureDetails.ContainsKey(DescriptionKey) ? manifestFeatureDetails[DescriptionKey] : null);
+                    var featureCategory = feature.Category ?? manifestInfo.ModuleInfo.Category;
+                    var featureDescription = feature.Description ?? manifestInfo.ModuleInfo.Description;
 
                     var context = new FeatureBuildingContext
                     {
@@ -77,8 +56,6 @@ namespace OrchardCore.Environment.Extensions.Features
                         Category = featureCategory,
                         Description = featureDescription,
                         ExtensionInfo = extensionInfo,
-                        FeatureDetails = featureDetails,
-                        ManifestDetails = manifestFeatureDetails,
                         ManifestInfo = manifestInfo,
                         Priority = featurePriority,
                         FeatureDependencyIds = featureDependencyIds
@@ -103,7 +80,7 @@ namespace OrchardCore.Environment.Extensions.Features
                         builder.Built(featureInfo);
                     }
                     
-                    features.Add(featureInfo);
+                    featuresInfos.Add(featureInfo);
                 }
             }
             else
@@ -112,19 +89,18 @@ namespace OrchardCore.Environment.Extensions.Features
                 var featureId = extensionInfo.Id;
                 var featureName = manifestInfo.Name;
 
-                var featureDetails = manifestInfo.ConfigurationRoot.GetChildren().ToDictionary(x => x.Key, v => v.Value);
-
-                var featurePriority = featureDetails.ContainsKey(PriorityKey) ? int.Parse(featureDetails[PriorityKey]) : 0;
-
-                var featureDependencyIds = featureDetails.ContainsKey(DependenciesKey) ?
-                    featureDetails[DependenciesKey]
+                var featureDependencyIds = manifestInfo.ModuleInfo.Dependencies
                         .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                         .Select(e => e.Trim())
-                        .ToArray() : new string[0];
+                        .ToArray();
 
-                var featureCategory = featureDetails.ContainsKey(CategoryKey) ? featureDetails[CategoryKey] : null;
+                if (!int.TryParse(manifestInfo.ModuleInfo.Priority, out int featurePriority))
+                {
+                    featurePriority = 0;
+                }
 
-                var featureDescription = featureDetails.ContainsKey(DescriptionKey) ? featureDetails[DescriptionKey] : null;
+                var featureCategory = manifestInfo.ModuleInfo.Category;
+                var featureDescription = manifestInfo.ModuleInfo.Description;
 
                 var context = new FeatureBuildingContext
                 {
@@ -133,8 +109,6 @@ namespace OrchardCore.Environment.Extensions.Features
                     Category = featureCategory,
                     Description = featureDescription,
                     ExtensionInfo = extensionInfo,
-                    FeatureDetails = featureDetails,
-                    ManifestDetails = featureDetails,
                     ManifestInfo = manifestInfo,
                     Priority = featurePriority,
                     FeatureDependencyIds = featureDependencyIds
@@ -159,10 +133,10 @@ namespace OrchardCore.Environment.Extensions.Features
                     builder.Built(featureInfo);
                 }
 
-                features.Add(featureInfo);
+                featuresInfos.Add(featureInfo);
             }
 
-            return features;
+            return featuresInfos;
         }
     }
 }

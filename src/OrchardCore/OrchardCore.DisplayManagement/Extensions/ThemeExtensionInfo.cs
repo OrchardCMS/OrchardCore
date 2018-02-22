@@ -1,10 +1,12 @@
 using System.Collections.Generic;
-using Microsoft.Extensions.FileProviders;
+using OrchardCore.DisplayManagement.Manifest;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.DisplayManagement.Extensions
 {
+    public interface IThemeExtensionInfo : IExtensionInfo { }
+
     public class ThemeExtensionInfo : IThemeExtensionInfo
     {
         private readonly IExtensionInfo _extensionInfo;
@@ -14,8 +16,9 @@ namespace OrchardCore.DisplayManagement.Extensions
         public ThemeExtensionInfo(IExtensionInfo extensionInfo)
         {
             _extensionInfo = extensionInfo;
-            
-            var baseTheme = _extensionInfo.Manifest.ConfigurationRoot["basetheme"];
+
+            var themeInfo = _extensionInfo.Manifest.ModuleInfo as ThemeAttribute;
+            var baseTheme = themeInfo?.BaseTheme;
 
             if (baseTheme != null && baseTheme.Length != 0) {
                 _baseTheme = baseTheme.Trim().ToString();
@@ -23,7 +26,6 @@ namespace OrchardCore.DisplayManagement.Extensions
         }
 
         public string Id => _extensionInfo.Id;
-        public IFileInfo ExtensionFileInfo => _extensionInfo.ExtensionFileInfo;
         public string SubPath => _extensionInfo.SubPath;
         public IManifestInfo Manifest => _extensionInfo.Manifest;
         public IEnumerable<IFeatureInfo> Features => _extensionInfo.Features;

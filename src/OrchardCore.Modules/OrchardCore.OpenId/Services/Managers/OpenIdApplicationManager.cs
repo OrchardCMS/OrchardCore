@@ -40,8 +40,11 @@ namespace OrchardCore.OpenId.Services.Managers
             await Store.SetClientIdAsync(application, model.ClientId, cancellationToken);
             await Store.SetClientSecretAsync(application, model.ClientSecret, cancellationToken);
             await Store.SetClientTypeAsync(application, model.Type.ToString().ToLowerInvariant(), cancellationToken);
-            await Store.SetConsentRequiredAsync(application, !model.SkipConsent, cancellationToken);
             await Store.SetDisplayNameAsync(application, model.DisplayName, cancellationToken);
+
+            await Store.SetConsentTypeAsync(application, model.SkipConsent ?
+                OpenIddictConstants.ConsentTypes.Implicit :
+                OpenIddictConstants.ConsentTypes.Explicit, cancellationToken);
 
             if (!string.IsNullOrEmpty(model.LogoutRedirectUri))
             {
@@ -150,16 +153,6 @@ namespace OrchardCore.OpenId.Services.Managers
             return Store.GetPhysicalIdAsync(application, cancellationToken);
         }
 
-        public virtual Task<bool> IsConsentRequiredAsync(IOpenIdApplication application, CancellationToken cancellationToken = default)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            return Store.IsConsentRequiredAsync(application, cancellationToken);
-        }
-
         public virtual async Task AddToRoleAsync(IOpenIdApplication application,
             string role, CancellationToken cancellationToken = default)
         {
@@ -244,8 +237,11 @@ namespace OrchardCore.OpenId.Services.Managers
 
             await Store.SetClientIdAsync(application, model.ClientId, cancellationToken);
             await Store.SetClientTypeAsync(application, model.Type.ToString().ToLowerInvariant(), cancellationToken);
-            await Store.SetConsentRequiredAsync(application, !model.SkipConsent, cancellationToken);
             await Store.SetDisplayNameAsync(application, model.DisplayName, cancellationToken);
+
+            await Store.SetConsentTypeAsync(application, model.SkipConsent ?
+                OpenIddictConstants.ConsentTypes.Implicit :
+                OpenIddictConstants.ConsentTypes.Explicit, cancellationToken);
 
             var permissions = new HashSet<string>(await Store.GetPermissionsAsync(application, cancellationToken), StringComparer.OrdinalIgnoreCase);
 

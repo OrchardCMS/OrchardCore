@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json.Linq;
 using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore;
@@ -20,8 +21,8 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         where TContext : DbContext
         where TKey : IEquatable<TKey>
     {
-        public OpenIdApplicationStore(TContext context)
-            : base(context)
+        public OpenIdApplicationStore(TContext context, IMemoryCache cache)
+            : base(context, cache)
         {
         }
     }
@@ -34,8 +35,8 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         where TContext : DbContext
         where TKey : IEquatable<TKey>
     {
-        public OpenIdApplicationStore(TContext context)
-            : base(context)
+        public OpenIdApplicationStore(TContext context, IMemoryCache cache)
+            : base(context, cache)
         {
         }
 
@@ -68,35 +69,6 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
             // the Entity Framework Core stores don't have distinct physical/logical identifiers.
             // To ensure this method can be safely used, the base GetIdAsync() method is called.
             => GetIdAsync(application, cancellationToken);
-
-        public virtual async Task<bool> IsConsentRequiredAsync(TApplication application, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            var properties = await GetPropertiesAsync(application, cancellationToken);
-            if (properties.TryGetValue(OpenIdConstants.Properties.ConsentRequired, StringComparison.OrdinalIgnoreCase, out JToken value))
-            {
-                return (bool) value;
-            }
-
-            return true;
-        }
-
-        public virtual async Task SetConsentRequiredAsync(TApplication application, bool value, CancellationToken cancellationToken)
-        {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
-
-            var properties = await GetPropertiesAsync(application, cancellationToken);
-            properties[OpenIdConstants.Properties.ConsentRequired] = new JValue(value);
-
-            await SetPropertiesAsync(application, properties, cancellationToken);
-        }
 
         public virtual async Task<ImmutableArray<string>> GetRolesAsync(TApplication application, CancellationToken cancellationToken)
         {
@@ -204,6 +176,9 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetClientTypeAsync(IOpenIdApplication application, CancellationToken cancellationToken)
             => GetClientTypeAsync((TApplication) application, cancellationToken);
 
+        Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetConsentTypeAsync(IOpenIdApplication application, CancellationToken cancellationToken)
+            => GetConsentTypeAsync((TApplication) application, cancellationToken);
+
         Task<string> IOpenIddictApplicationStore<IOpenIdApplication>.GetDisplayNameAsync(IOpenIdApplication application, CancellationToken cancellationToken)
             => GetDisplayNameAsync((TApplication) application, cancellationToken);
 
@@ -243,6 +218,9 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         Task IOpenIddictApplicationStore<IOpenIdApplication>.SetClientTypeAsync(IOpenIdApplication application, string type, CancellationToken cancellationToken)
             => SetClientTypeAsync((TApplication) application, type, cancellationToken);
 
+        Task IOpenIddictApplicationStore<IOpenIdApplication>.SetConsentTypeAsync(IOpenIdApplication application, string type, CancellationToken cancellationToken)
+            => SetConsentTypeAsync((TApplication) application, type, cancellationToken);
+
         Task IOpenIddictApplicationStore<IOpenIdApplication>.SetDisplayNameAsync(IOpenIdApplication application, string name, CancellationToken cancellationToken)
             => SetDisplayNameAsync((TApplication) application, name, cancellationToken);
 
@@ -276,14 +254,8 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         Task<ImmutableArray<string>> IOpenIdApplicationStore.GetRolesAsync(IOpenIdApplication application, CancellationToken cancellationToken)
             => GetRolesAsync((TApplication) application, cancellationToken);
 
-        Task<bool> IOpenIdApplicationStore.IsConsentRequiredAsync(IOpenIdApplication application, CancellationToken cancellationToken)
-            => IsConsentRequiredAsync((TApplication) application, cancellationToken);
-
         async Task<ImmutableArray<IOpenIdApplication>> IOpenIdApplicationStore.ListInRoleAsync(string role, CancellationToken cancellationToken)
             => (await ListInRoleAsync(role, cancellationToken)).CastArray<IOpenIdApplication>();
-
-        Task IOpenIdApplicationStore.SetConsentRequiredAsync(IOpenIdApplication application, bool value, CancellationToken cancellationToken)
-            => SetConsentRequiredAsync((TApplication) application, value, cancellationToken);
 
         Task IOpenIdApplicationStore.SetRolesAsync(IOpenIdApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken)
             => SetRolesAsync((TApplication) application, roles, cancellationToken);

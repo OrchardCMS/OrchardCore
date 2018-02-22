@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using OrchardCore.Environment.Extensions.Features;
 
@@ -40,7 +39,7 @@ namespace OrchardCore.Features.Models
         public IEnumerable<IFeatureInfo> DependentFeatures { get; set; }
 
         /// <summary>
-        /// List of features that this feature depends on .
+        /// List of features that this feature depends on.
         /// </summary>
         public IEnumerable<IFeatureInfo> FeatureDependencies { get; set; }
     }

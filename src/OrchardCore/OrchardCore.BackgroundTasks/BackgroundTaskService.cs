@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
@@ -36,7 +37,7 @@ namespace OrchardCore.BackgroundTasks
             _applicationLifetime = applicationLifetime;
             _tasks = tasks.GroupBy(GetGroupName).ToDictionary(x => x.Key, x => x.Select(i => i));
             _states = tasks.ToDictionary(x => x, x => BackgroundTaskState.Idle);
-            _timers = _tasks.Keys.ToDictionary(x => x, x => new Timer(DoWorkAsync, x, Timeout.Infinite, Timeout.Infinite));
+            _timers = _tasks.Keys.ToDictionary(x => x, x => CreateTimer(DoWorkAsync, x));
             _periods = _tasks.Keys.ToDictionary(x => x, x => TimeSpan.FromMinutes(1));
             Logger = logger;
         }
@@ -165,6 +166,33 @@ namespace OrchardCore.BackgroundTasks
             foreach(var timer in _timers.Values)
             {
                 timer.Dispose();
+            }
+        }
+
+        [SecuritySafeCritical]
+        private static Timer CreateTimer(TimerCallback callback, string name)
+        {
+            // Prevent the current execution context from being captured to ensure async-local
+            // elements like the HTTP context of the initiating request are not flowed and accessible
+            // from background tasks, which would prevent the HTTP context instance from being GCed.
+
+            var restore = false;
+            try
+            {
+                if (!ExecutionContext.IsFlowSuppressed())
+                {
+                    ExecutionContext.SuppressFlow();
+                    restore = true;
+                }
+
+                return new Timer(callback, name, Timeout.Infinite, Timeout.Infinite);
+            }
+            finally
+            {
+                if (restore)
+                {
+                    ExecutionContext.RestoreFlow();
+                }
             }
         }
     }
