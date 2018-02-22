@@ -15,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
         {
             if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
             {
-                throw new ArgumentException("DisplayHelper missing while invoking 'display'");
+                throw new ArgumentException("DisplayHelper missing while invoking 'shape_display'");
             }
 
             var shape = (await expression.EvaluateAsync(context)).ToObjectValue();

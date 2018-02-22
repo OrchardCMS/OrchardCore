@@ -227,7 +227,7 @@ Output
 Monday, September 11, 2017 3:29:26 PM
 ```
 
-## Shape Tags
+## Shape alteration Tags
 
 ### shape_clear_alternates
 
@@ -333,13 +333,13 @@ Input
 In this example, the `Model.Content` property evaluates to a zone shape, typically from a Content Item shape template, which contains the `BodyPart` shape
 rendered for the Body Part element. This call will remove the specific shape named `BodyPart`.
 
-### set_properties
+### shape_pager
 
-Replaces a property of an input shape.
+Replaces the properties of a Pager shape.
 
 Input
 ```liquid
-{% set_properties Model.Pager next_class: 'next', next_text: '>>' %}
+{% shape_pager Model.Pager next_class: 'next', next_text: '>>' %}
 ```
 
 ## Layout Tags
