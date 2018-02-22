@@ -74,6 +74,7 @@ namespace OrchardCore.Lists.Drivers
                 var query = _session.Query<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
                     .With<ContentItemIndex>(CreateContentIndexFilter(beforeValue, null, published))
+                    .OrderBy(x => x.CreatedUtc)
                     .Take(pager.PageSize + 1);
 
                 var containedItems = await query.ListAsync();
@@ -83,7 +84,7 @@ namespace OrchardCore.Lists.Drivers
                     return containedItems;
                 }
 
-                containedItems = containedItems.OrderByDescending(x => x.CreatedUtc);
+                containedItems = containedItems.Reverse();
 
                 // There is always an After as we clicked on Before
                 pager.Before = null;
@@ -103,6 +104,7 @@ namespace OrchardCore.Lists.Drivers
                 var query = _session.Query<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
                     .With<ContentItemIndex>(CreateContentIndexFilter(null, afterValue, published))
+                    .OrderByDescending(x => x.CreatedUtc)
                     .Take(pager.PageSize + 1);
 
                 var containedItems = await query.ListAsync();
@@ -111,8 +113,6 @@ namespace OrchardCore.Lists.Drivers
                 {
                     return containedItems;
                 }
-
-                containedItems = containedItems.OrderByDescending(x => x.CreatedUtc);
 
                 // There is always a Before page as we clicked on After
                 pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
@@ -128,22 +128,11 @@ namespace OrchardCore.Lists.Drivers
             }
             else
             {
-                var count = await _session.Query<ContentItem>()
-                    .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
-                    .With<ContentItemIndex>(x => x.Published)
-                    .CountAsync();
-
-                var skip = 0;
-
-                if (count > pager.PageSize + 1)
-                {
-                    skip = count - (pager.PageSize + 1);
-                }
-
                 var query = _session.Query<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
                     .With<ContentItemIndex>(CreateContentIndexFilter(null, null, published))
-                    .Skip(skip);
+                    .OrderByDescending(x => x.CreatedUtc)
+                    .Take(pager.PageSize + 1);
 
                 var containedItems = await query.ListAsync();
 
@@ -151,8 +140,6 @@ namespace OrchardCore.Lists.Drivers
                 {
                     return containedItems;
                 }
-
-                containedItems = containedItems.OrderByDescending(x => x.CreatedUtc);
 
                 pager.Before = null;
                 pager.After = null;

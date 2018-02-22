@@ -227,7 +227,51 @@ Output
 Monday, September 11, 2017 3:29:26 PM
 ```
 
-## Shape alteration Tags
+## Layout Tags
+
+### layout
+
+Sets the layout of a view.
+
+Input
+```liquid
+{% layout "CustomLayout" %}
+```
+
+Internally an alternate is added to the current theme `Layout` shape.
+
+### render_body
+
+In a layout, renders the body of the current view.
+
+Input
+```liquid
+{% render_body %}
+```
+
+### render_section
+
+In a layout, renders the section with the specified name.
+
+Input
+```liquid
+{% render_section "Header", required: false %}
+```
+
+### page_title
+
+Alters and renders the title of the current page.
+
+Input
+```liquid
+{% page_title Site.SiteName, position: "before", separator: " - " %}
+```
+
+The default parameter is a text that is appended to the current value of the title.
+`position` is where the value is appended, in this example at the beginning.
+`separator` is a string that is used to separate all the fragments of the title.
+
+## Shape Tags
 
 ### shape_clear_alternates
 
@@ -359,52 +403,6 @@ Input
 {% shape_pager Model.Pager next_class: 'next', next_text: '>>' %}
 ```
 
-## Layout Tags
-
-### layout
-
-Sets the layout of a view.
-
-Input
-```liquid
-{% layout "CustomLayout" %}
-```
-
-Internally an alternate is added to the current theme `Layout` shape.
-
-### render_body
-
-In a layout, renders the body of the current view.
-
-Input
-```liquid
-{% render_body %}
-```
-
-### render_section
-
-In a layout, renders the section with the specified name.
-
-Input
-```liquid
-{% render_section "Header", required: false %}
-```
-
-### page_title
-
-Alters and renders the title of the current page.
-
-Input
-```liquid
-{% page_title Site.SiteName, position: "before", separator: " - " %}
-```
-
-The default parameter is a text that is appended to the current value of the title.
-`position` is where the value is appended, in this example at the beginning.
-`separator` is a string that is used to separate all the fragments of the title.
-
-## Shape Tags
-
 ### shape_display
 
 Renders a shape. Similar to the `shape_stringify` filter.
@@ -420,14 +418,14 @@ Output
 Monday, September 11, 2017 3:29:26 PM
 ```
 
-### build_display
+### shape_build_display
 
-Creates the display shape for a content item. It can be used in conjunction with `display` 
+Creates the display shape for a content item. It can be used in conjunction with `shape_display` 
 to render a content item.
 
 Input
 ```liquid
-{% shape_display mycontentitem | build_display: "Detail"  %}
+{% shape_display mycontentitem | shape_build_display: "Detail"  %}
 ```
 
 ### shape

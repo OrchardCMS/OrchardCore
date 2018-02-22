@@ -22,7 +22,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
 
-
                 foreach (var name in arguments.Names)
                 {
                     var argument = arguments[name];
@@ -30,9 +29,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                     if (_properties.Contains(propertyName))
                     {
-                        objectValue[propertyName] = argument.ToObjectValue();
+                        objectValue[propertyName] = argument.ToStringValue();
                     }
-                    objectValue[propertyName] = argument.ToObjectValue();
                 }
             }
 

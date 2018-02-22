@@ -8,7 +8,6 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;
-using OrchardCore.Contents.Filters;
 using OrchardCore.Contents.Handlers;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Contents.Liquid;
@@ -128,7 +127,7 @@ namespace OrchardCore.Contents
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddLiquidFilter<ContentFilter>("content");
-            services.AddLiquidFilter<BuildDisplayFilter>("build_display");
+            services.AddLiquidFilter<BuildDisplayFilter>("shape_build_display");
         }
     }
 }

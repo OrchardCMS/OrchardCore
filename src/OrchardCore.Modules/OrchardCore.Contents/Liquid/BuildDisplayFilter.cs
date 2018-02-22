@@ -8,7 +8,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.Contents.Filters
+namespace OrchardCore.Contents.Liquid
 {
     public class BuildDisplayFilter : ILiquidFilter
     {
@@ -35,7 +35,7 @@ namespace OrchardCore.Contents.Filters
 
             if (!ctx.AmbientValues.TryGetValue("Services", out var services))
             {
-                throw new ArgumentException("Services missing while invoking 'build_display'");
+                throw new ArgumentException("Services missing while invoking 'shape_build_display'");
             }
 
             var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
