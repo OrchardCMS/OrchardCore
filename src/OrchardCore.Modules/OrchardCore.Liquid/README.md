@@ -224,7 +224,7 @@ The following properties are available on the `Request` object.
 
 ## Shape Filters
 
-These filters let you create, filter and display shapes.
+These filters let you create and filter shapes.
 
 ### shape_new
 
