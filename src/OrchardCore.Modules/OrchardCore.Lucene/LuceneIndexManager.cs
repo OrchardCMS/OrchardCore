@@ -86,10 +86,12 @@ namespace OrchardCore.Lucene
         {
             lock (this)
             {
-                if (_writers.TryRemove(indexName, out var writer))
+                if (_writers.TryGetValue(indexName, out var writer))
                 {
                     writer.Dispose();
                 }
+
+                _writers.TryRemove(indexName, out writer);
 
                 if (_indexPools.TryRemove(indexName, out var reader))
                 {
@@ -264,8 +266,8 @@ namespace OrchardCore.Lucene
 
             if (close)
             {
-                _writers.TryRemove(indexName, out writer);
                 writer.Dispose();
+                _writers.TryRemove(indexName, out writer);
             }
 
             _timestamps[indexName] = _clock.UtcNow;
