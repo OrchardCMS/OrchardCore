@@ -262,6 +262,11 @@ namespace OrchardCore.Lucene
                 return new IndexWriter(directory, config);
             });
 
+            if (writer.IsClosed)
+            {
+                return;
+            }
+
             action?.Invoke(writer);
 
             if (close)
