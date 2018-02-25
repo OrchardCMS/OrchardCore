@@ -104,11 +104,11 @@ namespace OrchardCore.Lucene
 
                 if (Directory.Exists(indexFolder))
                 {
-                    var directory = FSDirectory.Open(indexFolder);
-                    if (!IndexWriter.IsLocked(directory))
+                    try
                     {
                         Directory.Delete(indexFolder, true);
                     }
+                    catch { }
                 }
 
                 _writers.TryRemove(indexName, out writer);
@@ -265,33 +265,33 @@ namespace OrchardCore.Lucene
                     {
                         var directory = CreateDirectory(indexName);
 
-                        if (!IndexWriter.IsLocked(directory))
+                        var config = new IndexWriterConfig(LuceneVersion, new StandardAnalyzer(LuceneVersion))
                         {
-                            var config = new IndexWriterConfig(LuceneVersion, new StandardAnalyzer(LuceneVersion))
-                            {
-                                OpenMode = OpenMode.CREATE_OR_APPEND
-                            };
+                            OpenMode = OpenMode.CREATE_OR_APPEND
+                        };
 
-                            writer = _writers[indexName] = new IndexWriterWrapper(directory, config);
-                        }
+                        writer = _writers[indexName] = new IndexWriterWrapper(directory, config);
                     }
                 }
             }
 
-            if (writer == null || writer.IsClosed || writer.IsClosing)
+            if (writer.IsClosing)
             {
                 return;
             }
 
             action?.Invoke(writer);
 
-            if (close)
+            if (close && !writer.IsClosing)
             {
                 lock (this)
                 {
-                    writer.IsClosing = true;
-                    writer.Dispose();
-                    _writers.TryRemove(indexName, out writer);
+                    if (!writer.IsClosing)
+                    {
+                        writer.IsClosing = true;
+                        writer.Dispose();
+                        _writers.TryRemove(indexName, out writer);
+                    }
                 }
             }
 
