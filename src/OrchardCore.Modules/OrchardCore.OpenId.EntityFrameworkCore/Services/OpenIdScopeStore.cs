@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json.Linq;
 using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore;
 using OrchardCore.OpenId.Abstractions.Models;
@@ -16,8 +18,8 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         where TContext : DbContext
         where TKey : IEquatable<TKey>
     {
-        public OpenIdScopeStore(TContext context)
-            : base(context)
+        public OpenIdScopeStore(TContext context, IMemoryCache cache)
+            : base(context, cache)
         {
         }
     }
@@ -27,8 +29,8 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         where TContext : DbContext
         where TKey : IEquatable<TKey>
     {
-        public OpenIdScopeStore(TContext context)
-            : base(context)
+        public OpenIdScopeStore(TContext context, IMemoryCache cache)
+            : base(context, cache)
         {
         }
 
@@ -76,14 +78,21 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         Task<long> IOpenIddictScopeStore<IOpenIdScope>.CountAsync<TResult>(Func<IQueryable<IOpenIdScope>, IQueryable<TResult>> query, CancellationToken cancellationToken)
             => CountAsync(query, cancellationToken);
 
-        async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.CreateAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => await CreateAsync((TScope) scope, cancellationToken);
+        Task IOpenIddictScopeStore<IOpenIdScope>.CreateAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+            => CreateAsync((TScope) scope, cancellationToken);
 
         Task IOpenIddictScopeStore<IOpenIdScope>.DeleteAsync(IOpenIdScope scope, CancellationToken cancellationToken)
             => DeleteAsync((TScope) scope, cancellationToken);
 
         async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
             => await FindByIdAsync(identifier, cancellationToken);
+
+        async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.FindByNameAsync(string name, CancellationToken cancellationToken)
+            => await FindByNameAsync(name, cancellationToken);
+
+        async Task<ImmutableArray<IOpenIdScope>> IOpenIddictScopeStore<IOpenIdScope>.FindByNamesAsync(
+            ImmutableArray<string> names, CancellationToken cancellationToken)
+            => (await FindByNamesAsync(names, cancellationToken)).CastArray<IOpenIdScope>();
 
         Task<TResult> IOpenIddictScopeStore<IOpenIdScope>.GetAsync<TState, TResult>(
             Func<IQueryable<IOpenIdScope>, TState, IQueryable<TResult>> query,
@@ -93,11 +102,20 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetDescriptionAsync(IOpenIdScope scope, CancellationToken cancellationToken)
             => GetDescriptionAsync((TScope) scope, cancellationToken);
 
+        Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetDisplayNameAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+            => GetDisplayNameAsync((TScope) scope, cancellationToken);
+
         Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetIdAsync(IOpenIdScope scope, CancellationToken cancellationToken)
             => GetIdAsync((TScope) scope, cancellationToken);
 
         Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetNameAsync(IOpenIdScope scope, CancellationToken cancellationToken)
             => GetNameAsync((TScope) scope, cancellationToken);
+
+        Task<JObject> IOpenIddictScopeStore<IOpenIdScope>.GetPropertiesAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+            => GetPropertiesAsync((TScope) scope, cancellationToken);
+
+        Task<ImmutableArray<string>> IOpenIddictScopeStore<IOpenIdScope>.GetResourcesAsync(IOpenIdScope scope, CancellationToken cancellationToken)
+            => GetResourcesAsync((TScope) scope, cancellationToken);
 
         async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.InstantiateAsync(CancellationToken cancellationToken)
             => await InstantiateAsync(cancellationToken);
@@ -113,8 +131,17 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         Task IOpenIddictScopeStore<IOpenIdScope>.SetDescriptionAsync(IOpenIdScope scope, string description, CancellationToken cancellationToken)
             => SetDescriptionAsync((TScope) scope, description, cancellationToken);
 
+        Task IOpenIddictScopeStore<IOpenIdScope>.SetDisplayNameAsync(IOpenIdScope scope, string name, CancellationToken cancellationToken)
+            => SetDisplayNameAsync((TScope) scope, name, cancellationToken);
+
         Task IOpenIddictScopeStore<IOpenIdScope>.SetNameAsync(IOpenIdScope scope, string name, CancellationToken cancellationToken)
             => SetNameAsync((TScope) scope, name, cancellationToken);
+
+        Task IOpenIddictScopeStore<IOpenIdScope>.SetPropertiesAsync(IOpenIdScope scope, JObject properties, CancellationToken cancellationToken)
+            => SetPropertiesAsync((TScope) scope, properties, cancellationToken);
+
+        Task IOpenIddictScopeStore<IOpenIdScope>.SetResourcesAsync(IOpenIdScope scope, ImmutableArray<string> resources, CancellationToken cancellationToken)
+            => SetResourcesAsync((TScope) scope, resources, cancellationToken);
 
         Task IOpenIddictScopeStore<IOpenIdScope>.UpdateAsync(IOpenIdScope scope, CancellationToken cancellationToken)
             => UpdateAsync((TScope) scope, cancellationToken);

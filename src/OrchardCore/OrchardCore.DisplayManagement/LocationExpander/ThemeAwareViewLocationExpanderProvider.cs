@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Mvc.LocationExpander;
@@ -54,7 +55,7 @@ namespace OrchardCore.DisplayManagement.LocationExpander
 
             var currentThemeAndBaseThemesOrdered = _extensionManager
                 .GetFeatures(new[] { currentThemeId })
-                .Where(x => x.Extension.Manifest.IsTheme())
+                .Where(x => x.Extension.IsTheme())
                 .Reverse();
 
             if (context.ActionContext.ActionDescriptor is PageActionDescriptor page)

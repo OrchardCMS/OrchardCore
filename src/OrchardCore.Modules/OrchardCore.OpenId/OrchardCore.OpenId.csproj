@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.BackgroundTasks.Abstractions\OrchardCore.BackgroundTasks.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Entities.DisplayManagement\OrchardCore.Entities.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
@@ -18,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNet.Security.OAuth.Validation" Version="$(AspNetContribSecurityOAuthValidationPackageVersion)" />
+    <PackageReference Include="AspNet.Security.OAuth.Validation" Version="$(OAuthValidationPackageVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerPackageVersion)" />
     <PackageReference Include="OpenIddict" Version="$(OpenIddictVersion)" />
   </ItemGroup>

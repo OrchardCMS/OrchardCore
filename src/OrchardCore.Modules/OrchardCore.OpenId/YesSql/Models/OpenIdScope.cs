@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+using Newtonsoft.Json.Linq;
 using OrchardCore.OpenId.Abstractions.Models;
 
 namespace OrchardCore.OpenId.YesSql.Models
@@ -17,6 +19,12 @@ namespace OrchardCore.OpenId.YesSql.Models
         public string Description { get; set; }
 
         /// <summary>
+        /// Gets or sets the display name
+        /// associated with the current scope.
+        /// </summary>
+        public string DisplayName { get; set; }
+
+        /// <summary>
         /// Gets or sets the physical identifier
         /// associated with the current scope.
         /// </summary>
@@ -27,5 +35,17 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// associated with the current scope.
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the additional properties
+        /// associated with the current scope.
+        /// </summary>
+        public virtual JObject Properties { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resources associated with the current scope.
+        /// </summary>
+        public virtual ImmutableArray<string> Resources { get; set; }
+            = ImmutableArray.Create<string>();
     }
 }

@@ -1,5 +1,5 @@
-using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
+using Newtonsoft.Json.Linq;
 using OrchardCore.OpenId.Abstractions.Models;
 using OrchardCore.OpenId.Models;
 
@@ -27,6 +27,12 @@ namespace OrchardCore.OpenId.YesSql.Models
         public string ClientSecret { get; set; }
 
         /// <summary>
+        /// Gets or sets the consent type
+        /// associated with the current application.
+        /// </summary>
+        public string ConsentType { get; set; }
+
+        /// <summary>
         /// Gets or sets the display name
         /// associated with the current application.
         /// </summary>
@@ -39,42 +45,39 @@ namespace OrchardCore.OpenId.YesSql.Models
         public int Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the logout callback URLs
-        /// associated with the current application.
+        /// Gets or sets the permissions associated with the application.
         /// </summary>
-        public ISet<string> PostLogoutRedirectUris { get; set; }
-            = new HashSet<string>(StringComparer.Ordinal);
+        public ImmutableArray<string> Permissions { get; set; }
+            = ImmutableArray.Create<string>();
 
         /// <summary>
-        /// Gets or sets the callback URLs
+        /// Gets the logout callback URLs associated with the current application.
+        /// </summary>
+        public ImmutableArray<string> PostLogoutRedirectUris { get; set; }
+            = ImmutableArray.Create<string>();
+
+        /// <summary>
+        /// Gets or sets the additional properties
         /// associated with the current application.
         /// </summary>
-        public ISet<string> RedirectUris { get; set; }
-            = new HashSet<string>(StringComparer.Ordinal);
+        public virtual JObject Properties { get; set; }
+
+        /// <summary>
+        /// Gets or sets the callback URLs associated with the current application.
+        /// </summary>
+        public ImmutableArray<string> RedirectUris { get; set; }
+            = ImmutableArray.Create<string>();
+
+        /// <summary>
+        /// Gets or sets the roles associated with the application.
+        /// </summary>
+        public ImmutableArray<string> Roles { get; set; }
+            = ImmutableArray.Create<string>();
 
         /// <summary>
         /// Gets or sets the application type
         /// associated with the current application.        
         /// </summary>
         public ClientType Type { get; set; }
-
-        /// <summary>
-        /// Gets or sets if a consent form has to be fulfilled by 
-        /// the user after log in.
-        /// </summary>
-        public bool SkipConsent { get; set; }
-
-        /// <summary>
-        /// Gets or sets the RoleNames assined to the app.
-        /// </summary>
-        public ISet<string> RoleNames { get; set; }
-            = new HashSet<string>(StringComparer.Ordinal);
-
-        public bool AllowPasswordFlow { get; set; }
-        public bool AllowClientCredentialsFlow { get; set; }
-        public bool AllowAuthorizationCodeFlow { get; set; }
-        public bool AllowRefreshTokenFlow { get; set; }
-        public bool AllowImplicitFlow { get; set; }
-        public bool AllowHybridFlow { get; set; }
     }
 }

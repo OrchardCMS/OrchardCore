@@ -10,8 +10,8 @@ Create a class inheriting from `Query` which will represent the state that is ne
 
 ### QuerySource
 
-Create a class implementing `IQuerySource` in order to expose the new type of query. The query source can be registered
-like this:
+Create a class implementing `IQuerySource` in order to expose the new type of query.
+The query source can be registered like this:
 
 ```
 services.AddScoped<IQuerySource, LuceneQuerySource>();
@@ -19,7 +19,7 @@ services.AddScoped<IQuerySource, LuceneQuerySource>();
 
 ### Editors
 
-Queries are edited by providing custom implementation of a `DisplayDriver` for the type `Query`. 
+Queries are edited by providing a custom implementation of a `DisplayDriver` for the type `Query`. 
 
 ```
 public class LuceneQueryDisplayDriver : DisplayDriver<Query, LuceneQuery>
@@ -98,9 +98,16 @@ To access a named query, use the name as the input.
 {% endfor %}
 ```
 
-The example above will iterate over all the results of the query name `RecentBlogPosts` and display the text representing
-the content item. Any available property on the results of the queries can be used. This example assumes the results
-will be content items.
+The example above will iterate over all the results of the query name `RecentBlogPosts` and display the text representing the content item.
+Any available property on the results of the queries can be used. This example assumes the results will be content items.
+
+### Parameters
+
+The `query` filter allows you to pass in parameters to your paramterized queries. For example, a query called `ContentItems` that has two parameters (`contentType` and `limit`) can be called like this:
+
+```
+{% assign fiveBlogPosts = "ContentItems" | query: contentType: "BlogPost", limit: 5 %}
+```
 
 # Razor Helpers
 
@@ -135,7 +142,7 @@ Here is an example of a query that returns all published Blog Posts:
 
 By selecting the "Return documents" options, the content items associated with the resulting `DocumentId` values are loaded.
 
-The example below returns a custom set of value instead of content items:
+The example below returns a custom set of values instead of content items:
 
 ```sql
 select 
@@ -150,15 +157,16 @@ group by day(CreatedUtc), month(CreatedUtc), year(CreatedUtc)
 
 ## Parameters
 
-Parameters can be provided when running queries. Parameters are safe to use as they will always be parsed before 
-being included in a query. The syntax of a parameter is 
+Parameters can be provided when running queries.
+Parameters are safe to use as they will always be parsed before being included in a query.
+The syntax of a parameter is 
 
 `@name:default_value`
 
 Where `name` is the name of the parameter, and `default_value` an expression (usually a literal) to use in case
 the parameter is not defined.
 
-The following example load the document ids for a parameterized content type.
+The following example loads the document ids for a parameterized content type.
 
 ```sql
 select DocumentId
@@ -172,11 +180,11 @@ Parameter names are case-sensitive.
 
 ## Templates
 
-A sql query is actually a Liquid template. This allows your queries to be shaped based on the parameters it gets. 
-When injecting user provided value, be sure to encode these such that they can't be exploited. It is recommended
-ot use parameters to inject values in the queries, and only use Liquid templates to change the shape of the query.
+A SQL query is actually a Liquid template. This allows your queries to be shaped based on the parameters it gets. 
+When injecting user-provided values, be sure to encode these such that they can't be exploited.
+It is recommended to use parameters to inject values in the queries, and only use Liquid templates to change the shape of the query.
 
-This example checks that a `limit` parameter is provided and if so uses it.
+This example checks that a `limit` parameter is provided and if so uses it:
 
 ```
 {% if limit > 0 %}
@@ -190,11 +198,11 @@ This example checks that a `limit` parameter is provided and if so uses it.
 
 Use `LIMIT [number]` and `OFFSET [number]` to define paged results.
 
-These statements will be converted automatically based on the actual RDBMS.
+These statements will be converted automatically based on the RDBMS in use.
 
 ## Helper functions
 
-The SQL parser is also able to convert some specific function and convert them to the intended dialect.
+The SQL parser is also able to convert some specific functions to the intended dialect.
 
 | Name             | Description                        |
 | ---------------- |----------------------------------- |

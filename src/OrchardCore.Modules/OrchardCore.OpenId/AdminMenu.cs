@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Navigation;
 using System;
 
@@ -21,7 +21,7 @@ namespace OrchardCore.OpenId
             }
 
             builder
-                .Add(T["Design"], design => design
+                .Add(T["Configuration"], configuration => configuration
                     .Add(T["Security"], "5", security => security
                         .Add(T["OpenID Connect Apps"], "15", installed => installed
                             .Action("Index", "Admin", "OrchardCore.OpenId")

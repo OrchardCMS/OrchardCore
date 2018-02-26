@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The scripting provides an API allowing you to evaluate custom scripts in different languages.
+The scripting module provides an API allowing you to evaluate custom scripts in different languages.
 
 ## Usage
 
@@ -20,7 +20,7 @@ public interface IScriptingManager
 
 To evaluate an expression using a scripting engine, you must know which ones are available in the system. 
 For instance, a JavaScript one is available by default and its prefix is `js`.
-To return the current date and time as a string we could to something like this:
+To return the current date and time as a string we could do something like this:
 
 ```
 var scriptingManager = serviceProvider.GetService<IScriptingManager>();

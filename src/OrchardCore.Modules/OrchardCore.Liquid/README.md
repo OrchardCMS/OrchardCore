@@ -7,17 +7,19 @@ For more information about the Liquid syntax, please refer to this site: https:/
 
 ### HTML escaping
 
-All outputs are encoded into HTML by default. It means that any string that returns some HTML reserved chars will
-be converted to the corresponding HTML entities. If you need to render some raw HTML chars you can use the `Raw` filter.
+All outputs are encoded into HTML by default.
+This means that any HTML reserved chars will be converted to the corresponding HTML entities.
+If you need to render some raw HTML chars you can use the `Raw` filter.
 
 ## Content Item Filters
 
-All the default filters that are available in the standard Liquid syntax are available in OrchardCore. On top of that each Orchard module can
-provide custom filters for their own purpose. Here is a list of common filters that apply to content items.
+All the default filters that are available in the standard Liquid syntax are available in OrchardCore.
+On top of that each Orchard module can provide custom filters for their own purpose.
+Here is a list of common filters that apply to content items.
 
 ### display_url
 
-Returns the url of the content item
+Returns the URL of the content item
 
 Input
 ```
@@ -25,7 +27,7 @@ Input
 ```
 
 Output
-```
+```text
 /blog/my-blog-post
 ```
 
@@ -39,13 +41,13 @@ Input
 ```
 
 Output
-```
+```text
 My Blog Post
 ```
 
 ### slugify
 
-Convert a text into a string that can be used in a url.
+Convert a text into a string that can be used in a URL.
 
 Input
 ```
@@ -53,14 +55,13 @@ Input
 ```
 
 Output
-```
+```text
 this-is-some-text
 ```
 
 ### container
 
 Returns the container content item of another content item.
-
 
 Input
 ```
@@ -69,7 +70,7 @@ Input
 In this example we assume `ContentItem` represents a blog post.
 
 Output
-```
+```text
 Blog
 ```
 
@@ -80,12 +81,14 @@ Converts a UTC date and time to the local date and time based on the site settin
 Input
 ```
 {{ "now" | local | date: "%c" }}
+```
 or
+```
 {{ Model.ContentItem.CreatedUtc | local | date: "%c" }}
 ```
 
 Output
-```
+```text
 Wednesday, 02 August 2017 11:54:48
 ```
 
@@ -99,13 +102,13 @@ Input
 ```
 
 Output
-```
+```text
 Bonjour!
 ```
 
 ### html_class
 
-Converts a string into a friendly html class.
+Converts a string into a friendly HTML class.
 
 Input
 ```
@@ -113,7 +116,7 @@ Input
 ```
 
 Output
-```
+```text
 landing-page
 ```
 
@@ -170,7 +173,7 @@ The convention is that each Part is exposed by its name as the first level.
 If the content item has custom fields, they will be available under a part whose name will match the content type.
 
 For example, assuming the type `Product` has a Text field named `Size`, access the value of this field for a 
-content item would be:
+content item as follows:
 
 ```
 {{ Model.ContentItem.Content.Product.Size.Text }}
@@ -194,7 +197,30 @@ The following properties are available on the `User` object.
 
 ### Site
 
-Gives access to the current site settings, e.g Site.SiteName
+Gives access to the current site settings, e.g `Site.SiteName`
+
+### Request
+
+Represents the current request.
+
+The following properties are available on the `Request` object.
+
+| Property | Example | Description |
+| --------- | ---- |------------ |
+| `QueryString` | `?sort=name&page=1` | The query string |
+| `ContentType` | `application/x-www-form-urlencoded; charset=UTF-8` | The `Content-Type` header |
+| `ContentLength` | `600` | The `Content-Length` header |
+| `Cookies` | Usage: `Request.Cookies.orchauth_Default` | The collection of cookies for this request |
+| `Headers` | Usage: `Request.Headers.accept` | The request headers |
+| `Query` | Usage: `Request.Query.sort` | The query value collection parsed from `QueryString` |
+| `Form` | Usage: `Request.Form.value` | The collection of form values |
+| `Protocol` | `https` | The protocol of this request |
+| `Path` | `/OrchardCore.ContentPreview/Preview/Render` | The path of the request, unescaped |
+| `PathBase` | `/mytenant` | The base path of the request, unescaped |
+| `Host` | `localhost:44300` | The `Host` header. May contain the port |
+| `IsHttps` | `true` | True if the scheme of the request is `https` |
+| `Scheme` | `https` | The scheme of the request |
+| `Method` | `GET` | The HTTP method  |
 
 ## Shape Filters
 
@@ -220,7 +246,7 @@ Input
 ```
 
 Output
-```
+```text
 Monday, September 11, 2017 3:29:26 PM
 ```
 
@@ -297,6 +323,7 @@ Input
 ### shape_tab
 
 Replaces the tab of an input shape.
+
 Input
 ```
 {{ my_shape | shape_tab: "properties" }}
@@ -305,7 +332,7 @@ Input
 
 ### remove_item
 
-Removes a named shape from an input shape items.
+Removes a named shape from an input shape's items.
 
 Input
 ```
@@ -369,7 +396,7 @@ Input
 ```
 
 Output
-```
+```text
 Monday, September 11, 2017 3:29:26 PM
 ```
 
@@ -407,7 +434,7 @@ The content of this block can then be reused from the Layout using the `{% displ
 
 ## Tag Helper tags
 
-ASP.NET Core MVC provides a set of tag helpers to render predefined html outputs. The Liquid module provides a way to call into these Tag Helpers using custom liquid tags.
+ASP.NET Core MVC provides a set of tag helpers to render predefined HTML outputs. The Liquid module provides a way to call into these Tag Helpers using custom liquid tags.
 
 ### link
 
@@ -432,6 +459,15 @@ Invokes the `style` tag helper from the **Orchard.ResourceManagement** package.
 ### a
 
 Invokes the `a` tag helper from the MVC package.
+
+### antiforgerytoken
+
+Renders a `<hidden>` element (antiforgery token) that will be validated when the containing `<form>` is submitted.
+
+Example
+```liquid
+{% antiforgerytoken %}
+```
 
 ## CREDITS
 

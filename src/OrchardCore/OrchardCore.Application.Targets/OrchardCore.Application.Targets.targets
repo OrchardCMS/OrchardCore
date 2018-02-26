@@ -5,13 +5,20 @@
     Application that references it will embedd in its assembly a list of the referenced modules.
   -->
 
-  <Target Name="EmbeddModuleNames" AfterTargets="AfterResolveReferences">
+  <Target Name="ResolveModuleProjectReferences" AfterTargets="AfterResolveReferences">
+    <MSBuild
+      Targets="GetModuleProject"
+      BuildInParallel="$(BuildInParallel)"
+      Projects="@(_MSBuildProjectReferenceExistent)"
+      Condition="'@(_MSBuildProjectReferenceExistent)' != ''"
+      SkipNonexistentTargets="true"
+      ContinueOnError="true">
+
+      <Output ItemName="ModuleProjects" TaskParameter="TargetOutputs" />
+    </MSBuild>
 
     <ItemGroup>
-      <ModuleProjectReferences
-        Include="@(_MSBuildProjectReferenceExistent)"
-        Condition="Exists('%(RootDir)%(Directory)Module.txt') Or Exists('%(RootDir)%(Directory)obj\Module.txt') Or
-                   Exists('%(RootDir)%(Directory)Theme.txt') Or Exists('%(RootDir)%(Directory)obj\Theme.txt')" />
+      <ModuleProjectReferences Include="@(ModuleProjects)" />
     </ItemGroup>
 
     <ItemGroup>
@@ -19,25 +26,14 @@
       <ModuleNames Include="@(ModulePackageNames);@(ModuleProjectNames)" />
     </ItemGroup>
 
-    <WriteLinesToFile
-      File="$(IntermediateOutputPath)module.names.map"
-      Lines="@(ModuleNames)"
-      WriteOnlyWhenDifferent="true"
-      Condition="'@(ModuleNames)' != ''"
-      Overwrite="true"
-      Encoding="utf-8"
-      ContinueOnError="true" />
-
     <ItemGroup>
-      <EmbeddedResource Include="$(IntermediateOutputPath)module.names.map">
-        <Link>module.names.map</Link>
-      </EmbeddedResource>
+      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleNameAttribute">
+        <_Parameter1>%(ModuleNames.Identity)</_Parameter1>
+      </AssemblyAttribute>
     </ItemGroup>
-
   </Target>
 
   <Target Name="CompileModuleRazorFiles" BeforeTargets="_ResolveInputArguments">
-
     <ItemGroup>
       <ModuleProjectRazorFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml">
         <ProjectName>%(Filename)</ProjectName>

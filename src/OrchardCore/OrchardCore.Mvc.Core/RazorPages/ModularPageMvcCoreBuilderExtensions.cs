@@ -1,3 +1,5 @@
+using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,12 +10,13 @@ namespace OrchardCore.Mvc.RazorPages
 {
     public static class ModularPageMvcCoreBuilderExtensions
     {
-        public static IMvcCoreBuilder AddModularRazorPages(this IMvcCoreBuilder builder)
+        public static IMvcCoreBuilder AddModularRazorPages(this IMvcCoreBuilder builder, IServiceProvider services)
         {
             builder.AddRazorPages(options =>
             {
                 options.RootDirectory = "/";
-                options.Conventions.Add(new DefaultModularPageRouteModelConvention());
+                var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
+                options.Conventions.Add(new DefaultModularPageRouteModelConvention(httpContextAccessor));
             });
 
             builder.Services.TryAddEnumerable(

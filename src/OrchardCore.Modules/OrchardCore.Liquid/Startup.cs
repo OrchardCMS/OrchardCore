@@ -6,7 +6,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid.Drivers;
@@ -37,15 +36,7 @@ namespace OrchardCore.Liquid
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            // Liquid Part
-            services.AddScoped<IContentPartDisplayDriver, LiquidPartDisplay>();
-            services.AddScoped<IShapeTableProvider, LiquidShapes>();
-            services.AddSingleton<ContentPart, LiquidPart>();
-            services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
-            services.AddScoped<IContentPartHandler, LiquidPartHandler>();
             services.AddScoped<ISlugService, SlugService>();
-
             services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
 
             services.AddLiquidFilter<TimeZoneFilter>("local");
@@ -54,6 +45,21 @@ namespace OrchardCore.Liquid
             services.AddLiquidFilter<DisplayTextFilter>("display_text");
             services.AddLiquidFilter<DisplayUrlFilter>("display_url");
             services.AddLiquidFilter<ContentUrlFilter>("href");
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Contents")]
+    public class LiquidPartStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Liquid Part
+            services.AddScoped<IContentPartDisplayDriver, LiquidPartDisplay>();
+            services.AddScoped<IShapeTableProvider, LiquidShapes>();
+            services.AddSingleton<ContentPart, LiquidPart>();
+            services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
+            services.AddScoped<IContentPartHandler, LiquidPartHandler>();
         }
     }
 }

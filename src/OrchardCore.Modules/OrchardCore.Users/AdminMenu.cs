@@ -22,8 +22,8 @@ namespace OrchardCore.Users
             }
 
             builder
-                .Add(T["Design"], design => design
-                     .Add(T["Security"], "5", security => security
+                .Add(T["Configuration"], configuration => configuration
+                    .Add(T["Security"], "5", security => security
                         .Add(T["Users"], "5", installed => installed
                             .Action("Index", "Admin", "OrchardCore.Users")
                             .Permission(Permissions.ManageUsers)

@@ -4,7 +4,7 @@ The Lucene module allows to manage Lucene indices.
 
 ## Recipe step
 
-Lucene indices can be created during recipes using the `lucene-index` step.
+Lucene indices can be created during recipe execution using the `lucene-index` step.
 Here is a sample step:
 
 ```json
@@ -12,7 +12,6 @@ Here is a sample step:
     "name": "lucene-index",
     "Indices": "Indices": [ "Search" ]
 }
-
 ```
 
 ### Queries recipe step
@@ -46,8 +45,8 @@ Verbs: **POST** and **GET**
 
 ### api/lucene/documents
 
-Executes a query with the specified name and returns the corresponding lucene documents. Only the stored
-fields are returned.
+Executes a query with the specified name and returns the corresponding Lucene documents.
+Only the stored fields are returned.
 
 Verbs: **POST** and **GET**
 

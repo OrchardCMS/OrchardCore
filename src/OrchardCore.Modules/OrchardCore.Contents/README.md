@@ -6,7 +6,7 @@ This module provides Content Management services.
 
 ### content
 
-Returns a content items
+Returns a content item.
 
 #### Loading from a content item id
 
@@ -16,7 +16,7 @@ Loads a content item from its unique identifier.
 {% assign my_content = "417qsjrgv97e74wvp149h4da53" | content %}
 ```
 
-By default it loads the published version. The latest version (either published or draft) can be loaded using the `latest: true` option.
+By default it loads the _published_ version. The _latest_ version (either "published" or "draft") can be loaded using the `latest: true` option.
 
 ```
 {% assign my_content = "417qsjrgv97e74wvp149h4da53" | content: latest: true %}

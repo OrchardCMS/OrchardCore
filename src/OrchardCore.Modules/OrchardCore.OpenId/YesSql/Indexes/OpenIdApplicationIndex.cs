@@ -76,7 +76,7 @@ namespace OrchardCore.OpenId.YesSql.Indexes
                 });
 
             context.For<OpenIdApplicationByRoleNameIndex, string>()
-                .Map(application => application.RoleNames.Select(role => new OpenIdApplicationByRoleNameIndex
+                .Map(application => application.Roles.Select(role => new OpenIdApplicationByRoleNameIndex
                 {
                     RoleName = role,
                     Count = 1

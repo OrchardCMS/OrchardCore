@@ -93,8 +93,9 @@ namespace OrchardCore.OpenId
 
             options.ProviderType = typeof(OpenIddictProvider<IOpenIdApplication, IOpenIdAuthorization, IOpenIdScope, IOpenIdToken>);
             options.DataProtectionProvider = _dataProtectionProvider;
-            options.RequireClientIdentification = true;
+            options.ApplicationCanDisplayErrors = true;
             options.EnableRequestCaching = true;
+            options.RequireClientIdentification = true;
 
             if (settings.AccessTokenFormat == OpenIdSettings.TokenFormat.JWT)
             {
@@ -139,25 +140,25 @@ namespace OrchardCore.OpenId
             {
                 options.UserinfoEndpointPath = "/OrchardCore.OpenId/UserInfo/Me";
             }
-            if (settings.AllowPasswordFlow)
+            if (settings.AllowAuthorizationCodeFlow)
             {
-                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.Password);
+                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.AuthorizationCode);
             }
             if (settings.AllowClientCredentialsFlow)
             {
                 options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.ClientCredentials);
             }
-            if (settings.AllowAuthorizationCodeFlow || settings.AllowHybridFlow)
+            if (settings.AllowImplicitFlow)
             {
-                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.AuthorizationCode);
+                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.Implicit);
+            }
+            if (settings.AllowPasswordFlow)
+            {
+                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.Password);
             }
             if (settings.AllowRefreshTokenFlow)
             {
                 options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.RefreshToken);
-            }
-            if (settings.AllowImplicitFlow || settings.AllowHybridFlow)
-            {
-                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.Implicit);
             }
         }
 

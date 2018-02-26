@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Tests.Stubs
@@ -8,10 +8,9 @@ namespace OrchardCore.Tests.Stubs
         private string _rootPath;
         private IFileProvider _contentRootFileProvider;
 
-        public StubHostingEnvironment(string root)
+        public StubHostingEnvironment()
         {
-            _rootPath = root;
-            _contentRootFileProvider = new PhysicalFileProvider(root);
+            ApplicationName = GetType().Assembly.GetName().Name;
         }
 
         public string EnvironmentName { get; set; } = "Stub";
