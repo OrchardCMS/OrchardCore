@@ -26,8 +26,8 @@ namespace OrchardCore.Setup.ViewModels
         [Required]
         public string UserName { get; set; }
 
-        [EmailAddress]
         [Required]
+        [EmailAddress]
         public string Email { get; set; }
 
         [DataType(DataType.Password)]
