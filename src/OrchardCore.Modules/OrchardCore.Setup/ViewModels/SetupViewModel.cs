@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using OrchardCore.Data;
@@ -27,6 +27,7 @@ namespace OrchardCore.Setup.ViewModels
         public string UserName { get; set; }
 
         [EmailAddress]
+        [Required]
         public string Email { get; set; }
 
         [DataType(DataType.Password)]
