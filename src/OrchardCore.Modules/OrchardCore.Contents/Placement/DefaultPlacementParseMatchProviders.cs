@@ -11,7 +11,8 @@ using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.Contents.Placement
 {
-    public enum MatchType{
+    public enum MatchType
+    {
         Any,
         All
     }
@@ -25,42 +26,40 @@ namespace OrchardCore.Contents.Placement
         public MatchType MatchType { get; set; }
     }
 
-
-    public class ContentPartPlacementParseMatchProvider : IPlacementParseMatchProvider
+    public class ContentPartPlacementParseMatchProvider : ContentPlacementParseMatchProviderBase, IPlacementParseMatchProvider
     {
         public string Key { get { return "contentPart"; } }
 
         public bool Match(ShapePlacementContext context, JToken expression)
         {
-            var shape = context.ZoneShape as Shape;
-            if (shape == null || shape.Properties["ContentItem"] == null)
+            var contentItem = GetContent(context);
+            if (contentItem == null)
             {
                 return false;
             }
 
-            var contentItem = shape.Properties["ContentItem"] as ContentItem;
             var options = expression.ToObject<ContentPartPlacementParseMatchOptions>();
 
             return options.MatchType == MatchType.All ? options.Parts.All(p => contentItem.Has(p)) : options.Parts.Any(p => contentItem.Has(p));
         }
     }
 
-    public class ContentTypePlacementParseMatchProvider : IPlacementParseMatchProvider
+    public class ContentTypePlacementParseMatchProvider : ContentPlacementParseMatchProviderBase, IPlacementParseMatchProvider
     {
         public string Key { get { return "contentType"; } }
 
         public bool Match(ShapePlacementContext context, JToken expression)
         {
-            var shape = context.ZoneShape as Shape;
-            if (shape == null || shape.Properties["ContentItem"] == null)
+            var contentItem = GetContent(context);
+            if (contentItem == null)
             {
                 return false;
             }
 
-            var contentItem = shape.Properties["ContentItem"] as ContentItem;
             var contentTypes = expression.ToObject<IEnumerable<string>>();
 
-            return contentTypes.Any(ct => {
+            return contentTypes.Any(ct =>
+            {
                 if (ct.EndsWith("*"))
                 {
                     var prefix = ct.Substring(0, ct.Length - 1);
@@ -70,6 +69,26 @@ namespace OrchardCore.Contents.Placement
 
                 return contentItem.ContentType == ct;// || context.Stereotype == expression;
             });
+        }
+    }
+
+    public class ContentPlacementParseMatchProviderBase
+    {
+        protected bool HasContent(ShapePlacementContext context)
+        {
+            var shape = context.ZoneShape as Shape;
+            return shape != null && shape.Properties["ContentItem"] != null;
+        }
+
+        protected ContentItem GetContent(ShapePlacementContext context)
+        {
+            if (!HasContent(context))
+            {
+                return null;
+            }
+
+            var shape = context.ZoneShape as Shape;
+            return shape.Properties["ContentItem"] as ContentItem;
         }
     }
 }
