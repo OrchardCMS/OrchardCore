@@ -30,6 +30,12 @@ Currently you can filter shapes by:
 - Their original type, which is the property name of the placement rule, like 'TextField'.
 - `display-type` (Optional): The display type, like `Summary` and `Detail` for the most common ones.
 - `differentiator` (Optional): The differentiator which is used to distinguish shape types that are reused for multiple elements, like field names.
+- Custom match providers implementing `IPlacementParseMatchProvider`. 
+
+For shapes that are built from a content item, you can filter by the following built in match providers:
+
+- `contentType` (Optional): An array of ContentTypes that content item from which the shape was built should match.
+- `contentPart` (Optional): An array of ContentParts that content item from which the shape was built should contain (With the option for matching one or all).
 
 Placement information consists of:
 
@@ -45,6 +51,12 @@ Placement information consists of:
     {
 		"display-type": "Detail",
 		"differentiator": "Article.MyTextField",
+        "match": {
+            "contentType": [ "Page" ],
+            "contentPart": {
+              "parts": ["BodyPart","TitlePart"],
+              "matchType": "Any"
+            }
 
 		"place": "Content",
 		"alternates": [ "TextField_Title" ],
