@@ -12,12 +12,14 @@ using OrchardCore.Contents.Handlers;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Contents.Liquid;
 using OrchardCore.Contents.Models;
+using OrchardCore.Contents.Placement;
 using OrchardCore.Contents.Recipes;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.TagHelpers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Feeds;
@@ -61,6 +63,9 @@ namespace OrchardCore.Contents
             // Feeds
             // TODO: Move to feature
             services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
+
+            services.AddScoped<IPlacementParseMatchProvider, ContentTypePlacementParseMatchProvider>();
+            services.AddScoped<IPlacementParseMatchProvider, ContentPartPlacementParseMatchProvider>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

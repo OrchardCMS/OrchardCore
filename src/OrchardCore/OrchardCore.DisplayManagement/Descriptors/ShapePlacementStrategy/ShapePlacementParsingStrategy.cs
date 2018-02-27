@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -19,15 +21,18 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         private readonly IHostingEnvironment _hostingEnviroment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly ILogger _logger;
+        private readonly IEnumerable<IPlacementParseMatchProvider> _placementParseMatchProviders;
 
         public ShapePlacementParsingStrategy(
             IHostingEnvironment hostingEnviroment,
             IShellFeaturesManager shellFeaturesManager,
-            ILogger<ShapePlacementParsingStrategy> logger)
+            ILogger<ShapePlacementParsingStrategy> logger,
+            IEnumerable<IPlacementParseMatchProvider> placementParseMatchProviders)
         {
             _logger = logger;
             _hostingEnviroment = hostingEnviroment;
             _shellFeaturesManager = shellFeaturesManager;
+            _placementParseMatchProviders = placementParseMatchProviders;
         }
 
         public void Discover(ShapeTableBuilder builder)
@@ -70,12 +75,20 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             foreach (var entry in placementFile)
             {
                 var shapeType = entry.Key;
-                var matches = entry.Value;
-
 
                 foreach (var filter in entry.Value)
                 {
+                    var matches = filter.Match.ToList();
+
+                    Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, filter);
+                    
+                    if (matches.Any())
+                    {
+                        predicate = matches.Aggregate(predicate, BuildPredicate);
+                    }
+
                     var placement = new PlacementInfo();
+
                     placement.Location = filter.Location;
                     if (filter.Alternates?.Length > 0)
                     {
@@ -91,7 +104,16 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
                     builder.Describe(shapeType)
                         .From(featureDescriptor)
-                        .Placement(ctx => CheckFilter(ctx, filter), placement);
+                        .Placement(ctx => {
+                            var hit = predicate(ctx);
+                            // generate 'debugging' information to trace which file originated the actual location
+                            if (hit)
+                            {
+                                var virtualPath = featureDescriptor.Extension.ExtensionFileInfo.PhysicalPath + "/" + featureDescriptor.Extension.Id + "/Placement.info";
+                                ctx.Source = virtualPath;
+                            }
+                            return hit;
+                        }, placement);
                 }
             }
         }
@@ -144,6 +166,28 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             //normalizedPath = VirtualPathUtility.AppendTrailingSlash(normalizedPath);
             //return ctx => (ctx.Path.Equals(normalizedPath, StringComparison.OrdinalIgnoreCase)) && predicate(ctx);
             //}
+        }
+
+        private Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
+              KeyValuePair<string, JToken> term)
+        {
+            return BuildPredicate(predicate, term, _placementParseMatchProviders);
+        }
+
+        public static Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
+                KeyValuePair<string, JToken> term, IEnumerable<IPlacementParseMatchProvider> placementMatchProviders)
+        {
+
+            if (placementMatchProviders != null)
+            {
+                var providersForTerm = placementMatchProviders.Where(x => x.Key.Equals(term.Key));
+                if (providersForTerm.Any())
+                {
+                    var expression = term.Value;
+                    return ctx => providersForTerm.Any(x => x.Match(ctx, expression)) && predicate(ctx);
+                }
+            }
+            return predicate;
         }
     }
 }
