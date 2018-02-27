@@ -10,7 +10,6 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email.Drivers;
 using OrchardCore.Email.ViewModels;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Controllers
 {
@@ -82,7 +81,9 @@ namespace OrchardCore.Email.Controllers
 
         private MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
         {
-            var message = new MailMessage(testSettings.To, testSettings.To);
+            var message = new MailMessage();
+
+            message.To.Add(testSettings.To);
 
             foreach (var address in ParseMailAddresses(testSettings.Cc))
             {

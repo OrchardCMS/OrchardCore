@@ -28,6 +28,11 @@ namespace OrchardCore.Email.Services
 
         public async Task<SmtpResult> SendAsync(MailMessage message)
         {
+            if (message.From == null)
+            {
+                message.From = new MailAddress(_options.DefaultSender);
+            }
+
             var mailMessage = new MailMessage
             {
                 Subject = message.Subject,
