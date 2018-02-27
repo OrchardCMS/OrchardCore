@@ -41,7 +41,6 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterTag<RenderBodyTag>("render_body");
             Factory.RegisterTag<RenderSectionTag>("render_section");
             Factory.RegisterTag<RenderTitleSegmentsTag>("page_title");
-            Factory.RegisterTag<DisplayTag>("shape_display");
             Factory.RegisterTag<AntiForgeryTokenTag>("antiforgerytoken");
             Factory.RegisterTag<LayoutTag>("layout");
 

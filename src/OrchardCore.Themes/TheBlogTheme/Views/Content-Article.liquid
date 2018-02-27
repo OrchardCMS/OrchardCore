@@ -15,5 +15,5 @@
     </header>
 {% endzone %}
 
-{% shape_display Model.Content.ContentsMetadata %}
-{% shape_display Model.Content.BodyPart %}
+{{ Model.Content.ContentsMetadata | shape_render }}
+{{ Model.Content.BodyPart | shape_render }}

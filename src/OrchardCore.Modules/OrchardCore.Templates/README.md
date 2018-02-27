@@ -271,10 +271,10 @@ Model.Content.Remove("BodyPart");
 Display a shape after removing a specific shape by name
 ```liquid
 {% shape_remove_item Model.Content "BodyPart" %}
-{% shape_display Model.Content %}
+{{ Model.Content | shape_render }}
 ```
 
 Display a specific shape by name
 ```liquid
-{% shape_display Model.Content.BodyPart %}
+{{ Model.Content.BodyPart | shape_display }}
 ```

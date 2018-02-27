@@ -1,11 +1,11 @@
 <li {% if Model.HasItems %}class="dropdown"{% endif %}>
     {% shape_clear_alternates Model %}
     {% shape_type Model "MenuItemLink" %}
-    {% shape_display Model %}
+    {{ Model | shape_render }}
     {% if Model.HasItems %}
         <ul class="dropdown-menu">
             {% for item in Model.Items %}
-                {% shape_display item %}
+                {{ item | shape_render }}
             {% endfor %}
         </ul>
     {% endif %}

@@ -235,9 +235,20 @@ Input
 {% assign date_time = "DateTime" | shape_new %}
 ```
 
+### shape_render
+
+Renders a shape.
+
+Input
+```liquid
+{{ Model.Content | shape_render }}
+
+```
+
 ### shape_stringify
 
-Converts a shape to its string representation.
+Converts a shape to its string representation. Contrary to `shape_render` the result of this filter will
+be encoded if rendered in the output.
 
 Input
 ```liquid
@@ -411,7 +422,7 @@ Removes a shape by its name in a Zone.
 Input
 ```liquid
 {% shape_remove_item Model.Content "BodyPart" %}
-{% shape_display Model.Content %}
+{{ Model.Content | shape_render }}
 ```
 
 In this example, the `Model.Content` property evaluates to a zone shape, typically from a Content Item shape template, which contains the `BodyPart` shape
@@ -426,29 +437,14 @@ Input
 {% shape_pager Model.Pager next_class: 'next', next_text: '>>' %}
 ```
 
-### shape_display
-
-Renders a shape. Similar to the `shape_stringify` filter.
-
-Input
-```liquid
-{% assign date_time = "DateTime" | shape_new %}
-{% shape_display date_time %}
-```
-
-Output
-```text
-Monday, September 11, 2017 3:29:26 PM
-```
-
 ### shape_build_display
 
-Creates the display shape for a content item. It can be used in conjunction with `shape_display` 
+Creates the display shape for a content item. It can be used in conjunction with `shape_render` 
 to render a content item.
 
 Input
 ```liquid
-{% shape_display mycontentitem | shape_build_display: "Detail"  %}
+{{ mycontentitem | shape_build_display: "Detail" | shape_render }}
 ```
 
 ### shape
@@ -471,7 +467,7 @@ Input
 {% endzone %}
 ```
 
-The content of this block can then be reused from the Layout using the `{% shape_display Model.Header %}` code.
+The content of this block can then be reused from the Layout using the `{{ Model.Header | shape_render }}` code.
 
 ## Tag Helper tags
 

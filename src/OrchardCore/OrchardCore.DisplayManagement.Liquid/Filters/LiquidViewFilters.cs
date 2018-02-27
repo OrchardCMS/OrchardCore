@@ -17,7 +17,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             filters.AddAsyncFilter("t", Localize);
             filters.AddAsyncFilter("html_class", HtmlClass);
             filters.AddAsyncFilter("shape_new", NewShape);
-            filters.AddAsyncFilter("shape_stringify", ShapeString);
+            filters.AddAsyncFilter("shape_render", ShapeRender);
+            filters.AddAsyncFilter("shape_stringify", ShapeStringify);
 
             return filters;
         }
@@ -41,7 +42,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
         public static Task<FluidValue> HtmlClass(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-
             return Task.FromResult<FluidValue>(new StringValue(input.ToStringValue().HtmlClassify()));
         }
 
@@ -63,15 +63,34 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             return FluidValue.Create(await ((IShapeFactory)shapeFactory).CreateAsync(type, Arguments.From(properties)));
         }
 
-        public static async Task<FluidValue> ShapeString(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static async Task<FluidValue> ShapeStringify(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
             {
                 throw new ArgumentException("DisplayHelper missing while invoking 'shape_stringify'");
             }
 
-            var shape = input.ToObjectValue() as IShape;
-            return new StringValue((await (Task<IHtmlContent>)displayHelper(shape)).ToString());
+            if (input.ToObjectValue() is IShape shape)
+            {
+                return new StringValue((await (Task<IHtmlContent>)displayHelper(shape)).ToString());
+            }
+
+            return NilValue.Instance;
+        }
+
+        public static async Task<FluidValue> ShapeRender(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
+            {
+                throw new ArgumentException("DisplayHelper missing while invoking 'shape_render'");
+            }
+
+            if (input.ToObjectValue() is IShape shape)
+            {
+                return new StringValue((await (Task<IHtmlContent>)displayHelper(shape)).ToString(), false);
+            }
+
+            return NilValue.Instance;
         }
 
         public static Task<FluidValue> ShapeTab(FluidValue input, FilterArguments arguments, TemplateContext context)
