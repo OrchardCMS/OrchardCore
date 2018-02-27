@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Email.Services;
 using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
@@ -22,17 +23,21 @@ namespace OrchardCore.Email.Drivers
 
         public override IDisplayResult Edit(SmtpSettings section)
         {
-            return Shape<SmtpSettingsViewModel>("SmtpSettings_Edit", model =>
-            {
-                model.DefaultSender = section.DefaultSender;
-                model.Host = section.Host;
-                model.Port = section.Port;
-                model.EnableSsl = section.EnableSsl;
-                model.RequireCredentials = section.RequireCredentials;
-                model.UseDefaultCredentials = section.UseDefaultCredentials;
-                model.UserName = section.UserName;
-                model.Password = section.Password;
-            }).Location("Content:5").OnGroup(GroupId);
+            return Combine(
+                Shape<SmtpSettings>("SmtpSettings_Edit", model =>
+                {
+                    model.DefaultSender = section.DefaultSender;
+                    model.Host = section.Host;
+                    model.Port = section.Port;
+                    model.EnableSsl = section.EnableSsl;
+                    model.RequireCredentials = section.RequireCredentials;
+                    model.UseDefaultCredentials = section.UseDefaultCredentials;
+                    model.UserName = section.UserName;
+                    model.Password = section.Password;
+                }).Location("Content:5").OnGroup(GroupId),
+
+                Shape("SmtpSettings_TestButton").Location("Actions").OnGroup(GroupId)
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SmtpSettings section, IUpdateModel updater, string groupId)

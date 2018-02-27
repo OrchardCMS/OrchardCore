@@ -20,13 +20,13 @@ namespace OrchardCore.Email
                 return;
 
             builder
-                .Add(T["Design"], design => design
-                   .Add(T["Smtp Settings"], "1", p => p
-                      .Permission(Permissions.ManageEmailSettings)
-                      .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId })
-                      .LocalNav()
-                   )
-                );
+                .Add(T["Configuration"], configuration => configuration
+                    .Add(T["Settings"], settings => settings
+                       .Add(T["Smtp"], T["Smtp"], entry => entry
+                          .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId })
+                          .Permission(Permissions.ManageEmailSettings)
+                          .LocalNav()
+                )));
         }
     }
 }

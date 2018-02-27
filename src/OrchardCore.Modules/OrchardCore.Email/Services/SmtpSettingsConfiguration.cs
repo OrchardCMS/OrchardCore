@@ -5,7 +5,7 @@ using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Email
+namespace OrchardCore.Email.Services
 {
     public class SmtpSettingsConfiguration : IConfigureOptions<SmtpSettings>
     {
@@ -35,7 +35,8 @@ namespace OrchardCore.Email
             options.RequireCredentials = settings.RequireCredentials;
             options.UseDefaultCredentials = settings.UseDefaultCredentials;
             options.UserName = settings.UserName;
-            // decrypt the password
+
+            // Decrypt the password
             if (!String.IsNullOrWhiteSpace(settings.Password))
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration), _shellSettings.Name);

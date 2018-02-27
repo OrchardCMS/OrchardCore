@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -5,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Email.Drivers;
+using OrchardCore.Email.ViewModels;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Controllers
@@ -13,7 +18,6 @@ namespace OrchardCore.Email.Controllers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
-        private readonly IShapeFactory New;
         private readonly ISmtpService _smtpService;
         private readonly IHtmlLocalizer H;
 
@@ -27,84 +31,95 @@ namespace OrchardCore.Email.Controllers
             H = h;
             _authorizationService = authorizationService;
             _notifier = notifier;
-            New = shapeFactory;
             _smtpService = smtpService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SmtpSavedSettingsTest()
+        [HttpGet]
+        [ActionName("Index")]
+        public async Task<IActionResult> Get()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
                 return Unauthorized();
             }
 
-            // bind the model again for the test options
-            var testSettings = new SmtpSettingsViewModel();
-            if (await TryUpdateModelAsync(testSettings, nameof(ISite)))
-            {
-                // send eamil with DefaultSender
-                var result = await _smtpService
-                    .SendAsync(new EmailMessage
-                    {
-                        Recipients = testSettings.To,
-                        Cc = testSettings.Cc,
-                        Bcc = testSettings.Bcc,
-                        ReplyTo = testSettings.ReplyTo,
-                        Subject = testSettings.Subject,
-                        Body = testSettings.Body,
-                    });
-
-                if (!result.Success)
-                {
-                    ModelState.AddModelError("*", result.ErrorMessage);
-                }
-                else
-                {
-                    _notifier.Success(H["Message sent!"]);
-                }
-            }
-
-            return View("Index", testSettings);
+            return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> SmtpSettingsTest()
+        [ActionName("Index")]
+        public async Task<IActionResult> Post(SmtpSettingsViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
                 return Unauthorized();
             }
 
-            // bind the model for the test options
-            var testSettings = new SmtpSettingsViewModel();
-            if (await TryUpdateModelAsync(testSettings, nameof(ISite)))
+            if (ModelState.IsValid)
             {
+                var message = CreateMessageFromViewModel(model);
+
                 // send email with DefaultSender
-                var result = await _smtpService
-                    .WithSettings(testSettings)
-                    .SendAsync(new EmailMessage
-                    {
-                        Recipients = testSettings.To,
-                        Cc = testSettings.Cc,
-                        Bcc = testSettings.Bcc,
-                        ReplyTo = testSettings.ReplyTo,
-                        Subject = testSettings.Subject,
-                        Body = testSettings.Body,
-                    });
+                var result = await _smtpService.SendAsync(message);
 
-                if (!result.Success)
+                if (!result.Succeeded)
                 {
-                    ModelState.AddModelError("*", result.ErrorMessage);
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("*", error.ToString());
+                    }
                 }
                 else
                 {
-                    _notifier.Success(H["Message sent!"]);
+                    _notifier.Success(H["Message sent successfully"]);
+
+                    return Redirect(Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId }));
                 }
             }
 
-            return View("Index", testSettings);
+            return View(model);
         }
 
+        private MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
+        {
+            var message = new MailMessage(testSettings.To, testSettings.To);
+
+            foreach (var address in ParseMailAddresses(testSettings.Cc))
+            {
+                message.CC.Add(address);
+            }
+
+            foreach (var address in ParseMailAddresses(testSettings.Bcc))
+            {
+                message.Bcc.Add(address);
+            }
+
+            foreach (var address in ParseMailAddresses(testSettings.ReplyTo))
+            {
+                message.ReplyToList.Add(address);
+            }
+
+            if (!String.IsNullOrWhiteSpace(testSettings.Subject))
+            {
+                message.Subject = testSettings.Subject;
+            }
+
+            if (!String.IsNullOrWhiteSpace(testSettings.Body))
+            {
+                message.Body = testSettings.Body;
+            }
+
+            return message;
+        }
+
+        private IEnumerable<string> ParseMailAddresses(string adresses)
+        {
+            if (String.IsNullOrWhiteSpace(adresses))
+            {
+                return Array.Empty<string>();
+            }
+
+            return adresses.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+        }
     }
 }

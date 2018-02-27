@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Email
@@ -5,11 +6,8 @@ namespace OrchardCore.Email
     public interface ISmtpService
     {
         /// <summary>
-        /// A new instance of this service will be instantiated with
-        /// the <paramref name="settings"/>.
+        /// Sends the specified message to an SMTP server for delivery.
         /// </summary>
-        /// <returns>The settings.</returns>
-        ISmtpService WithSettings(SmtpSettings settings);
-        Task<SmtpResult> SendAsync(EmailMessage emailMessage);
+        Task<SmtpResult> SendAsync(MailMessage message);
     }
 }
