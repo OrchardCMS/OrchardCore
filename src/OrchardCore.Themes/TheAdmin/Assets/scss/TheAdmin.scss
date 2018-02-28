@@ -30,7 +30,8 @@ $link-padding-left: 16px !default;
     .ta-navbar-top {
         @extend .navbar, .navbar-expand-md, .navbar-light, .bg-light, .fixed-top;
         min-height: $top-nav-height;
-        border-bottom: $border-content
+        border-bottom: $border-content;
+        z-index:8;
     }
 
     .ta-navbar-brand {
@@ -50,7 +51,7 @@ $link-padding-left: 16px !default;
         @extend .bg-light;
         width: $left-navigation-width;
         height: 100%;
-        z-index: 12;
+        z-index: 7;
         position: fixed;
         top: $top-nav-height + 4;
         color: $gray-800;

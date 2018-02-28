@@ -6099,13 +6099,14 @@ a.text-dark:hover, a.text-dark:focus {
     }*/ }
   .ta-wrapper .ta-navbar-top {
     min-height: 55px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    z-index: 8; }
   .ta-wrapper .ta-navbar-brand {
     margin-left: 4px; }
   .ta-wrapper #ta-left-sidebar {
     width: 260px;
     height: 100%;
-    z-index: 12;
+    z-index: 7;
     position: fixed;
     top: 59px;
     color: #343a40;
