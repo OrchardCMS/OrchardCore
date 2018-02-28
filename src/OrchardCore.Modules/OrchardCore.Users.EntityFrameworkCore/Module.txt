@@ -5,6 +5,5 @@ Website: http://orchardproject.net
 Version: 2.0.x
 OrchardVersion: 2.0.x
 Description: The Users Entity Framework Core module allows to store user data via Entity Framework Core ORM
-FeatureDescription: Entity Framework Core Stores for the Users module.
 Category: Security
 Dependencies: OrchardCore.Roles, OrchardCore.Users

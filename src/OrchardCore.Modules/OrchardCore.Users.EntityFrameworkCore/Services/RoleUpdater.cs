@@ -17,7 +17,7 @@ namespace OrchardCore.Users.EntityFrameworkCore.Services
         private readonly IShellFeaturesManager _featuresManager;
         private readonly ShellSettings _shellSettings;
 
-        public RoleUpdater(RoleManager<IRole> roleManager, IEnumerable<IPermissionProvider> permissionProviders, ITypeFeatureProvider typeFeatureProvider, ILogger<Roles.Services.RoleUpdater> logger, IShellFeaturesManager featuresManager, ShellSettings shellSettings) : base(roleManager, permissionProviders, typeFeatureProvider, logger)
+        public RoleUpdater(RoleManager<IRole> roleManager, IEnumerable<IPermissionProvider> permissionProviders, ITypeFeatureProvider typeFeatureProvider, ILogger<RoleUpdater> logger, IShellFeaturesManager featuresManager, ShellSettings shellSettings) : base(roleManager, permissionProviders, typeFeatureProvider, logger)
         {
             _featuresManager = featuresManager;
             _shellSettings = shellSettings;
