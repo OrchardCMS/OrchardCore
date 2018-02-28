@@ -19,7 +19,7 @@ $link-padding-left: 16px !default;
     -ms-hyphens: auto;
     -moz-hyphens: auto;
     -webkit-hyphens: auto;
-    hyphens: auto
+    hyphens: auto;
 }
 
 // Layout
@@ -36,7 +36,7 @@ $link-padding-left: 16px !default;
 
     .ta-navbar-brand {
         @extend .navbar-brand;
-        margin-left: 4px
+        margin-left: 4px;
     }
     // Menu toggling button
     #navbar-toggler {
@@ -56,49 +56,49 @@ $link-padding-left: 16px !default;
         top: $top-nav-height;
         color: $gray-800;
         border-right: $border-content;
+        left: 0px;
+        transition: left 0.5s ease-in-out;
 
         // Remove padding/margin from all uls
         ul {
             margin: 0;
-            padding: 0
+            padding: 0;
         }
 
         // Rotate the chevron's icon when the menu is active
         input[type=checkbox]:checked + label > .chevron > i {
             transform: rotate(90deg);
-            transition-duration: 0.2s
+            transition-duration: 0.2s;
         }
 
         input[type=checkbox] + label > .chevron > i {
-            transition-duration: 0.2s
+            transition-duration: 0.2s;
         }
 
         // Hide native checkbox */
         input[type=checkbox] {
             position: absolute;
-            opacity: 0
+            opacity: 0;
         }
 
         input[type=checkbox] + label + ul {
             max-height: 0;
             opacity: 0;
-            transition: max-height 0.2s, opacity 0.2s, ease-in-out
-            // Hide chevrons when the containing ul is hidden
+            transition: max-height 0.2s, opacity 0.2s, ease-in-out;
         }
 
         input[type=checkbox]:checked + label + ul {
             overflow-y: hidden;
             max-height: 500px; /* approximate max height */
             opacity: 1;
-            transition: max-height 0.5s, opacity 0.5s, ease-in-out
-            // Hide chevrons when the containing ul is open
+            transition: max-height 0.5s, opacity 0.5s, ease-in-out;
         }
 
         // Make each line a block
         label, a {
             position: relative;
             display: block;
-            margin: 0
+            margin: 0;
         }
 
         nav ul {
@@ -125,7 +125,7 @@ $link-padding-left: 16px !default;
             position: absolute;
             top: 0;
             left: 100%;
-            margin-left: -25px
+            margin-left: -25px;
         }
 
         .icon {
@@ -143,34 +143,34 @@ $link-padding-left: 16px !default;
         li a:visited {
             color: $gray-700;
             text-decoration: none;
-            padding-left: $link-padding-left - 4px
+            padding-left: $link-padding-left - 4px;
         }
         // Hovering the navigation items
         li a:hover, li label:hover {
             background-color: $gray-700;
-            color: $gray-100
+            color: $gray-100;
         }
         // Current page
         li.active > a {
             background-color: $gray-600;
             //border-left: 4px solid $gray-800;
-            color: $gray-100 !important
+            color: $gray-100 !important;
         }
 
         li ul > li > a,
         li ul > li > label {
             background-color: $gray-200;
             color: $gray-700 !important;
-            padding-left: (2 * $link-padding-left) + 6  !important
+            padding-left: (2 * $link-padding-left) + 6  !important;
         }
 
         li ul > li > a:hover,
         li ul > li > label:hover {
-            color: $gray-100 !important
+            color: $gray-100 !important;
         }
 
         li ul > li ul > li > a {
-            padding-left: 3 * $link-padding-left !important
+            padding-left: 3 * $link-padding-left !important;
         }
     }
 
@@ -181,22 +181,20 @@ $link-padding-left: 16px !default;
     // When the screen is bigger than md, add a margin of the size of the menu
     @include media-breakpoint-up(sm) {
         .ta-content {
-            margin-left: $left-navigation-width
+            margin-left: $left-navigation-width;
+            transition: margin-left 0.5s ease-in-out;
         }
     }
 
-    @include media-breakpoint-down(xs) {
+    @include media-breakpoint-down(sm) {
         #ta-left-sidebar {
-            left: -$left-navigation-width
+            left: -$left-navigation-width;
+            transition: left 0.5s ease-in-out;
         }
 
-        .collapsing {
-            /*margin-left: 0;
-            transition: margin-left 0.5s ease-in-out;*/
-        }
-
-        .in {
-            /*margin-left:0;*/
+        .ta-content {
+            margin-left: 0;
+            transition: margin-left 0.5s ease-in-out;
         }
     }
 }
