@@ -128,7 +128,11 @@ $link-padding-left: 16px !default;
         }
 
         .icon {
-            padding-right: 10px
+            padding-right: 10px;
+
+            .fa {
+                min-width:16px;
+            }
         }
 
         li label,
@@ -156,7 +160,7 @@ $link-padding-left: 16px !default;
         li ul > li > label {
             background-color: $gray-200;
             color: $gray-700 !important;
-            padding-left: 2 * $link-padding-left !important
+            padding-left: (2 * $link-padding-left) + 6  !important
         }
 
         li ul > li > a:hover,

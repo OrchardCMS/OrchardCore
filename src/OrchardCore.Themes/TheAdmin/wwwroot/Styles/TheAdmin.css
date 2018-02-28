@@ -6156,6 +6156,8 @@ a.text-dark:hover, a.text-dark:focus {
       margin-left: -25px; }
     .ta-wrapper #ta-left-sidebar .icon {
       padding-right: 10px; }
+      .ta-wrapper #ta-left-sidebar .icon .fa {
+        min-width: 16px; }
     .ta-wrapper #ta-left-sidebar li label,
     .ta-wrapper #ta-left-sidebar li a,
     .ta-wrapper #ta-left-sidebar li a:hover,
@@ -6174,7 +6176,7 @@ a.text-dark:hover, a.text-dark:focus {
     .ta-wrapper #ta-left-sidebar li ul > li > label {
       background-color: #e9ecef;
       color: #495057 !important;
-      padding-left: 32px !important; }
+      padding-left: 38px !important; }
     .ta-wrapper #ta-left-sidebar li ul > li > a:hover,
     .ta-wrapper #ta-left-sidebar li ul > li > label:hover {
       color: #f8f9fa !important; }
