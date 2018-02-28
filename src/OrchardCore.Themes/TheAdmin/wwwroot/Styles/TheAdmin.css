@@ -6098,7 +6098,7 @@ a.text-dark:hover, a.text-dark:focus {
         @extend .hidden-xs-down;
     }*/ }
   .ta-wrapper .ta-navbar-top {
-    min-height: 55px;
+    min-height: 59px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     z-index: 8; }
   .ta-wrapper .ta-navbar-brand {

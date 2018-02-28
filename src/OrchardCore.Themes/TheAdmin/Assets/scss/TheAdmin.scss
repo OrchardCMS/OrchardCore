@@ -5,7 +5,7 @@
 
 @import "src/OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/scss/bootstrap.scss";
 
-$top-nav-height: 55px;
+$top-nav-height: 59px;
 $left-navigation-width: 260px;
 $border-content: 1px solid rgba(0, 0, 0, 0.05);
 $link-padding-left: 16px !default;
@@ -53,7 +53,7 @@ $link-padding-left: 16px !default;
         height: 100%;
         z-index: 7;
         position: fixed;
-        top: $top-nav-height + 4;
+        top: $top-nav-height;
         color: $gray-800;
         border-right: $border-content;
 
@@ -176,7 +176,7 @@ $link-padding-left: 16px !default;
 
     .ta-content {
         padding: ($grid-gutter-width / 2);
-        margin-top: ($top-nav-height + 4);
+        margin-top: ($top-nav-height);
     }
     // When the screen is bigger than md, add a margin of the size of the menu
     @include media-breakpoint-up(sm) {
