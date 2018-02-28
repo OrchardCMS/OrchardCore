@@ -31,8 +31,14 @@ namespace OrchardCore.Environment.Extensions.Features
             var features = manifestInfo.ModuleInfo.Features.ToList();
             if (features.Count > 0)
             {
-                foreach (var feature in features.Where(f => f.Exists))
+                foreach (var feature in features)
                 {
+                    if (String.IsNullOrWhiteSpace(feature.Id))
+                    {
+                        throw new ArgumentException(
+                            $"Missing 'Id' of Feature '{feature.Name ?? "Nameless"}' in Module '{extensionInfo.Id}'");
+                    }
+
                     var featureId = feature.Id;
                     var featureName = feature.Name ?? feature.Id;
 
