@@ -36,7 +36,7 @@ namespace OrchardCore.Environment.Extensions.Features
                     if (String.IsNullOrWhiteSpace(feature.Id))
                     {
                         throw new ArgumentException(
-                            $"Missing 'Id' of Feature '{feature.Name ?? "Nameless"}' in Module '{extensionInfo.Id}'");
+                            $"A feature is missing a mandatory 'Id' property in the Module '{extensionInfo.Id}'");
                     }
 
                     var featureId = feature.Id;
