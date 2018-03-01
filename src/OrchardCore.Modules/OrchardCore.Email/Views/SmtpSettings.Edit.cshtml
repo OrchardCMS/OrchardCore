@@ -1,0 +1,52 @@
+@model OrchardCore.Email.SmtpSettings
+
+<fieldset class="form-group" asp-validation-class-for="DefaultSender">
+    <label asp-for="DefaultSender">@T["Sender email address"] <span asp-validation-for="DefaultSender"></span></label>
+    <input asp-for="DefaultSender" class="form-control" type="email" />
+    <span class="hint">@T["The default email address to use as a sender."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Host">
+    <label asp-for="Host">@T["Host name"] <span asp-validation-for="Host"></span></label>
+    <input asp-for="Host" class="form-control" type="text" />
+    <span class="hint">@T["The SMTP server domain, e.g. <i>smtp.mailprovider.com</i>."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Port">
+    <label asp-for="Port">@T["Port number"] <span asp-validation-for="Port"></span></label>
+    <input asp-for="Port" class="form-control" type="number" step="any" min="0" max="65535" />
+    <span class="hint">@T["The SMTP server port, usually 25."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="EnableSsl">
+    <input asp-for="EnableSsl" type="checkbox" />
+    <label asp-for="EnableSsl">@T["Enable SSL communications"] <span asp-validation-for="EnableSsl"></span></label>
+    <span class="hint d-block">@T["Check if the SMTP server requires SSL communications."]</span>
+</fieldset>
+
+<fieldset class="form-group clearfix" asp-validation-class-for="RequireCredentials">
+    <input asp-for="RequireCredentials" type="checkbox" data-toggle="collapse" data-target=".requireCredential" />
+    <label asp-for="RequireCredentials">@T["Require credentials"] <span asp-validation-for="RequireCredentials"></span></label>
+</fieldset>
+
+<div class="requireCredential collapse @(Model.RequireCredentials ? "show" : "")">
+    <fieldset class="form-group" asp-validation-class-for="UseDefaultCredentials">
+        <input asp-for="UseDefaultCredentials" type="checkbox" data-toggle="collapse-toggle" data-target=".useCustomCredential" />
+        <label asp-for="UseDefaultCredentials">@T["Use Windows authentication"] <span asp-validation-for="UseDefaultCredentials"></span></label>
+        <span class="hint">@T["When this option is selected, the aplication pool or host-process identity is used to authenticate with the mail server."]</span>
+    </fieldset>
+
+    <div class="useCustomCredential collapse @(Model.UseDefaultCredentials? "": "show")">
+        <fieldset class="form-group" asp-validation-class-for="UserName">
+            <label asp-for="UserName">@T["User name"] <span asp-validation-for="UserName"></span></label>
+            <input asp-for="UserName" class="form-control" type="text" />
+            <span class="hint">@T["The username for authentication."]</span>
+        </fieldset>
+
+        <fieldset class="form-group" asp-validation-class-for="Password">
+            <label asp-for="Password">@T["Password"] <span asp-validation-for="Password"></span></label>
+            <input asp-for="Password" class="form-control" type="password" />
+            <span class="hint">@T["The password for authentication."]</span>
+        </fieldset>
+    </div>
+</div>
