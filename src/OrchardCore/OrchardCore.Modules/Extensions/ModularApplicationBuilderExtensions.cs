@@ -21,6 +21,7 @@ namespace Microsoft.AspNetCore.Builder
             
             // Ensure the shell tenants are loaded when a request comes in
             // and replaces the current service provider for the tenant's one.
+            app.UseMiddleware<PoweredByMiddleware>();
             app.UseMiddleware<ModularTenantContainerMiddleware>();
 
             app.ConfigureModules(modules);
