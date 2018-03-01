@@ -27,7 +27,7 @@ Input
 ```
 
 Output
-```
+```text
 /blog/my-blog-post
 ```
 
@@ -41,7 +41,7 @@ Input
 ```
 
 Output
-```
+```text
 My Blog Post
 ```
 
@@ -55,7 +55,7 @@ Input
 ```
 
 Output
-```
+```text
 this-is-some-text
 ```
 
@@ -70,7 +70,7 @@ Input
 In this example we assume `ContentItem` represents a blog post.
 
 Output
-```
+```text
 Blog
 ```
 
@@ -88,7 +88,7 @@ or
 ```
 
 Output
-```
+```text
 Wednesday, 02 August 2017 11:54:48
 ```
 
@@ -102,7 +102,7 @@ Input
 ```
 
 Output
-```
+```text
 Bonjour!
 ```
 
@@ -116,7 +116,7 @@ Input
 ```
 
 Output
-```
+```text
 landing-page
 ```
 
@@ -199,6 +199,29 @@ The following properties are available on the `User` object.
 
 Gives access to the current site settings, e.g `Site.SiteName`
 
+### Request
+
+Represents the current request.
+
+The following properties are available on the `Request` object.
+
+| Property | Example | Description |
+| --------- | ---- |------------ |
+| `QueryString` | `?sort=name&page=1` | The query string |
+| `ContentType` | `application/x-www-form-urlencoded; charset=UTF-8` | The `Content-Type` header |
+| `ContentLength` | `600` | The `Content-Length` header |
+| `Cookies` | Usage: `Request.Cookies.orchauth_Default` | The collection of cookies for this request |
+| `Headers` | Usage: `Request.Headers.accept` | The request headers |
+| `Query` | Usage: `Request.Query.sort` | The query value collection parsed from `QueryString` |
+| `Form` | Usage: `Request.Form.value` | The collection of form values |
+| `Protocol` | `https` | The protocol of this request |
+| `Path` | `/OrchardCore.ContentPreview/Preview/Render` | The path of the request, unescaped |
+| `PathBase` | `/mytenant` | The base path of the request, unescaped |
+| `Host` | `localhost:44300` | The `Host` header. May contain the port |
+| `IsHttps` | `true` | True if the scheme of the request is `https` |
+| `Scheme` | `https` | The scheme of the request |
+| `Method` | `GET` | The HTTP method  |
+
 ## Shape Filters
 
 These filters let you create, filter and display shapes.
@@ -223,7 +246,7 @@ Input
 ```
 
 Output
-```
+```text
 Monday, September 11, 2017 3:29:26 PM
 ```
 
@@ -373,7 +396,7 @@ Input
 ```
 
 Output
-```
+```text
 Monday, September 11, 2017 3:29:26 PM
 ```
 

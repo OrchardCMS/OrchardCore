@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,16 +18,13 @@ namespace OrchardCore.Environment.Extensions
 {
     public class ExtensionManager : IExtensionManager
     {
-        private readonly ExtensionExpanderOptions _extensionExpanderOptions;
-        private readonly ManifestOptions _manifestOptions;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly IManifestProvider _manifestProvider;
-        private readonly IExtensionProvider _extensionProvider;
 
-        private readonly IExtensionLoader _extensionLoader;
+        private readonly ManifestOptions _manifestOptions;
         private readonly IEnumerable<IExtensionDependencyStrategy> _extensionDependencyStrategies;
         private readonly IEnumerable<IExtensionPriorityStrategy> _extensionPriorityStrategies;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
+        private readonly IFeaturesProvider _featuresProvider;
 
         private IDictionary<string, ExtensionEntry> _extensions;
         private IEnumerable<IExtensionInfo> _extensionsInfos;
@@ -58,28 +53,21 @@ namespace OrchardCore.Environment.Extensions
         private static object InitializationSyncLock = new object();
 
         public ExtensionManager(
-            IOptions<ExtensionExpanderOptions> extensionExpanderOptionsAccessor,
-            IOptions<ManifestOptions> manifestOptionsAccessor,
             IHostingEnvironment hostingEnvironment,
-            IEnumerable<IManifestProvider> manifestProviders,
-
-            IEnumerable<IExtensionProvider> extensionProviders,
-            IEnumerable<IExtensionLoader> extensionLoaders,
+            IOptions<ManifestOptions> manifestOptionsAccessor,
             IEnumerable<IExtensionDependencyStrategy> extensionDependencyStrategies,
             IEnumerable<IExtensionPriorityStrategy> extensionPriorityStrategies,
             ITypeFeatureProvider typeFeatureProvider,
+            IFeaturesProvider featuresProvider,
             ILogger<ExtensionManager> logger,
             IStringLocalizer<ExtensionManager> localizer)
         {
-            _extensionExpanderOptions = extensionExpanderOptionsAccessor.Value;
-            _manifestOptions = manifestOptionsAccessor.Value;
             _hostingEnvironment = hostingEnvironment;
-            _manifestProvider = new CompositeManifestProvider(manifestProviders);
-            _extensionProvider = new CompositeExtensionProvider(extensionProviders);
-            _extensionLoader = new CompositeExtensionLoader(extensionLoaders);
+            _manifestOptions = manifestOptionsAccessor.Value;
             _extensionDependencyStrategies = extensionDependencyStrategies;
             _extensionPriorityStrategies = extensionPriorityStrategies;
             _typeFeatureProvider = typeFeatureProvider;
+            _featuresProvider = featuresProvider;
             L = logger;
             T = localizer;
         }
@@ -258,26 +246,45 @@ namespace OrchardCore.Environment.Extensions
                     return;
                 }
 
-                var extensions = HarvestExtensions();
-
+                var moduleNames = _hostingEnvironment.GetApplication().ModuleNames;
                 var loadedExtensions = new ConcurrentDictionary<string, ExtensionEntry>();
 
                 // Load all extensions in parallel
-                Parallel.ForEach(extensions, (extension) =>
+                Parallel.ForEach(moduleNames, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (name) =>
                 {
-                    if (!extension.Exists)
+                    var module = _hostingEnvironment.GetModule(name);
+
+                    if (!module.ModuleInfo.Exists)
                     {
                         return;
                     }
 
-                    var entry = _extensionLoader.Load(extension);
+                    var manifestConfiguration = _manifestOptions
+                        .ManifestConfigurations
+                        .FirstOrDefault(mc =>
+                        {
+                            return module.ModuleInfo.Type.Equals(mc.Type, StringComparison.OrdinalIgnoreCase);
+                        });
 
-                    if (entry.IsError && L.IsEnabled(LogLevel.Warning))
+                    if (manifestConfiguration == null)
                     {
-                        L.LogWarning("No loader found for extension \"{0}\". This might denote a dependency is missing or the extension doesn't have an assembly.", extension.Id);
+                        return;
                     }
 
-                    loadedExtensions.TryAdd(extension.Id, entry);
+                    var manifestInfo = new ManifestInfo(module.ModuleInfo);
+
+                    var extensionInfo = new ExtensionInfo(module.SubPath, manifestInfo, (mi, ei) => {
+                        return _featuresProvider.GetFeatures(ei, mi);
+                    });
+
+                    var entry = new ExtensionEntry
+                    {
+                        ExtensionInfo = extensionInfo,
+                        Assembly = module.Assembly,
+                        ExportedTypes = module.Assembly.ExportedTypes
+                    };
+
+                    loadedExtensions.TryAdd(module.Name, entry);
                 });
 
                 var loadedFeatures = new Dictionary<string, FeatureEntry>();
@@ -357,62 +364,6 @@ namespace OrchardCore.Environment.Extensions
         private int GetPriority(IFeatureInfo feature)
         {
             return _extensionPriorityStrategies.Sum(s => s.GetPriority(feature));
-        }
-
-        private ISet<IExtensionInfo> HarvestExtensions()
-        {
-            var searchOptions = _extensionExpanderOptions.Options;
-
-            var extensionSet = new HashSet<IExtensionInfo>();
-
-            if (searchOptions.Count == 0)
-            {
-                return extensionSet;
-            }
-
-            foreach (var searchOption in searchOptions)
-            {
-                foreach (var subDirectory in _hostingEnvironment
-                    .ContentRootFileProvider
-                    .GetDirectoryContents(searchOption.SearchPath)
-                    .Where(x => x.IsDirectory))
-                {
-                    var manifestConfiguration = _manifestOptions
-                        .ManifestConfigurations
-                        .FirstOrDefault(mc =>
-                        {
-                            var subPath = Path.Combine(searchOption.SearchPath, subDirectory.Name, mc.ManifestFileName);
-                            return _hostingEnvironment.ContentRootFileProvider.GetFileInfo(subPath).Exists;
-                        });
-
-                    if (manifestConfiguration == null)
-                    {
-                        continue;
-                    }
-
-                    var manifestsubPath = searchOption.SearchPath + '/' + subDirectory.Name;
-                    var manifestFilesubPath = manifestsubPath + '/' + manifestConfiguration.ManifestFileName;
-
-                    IConfigurationBuilder configurationBuilder =
-                        _manifestProvider.GetManifestConfiguration(new ConfigurationBuilder(), manifestFilesubPath);
-
-                    if (!configurationBuilder.Sources.Any())
-                    {
-                        continue;
-                    }
-
-                    var configurationRoot = configurationBuilder.Build();
-
-                    var manifestInfo = new ManifestInfo(configurationRoot, manifestConfiguration.Type);
-
-                    // Manifest tells you what your loading, subpath is where you are loading it
-                    var extensionInfo = _extensionProvider.GetExtensionInfo(manifestInfo, manifestsubPath);
-
-                    extensionSet.Add(extensionInfo);
-                }
-            }
-
-            return extensionSet;
         }
     }
 }

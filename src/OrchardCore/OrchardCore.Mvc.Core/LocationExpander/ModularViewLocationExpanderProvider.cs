@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Environment.Extensions;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Mvc.FileProviders;
 
 namespace OrchardCore.Mvc.LocationExpander
@@ -17,18 +17,18 @@ namespace OrchardCore.Mvc.LocationExpander
         private static IList<IExtensionInfo> _modulesWithComponentViews;
         private static object _synLock = new object();
 
-        private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IExtensionManager _extensionManager;
+        private readonly ShellDescriptor _shellDescriptor;
         private readonly IMemoryCache _memoryCache;
 
         public ModularViewLocationExpanderProvider(
             IRazorViewEngineFileProviderAccessor fileProviderAccessor,
-            IShellFeaturesManager shellFeaturesManager,
             IExtensionManager extensionManager,
+            ShellDescriptor shellDescriptor,
             IMemoryCache memoryCache)
         {
-            _shellFeaturesManager = shellFeaturesManager;
             _extensionManager = extensionManager;
+            _shellDescriptor = shellDescriptor;
             _memoryCache = memoryCache;
 
             if (_modulesWithComponentViews != null)
@@ -43,7 +43,8 @@ namespace OrchardCore.Mvc.LocationExpander
                     var modulesWithComponentViews = new List<IExtensionInfo>();
 
                     var orderedModules = _extensionManager.GetExtensions()
-                        .Where(e => !(e is IThemeExtensionInfo)).Reverse();
+                        .Where(e => e.Manifest.Type.Equals("module", StringComparison.OrdinalIgnoreCase))
+                        .Reverse();
 
                     foreach (var module in orderedModules)
                     {
@@ -110,7 +111,12 @@ namespace OrchardCore.Mvc.LocationExpander
             {
                 if (!_memoryCache.TryGetValue(CacheKey, out IEnumerable<string> moduleComponentViewLocations))
                 {
-                    var enabledExtensions = _shellFeaturesManager.GetEnabledExtensionsAsync().GetAwaiter().GetResult();
+                    var enabledIds = _extensionManager.GetFeatures().Where(f => _shellDescriptor
+                        .Features.Any(sf => sf.Id == f.Id)).Select(f => f.Extension.Id).Distinct().ToArray();
+
+                    var enabledExtensions = _extensionManager.GetExtensions()
+                        .Where(e => enabledIds.Contains(e.Id)).ToArray();
+
                     var sharedViewsPath = "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
 
                     moduleComponentViewLocations = _modulesWithComponentViews

@@ -18,6 +18,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using Directory = System.IO.Directory;
+using LDirectory = Lucene.Net.Store.Directory;
 
 namespace OrchardCore.Lucene
 {
@@ -33,7 +34,7 @@ namespace OrchardCore.Lucene
         private readonly DirectoryInfo _rootDirectory;
         private bool _disposing;
         private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
-        private ConcurrentDictionary<string, IndexWriter> _writers = new ConcurrentDictionary<string, IndexWriter>(StringComparer.OrdinalIgnoreCase);
+        private ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
 
         private static LuceneVersion LuceneVersion = LuceneVersion.LUCENE_48;
@@ -86,8 +87,9 @@ namespace OrchardCore.Lucene
         {
             lock (this)
             {
-                if (_writers.TryRemove(indexName, out var writer))
+                if (_writers.TryGetValue(indexName, out var writer))
                 {
+                    writer.IsClosing = true;
                     writer.Dispose();
                 }
 
@@ -102,8 +104,14 @@ namespace OrchardCore.Lucene
 
                 if (Directory.Exists(indexFolder))
                 {
-                    Directory.Delete(indexFolder, true);
+                    try
+                    {
+                        Directory.Delete(indexFolder, true);
+                    }
+                    catch { }
                 }
+
+                _writers.TryRemove(indexName, out writer);
             }
         }
 
@@ -249,23 +257,42 @@ namespace OrchardCore.Lucene
 
         private void Write(string indexName, Action<IndexWriter> action, bool close = false)
         {
-            var writer = _writers.GetOrAdd(indexName, name =>
+            if (!_writers.TryGetValue(indexName, out var writer))
             {
-                var directory = CreateDirectory(indexName);
-                var config = new IndexWriterConfig(LuceneVersion, new StandardAnalyzer(LuceneVersion))
+                lock (this)
                 {
-                    OpenMode = OpenMode.CREATE_OR_APPEND
-                };
+                    if (!_writers.TryGetValue(indexName, out writer))
+                    {
+                        var directory = CreateDirectory(indexName);
 
-                return new IndexWriter(directory, config);
-            });
+                        var config = new IndexWriterConfig(LuceneVersion, new StandardAnalyzer(LuceneVersion))
+                        {
+                            OpenMode = OpenMode.CREATE_OR_APPEND
+                        };
+
+                        writer = _writers[indexName] = new IndexWriterWrapper(directory, config);
+                    }
+                }
+            }
+
+            if (writer.IsClosing)
+            {
+                return;
+            }
 
             action?.Invoke(writer);
 
-            if (close)
+            if (close && !writer.IsClosing)
             {
-                _writers.TryRemove(indexName, out writer);
-                writer.Dispose();
+                lock (this)
+                {
+                    if (!writer.IsClosing)
+                    {
+                        writer.IsClosing = true;
+                        writer.Dispose();
+                        _writers.TryRemove(indexName, out writer);
+                    }
+                }
             }
 
             _timestamps[indexName] = _clock.UtcNow;
@@ -304,6 +331,7 @@ namespace OrchardCore.Lucene
                         _logger.LogInformation("Freeing writer for: " + writer.Key);
                     }
 
+                    writer.Value.IsClosing = true;
                     writer.Value.Dispose();
                 }
 
@@ -337,6 +365,7 @@ namespace OrchardCore.Lucene
                         _logger.LogInformation("Freeing writer for: " + indexName);
                     }
 
+                    writer.IsClosing = true;
                     writer.Dispose();
                 }
 
@@ -351,6 +380,8 @@ namespace OrchardCore.Lucene
                 }
 
                 _timestamps.TryRemove(indexName, out var timestamp);
+
+                _writers.TryRemove(indexName, out writer);
             }
         }
 
@@ -370,6 +401,16 @@ namespace OrchardCore.Lucene
         {
             Dispose();
         }
+    }
+
+    internal class IndexWriterWrapper : IndexWriter
+    {
+        public IndexWriterWrapper(LDirectory directory, IndexWriterConfig config) : base(directory, config)
+        {
+            IsClosing = false;
+        }
+
+        public bool IsClosing { get; set; }
     }
 
     internal class IndexReaderPool : IDisposable

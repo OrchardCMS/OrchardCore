@@ -53,7 +53,7 @@ namespace OrchardCore.Environment.Navigation
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError($"An exception occurred while building the menu: {name}", e);
+                    _logger.LogError(e, $"An exception occurred while building the menu: {name}");
                 }
             }
 
