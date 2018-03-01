@@ -119,7 +119,7 @@ namespace OrchardCore.OpenId
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogError("An error occurred while trying to register a X.509 certificate.", exception);
+                    _logger.LogError(exception, "An error occurred while trying to register a X.509 certificate.");
                     throw;
                 }
             }

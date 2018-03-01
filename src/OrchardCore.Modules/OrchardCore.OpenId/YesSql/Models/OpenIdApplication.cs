@@ -27,6 +27,12 @@ namespace OrchardCore.OpenId.YesSql.Models
         public string ClientSecret { get; set; }
 
         /// <summary>
+        /// Gets or sets the consent type
+        /// associated with the current application.
+        /// </summary>
+        public string ConsentType { get; set; }
+
+        /// <summary>
         /// Gets or sets the display name
         /// associated with the current application.
         /// </summary>
@@ -73,11 +79,5 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// associated with the current application.        
         /// </summary>
         public ClientType Type { get; set; }
-
-        /// <summary>
-        /// Gets or sets a boolean indicating whether an explicit consent should be
-        /// granted by the resource owner when authorizing an application.
-        /// </summary>
-        public bool RequireConsent { get; set; }
     }
 }

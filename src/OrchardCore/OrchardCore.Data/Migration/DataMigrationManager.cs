@@ -337,7 +337,7 @@ namespace OrchardCore.Data.Migration
                         throw;
                     }
 
-                    _logger.LogError("Could not run migrations automatically on " + featureId, ex);
+                    _logger.LogError(ex, "Could not run migrations automatically on " + featureId);
                 }
             }
         }

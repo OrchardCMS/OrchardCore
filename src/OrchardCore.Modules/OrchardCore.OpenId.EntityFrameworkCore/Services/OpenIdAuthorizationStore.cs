@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json.Linq;
 using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore;
@@ -19,8 +20,8 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         where TContext : DbContext
         where TKey : IEquatable<TKey>
     {
-        public OpenIdAuthorizationStore(TContext context)
-            : base(context)
+        public OpenIdAuthorizationStore(TContext context, IMemoryCache cache)
+            : base(context, cache)
         {
         }
     }
@@ -33,8 +34,8 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         where TContext : DbContext
         where TKey : IEquatable<TKey>
     {
-        public OpenIdAuthorizationStore(TContext context)
-            : base(context)
+        public OpenIdAuthorizationStore(TContext context, IMemoryCache cache)
+            : base(context, cache)
         {
         }
 
@@ -91,8 +92,18 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindAsync(string subject, string client, CancellationToken cancellationToken)
             => (await FindAsync(subject, client, cancellationToken)).CastArray<IOpenIdAuthorization>();
 
+        async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindAsync(string subject, string client, string status, CancellationToken cancellationToken)
+            => (await FindAsync(subject, client, status, cancellationToken)).CastArray<IOpenIdAuthorization>();
+
+        async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindAsync(
+            string subject, string client, string status, string type, CancellationToken cancellationToken)
+            => (await FindAsync(subject, client, status, type, cancellationToken)).CastArray<IOpenIdAuthorization>();
+
         async Task<IOpenIdAuthorization> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
             => await FindByIdAsync(identifier, cancellationToken);
+
+        async Task<ImmutableArray<IOpenIdAuthorization>> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.FindBySubjectAsync(string subject, CancellationToken cancellationToken)
+            => (await FindBySubjectAsync(subject, cancellationToken)).CastArray<IOpenIdAuthorization>();
 
         Task<string> IOpenIddictAuthorizationStore<IOpenIdAuthorization>.GetApplicationIdAsync(IOpenIdAuthorization authorization, CancellationToken cancellationToken)
             => GetApplicationIdAsync((TAuthorization) authorization, cancellationToken);

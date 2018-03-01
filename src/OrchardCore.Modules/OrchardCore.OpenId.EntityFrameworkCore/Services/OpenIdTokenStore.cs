@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json.Linq;
 using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore;
@@ -19,8 +20,8 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         where TContext : DbContext
         where TKey : IEquatable<TKey>
     {
-        public OpenIdTokenStore(TContext context)
-            : base(context)
+        public OpenIdTokenStore(TContext context, IMemoryCache cache)
+            : base(context, cache)
         {
         }
     }
@@ -33,8 +34,8 @@ namespace OrchardCore.OpenId.EntityFrameworkCore.Services
         where TContext : DbContext
         where TKey : IEquatable<TKey>
     {
-        public OpenIdTokenStore(TContext context)
-            : base(context)
+        public OpenIdTokenStore(TContext context, IMemoryCache cache)
+            : base(context, cache)
         {
         }
 

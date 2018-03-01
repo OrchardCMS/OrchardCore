@@ -10,13 +10,13 @@
    * the RTD JS code modified.
    */
   function fixSearch() {
-    var target = document.getElementById('rtd-search-form');
+    var target = document.getElementById('mkdocs-search-form');
     var config = {attributes: true, childList: true};
 
     var observer = new MutationObserver(function(mutations) {
       // if it isn't disconnected it'll loop infinitely because the observed element is modified
       observer.disconnect();
-      var form = $('#rtd-search-form');
+      var form = $('#mkdocs-search-form');
       form.empty();
       form.attr('action', 'https://' + window.location.hostname + '/en/' + determineSelectedBranch() + '/search.html');
       $('<input>').attr({
