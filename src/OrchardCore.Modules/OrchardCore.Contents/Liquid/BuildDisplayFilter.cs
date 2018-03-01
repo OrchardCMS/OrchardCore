@@ -35,7 +35,7 @@ namespace OrchardCore.Contents.Liquid
 
             if (!ctx.AmbientValues.TryGetValue("Services", out var services))
             {
-                throw new ArgumentException("Services missing while invoking 'build_display'");
+                throw new ArgumentException("Services missing while invoking 'shape_build_display'");
             }
 
             var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue();

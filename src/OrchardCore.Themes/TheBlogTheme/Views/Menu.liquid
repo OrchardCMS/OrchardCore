@@ -1,7 +1,7 @@
-﻿<nav>
+<nav>
     <ul class="nav navbar-nav navbar-right {{ Model.Classes | join: " " }}">
         {% for item in Model.Items %}
-            {% display item %}
+            {{ item | shape_render }}
         {% endfor %}
     </ul>
 </nav>
