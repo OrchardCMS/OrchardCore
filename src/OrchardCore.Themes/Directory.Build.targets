@@ -1,10 +1,11 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.targets" />
 
   <PropertyGroup>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
+  <!-- In a next release we will just use a new '$(EmbedAllSources)' property -->
   <Target Name="PopulateEmbeddedFiles" AfterTargets="BeforeCompile" BeforeTargets="CoreCompile">
     <ItemGroup>
       <EmbeddedFiles Include="@(Compile)" />
