@@ -20,7 +20,7 @@ namespace OrchardCore.Cms.Web
 
             app.UseStaticFiles();
 
-            app.UseModules(c => c.UsePoweredBy(true, "Cander mor"));
+            app.UseModules();
         }
     }
 }
