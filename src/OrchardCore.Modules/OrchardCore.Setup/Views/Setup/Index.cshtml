@@ -72,7 +72,7 @@
         <fieldset class="form-group col-md-6" asp-validation-class-for="SiteName">
             <div>
                 <label asp-for="SiteName">@T["What is the name of your site?"]</label>
-                <input asp-for="SiteName" tabindex="1" class="form-control" autofocus />
+                <input asp-for="SiteName" class="form-control" autofocus />
                 <span asp-validation-for="SiteName" class="text-danger">@T["The site name is required."]</span>
                 <span class="text-muted form-text small">@T["This is used as the default title of your pages."]</span>
             </div>
@@ -93,13 +93,13 @@
                     else
                     {
                         <div id="recipes" class="dropdown">
-                            <button id="recipeButton" tabindex="2" title="@defaultRecipe.Description" class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button id="recipeButton" title="@defaultRecipe.Description" class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @defaultRecipe.DisplayName
                             </button>
                             <div class="dropdown-menu">
                                 @foreach (var recipe in Model.Recipes.OrderBy(x => x.Name))
                                 {
-                                    <a href="#" data-recipe-name="@recipe.Name" tabindex="2" data-recipe-description="@recipe.Description" data-recipe-display-name="@recipe.DisplayName" class="dropdown-item">@recipe.DisplayName <span class="text-muted form-text small">@recipe.Description</span></a>
+                                    <a href="#" data-recipe-name="@recipe.Name" data-recipe-description="@recipe.Description" data-recipe-display-name="@recipe.DisplayName" class="dropdown-item">@recipe.DisplayName <span class="text-muted form-text small">@recipe.Description</span></a>
                                 }
                             </div>
                         </div>
@@ -126,7 +126,7 @@
             }
             else
             {
-                <select asp-for="DatabaseProvider" class="form-control" tabindex="3">
+                <select asp-for="DatabaseProvider" class="form-control">
                 @foreach (var provider in Model.DatabaseProviders)
                 {
                     <option value="@provider.Value" data-connection-string="@provider.HasConnectionString">@provider.Name</option>
@@ -144,7 +144,7 @@
         {
             <div class="form-group col-md-6" asp-validation-class-for="TablePrefix">
                 <label asp-for="TablePrefix">@T["Table Prefix"]</label>
-                <input asp-for="TablePrefix" class="form-control" tabindex="4"/>
+                <input asp-for="TablePrefix" class="form-control"/>
                 <span asp-validation-for="TablePrefix" class="text-danger"></span>
             </div>
         }
@@ -161,7 +161,7 @@
                 <label asp-for="ConnectionString">@T["Connection string"]</label>
 
                 <div class="input-group mb-2 mb-sm-0">
-                    <input asp-for="ConnectionString" class="form-control pwd" type="password" tabindex="5"/>
+                    <input asp-for="ConnectionString" class="form-control pwd" type="password"/>
                     <div class="input-group-prepend reveal" title="@T["Show/hide connection string"]"><button class="fa fa-eye-slash" tabindex="-1" aria-hidden="true"></button></div>
                 </div>
 
@@ -182,7 +182,7 @@
         </div>
         <div class="form-group col-md-6" asp-validation-class-for="Email">
             <label for="Email">@T["Email"]</label>
-            <input asp-for="Email" class="form-control" type="email" tabindex="7" />
+            <input asp-for="Email" class="form-control" type="email" />
             <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
         </div>
     </div>
@@ -190,20 +190,20 @@
     <div class="row">
         <div class="form-group col-md-6" asp-validation-class-for="Password">
             <label asp-for="Password">@T["Password"]</label>
-            <input asp-for="Password" tabindex="8" type="password" class="form-control" data-toggle="popover" data-placement="top" data-trigger="focus" title="@T["Password strength"]" data-content="@passwordTooltip" />
+            <input asp-for="Password" type="password" class="form-control" data-toggle="popover" data-placement="top" data-trigger="focus" title="@T["Password strength"]" data-content="@passwordTooltip" />
             <div id="passwordStrength"></div>
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
 
         <div class="form-group col-md-6" asp-validation-class-for="PasswordConfirmation">
             <label asp-for="PasswordConfirmation">@T["Password Confirmation"]</label>
-            <input asp-for="PasswordConfirmation" tabindex="9" type="password" class="form-control" />
+            <input asp-for="PasswordConfirmation" type="password" class="form-control" />
             <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
         </div>
     </div>
     <fieldset>
         <div class="form-group">
-            <button class="btn btn-primary" tabindex="10" type="submit">@T["Finish Setup"]</button>
+            <button class="btn btn-primary" type="submit">@T["Finish Setup"]</button>
         </div>
     </fieldset>
 </form>
