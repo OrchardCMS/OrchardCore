@@ -11,6 +11,7 @@
     <ModuleDefaultAssetExcludes>$(ModuleAssetExcludes);**\node_modules\**;node_modules\**</ModuleDefaultAssetExcludes>
     <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\jspm_packages\**;jspm_packages\**</ModuleDefaultAssetExcludes>
     <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\bower_components\**;bower_components\**</ModuleDefaultAssetExcludes>
+    <ModuleType Condition="'$(ModuleType)' == ''">Module</ModuleType>
     <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
   </PropertyGroup>
 
