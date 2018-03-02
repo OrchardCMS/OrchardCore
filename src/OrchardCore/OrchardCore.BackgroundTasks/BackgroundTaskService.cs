@@ -107,7 +107,7 @@ namespace OrchardCore.BackgroundTasks
                     {
                         if (Logger.IsEnabled(LogLevel.Error))
                         {
-                            Logger.LogError($"Error while processing background task \"{taskName}\": {ex.Message}");
+                            Logger.LogError(ex, $"Error while processing background task \"{taskName}\"");
                         }
                     }
                     finally

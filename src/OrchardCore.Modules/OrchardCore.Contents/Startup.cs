@@ -125,7 +125,7 @@ namespace OrchardCore.Contents
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddLiquidFilter<ContentFilter>("content");
-            services.AddLiquidFilter<BuildDisplayFilter>("build_display");
+            services.AddLiquidFilter<BuildDisplayFilter>("shape_build_display");
         }
     }
 }

@@ -148,7 +148,7 @@ namespace OrchardCore.Setup.Services
                         // tables. The tables should be rolled back if one of the steps is invalid,
                         // unless the recipe is executing?
 
-                        _logger.LogError("An error occurred while initializing the datastore.", e);
+                        _logger.LogError(e, "An error occurred while initializing the datastore.");
                         context.Errors.Add("DatabaseProvider", T["An error occurred while initializing the datastore: {0}", e.Message]);
                         return null;
                     }

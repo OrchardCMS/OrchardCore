@@ -149,7 +149,7 @@ namespace OrchardCore.Indexing.Services
             {
                 _session.Cancel();
 
-                Logger.LogError("An error occured while reading indexing tasks: " + e.Message);
+                Logger.LogError(e, "An error occured while reading indexing tasks");
                 throw;
             }
         }
