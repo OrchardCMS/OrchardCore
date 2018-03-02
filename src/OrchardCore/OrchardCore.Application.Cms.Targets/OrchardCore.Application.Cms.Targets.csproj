@@ -72,6 +72,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Users\OrchardCore.Users.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Widgets\OrchardCore.Widgets.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.XmlRpc\OrchardCore.XmlRpc.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Email\OrchardCore.Email.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\SafeMode\SafeMode.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheAdmin\TheAdmin.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheBlogTheme\TheBlogTheme.csproj" PrivateAssets="none" />
