@@ -197,7 +197,20 @@ The following properties are available on the `User` object.
 
 ### Site
 
-Gives access to the current site settings, e.g `Site.SiteName`
+Gives access to the current site settings, e.g `Site.SiteName`.
+
+| Property | Example | Description |
+| -------- | ------- |------------ |
+| `BaseUrl` |  | The base URL of the site | 
+| `Calendar` |  | The site's calendar | 
+| `Culture` | `en-us` | The site's culture as an ISO language code | 
+| `MaxPagedCount` | `0` | The maximum number of pages that can be paged | 
+| `MaxPageSize` | `100` | The maximum page size that can be set by a user | 
+| `PageSize` | `10` | The default page size of lists | 
+| `SiteName` | `My Site` | The friendly name of the site | 
+| `SuperUser` | `admin` | The user name of the site's super user | 
+| `TimeZone` | `Mountain Standard Time` | The site's time zone | 
+| `UseCdn` | `false` | Enable/disable the use of a CDN | 
 
 ### Request
 
