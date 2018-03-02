@@ -11,9 +11,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Lists",
     Name = "Lists",
     Description = "Introduces a preconfigured container-enabled content type.",
-    Dependencies = new string[]
-    {
-        "OrchardCore.ContentTypes"
-    },
+    Dependencies = new [] { "OrchardCore.ContentTypes" },
     Category = "Content Management"
 )]

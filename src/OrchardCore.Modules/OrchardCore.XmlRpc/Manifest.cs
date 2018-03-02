@@ -18,9 +18,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.RemotePublishing",
     Name = "Remote Publishing",
     Description = "The remote publishing feature enables creation of contents from client applications such as Open Live Writer.",
-    Dependencies = new string[]
-    {
-        "OrchardCore.XmlRpc"
-    },
+    Dependencies = new [] { "OrchardCore.XmlRpc" },
     Category = "Infrastructure"
 )]

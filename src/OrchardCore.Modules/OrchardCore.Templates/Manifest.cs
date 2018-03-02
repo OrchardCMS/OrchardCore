@@ -6,9 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "The Templates module provides a way to write custom shape templates from the admin.",
-    Dependencies = new string[]
-    {
-        "OrchardCore.Liquid"
-    },
+    Dependencies = new [] { "OrchardCore.Liquid" },
     Category = "Development"
 )]

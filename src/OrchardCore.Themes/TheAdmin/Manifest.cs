@@ -6,8 +6,5 @@ using OrchardCore.DisplayManagement.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "The default Admin theme.",
-    Tags = new string[]
-    {
-        "admin"
-    }
+    Tags = new [] { "admin" }
 )]
