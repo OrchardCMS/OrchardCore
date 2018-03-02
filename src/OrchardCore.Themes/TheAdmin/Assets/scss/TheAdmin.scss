@@ -5,10 +5,22 @@
 
 @import "src/OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/scss/bootstrap.scss";
 
-$top-nav-height: 55px;
+$top-nav-height: 59px;
 $left-navigation-width: 260px;
 $border-content: 1px solid rgba(0, 0, 0, 0.05);
 $link-padding-left: 16px !default;
+
+@mixin word-wrap() {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-all;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
 
 // Layout
 // -----------------------------
@@ -18,6 +30,8 @@ $link-padding-left: 16px !default;
     .ta-navbar-top {
         @extend .navbar, .navbar-expand-md, .navbar-light, .bg-light, .fixed-top;
         min-height: $top-nav-height;
+        border-bottom: $border-content;
+        z-index:8;
     }
 
     .ta-navbar-brand {
@@ -37,16 +51,20 @@ $link-padding-left: 16px !default;
         @extend .bg-light;
         width: $left-navigation-width;
         height: 100%;
-        z-index: 1;
+        z-index: 7;
         position: fixed;
         top: $top-nav-height;
         color: $gray-800;
         border-right: $border-content;
+        left: 0px;
+        transition: left 0.5s ease-in-out;
+
         // Remove padding/margin from all uls
         ul {
             margin: 0;
             padding: 0;
         }
+
         // Rotate the chevron's icon when the menu is active
         input[type=checkbox]:checked + label > .chevron > i {
             transform: rotate(90deg);
@@ -56,6 +74,7 @@ $link-padding-left: 16px !default;
         input[type=checkbox] + label > .chevron > i {
             transition-duration: 0.2s;
         }
+
         // Hide native checkbox */
         input[type=checkbox] {
             position: absolute;
@@ -66,10 +85,6 @@ $link-padding-left: 16px !default;
             max-height: 0;
             opacity: 0;
             transition: max-height 0.2s, opacity 0.2s, ease-in-out;
-            // Hide chevrons when the containing ul is hidden
-            li > label > .chevron {
-                display: none;
-            }
         }
 
         input[type=checkbox]:checked + label + ul {
@@ -77,11 +92,8 @@ $link-padding-left: 16px !default;
             max-height: 500px; /* approximate max height */
             opacity: 1;
             transition: max-height 0.5s, opacity 0.5s, ease-in-out;
-            // Hide chevrons when the containing ul is open
-            li > label > .chevron {
-                display: block;
-            }
         }
+
         // Make each line a block
         label, a {
             position: relative;
@@ -89,8 +101,10 @@ $link-padding-left: 16px !default;
             margin: 0;
         }
 
-        nav > ul {
+        nav ul {
             display: block;
+            margin: 0;
+            padding: 0;
             white-space: nowrap;
 
             li {
@@ -100,6 +114,10 @@ $link-padding-left: 16px !default;
                 display: list-item;
                 list-style: none;
                 line-height: 2.5em;
+
+                label {
+                    cursor: pointer;
+                }
             }
         }
 
@@ -112,6 +130,10 @@ $link-padding-left: 16px !default;
 
         .icon {
             padding-right: 10px;
+
+            .fa {
+                min-width:16px;
+            }
         }
 
         li label,
@@ -139,7 +161,7 @@ $link-padding-left: 16px !default;
         li ul > li > label {
             background-color: $gray-200;
             color: $gray-700 !important;
-            padding-left: 2 * $link-padding-left !important;
+            padding-left: (2 * $link-padding-left) + 6  !important;
         }
 
         li ul > li > a:hover,
@@ -153,32 +175,26 @@ $link-padding-left: 16px !default;
     }
 
     .ta-content {
-        padding-right: ($grid-gutter-width / 2);
-        padding-left: ($grid-gutter-width / 2);
-        margin-left: 0;
-        margin-top: $top-nav-height;
-        padding-top: 1em;
-        border-top: $border-content;
+        padding: ($grid-gutter-width / 2);
+        margin-top: ($top-nav-height);
     }
     // When the screen is bigger than md, add a margin of the size of the menu
     @include media-breakpoint-up(sm) {
         .ta-content {
             margin-left: $left-navigation-width;
+            transition: margin-left 0.5s ease-in-out;
         }
     }
 
-    @include media-breakpoint-down(xs) {
+    @include media-breakpoint-down(sm) {
         #ta-left-sidebar {
             left: -$left-navigation-width;
+            transition: left 0.5s ease-in-out;
         }
 
-        .collapsing {
-            /*margin-left: 0;
-            transition: margin-left 0.5s ease-in-out;*/
-        }
-
-        .in {
-            /*margin-left:0;*/
+        .ta-content {
+            margin-left: 0;
+            transition: margin-left 0.5s ease-in-out;
         }
     }
 }
@@ -188,6 +204,7 @@ $link-padding-left: 16px !default;
 
 .hint {
     @extend .small, .text-muted;
+    @include word-wrap;
 }
 
 .validation-summary-errors {
@@ -371,4 +388,3 @@ ul.pager li a {
     /* preventing last bottom item is not visible when scrolling to bottom */
     padding-bottom: 100px;
 }
-

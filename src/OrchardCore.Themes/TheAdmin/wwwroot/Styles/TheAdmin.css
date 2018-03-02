@@ -6098,17 +6098,21 @@ a.text-dark:hover, a.text-dark:focus {
         @extend .hidden-xs-down;
     }*/ }
   .ta-wrapper .ta-navbar-top {
-    min-height: 55px; }
+    min-height: 59px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    z-index: 8; }
   .ta-wrapper .ta-navbar-brand {
     margin-left: 4px; }
   .ta-wrapper #ta-left-sidebar {
     width: 260px;
     height: 100%;
-    z-index: 1;
+    z-index: 7;
     position: fixed;
-    top: 55px;
+    top: 59px;
     color: #343a40;
-    border-right: 1px solid rgba(0, 0, 0, 0.05); }
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    left: 0px;
+    transition: left 0.5s ease-in-out; }
     .ta-wrapper #ta-left-sidebar ul {
       margin: 0;
       padding: 0; }
@@ -6124,30 +6128,30 @@ a.text-dark:hover, a.text-dark:focus {
       max-height: 0;
       opacity: 0;
       transition: max-height 0.2s, opacity 0.2s, ease-in-out; }
-      .ta-wrapper #ta-left-sidebar input[type=checkbox] + label + ul li > label > .chevron {
-        display: none; }
     .ta-wrapper #ta-left-sidebar input[type=checkbox]:checked + label + ul {
       overflow-y: hidden;
       max-height: 500px;
       /* approximate max height */
       opacity: 1;
       transition: max-height 0.5s, opacity 0.5s, ease-in-out; }
-      .ta-wrapper #ta-left-sidebar input[type=checkbox]:checked + label + ul li > label > .chevron {
-        display: block; }
     .ta-wrapper #ta-left-sidebar label, .ta-wrapper #ta-left-sidebar a {
       position: relative;
       display: block;
       margin: 0; }
-    .ta-wrapper #ta-left-sidebar nav > ul {
+    .ta-wrapper #ta-left-sidebar nav ul {
       display: block;
+      margin: 0;
+      padding: 0;
       white-space: nowrap; }
-      .ta-wrapper #ta-left-sidebar nav > ul li {
+      .ta-wrapper #ta-left-sidebar nav ul li {
         position: relative;
         margin: 0;
         padding: 0;
         display: list-item;
         list-style: none;
         line-height: 2.5em; }
+        .ta-wrapper #ta-left-sidebar nav ul li label {
+          cursor: pointer; }
     .ta-wrapper #ta-left-sidebar .chevron {
       position: absolute;
       top: 0;
@@ -6155,6 +6159,8 @@ a.text-dark:hover, a.text-dark:focus {
       margin-left: -25px; }
     .ta-wrapper #ta-left-sidebar .icon {
       padding-right: 10px; }
+      .ta-wrapper #ta-left-sidebar .icon .fa {
+        min-width: 16px; }
     .ta-wrapper #ta-left-sidebar li label,
     .ta-wrapper #ta-left-sidebar li a,
     .ta-wrapper #ta-left-sidebar li a:hover,
@@ -6173,30 +6179,37 @@ a.text-dark:hover, a.text-dark:focus {
     .ta-wrapper #ta-left-sidebar li ul > li > label {
       background-color: #e9ecef;
       color: #495057 !important;
-      padding-left: 32px !important; }
+      padding-left: 38px !important; }
     .ta-wrapper #ta-left-sidebar li ul > li > a:hover,
     .ta-wrapper #ta-left-sidebar li ul > li > label:hover {
       color: #f8f9fa !important; }
     .ta-wrapper #ta-left-sidebar li ul > li ul > li > a {
       padding-left: 48px !important; }
   .ta-wrapper .ta-content {
-    padding-right: 15px;
-    padding-left: 15px;
-    margin-left: 0;
-    margin-top: 55px;
-    padding-top: 1em;
-    border-top: 1px solid rgba(0, 0, 0, 0.05); }
+    padding: 15px;
+    margin-top: 59px; }
   @media (min-width: 576px) {
     .ta-wrapper .ta-content {
-      margin-left: 260px; } }
-  @media (max-width: 575.98px) {
+      margin-left: 260px;
+      transition: margin-left 0.5s ease-in-out; } }
+  @media (max-width: 767.98px) {
     .ta-wrapper #ta-left-sidebar {
-      left: -260px; }
-    .ta-wrapper .collapsing {
-      /*margin-left: 0;
-            transition: margin-left 0.5s ease-in-out;*/ }
-    .ta-wrapper .in {
-      /*margin-left:0;*/ } }
+      left: -260px;
+      transition: left 0.5s ease-in-out; }
+    .ta-wrapper .ta-content {
+      margin-left: 0;
+      transition: margin-left 0.5s ease-in-out; } }
+
+.hint {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-all;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto; }
 
 .validation-summary-errors {
   padding-bottom: 0; }
