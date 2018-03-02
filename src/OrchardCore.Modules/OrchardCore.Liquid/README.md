@@ -201,15 +201,13 @@ Gives access to the current site settings, e.g `Site.SiteName`.
 
 | Property | Example | Description |
 | -------- | ------- |------------ |
-| `Id` | 42 | The site's unique ID | 
-| `BaseUrl` | `null` | The base URL of the site | 
-| `Calendar` | `null` | The site's calendar | 
-| `Culture` | `null` | The site's culture as an ISO language code such as `en` or `en-US` | 
+| `BaseUrl` |  | The base URL of the site | 
+| `Calendar` |  | The site's calendar | 
+| `Culture` | `en-us` | The site's culture as an ISO language code | 
 | `MaxPagedCount` | `0` | The maximum number of pages that can be paged | 
 | `MaxPageSize` | `100` | The maximum page size that can be set by a user | 
 | `PageSize` | `10` | The default page size of lists | 
 | `SiteName` | `My Site` | The friendly name of the site | 
-| `SiteSalt` | `5a7db69f1bdc4331833b1490fd15c675` | The site's salt for security purposes | 
 | `SuperUser` | `admin` | The user name of the site's super user | 
 | `TimeZone` | `Mountain Standard Time` | The site's time zone | 
 | `UseCdn` | `false` | Enable/disable the use of a CDN | 
