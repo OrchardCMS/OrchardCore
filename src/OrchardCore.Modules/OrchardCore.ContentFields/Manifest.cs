@@ -6,6 +6,9 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "Content Fields module adds common content fields to be used with your custom types.",
-    Dependencies = "OrchardCore.ContentTypes",
+    Dependencies = new string[]
+    {
+        "OrchardCore.ContentTypes"
+    },
     Category = "Content Management"
 )]

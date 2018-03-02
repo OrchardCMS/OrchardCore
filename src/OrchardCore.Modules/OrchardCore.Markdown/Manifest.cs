@@ -6,6 +6,9 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "The markdown module enables content items to have markdown editors.",
-    Dependencies = "OrchardCore.ContentTypes",
+    Dependencies = new string[]
+    {
+        "OrchardCore.ContentTypes"
+    },
     Category = "Content Management"
 )]

@@ -11,7 +11,11 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Lucene",
     Name = "Lucene",
     Description = "Creates Lucene indexes to support search scenarios, introduces a preconfigured container-enabled content type.",
-    Dependencies = "OrchardCore.Indexing, OrchardCore.Liquid",
+    Dependencies = new string[]
+    {
+        "OrchardCore.Indexing",
+        "OrchardCore.Liquid"
+    },
     Category = "Content Management"
 )]
 
@@ -19,6 +23,9 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Lucene.Worker",
     Name = "Lucene Worker",
     Description = "Provides a background task to keep local indices in sync with other instances.",
-    Dependencies = "OrchardCore.Lucene",
+    Dependencies = new string[]
+    {
+        "OrchardCore.Lucene"
+    },
     Category = "Content Management"
 )]

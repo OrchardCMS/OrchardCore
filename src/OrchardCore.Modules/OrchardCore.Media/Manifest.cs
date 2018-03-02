@@ -11,6 +11,10 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Media",
     Name = "Media",
     Description = "The media module adds media management support.",
-    Dependencies = "OrchardCore.ContentTypes, OrchardCore.Title",
+    Dependencies = new string[]
+    {
+        "OrchardCore.ContentTypes",
+        "OrchardCore.Title"
+    },
     Category = "Content Management"
 )]

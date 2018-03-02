@@ -6,6 +6,9 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "Content Types modules enables the creation and alteration of content types not based on code.",
-    Dependencies = "OrchardCore.Contents",
+    Dependencies = new string[]
+    {
+        "OrchardCore.Contents"
+    },
     Category = "Content Management"
 )]

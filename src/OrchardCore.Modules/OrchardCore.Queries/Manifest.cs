@@ -11,7 +11,10 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Queries",
     Name = "Queries",
     Description = "Provides querying capabilities.",
-    Dependencies = "OrchardCore.Liquid",
+    Dependencies = new string[]
+    {
+        "OrchardCore.Liquid"
+    },
     Category = "Content Management"
 )]
 
@@ -19,6 +22,9 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Queries.Sql",
     Name = "SQL Queries",
     Description = "Introduces a way to create custom Queries in pure SQL.",
-    Dependencies = "OrchardCore.Queries",
+    Dependencies = new string[]
+    {
+        "OrchardCore.Queries"
+    },
     Category = "Content Management"
 )]

@@ -10,6 +10,9 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Flows",
     Description = "Provides a content part allowing users to edit their content based on Widgets.",
-    Dependencies = "OrchardCore.Widgets",
+    Dependencies = new string[]
+    {
+        "OrchardCore.Widgets"
+    },
     Category = "Content"
 )]

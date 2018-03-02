@@ -6,6 +6,9 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "This package provides an Entity Framework Core 2.x adapter for the OpenID module.",
-    Dependencies = "OrchardCore.OpenId",
+    Dependencies = new string[]
+    {
+        "OrchardCore.OpenId"
+    },
     Category = "Security"
 )]

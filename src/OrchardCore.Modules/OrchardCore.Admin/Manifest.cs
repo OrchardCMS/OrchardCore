@@ -6,6 +6,9 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "Creates an admin section for the site.",
-    Dependencies = "OrchardCore.Settings",
+    Dependencies = new string[]
+    {
+        "OrchardCore.Settings"
+    },
     Category = "Infrastructure"
 )]
