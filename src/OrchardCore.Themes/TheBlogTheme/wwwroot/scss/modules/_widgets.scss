@@ -22,7 +22,7 @@
     text-align: justify;
 }
 
-/*.widget-size-25 {
+.widget-size-25 {
     @extend .col-sm-3;
 }
 
@@ -49,31 +49,31 @@
 .widget {
     .widget-size-25 {
         @extend .col-md-3;
-        @extend .col-xs-12;
+        @extend .col-12;
     }
 
     .widget-size-33 {
         @extend .col-md-4;
-        @extend .col-xs-12;
+        @extend .col-12;
     }
 
     .widget-size-50 {
         @extend .col-md-6;
-        @extend .col-xs-12;
+        @extend .col-12;
     }
 
     .widget-size-66 {
         @extend .col-md-8;
-        @extend .col-xs-12;
+        @extend .col-12;
     }
 
     .widget-size-75 {
         @extend .col-md-9;
-        @extend .col-xs-12;
+        @extend .col-12;
     }
 
     .widget-size-100 {
         @extend .col-md-12;
-        @extend .col-xs-12;
+        @extend .col-12;
     }
-}*/
+}

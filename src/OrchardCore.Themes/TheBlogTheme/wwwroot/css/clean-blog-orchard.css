@@ -610,8 +610,8 @@ pre code {
   padding-left: 0;
 }
 
-.col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .col,
-.col-auto, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm,
+.col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .widget .widget-size-25, .widget .widget-size-33, .widget .widget-size-50, .widget .widget-size-66, .widget .widget-size-75, .widget .widget-size-100, .col,
+.col-auto, .col-sm-1, .col-sm-2, .col-sm-3, .widget-size-25, .col-sm-4, .widget-size-33, .col-sm-5, .col-sm-6, .widget-size-50, .col-sm-7, .col-sm-8, .widget-size-66, .col-sm-9, .widget-size-75, .col-sm-10, .col-sm-11, .col-sm-12, .widget-size-100, .col-sm,
 .col-sm-auto, .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-md,
 .col-md-auto, .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg,
 .col-lg-auto, .col-xl-1, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl,
@@ -690,7 +690,7 @@ pre code {
   max-width: 91.66667%;
 }
 
-.col-12 {
+.col-12, .widget .widget-size-25, .widget .widget-size-33, .widget .widget-size-50, .widget .widget-size-66, .widget .widget-size-75, .widget .widget-size-100 {
   flex: 0 0 100%;
   max-width: 100%;
 }
@@ -818,11 +818,11 @@ pre code {
     flex: 0 0 16.66667%;
     max-width: 16.66667%;
   }
-  .col-sm-3 {
+  .col-sm-3, .widget-size-25 {
     flex: 0 0 25%;
     max-width: 25%;
   }
-  .col-sm-4 {
+  .col-sm-4, .widget-size-33 {
     flex: 0 0 33.33333%;
     max-width: 33.33333%;
   }
@@ -830,7 +830,7 @@ pre code {
     flex: 0 0 41.66667%;
     max-width: 41.66667%;
   }
-  .col-sm-6 {
+  .col-sm-6, .widget-size-50 {
     flex: 0 0 50%;
     max-width: 50%;
   }
@@ -838,11 +838,11 @@ pre code {
     flex: 0 0 58.33333%;
     max-width: 58.33333%;
   }
-  .col-sm-8 {
+  .col-sm-8, .widget-size-66 {
     flex: 0 0 66.66667%;
     max-width: 66.66667%;
   }
-  .col-sm-9 {
+  .col-sm-9, .widget-size-75 {
     flex: 0 0 75%;
     max-width: 75%;
   }
@@ -854,7 +854,7 @@ pre code {
     flex: 0 0 91.66667%;
     max-width: 91.66667%;
   }
-  .col-sm-12 {
+  .col-sm-12, .widget-size-100 {
     flex: 0 0 100%;
     max-width: 100%;
   }
@@ -960,11 +960,11 @@ pre code {
     flex: 0 0 16.66667%;
     max-width: 16.66667%;
   }
-  .col-md-3 {
+  .col-md-3, .widget .widget-size-25 {
     flex: 0 0 25%;
     max-width: 25%;
   }
-  .col-md-4 {
+  .col-md-4, .widget .widget-size-33 {
     flex: 0 0 33.33333%;
     max-width: 33.33333%;
   }
@@ -972,7 +972,7 @@ pre code {
     flex: 0 0 41.66667%;
     max-width: 41.66667%;
   }
-  .col-md-6 {
+  .col-md-6, .widget .widget-size-50 {
     flex: 0 0 50%;
     max-width: 50%;
   }
@@ -980,11 +980,11 @@ pre code {
     flex: 0 0 58.33333%;
     max-width: 58.33333%;
   }
-  .col-md-8 {
+  .col-md-8, .widget .widget-size-66 {
     flex: 0 0 66.66667%;
     max-width: 66.66667%;
   }
-  .col-md-9 {
+  .col-md-9, .widget .widget-size-75 {
     flex: 0 0 75%;
     max-width: 75%;
   }
@@ -996,7 +996,7 @@ pre code {
     flex: 0 0 91.66667%;
     max-width: 91.66667%;
   }
-  .col-md-12 {
+  .col-md-12, .widget .widget-size-100 {
     flex: 0 0 100%;
     max-width: 100%;
   }
@@ -8120,61 +8120,6 @@ a.text-dark:hover, a.text-dark:focus {
   text-align: justify;
 }
 
-/*.widget-size-25 {
-    @extend .col-sm-3;
-}
-
-.widget-size-33 {
-    @extend .col-sm-4;
-}
-
-.widget-size-50 {
-    @extend .col-sm-6;
-}
-
-.widget-size-66 {
-    @extend .col-sm-8;
-}
-
-.widget-size-75 {
-    @extend .col-sm-9;
-}
-
-.widget-size-100 {
-    @extend .col-sm-12;
-}
-
-.widget {
-    .widget-size-25 {
-        @extend .col-md-3;
-        @extend .col-xs-12;
-    }
-
-    .widget-size-33 {
-        @extend .col-md-4;
-        @extend .col-xs-12;
-    }
-
-    .widget-size-50 {
-        @extend .col-md-6;
-        @extend .col-xs-12;
-    }
-
-    .widget-size-66 {
-        @extend .col-md-8;
-        @extend .col-xs-12;
-    }
-
-    .widget-size-75 {
-        @extend .col-md-9;
-        @extend .col-xs-12;
-    }
-
-    .widget-size-100 {
-        @extend .col-md-12;
-        @extend .col-xs-12;
-    }
-}*/
 body {
   font-size: 20px;
   color: #212529;
