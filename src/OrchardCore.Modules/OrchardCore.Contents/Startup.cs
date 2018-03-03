@@ -128,8 +128,8 @@ namespace OrchardCore.Contents
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ILiquidTemplateEventHandler, ContentLiquidTemplateEventHandler>();
-            
-            services.AddLiquidFilter<BuildDisplayFilter>("build_display");
+
+            services.AddLiquidFilter<BuildDisplayFilter>("shape_build_display");
         }
     }
 }
