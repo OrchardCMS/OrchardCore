@@ -1,5 +1,5 @@
 {% for item in Model.ContentItems %}
-    {% display item | build_display: "Summary" %}
+    {{ item | shape_build_display: "Summary" | shape_render }}
 {% endfor %}
 
 {% assign previousText = "← Newer Posts" | t %}
@@ -7,5 +7,7 @@
 {% assign previousClass = "previous" | t %}
 {% assign nextClass = "next" | t %}
 
-{% display Model.Pager | set_properties: previous_text: previousText,
-    next_text: nextText, previous_class: previousClass, next_class: nextClass %}
+{% shape_pager Model.Pager previous_text: previousText, next_text: nextText,
+    previous_class: previousClass, next_class: nextClass %}
+
+{{ Model.Pager | shape_render }}

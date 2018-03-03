@@ -10,4 +10,11 @@
             nav.addClass('in');
         }
     });
+
+    $(window).on('resize', function(){
+        var win = $(this); //this = window
+        if (win.width() >= 768) { 
+            $('#ta-left-sidebar').removeAttr('style');
+        }
+    });
 });
