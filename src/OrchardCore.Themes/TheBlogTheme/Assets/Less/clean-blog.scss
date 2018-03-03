@@ -97,7 +97,7 @@ hr.small {
 			padding: 20px;
 			&:hover,
 			&:focus {
-				color: fade(white, 80%);
+				color: rgba(white, 0.8);
 			}
 		}
 		.nav {
@@ -107,7 +107,7 @@ hr.small {
 					padding: 20px;
 					&:hover,
 					&:focus {
-						color: fade(white, 80%);
+						color: rgba(white, 0.8);
 					}
 				}
 			}
@@ -129,7 +129,7 @@ hr.small {
 			/* when the user scrolls down, we hide the header right above the viewport */
 			position: fixed;
 			top: -61px;
-			background-color: fade(white, 90%);
+			background-color: rgba(white, 0.9);
 			border-bottom: 1px solid darken(white, 5%);
 			-webkit-transition: -webkit-transform 0.3s;
 			-moz-transition: -moz-transform 0.3s;

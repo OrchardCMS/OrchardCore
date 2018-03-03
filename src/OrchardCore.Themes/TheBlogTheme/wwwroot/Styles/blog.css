@@ -5920,12 +5920,12 @@ hr.small {
         color: white;
         padding: 20px; }
         .navbar-custom .navbar-brand:hover, .navbar-custom .navbar-brand:focus {
-          color: fade(white, 80%); }
+          color: rgba(255, 255, 255, 0.8); }
       .navbar-custom .nav li a {
         color: white;
         padding: 20px; }
         .navbar-custom .nav li a:hover, .navbar-custom .nav li a:focus {
-          color: fade(white, 80%); } }
+          color: rgba(255, 255, 255, 0.8); } }
   @media only screen and (min-width: 1170px) {
     .navbar-custom {
       -webkit-transition: background-color 0.3s;
@@ -5943,7 +5943,7 @@ hr.small {
         /* when the user scrolls down, we hide the header right above the viewport */
         position: fixed;
         top: -61px;
-        background-color: fade(white, 90%);
+        background-color: rgba(255, 255, 255, 0.9);
         border-bottom: 1px solid #f2f2f2;
         -webkit-transition: -webkit-transform 0.3s;
         -moz-transition: -moz-transform 0.3s;
