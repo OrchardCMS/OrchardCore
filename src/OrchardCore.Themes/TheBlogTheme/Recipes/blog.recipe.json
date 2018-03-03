@@ -741,7 +741,7 @@
             "Title": "Blog"
           },
           "BodyPart": {
-            "Body": "<p>This is the description of your blog</p>"
+            "Body": "This is the description of your blog"
           },
           "AutoroutePart": {
             "Path": "blog"
@@ -803,7 +803,7 @@
           },
           "RawHtml": {
             "Content": {
-              "Html": "<!-- This widget is configured in the layers section -->\n<div class=\"col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1\">\n    <ul class=\"list-inline text-center\">\n        <li>\n            <a href=\"#\">\n                <span class=\"fa-stack fa-lg\">\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\n                    <i class=\"fa fa-twitter fa-stack-1x fa-inverse\"></i>\n                </span>\n            </a>\n        </li>\n        <li>\n            <a href=\"#\">\n                <span class=\"fa-stack fa-lg\">\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\n                    <i class=\"fa fa-facebook fa-stack-1x fa-inverse\"></i>\n                </span>\n            </a>\n        </li>\n        <li>\n            <a href=\"#\">\n                <span class=\"fa-stack fa-lg\">\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\n                    <i class=\"fa fa-github fa-stack-1x fa-inverse\"></i>\n                </span>\n            </a>\n        </li>\n    </ul>\n    <p class=\"copyright text-muted\">Copyright ©</p></div>"
+              "Html": "<!-- This widget is configured in the layers section -->\r\n        <div class=\"row\">\r\n          <div class=\"col-lg-8 col-md-10 mx-auto\">\r\n            <ul class=\"list-inline text-center\">\r\n              <li class=\"list-inline-item\">\r\n                <a href=\"#\">\r\n                  <span class=\"fa-stack fa-lg\">\r\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\r\n                    <i class=\"fa fa-twitter fa-stack-1x fa-inverse\"></i>\r\n                  </span>\r\n                </a>\r\n              </li>\r\n              <li class=\"list-inline-item\">\r\n                <a href=\"#\">\r\n                  <span class=\"fa-stack fa-lg\">\r\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\r\n                    <i class=\"fa fa-facebook fa-stack-1x fa-inverse\"></i>\r\n                  </span>\r\n                </a>\r\n              </li>\r\n              <li class=\"list-inline-item\">\r\n                <a href=\"#\">\r\n                  <span class=\"fa-stack fa-lg\">\r\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\r\n                    <i class=\"fa fa-github fa-stack-1x fa-inverse\"></i>\r\n                  </span>\r\n                </a>\r\n              </li>\r\n            </ul>\r\n            <p class=\"copyright text-muted\">Copyright &copy; Your Website 2018</p>\r\n          </div>\r\n        </div>"
             }
           }
         }
