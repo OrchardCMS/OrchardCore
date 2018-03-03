@@ -25,7 +25,7 @@ namespace OrchardCore.Alias.Liquid
             {
                 return new LiquidPropertyAccessor(async alias =>
                 {
-                    var aliasPartIndex = _session.Query<ContentItem, AliasPartIndex>(x => x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync().GetAwaiter().GetResult();
+                    var aliasPartIndex = await _session.Query<ContentItem, AliasPartIndex>(x => x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync();
                     var contentItemId = aliasPartIndex?.ContentItemId;
 
                     if (contentItemId == null)
