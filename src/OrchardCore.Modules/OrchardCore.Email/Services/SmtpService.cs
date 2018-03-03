@@ -14,7 +14,7 @@ namespace OrchardCore.Email.Services
         private readonly ILogger<SmtpService> _logger;
 
         public SmtpService(
-            IOptions<SmtpSettings> options, 
+            IOptions<SmtpSettings> options,
             ILogger<SmtpService> logger,
             IStringLocalizer<SmtpService> S
             )
@@ -56,29 +56,43 @@ namespace OrchardCore.Email.Services
 
         private SmtpClient GetClient()
         {
-            if (String.IsNullOrWhiteSpace(_options.Host))
+            var smtp = new SmtpClient()
             {
-                return new SmtpClient();
-            }
-
-            var smtp = new SmtpClient(_options.Host, _options.Port)
-            {
-                EnableSsl = _options.EnableSsl,
-                DeliveryMethod = SmtpDeliveryMethod.Network
+                DeliveryMethod = _options.DeliveryMethod
             };
-
-            smtp.UseDefaultCredentials = _options.RequireCredentials && _options.UseDefaultCredentials;
-
-            if (_options.RequireCredentials)
+            switch (smtp.DeliveryMethod)
             {
-                if (_options.UseDefaultCredentials)
-                {
-                    smtp.UseDefaultCredentials = true;
-                }
-                else if (!String.IsNullOrWhiteSpace(_options.UserName))
-                {
-                    smtp.Credentials = new NetworkCredential(_options.UserName, _options.Password);
-                }
+                case SmtpDeliveryMethod.Network:
+                    smtp.Host = _options.Host;
+                    smtp.Port = _options.Port;
+                    smtp.EnableSsl = _options.EnableSsl;
+
+                    smtp.UseDefaultCredentials = _options.RequireCredentials && _options.UseDefaultCredentials;
+
+                    if (_options.RequireCredentials)
+                    {
+                        if (_options.UseDefaultCredentials)
+                        {
+                            smtp.UseDefaultCredentials = true;
+                        }
+                        else if (!String.IsNullOrWhiteSpace(_options.UserName))
+                        {
+                            smtp.Credentials = new NetworkCredential(_options.UserName, _options.Password);
+                        }
+                    }
+
+                    break;
+
+                case SmtpDeliveryMethod.PickupDirectoryFromIis:
+                    // Nothing to configure
+                    break;
+
+                case SmtpDeliveryMethod.SpecifiedPickupDirectory:
+                    smtp.PickupDirectoryLocation = _options.PickupDirectoryLocation;
+                    break;
+
+                default:
+                    throw new NotSupportedException($"The '{smtp.DeliveryMethod}' delivery method is not supported."); ;
             }
 
             return smtp;
