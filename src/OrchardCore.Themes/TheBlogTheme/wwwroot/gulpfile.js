@@ -27,6 +27,14 @@ gulp.task('vendor', function() {
     ])
     .pipe(gulp.dest('./vendor/bootstrap'))
 
+  gulp.src([
+    './node_modules/bootstrap/scss/**/*',
+    '!./node_modules/bootstrap/scss/bootstrap-grid*',
+    '!./node_modules/bootstrap/scss/bootstrap-reboot*'
+   ])
+   .pipe(gulp.dest('./vendor/bootstrap/scss'))
+
+
   // Font Awesome
   gulp.src([
       './node_modules/font-awesome/**/*',
