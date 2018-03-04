@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Recipes.Models
 {
@@ -8,5 +8,6 @@ namespace OrchardCore.Recipes.Models
         public object Environment { get; set; }
         public string Name { get; set; }
         public JObject Step { get; set; }
+        public RecipeDescriptor RecipeDescriptor { get; set; }
     }
 }

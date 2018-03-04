@@ -43,3 +43,12 @@ var scriptingManager = serviceProvider.GetService<IScriptingManager>();
 var globalMethodProvider = new MyGlobalMethodProvider();
 scriptingManager.GlobalMethodProviders.Add(globalMethodProvider);
 ```
+
+## File
+
+The File scripting engine provides methods to read file contents.
+
+| Name | Example | Description |
+| ---- | ---- | -------- |
+| `text` | `file:raw('../wwwroot/template.html')` | Returns the content of a text file. |
+| `base64` | `file:base64('../wwwroot/image.jpg')` | Returns the base64 encoded content of a file. |
