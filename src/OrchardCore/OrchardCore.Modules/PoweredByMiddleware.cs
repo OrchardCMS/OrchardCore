@@ -25,7 +25,7 @@ namespace OrchardCore.Modules
         {
             if (_options.Enabled)
             {
-                httpContext.Response.Headers[headerName] = headerValue;
+                httpContext.Response.Headers[_options.HeaderName] = _options.HeaderValue;
             }
             
             return _next.Invoke(httpContext);
