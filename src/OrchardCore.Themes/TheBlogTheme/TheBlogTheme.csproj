@@ -5,6 +5,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\node_modules\**" />
+    <Compile Remove="wwwroot\scss\**" />
+    <Compile Remove="wwwroot\vendor\bootstrap\css\**" />
+    <EmbeddedResource Remove="wwwroot\node_modules\**" />
+    <EmbeddedResource Remove="wwwroot\scss\**" />
+    <EmbeddedResource Remove="wwwroot\vendor\bootstrap\css\**" />
+    <None Remove="wwwroot\node_modules\**" />
+    <None Remove="wwwroot\scss\**" />
+    <None Remove="wwwroot\vendor\bootstrap\css\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
@@ -17,7 +29,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\css\" />
+    <EmbeddedResource Remove="wwwroot\about.html" />
+    <EmbeddedResource Remove="wwwroot\contact.html" />
+    <EmbeddedResource Remove="wwwroot\css\clean-blog.css" />
+    <EmbeddedResource Remove="wwwroot\css\clean-blog.min.css" />
+    <EmbeddedResource Remove="wwwroot\gulpfile.js" />
+    <EmbeddedResource Remove="wwwroot\index.html" />
+    <EmbeddedResource Remove="wwwroot\package-lock.json" />
+    <EmbeddedResource Remove="wwwroot\package.json" />
+    <EmbeddedResource Remove="wwwroot\post.html" />
+    <EmbeddedResource Remove="wwwroot\README.md" />
   </ItemGroup>
 
 </Project>
