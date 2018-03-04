@@ -21,32 +21,14 @@ namespace OrchardCore.Modules
             _options = options;
         }
 
-        public async Task Invoke(HttpContext httpContext)
+        public Task Invoke(HttpContext httpContext)
         {
             if (_options.Enabled)
-                AddHeader(httpContext, _options.HeaderName, _options.HeaderValue);
-            await _next.Invoke(httpContext);
-        }
-
-        /// <summary>
-        /// Adds a delegate to responses OnStarting event in order to add
-        /// a header with <paramref name="headerName"/> and value <paramref name="headerValue"/>
-        /// </summary>
-        /// <param name="httpContext">The Http Context</param>
-        /// <param name="headerName">Header name</param>
-        /// <param name="headerValue">Header value</param>
-        private static void AddHeader(HttpContext httpContext, string headerName, string headerValue)
-        {
-            httpContext.Response.OnStarting(() =>
             {
-                var headers = httpContext.Response.Headers;
-
-                if (!headers.ContainsKey(headerName))
-                    headers.Add(headerName, headerValue);
-                else headers.Append(headerName, headerValue);
-
-                return Task.CompletedTask;
-            });
+                httpContext.Response.Headers[headerName] = headerValue;
+            }
+            
+            return _next.Invoke(httpContext);
         }
     }
     
