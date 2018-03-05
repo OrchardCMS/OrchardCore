@@ -571,11 +571,29 @@
       "ContentParts": [
         {
           "Name": "BlogPost",
-          "Settings": {}
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Subtitle",
+              "Settings": {
+                "DisplayName": "Subtitle"
+              }
+            }
+          ]
         },
         {
           "Name": "Article",
-          "Settings": {}
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Subtitle",
+              "Settings": {
+                "DisplayName": "Subtitle"
+              }
+            }
+          ]
         },
         {
           "Name": "Blockquote",
@@ -767,6 +785,11 @@
           },
           "AutoroutePart": {
             "Path": "blog/post-1"
+          },
+          "BlogPost": {
+            "Subtitle": {
+              "Text": "Problems look mighty small from 150 miles up"
+            }
           }
         },
         {
@@ -785,6 +808,11 @@
           },
           "TitlePart": {
             "Title": "About"
+          },
+          "Article": {
+            "Subtitle": {
+              "Text": "This is what I do."
+            }
           }
         },
         {
@@ -795,7 +823,7 @@
           "Owner": "[js: parameters('AdminUsername')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LayerMetadata": {
-            "Title": "Copyright",
+            "Title": "Footer",
             "Layer": "Always",
             "Zone": "Footer",
             "RenderTitle": false,
@@ -803,7 +831,7 @@
           },
           "RawHtml": {
             "Content": {
-              "Html": "<!-- This widget is configured in the layers section -->\r\n        <div class=\"row\">\r\n          <div class=\"col-lg-8 col-md-10 mx-auto\">\r\n            <ul class=\"list-inline text-center\">\r\n              <li class=\"list-inline-item\">\r\n                <a href=\"#\">\r\n                  <span class=\"fa-stack fa-lg\">\r\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\r\n                    <i class=\"fa fa-twitter fa-stack-1x fa-inverse\"></i>\r\n                  </span>\r\n                </a>\r\n              </li>\r\n              <li class=\"list-inline-item\">\r\n                <a href=\"#\">\r\n                  <span class=\"fa-stack fa-lg\">\r\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\r\n                    <i class=\"fa fa-facebook fa-stack-1x fa-inverse\"></i>\r\n                  </span>\r\n                </a>\r\n              </li>\r\n              <li class=\"list-inline-item\">\r\n                <a href=\"#\">\r\n                  <span class=\"fa-stack fa-lg\">\r\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\r\n                    <i class=\"fa fa-github fa-stack-1x fa-inverse\"></i>\r\n                  </span>\r\n                </a>\r\n              </li>\r\n            </ul>\r\n            <p class=\"copyright text-muted\">Copyright &copy; Your Website 2018</p>\r\n          </div>\r\n        </div>"
+              "Html": "[file:text('Snippets/footer.html')]"
             }
           }
         }
