@@ -1,3 +1,4 @@
+using OrchardCore.BackgroundTasks;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Extensions.Manifests;
@@ -19,7 +20,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 modules.WithDefaultFeatures(
                     "OrchardCore.Mvc", "OrchardCore.Settings", "OrchardCore.Setup",
                     "OrchardCore.Recipes", "OrchardCore.Commons");
-            });
+            })
+            .AddHostedBackgroundService();
 
             return services;
         }

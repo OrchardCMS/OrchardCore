@@ -1,18 +1,14 @@
-﻿using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.BackgroundTasks
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddBackgroundTasks(this IServiceCollection services)
+        public static IServiceCollection AddHostedBackgroundService(this IServiceCollection services)
         {
-            services.TryAddSingleton<IBackgroundTaskService, BackgroundTaskService>();
-
-            services.AddScoped<BackgroundTasksStarter>();
-            services.AddScoped<IModularTenantEvents>(sp => sp.GetRequiredService<BackgroundTasksStarter>());
-
+            services.TryAddSingleton<IHostedService, HostedBackgroundService>();
             return services;
         }
     }
