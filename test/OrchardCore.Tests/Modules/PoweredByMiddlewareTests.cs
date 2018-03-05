@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using Moq;
 using OrchardCore.Modules;
 using Xunit;
@@ -16,12 +17,10 @@ namespace OrchardCore.Tests.Modules
         {
             // Arrange
             string key = "X-Powered-By", value = "OrchardCore";
+            var headersArray = new Dictionary<string, StringValues>() { { key, string.Empty } };
+            var headersDic = new HeaderDictionary(headersArray);
             var httpResponseMock = new Mock<HttpResponse>();
-            httpResponseMock.Setup(r => r.Headers.Add(key, value));
-
-            Func<Task> dueTask = null;
-            httpResponseMock.Setup(r => r.OnStarting(It.IsAny<Func<Task>>()))
-                            .Callback<Func<Task>>((f) => dueTask = f);
+            httpResponseMock.SetupGet(r => r.Headers).Returns(headersDic);
 
             var httpContextMock = new Mock<HttpContext>();
             httpContextMock.Setup(c => c.Response).Returns(httpResponseMock.Object);
@@ -30,15 +29,15 @@ namespace OrchardCore.Tests.Modules
             optionsMock.SetupGet(o => o.Enabled).Returns(true);
             optionsMock.SetupGet(o => o.HeaderName).Returns(key);
             optionsMock.SetupGet(o => o.HeaderValue).Returns(value);
-            RequestDelegate requestDelegate = async (context) => await dueTask();
+            RequestDelegate requestDelegate = (context) => Task.CompletedTask;
             var middleware = new PoweredByMiddleware(next: requestDelegate, options: optionsMock.Object);
 
             // Act
             await middleware.Invoke(httpContextMock.Object);
 
             // Assert 
-            Assert.NotNull(dueTask);
-            httpResponseMock.Verify(r => r.Headers.Add(key, value), Times.Once);
+            Assert.Equal(value, headersArray[key]);
+            httpResponseMock.Verify(r => r.Headers, Times.Once);
         }
 
         [Fact]
