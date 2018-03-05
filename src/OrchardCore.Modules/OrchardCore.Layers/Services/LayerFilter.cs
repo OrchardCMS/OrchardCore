@@ -70,7 +70,7 @@ namespace OrchardCore.Layers.Services
 				var updater = _modelUpdaterAccessor.ModelUpdater;
 
 				var engine = _scriptingManager.GetScriptingEngine("js");
-				var scope = engine.CreateScope(_scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), _serviceProvider);
+				var scope = engine.CreateScope(_scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), _serviceProvider, null, null);
 
 				var layersCache = new Dictionary<string, bool>();
 

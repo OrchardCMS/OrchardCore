@@ -9,13 +9,14 @@ p {
 }
 
 a {
-  color: $theme-primary;
-  &.active,
-  &:active,
-  &:focus,
+  color: $primary;
   &:hover {
-    color: darken($theme-primary, 10%);
+    color: darken($primary, 10%);
   }
+}
+
+.text-primary {
+  color: $primary !important;
 }
 
 h1,
@@ -50,14 +51,41 @@ section {
   }
 }
 
+// Button Styles
+.btn {
+  @include heading-font;
+  font-weight: 700;
+}
+
+.btn-xl {
+  font-size: 18px;
+  padding: 20px 40px;
+}
+
+.btn-primary {
+  background-color: $primary;
+  border-color: $primary;
+  &:active,
+  &:focus,
+  &:hover {
+    background-color: darken($primary, 7.5%) !important;
+    border-color: darken($primary, 7.5%) !important;
+    color: white;
+  }
+  &:active,
+  &:focus {
+    box-shadow: 0 0 0 0.2rem rgba(254, 209, 55,.5) !important;
+  }
+}
+
 // Highlight color customization
 ::-moz-selection {
-  background: $theme-primary;
+  background: $primary;
   text-shadow: none;
 }
 
 ::selection {
-  background: $theme-primary;
+  background: $primary;
   text-shadow: none;
 }
 
@@ -67,8 +95,4 @@ img::selection {
 
 img::-moz-selection {
   background: transparent;
-}
-
-body {
-  -webkit-tap-highlight-color: $theme-primary;
 }

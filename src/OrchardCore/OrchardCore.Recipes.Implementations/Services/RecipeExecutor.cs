@@ -96,7 +96,8 @@ namespace OrchardCore.Recipes.Services
                                                 Name = child.Value<string>("name"),
                                                 Step = child,
                                                 ExecutionId = executionId,
-                                                Environment = environment
+                                                Environment = environment,
+                                                RecipeDescriptor = recipeDescriptor
                                             };
 
                                             var stepResult = new RecipeStepResult { StepName = recipeStep.Name };
@@ -216,7 +217,7 @@ namespace OrchardCore.Recipes.Services
         /// <summary>
         /// Traverse all the nodes of the recipe steps and replaces their value if they are scripted.
         /// </summary>
-        private void EvaluateScriptNodes(RecipeExecutionContext recipeStep, IScriptingManager scriptingManager)
+        private void EvaluateScriptNodes(RecipeExecutionContext context, IScriptingManager scriptingManager)
         {
             if (_variablesMethodProvider != null)
             {
@@ -229,13 +230,13 @@ namespace OrchardCore.Recipes.Services
                 throw new Exception(T["Recipe cancelled, application is restarting"]);
             }
 
-            EvaluateJsonTree(scriptingManager, recipeStep.Step);
+            EvaluateJsonTree(scriptingManager, context, context.Step);
         }
 
         /// <summary>
         /// Traverse all the nodes of the json document and replaces their value if they are scripted.
         /// </summary>
-        private void EvaluateJsonTree(IScriptingManager scriptingManager, JToken node)
+        private void EvaluateJsonTree(IScriptingManager scriptingManager, RecipeExecutionContext context, JToken node)
         {
             switch (node.Type)
             {
@@ -243,13 +244,13 @@ namespace OrchardCore.Recipes.Services
                     var array = (JArray)node;
                     for (var i=0; i < array.Count; i++)
                     {
-                        EvaluateJsonTree(scriptingManager, array[i]);
+                        EvaluateJsonTree(scriptingManager, context, array[i]);
                     }
                     break;
                 case JTokenType.Object:
                     foreach (var property in (JObject)node)
                     {
-                        EvaluateJsonTree(scriptingManager, property.Value);
+                        EvaluateJsonTree(scriptingManager, context, property.Value);
                     }
                     break;
 
@@ -261,7 +262,7 @@ namespace OrchardCore.Recipes.Services
                     while (value.StartsWith("[") && value.EndsWith("]"))
                     {
                         value = value.Trim('[', ']');
-                        value = (scriptingManager.Evaluate(value) ?? "").ToString();
+                        value = (scriptingManager.Evaluate(value, context.RecipeDescriptor.FileProvider, context.RecipeDescriptor.BasePath, null) ?? "").ToString();
                         ((JValue)node).Value = value;
                     }
                     break;
