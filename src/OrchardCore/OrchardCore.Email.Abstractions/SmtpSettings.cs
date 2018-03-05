@@ -1,7 +1,9 @@
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mail;
+using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Email
 {
@@ -27,12 +29,14 @@ namespace OrchardCore.Email
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            var S = validationContext.GetService<IStringLocalizer<SmtpSettings>>();
+
             switch (DeliveryMethod)
             {
                 case SmtpDeliveryMethod.Network:
                     if (String.IsNullOrEmpty(Host))
                     {
-                        yield return new ValidationResult("The Host name field is required.", new[] { nameof(Host) });
+                        yield return new ValidationResult(S["The {0} field is required.", "Host name"], new[] { nameof(Host) });
                     }
                     break;
                 case SmtpDeliveryMethod.PickupDirectoryFromIis:
@@ -40,11 +44,11 @@ namespace OrchardCore.Email
                 case SmtpDeliveryMethod.SpecifiedPickupDirectory:
                     if (String.IsNullOrEmpty(PickupDirectoryLocation))
                     {
-                        yield return new ValidationResult("The Pickup directory location field is required.", new[] { nameof(PickupDirectoryLocation) });
+                        yield return new ValidationResult(S["The {0} field is required.", "Pickup directory location"], new[] { nameof(PickupDirectoryLocation) });
                     }
                     break;
                 default:
-                    throw new NotSupportedException($"The '{DeliveryMethod}' delivery method is not supported.");
+                    throw new NotSupportedException(S["The '{0}' delivery method is not supported.", DeliveryMethod]);
             }
         }
     }
