@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.Environment.Extensions.Manifests
@@ -8,7 +7,6 @@ namespace OrchardCore.Environment.Extensions.Manifests
     public class ManifestInfo : IManifestInfo
     {
         private readonly ModuleAttribute _moduleInfo;
-        private Lazy<IEnumerable<string>> _tags;
         private Lazy<Version> _version;
 
         public ManifestInfo
@@ -17,7 +15,6 @@ namespace OrchardCore.Environment.Extensions.Manifests
         )
         {
             _moduleInfo = moduleInfo;
-            _tags = new Lazy<IEnumerable<string>>(ParseTags);
             _version = new Lazy<Version>(ParseVersion);
         }
 
@@ -28,20 +25,8 @@ namespace OrchardCore.Environment.Extensions.Manifests
         public string Author => _moduleInfo.Author;
         public string Website => _moduleInfo.Website;
         public Version Version => _version.Value;
-        public IEnumerable<string> Tags => _tags.Value;
+        public IEnumerable<string> Tags => _moduleInfo.Tags;
         public ModuleAttribute ModuleInfo => _moduleInfo;
-
-        private IEnumerable<string> ParseTags()
-        {
-            var tags = _moduleInfo.Tags;
-
-            if (string.IsNullOrWhiteSpace(tags))
-            {
-                return Enumerable.Empty<string>();
-            }
-
-            return tags.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
-        }
 
         private Version ParseVersion()
         {

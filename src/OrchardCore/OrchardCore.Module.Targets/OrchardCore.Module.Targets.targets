@@ -53,7 +53,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleMarkerAttribute" />
+      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleMarkerAttribute">
+        <_Parameter1>$(MSBuildProjectName)</_Parameter1>
+        <_Parameter2>$(ModuleType)</_Parameter2>
+      </AssemblyAttribute>
       <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleAssetAttribute">
         <_Parameter1>%(ModuleAssets.Identity)</_Parameter1>
       </AssemblyAttribute>
