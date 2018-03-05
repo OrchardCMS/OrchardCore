@@ -27,6 +27,8 @@ namespace OrchardCore.Email.Drivers
                 Shape<SmtpSettings>("SmtpSettings_Edit", model =>
                 {
                     model.DefaultSender = section.DefaultSender;
+                    model.DeliveryMethod = section.DeliveryMethod;
+                    model.PickupDirectoryLocation = section.PickupDirectoryLocation;
                     model.Host = section.Host;
                     model.Port = section.Port;
                     model.EnableSsl = section.EnableSsl;
