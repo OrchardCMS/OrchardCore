@@ -21,7 +21,7 @@
     <OAuthValidationPackageVersion>2.0.0-rc2-final</OAuthValidationPackageVersion>
     <OpenIddictVersion>2.0.0-rc2-final</OpenIddictVersion>
     <LuceneNetVersion>4.8.0-beta00005</LuceneNetVersion>
-    <NcrontabVersion>3.3.0</NcrontabVersion>
+    <NCrontabVersion>3.3.0</NCrontabVersion>
   </PropertyGroup>
 
 </Project>

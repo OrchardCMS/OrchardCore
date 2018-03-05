@@ -49,8 +49,11 @@ namespace OrchardCore.BackgroundTasks
 
                     using (var scope = shellContext.EnterServiceScope())
                     {
-                        taskTypes = scope.ServiceProvider.GetServices<IBackgroundTask>().Select(t => t.GetType());
+                        taskTypes = scope.ServiceProvider.GetServices<IBackgroundTask>()
+                            .Select(t => t.GetType());
                     }
+
+                    var tenant = shellContext.Settings.Name;
 
                     foreach (var taskType in taskTypes)
                     {
@@ -66,9 +69,10 @@ namespace OrchardCore.BackgroundTasks
                                 continue;
                             }
 
-                            if (!_schedulers.TryGetValue(shellContext.Settings.Name + taskName, out Scheduler scheduler))
+                            if (!_schedulers.TryGetValue(shellContext.Settings.Name + ':' + taskName,
+                                out Scheduler scheduler))
                             {
-                                _schedulers[shellContext.Settings.Name + taskName] = scheduler = new Scheduler(task);
+                                _schedulers[tenant + ':' + taskName] = scheduler = new Scheduler(task);
                             }
 
                             if (!scheduler.ShouldRun())
@@ -80,16 +84,18 @@ namespace OrchardCore.BackgroundTasks
                             {
                                 if (Logger.IsEnabled(LogLevel.Information))
                                 {
-                                    Logger.LogInformation("Start processing background task \"{0}\" on tenant \"{1}\".",
-                                        shellContext.Settings.Name, taskName);
+                                    Logger.LogInformation(
+                                        "Start processing background task \"{0}\" on tenant \"{1}\".",
+                                        tenant, taskName);
                                 }
 
                                 await task.DoWorkAsync(scope.ServiceProvider, cancellationToken);
 
                                 if (Logger.IsEnabled(LogLevel.Information))
                                 {
-                                    Logger.LogInformation("Finished processing background task \"{0}\" on tenant \"{1}\".",
-                                        shellContext.Settings.Name, taskName);
+                                    Logger.LogInformation(
+                                        "Finished processing background task \"{0}\" on tenant \"{1}\".",
+                                        tenant, taskName);
                                 }
                             }
 
@@ -97,10 +103,16 @@ namespace OrchardCore.BackgroundTasks
                             {
                                 if (Logger.IsEnabled(LogLevel.Error))
                                 {
-                                    Logger.LogError(ex, $"Error while processing background task \"{0}\" on tenant \"{1}\".",
-                                        shellContext.Settings.Name, taskName);
+                                    Logger.LogError(ex,
+                                        $"Error while processing background task \"{0}\" on tenant \"{1}\".",
+                                        tenant, taskName);
                                 }
                             }
+                        }
+
+                        if (shellContext.Released || shellContext.Settings.State != TenantState.Running)
+                        {
+                            break;
                         }
 
                         if (cancellationToken.IsCancellationRequested)
@@ -115,7 +127,7 @@ namespace OrchardCore.BackgroundTasks
                     }
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
+                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
             }
         }
 
