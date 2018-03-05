@@ -97,7 +97,11 @@ namespace OrchardCore.Modules
 
                 AssetPaths = Assets.Select(a => a.ModuleAssetPath).ToArray();
 
-                ModuleInfo = Assembly.GetCustomAttribute<ModuleAttribute>() ??
+                var moduleInfos = Assembly.GetCustomAttributes<ModuleAttribute>();
+
+                ModuleInfo = 
+                    moduleInfos.Where(f => !(f is ModuleMarkerAttribute)).FirstOrDefault() ??
+                    moduleInfos.Where(f => f is ModuleMarkerAttribute).FirstOrDefault() ??
                     new ModuleAttribute { Name = Name };
 
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()

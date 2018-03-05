@@ -6,6 +6,12 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "The OpenID module enables authentication of external apps through OpenID Connect.",
-    Dependencies = "OrchardCore.Authentication, OrchardCore.Users, OrchardCore.Roles, OrchardCore.Settings",
+    Dependencies = new []
+    {
+        "OrchardCore.Authentication",
+        "OrchardCore.Users",
+        "OrchardCore.Roles",
+        "OrchardCore.Settings"
+    },
     Category = "Security"
 )]

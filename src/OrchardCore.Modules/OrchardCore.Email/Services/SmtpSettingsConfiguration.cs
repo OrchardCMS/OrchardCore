@@ -29,6 +29,8 @@ namespace OrchardCore.Email.Services
                 .As<SmtpSettings>();
 
             options.DefaultSender = settings.DefaultSender;
+            options.DeliveryMethod = settings.DeliveryMethod;
+            options.PickupDirectoryLocation = settings.PickupDirectoryLocation;
             options.Host = settings.Host;
             options.Port = settings.Port;
             options.EnableSsl = settings.EnableSsl;
