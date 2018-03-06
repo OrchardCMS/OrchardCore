@@ -50,24 +50,6 @@ namespace OrchardCore.BackgroundTasks
 
                     using (var scope = shellContext.EnterServiceScope())
                     {
-                        if (!shellContext.IsActivated)
-                        {
-                            var tenantEvents = scope.ServiceProvider
-                                .GetServices<IModularTenantEvents>();
-
-                            foreach (var tenantEvent in tenantEvents)
-                            {
-                                tenantEvent.ActivatingAsync().Wait();
-                            }
-
-                            shellContext.IsActivated = true;
-
-                            foreach (var tenantEvent in tenantEvents)
-                            {
-                                tenantEvent.ActivatedAsync().Wait();
-                            }
-                        }
-
                         taskTypes = scope.ServiceProvider.GetServices<IBackgroundTask>()
                             .Select(t => t.GetType());
                     }
@@ -105,6 +87,24 @@ namespace OrchardCore.BackgroundTasks
                                     Logger.LogInformation(
                                         "Start processing background task \"{0}\" on tenant \"{1}\".",
                                         tenant, taskName);
+                                }
+
+                                if (!shellContext.IsActivated)
+                                {
+                                    var tenantEvents = scope.ServiceProvider
+                                        .GetServices<IModularTenantEvents>();
+
+                                    foreach (var tenantEvent in tenantEvents)
+                                    {
+                                        tenantEvent.ActivatingAsync().Wait();
+                                    }
+
+                                    shellContext.IsActivated = true;
+
+                                    foreach (var tenantEvent in tenantEvents)
+                                    {
+                                        tenantEvent.ActivatedAsync().Wait();
+                                    }
                                 }
 
                                 await task.DoWorkAsync(scope.ServiceProvider, cancellationToken);
