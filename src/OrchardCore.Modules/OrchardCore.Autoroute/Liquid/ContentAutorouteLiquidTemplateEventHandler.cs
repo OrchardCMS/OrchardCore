@@ -20,7 +20,7 @@ namespace OrchardCore.Autoroute.Liquid
 
         public Task RenderingAsync(TemplateContext context)
         {
-            context.MemberAccessStrategy.Register<LiquidContentAccessor>("Slug", obj =>
+            context.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Slug", obj =>
             {
                 return new LiquidPropertyAccessor(async alias =>
                 {

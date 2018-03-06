@@ -21,22 +21,22 @@ namespace OrchardCore.Contents.Liquid
         {
             context.LocalScope.SetValue("Content", new LiquidContentAccessor());
             // TODO: change to async/await once https://github.com/sebastienros/fluid/pull/67 is merged
-            context.MemberAccessStrategy.Register<LiquidPropertyAccessor>((obj, name) => obj.GetValueAsync(name).GetAwaiter().GetResult());
+            context.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
 
-            context.MemberAccessStrategy.Register<LiquidContentAccessor>("ContentItemId", obj =>
+            context.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemId", obj =>
             {
                 return new LiquidPropertyAccessor(async contentItemId => FluidValue.Create(await _contentManager.GetAsync(contentItemId)));
             });
 
-            context.MemberAccessStrategy.Register<LiquidContentAccessor>("ContentItemVersionId", obj =>
+            context.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemVersionId", obj =>
             {
                 return new LiquidPropertyAccessor(async contentItemVersionId => FluidValue.Create(await _contentManager.GetVersionAsync(contentItemVersionId)));
             });
 
-            context.MemberAccessStrategy.Register<LiquidContentAccessor>("Latest", obj => new LiquidPropertyAccessor(name => GetContentByAlias(name, true)));
+            context.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Latest", obj => new LiquidPropertyAccessor(name => GetContentByAlias(name, true)));
 
             // TODO: change to async/await once https://github.com/sebastienros/fluid/pull/67 is merged
-            context.MemberAccessStrategy.Register<LiquidContentAccessor>((obj, name) => GetContentByAlias(name).GetAwaiter().GetResult());
+            context.MemberAccessStrategy.Register<LiquidContentAccessor, FluidValue>((obj, name) => GetContentByAlias(name));
 
             return Task.CompletedTask;
         }

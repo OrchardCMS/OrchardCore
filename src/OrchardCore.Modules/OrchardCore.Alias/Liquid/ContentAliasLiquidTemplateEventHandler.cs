@@ -21,7 +21,7 @@ namespace OrchardCore.Alias.Liquid
 
         public Task RenderingAsync(TemplateContext context)
         {
-            context.MemberAccessStrategy.Register<LiquidContentAccessor>("Alias", obj =>
+            context.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Alias", obj =>
             {
                 return new LiquidPropertyAccessor(async alias =>
                 {
