@@ -56,7 +56,9 @@ namespace OrchardCore.Queries
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<ILiquidTemplateEventHandler, QueriesLiquidTemplateEventHandler>();
             services.AddLiquidFilter<QueryFilter>("query");
+            services.AddLiquidFilter<QueryParametersFilter>("add_parameters");
         }
     }
 }
