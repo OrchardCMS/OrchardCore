@@ -8,7 +8,7 @@ Attach this part to a content type to specify custom URLs to your content items.
 
 ## Autoroute Alias
 
-Content items with an Autoroute can be retrieved by URL anywhere you can retrieve content by alias (see exmaple below). The syntax for this is `slug:<URL>`, e.g. `slug:my-blog/my-blog-post`.
+Content items with an Autoroute can be retrieved by URL anywhere you can retrieve content by alias (see example below). The syntax for this is `slug:<URL>`, e.g. `slug:my-blog/my-blog-post`.
 
 ## Liquid
 
