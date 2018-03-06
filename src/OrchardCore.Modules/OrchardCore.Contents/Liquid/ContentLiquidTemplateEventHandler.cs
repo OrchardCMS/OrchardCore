@@ -20,7 +20,6 @@ namespace OrchardCore.Contents.Liquid
         public Task RenderingAsync(TemplateContext context)
         {
             context.LocalScope.SetValue("Content", new LiquidContentAccessor());
-            // TODO: change to async/await once https://github.com/sebastienros/fluid/pull/67 is merged
             context.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
 
             context.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemId", obj =>
@@ -34,8 +33,7 @@ namespace OrchardCore.Contents.Liquid
             });
 
             context.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Latest", obj => new LiquidPropertyAccessor(name => GetContentByAlias(name, true)));
-
-            // TODO: change to async/await once https://github.com/sebastienros/fluid/pull/67 is merged
+            
             context.MemberAccessStrategy.Register<LiquidContentAccessor, FluidValue>((obj, name) => GetContentByAlias(name));
 
             return Task.CompletedTask;
