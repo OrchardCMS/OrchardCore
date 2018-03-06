@@ -20,7 +20,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         static RequestLiquidTemplateEventHandler()
         {
-            TemplateContext.GlobalMemberAccessStrategy.Register<HttpRequest>((request, name) =>
+            TemplateContext.GlobalMemberAccessStrategy.Register<HttpRequest, FluidValue>((request, name) =>
             {
                 switch (name)
                 {
@@ -43,10 +43,10 @@ namespace OrchardCore.DisplayManagement.Liquid
                 }
             });
 
-            TemplateContext.GlobalMemberAccessStrategy.Register<RequestCookieCollection>((cookies, name) => cookies[name]);
-            TemplateContext.GlobalMemberAccessStrategy.Register<QueryCollection>((queries, name) => queries[name].ToArray());
-            TemplateContext.GlobalMemberAccessStrategy.Register<FormCollection>((forms, name) => forms[name].ToArray());
-            TemplateContext.GlobalMemberAccessStrategy.Register<HeaderDictionaryWrapper>((headers, name) => headers.HeaderDictionary[name].ToArray());
+            TemplateContext.GlobalMemberAccessStrategy.Register<RequestCookieCollection, string>((cookies, name) => cookies[name]);
+            TemplateContext.GlobalMemberAccessStrategy.Register<QueryCollection, string[]>((queries, name) => queries[name].ToArray());
+            TemplateContext.GlobalMemberAccessStrategy.Register<FormCollection, string[]>((forms, name) => forms[name].ToArray());
+            TemplateContext.GlobalMemberAccessStrategy.Register<HeaderDictionaryWrapper, string[]>((headers, name) => headers.HeaderDictionary[name].ToArray());
         }
 
         public RequestLiquidTemplateEventHandler(IServiceProvider serviceProvider)
