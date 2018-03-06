@@ -109,7 +109,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                             // generate 'debugging' information to trace which file originated the actual location
                             if (hit)
                             {
-                                var virtualPath = featureDescriptor.Extension.ExtensionFileInfo.PhysicalPath + "/" + featureDescriptor.Extension.Id + "/Placement.info";
+                                var virtualPath = featureDescriptor.Extension.SubPath + "/" + featureDescriptor.Extension.Id + "/Placement.info";
                                 ctx.Source = virtualPath;
                             }
                             return hit;
