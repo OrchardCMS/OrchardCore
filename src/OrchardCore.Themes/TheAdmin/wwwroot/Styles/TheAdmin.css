@@ -6116,10 +6116,10 @@ a.text-dark:hover, a.text-dark:focus {
     .ta-wrapper #ta-left-sidebar ul {
       margin: 0;
       padding: 0; }
-    .ta-wrapper #ta-left-sidebar input[type=checkbox]:checked + label > .chevron > i {
+    .ta-wrapper #ta-left-sidebar input[type=checkbox]:checked + label .chevron {
       transform: rotate(90deg);
       transition-duration: 0.2s; }
-    .ta-wrapper #ta-left-sidebar input[type=checkbox] + label > .chevron > i {
+    .ta-wrapper #ta-left-sidebar input[type=checkbox] + label .chevron {
       transition-duration: 0.2s; }
     .ta-wrapper #ta-left-sidebar input[type=checkbox] {
       position: absolute;
@@ -6154,7 +6154,7 @@ a.text-dark:hover, a.text-dark:focus {
           cursor: pointer; }
     .ta-wrapper #ta-left-sidebar .chevron {
       position: absolute;
-      top: 0;
+      top: 33%;
       left: 100%;
       margin-left: -25px; }
     .ta-wrapper #ta-left-sidebar .icon {
