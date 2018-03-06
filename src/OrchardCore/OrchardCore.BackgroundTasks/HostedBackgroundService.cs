@@ -11,6 +11,7 @@ using NCrontab;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Modules;
 
 namespace OrchardCore.BackgroundTasks
 {
@@ -40,7 +41,7 @@ namespace OrchardCore.BackgroundTasks
 
                 foreach (var shellContext in shellContexts)
                 {
-                    if (shellContext.Settings.State != TenantState.Running)
+                    if (shellContext.Released || shellContext.Settings.State != TenantState.Running)
                     {
                         continue;
                     }
@@ -49,6 +50,24 @@ namespace OrchardCore.BackgroundTasks
 
                     using (var scope = shellContext.EnterServiceScope())
                     {
+                        if (!shellContext.IsActivated)
+                        {
+                            var tenantEvents = scope.ServiceProvider
+                                .GetServices<IModularTenantEvents>();
+
+                            foreach (var tenantEvent in tenantEvents)
+                            {
+                                tenantEvent.ActivatingAsync().Wait();
+                            }
+
+                            shellContext.IsActivated = true;
+
+                            foreach (var tenantEvent in tenantEvents)
+                            {
+                                tenantEvent.ActivatedAsync().Wait();
+                            }
+                        }
+
                         taskTypes = scope.ServiceProvider.GetServices<IBackgroundTask>()
                             .Select(t => t.GetType());
                     }
@@ -69,10 +88,9 @@ namespace OrchardCore.BackgroundTasks
                                 continue;
                             }
 
-                            if (!_schedulers.TryGetValue(shellContext.Settings.Name + ':' + taskName,
-                                out Scheduler scheduler))
+                            if (!_schedulers.TryGetValue(tenant + taskName, out Scheduler scheduler))
                             {
-                                _schedulers[tenant + ':' + taskName] = scheduler = new Scheduler(task);
+                                _schedulers[tenant + taskName] = scheduler = new Scheduler(task);
                             }
 
                             if (!scheduler.ShouldRun())
