@@ -35,9 +35,22 @@ namespace OrchardCore.BackgroundTasks
         {
             cancellationToken.Register(() => Logger.LogDebug($"HostedBackgroundService is stopping."));
 
+            var referenceTime = DateTime.UtcNow;
+
             while (!cancellationToken.IsCancellationRequested)
             {
                 var shellContexts = _shellHost.ListShellContexts() ?? Enumerable.Empty<ShellContext>();
+
+                var tenants = shellContexts.Select(s => s.Settings.Name);
+
+                var schedulersToRemove = _schedulers
+                    .Where(kv => !tenants.Contains(kv.Value.Tenant))
+                    .Select(kv => kv.Key);
+
+                foreach (var schedulerToRemove in schedulersToRemove)
+                {
+                    _schedulers.Remove(schedulerToRemove);
+                }
 
                 foreach (var shellContext in shellContexts)
                 {
@@ -72,7 +85,8 @@ namespace OrchardCore.BackgroundTasks
 
                             if (!_schedulers.TryGetValue(tenant + taskName, out Scheduler scheduler))
                             {
-                                _schedulers[tenant + taskName] = scheduler = new Scheduler(task);
+                                scheduler = new Scheduler(tenant, task, referenceTime);
+                                _schedulers[tenant + taskName] = scheduler;
                             }
 
                             if (!scheduler.ShouldRun())
@@ -91,21 +105,29 @@ namespace OrchardCore.BackgroundTasks
 
                                 if (!shellContext.IsActivated)
                                 {
-                                    var tenantEvents = scope.ServiceProvider
-                                        .GetServices<IModularTenantEvents>();
-
-                                    foreach (var tenantEvent in tenantEvents)
+                                    lock (shellContext)
                                     {
-                                        tenantEvent.ActivatingAsync().Wait();
-                                    }
+                                        if (!shellContext.IsActivated)
+                                        {
+                                            var tenantEvents = scope.ServiceProvider
+                                                .GetServices<IModularTenantEvents>();
 
-                                    shellContext.IsActivated = true;
+                                            foreach (var tenantEvent in tenantEvents)
+                                            {
+                                                tenantEvent.ActivatingAsync().Wait();
+                                            }
 
-                                    foreach (var tenantEvent in tenantEvents)
-                                    {
-                                        tenantEvent.ActivatedAsync().Wait();
+                                            shellContext.IsActivated = true;
+
+                                            foreach (var tenantEvent in tenantEvents)
+                                            {
+                                                tenantEvent.ActivatedAsync().Wait();
+                                            }
+                                        }
                                     }
                                 }
+
+                                shellContext.RequestStarted();
 
                                 await task.DoWorkAsync(scope.ServiceProvider, cancellationToken);
 
@@ -122,8 +144,31 @@ namespace OrchardCore.BackgroundTasks
                                 if (Logger.IsEnabled(LogLevel.Error))
                                 {
                                     Logger.LogError(ex,
-                                        $"Error while processing background task \"{0}\" on tenant \"{1}\".",
+                                        "Error while processing background task \"{0}\" on tenant \"{1}\".",
                                         tenant, taskName);
+                                }
+                            }
+
+                            finally
+                            {
+                                shellContext.RequestEnded();
+
+                                if (shellContext.CanTerminate)
+                                {
+                                    var tenantEvents = scope.ServiceProvider
+                                        .GetServices<IModularTenantEvents>();
+
+                                    foreach (var tenantEvent in tenantEvents)
+                                    {
+                                        await tenantEvent.TerminatingAsync();
+                                    }
+
+                                    foreach (var tenantEvent in tenantEvents.Reverse())
+                                    {
+                                        await tenantEvent.TerminatedAsync();
+                                    }
+
+                                    shellContext.Dispose();
                                 }
                             }
                         }
@@ -151,13 +196,15 @@ namespace OrchardCore.BackgroundTasks
 
         private class Scheduler
         {
-            public Scheduler(IBackgroundTask task)
+            public Scheduler(string tenant, IBackgroundTask task, DateTime startUtc)
             {
+                Tenant = tenant;
                 var attribute = task.GetType().GetCustomAttribute<BackgroundTaskAttribute>();
                 Schedule = attribute?.Schedule ?? "* * * * *";
-                StartUtc = DateTime.UtcNow;
+                StartUtc = startUtc;
             }
 
+            public string Tenant { get; }
             public string Schedule { get; }
             public DateTime StartUtc { get; set; }
 

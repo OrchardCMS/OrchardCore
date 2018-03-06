@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Indexing;
+using OrchardCore.Modules;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Lucene
@@ -70,6 +71,11 @@ namespace OrchardCore.Lucene
             }
 
             IndexingTask[] batch;
+
+            if (_shellSettings?.State != TenantState.Running)
+            {
+                return;
+            }
 
             var shellContext = _shellHost.GetOrCreateShellContext(_shellSettings);
 
@@ -134,7 +140,7 @@ namespace OrchardCore.Lucene
                     _indexingState.Update();
 
                 } 
-            } while (batch.Length == BatchSize);
+            } while (batch.Length == BatchSize && _shellSettings?.State == TenantState.Running);
         }
 
         /// <summary>
