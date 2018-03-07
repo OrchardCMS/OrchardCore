@@ -80,9 +80,9 @@ namespace OrchardCore.Demo.Controllers
         }
 
         [HttpPost]
-        public ActionResult Tag(string tag)
+        public async Task<ActionResult> Tag(string tag)
         {
-            _tagCache.RemoveTag(tag);
+            await _tagCache.RemoveTagAsync(tag);
             return RedirectToAction("Tag", "Home", new { area = "OrchardCore.Demo" });
         }
 
