@@ -28,7 +28,7 @@ namespace OrchardCore.Email.Services
 
         public async Task<SmtpResult> SendAsync(MailMessage message)
         {
-            if(_options?.DefaultSender == null)
+            if (_options?.DefaultSender == null)
             {
                 return SmtpResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
             }
@@ -65,6 +65,7 @@ namespace OrchardCore.Email.Services
             {
                 DeliveryMethod = _options.DeliveryMethod
             };
+            
             switch (smtp.DeliveryMethod)
             {
                 case SmtpDeliveryMethod.Network:
