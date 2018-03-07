@@ -72,12 +72,12 @@ namespace OrchardCore.Lucene
 
             IndexingTask[] batch;
 
-            if (_shellSettings?.State != TenantState.Running)
+            var shellContext = _shellHost.GetOrCreateShellContext(_shellSettings);
+
+            if (shellContext.Released || !shellContext.IsActivated)
             {
                 return;
             }
-
-            var shellContext = _shellHost.GetOrCreateShellContext(_shellSettings);
 
             do
             {
@@ -140,7 +140,7 @@ namespace OrchardCore.Lucene
                     _indexingState.Update();
 
                 } 
-            } while (batch.Length == BatchSize && _shellSettings?.State == TenantState.Running);
+            } while (batch.Length == BatchSize && !shellContext.Released);
         }
 
         /// <summary>

@@ -42,13 +42,15 @@ namespace OrchardCore.Modules
 
                 using (var scope = shellContext.EnterServiceScope())
                 {
-                    if (!shellContext.IsActivated)
+                    if (!shellContext.IsActivated || shellContext.IsActivating)
                     {
                         lock (shellContext)
                         {
                             // The tenant gets activated here
                             if (!shellContext.IsActivated)
                             {
+                                shellContext.IsActivating = true;
+
                                 var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
 
                                 foreach (var tenantEvent in tenantEvents)
@@ -63,6 +65,8 @@ namespace OrchardCore.Modules
                                 {
                                     tenantEvent.ActivatedAsync().Wait();
                                 }
+
+                                shellContext.IsActivating = false;
                             }
                         }
                     }

@@ -27,6 +27,11 @@ namespace OrchardCore.Hosting.ShellBuilders
         public bool IsActivated { get; set; }
 
         /// <summary>
+        /// Whether the shell is activating. 
+        /// </summary>
+        public bool IsActivating { get; set; }
+
+        /// <summary>
         /// Creates a standalone service scope that can be used to resolve local services and
         /// replaces <see cref="HttpContext.RequestServices"/> with it.
         /// </summary>
