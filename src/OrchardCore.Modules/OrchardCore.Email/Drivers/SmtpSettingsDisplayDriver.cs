@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -23,7 +24,8 @@ namespace OrchardCore.Email.Drivers
 
         public override IDisplayResult Edit(SmtpSettings section)
         {
-            return Combine(
+            var shapes = new List<IDisplayResult>
+            {
                 Shape<SmtpSettings>("SmtpSettings_Edit", model =>
                 {
                     model.DefaultSender = section.DefaultSender;
@@ -36,10 +38,15 @@ namespace OrchardCore.Email.Drivers
                     model.UseDefaultCredentials = section.UseDefaultCredentials;
                     model.UserName = section.UserName;
                     model.Password = section.Password;
-                }).Location("Content:5").OnGroup(GroupId),
+                }).Location("Content:5").OnGroup(GroupId)
+            };
 
-                Shape("SmtpSettings_TestButton").Location("Actions").OnGroup(GroupId)
-            );
+            if (section?.DefaultSender != null)
+            {
+                shapes.Add(Shape("SmtpSettings_TestButton").Location("Actions").OnGroup(GroupId));
+            }
+
+            return Combine(shapes);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SmtpSettings section, IUpdateModel updater, string groupId)

@@ -28,6 +28,9 @@ namespace OrchardCore.Email.Services
                 .GetAwaiter().GetResult()
                 .As<SmtpSettings>();
 
+            if (settings == null)
+                return;
+
             options.DefaultSender = settings.DefaultSender;
             options.DeliveryMethod = settings.DeliveryMethod;
             options.PickupDirectoryLocation = settings.PickupDirectoryLocation;

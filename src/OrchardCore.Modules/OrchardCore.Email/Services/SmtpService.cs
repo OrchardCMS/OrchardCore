@@ -28,6 +28,11 @@ namespace OrchardCore.Email.Services
 
         public async Task<SmtpResult> SendAsync(MailMessage message)
         {
+            if(_options?.DefaultSender == null)
+            {
+                return SmtpResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
+            }
+
             if (message.From == null)
             {
                 message.From = new MailAddress(_options.DefaultSender);
