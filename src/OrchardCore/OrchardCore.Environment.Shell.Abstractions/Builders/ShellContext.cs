@@ -15,6 +15,8 @@ namespace OrchardCore.Hosting.ShellBuilders
     {
         private bool _disposed = false;
         private volatile int _refCount = 0;
+        private volatile int _scopeCount = 0;
+        private bool _terminated = false;
         private bool _released = false;
 
         public ShellSettings Settings { get; set; }
@@ -50,7 +52,7 @@ namespace OrchardCore.Hosting.ShellBuilders
                 throw new InvalidOperationException("Can't use EnterServiceScope on a released context");
             }
 
-            return new ServiceScopeWrapper(ServiceProvider.CreateScope());
+            return new ServiceScopeWrapper(this);
         }
 
         /// <summary>
@@ -63,6 +65,11 @@ namespace OrchardCore.Hosting.ShellBuilders
         /// </summary>
         public int ActiveRequests => _refCount;
 
+        /// <summary>
+        /// Returns the number of active scopes on this tenant.
+        /// </summary>
+        public int ActiveScopes => _scopeCount;
+
         public void RequestStarted()
         {
             Interlocked.Increment(ref _refCount);
@@ -71,6 +78,21 @@ namespace OrchardCore.Hosting.ShellBuilders
         public void RequestEnded()
         {
             var refCount = Interlocked.Decrement(ref _refCount);
+        }
+
+        public void ScopeStarted()
+        {
+            Interlocked.Increment(ref _scopeCount);
+        }
+
+        public void ScopeEnded()
+        {
+            Interlocked.Decrement(ref _scopeCount);
+
+            if (_terminated && _scopeCount == 0)
+            {
+                Dispose();
+            }
         }
 
         public bool CanTerminate => _released && _refCount == 0;
@@ -86,6 +108,11 @@ namespace OrchardCore.Hosting.ShellBuilders
             // when the number reached zero.
 
             _released = true;
+        }
+
+        public void Terminate()
+        {
+            _terminated = true;
         }
 
         public void Dispose()
@@ -125,14 +152,18 @@ namespace OrchardCore.Hosting.ShellBuilders
 
         internal class ServiceScopeWrapper : IServiceScope
         {
+            private readonly ShellContext _shellContext;
             private readonly IServiceScope _serviceScope;
             private readonly IServiceProvider _existingServices;
             private readonly HttpContext _httpContext;
 
-            public ServiceScopeWrapper(IServiceScope serviceScope)
+            public ServiceScopeWrapper(ShellContext shellContext)
             {
-                ServiceProvider = serviceScope.ServiceProvider;
-                _serviceScope = serviceScope;
+                shellContext.ScopeStarted();
+                _shellContext = shellContext;
+
+                _serviceScope = shellContext.ServiceProvider.CreateScope();
+                ServiceProvider = _serviceScope.ServiceProvider;
 
                 var httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
 
@@ -150,6 +181,7 @@ namespace OrchardCore.Hosting.ShellBuilders
 
             public void Dispose()
             {
+                _shellContext.ScopeEnded();
                 _httpContext.RequestServices = _existingServices;
                 _serviceScope.Dispose();
             }

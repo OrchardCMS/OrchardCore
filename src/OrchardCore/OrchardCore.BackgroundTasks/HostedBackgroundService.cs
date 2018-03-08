@@ -11,7 +11,6 @@ using NCrontab;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
-using OrchardCore.Modules;
 
 namespace OrchardCore.BackgroundTasks
 {
@@ -41,25 +40,32 @@ namespace OrchardCore.BackgroundTasks
             {
                 var shellContexts = GetShellContexts();
 
+                CleanSchedulers();
+
                 foreach (var shellContext in shellContexts)
                 {
-                    if (shellContext.Released || shellContext.Settings?.State != TenantState.Running)
+                    if (!shellContext.IsRunning())
                     {
                         continue;
                     }
 
-                    var tenant = shellContext.Settings.Name;
-
                     IEnumerable<Type> taskTypes;
-
                     using (var scope = shellContext.EnterServiceScope())
                     {
                         taskTypes = scope.GetBackgroundTaskTypes();
                     }
 
+                    var tenant = shellContext.Settings.Name;
+
                     foreach (var taskType in taskTypes)
                     {
                         var taskName = taskType.FullName;
+
+
+                        if (shellContext.Released)
+                        {
+                            break;
+                        }
 
                         using (var scope = shellContext.EnterServiceScope())
                         {
@@ -90,9 +96,6 @@ namespace OrchardCore.BackgroundTasks
                                         tenant, taskName);
                                 }
 
-                                shellContext.EnsureActivated(scope);
-                                shellContext.RequestStarted();
-
                                 await task.DoWorkAsync(scope.ServiceProvider, cancellationToken);
 
                                 if (Logger.IsEnabled(LogLevel.Information))
@@ -112,22 +115,6 @@ namespace OrchardCore.BackgroundTasks
                                         tenant, taskName);
                                 }
                             }
-
-                            finally
-                            {
-                                shellContext.RequestEnded();
-
-                                if (shellContext.CanTerminate)
-                                {
-                                    await shellContext.TerminateAsync(scope);
-                                    shellContext.Dispose();
-                                }
-                            }
-                        }
-
-                        if (shellContext.Released)
-                        {
-                            break;
                         }
 
                         if (cancellationToken.IsCancellationRequested)
@@ -148,18 +135,12 @@ namespace OrchardCore.BackgroundTasks
 
         private IEnumerable<ShellContext> GetShellContexts()
         {
-            var shellContexts = _shellHost.ListShellContexts()?
-                .OrderBy(x => x.Settings.Name) ?? Enumerable.Empty<ShellContext>();
-
-            var tenants = shellContexts.Select(s => s.Settings.Name);
-            CleanSchedulers(tenants);
-
-            return shellContexts;
+            return _shellHost.ListShellContexts()?.OrderBy(x => x.Settings.Name) ?? Enumerable.Empty<ShellContext>();
         }
 
-        private void CleanSchedulers(IEnumerable<string> tenants)
+        private void CleanSchedulers()
         {
-            var schedulers = _schedulers.Where(kv => !tenants.Contains(kv.Value.Tenant)).Select(kv => kv.Key);
+            var schedulers = _schedulers.Where(kv => !kv.Value.ShellContext.IsRunning()).Select(kv => kv.Key);
 
             foreach (var scheduler in schedulers)
             {
@@ -169,15 +150,15 @@ namespace OrchardCore.BackgroundTasks
 
         private class Scheduler
         {
-            public Scheduler(string tenant, IBackgroundTask task, DateTime startUtc)
+            public Scheduler(ShellContext shellContext, IBackgroundTask task, DateTime startUtc)
             {
-                Tenant = tenant;
+                ShellContext = shellContext;
                 var attribute = task.GetType().GetCustomAttribute<BackgroundTaskAttribute>();
                 Schedule = attribute?.Schedule ?? "* * * * *";
                 StartUtc = startUtc;
             }
 
-            public string Tenant { get; }
+            public ShellContext ShellContext { get; }
             public string Schedule { get; }
             public DateTime StartUtc { get; set; }
 
@@ -209,49 +190,9 @@ namespace OrchardCore.BackgroundTasks
 
     internal static class ShellContextExtensions
     {
-        public static void EnsureActivated(this ShellContext shellContext, IServiceScope scope)
+        public static bool IsRunning(this ShellContext shellContext)
         {
-            if (!shellContext.IsActivated || shellContext.IsActivating)
-            {
-                lock (shellContext)
-                {
-                    if (!shellContext.IsActivated)
-                    {
-                        shellContext.IsActivating = true;
-
-                        var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-
-                        foreach (var tenantEvent in tenantEvents)
-                        {
-                            tenantEvent.ActivatingAsync().Wait();
-                        }
-
-                        shellContext.IsActivated = true;
-
-                        foreach (var tenantEvent in tenantEvents)
-                        {
-                            tenantEvent.ActivatedAsync().Wait();
-                        }
-
-                        shellContext.IsActivating = false;
-                    }
-                }
-            }
-        }
-
-        public static async Task TerminateAsync(this ShellContext shellContext, IServiceScope scope)
-        {
-            var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-
-            foreach (var tenantEvent in tenantEvents)
-            {
-                await tenantEvent.TerminatingAsync();
-            }
-
-            foreach (var tenantEvent in tenantEvents.Reverse())
-            {
-                await tenantEvent.TerminatedAsync();
-            }
+            return !shellContext.Released && shellContext.Settings?.State == TenantState.Running;
         }
     }
 }

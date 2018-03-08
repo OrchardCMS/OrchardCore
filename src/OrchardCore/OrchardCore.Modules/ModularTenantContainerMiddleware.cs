@@ -96,7 +96,7 @@ namespace OrchardCore.Modules
                                 await tenantEvent.TerminatedAsync();
                             }
 
-                            shellContext.Dispose();
+                            shellContext.Terminate();
                         }
                     }
                 }
