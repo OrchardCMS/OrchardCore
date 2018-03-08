@@ -47,6 +47,11 @@ namespace OrchardCore.Hosting.ShellBuilders
                 throw new InvalidOperationException("Can't use EnterServiceScope on a disposed context");
             }
 
+            if (_terminated)
+            {
+                throw new InvalidOperationException("Can't use EnterServiceScope on a terminated context");
+            }
+
             if (_released)
             {
                 throw new InvalidOperationException("Can't use EnterServiceScope on a released context");
@@ -160,8 +165,8 @@ namespace OrchardCore.Hosting.ShellBuilders
             public ServiceScopeWrapper(ShellContext shellContext)
             {
                 shellContext.ScopeStarted();
-                _shellContext = shellContext;
 
+                _shellContext = shellContext;
                 _serviceScope = shellContext.ServiceProvider.CreateScope();
                 ServiceProvider = _serviceScope.ServiceProvider;
 
@@ -181,9 +186,10 @@ namespace OrchardCore.Hosting.ShellBuilders
 
             public void Dispose()
             {
-                _shellContext.ScopeEnded();
                 _httpContext.RequestServices = _existingServices;
                 _serviceScope.Dispose();
+
+                _shellContext.ScopeEnded();
             }
         }
     }

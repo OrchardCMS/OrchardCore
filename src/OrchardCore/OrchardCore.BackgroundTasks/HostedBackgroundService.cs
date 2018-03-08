@@ -79,7 +79,7 @@ namespace OrchardCore.BackgroundTasks
                             if (!_schedulers.TryGetValue(tenant + taskName, out Scheduler scheduler))
                             {
                                 _schedulers[tenant + taskName] = scheduler =
-                                    new Scheduler(tenant, task, referenceTime);
+                                    new Scheduler(shellContext, task, referenceTime);
                             }
 
                             if (!scheduler.ShouldRun())
@@ -95,6 +95,8 @@ namespace OrchardCore.BackgroundTasks
                                         "Start processing background task \"{0}\" on tenant \"{1}\".",
                                         tenant, taskName);
                                 }
+
+                                await Task.Delay(TimeSpan.FromSeconds(1));
 
                                 await task.DoWorkAsync(scope.ServiceProvider, cancellationToken);
 
