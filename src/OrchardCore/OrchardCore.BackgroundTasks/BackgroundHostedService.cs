@@ -14,7 +14,7 @@ using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.BackgroundTasks
 {
-    public class HostedBackgroundService : BackgroundService
+    public class BackgroundHostedService : BackgroundService
     {
         private static TimeSpan PeriodTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
@@ -22,9 +22,9 @@ namespace OrchardCore.BackgroundTasks
 
         private readonly IShellHost _shellHost;
 
-        public HostedBackgroundService(
+        public BackgroundHostedService(
             IShellHost shellHost,
-            ILogger<HostedBackgroundService> logger)
+            ILogger<BackgroundHostedService> logger)
         {
             _shellHost = shellHost;
             Logger = logger;
@@ -34,7 +34,7 @@ namespace OrchardCore.BackgroundTasks
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            cancellationToken.Register(() => Logger.LogDebug($"HostedBackgroundService is stopping."));
+            cancellationToken.Register(() => Logger.LogDebug($"BackgroundHostedService is stopping."));
 
             var startedUtc = DateTime.UtcNow;
 
@@ -54,6 +54,7 @@ namespace OrchardCore.BackgroundTasks
                     }
 
                     IEnumerable<Type> taskTypes;
+
                     using (var scope = shellContext.EnterServiceScope())
                     {
                         taskTypes = scope.GetBackgroundTaskTypes();

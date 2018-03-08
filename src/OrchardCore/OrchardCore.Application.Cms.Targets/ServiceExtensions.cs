@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     "OrchardCore.Mvc", "OrchardCore.Settings", "OrchardCore.Setup",
                     "OrchardCore.Recipes", "OrchardCore.Commons");
             })
-            .AddHostedBackgroundService();
+            .AddBackgroundHostedService();
 
             return services;
         }
