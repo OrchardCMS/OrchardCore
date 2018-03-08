@@ -88,13 +88,15 @@ namespace OrchardCore.Hosting.ShellBuilders
         {
             Interlocked.Decrement(ref _scopeCount);
 
-            if (_released && _refCount == 0 && _scopeCount == 0)
+            if (CanDispose)
             {
                 Dispose();
             }
         }
 
         public bool CanTerminate => _released && _refCount == 0;
+
+        public bool CanDispose => CanTerminate && _scopeCount == 0;
 
         /// <summary>
         /// Mark the <see cref="ShellContext"/> has a candidate to be released.

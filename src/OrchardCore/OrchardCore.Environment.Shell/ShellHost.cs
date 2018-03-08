@@ -231,6 +231,11 @@ namespace OrchardCore.Environment.Shell
             if (_shellContexts.TryRemove(tenant, out var context))
             {
                 context.Release();
+
+                if (context.CanDispose)
+                {
+                    context.Dispose();
+                }
             }
 
             return Task.CompletedTask;
@@ -243,7 +248,13 @@ namespace OrchardCore.Environment.Shell
             if (_shellContexts.TryRemove(settings.Name, out context))
             {
                 _runningShellTable.Remove(settings);
+
                 context.Release();
+
+                if (context.CanDispose)
+                {
+                    context.Dispose();
+                }
             }
 
             GetOrCreateShellContext(settings);
