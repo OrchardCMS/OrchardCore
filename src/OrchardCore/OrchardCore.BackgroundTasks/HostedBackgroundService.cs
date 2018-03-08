@@ -16,8 +16,8 @@ namespace OrchardCore.BackgroundTasks
 {
     public class HostedBackgroundService : BackgroundService
     {
-        private static TimeSpan PoollingTime = TimeSpan.FromMinutes(1);
-        private static TimeSpan RelaxProcessTime = TimeSpan.FromSeconds(15);
+        private static TimeSpan PeriodTime = TimeSpan.FromMinutes(1);
+        private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
         private Dictionary<string, Scheduler> _schedulers = new Dictionary<string, Scheduler>();
 
         private readonly IShellHost _shellHost;
@@ -40,7 +40,7 @@ namespace OrchardCore.BackgroundTasks
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                var poollingDelay = Task.Delay(PoollingTime, cancellationToken);
+                var periodDelay = Task.Delay(PeriodTime, cancellationToken);
 
                 CleanSchedulers();
 
@@ -133,8 +133,8 @@ namespace OrchardCore.BackgroundTasks
                 }
 
                 startedUtc = DateTime.UtcNow;
-                await Task.Delay(RelaxProcessTime, cancellationToken);
-                await poollingDelay;
+                await Task.Delay(MinIdleTime, cancellationToken);
+                await periodDelay;
             }
         }
 
