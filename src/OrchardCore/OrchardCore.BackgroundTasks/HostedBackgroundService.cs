@@ -38,13 +38,13 @@ namespace OrchardCore.BackgroundTasks
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                var shellContexts = GetShellContexts();
-
                 CleanSchedulers();
+
+                var shellContexts = GetRunningShellContexts();
 
                 foreach (var shellContext in shellContexts)
                 {
-                    if (!shellContext.IsRunning())
+                    if (shellContext.Released)
                     {
                         continue;
                     }
@@ -60,7 +60,6 @@ namespace OrchardCore.BackgroundTasks
                     foreach (var taskType in taskTypes)
                     {
                         var taskName = taskType.FullName;
-
 
                         if (shellContext.Released)
                         {
@@ -135,14 +134,15 @@ namespace OrchardCore.BackgroundTasks
             }
         }
 
-        private IEnumerable<ShellContext> GetShellContexts()
+        private IEnumerable<ShellContext> GetRunningShellContexts()
         {
-            return _shellHost.ListShellContexts()?.OrderBy(x => x.Settings.Name) ?? Enumerable.Empty<ShellContext>();
+            return _shellHost.ListShellContexts()?.Where(s => s.Settings.State == TenantState.Running)
+                .OrderBy(s => s.Settings.Name).ToArray() ?? Enumerable.Empty<ShellContext>();
         }
 
         private void CleanSchedulers()
         {
-            var schedulers = _schedulers.Where(kv => !kv.Value.ShellContext.IsRunning()).Select(kv => kv.Key).ToArray();
+            var schedulers = _schedulers.Where(kv => kv.Value.ShellContext.Released).Select(kv => kv.Key).ToArray();
 
             foreach (var scheduler in schedulers)
             {
@@ -154,14 +154,14 @@ namespace OrchardCore.BackgroundTasks
         {
             public Scheduler(ShellContext shellContext, IBackgroundTask task, DateTime startUtc)
             {
-                ShellContext = shellContext;
                 var attribute = task.GetType().GetCustomAttribute<BackgroundTaskAttribute>();
                 Schedule = attribute?.Schedule ?? "* * * * *";
+                ShellContext = shellContext;
                 StartUtc = startUtc;
             }
 
-            public ShellContext ShellContext { get; }
             public string Schedule { get; }
+            public ShellContext ShellContext { get; }
             public DateTime StartUtc { get; set; }
 
             public bool ShouldRun()
@@ -187,14 +187,6 @@ namespace OrchardCore.BackgroundTasks
         public static IBackgroundTask GetBackgroundTaskOfType(this IServiceScope scope, Type type)
         {
             return scope.ServiceProvider.GetServices<IBackgroundTask>().FirstOrDefault(t => t.GetType() == type);
-        }
-    }
-
-    internal static class ShellContextExtensions
-    {
-        public static bool IsRunning(this ShellContext shellContext)
-        {
-            return !shellContext.Released && shellContext.Settings?.State == TenantState.Running;
         }
     }
 }
