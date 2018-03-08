@@ -16,6 +16,8 @@ namespace OrchardCore.BackgroundTasks
 {
     public class HostedBackgroundService : BackgroundService
     {
+        private static TimeSpan PoollingTime = TimeSpan.FromMinutes(1);
+        private static TimeSpan RelaxProcessTime = TimeSpan.FromSeconds(15);
         private Dictionary<string, Scheduler> _schedulers = new Dictionary<string, Scheduler>();
 
         private readonly IShellHost _shellHost;
@@ -34,10 +36,12 @@ namespace OrchardCore.BackgroundTasks
         {
             cancellationToken.Register(() => Logger.LogDebug($"HostedBackgroundService is stopping."));
 
-            var referenceTime = DateTime.UtcNow;
+            var startedUtc = DateTime.UtcNow;
 
             while (!cancellationToken.IsCancellationRequested)
             {
+                var poollingDelay = Task.Delay(PoollingTime, cancellationToken);
+
                 CleanSchedulers();
 
                 var shellContexts = GetRunningShellContexts();
@@ -78,7 +82,7 @@ namespace OrchardCore.BackgroundTasks
                             if (!_schedulers.TryGetValue(tenant + taskName, out Scheduler scheduler))
                             {
                                 _schedulers[tenant + taskName] = scheduler =
-                                    new Scheduler(shellContext, task, referenceTime);
+                                    new Scheduler(shellContext, task, startedUtc);
                             }
 
                             if (!scheduler.ShouldRun())
@@ -94,8 +98,6 @@ namespace OrchardCore.BackgroundTasks
                                         "Start processing background task \"{0}\" on tenant \"{1}\".",
                                         tenant, taskName);
                                 }
-
-                                await Task.Delay(TimeSpan.FromSeconds(1));
 
                                 await task.DoWorkAsync(scope.ServiceProvider, cancellationToken);
 
@@ -130,7 +132,9 @@ namespace OrchardCore.BackgroundTasks
                     }
                 }
 
-                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+                startedUtc = DateTime.UtcNow;
+                await Task.Delay(RelaxProcessTime, cancellationToken);
+                await poollingDelay;
             }
         }
 
