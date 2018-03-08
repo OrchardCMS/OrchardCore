@@ -649,14 +649,6 @@
       ],
       "ContentParts": [
         {
-          "Name": "BlogPost",
-          "Settings": {}
-        },
-        {
-          "Name": "Article",
-          "Settings": {}
-        },
-        {
           "Name": "HtmlWidget",
           "Settings": {},
           "ContentPartFieldDefinitionRecords": [
