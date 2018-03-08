@@ -66,12 +66,12 @@ $link-padding-left: 16px !default;
         }
 
         // Rotate the chevron's icon when the menu is active
-        input[type=checkbox]:checked + label > .chevron > i {
+        input[type=checkbox]:checked + label .chevron {
             transform: rotate(90deg);
             transition-duration: 0.2s;
         }
 
-        input[type=checkbox] + label > .chevron > i {
+        input[type=checkbox] + label .chevron {
             transition-duration: 0.2s;
         }
 
@@ -123,7 +123,7 @@ $link-padding-left: 16px !default;
 
         .chevron {
             position: absolute;
-            top: 0;
+            top: 33%;
             left: 100%;
             margin-left: -25px;
         }

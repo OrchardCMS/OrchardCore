@@ -28,13 +28,7 @@ namespace OrchardCore.OpenId.Services
         {
             var settings = await _siteService.GetSiteSettingsAsync();
 
-            var result = settings.As<OpenIdSettings>();
-            if (result == null)
-            {
-                result = new OpenIdSettings();
-            }
-
-            return result;
+            return settings.As<OpenIdSettings>();
         }
 
         public async Task UpdateOpenIdSettingsAsync(OpenIdSettings openIdSettings)

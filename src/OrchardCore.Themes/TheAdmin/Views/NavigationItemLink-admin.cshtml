@@ -14,7 +14,7 @@
         tag.TagRenderMode = TagRenderMode.Normal;
         tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
 
-        tag.InnerHtml.AppendHtml(Html.Raw("<span class=\"chevron\"><i class=\"fa fa-angle-right\"></i></span>"));
+        tag.InnerHtml.AppendHtml(Html.Raw("<span><i class=\"fas fa-chevron-right fa-xs chevron\"></i></span>"));
     }
     else
     {
