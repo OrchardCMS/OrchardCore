@@ -18,8 +18,7 @@ namespace OrchardCore.BackgroundTasks
     {
         private static TimeSpan PeriodTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
-        private Dictionary<string, Scheduler> _schedulers = new Dictionary<string, Scheduler>();
-
+        private readonly Dictionary<string, Scheduler> _schedulers = new Dictionary<string, Scheduler>();
         private readonly IShellHost _shellHost;
 
         public BackgroundHostedService(
@@ -141,7 +140,7 @@ namespace OrchardCore.BackgroundTasks
 
         private IEnumerable<ShellContext> GetRunningShellContexts()
         {
-            return _shellHost.ListShellContexts()?.Where(s => s.Settings.State == TenantState.Running)
+            return _shellHost.ListShellContexts()?.Where(s => s.Settings?.State == TenantState.Running)
                 .OrderBy(s => s.Settings.Name).ToArray() ?? Enumerable.Empty<ShellContext>();
         }
 
