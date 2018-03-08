@@ -142,7 +142,7 @@ namespace OrchardCore.BackgroundTasks
 
         private void CleanSchedulers()
         {
-            var schedulers = _schedulers.Where(kv => !kv.Value.ShellContext.IsRunning()).Select(kv => kv.Key);
+            var schedulers = _schedulers.Where(kv => !kv.Value.ShellContext.IsRunning()).Select(kv => kv.Key).ToArray();
 
             foreach (var scheduler in schedulers)
             {

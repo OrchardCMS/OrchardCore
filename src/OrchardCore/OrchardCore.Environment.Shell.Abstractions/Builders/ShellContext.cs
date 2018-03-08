@@ -16,7 +16,6 @@ namespace OrchardCore.Hosting.ShellBuilders
         private bool _disposed = false;
         private volatile int _refCount = 0;
         private volatile int _scopeCount = 0;
-        private bool _terminated = false;
         private bool _released = false;
 
         public ShellSettings Settings { get; set; }
@@ -45,11 +44,6 @@ namespace OrchardCore.Hosting.ShellBuilders
             if (_disposed)
             {
                 throw new InvalidOperationException("Can't use EnterServiceScope on a disposed context");
-            }
-
-            if (_terminated)
-            {
-                throw new InvalidOperationException("Can't use EnterServiceScope on a terminated context");
             }
 
             if (_released)
@@ -94,7 +88,7 @@ namespace OrchardCore.Hosting.ShellBuilders
         {
             Interlocked.Decrement(ref _scopeCount);
 
-            if (_terminated && _scopeCount == 0)
+            if (_released && _refCount == 0 && _scopeCount == 0)
             {
                 Dispose();
             }
@@ -113,11 +107,6 @@ namespace OrchardCore.Hosting.ShellBuilders
             // when the number reached zero.
 
             _released = true;
-        }
-
-        public void Terminate()
-        {
-            _terminated = true;
         }
 
         public void Dispose()

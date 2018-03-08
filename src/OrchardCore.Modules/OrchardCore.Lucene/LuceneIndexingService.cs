@@ -74,7 +74,7 @@ namespace OrchardCore.Lucene
 
             var shellContext = _shellHost.GetOrCreateShellContext(_shellSettings);
 
-            if (shellContext.Released || shellContext.Settings?.State != TenantState.Running)
+            if (shellContext.Settings?.State != TenantState.Running)
             {
                 return;
             }
