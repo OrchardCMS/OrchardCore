@@ -11,14 +11,15 @@ using NCrontab;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
+using System.Collections.Concurrent;
 
 namespace OrchardCore.BackgroundTasks
 {
     public class BackgroundHostedService : BackgroundService
     {
-        private static TimeSpan PeriodTime = TimeSpan.FromMinutes(1);
+        private static TimeSpan PoolingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
-        private readonly Dictionary<string, Scheduler> _schedulers = new Dictionary<string, Scheduler>();
+        private readonly ConcurrentDictionary<string, Scheduler> _schedulers = new ConcurrentDictionary<string, Scheduler>();
         private readonly IShellHost _shellHost;
 
         public BackgroundHostedService(
@@ -39,17 +40,18 @@ namespace OrchardCore.BackgroundTasks
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                var periodDelay = Task.Delay(PeriodTime, cancellationToken);
+                var poolingDelay = Task.Delay(PoolingTime, cancellationToken);
 
                 CleanSchedulers();
 
                 var shellContexts = GetRunningShellContexts();
 
-                foreach (var shellContext in shellContexts)
+                Parallel.ForEach(shellContexts, new ParallelOptions { MaxDegreeOfParallelism = 8 },
+                    async shellContext =>
                 {
                     if (shellContext.Released)
                     {
-                        continue;
+                        return;
                     }
 
                     IEnumerable<Type> taskTypes;
@@ -128,13 +130,13 @@ namespace OrchardCore.BackgroundTasks
 
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        break;
+                        return;
                     }
-                }
+                });
 
                 startedUtc = DateTime.UtcNow;
                 await Task.Delay(MinIdleTime, cancellationToken);
-                await periodDelay;
+                await poolingDelay;
             }
         }
 
@@ -146,11 +148,11 @@ namespace OrchardCore.BackgroundTasks
 
         private void CleanSchedulers()
         {
-            var schedulers = _schedulers.Where(kv => kv.Value.ShellContext.Released).Select(kv => kv.Key).ToArray();
+            var keys = _schedulers.Where(kv => kv.Value.ShellContext.Released).Select(kv => kv.Key).ToArray();
 
-            foreach (var scheduler in schedulers)
+            foreach (var key in keys)
             {
-                _schedulers.Remove(scheduler);
+                _schedulers.TryRemove(key, out var scheduler);
             }
         }
 
