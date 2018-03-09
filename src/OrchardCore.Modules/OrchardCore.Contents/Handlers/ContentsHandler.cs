@@ -17,20 +17,17 @@ namespace OrchardCore.Contents.Handlers
 
         public override Task PublishedAsync(PublishContentContext context)
         {
-            _tagCache.RemoveTag($"contentitemid:{context.ContentItem.ContentItemId}");
-            return Task.CompletedTask;
+            return _tagCache.RemoveTagAsync($"contentitemid:{context.ContentItem.ContentItemId}");
         }
 
         public override Task RemovedAsync(RemoveContentContext context)
         {
-            _tagCache.RemoveTag($"contentitemid:{context.ContentItem.ContentItemId}");
-            return Task.CompletedTask;
+            return _tagCache.RemoveTagAsync($"contentitemid:{context.ContentItem.ContentItemId}");
         }
 
         public override Task UnpublishedAsync(PublishContentContext context)
         {
-            _tagCache.RemoveTag($"contentitemid:{context.ContentItem.ContentItemId}");
-            return Task.CompletedTask;
+            return _tagCache.RemoveTagAsync($"contentitemid:{context.ContentItem.ContentItemId}");
         }
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context)

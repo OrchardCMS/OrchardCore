@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Environment.Cache
 {
@@ -6,11 +7,11 @@ namespace OrchardCore.Environment.Cache
     {
         void Tag(string key, params string[] tags);
         IEnumerable<string> GetTaggedItems(string tag);
-        void RemoveTag(string tag);
+        Task RemoveTagAsync(string tag);
     }
 
     public interface ITagRemovedEventHandler
     {
-        void TagRemoved(string tag, IEnumerable<string> keys);
+        Task TagRemovedAsync(string tag, IEnumerable<string> keys);
     }
 }

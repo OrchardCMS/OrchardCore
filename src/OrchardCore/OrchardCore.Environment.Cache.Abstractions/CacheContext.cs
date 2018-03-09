@@ -129,7 +129,7 @@ namespace OrchardCore.Environment.Cache
         }
 
         public string CacheId => _cacheId;
-        public IEnumerable<string> Contexts => _contexts ?? Enumerable.Empty<string>();
+        public ICollection<string> Contexts => (ICollection<string>) _contexts ?? Array.Empty<string>();
         public IEnumerable<string> Tags => _tags ?? Enumerable.Empty<string>();
         public IEnumerable<string> Dependencies => _dependencies ?? Enumerable.Empty<string>();
         public TimeSpan? Duration => _duration;

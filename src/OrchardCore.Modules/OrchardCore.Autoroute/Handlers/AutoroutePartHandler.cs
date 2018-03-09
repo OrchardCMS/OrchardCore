@@ -64,7 +64,7 @@ namespace OrchardCore.Autoroute.Handlers
             }
 
             // Evict any dependent item from cache
-            RemoveTag(part);
+            await RemoveTagAsync(part);
         }
 
         public override Task UnpublishedAsync(PublishContentContext context, AutoroutePart part)
@@ -74,7 +74,7 @@ namespace OrchardCore.Autoroute.Handlers
                 _entries.RemoveEntry(part.ContentItem.ContentItemId, part.Path);
 
                 // Evict any dependent item from cache
-                RemoveTag(part);
+                return RemoveTagAsync(part);
             }
 
             return Task.CompletedTask;
@@ -87,7 +87,7 @@ namespace OrchardCore.Autoroute.Handlers
                 _entries.RemoveEntry(part.ContentItem.ContentItemId, part.Path);
 
                 // Evict any dependent item from cache
-                RemoveTag(part);
+                return RemoveTagAsync(part);
             }
 
             return Task.CompletedTask;
@@ -119,9 +119,9 @@ namespace OrchardCore.Autoroute.Handlers
             }
         }
 
-        private void RemoveTag(AutoroutePart part)
+        private Task RemoveTagAsync(AutoroutePart part)
         {
-            _tagCache.RemoveTag($"alias:{part.Path}");
+            return _tagCache.RemoveTagAsync($"alias:{part.Path}");
         }
 
         /// <summary>

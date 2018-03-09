@@ -1,87 +1,3 @@
-//using System.Collections.Generic;
-//using System.IO;
-//using System.Text.Encodings.Web;
-//using Microsoft.AspNetCore.Html;
-//using OrchardCore.DisplayManagement.Implementation;
-//using OrchardCore.Environment.Cache;
-
-//namespace OrchardCore.DynamicCache.Services
-//{
-//    /// <summary>
-//    /// Caches shapes in the default <see cref="IDynamicCacheService"/> implementation.
-//    /// It uses the shape's metadata cache context to define the cache parameters.
-//    /// </summary>
-//    public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents, ITagRemovedEventHandler
-//    {
-//        private readonly IDynamicCacheService _dynamicCacheService;
-//        private readonly IDynamicCache _dynamicCache;
-
-//        public DynamicCacheShapeDisplayEvents(IDynamicCacheService dynamicCacheService, IDynamicCache dynamicCache)
-//        {
-//            _dynamicCacheService = dynamicCacheService;
-//            _dynamicCache = dynamicCache;
-//        }
-
-//        public void Displaying(ShapeDisplayContext context)
-//        {
-//            if (context.ShapeMetadata.IsCached && context.ChildContent == null)
-//            {
-//                var cacheContext = context.ShapeMetadata.Cache();
-//                var cachedValue = _dynamicCacheService.GetCachedValueAsync(cacheContext).GetAwaiter().GetResult();// todo
-
-//                if (cachedValue != null)
-//                {
-//                    context.ChildContent = new HtmlString(cachedValue);
-//                }
-//            }
-//        }
-
-//        public void Displayed(ShapeDisplayContext context)
-//        {
-//            var cacheContext = context.ShapeMetadata.Cache();
-
-//            // If the shape is not cached, evaluate the ESIs
-//            if(cacheContext == null)
-//            {
-//                if (context.ChildContent != null)
-//                {
-//                    string content;
-
-//                    using (var sw = new StringWriter())
-//                    {
-//                        context.ChildContent.WriteTo(sw, HtmlEncoder.Default);
-//                        content = sw.ToString();
-//                    }
-
-//                    var esiResult = _dynamicCacheService.ProcessEdgeSideIncludesAsync(content).GetAwaiter().GetResult(); // todo
-//                    context.ChildContent = new HtmlString(esiResult.Item2);
-//                }
-//                else
-//                {
-//                    context.ChildContent = HtmlString.Empty;
-//                }
-//            }
-//            else if (context.ChildContent != null)
-//            {
-//                var childContent = _dynamicCacheService.SetCachedValueAsync(cacheContext, context.ChildContent.ToString()).GetAwaiter().GetResult(); //todo
-//                if (childContent != null)
-//                {
-//                    context.ChildContent = new HtmlString(childContent);
-//                }
-//            }
-//        }
-
-//        public void TagRemoved(string tag, IEnumerable<string> keys)
-//        {
-//            foreach (var key in keys)
-//            {
-//                _dynamicCache.RemoveAsync(key);
-//            }
-//        }
-//    }
-//}
-
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -128,8 +44,8 @@ namespace OrchardCore.DynamicCache.Services
             {
                 var cacheContext = context.ShapeMetadata.Cache();
 
-                var cacheEntries = cacheContext.Contexts.Count > 0
-                    ? await _cacheContextManager.GetContextAsync(cacheContext.Contexts)
+                var cacheEntries = cacheContext.Contexts.Count > 0 
+                    ? await _cacheContextManager.GetContextAsync(cacheContext.Contexts) 
                     : Enumerable.Empty<CacheContextEntry>();
 
                 var cacheKey = GetCacheKey(cacheContext.CacheId, cacheEntries);
