@@ -17,7 +17,7 @@ namespace OrchardCore.BackgroundTasks
 {
     public class BackgroundHostedService : BackgroundService
     {
-        private static TimeSpan PoolingTime = TimeSpan.FromMinutes(1);
+        private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
         private readonly ConcurrentDictionary<string, Scheduler> _schedulers = new ConcurrentDictionary<string, Scheduler>();
         private readonly IShellHost _shellHost;
@@ -36,11 +36,11 @@ namespace OrchardCore.BackgroundTasks
         {
             cancellationToken.Register(() => Logger.LogDebug($"BackgroundHostedService is stopping."));
 
-            var startedUtc = DateTime.UtcNow;
+            var pollingUtc = DateTime.UtcNow;
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                var poolingDelay = Task.Delay(PoolingTime, cancellationToken);
+                var pollingDelay = Task.Delay(PollingTime, cancellationToken);
 
                 CleanSchedulers();
 
@@ -84,7 +84,7 @@ namespace OrchardCore.BackgroundTasks
                             if (!_schedulers.TryGetValue(tenant + taskName, out Scheduler scheduler))
                             {
                                 _schedulers[tenant + taskName] = scheduler =
-                                    new Scheduler(shellContext, task, startedUtc);
+                                    new Scheduler(shellContext, task, pollingUtc);
                             }
 
                             if (!scheduler.ShouldRun())
@@ -134,9 +134,9 @@ namespace OrchardCore.BackgroundTasks
                     }
                 });
 
-                startedUtc = DateTime.UtcNow;
                 await Task.Delay(MinIdleTime, cancellationToken);
-                await poolingDelay;
+                pollingUtc = DateTime.UtcNow;
+                await pollingDelay;
             }
         }
 
