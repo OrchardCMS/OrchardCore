@@ -17,7 +17,8 @@ namespace OrchardCore.DynamicCache
             services.AddScoped<DynamicCacheShapeDisplayEvents>();
             services.AddScoped<IShapeDisplayEvents>(sp => sp.GetRequiredService<DynamicCacheShapeDisplayEvents>());
             services.AddScoped<ITagRemovedEventHandler>(sp => sp.GetRequiredService<DynamicCacheShapeDisplayEvents>());
-
+            
+            services.AddScoped<IDynamicCacheService, DynamicCacheService>();
             services.AddSingleton<IDynamicCache, DefaultDynamicCache>();
         }
     }

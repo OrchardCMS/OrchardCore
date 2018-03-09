@@ -15,6 +15,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Liquid.Blocks;
 using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.DisplayManagement.Liquid.Internal;
 using OrchardCore.DisplayManagement.Liquid.Tags;
@@ -69,6 +70,8 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterBlock<HelperBlock>("block");
             Factory.RegisterBlock<NamedHelperBlock>("a");
             Factory.RegisterBlock<NamedHelperBlock>("zone");
+
+            Factory.RegisterBlock<CacheBlock>("cache");
 
             NamedHelperTag.RegisterDefaultArgument("shape", "type");
             NamedHelperBlock.RegisterDefaultArgument("zone", "name");

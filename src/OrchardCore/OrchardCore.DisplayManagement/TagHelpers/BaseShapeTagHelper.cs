@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.TagHelpers
 {
@@ -95,7 +94,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
                 if (Duration.HasValue)
                 {
-                    metadata.Cache().During(Duration.Value);
+                    metadata.Cache().WithDuration(Duration.Value);
                 }
 
                 if (!string.IsNullOrWhiteSpace(Context))

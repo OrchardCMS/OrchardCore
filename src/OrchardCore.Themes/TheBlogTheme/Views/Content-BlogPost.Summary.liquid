@@ -1,16 +1,33 @@
+{% assign cacheKey = "SummaryBlogPost-" | append: Model.ContentItem.Id %}
+{% assign tags = "contentitemid:" | append: Model.ContentItem.ContentItemId %}
+{% cache cacheKey, tags: tags, fixed_duration: "0:5:00", sliding_duration: "0:0:45"  %}
 <div class="post-preview">
     {% a display_for:Model.ContentItem %}
-        <h2 class="post-title">
-            {{ Model.ContentItem.Content.TitlePart.Title }}
-        </h2>
-        <h3 class="post-subtitle">
-            {{ Model.ContentItem.Content.BlogPost.Subtitle.Text }}
-        </h3>
+    <h2 class="post-title">
+        {{ Model.ContentItem.Content.TitlePart.Title }}
+    </h2>
+    <h3 class="post-subtitle">
+        {{ Model.ContentItem.Content.BlogPost.Subtitle.Text }}
+    </h3>
     {% enda %}
     <p class="post-meta">
         {% assign format = "MMMM dd, yyyy" | t %}
         {% assign dateTime = "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc, format: format | shape_stringify %}
-        {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
+        {{ "Posted by" | t }}
+
+        {% assign cacheKey = "SummaryBlogPostAuthor-" | append: User.Identity.Name %}
+        {% cache cacheKey, contexts: "user", sliding_duration: "0:0:5" %}
+        <a href="#">
+            {% if Model.ContentItem.Owner == User.Identity.Name %}
+            {{ "You" | t }}
+            {% else %}
+            {{ Model.ContentItem.Owner }}
+            {% endif %}
+        </a>
+        {% endcache %}
+
+        {{ "on {0}" | t: dateTime | raw }}
     </p>
 </div>
 <hr />
+{% endcache %}
