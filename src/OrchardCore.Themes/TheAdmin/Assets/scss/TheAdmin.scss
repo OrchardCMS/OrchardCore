@@ -31,21 +31,24 @@ $link-padding-left: 16px !default;
         @extend .navbar, .navbar-expand-md, .navbar-light, .bg-light, .fixed-top;
         min-height: $top-nav-height;
         border-bottom: $border-content;
-        z-index:8;
+        z-index: 8;
     }
 
     .ta-navbar-brand {
         @extend .navbar-brand;
         margin-left: 4px;
     }
+
     // Menu toggling button
     #navbar-toggler {
         @extend .navbar-toggler;
     }
+
     // Icons in the main nav bar
     /*#navbar-content {
         @extend .hidden-xs-down;
     }*/
+
     // The menu is hidden for sm
     #ta-left-sidebar {
         @extend .bg-light;
@@ -53,11 +56,18 @@ $link-padding-left: 16px !default;
         height: 100%;
         z-index: 7;
         position: fixed;
-        top: $top-nav-height;
+        top: 0;
+        bottom: 0;
         color: $gray-800;
         border-right: $border-content;
         left: 0px;
         transition: left 0.5s ease-in-out;
+
+        nav {
+            position: relative;
+            top: $top-nav-height;
+            margin-bottom: 100px;
+        }
 
         // Remove padding/margin from all uls
         ul {
@@ -66,32 +76,25 @@ $link-padding-left: 16px !default;
         }
 
         // Rotate the chevron's icon when the menu is active
-        input[type=checkbox]:checked + label .chevron {
-            transform: rotate(90deg);
-            transition-duration: 0.2s;
+        label[aria-expanded="true"] {
+            .chevron {
+                transform: rotate(90deg);
+                transition-duration: 0.2s;
+            }
         }
 
-        input[type=checkbox] + label .chevron {
-            transition-duration: 0.2s;
+        label[aria-expanded="false"] {
+            .chevron {
+                transition-duration: 0.2s;
+            }
         }
 
-        // Hide native checkbox */
-        input[type=checkbox] {
-            position: absolute;
-            opacity: 0;
+        .collapse {
+            display: none;
         }
 
-        input[type=checkbox] + label + ul {
-            max-height: 0;
-            opacity: 0;
-            transition: max-height 0.2s, opacity 0.2s, ease-in-out;
-        }
-
-        input[type=checkbox]:checked + label + ul {
-            overflow-y: hidden;
-            max-height: 500px; /* approximate max height */
-            opacity: 1;
-            transition: max-height 0.5s, opacity 0.5s, ease-in-out;
+        .collapse.show {
+            display: block;
         }
 
         // Make each line a block
@@ -102,7 +105,6 @@ $link-padding-left: 16px !default;
         }
 
         nav ul {
-            display: block;
             margin: 0;
             padding: 0;
             white-space: nowrap;
@@ -132,7 +134,7 @@ $link-padding-left: 16px !default;
             padding-right: 10px;
 
             .fa {
-                min-width:16px;
+                min-width: 16px;
             }
         }
 
@@ -145,11 +147,13 @@ $link-padding-left: 16px !default;
             text-decoration: none;
             padding-left: $link-padding-left - 4px;
         }
+
         // Hovering the navigation items
         li a:hover, li label:hover {
             background-color: $gray-700;
             color: $gray-100;
         }
+
         // Current page
         li.active > a {
             background-color: $gray-600;
@@ -161,7 +165,7 @@ $link-padding-left: 16px !default;
         li ul > li > label {
             background-color: $gray-200;
             color: $gray-700 !important;
-            padding-left: (2 * $link-padding-left) + 6  !important;
+            padding-left: (2 * $link-padding-left) + 6 !important;
         }
 
         li ul > li > a:hover,
@@ -178,6 +182,7 @@ $link-padding-left: 16px !default;
         padding: ($grid-gutter-width / 2);
         margin-top: ($top-nav-height);
     }
+
     // When the screen is bigger than md, add a margin of the size of the menu
     @include media-breakpoint-up(sm) {
         .ta-content {
@@ -324,67 +329,4 @@ ul.pager li a {
 
 .col-xl {
     @extend .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-12;
-}
-
-// NanoScroller
-// ------------------------------
-.ta-left-sidebar-nano {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
-.ta-left-sidebar-nano > .nano-content {
-    position: absolute;
-    overflow: scroll;
-    overflow-x: hidden;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-}
-
-.ta-left-sidebar-nano > .nano-content:focus {
-    outline: thin dotted;
-}
-
-.ta-left-sidebar-nano > .nano-content::-webkit-scrollbar {
-    display: none;
-}
-
-.has-scrollbar > .nano-content::-webkit-scrollbar {
-    display: block;
-}
-
-.ta-left-sidebar-nano > .nano-pane {
-    position: absolute;
-    width: 10px;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    visibility: hidden\9; /* Target only IE7 and IE8 with this hack */
-    opacity: .01;
-    -webkit-transition: .2s;
-    -moz-transition: .2s;
-    -o-transition: .2s;
-    transition: .2s;
-}
-
-.ta-left-sidebar-nano > .nano-pane > .nano-slider {
-    background: #444;
-    background: rgba(0,0,0,.5);
-    position: relative;
-    margin: 0 1px;
-}
-
-.ta-left-sidebar-nano:hover > .nano-pane, .nano-pane.active, .nano-pane.flashed {
-    visibility: visible\9; /* Target only IE7 and IE8 with this hack */
-    opacity: 0.99;
-}
-
-
-.ta-left-sidebar-nano .nano-content {
-    /* preventing last bottom item is not visible when scrolling to bottom */
-    padding-bottom: 100px;
 }

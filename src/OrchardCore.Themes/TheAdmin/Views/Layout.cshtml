@@ -1,4 +1,4 @@
-@inject OrchardCore.Settings.ISiteService SiteService
+﻿@inject OrchardCore.Settings.ISiteService SiteService
 @{
         var site = await SiteService.GetSiteSettingsAsync();
 }
@@ -44,10 +44,8 @@
             </div>
         </div>
 
-        <div id="ta-left-sidebar" class="ta-left-sidebar-nano">
-            <div class="nano-content">
-                @await RenderSectionAsync("Navigation", required: false)
-            </div>
+        <div id="ta-left-sidebar">
+            @await RenderSectionAsync("Navigation", required: false)
         </div>
 
         <div class="ta-content">
