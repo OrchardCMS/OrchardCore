@@ -38,14 +38,17 @@ $link-padding-left: 16px !default;
         @extend .navbar-brand;
         margin-left: 4px;
     }
+
     // Menu toggling button
     #navbar-toggler {
         @extend .navbar-toggler;
     }
+
     // Icons in the main nav bar
     /*#navbar-content {
         @extend .hidden-xs-down;
     }*/
+
     // The menu is hidden for sm
     #ta-left-sidebar {
         @extend .bg-light;
@@ -145,11 +148,13 @@ $link-padding-left: 16px !default;
             text-decoration: none;
             padding-left: $link-padding-left - 4px;
         }
+
         // Hovering the navigation items
         li a:hover, li label:hover {
             background-color: $gray-700;
             color: $gray-100;
         }
+
         // Current page
         li.active > a {
             background-color: $gray-600;
@@ -178,6 +183,7 @@ $link-padding-left: 16px !default;
         padding: ($grid-gutter-width / 2);
         margin-top: ($top-nav-height);
     }
+
     // When the screen is bigger than md, add a margin of the size of the menu
     @include media-breakpoint-up(sm) {
         .ta-content {
