@@ -14,7 +14,15 @@
         tag.Attributes["data-target"] = "#" + Model.GetHashCode().ToString();
         tag.Attributes["aria-expanded"] = "false";
         tag.Attributes["aria-controls"] = Model.GetHashCode().ToString();
-        tag.Attributes["aria-expanded"] = "false";
+
+        if ((bool)Model.Selected)
+        {
+            tag.Attributes["aria-expanded"] = "true";
+        }
+        else {
+            tag.Attributes["aria-expanded"] = "false";
+        }
+
         tag.TagRenderMode = TagRenderMode.Normal;
         tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
 

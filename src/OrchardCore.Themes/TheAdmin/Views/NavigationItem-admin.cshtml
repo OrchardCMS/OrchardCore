@@ -14,11 +14,17 @@
     // Render sub-items (MenuItem)
     if (Model.HasItems)
     {
-        tag.AddCssClass("dropdown");
-
         tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
 
-        tag.InnerHtml.AppendHtml("<ul id=\"" + Model.GetHashCode() + "\" class=\"collapse\" >");
+        if ((bool)Model.Selected)
+        {
+            tag.InnerHtml.AppendHtml("<ul id=\"" + Model.GetHashCode() + "\" class=\"collapse show\" >");
+        }
+        else
+        {
+            tag.InnerHtml.AppendHtml("<ul id=\"" + Model.GetHashCode() + "\" class=\"collapse\" >");
+        }
+
         foreach (var item in Model)
         {
             tag.InnerHtml.AppendHtml(await DisplayAsync(item));
