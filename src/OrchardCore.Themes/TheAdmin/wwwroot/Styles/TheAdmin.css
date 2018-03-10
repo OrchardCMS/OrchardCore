@@ -6288,6 +6288,11 @@ a.text-dark:hover, a.text-dark:focus {
       color: #f8f9fa; }
     .ta-wrapper #ta-left-sidebar li.active > a {
       background-color: #6c757d;
+      border-left: 4px solid #343a40;
+      color: #f8f9fa !important;
+      padding-left: 34px !important; }
+    .ta-wrapper #ta-left-sidebar li.active > label {
+      background-color: #b4bdc4;
       color: #f8f9fa !important; }
     .ta-wrapper #ta-left-sidebar li ul > li > a,
     .ta-wrapper #ta-left-sidebar li ul > li > label {
@@ -6299,6 +6304,8 @@ a.text-dark:hover, a.text-dark:focus {
       color: #f8f9fa !important; }
     .ta-wrapper #ta-left-sidebar li ul > li ul > li > a {
       padding-left: 48px !important; }
+    .ta-wrapper #ta-left-sidebar li ul > li ul > .active > a {
+      padding-left: 44px !important; }
   .ta-wrapper .ta-content {
     padding: 15px;
     margin-top: 59px; }
