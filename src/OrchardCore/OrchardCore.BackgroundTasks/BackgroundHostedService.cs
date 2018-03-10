@@ -32,15 +32,15 @@ namespace OrchardCore.BackgroundTasks
 
         public ILogger Logger { get; set; }
 
-        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            cancellationToken.Register(() => Logger.LogDebug($"BackgroundHostedService is stopping."));
+            stoppingToken.Register(() => Logger.LogDebug($"BackgroundHostedService is stopping."));
 
             var pollingUtc = DateTime.UtcNow;
 
-            while (!cancellationToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
             {
-                var pollingDelay = Task.Delay(PollingTime, cancellationToken);
+                var pollingDelay = Task.Delay(PollingTime, stoppingToken);
 
                 CleanSchedulers();
 
@@ -49,7 +49,7 @@ namespace OrchardCore.BackgroundTasks
                 Parallel.ForEach(shellContexts, new ParallelOptions { MaxDegreeOfParallelism = 8 },
                     async shellContext =>
                 {
-                    if (shellContext.Released)
+                    if (shellContext.Released || stoppingToken.IsCancellationRequested)
                     {
                         return;
                     }
@@ -67,7 +67,7 @@ namespace OrchardCore.BackgroundTasks
                     {
                         var taskName = taskType.FullName;
 
-                        if (shellContext.Released)
+                        if (shellContext.Released || stoppingToken.IsCancellationRequested)
                         {
                             break;
                         }
@@ -101,7 +101,7 @@ namespace OrchardCore.BackgroundTasks
                                         tenant, taskName);
                                 }
 
-                                await task.DoWorkAsync(scope.ServiceProvider, cancellationToken);
+                                await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
 
                                 if (Logger.IsEnabled(LogLevel.Information))
                                 {
@@ -121,20 +121,10 @@ namespace OrchardCore.BackgroundTasks
                                 }
                             }
                         }
-
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            break;
-                        }
-                    }
-
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        return;
                     }
                 });
 
-                await Task.Delay(MinIdleTime, cancellationToken);
+                await Task.Delay(MinIdleTime, stoppingToken);
                 pollingUtc = DateTime.UtcNow;
                 await pollingDelay;
             }
