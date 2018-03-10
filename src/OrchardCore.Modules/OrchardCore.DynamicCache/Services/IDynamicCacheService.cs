@@ -9,11 +9,12 @@ using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DynamicCache.Services
 {
+    // todo: is this the correct name?
     public interface IDynamicCacheService
     {
         Task<string> GetCachedValueAsync(CacheContext context);
         Task<string> SetCachedValueAsync(CacheContext context, string value);
-        Task<Tuple<bool, string>> ProcessEdgeSideIncludesAsync(string content); //todo- tuple?!
+        Task<string> ProcessEdgeSideIncludesAsync(string content);
     }
 
     public class DynamicCacheService : IDynamicCacheService
@@ -26,7 +27,7 @@ namespace OrchardCore.DynamicCache.Services
         private readonly IServiceProvider _serviceProvider;
 
         private readonly HashSet<CacheContext> _cached = new HashSet<CacheContext>();
-        private readonly Dictionary<string, string> _cache = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _localCache = new Dictionary<string, string>();
 
         public DynamicCacheService(ICacheScopeManager cacheScopeManager, ICacheContextManager cacheContextManager, IDynamicCache dynamicCache, IServiceProvider serviceProvider)
         {
@@ -38,25 +39,28 @@ namespace OrchardCore.DynamicCache.Services
 
         public async Task<string> GetCachedValueAsync(CacheContext context)
         {
-            var cacheEntries = (await GetCacheEntriesAsync(context)).ToList();
-            var cacheKey = GetCacheKey(context.CacheId, cacheEntries);
-
-            var value = await GetDistributedCacheAsync(cacheKey);
-            if (value == null)
-            {
-                return null;
-            }
-
             _cacheScopeManager.EnterScope(context);
 
             try
             {
-                var esiResult = await ProcessEdgeSideIncludesAsync(value);
-                if (esiResult.Item1)
+                var cacheEntries = context.Contexts.Count > 0
+                    ? await _cacheContextManager.GetDiscriminatorsAsync(context.Contexts)
+                    : Enumerable.Empty<CacheContextEntry>();
+
+                var cacheKey = GetCacheKey(context.CacheId, cacheEntries);
+
+                var content = await GetDistributedCacheAsync(cacheKey);
+
+                if (content != null)
                 {
-                    _cached.Add(context);
-                    var contexts = String.Join(ContextSeparator.ToString(), context.Contexts.ToArray());
-                    return $"[[cache id='{context.CacheId}' contexts='{contexts}']]";
+                    content = await ProcessEdgeSideIncludesAsync(content);
+
+                    if (content != null)
+                    {
+                        _cached.Add(context);
+                        var contexts = String.Join(ContextSeparator.ToString(), context.Contexts.ToArray());
+                        return $"[[cache id='{context.CacheId}' contexts='{contexts}']]";
+                    }
                 }
             }
             finally
@@ -64,22 +68,22 @@ namespace OrchardCore.DynamicCache.Services
                 _cacheScopeManager.ExitScope();
             }
 
-            return value;
+            return null;
         }
 
         public async Task<string> SetCachedValueAsync(CacheContext context, string value)
         {
             if (_cached.Contains(context))
             {
-                // We've already cached this result, so no need to do it again
                 return null;
             }
 
-            var cacheEntries = (await GetCacheEntriesAsync(context)).ToList();
-            var cacheKey = GetCacheKey(context.CacheId, cacheEntries);
+            var cacheEntries = await _cacheContextManager.GetDiscriminatorsAsync(context.Contexts);
+            string cacheKey = GetCacheKey(context.CacheId, cacheEntries);
+            
             
             _cached.Add(context);
-            _cache[cacheKey] = value;
+            _localCache[cacheKey] = value;
             var contexts = String.Join(ContextSeparator.ToString(), context.Contexts.ToArray());
             var result = $"[[cache id='{context.CacheId}' contexts='{contexts}']]";
 
@@ -97,7 +101,7 @@ namespace OrchardCore.DynamicCache.Services
                 options.SlidingExpiration = new TimeSpan(0, 1, 0);
             }
 
-            _dynamicCache.SetAsync(cacheKey, bytes, options).Wait();
+            await _dynamicCache.SetAsync(cacheKey, bytes, options);
 
             // Lazy load to prevent cyclic dependency
             var tagCache = _serviceProvider.GetRequiredService<ITagCache>();
@@ -106,31 +110,23 @@ namespace OrchardCore.DynamicCache.Services
             return result;
         }
 
-        private string GetCacheKey(string cacheId, IEnumerable<CacheContextEntry> cacheEntries)
+        /// <summary>
+        /// Substitutes all ESIs with their actual content
+        /// </summary>
+        /// <returns>The updated content</returns>
+        public async Task<string> ProcessEdgeSideIncludesAsync(string content)
         {
-            var key = cacheId + "/" + cacheEntries.GetContextHash();
-            return key;
-        }
-
-        private async Task<IEnumerable<CacheContextEntry>> GetCacheEntriesAsync(CacheContext cacheContext)
-        {
-            // All contexts' entries
-            return await GetCacheEntriesAsync(cacheContext.Contexts);
-        }
-
-        private async Task<IEnumerable<CacheContextEntry>> GetCacheEntriesAsync(IEnumerable<string> contexts)
-        {
-            return await _cacheContextManager.GetDiscriminatorsAsync(contexts);
-        }
-
-        public async Task<Tuple<bool, string>> ProcessEdgeSideIncludesAsync(string content)
-        {
-            var result = new StringBuilder(content.Length);
+            StringBuilder result = null;
 
             int lastIndex = 0, startIndex = 0, start = 0, end = 0;
             var processed = false;
             while ((lastIndex = content.IndexOf("[[cache ", lastIndex)) > 0)
             {
+                if (result == null)
+                {
+                    result = new StringBuilder(content.Length);
+                }
+
                 result.Append(content.Substring(end, lastIndex - end));
 
                 processed = true;
@@ -141,20 +137,24 @@ namespace OrchardCore.DynamicCache.Services
 
                 end = content.IndexOf("]]", lastIndex) + 2;
 
-                var cacheEntries = await GetCacheEntriesAsync(contexts);
+                var cacheEntries = contexts.Length > 0
+                    ? await _cacheContextManager.GetDiscriminatorsAsync(contexts)
+                    : Enumerable.Empty<CacheContextEntry>();
+
                 var cachedFragmentKey = GetCacheKey(id, cacheEntries);
                 var htmlContent = await GetDistributedCacheAsync(cachedFragmentKey);
 
                 // Expired child cache entry? Reprocess shape.
                 if (htmlContent == null)
                 {
-                    return new Tuple<bool, string>(false, content);
+                    return null;
                 }
 
-                var esiResult = await ProcessEdgeSideIncludesAsync(htmlContent);
-                if (!esiResult.Item1)
+                htmlContent = await ProcessEdgeSideIncludesAsync(htmlContent);
+
+                if (htmlContent == null)
                 {
-                    return new Tuple<bool, string>(false, content);
+                    return null;
                 }
 
                 result.Append(htmlContent);
@@ -166,13 +166,23 @@ namespace OrchardCore.DynamicCache.Services
                 content = result.ToString();
             }
 
-            return new Tuple<bool, string>(true, content);
+            return content;
+        }
+
+        private string GetCacheKey(string cacheId, IEnumerable<CacheContextEntry> cacheEntries)
+        {
+            if (!cacheEntries.Any())
+            {
+                return cacheId;
+            }
+
+            var key = cacheId + "/" + cacheEntries.GetContextHash();
+            return key;
         }
 
         private async Task<string> GetDistributedCacheAsync(string cacheKey)
         {
-            string content;
-            if (_cache.TryGetValue(cacheKey, out content))
+            if (_localCache.TryGetValue(cacheKey, out var content))
             {
                 return content;
             }

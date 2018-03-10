@@ -21,10 +21,10 @@
 
 {% cache "a" %}
 {% cache "a1", tags: "a1", contexts: "user", sliding_duration: "1:0:5" %}
-A1
+A1 {{ "now" | date: "%T" }} <br />
 {% endcache %}
 {% cache "a2", tags: "a2", contexts: "user", sliding_duration: "1:0:5" %}
-A2
+A2 {{ "now" | date: "%T" }}
 {% endcache %}
 {% endcache %}
 

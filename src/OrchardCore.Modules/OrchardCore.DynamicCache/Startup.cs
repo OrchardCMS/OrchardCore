@@ -13,12 +13,13 @@ namespace OrchardCore.DynamicCache
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IDynamicCacheService, DynamicCacheService>();
+
             // Register the type as it implements multiple interfaces
             services.AddScoped<DynamicCacheShapeDisplayEvents>();
             services.AddScoped<IShapeDisplayEvents>(sp => sp.GetRequiredService<DynamicCacheShapeDisplayEvents>());
             services.AddScoped<ITagRemovedEventHandler>(sp => sp.GetRequiredService<DynamicCacheShapeDisplayEvents>());
             
-            services.AddScoped<IDynamicCacheService, DynamicCacheService>();
             services.AddSingleton<IDynamicCache, DefaultDynamicCache>();
         }
     }
