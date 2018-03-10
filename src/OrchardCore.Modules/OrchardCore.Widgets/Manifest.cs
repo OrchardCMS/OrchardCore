@@ -10,6 +10,6 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Widgets",
     Description = "Provides a part allowing content items to render Widgets in theme zones.",
-    Dependencies = "OrchardCore.ContentTypes",
+    Dependencies = new [] { "OrchardCore.ContentTypes" },
     Category = "Content"
 )]

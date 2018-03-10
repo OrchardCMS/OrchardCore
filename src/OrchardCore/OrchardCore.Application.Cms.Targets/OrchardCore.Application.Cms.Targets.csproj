@@ -5,10 +5,10 @@
     <IgnorePackageAssets>true</IgnorePackageAssets>
   </PropertyGroup>
 
-  <!-- Add a ".props" file in the package specific to the "Cms" bundle -->
+  <!-- Add a ".targets" file in the package specific to the "Cms" bundle -->
   <ItemGroup>
-    <None Include="OrchardCore.Application.Cms.Targets.props" Pack="true">
-      <PackagePath>build\netstandard2.0\OrchardCore.Application.Cms.Targets.props</PackagePath>
+    <None Include="OrchardCore.Application.Cms.Targets.targets" Pack="true">
+      <PackagePath>build\netstandard2.0\OrchardCore.Application.Cms.Targets.targets</PackagePath>
     </None>
   </ItemGroup>
 

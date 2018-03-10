@@ -1,6 +1,6 @@
 // Styling for the navbar
 #mainNav {
-  background-color: $gray-darker;
+  background-color: $gray-900;
   .navbar-toggler {
     font-size: 12px;
     right: 0;
@@ -8,17 +8,17 @@
     text-transform: uppercase;
     color: white;
     border: 0;
-    background-color: $theme-primary;
+    background-color: $primary;
     @include heading-font;
   }
   .navbar-brand {
-    color: $theme-primary;
+    color: $primary;
     @include script-font;
     &.active,
     &:active,
     &:focus,
     &:hover {
-      color: darken($theme-primary, 10%);
+      color: darken($primary, 10%);
     }
   }
   .navbar-nav {
@@ -32,7 +32,7 @@
         @include heading-font;
         &.active,
         &:hover {
-          color: $theme-primary;
+          color: $primary;
         }
       }
     }
@@ -63,7 +63,7 @@
     &.navbar-shrink {
       padding-top: 0;
       padding-bottom: 0;
-      background-color: $gray-darker;
+      background-color: $gray-900;
       .navbar-brand {
         font-size: 1.25em;
         padding: 12px 0;

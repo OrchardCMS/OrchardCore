@@ -1,10 +1,6 @@
 ﻿<Project ToolsVersion="15.0" Sdk="Microsoft.NET.Sdk.Web">
 
   <Import Project="..\OrchardCore.Build\Dependencies.props" />
-  
-  <!-- Necessary as we reference the Project and not the Package -->
-  <Import Project="..\OrchardCore\OrchardCore.Application.Cms.Targets\OrchardCore.Application.Cms.Targets.props" />
-  <Import Project="..\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
@@ -26,25 +22,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="$(MicrosoftAspNetCorePackageVersion)" />
-    
+
     <!-- This reference is necessary for view precompilation to work on publish -->
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.ViewCompilation" Version="$(MicrosoftAspNetCoreMvcRazorViewCompilationPackageVersion)" PrivateAssets="All" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <TypeScriptTarget>ES6</TypeScriptTarget>
-    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
-    <TypeScriptModuleKind>ES6</TypeScriptModuleKind>
-    <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
-    <TypeScriptNoImplicitAny>True</TypeScriptNoImplicitAny>
-    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
-    <TypeScriptOutFile />
-    <TypeScriptOutDir />
-    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
-    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
-    <TypeScriptSourceMap>True</TypeScriptSourceMap>
-    <TypeScriptMapRoot />
-    <TypeScriptSourceRoot />
-  </PropertyGroup>
+  <!-- Necessary as we reference the Project and not the Package -->
+  <Import Project="..\OrchardCore\OrchardCore.Application.Cms.Targets\OrchardCore.Application.Cms.Targets.targets" />
+  <Import Project="..\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
 
 </Project>

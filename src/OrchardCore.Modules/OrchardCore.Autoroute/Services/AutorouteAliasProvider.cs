@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Autoroute.Services
@@ -16,8 +16,6 @@ namespace OrchardCore.Autoroute.Services
 
         public Task<string> GetContentItemIdAsync(string alias)
         {
-            string contentItemId;
-
             if (alias.StartsWith("slug:", System.StringComparison.OrdinalIgnoreCase))
             {
                 alias = alias.Substring(5);
@@ -27,6 +25,7 @@ namespace OrchardCore.Autoroute.Services
                     alias = "/" + alias;
                 }
 
+                string contentItemId;
                 if (_autorouteEntries.TryGetContentItemId(alias, out contentItemId))
                 {
                     return Task.FromResult(contentItemId);

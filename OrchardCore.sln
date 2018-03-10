@@ -316,9 +316,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseThemeSample", "test\Orc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DerivedThemeSample", "test\OrchardCore.Tests.Modules\DerivedThemeSample\DerivedThemeSample.csproj", "{55C32754-82E3-4E0C-B71A-A2C7EAE3D486}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseThemeSample2", "test\OrchardCore.Tests.Modules\BaseThemeSample2\BaseThemeSample2.csproj", "{DFF19F43-F724-4A80-9267-7B2C40D1DC6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseThemeSample2", "test\OrchardCore.Tests.Modules\BaseThemeSample2\BaseThemeSample2.csproj", "{DFF19F43-F724-4A80-9267-7B2C40D1DC6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DerivedThemeSample2", "test\OrchardCore.Tests.Modules\DerivedThemeSample2\DerivedThemeSample2.csproj", "{713E40F9-E711-43B5-B9B3-985325C7BF91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DerivedThemeSample2", "test\OrchardCore.Tests.Modules\DerivedThemeSample2\DerivedThemeSample2.csproj", "{713E40F9-E711-43B5-B9B3-985325C7BF91}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Workflows", "src\OrchardCore.Modules\OrchardCore.Workflows\OrchardCore.Workflows.csproj", "{9973E641-B464-47F2-AA86-6A234B2A9604}"
 EndProject

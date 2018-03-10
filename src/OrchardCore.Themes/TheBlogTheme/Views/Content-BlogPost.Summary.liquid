@@ -3,6 +3,9 @@
         <h2 class="post-title">
             {{ Model.ContentItem.Content.TitlePart.Title }}
         </h2>
+        <h3 class="post-subtitle">
+            {{ Model.ContentItem.Content.BlogPost.Subtitle.Text }}
+        </h3>
     {% enda %}
     <p class="post-meta">
         {% assign format = "MMMM dd, yyyy" | t %}

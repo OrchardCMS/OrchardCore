@@ -9,8 +9,8 @@ namespace OrchardCore.Entities
         /// Extracts the specified type of property.
         /// </summary>
         /// <typeparam name="T">The type of the property to extract.</typeparam>
-        /// <returns>The default value of the requested type if the property was not found.</returns>
-        public static T As<T>(this IEntity entity)
+        /// <returns>A new instance of the requested type if the property was not found.</returns>
+        public static T As<T>(this IEntity entity) where T : new()
         {
             var typeName = typeof(T).Name;
             return entity.As<T>(typeName);
@@ -21,8 +21,8 @@ namespace OrchardCore.Entities
         /// </summary>
         /// <typeparam name="T">The type of the property to extract.</typeparam>
         /// <param name="name">The name of the property to extract.</param>
-        /// <returns>The default value of the requested type if the property was not found.</returns>
-        public static T As<T>(this IEntity entity, string name)
+        /// <returns>A new instance of the requested type if the property was not found.</returns>
+        public static T As<T>(this IEntity entity, string name) where T : new()
         {
             JToken value;
 
@@ -31,7 +31,28 @@ namespace OrchardCore.Entities
                 return value.ToObject<T>();
             }
 
-            return default(T);
+            return new T();
+        }
+
+        /// <summary>
+        /// Indicates if the specified type of property is attached to the <see cref="IEntity"/> instance.
+        /// </summary>
+        /// <typeparam name="T">The type of the property to check.</typeparam>
+        /// <returns>True if the property was found, otherwise false.</returns>
+        public static bool Has<T>(this IEntity entity)
+        {
+            var typeName = typeof(T).Name;
+            return entity.Has(typeName);
+        }
+
+        /// <summary>
+        /// Indicates if the specified property is attached to the <see cref="IEntity"/> instance.
+        /// </summary>
+        /// <param name="name">The name of the property to check.</param>
+        /// <returns>True if the property was found, otherwise false.</returns>
+        public static bool Has(this IEntity entity, string name)
+        {
+            return entity.Properties[name] != null;
         }
 
         public static IEntity Put<T>(this IEntity entity, T aspect) where T : new()

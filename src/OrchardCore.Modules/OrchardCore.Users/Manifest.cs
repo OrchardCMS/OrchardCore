@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "The users module enables authentication UI and user management.",
-    Dependencies = "OrchardCore.Authentication",
+    Dependencies = new [] { "OrchardCore.Authentication" },
     Category = "Security"
 )]

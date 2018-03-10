@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -11,6 +11,7 @@ using OrchardCore.Deployment.Remote.Models;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using YesSql;
 
@@ -70,7 +71,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
                 var executionId = Guid.NewGuid().ToString("n");
                 var fileProvider = new PhysicalFileProvider(tempArchiveFolder);
-                await _recipeExecutor.ExecuteAsync(executionId, new Recipes.Models.RecipeDescriptor { RecipeFileInfo = fileProvider.GetFileInfo("Recipe.json") }, new object());
+                var recipeDescriptor = new RecipeDescriptor
+                {
+                    FileProvider = fileProvider,
+                    BasePath = "",
+                    RecipeFileInfo = fileProvider.GetFileInfo("Recipe.json")
+                };
+
+                await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object());
             }
             finally
             {

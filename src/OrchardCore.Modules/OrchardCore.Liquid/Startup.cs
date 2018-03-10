@@ -26,7 +26,7 @@ namespace OrchardCore.Liquid
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentElement>();
 
             // When accessing a property of a JObject instance
-            TemplateContext.GlobalMemberAccessStrategy.Register<JObject>((obj, name) => obj[name]);
+            TemplateContext.GlobalMemberAccessStrategy.Register<JObject, object>((obj, name) => obj[name]);
 
             // Prevent JTokens from being converted to an ArrayValue as they implement IEnumerable
             FluidValue.TypeMappings.Add(typeof(JObject), o => new ObjectValue(o));

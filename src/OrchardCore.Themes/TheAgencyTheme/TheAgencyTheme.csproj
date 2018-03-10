@@ -6,6 +6,9 @@
 
   <ItemGroup>
     <EmbeddedResource Remove="gulpfile.js;**\*.less;**\*.scss;" />
+    <Compile Remove="wwwroot\node_modules\**" />
+    <EmbeddedResource Remove="wwwroot\node_modules\**" />
+    <None Remove="wwwroot\node_modules\**" />
   </ItemGroup>
 
   <ItemGroup>
