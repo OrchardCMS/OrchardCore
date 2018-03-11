@@ -215,7 +215,7 @@ Vue.component('folder', {
     template: '\
         <li :class="{selected: selected}">\
             <div>\
-                <a href="javascript:;" v-on:click="toggle" class="expand"><i class="fas fa-caret-right" v-bind:class="{opened: open}"></i></a>\
+                <a href="javascript:;" v-on:click="toggle" class="expand" v-bind:class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
                 <a href="javascript:;" v-on:click="select">\
                     <i class="folder fa fa-folder"></i>\
                     {{model.name}}\

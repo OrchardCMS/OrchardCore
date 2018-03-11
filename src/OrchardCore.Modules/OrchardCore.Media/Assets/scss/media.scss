@@ -40,17 +40,14 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
         color: $gray;
     }
 
-    li.opened{
-        transform: rotate(90deg);
-        -webkit-transform: rotate(90deg);
-    }
-
     div {
         padding: 0.2rem 0.2rem;
 
         a {
             color: $gray-dark;
             text-decoration: none;
+
+
         }
     }
 
@@ -74,9 +71,10 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
         cursor: pointer;
     }
 
-    .open {
-        &:before {
-            content: '\f0d7';
+    .opened {
+        svg{
+            transform: rotate(90deg);
+            -webkit-transform: rotate(90deg);
         }
     }
 

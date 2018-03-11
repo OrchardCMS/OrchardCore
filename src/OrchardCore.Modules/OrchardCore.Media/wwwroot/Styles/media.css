@@ -6054,9 +6054,6 @@ a.text-dark:hover, a.text-dark:focus {
   #media-container-navigation-menu li.selected > div > a > i.folder:before {
     content: "\f07c";
     color: #555555; }
-  #media-container-navigation-menu li.opened {
-    transform: rotate(90deg);
-    -webkit-transform: rotate(90deg); }
   #media-container-navigation-menu div {
     padding: 0.2rem 0.2rem; }
     #media-container-navigation-menu div a {
@@ -6074,8 +6071,9 @@ a.text-dark:hover, a.text-dark:focus {
     text-align: center;
     width: 10px;
     cursor: pointer; }
-  #media-container-navigation-menu .open:before {
-    content: '\f0d7'; }
+  #media-container-navigation-menu .opened svg {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg); }
   #media-container-navigation-menu .empty {
     transform: none;
     visibility: hidden; }
