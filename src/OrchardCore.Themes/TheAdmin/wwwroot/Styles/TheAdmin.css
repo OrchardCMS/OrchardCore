@@ -6231,10 +6231,10 @@ a.text-dark:hover, a.text-dark:focus {
     border-right: 1px solid rgba(0, 0, 0, 0.05);
     left: 0px;
     transition: left 0.5s ease-in-out; }
-    .ta-wrapper #ta-left-sidebar nav {
+    .ta-wrapper #ta-left-sidebar #left-nav {
       position: relative;
-      top: 59px;
-      margin-bottom: 100px; }
+      margin-top: 59px;
+      height: calc(100% - 59px); }
     .ta-wrapper #ta-left-sidebar ul {
       margin: 0;
       padding: 0; }
@@ -6251,19 +6251,21 @@ a.text-dark:hover, a.text-dark:focus {
       position: relative;
       display: block;
       margin: 0; }
-    .ta-wrapper #ta-left-sidebar nav ul {
+    .ta-wrapper #ta-left-sidebar #left-nav ul {
       margin: 0;
       padding: 0;
       white-space: nowrap; }
-      .ta-wrapper #ta-left-sidebar nav ul li {
+      .ta-wrapper #ta-left-sidebar #left-nav ul li {
         position: relative;
         margin: 0;
         padding: 0;
         display: list-item;
         list-style: none;
         line-height: 2.5em; }
-        .ta-wrapper #ta-left-sidebar nav ul li label {
+        .ta-wrapper #ta-left-sidebar #left-nav ul li label {
           cursor: pointer; }
+    .ta-wrapper #ta-left-sidebar #left-nav ul.menu-admin {
+      margin-bottom: 100px; }
     .ta-wrapper #ta-left-sidebar .chevron {
       position: absolute;
       top: 33%;
@@ -6286,6 +6288,11 @@ a.text-dark:hover, a.text-dark:focus {
       color: #f8f9fa; }
     .ta-wrapper #ta-left-sidebar li.active > a {
       background-color: #6c757d;
+      border-left: 4px solid #343a40;
+      color: #f8f9fa !important;
+      padding-left: 34px !important; }
+    .ta-wrapper #ta-left-sidebar li.active > label {
+      background-color: #b4bdc4;
       color: #f8f9fa !important; }
     .ta-wrapper #ta-left-sidebar li ul > li > a,
     .ta-wrapper #ta-left-sidebar li ul > li > label {
@@ -6297,6 +6304,8 @@ a.text-dark:hover, a.text-dark:focus {
       color: #f8f9fa !important; }
     .ta-wrapper #ta-left-sidebar li ul > li ul > li > a {
       padding-left: 48px !important; }
+    .ta-wrapper #ta-left-sidebar li ul > li ul > .active > a {
+      padding-left: 44px !important; }
   .ta-wrapper .ta-content {
     padding: 15px;
     margin-top: 59px; }
