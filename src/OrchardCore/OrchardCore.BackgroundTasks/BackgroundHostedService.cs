@@ -42,9 +42,9 @@ namespace OrchardCore.BackgroundTasks
             {
                 var pollingDelay = Task.Delay(PollingTime, stoppingToken);
 
-                CleanSchedulers();
+                var shells = GetRunningShells(out var tenants);
 
-                var shells = GetRunningShells();
+                CleanSchedulers(tenants);
 
                 Parallel.ForEach(shells, new ParallelOptions { MaxDegreeOfParallelism = 8 }, async shell =>
                 {
@@ -82,7 +82,7 @@ namespace OrchardCore.BackgroundTasks
 
                             if (!_schedulers.TryGetValue(tenant + taskName, out Scheduler scheduler))
                             {
-                                _schedulers[tenant + taskName] = scheduler = new Scheduler(shell, task, startUtc);
+                                _schedulers[tenant + taskName] = scheduler = new Scheduler(tenant, task, startUtc);
                             }
 
                             if (!scheduler.ShouldRun())
@@ -128,15 +128,19 @@ namespace OrchardCore.BackgroundTasks
             }
         }
 
-        private IEnumerable<ShellContext> GetRunningShells()
+        private IEnumerable<ShellContext> GetRunningShells(out IEnumerable<string> tenants)
         {
-            return _shellHost.ListShellContexts()?.Where(s => s.Settings?.State == TenantState.Running)
+            var shells = _shellHost.ListShellContexts()?.Where(s => s.Settings?.State == TenantState.Running)
                 .OrderBy(s => s.Settings.Name).ToArray() ?? Enumerable.Empty<ShellContext>();
+
+            tenants = shells.Select(s => s.Settings.Name).ToArray();
+
+            return shells;
         }
 
-        private void CleanSchedulers()
+        private void CleanSchedulers(IEnumerable<string> tenants)
         {
-            var keys = _schedulers.Where(kv => kv.Value.ShellContext.Released).Select(kv => kv.Key).ToArray();
+            var keys = _schedulers.Where(kv => !tenants.Contains(kv.Value.Tenant)).Select(kv => kv.Key).ToArray();
 
             foreach (var key in keys)
             {
@@ -149,15 +153,15 @@ namespace OrchardCore.BackgroundTasks
             private readonly string _schedule;
             private DateTime _startUtc;
 
-            public Scheduler(ShellContext shellContext, IBackgroundTask task, DateTime startUtc)
+            public Scheduler(string tenant, IBackgroundTask task, DateTime startUtc)
             {
-                ShellContext = shellContext;
+                Tenant = tenant;
                 var attribute = task.GetType().GetCustomAttribute<BackgroundTaskAttribute>();
                 _schedule = attribute?.Schedule ?? "* * * * *";
                 _startUtc = startUtc;
             }
 
-            public ShellContext ShellContext { get; }
+            public string Tenant { get; }
 
             public bool ShouldRun()
             {
