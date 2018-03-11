@@ -6054,6 +6054,9 @@ a.text-dark:hover, a.text-dark:focus {
   #media-container-navigation-menu li.selected > div > a > i.folder:before {
     content: "\f07c";
     color: #555555; }
+  #media-container-navigation-menu li.opened {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg); }
   #media-container-navigation-menu div {
     padding: 0.2rem 0.2rem; }
     #media-container-navigation-menu div a {

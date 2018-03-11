@@ -40,6 +40,11 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
         color: $gray;
     }
 
+    li.opened{
+        transform: rotate(90deg);
+        -webkit-transform: rotate(90deg);
+    }
+
     div {
         padding: 0.2rem 0.2rem;
 
