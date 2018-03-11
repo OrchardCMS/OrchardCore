@@ -36,7 +36,7 @@ namespace OrchardCore.BackgroundTasks
         {
             stoppingToken.Register(() => Logger.LogDebug($"BackgroundHostedService is stopping."));
 
-            var pollingUtc = DateTime.UtcNow;
+            var startUtc = DateTime.UtcNow;
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -44,35 +44,34 @@ namespace OrchardCore.BackgroundTasks
 
                 CleanSchedulers();
 
-                var shellContexts = GetRunningShellContexts();
+                var shells = GetRunningShells();
 
-                Parallel.ForEach(shellContexts, new ParallelOptions { MaxDegreeOfParallelism = 8 },
-                    async shellContext =>
+                Parallel.ForEach(shells, new ParallelOptions { MaxDegreeOfParallelism = 8 }, async shell =>
                 {
-                    if (shellContext.Released || stoppingToken.IsCancellationRequested)
+                    if (shell.Released || stoppingToken.IsCancellationRequested)
                     {
                         return;
                     }
 
                     IEnumerable<Type> taskTypes;
 
-                    using (var scope = shellContext.EnterServiceScope())
+                    using (var scope = shell.EnterServiceScope())
                     {
                         taskTypes = scope.GetBackgroundTaskTypes();
                     }
 
-                    var tenant = shellContext.Settings.Name;
+                    var tenant = shell.Settings.Name;
 
                     foreach (var taskType in taskTypes)
                     {
                         var taskName = taskType.FullName;
 
-                        if (shellContext.Released || stoppingToken.IsCancellationRequested)
+                        if (shell.Released || stoppingToken.IsCancellationRequested)
                         {
                             break;
                         }
 
-                        using (var scope = shellContext.EnterServiceScope())
+                        using (var scope = shell.EnterServiceScope())
                         {
                             var task = scope.GetBackgroundTaskOfType(taskType);
 
@@ -83,8 +82,7 @@ namespace OrchardCore.BackgroundTasks
 
                             if (!_schedulers.TryGetValue(tenant + taskName, out Scheduler scheduler))
                             {
-                                _schedulers[tenant + taskName] = scheduler =
-                                    new Scheduler(shellContext, task, pollingUtc);
+                                _schedulers[tenant + taskName] = scheduler = new Scheduler(shell, task, startUtc);
                             }
 
                             if (!scheduler.ShouldRun())
@@ -124,13 +122,13 @@ namespace OrchardCore.BackgroundTasks
                     }
                 });
 
+                startUtc = DateTime.UtcNow;
                 await Task.Delay(MinIdleTime, stoppingToken);
-                pollingUtc = DateTime.UtcNow;
                 await pollingDelay;
             }
         }
 
-        private IEnumerable<ShellContext> GetRunningShellContexts()
+        private IEnumerable<ShellContext> GetRunningShells()
         {
             return _shellHost.ListShellContexts()?.Where(s => s.Settings?.State == TenantState.Running)
                 .OrderBy(s => s.Settings.Name).ToArray() ?? Enumerable.Empty<ShellContext>();
@@ -148,23 +146,26 @@ namespace OrchardCore.BackgroundTasks
 
         private class Scheduler
         {
+            private readonly string _schedule;
+            private DateTime _startUtc;
+
             public Scheduler(ShellContext shellContext, IBackgroundTask task, DateTime startUtc)
             {
-                var attribute = task.GetType().GetCustomAttribute<BackgroundTaskAttribute>();
-                Schedule = attribute?.Schedule ?? "* * * * *";
                 ShellContext = shellContext;
-                StartUtc = startUtc;
+                var attribute = task.GetType().GetCustomAttribute<BackgroundTaskAttribute>();
+                _schedule = attribute?.Schedule ?? "* * * * *";
+                _startUtc = startUtc;
             }
 
-            public string Schedule { get; }
             public ShellContext ShellContext { get; }
-            public DateTime StartUtc { get; set; }
 
             public bool ShouldRun()
             {
-                if (DateTime.UtcNow > CrontabSchedule.Parse(Schedule).GetNextOccurrence(StartUtc))
+                var now = DateTime.UtcNow;
+
+                if (now >= CrontabSchedule.Parse(_schedule).GetNextOccurrence(_startUtc))
                 {
-                    StartUtc = DateTime.UtcNow;
+                    _startUtc = now;
                     return true;
                 }
 

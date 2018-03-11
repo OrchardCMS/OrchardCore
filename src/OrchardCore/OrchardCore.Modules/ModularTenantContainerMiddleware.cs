@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Modules
@@ -30,16 +31,17 @@ namespace OrchardCore.Modules
             // Ensure all ShellContext are loaded and available.
             _orchardHost.Initialize();
 
-            var shellSetting = _runningShellTable.Match(httpContext);
+            var shellSettings = _runningShellTable.Match(httpContext);
 
             // Register the shell settings as a custom feature.
-            httpContext.Features.Set(shellSetting);
+            httpContext.Features.Set(shellSettings);
 
             // We only serve the next request if the tenant has been resolved.
-            if (shellSetting != null)
+            if (shellSettings != null)
             {
-                var shellContext = _orchardHost.GetOrCreateShellContext(shellSetting);
+                var shellContext = _orchardHost.GetOrCreateShellContext(shellSettings);
 
+                IDeferredTaskEngine deferredTaskEngine;
                 using (var scope = shellContext.EnterServiceScope())
                 {
                     if (!shellContext.IsActivated || shellContext.IsActivating)
@@ -76,6 +78,7 @@ namespace OrchardCore.Modules
                     try
                     {
                         await _next.Invoke(httpContext);
+                        deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
                     }
                     finally
                     {
@@ -95,6 +98,21 @@ namespace OrchardCore.Modules
                             {
                                 await tenantEvent.TerminatedAsync();
                             }
+                        }
+                    }
+                }
+
+                // Create a new scope only if there are pending tasks
+                if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
+                {
+                    shellContext = _orchardHost.GetOrCreateShellContext(shellSettings);
+
+                    if (!shellContext.Released)
+                    {
+                        using (var scope = shellContext.EnterServiceScope())
+                        {
+                            var context = new DeferredTaskContext(scope.ServiceProvider);
+                            await deferredTaskEngine.ExecuteTasksAsync(context);
                         }
                     }
                 }

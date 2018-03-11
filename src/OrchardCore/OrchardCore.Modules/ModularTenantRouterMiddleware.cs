@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Builder.Internal;
@@ -8,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
-using System.Linq;
 
 namespace OrchardCore.Modules
 {
@@ -36,7 +36,6 @@ namespace OrchardCore.Modules
             {
                 _logger.LogInformation("Begin Routing Request");
             }
-
 
             var shellSettings = httpContext.Features.Get<ShellSettings>();
 
