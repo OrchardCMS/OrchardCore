@@ -175,8 +175,8 @@ namespace OrchardCore.Workflows.Services
             // Signal every activity that the workflow is about to be resumed.
             var cancellationToken = new CancellationToken();
 
-            await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnInputReceivedAsync(workflowContext, input));
-            await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowResumingAsync(workflowContext, cancellationToken));
+            await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnInputReceivedAsync(workflowContext, input));
+            await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowResumingAsync(workflowContext, cancellationToken));
 
             if (cancellationToken.IsCancellationRequested)
             {
@@ -190,7 +190,7 @@ namespace OrchardCore.Workflows.Services
                 if (await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
                 {
                     // Signal every activity that the workflow is resumed.
-                    await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowResumedAsync(workflowContext));
+                    await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowResumedAsync(workflowContext));
 
                     // Remove the blocking activity.
                     workflowContext.WorkflowInstanceRecord.BlockingActivities.Remove(awaitingActivity);
@@ -237,11 +237,11 @@ namespace OrchardCore.Workflows.Services
             workflowContext.Status = WorkflowStatus.Starting;
 
             // Signal every activity about available input.
-            await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnInputReceivedAsync(workflowContext, input));
+            await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnInputReceivedAsync(workflowContext, input));
 
             // Signal every activity that the workflow is about to start.
             var cancellationToken = new CancellationToken();
-            await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowStartingAsync(workflowContext, cancellationToken));
+            await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowStartingAsync(workflowContext, cancellationToken));
 
             if (cancellationToken.IsCancellationRequested)
             {
@@ -256,7 +256,7 @@ namespace OrchardCore.Workflows.Services
                 if (await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
                 {
                     // Signal every activity that the workflow has started.
-                    await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnWorkflowStartedAsync(workflowContext));
+                    await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowStartedAsync(workflowContext));
 
                     // Execute the activity.
                     await ExecuteWorkflowAsync(workflowContext, startActivity);
@@ -296,7 +296,7 @@ namespace OrchardCore.Workflows.Services
 
                 // Signal every activity that the activity is about to be executed.
                 var cancellationToken = new CancellationToken();
-                await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnActivityExecutingAsync(workflowContext, activityContext, cancellationToken));
+                await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnActivityExecutingAsync(workflowContext, activityContext, cancellationToken));
 
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -359,7 +359,7 @@ namespace OrchardCore.Workflows.Services
                 }
 
                 // Signal every activity that the activity is executed.
-                await InvokeActivitiesAsync(workflowContext, async x => await x.Activity.OnActivityExecutedAsync(workflowContext, activityContext));
+                await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnActivityExecutedAsync(workflowContext, activityContext));
 
                 foreach (var outcome in outcomes)
                 {
@@ -409,7 +409,7 @@ namespace OrchardCore.Workflows.Services
         /// </summary>
         private async Task InvokeActivitiesAsync(WorkflowExecutionContext workflowContext, Func<ActivityContext, Task> action)
         {
-            await workflowContext.Activities.Values.InvokeAsync(async x => await action(x), _logger);
+            await workflowContext.Activities.Values.InvokeAsync(action, _logger);
         }
 
         private async Task<IDictionary<string, object>> SerializeAsync(IDictionary<string, object> dictionary)
@@ -435,14 +435,14 @@ namespace OrchardCore.Workflows.Services
         private async Task<object> SerializeAsync(object value)
         {
             var context = new SerializeWorkflowValueContext(value);
-            await _workflowValueSerializers.Resolve().InvokeAsync(async x => await x.SerializeValueAsync(context), _logger);
+            await _workflowValueSerializers.Resolve().InvokeAsync(x => x.SerializeValueAsync(context), _logger);
             return context.Output;
         }
 
         private async Task<object> DeserializeAsync(object value)
         {
             var context = new SerializeWorkflowValueContext(value);
-            await _workflowValueSerializers.Resolve().InvokeAsync(async x => await x.DeserializeValueAsync(context), _logger);
+            await _workflowValueSerializers.Resolve().InvokeAsync(x => x.DeserializeValueAsync(context), _logger);
             return context.Output;
         }
     }
