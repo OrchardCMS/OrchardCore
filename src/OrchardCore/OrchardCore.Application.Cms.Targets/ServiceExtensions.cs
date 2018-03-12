@@ -1,4 +1,3 @@
-using OrchardCore.BackgroundTasks;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Extensions.Manifests;
@@ -15,13 +14,12 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSitesFolder();
             services.AddCommands();
             services.AddAuthentication();
-            services.AddModules(modules => 
+            services.AddModules(modules =>
             {
                 modules.WithDefaultFeatures(
                     "OrchardCore.Mvc", "OrchardCore.Settings", "OrchardCore.Setup",
                     "OrchardCore.Recipes", "OrchardCore.Commons");
-            })
-            .AddBackgroundHostedService();
+            });
 
             return services;
         }

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.BackgroundTasks
 {
@@ -8,8 +8,9 @@ namespace OrchardCore.BackgroundTasks
     {
         public static IServiceCollection AddBackgroundHostedService(this IServiceCollection services)
         {
-            services.TryAddSingleton<IHostedService, BackgroundHostedService>();
-            return services;
+            return services.AddSingleton<BackgroundHostedService>()
+                .AddSingleton<IHostedService>(sp => sp.GetRequiredService<BackgroundHostedService>())
+                .AddSingleton<IShellDescriptorManagerHostEventHandler>(sp => sp.GetRequiredService<BackgroundHostedService>());
         }
     }
 }

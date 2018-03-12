@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
@@ -103,6 +104,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddLogging();
             services.AddOptions();
             services.AddLocalization();
+            services.AddBackgroundHostedService();
             services.AddHostingShellServices();
             services.AddExtensionManagerHost();
             services.AddWebEncoders();

@@ -18,7 +18,7 @@ namespace OrchardCore.Environment.Shell
     /// tenant is removed, but are necessary to match an incoming request, even if they are not initialized.
     /// Each <see cref="ShellContext"/> is activated (its service provider is built) on the first request.
     /// </summary>
-    public class ShellHost : IShellHost, IShellDescriptorManagerEventHandler
+    public class ShellHost : IShellHost, IShellDescriptorManagerHostEventHandler
     {
         private static EventId TenantNotStarted = new EventId(0);
 

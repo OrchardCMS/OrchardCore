@@ -10,12 +10,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NCrontab;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.BackgroundTasks
 {
-    public class BackgroundHostedService : BackgroundService
+    public class BackgroundHostedService : BackgroundService, IShellDescriptorManagerHostEventHandler
     {
         private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
@@ -42,9 +43,7 @@ namespace OrchardCore.BackgroundTasks
             {
                 var pollingDelay = Task.Delay(PollingTime, stoppingToken);
 
-                var shells = GetRunningShells(out var tenants);
-
-                CleanSchedulers(tenants);
+                var shells = GetRunningShells();
 
                 Parallel.ForEach(shells, new ParallelOptions { MaxDegreeOfParallelism = 8 }, async shell =>
                 {
@@ -128,19 +127,21 @@ namespace OrchardCore.BackgroundTasks
             }
         }
 
-        private IEnumerable<ShellContext> GetRunningShells(out IEnumerable<string> tenants)
+        private IEnumerable<ShellContext> GetRunningShells()
         {
-            var shells = _shellHost.ListShellContexts()?.Where(s => s.Settings?.State == TenantState.Running)
+            return _shellHost.ListShellContexts()?.Where(s => s.Settings?.State == TenantState.Running)
                 .OrderBy(s => s.Settings.Name).ToArray() ?? Enumerable.Empty<ShellContext>();
-
-            tenants = shells.Select(s => s.Settings.Name).ToArray();
-
-            return shells;
         }
 
-        private void CleanSchedulers(IEnumerable<string> tenants)
+        Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
         {
-            var keys = _schedulers.Where(kv => !tenants.Contains(kv.Value.Tenant)).Select(kv => kv.Key).ToArray();
+            CleanTenantSchedulers(tenant);
+            return Task.CompletedTask;
+        }
+
+        internal void CleanTenantSchedulers(string tenant)
+        {
+            var keys = _schedulers.Where(kv => kv.Value.Tenant == tenant).Select(kv => kv.Key).ToArray();
 
             foreach (var key in keys)
             {
@@ -150,26 +151,25 @@ namespace OrchardCore.BackgroundTasks
 
         private class Scheduler
         {
-            private readonly string _schedule;
-            private DateTime _startUtc;
-
             public Scheduler(string tenant, IBackgroundTask task, DateTime startUtc)
             {
                 Tenant = tenant;
                 var attribute = task.GetType().GetCustomAttribute<BackgroundTaskAttribute>();
-                _schedule = attribute?.Schedule ?? "* * * * *";
-                _startUtc = startUtc;
+                Schedule = attribute?.Schedule ?? "* * * * *";
+                StartUtc = startUtc;
             }
 
             public string Tenant { get; }
+            public string Schedule { get; }
+            public DateTime StartUtc { get; private set; }
 
             public bool ShouldRun()
             {
                 var now = DateTime.UtcNow;
 
-                if (now >= CrontabSchedule.Parse(_schedule).GetNextOccurrence(_startUtc))
+                if (now >= CrontabSchedule.Parse(Schedule).GetNextOccurrence(StartUtc))
                 {
-                    _startUtc = now;
+                    StartUtc = now;
                     return true;
                 }
 
