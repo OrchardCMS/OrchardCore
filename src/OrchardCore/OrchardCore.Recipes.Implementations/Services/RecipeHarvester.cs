@@ -18,17 +18,14 @@ namespace OrchardCore.Recipes.Services
     {
         private readonly IExtensionManager _extensionManager;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly IOptions<RecipeHarvestingOptions> _recipeOptions;
 
         public RecipeHarvester(
             IExtensionManager extensionManager,
             IHostingEnvironment hostingEnvironment,
-            IOptions<RecipeHarvestingOptions> recipeOptions,
             ILogger<RecipeHarvester> logger)
         {
             _extensionManager = extensionManager;
             _hostingEnvironment = hostingEnvironment;
-            _recipeOptions = recipeOptions;
 
             Logger = logger;
         }
@@ -43,7 +40,7 @@ namespace OrchardCore.Recipes.Services
         private Task<IEnumerable<RecipeDescriptor>> HarvestRecipes(IExtensionInfo extension)
         {
             var folderSubPath = Path.Combine(extension.SubPath, "Recipes");
-            return HarvestRecipesAsync(folderSubPath, _recipeOptions.Value, _hostingEnvironment);
+            return HarvestRecipesAsync(folderSubPath, _hostingEnvironment);
         }
 
         /// <summary>
@@ -51,7 +48,7 @@ namespace OrchardCore.Recipes.Services
         /// </summary>
         /// <param name="path">A path string relative to the content root of the application.</param>
         /// <returns>The list of <see cref="RecipeDescriptor"/> instances.</returns>
-        public static Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string path, RecipeHarvestingOptions options, IHostingEnvironment hostingEnvironment)
+        public static Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string path, IHostingEnvironment hostingEnvironment)
         {
             var recipeContainerFileInfo = hostingEnvironment
                 .ContentRootFileProvider
