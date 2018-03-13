@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -20,14 +21,19 @@ namespace OrchardCore.BackgroundTasks
     {
         private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
+
         private readonly ConcurrentDictionary<string, Scheduler> _schedulers = new ConcurrentDictionary<string, Scheduler>();
+
         private readonly IShellHost _shellHost;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public BackgroundHostedService(
             IShellHost shellHost,
+            IHttpContextAccessor httpContextAccessor,
             ILogger<BackgroundHostedService> logger)
         {
             _shellHost = shellHost;
+            _httpContextAccessor = httpContextAccessor;
             Logger = logger;
         }
 
@@ -59,7 +65,12 @@ namespace OrchardCore.BackgroundTasks
                         taskTypes = scope.GetBackgroundTaskTypes();
                     }
 
-                    var tenant = shell.Settings.Name;
+                    var tenant = shell.Settings?.Name;
+
+                    if (taskTypes.Count() > 0)
+                    {
+                        _httpContextAccessor.HttpContext = shell.GetBackgroundHttpContext();
+                    }
 
                     foreach (var taskType in taskTypes)
                     {
@@ -127,19 +138,19 @@ namespace OrchardCore.BackgroundTasks
             }
         }
 
-        private IEnumerable<ShellContext> GetRunningShells()
-        {
-            return _shellHost.ListShellContexts()?.Where(s => s.Settings?.State == TenantState.Running)
-                .OrderBy(s => s.Settings.Name).ToArray() ?? Enumerable.Empty<ShellContext>();
-        }
-
         Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
         {
             CleanTenantSchedulers(tenant);
             return Task.CompletedTask;
         }
 
-        internal void CleanTenantSchedulers(string tenant)
+        private IEnumerable<ShellContext> GetRunningShells()
+        {
+            return _shellHost.ListShellContexts()?.Where(s => s.Settings?.State == TenantState.Running)
+                .OrderBy(s => s.Settings?.Name).ToArray() ?? Enumerable.Empty<ShellContext>();
+        }
+
+        private void CleanTenantSchedulers(string tenant)
         {
             var keys = _schedulers.Where(kv => kv.Value.Tenant == tenant).Select(kv => kv.Key).ToArray();
 
@@ -175,6 +186,17 @@ namespace OrchardCore.BackgroundTasks
 
                 return false;
             }
+        }
+    }
+
+    internal static class ShellExtensions
+    {
+        public static HttpContext GetBackgroundHttpContext(this ShellContext shell)
+        {
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Host = new HostString(shell.Settings?.RequestUrlHost ?? "localhost");
+            httpContext.Request.Path = "/" + shell.Settings?.RequestUrlPrefix ?? "";
+            return httpContext;
         }
     }
 

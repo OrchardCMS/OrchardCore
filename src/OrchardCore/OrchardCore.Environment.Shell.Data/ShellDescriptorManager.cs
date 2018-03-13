@@ -29,7 +29,8 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             ILogger<ShellDescriptorManager> logger)
         {
             _shellSettings = shellSettings;
-            _shellDescriptorManagerEventHandlers = shellDescriptorManagerHostEventHandlers.Concat(shellDescriptorManagerEventHandlers);
+            _shellDescriptorManagerEventHandlers = shellDescriptorManagerHostEventHandlers
+                .Concat(shellDescriptorManagerEventHandlers);
             _session = session;
             _logger = logger;
         }

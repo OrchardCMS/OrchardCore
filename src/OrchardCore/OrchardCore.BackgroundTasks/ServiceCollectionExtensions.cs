@@ -8,7 +8,8 @@ namespace OrchardCore.BackgroundTasks
     {
         public static IServiceCollection AddBackgroundHostedService(this IServiceCollection services)
         {
-            return services.AddSingleton<BackgroundHostedService>()
+            return services
+                .AddSingleton<BackgroundHostedService>()
                 .AddSingleton<IHostedService>(sp => sp.GetRequiredService<BackgroundHostedService>())
                 .AddSingleton<IShellDescriptorManagerHostEventHandler>(sp => sp.GetRequiredService<BackgroundHostedService>());
         }
