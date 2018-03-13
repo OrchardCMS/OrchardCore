@@ -85,7 +85,7 @@ namespace OrchardCore.Environment.Shell.Builders
                         {
                             var instances = scope.ServiceProvider.GetServices(services.Key).ToList();
 
-                            // Then we only kept singletons.
+                            // Then we only keep singleton instances.
                             for (var i = 0; i < services.Count(); i++)
                             {
                                 if (services.ElementAt(i).Lifetime == ServiceLifetime.Singleton)
