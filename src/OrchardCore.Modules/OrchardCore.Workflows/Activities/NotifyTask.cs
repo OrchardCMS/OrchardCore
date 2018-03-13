@@ -12,14 +12,12 @@ namespace OrchardCore.Workflows.Activities
     {
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
 
-        public NotifyTask(INotifier notifier, IStringLocalizer<NotifyTask> s, IHtmlLocalizer<NotifyTask> h)
+        public NotifyTask(INotifier notifier, IStringLocalizer<NotifyTask> s)
         {
             _notifier = notifier;
 
             S = s;
-            H = h;
         }
 
         public override string Name => nameof(NotifyTask);
@@ -45,7 +43,8 @@ namespace OrchardCore.Workflows.Activities
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var message = await workflowContext.EvaluateExpressionAsync(Message);
-            _notifier.Add(NotificationType, H[message]);
+            _notifier.Add(NotificationType, new LocalizedHtmlString(nameof(NotifyTask), message));
+
             return Outcomes("Done");
         }
     }
