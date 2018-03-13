@@ -25,12 +25,12 @@
     <div class="activity-commands">
         @if (canStart)
         {
-            <a class="btn btn-outline-secondary activity-start-action" href="#" data-toggle="button"><i class="fa fa-power-off"></i></a>
+            <a class="btn btn-outline-secondary activity-start-action" href="#" data-toggle="button" title="@T["Startup task"]"><i class="fa fa-power-off"></i></a>
         }
         @if (hasEditor)
         {
-            <a class="btn btn-primary activity-edit-action" asp-action="Edit" asp-controller="Activity" asp-route-workflowdefinitionid="@Model.WorkflowDefinitionId" asp-route-activityid="@activityRecord.ActivityId" asp-route-returnurl="@Model.ReturnUrl" data-persist-workflow="true"><i class="fa fa-pencil"></i></a>
+            <a class="btn btn-primary activity-edit-action" asp-action="Edit" asp-controller="Activity" asp-route-workflowdefinitionid="@Model.WorkflowDefinitionId" asp-route-activityid="@activityRecord.ActivityId" asp-route-returnurl="@Model.ReturnUrl" data-persist-workflow="true" title="@T["Edit"]"><i class="fa fa-pencil"></i></a>
         }
-        <a class="btn btn-danger activity-delete-action" href="#"><i class="fa fa-trash"></i></a>
+        <a class="btn btn-danger activity-delete-action" href="#" title="@T["Delete"]"><i class="fa fa-trash"></i></a>
     </div>
 </div>
