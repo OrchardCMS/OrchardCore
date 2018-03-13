@@ -18,9 +18,8 @@ namespace OrchardCore.Environment.Shell.Builders
 
             foreach (var services in servicesByType)
             {
-                var count = services.Count();
-
-                if (count == 1)
+                // if only one service of a given type
+                if (services.Count() == 1)
                 {
                     var service = services.First();
 
@@ -53,6 +52,7 @@ namespace OrchardCore.Environment.Shell.Builders
                     }
                 }
 
+                // If multiple services of the same type
                 else
                 {
                     // If all services of the same type are not singletons.
