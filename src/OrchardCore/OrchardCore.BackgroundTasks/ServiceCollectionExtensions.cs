@@ -11,7 +11,7 @@ namespace OrchardCore.BackgroundTasks
             return services
                 .AddSingleton<BackgroundHostedService>()
                 .AddSingleton<IHostedService>(sp => sp.GetRequiredService<BackgroundHostedService>())
-                .AddSingleton<IShellDescriptorManagerHostEventHandler>(sp => sp.GetRequiredService<BackgroundHostedService>());
+                .AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<BackgroundHostedService>());
         }
     }
 }

@@ -13,6 +13,4 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         Task Changed(ShellDescriptor descriptor, string tenant);
     }
-
-    public interface IShellDescriptorManagerHostEventHandler : IShellDescriptorManagerEventHandler { }
 }

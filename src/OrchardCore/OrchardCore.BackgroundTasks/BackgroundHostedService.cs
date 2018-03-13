@@ -17,7 +17,7 @@ using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.BackgroundTasks
 {
-    public class BackgroundHostedService : BackgroundService, IShellDescriptorManagerHostEventHandler
+    public class BackgroundHostedService : BackgroundService, IShellDescriptorManagerEventHandler
     {
         private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);

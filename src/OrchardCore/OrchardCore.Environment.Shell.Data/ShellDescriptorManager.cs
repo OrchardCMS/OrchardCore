@@ -23,14 +23,12 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
         public ShellDescriptorManager(
             ShellSettings shellSettings,
-            IEnumerable<IShellDescriptorManagerHostEventHandler> shellDescriptorManagerHostEventHandlers,
             IEnumerable<IShellDescriptorManagerEventHandler> shellDescriptorManagerEventHandlers,
             ISession session,
             ILogger<ShellDescriptorManager> logger)
         {
             _shellSettings = shellSettings;
-            _shellDescriptorManagerEventHandlers = shellDescriptorManagerHostEventHandlers
-                .Concat(shellDescriptorManagerEventHandlers);
+            _shellDescriptorManagerEventHandlers = shellDescriptorManagerEventHandlers;
             _session = session;
             _logger = logger;
         }
