@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,12 +41,6 @@ namespace OrchardCore.Workflows.Activities
         /// Resumes the specified activity.
         /// </summary>
         Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
-
-        /// <summary>
-        /// Called when an exception occurred, either during this activity, or any activity after.
-        /// <paramref name="activityContext">The activity context of the faulting activity.</paramref>
-        /// </summary>
-        Task<bool> HandleExceptionAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext, Exception exception);
 
         /// <summary>
         /// Executes before a workflow starts or resumes, giving activities an opportunity to read and store any values of interest.

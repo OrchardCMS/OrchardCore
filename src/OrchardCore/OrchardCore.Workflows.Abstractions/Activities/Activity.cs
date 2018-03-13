@@ -51,16 +51,6 @@ namespace OrchardCore.Workflows.Activities
             return Noop();
         }
 
-        public virtual Task<bool> HandleExceptionAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext, Exception exception)
-        {
-            return Task.FromResult(HandleException(workflowContext, activityContext, exception));
-        }
-
-        public virtual bool HandleException(WorkflowExecutionContext workflowContext, ActivityContext activityContext, Exception exception)
-        {
-            return false;
-        }
-
         public virtual Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
         {
             return Task.CompletedTask;
