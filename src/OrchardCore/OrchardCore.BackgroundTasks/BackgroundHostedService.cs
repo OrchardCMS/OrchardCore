@@ -196,6 +196,7 @@ namespace OrchardCore.BackgroundTasks
             var httpContext = new DefaultHttpContext();
             httpContext.Request.Host = new HostString(shell.Settings?.RequestUrlHost ?? "localhost");
             httpContext.Request.Path = "/" + shell.Settings?.RequestUrlPrefix ?? "";
+            httpContext.Items["IsBackground"] = true;
             return httpContext;
         }
     }

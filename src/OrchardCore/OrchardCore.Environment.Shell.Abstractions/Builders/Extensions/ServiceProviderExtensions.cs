@@ -69,7 +69,7 @@ namespace OrchardCore.Environment.Shell.Builders
                     else if (services.All(s => s.Lifetime == ServiceLifetime.Singleton))
                     {
                         // We can resolve them from the main container.
-                        var instances = serviceProvider.GetServices(services.Key).ToArray();
+                        var instances = serviceProvider.GetServices(services.Key);
 
                         foreach (var instance in instances)
                         {
@@ -83,14 +83,14 @@ namespace OrchardCore.Environment.Shell.Builders
                         // We need a service scope to resolve them.
                         using (var scope = serviceProvider.CreateScope())
                         {
-                            var instances = scope.ServiceProvider.GetServices(services.Key).ToList();
+                            var instances = scope.ServiceProvider.GetServices(services.Key);
 
                             // Then we only keep singleton instances.
                             for (var i = 0; i < services.Count(); i++)
                             {
                                 if (services.ElementAt(i).Lifetime == ServiceLifetime.Singleton)
                                 {
-                                    clonedCollection.AddSingleton(services.Key, instances[i]);
+                                    clonedCollection.AddSingleton(services.Key, instances.ElementAt(i));
                                 }
                                 else
                                 {
