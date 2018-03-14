@@ -244,6 +244,14 @@
                 $pwd.focus();
             }
         });
+
+        $("#DatabaseProvider").change(function () {
+            $("#DatabaseProvider option:selected").each(function () {
+                $(this).data("connection-string").toLowerCase() === "true"
+                    ? $(".pwd").attr('required', 'required')
+                    : $(".pwd").removeAttr('required');
+            });
+        });
     })
     //]]>
 </script>

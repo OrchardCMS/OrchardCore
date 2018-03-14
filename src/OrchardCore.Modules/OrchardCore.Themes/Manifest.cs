@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "Themes.",
-    Dependencies = "OrchardCore.Admin",
+    Dependencies = new [] { "OrchardCore.Admin" },
     Category = "Theming"
 )]

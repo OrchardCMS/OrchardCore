@@ -17,7 +17,7 @@
         -moz-transition: all ease 0.5s;
         transition: all ease 0.5s;
         opacity: 0;
-        background: fade-out($theme-primary, .1);
+        background: fade-out($primary, .1);
         &:hover {
           opacity: 1;
         }
@@ -45,7 +45,7 @@
       margin: 0 auto;
       padding: 25px;
       text-align: center;
-      background-color: white;
+      background-color: $white;
       h4 {
         margin: 0;
         text-transform: none;
@@ -71,20 +71,14 @@
 }
 
 .portfolio-modal {
+  padding-right: 0px !important;
   .modal-dialog {
-    max-width: none;
-    height: 100%;
-    margin: 0;
+    margin: 1rem;
+    max-width: 100vw;
   }
   .modal-content {
-    min-height: 100%;
     padding: 100px 0;
     text-align: center;
-    border: none;
-    border-radius: 0;
-    background-clip: border-box;
-    -webkit-box-shadow: none;
-    box-shadow: none;
     h2 {
       font-size: 3em;
       margin-bottom: 15px;
@@ -130,7 +124,7 @@
       -webkit-transform: rotate(45deg);
       -ms-transform: rotate(45deg);
       transform: rotate(45deg);
-      background-color: $gray-darker;
+      background-color: $gray-900;
       .rl {
         /* Safari and Chrome */
         z-index: 1052;
@@ -140,12 +134,11 @@
         -webkit-transform: rotate(90deg);
         -ms-transform: rotate(90deg);
         transform: rotate(90deg);
-        background-color: $gray-darker;
+        background-color: $gray-900;
       }
     }
   }
   .modal-backdrop {
-    display: none;
-    opacity: 0;
+
   }
 }

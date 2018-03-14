@@ -64,20 +64,17 @@ namespace OrchardCore.Alias.Handlers
 
         public override Task PublishedAsync(PublishContentContext context, AliasPart instance)
         {
-            _tagCache.RemoveTag($"alias:{instance.Alias}");
-            return Task.CompletedTask;
+            return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
         }
 
         public override Task RemovedAsync(RemoveContentContext context, AliasPart instance)
         {
-            _tagCache.RemoveTag($"alias:{instance.Alias}");
-            return Task.CompletedTask;
+            return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
         }
 
         public override Task UnpublishedAsync(PublishContentContext context, AliasPart instance)
         {
-            _tagCache.RemoveTag($"alias:{instance.Alias}");
-            return Task.CompletedTask;
+            return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
         }
     }
 }

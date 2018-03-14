@@ -3,6 +3,123 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+/*
+ * Container style
+ */
+.ps {
+  overflow: hidden !important;
+  overflow-anchor: none;
+  -ms-overflow-style: none;
+  touch-action: auto;
+  -ms-touch-action: auto;
+}
+
+/*
+ * Scrollbar rail styles
+ */
+.ps__rail-x {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+  height: 15px;
+  /* there must be 'bottom' or 'top' for ps__rail-x */
+  bottom: 0px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps__rail-y {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+  width: 15px;
+  /* there must be 'right' or 'left' for ps__rail-y */
+  right: 0;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps--active-x > .ps__rail-x,
+.ps--active-y > .ps__rail-y {
+  display: block;
+  background-color: transparent;
+}
+
+.ps:hover > .ps__rail-x,
+.ps:hover > .ps__rail-y,
+.ps--focus > .ps__rail-x,
+.ps--focus > .ps__rail-y,
+.ps--scrolling-x > .ps__rail-x,
+.ps--scrolling-y > .ps__rail-y {
+  opacity: 0.6;
+}
+
+.ps .ps__rail-x:hover,
+.ps .ps__rail-y:hover,
+.ps .ps__rail-x:focus,
+.ps .ps__rail-y:focus,
+.ps .ps__rail-x.ps--clicking,
+.ps .ps__rail-y.ps--clicking {
+  background-color: #eee;
+  opacity: 0.9;
+}
+
+/*
+ * Scrollbar thumb styles
+ */
+.ps__thumb-x {
+  background-color: #aaa;
+  border-radius: 6px;
+  transition: background-color .2s linear, height .2s ease-in-out;
+  -webkit-transition: background-color .2s linear, height .2s ease-in-out;
+  height: 6px;
+  /* there must be 'bottom' for ps__thumb-x */
+  bottom: 2px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps__thumb-y {
+  background-color: #aaa;
+  border-radius: 6px;
+  transition: background-color .2s linear, width .2s ease-in-out;
+  -webkit-transition: background-color .2s linear, width .2s ease-in-out;
+  width: 6px;
+  /* there must be 'right' for ps__thumb-y */
+  right: 2px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps__rail-x:hover > .ps__thumb-x,
+.ps__rail-x:focus > .ps__thumb-x,
+.ps__rail-x.ps--clicking .ps__thumb-x {
+  background-color: #999;
+  height: 11px;
+}
+
+.ps__rail-y:hover > .ps__thumb-y,
+.ps__rail-y:focus > .ps__thumb-y,
+.ps__rail-y.ps--clicking .ps__thumb-y {
+  background-color: #999;
+  width: 11px;
+}
+
+/* MS supports */
+@supports (-ms-overflow-style: none) {
+  .ps {
+    overflow: auto !important;
+  }
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .ps {
+    overflow: auto !important;
+  }
+}
+
 /*!
  * Bootstrap v4.0.0 (https://getbootstrap.com)
  * Copyright 2011-2018 The Bootstrap Authors
@@ -6108,53 +6225,50 @@ a.text-dark:hover, a.text-dark:focus {
     height: 100%;
     z-index: 7;
     position: fixed;
-    top: 59px;
+    top: 0;
+    bottom: 0;
     color: #343a40;
     border-right: 1px solid rgba(0, 0, 0, 0.05);
     left: 0px;
     transition: left 0.5s ease-in-out; }
+    .ta-wrapper #ta-left-sidebar #left-nav {
+      position: relative;
+      margin-top: 59px;
+      height: calc(100% - 59px); }
     .ta-wrapper #ta-left-sidebar ul {
       margin: 0;
       padding: 0; }
-    .ta-wrapper #ta-left-sidebar input[type=checkbox]:checked + label > .chevron > i {
+    .ta-wrapper #ta-left-sidebar label[aria-expanded="true"] .chevron {
       transform: rotate(90deg);
       transition-duration: 0.2s; }
-    .ta-wrapper #ta-left-sidebar input[type=checkbox] + label > .chevron > i {
+    .ta-wrapper #ta-left-sidebar label[aria-expanded="false"] .chevron {
       transition-duration: 0.2s; }
-    .ta-wrapper #ta-left-sidebar input[type=checkbox] {
-      position: absolute;
-      opacity: 0; }
-    .ta-wrapper #ta-left-sidebar input[type=checkbox] + label + ul {
-      max-height: 0;
-      opacity: 0;
-      transition: max-height 0.2s, opacity 0.2s, ease-in-out; }
-    .ta-wrapper #ta-left-sidebar input[type=checkbox]:checked + label + ul {
-      overflow-y: hidden;
-      max-height: 500px;
-      /* approximate max height */
-      opacity: 1;
-      transition: max-height 0.5s, opacity 0.5s, ease-in-out; }
+    .ta-wrapper #ta-left-sidebar .collapse {
+      display: none; }
+    .ta-wrapper #ta-left-sidebar .collapse.show {
+      display: block; }
     .ta-wrapper #ta-left-sidebar label, .ta-wrapper #ta-left-sidebar a {
       position: relative;
       display: block;
       margin: 0; }
-    .ta-wrapper #ta-left-sidebar nav ul {
-      display: block;
+    .ta-wrapper #ta-left-sidebar #left-nav ul {
       margin: 0;
       padding: 0;
       white-space: nowrap; }
-      .ta-wrapper #ta-left-sidebar nav ul li {
+      .ta-wrapper #ta-left-sidebar #left-nav ul li {
         position: relative;
         margin: 0;
         padding: 0;
         display: list-item;
         list-style: none;
         line-height: 2.5em; }
-        .ta-wrapper #ta-left-sidebar nav ul li label {
+        .ta-wrapper #ta-left-sidebar #left-nav ul li label {
           cursor: pointer; }
+    .ta-wrapper #ta-left-sidebar #left-nav ul.menu-admin {
+      margin-bottom: 100px; }
     .ta-wrapper #ta-left-sidebar .chevron {
       position: absolute;
-      top: 0;
+      top: 33%;
       left: 100%;
       margin-left: -25px; }
     .ta-wrapper #ta-left-sidebar .icon {
@@ -6174,6 +6288,11 @@ a.text-dark:hover, a.text-dark:focus {
       color: #f8f9fa; }
     .ta-wrapper #ta-left-sidebar li.active > a {
       background-color: #6c757d;
+      border-left: 4px solid #343a40;
+      color: #f8f9fa !important;
+      padding-left: 34px !important; }
+    .ta-wrapper #ta-left-sidebar li.active > label {
+      background-color: #b4bdc4;
       color: #f8f9fa !important; }
     .ta-wrapper #ta-left-sidebar li ul > li > a,
     .ta-wrapper #ta-left-sidebar li ul > li > label {
@@ -6185,6 +6304,8 @@ a.text-dark:hover, a.text-dark:focus {
       color: #f8f9fa !important; }
     .ta-wrapper #ta-left-sidebar li ul > li ul > li > a {
       padding-left: 48px !important; }
+    .ta-wrapper #ta-left-sidebar li ul > li ul > .active > a {
+      padding-left: 44px !important; }
   .ta-wrapper .ta-content {
     padding: 15px;
     margin-top: 59px; }
@@ -6228,59 +6349,6 @@ label .field-validation-error::before {
 
 .ui-sortable {
   min-height: 1rem; }
-
-.ta-left-sidebar-nano {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden; }
-
-.ta-left-sidebar-nano > .nano-content {
-  position: absolute;
-  overflow: scroll;
-  overflow-x: hidden;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0; }
-
-.ta-left-sidebar-nano > .nano-content:focus {
-  outline: thin dotted; }
-
-.ta-left-sidebar-nano > .nano-content::-webkit-scrollbar {
-  display: none; }
-
-.has-scrollbar > .nano-content::-webkit-scrollbar {
-  display: block; }
-
-.ta-left-sidebar-nano > .nano-pane {
-  position: absolute;
-  width: 10px;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  visibility: hidden\9;
-  /* Target only IE7 and IE8 with this hack */
-  opacity: .01;
-  -webkit-transition: .2s;
-  -moz-transition: .2s;
-  -o-transition: .2s;
-  transition: .2s; }
-
-.ta-left-sidebar-nano > .nano-pane > .nano-slider {
-  background: #444;
-  background: rgba(0, 0, 0, 0.5);
-  position: relative;
-  margin: 0 1px; }
-
-.ta-left-sidebar-nano:hover > .nano-pane, .nano-pane.active, .nano-pane.flashed {
-  visibility: visible\9;
-  /* Target only IE7 and IE8 with this hack */
-  opacity: 0.99; }
-
-.ta-left-sidebar-nano .nano-content {
-  /* preventing last bottom item is not visible when scrolling to bottom */
-  padding-bottom: 100px; }
 
 /*!
  * Bootstrap v4.0.0 (https://getbootstrap.com)
