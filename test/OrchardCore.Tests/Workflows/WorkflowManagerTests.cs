@@ -60,7 +60,7 @@ namespace OrchardCore.Tests.Workflows
             var workflowManager = CreateWorkflowManager(new IActivity[] { addTask, writeLineTask }, workflowDefinition);
             var a = 10d;
             var b = 22d;
-            var expectedResult = (a + b).ToString() + "\r\n";
+            var expectedResult = (a + b).ToString() + System.Environment.NewLine;
 
             var workflowContext = await workflowManager.StartWorkflowAsync(workflowDefinition, input: new RouteValueDictionary(new { A = a, B = b }));
             var actualResult = stringBuilder.ToString();
