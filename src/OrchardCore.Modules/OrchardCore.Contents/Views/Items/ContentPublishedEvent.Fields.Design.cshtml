@@ -1,11 +1,6 @@
-@using OrchardCore.Contents.Workflows.Activities
-@using OrchardCore.ContentManagement.Metadata.Models
-@{
-    var activity = (ContentEvent)Model.Activity;
-    var contentTypeFilter = (IList<ContentTypeDefinition>)Model.ContentTypeFilter;
-    var contentTypeFilterText = contentTypeFilter.Any() ? string.Join(", ", contentTypeFilter.Select(x => x.DisplayName)) : T["Any content type"].Value;
-}
+@model ContentEventViewModel<ContentPublishedEvent>
+
 <header>
     <h4><i class="fa fa-bolt"></i>@T["Content Published"]</h4>
 </header>
-<em>@contentTypeFilterText</em>
+<em>@(Model.ContentTypeFilter.Any() ? (object)string.Join(", ", Model.ContentTypeFilter.Select(x => x.DisplayName)) : T["Any content type"])</em>

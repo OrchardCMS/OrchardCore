@@ -7,20 +7,20 @@ namespace OrchardCore.Workflows.Email.Drivers
 {
     public class EmailTaskDisplay : ActivityDisplayDriver<EmailTask, EmailTaskViewModel>
     {
-        protected override void Map(EmailTask source, EmailTaskViewModel target)
+        protected override void EditActivity(EmailTask activity, EmailTaskViewModel model)
         {
-            target.SenderExpression = source.Sender.Expression;
-            target.RecipientsExpression = source.Recipients.Expression;
-            target.SubjectExpression = source.Subject.Expression;
-            target.Body = source.Body.Expression;
+            model.SenderExpression = activity.Sender.Expression;
+            model.RecipientsExpression = activity.Recipients.Expression;
+            model.SubjectExpression = activity.Subject.Expression;
+            model.Body = activity.Body.Expression;
         }
 
-        protected override void Map(EmailTaskViewModel source, EmailTask target)
+        protected override void UpdateActivity(EmailTaskViewModel model, EmailTask activity)
         {
-            target.Sender = new WorkflowExpression<string>(source.SenderExpression);
-            target.Recipients = new WorkflowExpression<string>(source.RecipientsExpression);
-            target.Subject = new WorkflowExpression<string>(source.SubjectExpression);
-            target.Body = new WorkflowExpression<string>(source.Body);
+            activity.Sender = new WorkflowExpression<string>(model.SenderExpression);
+            activity.Recipients = new WorkflowExpression<string>(model.RecipientsExpression);
+            activity.Subject = new WorkflowExpression<string>(model.SubjectExpression);
+            activity.Body = new WorkflowExpression<string>(model.Body);
         }
     }
 }

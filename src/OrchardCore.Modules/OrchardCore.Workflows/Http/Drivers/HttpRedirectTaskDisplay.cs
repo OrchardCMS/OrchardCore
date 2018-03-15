@@ -7,16 +7,16 @@ namespace OrchardCore.Workflows.Http.Drivers
 {
     public class HttpRedirectTaskDisplay : ActivityDisplayDriver<HttpRedirectTask, HttpRedirectTaskViewModel>
     {
-        protected override void Map(HttpRedirectTask source, HttpRedirectTaskViewModel target)
+        protected override void EditActivity(HttpRedirectTask activity, HttpRedirectTaskViewModel model)
         {
-            target.Location = source.Location.Expression;
-            target.Permanent = source.Permanent;
+            model.Location = activity.Location.Expression;
+            model.Permanent = activity.Permanent;
         }
 
-        protected override void Map(HttpRedirectTaskViewModel source, HttpRedirectTask target)
+        protected override void UpdateActivity(HttpRedirectTaskViewModel model, HttpRedirectTask activity)
         {
-            target.Location = new WorkflowExpression<string>(source.Location?.Trim());
-            target.Permanent = source.Permanent;
+            activity.Location = new WorkflowExpression<string>(model.Location?.Trim());
+            activity.Permanent = model.Permanent;
         }
     }
 }

@@ -6,14 +6,14 @@ namespace OrchardCore.Workflows.Drivers
 {
     public class JoinTaskDisplay : ActivityDisplayDriver<JoinTask, JoinTaskViewModel>
     {
-        protected override void Map(JoinTask source, JoinTaskViewModel target)
+        protected override void EditActivity(JoinTask activity, JoinTaskViewModel model)
         {
-            target.Mode = source.Mode;
+            model.Mode = activity.Mode;
         }
 
-        protected override void Map(JoinTaskViewModel source, JoinTask target)
+        protected override void UpdateActivity(JoinTaskViewModel model, JoinTask activity)
         {
-            target.Mode = source.Mode;
+            activity.Mode = model.Mode;
         }
     }
 }

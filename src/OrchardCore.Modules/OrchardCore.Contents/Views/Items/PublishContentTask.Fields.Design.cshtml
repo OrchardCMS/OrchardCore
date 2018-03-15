@@ -1,15 +1,14 @@
-@using OrchardCore.Contents.Workflows.Activities
-@{
-    var activity = (ContentTask)Model.Activity;
-}
+@model ContentTaskViewModel<PublishContentTask>
+
 <header>
     <h4><i class="fa fa-cloud-upload"></i>@T["Publish Content"]</h4>
 </header>
-@if (string.IsNullOrWhiteSpace(activity.Content?.Expression))
+
+@if (string.IsNullOrWhiteSpace(Model.Activity.Content?.Expression))
 {
     <span>@T["Publish content provided via the <em>Content</em> input argument"]</span>
 }
 else
 {
-    <span>@T["Publish content using expression: <em>{0}</em>", activity.Content.Expression]</span>
+    <span>@T["Publish content using expression: <em>{0}</em>", Model.Activity.Content.Expression]</span>
 }

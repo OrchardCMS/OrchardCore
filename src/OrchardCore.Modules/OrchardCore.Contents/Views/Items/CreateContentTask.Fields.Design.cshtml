@@ -1,8 +1,7 @@
-@using OrchardCore.Contents.Workflows.Activities
-@{
-    var activity = (CreateContentTask)Model.Activity;
-}
+@model ContentTaskViewModel<CreateContentTask>
+
 <header>
     <h4><i class="fa fa-file-text-o"></i>@T["Create Content"]</h4>
 </header>
-<span>@T["<em>{0}</em>", activity.ContentType]</span>
+
+<em>@Model.Activity.ContentType</em>

@@ -18,7 +18,7 @@ namespace OrchardCore.Templates.Settings
 
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
         {
-            return Shape<ContentSettingsViewModel>("TemplateSettings", model =>
+            return Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
             {
                 var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
 

@@ -6,20 +6,20 @@ namespace OrchardCore.Workflows.Http.Drivers
 {
     public class HttpRequestFilterEventDisplay : ActivityDisplayDriver<HttpRequestFilterEvent, HttpRequestFilterEventViewModel>
     {
-        protected override void Map(HttpRequestFilterEvent source, HttpRequestFilterEventViewModel target)
+        protected override void EditActivity(HttpRequestFilterEvent activity, HttpRequestFilterEventViewModel model)
         {
-            target.HttpMethod = source.HttpMethod;
-            target.ControllerName = source.ControllerName;
-            target.ActionName = source.ActionName;
-            target.AreaName = source.AreaName;
+            model.HttpMethod = activity.HttpMethod;
+            model.ControllerName = activity.ControllerName;
+            model.ActionName = activity.ActionName;
+            model.AreaName = activity.AreaName;
         }
 
-        protected override void Map(HttpRequestFilterEventViewModel source, HttpRequestFilterEvent target)
+        protected override void UpdateActivity(HttpRequestFilterEventViewModel model, HttpRequestFilterEvent activity)
         {
-            target.HttpMethod = source.HttpMethod?.Trim();
-            target.ControllerName = NullIfEmpty(source.ControllerName);
-            target.ActionName = NullIfEmpty(source.ActionName);
-            target.AreaName = NullIfEmpty(source.AreaName);
+            activity.HttpMethod = model.HttpMethod?.Trim();
+            activity.ControllerName = NullIfEmpty(model.ControllerName);
+            activity.ActionName = NullIfEmpty(model.ActionName);
+            activity.AreaName = NullIfEmpty(model.AreaName);
         }
 
         private string NullIfEmpty(string s)

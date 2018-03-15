@@ -7,14 +7,14 @@ namespace OrchardCore.Workflows.Drivers
 {
     public class ForkTaskDisplay : ActivityDisplayDriver<ForkTask, ForkTaskViewModel>
     {
-        protected override void Map(ForkTask source, ForkTaskViewModel target)
+        protected override void EditActivity(ForkTask activity, ForkTaskViewModel model)
         {
-            target.Forks = string.Join(", ", source.Forks);
+            model.Forks = string.Join(", ", activity.Forks);
         }
 
-        protected override void Map(ForkTaskViewModel source, ForkTask target)
+        protected override void UpdateActivity(ForkTaskViewModel model, ForkTask activity)
         {
-            target.Forks = source.Forks.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            activity.Forks = model.Forks.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }

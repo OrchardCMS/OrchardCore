@@ -4,14 +4,14 @@ namespace OrchardCore.Workflows.Timers
 {
     public class TimerEventDisplay : ActivityDisplayDriver<TimerEvent, TimerEventViewModel>
     {
-        protected override void Map(TimerEvent source, TimerEventViewModel target)
+        protected override void EditActivity(TimerEvent source, TimerEventViewModel model)
         {
-            target.CronExpression = source.CronExpression;
+            model.CronExpression = source.CronExpression;
         }
 
-        protected override void Map(TimerEventViewModel source, TimerEvent target)
+        protected override void UpdateActivity(TimerEventViewModel model, TimerEvent target)
         {
-            target.CronExpression = source.CronExpression.Trim();
+            target.CronExpression = model.CronExpression.Trim();
         }
     }
 }

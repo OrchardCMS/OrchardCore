@@ -7,14 +7,14 @@ namespace OrchardCore.Workflows.Drivers
 {
     public class WhileLoopTaskDisplay : ActivityDisplayDriver<WhileLoopTask, WhileLoopTaskViewModel>
     {
-        protected override void Map(WhileLoopTask source, WhileLoopTaskViewModel target)
+        protected override void EditActivity(WhileLoopTask source, WhileLoopTaskViewModel model)
         {
-            target.ConditionExpression = source.Condition.Expression;
+            model.ConditionExpression = source.Condition.Expression;
         }
 
-        protected override void Map(WhileLoopTaskViewModel source, WhileLoopTask target)
+        protected override void UpdateActivity(WhileLoopTaskViewModel model, WhileLoopTask activity)
         {
-            target.Condition = new WorkflowExpression<bool>(source.ConditionExpression.Trim());
+            activity.Condition = new WorkflowExpression<bool>(model.ConditionExpression.Trim());
         }
     }
 }

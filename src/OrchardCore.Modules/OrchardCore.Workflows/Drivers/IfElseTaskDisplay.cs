@@ -7,14 +7,14 @@ namespace OrchardCore.Workflows.Drivers
 {
     public class IfElseTaskDisplay : ActivityDisplayDriver<IfElseTask, IfElseTaskViewModel>
     {
-        protected override void Map(IfElseTask source, IfElseTaskViewModel target)
+        protected override void EditActivity(IfElseTask activity, IfElseTaskViewModel model)
         {
-            target.ConditionExpression = source.Condition.Expression;
+            model.ConditionExpression = activity.Condition.Expression;
         }
 
-        protected override void Map(IfElseTaskViewModel source, IfElseTask target)
+        protected override void UpdateActivity(IfElseTaskViewModel model, IfElseTask activity)
         {
-            target.Condition = new WorkflowExpression<bool>(source.ConditionExpression);
+            activity.Condition = new WorkflowExpression<bool>(model.ConditionExpression);
         }
     }
 }

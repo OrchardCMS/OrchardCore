@@ -7,16 +7,16 @@ namespace OrchardCore.Workflows.Drivers
 {
     public class LogTaskDisplay : ActivityDisplayDriver<LogTask, LogTaskViewModel>
     {
-        protected override void Map(LogTask source, LogTaskViewModel target)
+        protected override void EditActivity(LogTask activity, LogTaskViewModel model)
         {
-            target.LogLevel = source.LogLevel;
-            target.Text = source.Text.Expression;
+            model.LogLevel = activity.LogLevel;
+            model.Text = activity.Text.Expression;
         }
 
-        protected override void Map(LogTaskViewModel source, LogTask target)
+        protected override void UpdateActivity(LogTaskViewModel model, LogTask activity)
         {
-            target.LogLevel = source.LogLevel;
-            target.Text = new WorkflowExpression<string>(source.Text);
+            activity.LogLevel = model.LogLevel;
+            activity.Text = new WorkflowExpression<string>(model.Text);
         }
     }
 }

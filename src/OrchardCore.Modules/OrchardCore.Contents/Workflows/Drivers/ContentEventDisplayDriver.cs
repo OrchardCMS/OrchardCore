@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
@@ -20,14 +19,14 @@ namespace OrchardCore.Contents.Workflows.Drivers
 
         protected IContentDefinitionManager ContentDefinitionManager { get; }
 
-        protected override void Map(TActivity source, TViewModel target)
+        protected override void EditActivity(TActivity source, TViewModel target)
         {
             target.SelectedContentTypeNames = source.ContentTypeFilter;
         }
 
         public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
         {
-            var viewModel = CreateViewModel();
+            var viewModel = new TViewModel();
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.SelectedContentTypeNames))
             {
                 model.ContentTypeFilter = FilterContentTypesQuery(viewModel.SelectedContentTypeNames).ToList();
@@ -35,19 +34,23 @@ namespace OrchardCore.Contents.Workflows.Drivers
             return Edit(model);
         }
 
-        protected override ShapeResult Shape(string shapeType, TActivity activity)
+        public override IDisplayResult Display(TActivity activity)
         {
-            return Shape(shapeType, shape =>
-            {
-                if (shapeType.EndsWith("Design"))
+            return Combine(
+                Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new ContentEventViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
+                Factory($"{typeof(TActivity).Name}_Fields_Design", ctx =>
                 {
                     var contentTypeDefinitions = ContentDefinitionManager.ListTypeDefinitions().ToDictionary(x => x.Name);
                     var selectedContentTypeDefinitions = activity.ContentTypeFilter.Select(x => contentTypeDefinitions[x]).ToList();
 
+                    var shape = new ContentEventViewModel<TActivity>();
                     shape.ContentTypeFilter = selectedContentTypeDefinitions;
-                }
-                shape.Activity = activity;
-            });
+                    shape.Activity = activity;
+
+                    return shape;
+                    
+                }).Location("Design", "Content")
+            );
         }
 
         /// <summary>

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using OrchardCore.Contents.Workflows.Activities;
 
 namespace OrchardCore.Contents.Workflows.ViewModels

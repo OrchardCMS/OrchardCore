@@ -7,16 +7,16 @@ namespace OrchardCore.Workflows.Drivers
 {
     public class SetOutputTaskDisplay : ActivityDisplayDriver<SetOutputTask, SetOutputTaskViewModel>
     {
-        protected override void Map(SetOutputTask source, SetOutputTaskViewModel target)
+        protected override void EditActivity(SetOutputTask source, SetOutputTaskViewModel model)
         {
-            target.OutputName = source.OutputName;
-            target.Value = source.Value.Expression;
+            model.OutputName = source.OutputName;
+            model.Value = source.Value.Expression;
         }
 
-        protected override void Map(SetOutputTaskViewModel source, SetOutputTask target)
+        protected override void UpdateActivity(SetOutputTaskViewModel model, SetOutputTask activity)
         {
-            target.OutputName = source.OutputName.Trim();
-            target.Value = new WorkflowExpression<object>(source.Value);
+            activity.OutputName = model.OutputName.Trim();
+            activity.Value = new WorkflowExpression<object>(model.Value);
         }
     }
 }

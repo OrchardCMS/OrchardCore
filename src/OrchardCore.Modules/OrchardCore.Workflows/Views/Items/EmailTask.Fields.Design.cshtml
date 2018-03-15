@@ -1,8 +1,7 @@
+@model ActivityViewModel<EmailTask>
 @using OrchardCore.Workflows.Email.Activities
-@{
-    var activity = (EmailTask)Model.Activity;
-}
+
 <header>
     <h4><i class="fa fa-envelope"></i>@T["Send Email"]</h4>
 </header>
-<em>&quot;@activity.Subject&quot;</em>
+<em>&quot;@Model.Activity.Subject&quot;</em>

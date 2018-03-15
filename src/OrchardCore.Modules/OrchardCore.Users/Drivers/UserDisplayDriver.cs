@@ -37,14 +37,14 @@ namespace OrchardCore.Users.Drivers
         public override IDisplayResult Display(User user)
         {
             return Combine(
-                Shape<SummaryAdminUserViewModel>("UserFields", model => model.User = user).Location("SummaryAdmin", "Header:1"),
-                Shape<SummaryAdminUserViewModel>("UserButtons", model => model.User = user).Location("SummaryAdmin", "Actions:1")
+                Initialize<SummaryAdminUserViewModel>("UserFields", model => model.User = user).Location("SummaryAdmin", "Header:1"),
+                Initialize<SummaryAdminUserViewModel>("UserButtons", model => model.User = user).Location("SummaryAdmin", "Actions:1")
             );
         }
 
         public override IDisplayResult Edit(User user)
         {
-            return Shape<EditUserViewModel>("UserFields_Edit", async model =>
+            return Initialize<EditUserViewModel>("UserFields_Edit", async model =>
             {
                 var roleNames = await GetRoleNamesAsync();
                 var userRoleNames = await _userManager.GetRolesAsync(user);

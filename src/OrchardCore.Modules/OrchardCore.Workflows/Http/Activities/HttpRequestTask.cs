@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
-using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Http.Activities
