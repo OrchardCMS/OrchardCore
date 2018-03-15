@@ -18,14 +18,36 @@
 
 {% shape_remove_item Model.Content "BodyPart" %}
 
-
+<ul>
+    <li>A</li>
+    <li>
+        <ul>
+            <li>A1</li>
+            <li>A2</li>
+            <li>
+                <ul>
+                    <li>A2A</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
 {% cache "a" %}
-{% cache "a1", tags: "a1", contexts: "user", sliding_duration: "1:0:5" %}
-A1 {{ "now" | date: "%T" }} <br />
+A {{ "now" | date: "%T" }} (No Duration) <br />
+{% cache "a1", tags: "a1", contexts: "user", fixed_duration: "0:5:0" %}
+A1 {{ "now" | date: "%T" }} (5 Minutes) <br />
 {% endcache %}
-{% cache "a2", tags: "a2", contexts: "user", sliding_duration: "1:0:5" %}
-A2 {{ "now" | date: "%T" }}
+{% cache "a2", tags: "a2", contexts: "user", fixed_duration: "0:0:1" %}
+A2 {{ "now" | date: "%T" }} (1 Second) <br />
+{% cache "a2a", tags: "a2a", contexts: "user", fixed_duration: "0:0:5" %}
+A2A {{ "now" | date: "%T" }} (5 Seconds) <br />
 {% endcache %}
+{% endcache %}
+{% endcache %}
+
+
+{% cache "menublock" %}
+    {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu2", cache_duration: "00:05:00", cache_tag: "alias:main-menu" %}
 {% endcache %}
 
 {% cache "blog" %}

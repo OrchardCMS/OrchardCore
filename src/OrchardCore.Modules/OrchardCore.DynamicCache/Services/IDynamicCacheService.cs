@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using OrchardCore.DynamicCache.Models;
 using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DynamicCache.Services
@@ -12,14 +14,18 @@ namespace OrchardCore.DynamicCache.Services
     // todo: is this the correct name?
     public interface IDynamicCacheService
     {
-        Task<string> GetCachedValueAsync(CacheContext context);
-        Task<string> SetCachedValueAsync(CacheContext context, string value);
-        Task<string> ProcessEdgeSideIncludesAsync(string content);
+        // Takes the cache id, checks for cached contexts based on id, returns null if miss or cached content if hit
+        Task<string> GetCachedValueAsync(string cacheId);
+        // I don't think this method is needed
+        //Task<string> GetCachedValueAsync(CacheContext context);
+        // needs to also cache the context by the cache id
+        Task<string> SetCachedValueAsync(CacheContext context, Func<Task<string>> contentFactory);
+        Task<string> ProcessEdgeSideIncludesAsync(string value);
     }
 
     public class DynamicCacheService : IDynamicCacheService
     {
-        private static char ContextSeparator = ';';
+        //private static char ContextSeparator = ';';
 
         private readonly ICacheScopeManager _cacheScopeManager;
         private readonly ICacheContextManager _cacheContextManager;
@@ -37,19 +43,26 @@ namespace OrchardCore.DynamicCache.Services
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<string> GetCachedValueAsync(CacheContext context)
+        public async Task<string> GetCachedValueAsync(string cacheId)
         {
-            _cacheScopeManager.EnterScope(context);
+            //_cacheScopeManager.EnterScope(context);
 
             try
             {
+                var context = await GetCachedContextAsync(cacheId);
+                if (context == null)
+                {
+                    // We don't know the context, so we must treat this as a cache miss
+                    return null;
+                }
+
                 var cacheEntries = context.Contexts.Count > 0
                     ? await _cacheContextManager.GetDiscriminatorsAsync(context.Contexts)
                     : Enumerable.Empty<CacheContextEntry>();
 
                 var cacheKey = GetCacheKey(context.CacheId, cacheEntries);
 
-                var content = await GetDistributedCacheAsync(cacheKey);
+                var content = await GetCachedStringAsync(cacheKey);
 
                 if (content != null)
                 {
@@ -58,21 +71,22 @@ namespace OrchardCore.DynamicCache.Services
                     if (content != null)
                     {
                         _cached.Add(context);
-                        var contexts = String.Join(ContextSeparator.ToString(), context.Contexts.ToArray());
-                        return $"[[cache id='{context.CacheId}' contexts='{contexts}']]";
+                        return content;
+                        //return $"[[cache esi='{JsonConvert.SerializeObject(EdgeSideInclude.FromCacheContext(context))}']]";
                     }
                 }
             }
             finally
             {
-                _cacheScopeManager.ExitScope();
+                //_cacheScopeManager.ExitScope();
             }
 
             return null;
         }
-
-        public async Task<string> SetCachedValueAsync(CacheContext context, string value)
+        
+        public async Task<string> SetCachedValueAsync(CacheContext context, Func<Task<string>> contentFactory)
         {
+            //_cacheScopeManager.EnterScope(context);
             if (_cached.Contains(context))
             {
                 return null;
@@ -80,13 +94,24 @@ namespace OrchardCore.DynamicCache.Services
 
             var cacheEntries = await _cacheContextManager.GetDiscriminatorsAsync(context.Contexts);
             string cacheKey = GetCacheKey(context.CacheId, cacheEntries);
-            
-            
+
+            var value = await contentFactory();
+
             _cached.Add(context);
             _localCache[cacheKey] = value;
-            var contexts = String.Join(ContextSeparator.ToString(), context.Contexts.ToArray());
-            var result = $"[[cache id='{context.CacheId}' contexts='{contexts}']]";
+            var esi = JsonConvert.SerializeObject(EdgeSideInclude.FromCacheContext(context));
+            var result = $"[[cache esi='{esi}']]";
 
+            // todo: when all
+            await SetCachedValueAsync(cacheKey, value, context);
+            await SetCachedValueAsync("cachecontext-" + context.CacheId, esi, context);
+
+            //_cacheScopeManager.ExitScope();
+            return result;
+        }
+
+        private async Task SetCachedValueAsync(string cacheKey, string value, CacheContext context)
+        {
             var bytes = Encoding.UTF8.GetBytes(value);
 
             var options = new DistributedCacheEntryOptions
@@ -106,8 +131,6 @@ namespace OrchardCore.DynamicCache.Services
             // Lazy load to prevent cyclic dependency
             var tagCache = _serviceProvider.GetRequiredService<ITagCache>();
             tagCache.Tag(cacheKey, context.Tags.ToArray());
-
-            return result;
         }
 
         /// <summary>
@@ -132,32 +155,46 @@ namespace OrchardCore.DynamicCache.Services
                 processed = true;
                 start = lastIndex;
 
-                var id = content.Substring(startIndex = content.IndexOf("id='", lastIndex) + 4, (lastIndex = content.IndexOf("'", startIndex)) - startIndex);
-                var contexts = content.Substring(startIndex = content.IndexOf("contexts='", lastIndex) + 10, (lastIndex = content.IndexOf("'", startIndex)) - startIndex).Split(ContextSeparator);
+                var esi = content.Substring(startIndex = content.IndexOf("esi='", lastIndex) + 5, (lastIndex = content.IndexOf("']]", startIndex)) - startIndex);
+                //var id = content.Substring(startIndex = content.IndexOf("id='", lastIndex) + 4, (lastIndex = content.IndexOf("'", startIndex)) - startIndex);
+                //var contexts = content.Substring(startIndex = content.IndexOf("contexts='", lastIndex) + 10, (lastIndex = content.IndexOf("'", startIndex)) - startIndex).Split(ContextSeparator);
+                //var tags = content.Substring(startIndex = content.IndexOf("tags='", lastIndex) + 6, (lastIndex = content.IndexOf("'", startIndex)) - startIndex).Split(ContextSeparator);
 
                 end = content.IndexOf("]]", lastIndex) + 2;
+                
+                var esiModel = JsonConvert.DeserializeObject<EdgeSideInclude>(esi);
+                var cacheContext = esiModel.ToCacheContext();
 
-                var cacheEntries = contexts.Length > 0
-                    ? await _cacheContextManager.GetDiscriminatorsAsync(contexts)
+                var cacheEntries = cacheContext.Contexts.Count > 0
+                    ? await _cacheContextManager.GetDiscriminatorsAsync(cacheContext.Contexts)
                     : Enumerable.Empty<CacheContextEntry>();
 
-                var cachedFragmentKey = GetCacheKey(id, cacheEntries);
-                var htmlContent = await GetDistributedCacheAsync(cachedFragmentKey);
+                _cacheScopeManager.EnterScope(cacheContext);
 
-                // Expired child cache entry? Reprocess shape.
-                if (htmlContent == null)
+                try
                 {
-                    return null;
+                    var cachedFragmentKey = GetCacheKey(cacheContext.CacheId, cacheEntries);
+                    var htmlContent = await GetCachedValueAsync(cachedFragmentKey);
+
+                    // Expired child cache entry? Reprocess shape.
+                    if (htmlContent == null)
+                    {
+                        return null;
+                    }
+
+                    htmlContent = await ProcessEdgeSideIncludesAsync(htmlContent);
+
+                    if (htmlContent == null)
+                    {
+                        return null;
+                    }
+
+                    result.Append(htmlContent);
                 }
-
-                htmlContent = await ProcessEdgeSideIncludesAsync(htmlContent);
-
-                if (htmlContent == null)
+                finally
                 {
-                    return null;
+                    _cacheScopeManager.ExitScope();
                 }
-
-                result.Append(htmlContent);
             }
 
             if (processed)
@@ -180,7 +217,7 @@ namespace OrchardCore.DynamicCache.Services
             return key;
         }
 
-        private async Task<string> GetDistributedCacheAsync(string cacheKey)
+        private async Task<string> GetCachedStringAsync(string cacheKey)
         {
             if (_localCache.TryGetValue(cacheKey, out var content))
             {
@@ -194,6 +231,19 @@ namespace OrchardCore.DynamicCache.Services
             }
 
             return Encoding.UTF8.GetString(bytes);
+        }
+
+        private async Task<CacheContext> GetCachedContextAsync(string cacheId)
+        {
+            var cachedValue = await GetCachedStringAsync("cachecontext-" + cacheId);
+
+            if (cachedValue == null)
+            {
+                return null;
+            }
+
+            var esiModel = JsonConvert.DeserializeObject<EdgeSideInclude>(cachedValue);
+            return esiModel.ToCacheContext();
         }
     }
 }

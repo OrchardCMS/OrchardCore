@@ -17,11 +17,13 @@ namespace OrchardCore.DynamicCache.Services
     {
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly IDynamicCache _dynamicCache;
+        private readonly ICacheScopeManager _cacheScopeManager;
 
-        public DynamicCacheShapeDisplayEvents(IDynamicCacheService dynamicCacheService, IDynamicCache dynamicCache)
+        public DynamicCacheShapeDisplayEvents(IDynamicCacheService dynamicCacheService, IDynamicCache dynamicCache, ICacheScopeManager cacheScopeManager)
         {
             _dynamicCacheService = dynamicCacheService;
             _dynamicCache = dynamicCache;
+            _cacheScopeManager = cacheScopeManager;
         }
 
         public async Task DisplayingAsync(ShapeDisplayContext context)
@@ -30,11 +32,15 @@ namespace OrchardCore.DynamicCache.Services
             if (context.ShapeMetadata.IsCached && context.ChildContent == null)
             {
                 var cacheContext = context.ShapeMetadata.Cache();
-                var cachedContent = await _dynamicCacheService.GetCachedValueAsync(cacheContext);
+                var cachedContent = await _dynamicCacheService.GetCachedValueAsync(cacheContext.CacheId);
 
                 if (cachedContent != null)
                 {
                     context.ChildContent = new HtmlString(cachedContent);
+                }
+                else
+                {
+                    // open and close scope when displaying
                 }
             }
         }
@@ -66,17 +72,18 @@ namespace OrchardCore.DynamicCache.Services
             }
             else if (context.ChildContent != null)
             {
-                using (var sw = new StringWriter())
+                var content = await _dynamicCacheService.SetCachedValueAsync(cacheContext, () =>
                 {
-                    context.ChildContent.WriteTo(sw, HtmlEncoder.Default);
-                    var content = sw.ToString();
-
-                    content = await _dynamicCacheService.SetCachedValueAsync(cacheContext, content);
-
-                    if (content != null)
+                    using (var sw = new StringWriter())
                     {
-                        context.ChildContent = new HtmlString(content);
+                        context.ChildContent.WriteTo(sw, HtmlEncoder.Default);
+                        return Task.FromResult(sw.ToString());
                     }
+                });
+
+                if (content != null)
+                {
+                    context.ChildContent = new HtmlString(content);
                 }
             }
         }

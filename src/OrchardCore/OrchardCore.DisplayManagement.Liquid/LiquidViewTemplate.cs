@@ -15,12 +15,12 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Layout;
-using OrchardCore.DisplayManagement.Liquid.Blocks;
 using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.DisplayManagement.Liquid.Internal;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.DynamicCache.Liquid;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid
@@ -71,6 +71,8 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterBlock<NamedHelperBlock>("a");
             Factory.RegisterBlock<NamedHelperBlock>("zone");
 
+            // todo: modules cannot register their own blocks yet, and cache block lives in the Dynamic Cache module
+            // figure out a way to arrange this logically
             Factory.RegisterBlock<CacheBlock>("cache");
 
             NamedHelperTag.RegisterDefaultArgument("shape", "type");
