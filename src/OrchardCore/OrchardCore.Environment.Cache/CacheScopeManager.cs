@@ -28,8 +28,9 @@ namespace OrchardCore.Environment.Cache
             }
         }
 
-        private CacheContext MergeCacheContexts(CacheContext into, CacheContext from)
+        private void MergeCacheContexts(CacheContext into, CacheContext from)
         {
+            // todo: do we need to merge contexts? if inner cache items have more specific contexts than the puter objects, then the ESIs will handle this?
             into.AddContext(from.Contexts.ToArray());
             into.AddTag(from.Tags.ToArray());
             into.AddDependency(from.Dependencies.ToArray());
@@ -45,8 +46,6 @@ namespace OrchardCore.Environment.Cache
             {
                 into.WithDuration(duration.Value);
             }
-
-            return into;
         }
 
         private TimeSpan? GetMostRestrictiveTimespan(TimeSpan? a, TimeSpan? b)

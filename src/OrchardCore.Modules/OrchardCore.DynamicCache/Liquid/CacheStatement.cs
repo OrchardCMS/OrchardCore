@@ -71,24 +71,14 @@ namespace OrchardCore.DynamicCache.Liquid
             {
                 cacheContext.WithSlidingExpiration(slidingDuration);
             }
-
-            var cacheResult = "hello";
-
-            cacheResult = await dynamicCache.GetCachedValueAsync(cacheContext.CacheId);
+            
+            var cacheResult = await dynamicCache.GetCachedValueAsync(cacheContext.CacheId);
             if (cacheResult != null)
             {
                 await writer.WriteAsync(cacheResult);
 
                 return Completion.Normal;
             }
-            
-            //return Task.FromResult("world");
-
-            //if (!(Statements?.Any() ?? false))
-            //{
-            //    return Task.FromResult("no statements");
-            //    //return null;
-            //}
 
             var content = new StringWriter();
 

@@ -45,11 +45,6 @@ A2A {{ "now" | date: "%T" }} (5 Seconds) <br />
 {% endcache %}
 {% endcache %}
 
-
-{% cache "menublock" %}
-    {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu2", cache_duration: "00:05:00", cache_tag: "alias:main-menu" %}
-{% endcache %}
-
 {% cache "blog" %}
 {{ Model.Content | shape_render }}
 {% endcache %}

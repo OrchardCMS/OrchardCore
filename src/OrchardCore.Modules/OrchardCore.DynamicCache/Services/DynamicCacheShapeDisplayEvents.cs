@@ -15,6 +15,8 @@ namespace OrchardCore.DynamicCache.Services
     /// </summary>
     public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents, ITagRemovedEventHandler
     {
+        private readonly HashSet<CacheContext> _cached = new HashSet<CacheContext>();
+
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly IDynamicCache _dynamicCache;
         private readonly ICacheScopeManager _cacheScopeManager;
@@ -32,15 +34,16 @@ namespace OrchardCore.DynamicCache.Services
             if (context.ShapeMetadata.IsCached && context.ChildContent == null)
             {
                 var cacheContext = context.ShapeMetadata.Cache();
+                _cacheScopeManager.EnterScope(cacheContext);
+
                 var cachedContent = await _dynamicCacheService.GetCachedValueAsync(cacheContext.CacheId);
 
                 if (cachedContent != null)
                 {
+                    // The contents of this shape was found in the cache.
+                    // Add the cacheContext to _cached so that we don't try to cache the content again in the DisplayedAsync method.
+                    _cached.Add(cacheContext);
                     context.ChildContent = new HtmlString(cachedContent);
-                }
-                else
-                {
-                    // open and close scope when displaying
                 }
             }
         }
@@ -70,17 +73,16 @@ namespace OrchardCore.DynamicCache.Services
                     context.ChildContent = HtmlString.Empty;
                 }
             }
-            else if (context.ChildContent != null)
+            else if (!_cached.Contains(cacheContext) && context.ChildContent != null)
             {
+                // This shape should be cached, and the content did not come from the cache.
+                // We need to insert the content of this shape into the cache, so that it can be retrieved on subsequent attempts.
+                _cacheScopeManager.ExitScope(); // todo: how can we guarantee that this is called, even on failures?
+
                 using (var sw = new StringWriter())
                 {
                     context.ChildContent.WriteTo(sw, HtmlEncoder.Default);
                     await _dynamicCacheService.SetCachedValueAsync(cacheContext, sw.ToString());
-
-                    //if (content != null)
-                    //{
-                    //    context.ChildContent = new HtmlString(content);
-                    //}
                 }
             }
         }
