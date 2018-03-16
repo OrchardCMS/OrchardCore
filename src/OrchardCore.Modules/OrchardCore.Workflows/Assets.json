@@ -3,31 +3,31 @@
     "inputs": [
       "Assets/Lib/jsplumb/jsplumbtoolkit-defaults.css"
     ],
-    "output": "Content/Styles/jsplumbtoolkit-defaults.css"
+    "output": "wwwroot/Styles/jsplumbtoolkit-defaults.css"
   },
   {
     "inputs": [
       "Assets/Lib/jsplumb/jsplumb.js"
     ],
-    "output": "Content/Scripts/jsplumb.js"
+    "output": "wwwroot/Scripts/jsplumb.js"
   },
   {
     "inputs": [
       "Assets/Styles/workflow-editor.scss"
     ],
-    "output": "Content/Styles/orchard.workflows-editor.css"
+    "output": "wwwroot/Styles/orchard.workflows-editor.css"
   },
   {
     "inputs": [
       "Assets/Styles/workflow-viewer.scss"
     ],
-    "output": "Content/Styles/orchard.workflows-viewer.css"
+    "output": "wwwroot/Styles/orchard.workflows-viewer.css"
   },
   {
     "inputs": [
       "Assets/Styles/admin-menu.scss"
     ],
-    "output": "Content/Styles/menu.workflows-admin.css"
+    "output": "wwwroot/Styles/menu.workflows-admin.css"
   },
   {
     "inputs": [
@@ -36,26 +36,26 @@
       "Assets/Scripts/workflow-canvas.ts",
       "Assets/Scripts/workflow-editor.ts"
     ],
-    "output": "Content/Scripts/orchard.workflows-editor.js"
+    "output": "wwwroot/Scripts/orchard.workflows-editor.js"
   },
   {
     "inputs": [
       "HTTP/Assets/Scripts/workflow-url-generator.ts"
     ],
-    "output": "Content/Scripts/orchard.http-request-event-editor.js"
+    "output": "wwwroot/Scripts/orchard.http-request-event-editor.js"
   },
   {
     "inputs": [
       "Assets/Scripts/workflow-canvas.ts",
       "Assets/Scripts/workflow-viewer.ts"
     ],
-    "output": "Content/Scripts/orchard.workflows-viewer.js"
+    "output": "wwwroot/Scripts/orchard.workflows-viewer.js"
   },
   {
     "copy": true,
     "inputs": [
       "Assets/Images/*"
     ],
-    "output": "Content/Styles/Images/@"
+    "output": "wwwroot/Styles/Images/@"
   }
 ]
