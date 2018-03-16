@@ -1,9 +1,11 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
+using Fluid.Values;
 using OrchardCore.DisplayManagement.Liquid.Ast;
 using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.DisplayManagement.Shapes;
@@ -18,18 +20,47 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
         {
             var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue() as dynamic;
 
-            if (objectValue is Shape shape && shape.Metadata.Type == "PagerSlim")
+            if (objectValue is Shape shape)
             {
                 var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
 
-                foreach (var name in arguments.Names)
+                if (shape.Metadata.Type == "PagerSlim")
                 {
-                    var argument = arguments[name];
-                    var propertyName = LiquidViewFilters.LowerKebabToPascalCase(name);
-
-                    if (_properties.Contains(propertyName))
+                    foreach (var name in arguments.Names)
                     {
-                        objectValue[propertyName] = argument.ToStringValue();
+                        var argument = arguments[name];
+                        var propertyName = LiquidViewFilters.LowerKebabToPascalCase(name);
+
+                        if (_properties.Contains(propertyName))
+                        {
+                            objectValue[propertyName] = argument.ToStringValue();
+                        }
+                    }
+                }
+
+                if (shape.Metadata.Type == "PagerSlim" || shape.Metadata.Type == "Pager")
+                {
+                    if (arguments.Names.Contains("item_classes"))
+                    {
+                        var classes = arguments["item_classes"];
+
+                        if (classes.Type == FluidValues.String)
+                        {
+                            var values = classes.ToStringValue().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                            foreach (var value in values)
+                            {
+                                objectValue.ItemClasses.Add(value);
+                            }
+                        }
+
+                        else if (classes.Type == FluidValues.Array)
+                        {
+                            foreach (var value in classes.Enumerate())
+                            {
+                                objectValue.ItemClasses.Add(value.ToStringValue());
+                            }
+                        }
                     }
                 }
             }

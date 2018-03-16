@@ -6071,8 +6071,9 @@ a.text-dark:hover, a.text-dark:focus {
     text-align: center;
     width: 10px;
     cursor: pointer; }
-  #media-container-navigation-menu .open:before {
-    content: '\f0d7'; }
+  #media-container-navigation-menu .opened svg {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg); }
   #media-container-navigation-menu .empty {
     transform: none;
     visibility: hidden; }

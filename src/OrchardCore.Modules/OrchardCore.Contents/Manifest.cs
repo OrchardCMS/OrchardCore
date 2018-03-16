@@ -6,6 +6,10 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "The contents module enables the edition and rendering of content items.",
-    Dependencies = "OrchardCore.Settings, OrchardCore.Liquid",
+    Dependencies = new []
+    {
+        "OrchardCore.Settings",
+        "OrchardCore.Liquid"
+    },
     Category = "Content Management"
 )]

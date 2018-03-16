@@ -220,7 +220,7 @@ Vue.component('folder', {
     template: '\
         <li :class="{selected: selected}">\
             <div>\
-                <i v-on:click="toggle" class="expand fa fa-caret-right" v-bind:class="{open: open, closed: !open, empty: empty}"></i>\
+                <a href="javascript:;" v-on:click="toggle" class="expand" v-bind:class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
                 <a href="javascript:;" v-on:click="select">\
                     <i class="folder fa fa-folder"></i>\
                     {{model.name}}\
@@ -281,6 +281,7 @@ Vue.component('folder', {
         toggle: function () {
             this.open = !this.open
             var self = this;
+
             if (this.open && !this.children) {
                 $.ajax({
                     url: $('#getFoldersUrl').val() + "?path=" + encodeURIComponent(self.model.path),

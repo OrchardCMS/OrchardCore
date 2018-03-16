@@ -1,13 +1,17 @@
 // Variables
 
-// Gray and Brand Colors for use across theme
+// Restated Bootstrap Variables
 
-$theme-primary: #fed136;
-$theme-danger: #e74c3c;
+$white: #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #adb5bd !default;
+$gray-600: #868e96 !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;
+$black: #000 !default;
 
-$gray-base: #000 !default;
-$gray-darker: lighten($gray-base, 13.5%) !default;
-$gray-dark: lighten($gray-base, 20%) !default;
-$gray: lighten($gray-base, 33.5%) !default;
-$gray-light: lighten($gray-base, 46.7%) !default;
-$gray-lighter: lighten($gray-base, 93.5%) !default;
+$primary: #fed136 !default;

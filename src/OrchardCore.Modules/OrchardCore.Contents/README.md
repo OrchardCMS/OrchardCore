@@ -2,46 +2,43 @@
 
 This module provides Content Management services.
 
-## Liquid Filters
+## Liquid
 
-### content
-
-Returns a content item.
-
-#### Loading from a content item id
-
-Loads a content item from its unique identifier. 
-
-```
-{% assign my_content = "417qsjrgv97e74wvp149h4da53" | content %}
-```
-
-By default it loads the _published_ version. The _latest_ version (either "published" or "draft") can be loaded using the `latest: true` option.
-
-```
-{% assign my_content = "417qsjrgv97e74wvp149h4da53" | content: latest: true %}
-```
+You can access content items from liquid views and templates by using the `Content` property. 
+By default, you can retrieve content by alias or content item ID. Other modules (such as Alias and Autoroute) allow you to retrieve content by other identifiers.
 
 #### Loading from an alias
 
 ```
-{% assign my_content = "alias:main-menu" | content: 'alias' %}
+{% assign my_content = Content["alias:main-menu"] %}
 ```
-
-The latest version can be loaded using the `latest: true` option. 
 
 Aliases can be in various forms, like when using Autoroute, with the `slug` prefix.
 
 ```
-{% assign my_content = "slug:my-blog/my-blog-post" | content: 'alias' %}
+{% assign my_content = Content["slug:my-blog/my-blog-post"] %}
 ```
 
 > Aliases are provided by implementing `IContentAliasProvider`.
 
-#### Loading from a content version id
+#### Loading the latest version of a content item
+
+You can use the `Latest` property to retrieve the latest version of a content item (whether that's the published version or the latest draft version) by alias:
 
 ```
-{% assign my_content = "417qsjrgv97e74wvp149h4da53" | content: 'version' %}
+{% assign my_content = Content.Latest["alias:main-menu"] %}
+```
+
+#### Loading from a content item id
+
+```
+{% assign my_content = Content.ContentItemId["417qsjrgv97e74wvp149h4da53"] %}
+```
+
+#### Loading from a content item version id
+
+```
+{% assign my_content = Content.ContentItemVersionId["49gq8g6zndfc736x0az3zsp4w3"] %}
 ```
 
 ## Razor Helper

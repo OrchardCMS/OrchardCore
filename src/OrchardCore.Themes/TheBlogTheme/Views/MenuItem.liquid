@@ -1,4 +1,4 @@
-<li {% if Model.HasItems %}class="dropdown"{% endif %}>
+<li class="nav-item {% if Model.HasItems %}dropdown{% endif %}">
     {% shape_clear_alternates Model %}
     {% shape_type Model "MenuItemLink" %}
     {{ Model | shape_render }}

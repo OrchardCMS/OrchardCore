@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.Modules.Manifest
 {
@@ -31,8 +32,8 @@ namespace OrchardCore.Modules.Manifest
         /// <Summary>The version number in SemVer format.</Summary>
         public string Version { get; set; } = "0.0";
 
-        /// <Summary>A comma-separated lists of tags.</Summary>
-        public string Tags { get; set; } = String.Empty;
+        /// <Summary>A list of tags.</Summary>
+        public string[] Tags { get; set; } = Enumerable.Empty<string>().ToArray();
 
         public List<FeatureAttribute> Features { get; } = new List<FeatureAttribute>();
     }
@@ -62,10 +63,10 @@ namespace OrchardCore.Modules.Manifest
         public string Description { get; set; } = String.Empty;
 
         /// <Summary>
-        /// A comma-separated list of features that the feature depends on.
+        /// A list of features that the feature depends on.
         /// So that its drivers / handlers are invoked after those of dependencies.
         /// </Summary>
-        public string Dependencies { get; set; } = String.Empty;
+        public string[] Dependencies { get; set; } = Enumerable.Empty<string>().ToArray();
 
         /// <Summary>
         /// The priority of the feature without breaking the dependencies order.
@@ -81,14 +82,20 @@ namespace OrchardCore.Modules.Manifest
     }
 
     /// <summary>
-    /// Marks an assembly as a module, auto generated on building.
+    /// Marks an assembly as a module of a given type, auto generated on building.
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
-    public class ModuleMarkerAttribute : Attribute
+    public class ModuleMarkerAttribute : ModuleAttribute
     {
-        public ModuleMarkerAttribute()
+        private string _type;
+
+        public ModuleMarkerAttribute(string name, string type)
         {
+            Name = name;
+            _type = type;
         }
+
+        public override string Type => _type;
     }
 
     /// <summary>

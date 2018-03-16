@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Scripting
 {
@@ -21,7 +22,10 @@ namespace OrchardCore.Scripting
 
         public IList<IGlobalMethodProvider> GlobalMethodProviders { get; }
 
-        public object Evaluate(string directive, IEnumerable<IGlobalMethodProvider> scopedMethodProviders = null)
+        public object Evaluate(string directive,
+            IFileProvider fileProvider,
+            string basePath,
+            IEnumerable<IGlobalMethodProvider> scopedMethodProviders)
         {
             var directiveIndex = directive.IndexOf(":");
 
@@ -40,7 +44,7 @@ namespace OrchardCore.Scripting
             }
 
             var methodProviders = scopedMethodProviders != null ? GlobalMethodProviders.Concat(scopedMethodProviders) : GlobalMethodProviders;
-            var scope = engine.CreateScope(methodProviders.SelectMany(x => x.GetMethods()), _serviceProvider);
+            var scope = engine.CreateScope(methodProviders.SelectMany(x => x.GetMethods()), _serviceProvider, fileProvider, basePath);
             return engine.Evaluate(scope, script);
         }
 
