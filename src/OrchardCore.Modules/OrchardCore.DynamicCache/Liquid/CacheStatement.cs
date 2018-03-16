@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DynamicCache.Services;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid.Ast;
@@ -39,22 +35,14 @@ namespace OrchardCore.DynamicCache.Liquid
             var durationString = arguments["fixed_duration"].ToStringValue();
             var slidingDurationString = arguments["sliding_duration"].ToStringValue();
 
-            //if (!context.AmbientValues.TryGetValue("ViewContext", out var viewContextObj))
-            //{
-            //    throw new ArgumentException("ViewContext missing while invoking 'cache' block");
-            //}
-
             if (!context.AmbientValues.TryGetValue("Services", out var servicesObj))
             {
                 throw new ArgumentException("Services missing while invoking 'cache' block");
             }
-
-            //var viewContext = viewContextObj as ViewContext;
+            
             var services = servicesObj as IServiceProvider;
             
             var dynamicCache = services.GetService<IDynamicCacheService>(); // todo: if this is not registered then just fall through without caching?
-            //var shapeFactory = services.GetService<IShapeFactory>();
-            //var displayHelperFactory = services.GetService<IDisplayHelperFactory>();
             var cacheScopeManager = services.GetService<ICacheScopeManager>();
 
             var cacheContext = new CacheContext(cacheKey)
@@ -86,12 +74,7 @@ namespace OrchardCore.DynamicCache.Liquid
 
             foreach (var statement in Statements)
             {
-                var completion = await statement.WriteToAsync(content, encoder, context);
-
-                //if (completion != Completion.Normal)
-                //{
-                //    return completion;
-                //}
+                await statement.WriteToAsync(content, encoder, context);
             }
 
             cacheScopeManager.ExitScope();
@@ -116,34 +99,6 @@ namespace OrchardCore.DynamicCache.Liquid
             await writer.WriteAsync(content.ToString());
 
             return Completion.Normal;
-
-            //var shape = await shapeFactory.CreateAsync("CacheBlock");
-            
-            //var metadata = shape.Metadata;
-
-            //metadata.OnProcessing(async s =>
-            //{
-            //    cacheScopeManager.EnterScope(metadata.Cache());
-
-            //    try
-            //    {
-            //        if (debugMode)
-            //        {
-            //            metadata.Wrappers.Add("CacheBlockWrapper");
-            //        }
-            //    }
-            //    finally
-            //    {
-            //        cacheScopeManager.ExitScope();
-            //    }
-
-            //});
-
-            //var display = (DisplayHelper)displayHelperFactory.CreateHelper(viewContext);
-
-            //writer.Write(await display.ShapeExecuteAsync(shape));
-
-            //return Completion.Normal;
         }
     }
 }
