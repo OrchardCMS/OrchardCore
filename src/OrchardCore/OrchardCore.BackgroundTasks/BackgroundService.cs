@@ -1,13 +1,14 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 
-namespace Microsoft.Extensions.Hosting
+namespace OrchardCore.BackgroundTasks
 {
     /// <summary>
     /// Base class for implementing a long running <see cref="IHostedService"/>.
     /// </summary>
-    public abstract class BackgroundService : IHostedService, IDisposable
+    internal abstract class BackgroundService : IHostedService, IDisposable
     {
         private Task _executingTask;
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();

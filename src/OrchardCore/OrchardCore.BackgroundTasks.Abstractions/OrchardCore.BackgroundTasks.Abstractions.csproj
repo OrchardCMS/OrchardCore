@@ -5,8 +5,4 @@
     <RootNamespace>OrchardCore.BackgroundTasks</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(MicrosoftExtensionsHostingAbstractionsPackageVersion)" />
-  </ItemGroup>
-
 </Project>

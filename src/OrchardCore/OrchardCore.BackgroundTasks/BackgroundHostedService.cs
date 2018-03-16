@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NCrontab;
 using OrchardCore.Environment.Shell;
@@ -17,7 +16,7 @@ using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.BackgroundTasks
 {
-    public class BackgroundHostedService : BackgroundService, IShellDescriptorManagerEventHandler
+    internal class BackgroundHostedService : BackgroundService, IShellDescriptorManagerEventHandler
     {
         private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
@@ -195,8 +194,10 @@ namespace OrchardCore.BackgroundTasks
 
         public static Task ForEachAsync<T>(this IEnumerable<T> source, Func<T, Task> body)
         {
+            var partitionCount = System.Environment.ProcessorCount;
+
             return Task.WhenAll(
-                from partition in Partitioner.Create(source).GetPartitions(8)
+                from partition in Partitioner.Create(source).GetPartitions(partitionCount)
                 select Task.Run(async delegate
                 {
                     using (partition)
