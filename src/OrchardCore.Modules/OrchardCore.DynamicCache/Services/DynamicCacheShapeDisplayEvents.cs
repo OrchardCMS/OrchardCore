@@ -72,18 +72,15 @@ namespace OrchardCore.DynamicCache.Services
             }
             else if (context.ChildContent != null)
             {
-                var content = await _dynamicCacheService.SetCachedValueAsync(cacheContext, () =>
+                using (var sw = new StringWriter())
                 {
-                    using (var sw = new StringWriter())
-                    {
-                        context.ChildContent.WriteTo(sw, HtmlEncoder.Default);
-                        return Task.FromResult(sw.ToString());
-                    }
-                });
+                    context.ChildContent.WriteTo(sw, HtmlEncoder.Default);
+                    await _dynamicCacheService.SetCachedValueAsync(cacheContext, sw.ToString());
 
-                if (content != null)
-                {
-                    context.ChildContent = new HtmlString(content);
+                    //if (content != null)
+                    //{
+                    //    context.ChildContent = new HtmlString(content);
+                    //}
                 }
             }
         }

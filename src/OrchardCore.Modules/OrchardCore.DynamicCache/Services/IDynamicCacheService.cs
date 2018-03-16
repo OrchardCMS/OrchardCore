@@ -14,12 +14,8 @@ namespace OrchardCore.DynamicCache.Services
     // todo: is this the correct name?
     public interface IDynamicCacheService
     {
-        // Takes the cache id, checks for cached contexts based on id, returns null if miss or cached content if hit
         Task<string> GetCachedValueAsync(string cacheId);
-        // I don't think this method is needed
-        //Task<string> GetCachedValueAsync(CacheContext context);
-        // needs to also cache the context by the cache id
-        Task<string> SetCachedValueAsync(CacheContext context, Func<Task<string>> contentFactory);
+        Task SetCachedValueAsync(CacheContext context, string value); 
         Task<string> ProcessEdgeSideIncludesAsync(string value);
     }
 
@@ -84,30 +80,28 @@ namespace OrchardCore.DynamicCache.Services
             return null;
         }
         
-        public async Task<string> SetCachedValueAsync(CacheContext context, Func<Task<string>> contentFactory)
+        public async Task SetCachedValueAsync(CacheContext context, string value)
         {
             //_cacheScopeManager.EnterScope(context);
             if (_cached.Contains(context))
             {
-                return null;
+                return;
             }
 
             var cacheEntries = await _cacheContextManager.GetDiscriminatorsAsync(context.Contexts);
             string cacheKey = GetCacheKey(context.CacheId, cacheEntries);
-
-            var value = await contentFactory();
-
+            
             _cached.Add(context);
             _localCache[cacheKey] = value;
             var esi = JsonConvert.SerializeObject(EdgeSideInclude.FromCacheContext(context));
-            var result = $"[[cache esi='{esi}']]";
+            //var result = $"[[cache esi='{esi}']]";
 
             // todo: when all
             await SetCachedValueAsync(cacheKey, value, context);
             await SetCachedValueAsync("cachecontext-" + context.CacheId, esi, context);
 
             //_cacheScopeManager.ExitScope();
-            return result;
+            //return result; //todo: do we need to return anything?
         }
 
         private async Task SetCachedValueAsync(string cacheKey, string value, CacheContext context)

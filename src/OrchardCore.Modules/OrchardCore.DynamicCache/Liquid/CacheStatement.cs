@@ -121,7 +121,7 @@ namespace OrchardCore.DynamicCache.Liquid
                 content = debugContent;
             }
 
-            await dynamicCache.SetCachedValueAsync(cacheContext, () => Task.FromResult(content.ToString()));
+            await dynamicCache.SetCachedValueAsync(cacheContext, content.ToString());
 
             await writer.WriteAsync(content.ToString());
 
