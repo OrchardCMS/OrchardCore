@@ -51,8 +51,9 @@ namespace OrchardCore.BackgroundTasks
 
                 var shells = GetRunningShells();
 
-                Parallel.ForEach(shells, new ParallelOptions { MaxDegreeOfParallelism = 8 }, async shell =>
+                await shells.ForEachAsync(async shell =>
                 {
+                    await Task.Delay(TimeSpan.FromSeconds(10));
                     if (shell.Released || stoppingToken.IsCancellationRequested)
                     {
                         return;
@@ -186,6 +187,26 @@ namespace OrchardCore.BackgroundTasks
 
                 return false;
             }
+        }
+    }
+
+    internal static class EnumerableExtensions
+    {
+
+        public static Task ForEachAsync<T>(this IEnumerable<T> source, Func<T, Task> body)
+        {
+            return Task.WhenAll(
+                from partition in Partitioner.Create(source).GetPartitions(8)
+                select Task.Run(async delegate
+                {
+                    using (partition)
+                    {
+                        while (partition.MoveNext())
+                        {
+                            await body(partition.Current);
+                        }
+                    }
+                }));
         }
     }
 
