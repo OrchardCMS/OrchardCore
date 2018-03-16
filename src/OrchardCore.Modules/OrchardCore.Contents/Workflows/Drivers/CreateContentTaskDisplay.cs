@@ -4,12 +4,11 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
-using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Contents.Workflows.Drivers
 {
-    public class CreateContentTaskDisplay : ActivityDisplayDriver<CreateContentTask, CreateContentTaskViewModel>
+    public class CreateContentTaskDisplay : ContentTaskDisplayDriver<CreateContentTask, CreateContentTaskViewModel>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -18,19 +17,23 @@ namespace OrchardCore.Contents.Workflows.Drivers
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        protected override void Map(CreateContentTask source, CreateContentTaskViewModel target)
+        protected override void EditActivity(CreateContentTask activity, CreateContentTaskViewModel model)
         {
-            target.AvailableContentTypes = _contentDefinitionManager.ListTypeDefinitions().Where(x => x.Settings.ToObject<ContentTypeSettings>().Creatable).Select(x => new SelectListItem { Text = x.DisplayName, Value = x.Name }).ToList();
-            target.ContentType = source.ContentType;
-            target.Publish = source.Publish;
-            target.ContentProperties = source.ContentProperties.Expression;
+            model.AvailableContentTypes = _contentDefinitionManager.ListTypeDefinitions()
+                .Where(x => x.Settings.ToObject<ContentTypeSettings>().Creatable)
+                .Select(x => new SelectListItem { Text = x.DisplayName, Value = x.Name })
+                .ToList();
+
+            model.ContentType = activity.ContentType;
+            model.Publish = activity.Publish;
+            model.ContentProperties = activity.ContentProperties.Expression;
         }
 
-        protected override void Map(CreateContentTaskViewModel source, CreateContentTask target)
+        protected override void UpdateActivity(CreateContentTaskViewModel model, CreateContentTask activity)
         {
-            target.ContentType = source.ContentType;
-            target.Publish = source.Publish;
-            target.ContentProperties = new WorkflowExpression<string>(source.ContentProperties);
+            activity.ContentType = model.ContentType;
+            activity.Publish = model.Publish;
+            activity.ContentProperties = new WorkflowExpression<string>(model.ContentProperties);
         }
     }
 }

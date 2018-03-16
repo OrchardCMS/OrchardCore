@@ -7,14 +7,14 @@ namespace OrchardCore.Workflows.Drivers
 {
     public class CorrelateTaskDisplay : ActivityDisplayDriver<CorrelateTask, CorrelateTaskViewModel>
     {
-        protected override void Map(CorrelateTask source, CorrelateTaskViewModel target)
+        protected override void EditActivity(CorrelateTask activity, CorrelateTaskViewModel model)
         {
-            target.Value = source.Value.Expression;
+            model.Value = activity.Value.Expression;
         }
 
-        protected override void Map(CorrelateTaskViewModel source, CorrelateTask target)
+        protected override void UpdateActivity(CorrelateTaskViewModel model, CorrelateTask activity)
         {
-            target.Value = new WorkflowExpression<string>(source.Value);
+            activity.Value = new WorkflowExpression<string>(model.Value);
         }
     }
 }

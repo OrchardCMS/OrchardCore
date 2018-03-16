@@ -1,10 +1,10 @@
+@model ActivityViewModel<LogTask>
 @using Microsoft.Extensions.Logging
-@using OrchardCore.Workflows.Activities
+
 @{
-    var activity = (LogTask)Model.Activity;
     string className = "info-circle";
 
-    switch (activity.LogLevel)
+    switch (Model.Activity.LogLevel)
     {
         case LogLevel.Error:
         case LogLevel.Critical:
@@ -24,4 +24,4 @@
 <header>
     <h4><i class="fa fa-@className"></i>@T["Log"]</h4>
 </header>
-<span>@activity.LogLevel</span> <em>&quot;@activity.Text&quot;</em>
+<span>@Model.Activity.LogLevel</span> <em>&quot;@Model.Activity.Text&quot;</em>

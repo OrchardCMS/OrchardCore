@@ -7,24 +7,24 @@ namespace OrchardCore.Workflows.Http.Drivers
 {
     public class HttpRequestTaskDisplay : ActivityDisplayDriver<HttpRequestTask, HttpRequestTaskViewModel>
     {
-        protected override void Map(HttpRequestTask source, HttpRequestTaskViewModel target)
+        protected override void EditActivity(HttpRequestTask activity, HttpRequestTaskViewModel model)
         {
-            target.Url = source.Url.Expression;
-            target.HttpMethod = source.HttpMethod;
-            target.Body = source.Body.Expression;
-            target.ContentType = source.ContentType.Expression;
-            target.Headers = source.Headers.Expression;
-            target.HttpResponseCodes = source.HttpResponseCodes;
+            model.Url = activity.Url.Expression;
+            model.HttpMethod = activity.HttpMethod;
+            model.Body = activity.Body.Expression;
+            model.ContentType = activity.ContentType.Expression;
+            model.Headers = activity.Headers.Expression;
+            model.HttpResponseCodes = activity.HttpResponseCodes;
         }
 
-        protected override void Map(HttpRequestTaskViewModel source, HttpRequestTask target)
+        protected override void UpdateActivity(HttpRequestTaskViewModel model, HttpRequestTask activity)
         {
-            target.Url = new WorkflowExpression<string>(source.Url?.Trim());
-            target.HttpMethod = source.HttpMethod;
-            target.Body = new WorkflowExpression<string>(source.Body);
-            target.ContentType = new WorkflowExpression<string>(source.ContentType?.Trim());
-            target.Headers = new WorkflowExpression<string>(source.Headers?.Trim());
-            target.HttpResponseCodes = source.HttpResponseCodes;
+            activity.Url = new WorkflowExpression<string>(model.Url?.Trim());
+            activity.HttpMethod = model.HttpMethod;
+            activity.Body = new WorkflowExpression<string>(model.Body);
+            activity.ContentType = new WorkflowExpression<string>(model.ContentType?.Trim());
+            activity.Headers = new WorkflowExpression<string>(model.Headers?.Trim());
+            activity.HttpResponseCodes = model.HttpResponseCodes;
         }
     }
 }

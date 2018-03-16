@@ -1,13 +1,12 @@
-@using OrchardCore.Workflows.Activities
-@{
-    var activity = (ForkTask)Model.Activity;
-}
+@model ActivityViewModel<ForkTask>
+
 <header>
     <h4><i class="fa fa-code-fork"></i>@T["Fork"]</h4>
 </header>
-@if (activity.Forks.Any())
+
+@if (Model.Activity.Forks.Any())
 {
-    <span>@T["Fork execution into <em>{0}</em>", string.Join(", ", activity.Forks)]</span>
+    <span>@T["Fork execution into <em>{0}</em>", string.Join(", ", Model.Activity.Forks)]</span>
 }
 else
 {

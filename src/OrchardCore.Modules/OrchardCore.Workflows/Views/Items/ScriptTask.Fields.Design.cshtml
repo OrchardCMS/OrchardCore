@@ -1,11 +1,9 @@
-@using OrchardCore.Workflows.Activities
-@{
-    var activity = (ScriptTask)Model.Activity;
-}
+@model ActivityViewModel<ScriptTask>
+
 <header>
     <h4><i class="fa fa-cog"></i>@T["Script"]</h4>
 </header>
-@if (!String.IsNullOrWhiteSpace(activity.Title))
+@if (!String.IsNullOrWhiteSpace(Model.Activity.Title))
 {
-    <span>@activity.Title</span>
+    <span>@Model.Activity.Title</span>
 }

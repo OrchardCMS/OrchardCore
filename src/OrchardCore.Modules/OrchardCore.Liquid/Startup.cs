@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid.Drivers;
 using OrchardCore.Liquid.Filters;
@@ -24,6 +25,7 @@ namespace OrchardCore.Liquid
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentItem>();
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentElement>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
 
             // When accessing a property of a JObject instance
             TemplateContext.GlobalMemberAccessStrategy.Register<JObject, object>((obj, name) => obj[name]);

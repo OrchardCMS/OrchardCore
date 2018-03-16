@@ -1,8 +1,6 @@
-@using OrchardCore.Workflows.Activities
-@{
-    var activity = (WhileLoopTask)Model.Activity;
-}
+@model ActivityViewModel<WhileLoopTask>
+
 <header>
     <h4><i class="fa fa-circle-o-notch"></i>@T["While Loop"]</h4>
 </header>
-<span>@T["Loop while <em>{0}</em> is true", activity.Condition]</span>
+<span>@T["Loop while <em>{0}</em> is true", Model.Activity.Condition]</span>

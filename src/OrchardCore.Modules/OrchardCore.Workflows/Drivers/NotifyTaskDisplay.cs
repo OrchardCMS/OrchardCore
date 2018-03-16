@@ -7,16 +7,16 @@ namespace OrchardCore.Workflows.Drivers
 {
     public class NotifyTaskDisplay : ActivityDisplayDriver<NotifyTask, NotifyTaskViewModel>
     {
-        protected override void Map(NotifyTask source, NotifyTaskViewModel target)
+        protected override void EditActivity(NotifyTask activity, NotifyTaskViewModel model)
         {
-            target.NotificationType = source.NotificationType;
-            target.Message = source.Message.Expression;
+            model.NotificationType = activity.NotificationType;
+            model.Message = activity.Message.Expression;
         }
 
-        protected override void Map(NotifyTaskViewModel source, NotifyTask target)
+        protected override void UpdateActivity(NotifyTaskViewModel model, NotifyTask activity)
         {
-            target.NotificationType = source.NotificationType;
-            target.Message = new WorkflowExpression<string>(source.Message);
+            activity.NotificationType = model.NotificationType;
+            activity.Message = new WorkflowExpression<string>(model.Message);
         }
     }
 }

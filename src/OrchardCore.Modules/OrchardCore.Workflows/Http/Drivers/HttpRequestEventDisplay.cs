@@ -6,16 +6,16 @@ namespace OrchardCore.Workflows.Http.Drivers
 {
     public class HttpRequestEventDisplay : ActivityDisplayDriver<HttpRequestEvent, HttpRequestEventViewModel>
     {
-        protected override void Map(HttpRequestEvent source, HttpRequestEventViewModel target)
+        protected override void EditActivity(HttpRequestEvent activity, HttpRequestEventViewModel model)
         {
-            target.HttpMethod = source.HttpMethod;
-            target.Url = source.Url;
+            model.HttpMethod = activity.HttpMethod;
+            model.Url = activity.Url;
         }
 
-        protected override void Map(HttpRequestEventViewModel source, HttpRequestEvent target)
+        protected override void UpdateActivity(HttpRequestEventViewModel model, HttpRequestEvent activity)
         {
-            target.HttpMethod = source.HttpMethod?.Trim();
-            target.Url = source.Url?.Trim();
+            activity.HttpMethod = model.HttpMethod?.Trim();
+            activity.Url = model.Url?.Trim();
         }
     }
 }

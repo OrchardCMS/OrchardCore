@@ -7,14 +7,14 @@ namespace OrchardCore.Workflows.Drivers
 {
     public class ForLoopTaskDisplay : ActivityDisplayDriver<ForLoopTask, ForLoopTaskViewModel>
     {
-        protected override void Map(ForLoopTask source, ForLoopTaskViewModel target)
+        protected override void EditActivity(ForLoopTask activity, ForLoopTaskViewModel model)
         {
-            target.CountExpression = source.Count.Expression;
+            model.CountExpression = activity.Count.Expression;
         }
 
-        protected override void Map(ForLoopTaskViewModel source, ForLoopTask target)
+        protected override void UpdateActivity(ForLoopTaskViewModel model, ForLoopTask activity)
         {
-            target.Count = new WorkflowExpression<int>(source.CountExpression);
+            activity.Count = new WorkflowExpression<int>(model.CountExpression);
         }
     }
 }

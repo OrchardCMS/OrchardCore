@@ -1,8 +1,6 @@
+@model ActivityViewModel<HttpRequestTask>
 @using OrchardCore.Workflows.Http.Activities
-@{
-    var activity = (HttpRequestTask)Model.Activity;
-}
 <header>
     <h4><i class="fa fa-globe"></i>@T["HTTP Request"]</h4>
 </header>
-<span>@T["<em>{0} {1}</em>", activity.HttpMethod, activity.Url]</span>
+<span>@T["<em>{0} {1}</em>", Model.Activity.HttpMethod, Model.Activity.Url]</span>

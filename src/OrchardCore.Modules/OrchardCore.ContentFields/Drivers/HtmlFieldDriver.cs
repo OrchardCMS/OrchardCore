@@ -21,7 +21,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Display(HtmlField field, BuildFieldDisplayContext context)
         {
-            return Shape<DisplayHtmlFieldViewModel>("HtmlField", async model =>
+            return Initialize<DisplayHtmlFieldViewModel>("HtmlField", async model =>
             {
                 var templateContext = new TemplateContext();
                 templateContext.SetValue("ContentItem", field.ContentItem);
@@ -43,7 +43,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(HtmlField field, BuildFieldEditorContext context)
         {
-            return Shape<EditHtmlFieldViewModel>("HtmlField_Edit", model =>
+            return Initialize<EditHtmlFieldViewModel>("HtmlField_Edit", model =>
             {
                 model.Html = field.Html;
                 model.Field = field;

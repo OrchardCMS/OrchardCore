@@ -13,7 +13,7 @@ namespace OrchardCore.Settings.Drivers
         public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
             return Task.FromResult<IDisplayResult>(
-                    Shape<SiteSettingsViewModel>("Settings_Edit", model =>
+                    Initialize<SiteSettingsViewModel>("Settings_Edit", model =>
                     {
                         model.SiteName = site.SiteName;
                         model.TimeZone = site.TimeZone;

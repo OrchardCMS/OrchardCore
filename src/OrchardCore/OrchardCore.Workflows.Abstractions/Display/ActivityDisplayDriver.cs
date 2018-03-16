@@ -3,75 +3,85 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Display
 {
     /// <summary>
-    /// A display driver for <see cref="IActivity"/> types. Adds useful values to the created shape, such as the <see cref="IActivity"/> itself.
+    /// Base class for activity drivers.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public abstract class ActivityDisplayDriver<T> : DisplayDriver<IActivity, T> where T : class, IActivity
+    public abstract class ActivityDisplayDriver<TActivity> : DisplayDriver<IActivity, TActivity> where TActivity : class, IActivity
     {
-        protected virtual string ShapeNameBase => typeof(T).Name;
 
-        public override IDisplayResult Display(T activity)
-        {
-            return Combine(
-                Shape($"{ShapeNameBase}_Fields_Thumbnail", activity).Location("Thumbnail", "Content"),
-                Shape($"{ShapeNameBase}_Fields_Design", activity).Location("Design", "Content")
-            );
-        }
-
-        protected virtual ShapeResult Shape(string shapeType, T activity)
-        {
-            return Shape(shapeType, shape =>
-            {
-                shape.Activity = activity;
-            });
-        }
     }
 
     /// <summary>
-    /// A convention-based activity display driver that simplifies its sub-classes.
+    /// Base class for activity drivers using a strongly typed view model.
     /// </summary>
-    public abstract class ActivityDisplayDriver<TActivity, TActivityViewModel> : ActivityDisplayDriver<TActivity> where TActivity : class, IActivity where TActivityViewModel : class, new()
+    public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : ActivityDisplayDriver<TActivity> where TActivity : class, IActivity where TEditViewModel : class, new()
     {
+        private static string ThumbnailshapeType = $"{typeof(TActivity).Name}_Fields_Thumbnail";
+        private static string DesignShapeType = $"{typeof(TActivity).Name}_Fields_Design";
+        private static string EditShapeType = $"{typeof(TActivity).Name}_Fields_Edit";
+
+        public override IDisplayResult Display(TActivity activity)
+        {
+            return Combine(
+                Shape(ThumbnailshapeType, new ActivityViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
+                Shape(DesignShapeType, new ActivityViewModel<TActivity>(activity)).Location("Design", "Content")
+            );
+        }
+
         public override IDisplayResult Edit(TActivity activity)
         {
-            return Shape<TActivityViewModel>($"{ShapeNameBase}_Fields_Edit", model =>
+            return Initialize<TEditViewModel>(EditShapeType, model =>
             {
-                Map(activity, model);
+                return EditActivityAsync(activity, model);
             }).Location("Content");
         }
 
         public async override Task<IDisplayResult> UpdateAsync(TActivity activity, IUpdateModel updater)
         {
-            var viewModel = CreateViewModel();
+            var viewModel = new TEditViewModel();
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
             {
-                Map(viewModel, activity);
+                await UpdateActivityAsync(viewModel, activity);
             }
+
             return Edit(activity);
         }
 
-        protected TActivityViewModel CreateViewModel()
+        /// <summary>
+        /// Edit the view model before it's used in the editor.
+        /// </summary>
+        protected virtual Task EditActivityAsync(TActivity activity, TEditViewModel model)
         {
-            return new TActivityViewModel();
+            EditActivity(activity, model);
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Maps activity properties onto the view model. Called when the editor is to be displayed.
+        /// Edit the view model before it's used in the editor.
         /// </summary>
-        protected virtual void Map(TActivity source, TActivityViewModel target)
+        protected virtual void EditActivity(TActivity activity, TEditViewModel model)
         {
         }
 
         /// <summary>
-        /// Maps view model properties onto the activity. Called when the editor form has been submitted back.
+        /// Updates the activity when the view model is validated.
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="target"></param>
-        protected virtual void Map(TActivityViewModel source, TActivity target)
+        protected virtual Task UpdateActivityAsync(TEditViewModel model, TActivity activity)
+        {
+            UpdateActivity(model, activity);
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Updates the activity when the view model is validated.
+        /// </summary>
+        protected virtual void UpdateActivity(TEditViewModel model, TActivity activity)
         {
         }
     }

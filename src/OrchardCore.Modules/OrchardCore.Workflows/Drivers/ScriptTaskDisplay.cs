@@ -9,18 +9,18 @@ namespace OrchardCore.Workflows.Drivers
 {
     public class ScriptTaskDisplay : ActivityDisplayDriver<ScriptTask, ScriptTaskViewModel>
     {
-        protected override void Map(ScriptTask source, ScriptTaskViewModel target)
+        protected override void EditActivity(ScriptTask source, ScriptTaskViewModel model)
         {
-            target.Title = source.Title;
-            target.AvailableOutcomes = string.Join(", ", source.AvailableOutcomes);
-            target.Script = source.Script.Expression;
+            model.Title = source.Title;
+            model.AvailableOutcomes = string.Join(", ", source.AvailableOutcomes);
+            model.Script = source.Script.Expression;
         }
 
-        protected override void Map(ScriptTaskViewModel source, ScriptTask target)
+        protected override void UpdateActivity(ScriptTaskViewModel model, ScriptTask activity)
         {
-            target.Title = source.Title?.Trim();
-            target.AvailableOutcomes = source.AvailableOutcomes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
-            target.Script = new WorkflowExpression<object>(source.Script);
+            activity.Title = model.Title?.Trim();
+            activity.AvailableOutcomes = model.AvailableOutcomes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
+            activity.Script = new WorkflowExpression<object>(model.Script);
         }
     }
 }

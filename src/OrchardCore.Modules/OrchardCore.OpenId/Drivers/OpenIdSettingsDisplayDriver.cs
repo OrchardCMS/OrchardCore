@@ -47,7 +47,7 @@ namespace OrchardCore.OpenId.Drivers
                 _notifier.Warning(T["The site needs to be restarted for the settings to take effect"]);
 
             var requestUrl = _httpContextAccessor.HttpContext.Request.GetDisplayUrl();
-            return Shape<OpenIdSettingsViewModel>("OpenIdSettings_Edit", model =>
+            return Initialize<OpenIdSettingsViewModel>("OpenIdSettings_Edit", model =>
             {
                 model.TestingModeEnabled = settings.TestingModeEnabled;
                 model.AccessTokenFormat = settings.AccessTokenFormat;

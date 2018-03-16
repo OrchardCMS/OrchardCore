@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
@@ -34,7 +35,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
     public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>, IRazorPage
     {
-        private dynamic _displayHelper;
+        private IDisplayHelper _displayHelper;
         private IShapeFactory _shapeFactory;
         private OrchardRazorHelper _orchardHelper;
 
@@ -102,7 +103,7 @@ namespace OrchardCore.DisplayManagement.Razor
         public Task<IHtmlContent> DisplayAsync(dynamic shape)
         {
             EnsureDisplayHelper();
-            return (Task<IHtmlContent>)_displayHelper(shape);
+            return _displayHelper.ShapeExecuteAsync(shape);
         }
 
         public OrchardRazorHelper OrchardCore

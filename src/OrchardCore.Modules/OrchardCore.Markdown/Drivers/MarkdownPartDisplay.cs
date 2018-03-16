@@ -28,14 +28,14 @@ namespace OrchardCore.Markdown.Drivers
 
         public override IDisplayResult Display(MarkdownPart markdownPart)
         {
-            return Shape<MarkdownPartViewModel>("MarkdownPart", m => BuildViewModel(m, markdownPart))
+            return Initialize<MarkdownPartViewModel>("MarkdownPart", m => BuildViewModel(m, markdownPart))
                 .Location("Detail", "Content:10")
                 .Location("Summary", "Content:10");
         }
 
         public override IDisplayResult Edit(MarkdownPart markdownPart)
         {
-            return Shape<MarkdownPartViewModel>("MarkdownPart_Edit", m => BuildViewModel(m, markdownPart));
+            return Initialize<MarkdownPartViewModel>("MarkdownPart_Edit", m => BuildViewModel(m, markdownPart));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MarkdownPart model, IUpdateModel updater)

@@ -1,8 +1,6 @@
-@using OrchardCore.Workflows.Activities
-@{
-    var activity = (ForLoopTask)Model.Activity;
-}
+@model ActivityViewModel<ForLoopTask>
+
 <header>
     <h4><i class="fa fa-circle-o-notch"></i>@T["For Loop"]</h4>
 </header>
-<span>@T["Loop <em>{0}</em> times", activity.Count]</span>
+<span>@T["Loop <em>{0}</em> times", Model.Activity.Count]</span>
