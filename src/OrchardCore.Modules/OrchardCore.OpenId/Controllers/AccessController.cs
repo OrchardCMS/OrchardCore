@@ -310,8 +310,18 @@ namespace OrchardCore.OpenId.Controllers
                 });
             }
 
+            var user = await _userManager.FindByNameAsync(request.Username);
+            if (user == null)
+            {
+                return BadRequest(new OpenIdConnectResponse
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                    ErrorDescription = T["The username/password couple is invalid."]
+                });
+            }
+
             var authorizations = await _authorizationManager.FindAsync(
-                subject: _userManager.GetUserId(User),
+                subject: await _userManager.GetUserIdAsync(user),
                 client : await _applicationManager.GetIdAsync(application),
                 status : OpenIddictConstants.Statuses.Valid,
                 type   : OpenIddictConstants.AuthorizationTypes.Permanent,
@@ -327,16 +337,6 @@ namespace OrchardCore.OpenId.Controllers
                         Error = OpenIdConnectConstants.Errors.ConsentRequired,
                         ErrorDescription = T["The logged in user is not allowed to access this client application."]
                     });
-            }
-
-            var user = await _userManager.FindByNameAsync(request.Username);
-            if (user == null)
-            {
-                return BadRequest(new OpenIdConnectResponse
-                {
-                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
-                    ErrorDescription = T["The username/password couple is invalid."]
-                });
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
