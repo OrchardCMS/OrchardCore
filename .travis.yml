@@ -4,7 +4,7 @@ services:
   - docker
 dist: trusty
 mono: none
-dotnet: 2.1.101
+dotnet: 2.1.4
 env:
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
