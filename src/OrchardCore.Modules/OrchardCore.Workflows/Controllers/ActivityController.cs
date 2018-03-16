@@ -150,7 +150,7 @@ namespace OrchardCore.Workflows.Controllers
                 ReturnUrl = returnUrl
             };
 
-            return View(viewModel);
+            return View("EditActivity", viewModel);
         }
 
         [HttpPost]
@@ -172,7 +172,7 @@ namespace OrchardCore.Workflows.Controllers
                 model.Activity = activityContext.Activity;
                 model.ActivityEditor = activityEditor;
 
-                return View(model);
+                return View("EditActivity", model);
             }
 
             activityRecord.Properties = activityContext.Activity.Properties;
@@ -180,7 +180,9 @@ namespace OrchardCore.Workflows.Controllers
             _session.Save(workflowDefinition);
             _notifier.Success(H["Activity updated successfully"]);
 
-            return Url.IsLocalUrl(model.ReturnUrl) ? (IActionResult)Redirect(model.ReturnUrl) : RedirectToAction("Edit", "WorkflowDefinition", new { id = model.WorkflowDefinitionId });
+            return Url.IsLocalUrl(model.ReturnUrl) 
+                ? (IActionResult)Redirect(model.ReturnUrl) 
+                : RedirectToAction("Edit", "WorkflowDefinition", new { id = model.WorkflowDefinitionId });
         }
     }
 }
