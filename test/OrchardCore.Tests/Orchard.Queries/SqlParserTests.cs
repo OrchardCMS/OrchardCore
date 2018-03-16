@@ -68,7 +68,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a where a = false", "SELECT [a] WHERE [a] = 0;")]
         [InlineData("select a where a = 1", "SELECT [a] WHERE [a] = 1;")]
         [InlineData("select a where a = 1.234", "SELECT [a] WHERE [a] = 1.234;")]
-        [InlineData("select a where a = 'foo'", "SELECT [a] WHERE [a] = \"foo\";")]
+        [InlineData("select a where a = 'foo'", "SELECT [a] WHERE [a] = 'foo';")]
         [InlineData("select a where a between b and c", "SELECT [a] WHERE [a] BETWEEN [b] AND [c];")]
         [InlineData("select a where a not between b and c", "SELECT [a] WHERE [a] NOT BETWEEN [b] AND [c];")]
         [InlineData("select a where a = b or c = d", "SELECT [a] WHERE [a] = [b] OR [c] = [d];")]
@@ -94,19 +94,6 @@ namespace OrchardCore.Tests.OrchardCore.Queries
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
-
-        [Theory]
-        [InlineData("select a where a = 1", "SELECT [a] WHERE [a] = 1;")]
-        [InlineData("select a where a = true ", "SELECT [a] WHERE [a] = 1;")]
-        [InlineData("select a where a = 1.234", "SELECT [a] WHERE [a] = 1.234;")]
-        [InlineData("select a where a = 'abcd'", "SELECT [a] WHERE [a] = 'abcd';")]
-        public void ShouldParseLiterals(string sql, string expectedSql)
-        {
-            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
-            Assert.True(result);
-            Assert.Equal(expectedSql, FormatSql(rawQuery));
-        }
-
 
         [Fact]
         public void ShouldDefineDefaultParametersValue()
