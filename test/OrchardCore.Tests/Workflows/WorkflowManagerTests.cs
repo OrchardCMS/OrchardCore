@@ -98,7 +98,6 @@ namespace OrchardCore.Tests.Workflows
             var missingActivityLocalizer = new Mock<IStringLocalizer<MissingActivity>>();
             var clock = new Mock<IClock>();
             var workflowManager = new WorkflowManager(
-                serviceProvider,
                 activityLibrary.Object,
                 workflowDefinitionStore.Object,
                 workflowInstanceStore.Object,
