@@ -135,7 +135,7 @@ The liquid `cache` block can be used to cache sections of markup. `cache` blocks
 
 #### Arguments
 | Liquid Attribute | Description | Required |
-| --------- | ----------- | ----------- | ----------- |
+| --------- | ----------- | ----------- |
 | `id` | The identifier of the cached shape. | Yes (this is the default first argument- no need to explicitly specify the name of this argument)  |
 | `contexts` | A set of space/comma-separated context values. | No |
 | `dependencies` | A set of space/comma-separated dependency values. | No |
