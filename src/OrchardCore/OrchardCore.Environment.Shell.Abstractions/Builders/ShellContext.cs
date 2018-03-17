@@ -21,6 +21,7 @@ namespace OrchardCore.Hosting.ShellBuilders
         public ShellSettings Settings { get; set; }
         public ShellBlueprint Blueprint { get; set; }
         public IServiceProvider ServiceProvider { get; set; }
+        public SemaphoreSlim SemaphoreSlim  { get; set; } = new SemaphoreSlim(1, 1);
 
         /// <summary>
         /// Whether the shell is activated. 
@@ -136,6 +137,8 @@ namespace OrchardCore.Hosting.ShellBuilders
 
                 Settings = null;
                 Blueprint = null;
+
+                SemaphoreSlim.Dispose();
 
                 _disposed = true;
             }

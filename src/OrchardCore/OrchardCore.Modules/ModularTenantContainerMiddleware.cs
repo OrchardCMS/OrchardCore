@@ -46,7 +46,9 @@ namespace OrchardCore.Modules
                 {
                     if (!shellContext.IsActivated || shellContext.IsActivating)
                     {
-                        lock (shellContext)
+                        await shellContext.SemaphoreSlim.WaitAsync();
+
+                        try
                         {
                             // The tenant gets activated here
                             if (!shellContext.IsActivated)
@@ -70,6 +72,10 @@ namespace OrchardCore.Modules
 
                                 shellContext.IsActivating = false;
                             }
+                        }
+                        finally
+                        {
+                            shellContext.SemaphoreSlim.Release();
                         }
                     }
 
