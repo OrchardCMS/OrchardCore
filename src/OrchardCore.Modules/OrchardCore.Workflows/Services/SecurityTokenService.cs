@@ -8,7 +8,7 @@ namespace OrchardCore.Workflows.Services
 {
     public class SecurityTokenService : ISecurityTokenService
     {
-        private readonly IDataProtector _dataProtector;
+        private readonly ITimeLimitedDataProtector _dataProtector;
         private readonly IClock _clock;
 
         public SecurityTokenService(
@@ -16,7 +16,7 @@ namespace OrchardCore.Workflows.Services
             IClock clock,
             IStringLocalizer<SecurityTokenService> localizer)
         {
-            _dataProtector = dataProtectionProvider.CreateProtector("Tokens");
+            _dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
             _clock = clock;
             T = localizer;
         }
@@ -25,11 +25,9 @@ namespace OrchardCore.Workflows.Services
 
         public string CreateToken<T>(T payload, TimeSpan lifetime)
         {
-            var expiringPayload = new ExpiringPayload<T> { Payload = payload, ExpireUtc = _clock.UtcNow.Add(lifetime) };
+            var json = JsonConvert.SerializeObject(payload);
 
-            var json = JsonConvert.SerializeObject(expiringPayload);
-            var token = _dataProtector.Protect(json);
-            return token;
+            return _dataProtector.Protect(json, _clock.UtcNow.Add(lifetime));
         }
 
         public bool TryDecryptToken<T>(string token, out T payload)
@@ -38,13 +36,11 @@ namespace OrchardCore.Workflows.Services
 
             try
             {
-                var json = _dataProtector.Unprotect(token);
-                var expiringPayload = JsonConvert.DeserializeObject<ExpiringPayload<T>>(json);
+                var json = _dataProtector.Unprotect(token, out var expiration);
 
-                if (_clock.UtcNow < expiringPayload.ExpireUtc)
+                if (_clock.UtcNow < expiration.ToUniversalTime())
                 {
-                    payload = expiringPayload.Payload;
-
+                    payload = JsonConvert.DeserializeObject<T>(json);
                     return true;
                 }
             }
@@ -53,12 +49,6 @@ namespace OrchardCore.Workflows.Services
             }
 
             return false;
-        }
-
-        private class ExpiringPayload<T>
-        {
-            public T Payload { get; set; }
-            public DateTime ExpireUtc { get; set; }
         }
     }
 }
