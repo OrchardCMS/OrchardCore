@@ -2,41 +2,63 @@ using System;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Workflows.Services
 {
     public class SecurityTokenService : ISecurityTokenService
     {
-        private readonly Lazy<IDataProtector> _dataProtector;
+        private readonly IDataProtector _dataProtector;
+        private readonly IClock _clock;
 
-        public SecurityTokenService(IDataProtectionProvider dataProtectionProvider, IStringLocalizer<SecurityTokenService> localizer)
+        public SecurityTokenService(
+            IDataProtectionProvider dataProtectionProvider, 
+            IClock clock,
+            IStringLocalizer<SecurityTokenService> localizer)
         {
-            _dataProtector = new Lazy<IDataProtector>(() => dataProtectionProvider.CreateProtector("OrchardCore.Workflows.Services.SecurityTokenService.V1"));
+            _dataProtector = dataProtectionProvider.CreateProtector("Tokens");
+            _clock = clock;
             T = localizer;
         }
 
         private IStringLocalizer T { get; }
 
-        public string CreateToken<T>(T payload)
+        public string CreateToken<T>(T payload, TimeSpan lifetime)
         {
-            var json = JsonConvert.SerializeObject(payload);
-            var token = _dataProtector.Value.Protect(json);
+            var expiringPayload = new ExpiringPayload<T> { Payload = payload, ExpireUtc = _clock.UtcNow.Add(lifetime) };
+
+            var json = JsonConvert.SerializeObject(expiringPayload);
+            var token = _dataProtector.Protect(json);
             return token;
         }
 
-        public Result<T> DecryptToken<T>(string token)
+        public bool TryDecryptToken<T>(string token, out T payload)
         {
+            payload = default;
+
             try
             {
-                var json = _dataProtector.Value.Unprotect(token);
-                var payload = JsonConvert.DeserializeObject<T>(json);
+                var json = _dataProtector.Unprotect(token);
+                var expiringPayload = JsonConvert.DeserializeObject<ExpiringPayload<T>>(json);
 
-                return Result.Ok(payload);
+                if (_clock.UtcNow < expiringPayload.ExpireUtc)
+                {
+                    payload = expiringPayload.Payload;
+
+                    return true;
+                }
             }
-            catch (Exception ex)
+            catch
             {
-                return Result.Fail<T>(this.T[ex.Message]);
             }
+
+            return false;
+        }
+
+        private class ExpiringPayload<T>
+        {
+            public T Payload { get; set; }
+            public DateTime ExpireUtc { get; set; }
         }
     }
 }

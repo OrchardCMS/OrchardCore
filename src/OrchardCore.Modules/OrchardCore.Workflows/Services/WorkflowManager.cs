@@ -15,7 +15,6 @@ namespace OrchardCore.Workflows.Services
 {
     public class WorkflowManager : IWorkflowManager
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowDefinitionStore _workflowDefinitionStore;
         private readonly IWorkflowInstanceStore _workflowInstanceStore;
@@ -32,7 +31,6 @@ namespace OrchardCore.Workflows.Services
 
         public WorkflowManager
         (
-            IServiceProvider serviceProvider,
             IActivityLibrary activityLibrary,
             IWorkflowDefinitionStore workflowDefinitionRepository,
             IWorkflowInstanceStore workflowInstanceRepository,
@@ -48,7 +46,6 @@ namespace OrchardCore.Workflows.Services
             IClock clock
         )
         {
-            _serviceProvider = serviceProvider;
             _activityLibrary = activityLibrary;
             _workflowDefinitionStore = workflowDefinitionRepository;
             _workflowInstanceStore = workflowInstanceRepository;
@@ -91,7 +88,7 @@ namespace OrchardCore.Workflows.Services
             var output = await DeserializeAsync(state.Output);
             var lastResult = await DeserializeAsync(state.LastResult);
             var executedActivities = state.ExecutedActivities;
-            return new WorkflowExecutionContext(workflowDefinitionRecord, workflowInstanceRecord, _serviceProvider, mergedInput, output, properties, executedActivities, lastResult, activityQuery, _workflowContextHandlers.Resolve(), _expressionEvaluator, _scriptEvaluator, _workflowContextLogger);
+            return new WorkflowExecutionContext(workflowDefinitionRecord, workflowInstanceRecord, mergedInput, output, properties, executedActivities, lastResult, activityQuery, _workflowContextHandlers.Resolve(), _expressionEvaluator, _scriptEvaluator, _workflowContextLogger);
         }
 
         public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JObject properties)
@@ -144,7 +141,7 @@ namespace OrchardCore.Workflows.Services
                     continue;
                 }
 
-                var startActivity = workflowToStart.Activities.FirstOrDefault(x => x.IsStart && string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+                var startActivity = workflowToStart.Activities.FirstOrDefault(x => x.IsStart && String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
                 if (startActivity != null)
                 {
@@ -407,9 +404,9 @@ namespace OrchardCore.Workflows.Services
         /// <summary>
         /// Executes a specific action on all the activities of a workflow.
         /// </summary>
-        private async Task InvokeActivitiesAsync(WorkflowExecutionContext workflowContext, Func<ActivityContext, Task> action)
+        private Task InvokeActivitiesAsync(WorkflowExecutionContext workflowContext, Func<ActivityContext, Task> action)
         {
-            await workflowContext.Activities.Values.InvokeAsync(action, _logger);
+            return workflowContext.Activities.Values.InvokeAsync(action, _logger);
         }
 
         private async Task<IDictionary<string, object>> SerializeAsync(IDictionary<string, object> dictionary)

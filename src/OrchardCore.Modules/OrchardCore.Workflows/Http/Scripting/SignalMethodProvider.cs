@@ -20,8 +20,8 @@ namespace OrchardCore.Workflows.Http.Scripting
                 Name = "signalUrl",
                 Method = serviceProvider => (Func<string, string>)((signal) =>
                 {
-                    var payload = !string.IsNullOrWhiteSpace(workflowContext.CorrelationId) ? SignalPayload.ForCorrelation(signal, workflowContext.CorrelationId) : SignalPayload.ForWorkflowInstance(signal, workflowContext.WorkflowInstanceId);
-                    var token = signalService.CreateToken(payload);
+                    var payload = !String.IsNullOrWhiteSpace(workflowContext.CorrelationId) ? SignalPayload.ForCorrelation(signal, workflowContext.CorrelationId) : SignalPayload.ForWorkflowInstance(signal, workflowContext.WorkflowInstanceId);
+                    var token = signalService.CreateToken(payload, TimeSpan.FromDays(7));
                     var urlHelper = serviceProvider.GetRequiredService<IUrlHelper>();
                     return urlHelper.Action("Trigger", "Workflow", new { area = "OrchardCore.Workflows", token });
                 })

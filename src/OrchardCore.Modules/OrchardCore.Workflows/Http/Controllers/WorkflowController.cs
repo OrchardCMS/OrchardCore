@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -5,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Services;
@@ -53,36 +53,29 @@ namespace OrchardCore.Workflows.Controllers
                 return NotFound();
             }
 
-            var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowDefinition.WorkflowDefinitionId, activityId));
+            var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowDefinition.WorkflowDefinitionId, activityId), TimeSpan.FromDays(7));
             var url = Url.Action("Invoke", "Workflow", new { token = token });
 
             return Ok(url);
         }
 
-        [IgnoreAntiforgeryToken]
+        [HttpGet]
         public async Task<IActionResult> Invoke(string token)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ExecuteWorkflows))
+            if (!_securityTokenService.TryDecryptToken<WorkflowPayload>(token, out var payload))
             {
-                return Unauthorized();
-            }
-
-            var result = _securityTokenService.DecryptToken<WorkflowPayload>(token);
-
-            if (!result.IsSuccess)
-            {
-                _logger.LogDebug("Invalid SAS token provided: " + token);
+                _logger.LogWarning("Invalid SAS token provided");
                 return NotFound();
             }
 
-            var workflowDefinition = await _workflowDefinitionStore.GetAsync(result.Value.WorkflowId);
+            var workflowDefinition = await _workflowDefinitionStore.GetAsync(payload.WorkflowId);
 
             if (workflowDefinition == null)
             {
                 return NotFound();
             }
 
-            var startActivity = workflowDefinition.Activities.FirstOrDefault(x => x.ActivityId == result.Value.ActivityId);
+            var startActivity = workflowDefinition.Activities.FirstOrDefault(x => x.ActivityId == payload.ActivityId);
 
             if (startActivity.IsStart)
             {
@@ -103,33 +96,26 @@ namespace OrchardCore.Workflows.Controllers
                 }
             }
 
-            return new EmptyResult();
+            return Accepted();
         }
 
-        [IgnoreAntiforgeryToken]
+        [HttpGet]
         public async Task<IActionResult> Trigger(string token)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ExecuteWorkflows))
+            if (!_securityTokenService.TryDecryptToken<SignalPayload>(token, out var payload))
             {
-                return Unauthorized();
-            }
-
-            var result = _securityTokenService.DecryptToken<SignalPayload>(token);
-
-            if (!result.IsSuccess)
-            {
-                _logger.LogDebug("Invalid SAS token provided: " + token);
+                _logger.LogWarning("Invalid SAS token provided");
                 return NotFound();
             }
 
-            var input = new Dictionary<string, object> { { "Signal", result.Value.SignalName } };
+            var input = new Dictionary<string, object> { { "Signal", payload.SignalName } };
 
             CopyTo(Request.Query, input);
 
             // If a specific workflow instance was provided, then resume that workflow instance.
-            if (!string.IsNullOrWhiteSpace(result.Value.WorkflowInstanceId))
+            if (!String.IsNullOrWhiteSpace(payload.WorkflowInstanceId))
             {
-                var workflowInstance = await _workflowInstanceStore.GetAsync(result.Value.WorkflowInstanceId);
+                var workflowInstance = await _workflowInstanceStore.GetAsync(payload.WorkflowInstanceId);
                 var signalActivity = workflowInstance?.BlockingActivities.FirstOrDefault(x => x.Name == SignalEvent.EventName);
 
                 if (signalActivity == null)
@@ -143,10 +129,10 @@ namespace OrchardCore.Workflows.Controllers
             else
             {
                 // Resume all workflows with the specified correlation ID and start workflows with SignalEvent as their start activity.
-                await _workflowManager.TriggerEventAsync(SignalEvent.EventName, input, result.Value.CorrelationId);
+                await _workflowManager.TriggerEventAsync(SignalEvent.EventName, input, payload.CorrelationId);
             }
 
-            return new EmptyResult();
+            return Accepted();
         }
 
         private void CopyTo(IEnumerable<KeyValuePair<string, StringValues>> source, IDictionary<string, object> target)

@@ -13,14 +13,12 @@ namespace OrchardCore.Workflows.Models
         private readonly IEnumerable<IWorkflowExecutionContextHandler> _handlers;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<WorkflowExecutionContext> _logger;
 
         public WorkflowExecutionContext
         (
             WorkflowDefinition workflowDefinitionRecord,
             WorkflowInstance workflowInstanceRecord,
-            IServiceProvider serviceProvider,
             IDictionary<string, object> input,
             IDictionary<string, object> output,
             IDictionary<string, object> properties,
@@ -33,7 +31,6 @@ namespace OrchardCore.Workflows.Models
             ILogger<WorkflowExecutionContext> logger
         )
         {
-            _serviceProvider = serviceProvider;
             _handlers = handlers;
             _expressionEvaluator = expressionEvaluator;
             _scriptEvaluator = scriptEvaluator;

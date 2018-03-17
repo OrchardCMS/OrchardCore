@@ -39,42 +39,14 @@ namespace OrchardCore.Workflows.Http.Filters
 
             if (workflowDefinitionEntries.Any())
             {
-                var workflowDefinitionIds = workflowDefinitionEntries.Select(x => int.Parse(x.WorkflowId)).ToList();
+                var workflowDefinitionIds = workflowDefinitionEntries.Select(x => Int32.Parse(x.WorkflowId)).ToList();
                 var workflowDefinitions = (await _workflowDefinitionRepository.GetAsync(workflowDefinitionIds)).ToDictionary(x => x.Id);
 
                 foreach (var entry in workflowDefinitionEntries)
                 {
-                    var workflowDefinition = workflowDefinitions[int.Parse(entry.WorkflowId)];
+                    var workflowDefinition = workflowDefinitions[Int32.Parse(entry.WorkflowId)];
                     var activity = workflowDefinition.Activities.Single(x => x.ActivityId == entry.ActivityId);
                     await _workflowManager.StartWorkflowAsync(workflowDefinition, activity);
-                }
-            }
-
-            if (workflowInstanceEntries.Any())
-            {
-                var workflowInstanceUid = context.HttpContext.Request.Query["workflowInstanceId"];
-                var correlationId = context.HttpContext.Request.Query["correlationId"];
-                var query = workflowInstanceEntries;
-
-                if (!string.IsNullOrWhiteSpace(workflowInstanceUid))
-                {
-                    query = query.Where(x => x.WorkflowId == workflowInstanceUid);
-                }
-
-                if (!string.IsNullOrWhiteSpace(correlationId))
-                {
-                    query = query.Where(x => string.Equals(x.CorrelationId, correlationId, StringComparison.OrdinalIgnoreCase));
-                }
-
-                var filteredWorkflowInstanceEntries = query.ToList();
-                var workflowInstanceUids = filteredWorkflowInstanceEntries.Select(x => x.WorkflowId).ToList();
-                var workflowInstances = (await _workflowInstanceRepository.GetAsync(workflowInstanceUids)).ToDictionary(x => x.WorkflowInstanceId);
-
-                foreach (var entry in filteredWorkflowInstanceEntries)
-                {
-                    var workflowInstance = workflowInstances[entry.WorkflowId];
-                    var awaitingActivity = workflowInstance.BlockingActivities.First(x => x.ActivityId == entry.ActivityId);
-                    await _workflowManager.ResumeWorkflowAsync(workflowInstance, awaitingActivity);
                 }
             }
 
