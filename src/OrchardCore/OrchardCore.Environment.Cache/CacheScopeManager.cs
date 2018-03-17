@@ -28,9 +28,17 @@ namespace OrchardCore.Environment.Cache
             }
         }
 
+        public void AddTag(params string[] tag)
+        {
+            if (_scopes.Count > 0)
+            {
+                _scopes.Peek().AddTag(tag);
+            }
+        }
+
         private void MergeCacheContexts(CacheContext into, CacheContext from)
         {
-            // todo: do we need to merge contexts? if inner cache items have more specific contexts than the puter objects, then the ESIs will handle this?
+            // todo: do we need to merge contexts? if inner cache items have more specific contexts than the outer objects, then the ESIs will handle this?
             into.AddContext(from.Contexts.ToArray());
             into.AddTag(from.Tags.ToArray());
             into.AddDependency(from.Dependencies.ToArray());

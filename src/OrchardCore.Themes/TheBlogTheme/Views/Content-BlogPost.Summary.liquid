@@ -1,6 +1,3 @@
-{% assign cacheKey = "SummaryBlogPost-" | append: Model.ContentItem.Id %}
-{% assign tags = "contentitemid:" | append: Model.ContentItem.ContentItemId %}
-{% cache cacheKey, tags: tags, fixed_duration: "0:5:00", sliding_duration: "0:0:45"  %}
 <div class="post-preview">
     {% a display_for:Model.ContentItem %}
     <h2 class="post-title">
@@ -30,4 +27,3 @@
     </p>
 </div>
 <hr />
-{% endcache %}

@@ -5,9 +5,10 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DynamicCache.Services;
 using OrchardCore.Environment.Cache;
 
-namespace OrchardCore.DynamicCache.Services
+namespace OrchardCore.DynamicCache.EventHandlers
 {
     /// <summary>
     /// Caches shapes in the default <see cref="IDynamicCacheService"/> implementation.
