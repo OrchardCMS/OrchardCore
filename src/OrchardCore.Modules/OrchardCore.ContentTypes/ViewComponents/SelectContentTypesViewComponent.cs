@@ -39,8 +39,7 @@ namespace OrchardCore.ContentTypes.ViewComponents
                 ContentTypeSelections = contentTypes
             };
 
-            // Need to provide full path to the view in order for the view engine to be able to find the view when this component is called from another module.
-            return View("/.Modules/OrchardCore.ContentTypes/Views/Shared/Components/SelectContentTypes/Default.cshtml", model);
+            return View(model);
         }
     }
 }
