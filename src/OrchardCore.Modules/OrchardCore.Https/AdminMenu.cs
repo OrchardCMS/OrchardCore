@@ -21,7 +21,7 @@ namespace OrchardCore.Https
             }
 
             builder
-                .Add(T["Design"], design => design
+                .Add(T["Configuration"], configuration => configuration
                     .Add(T["Settings"], settings => settings
                         .Add(T["HTTPS"], "100", entry => entry
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "Https" })

@@ -21,7 +21,6 @@ namespace OrchardCore.Recipes.Services
 {
     public class RecipeExecutor : IRecipeExecutor
     {
-        private readonly RecipeHarvestingOptions _recipeOptions;
         private readonly IApplicationLifetime _applicationLifetime;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _orchardHost;
@@ -34,7 +33,6 @@ namespace OrchardCore.Recipes.Services
         public RecipeExecutor(
             IEnumerable<IRecipeEventHandler> recipeEventHandlers,
             IRecipeStore recipeStore,
-            IOptions<RecipeHarvestingOptions> recipeOptions,
             IApplicationLifetime applicationLifetime,
             ShellSettings shellSettings,
             IShellHost orchardHost,
@@ -46,7 +44,6 @@ namespace OrchardCore.Recipes.Services
             _applicationLifetime = applicationLifetime;
             _recipeEventHandlers = recipeEventHandlers;
             _recipeStore = recipeStore;
-            _recipeOptions = recipeOptions.Value;
             Logger = logger;
             T = localizer;
         }
