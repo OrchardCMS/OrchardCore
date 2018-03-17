@@ -289,19 +289,17 @@ namespace OrchardCore.Users.Controllers
 
                 var user = await _signInManager.UserManager.FindByEmailAsync(emailClaim.Value);
 
+                var userCanRegister = false;
+
                 if (user == null)
                 {
-                    var userCanRegister = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>()?.UsersCanRegister ?? false;
+                    userCanRegister = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>()?.UsersCanRegister ?? false;
                     if (userCanRegister)
                     {
                         var nameClaim = claims.FirstOrDefault(c => c.Type == IdentityModel.JwtClaimTypes.PreferredUserName) ??
                                         claims.FirstOrDefault(c => c.Type == IdentityModel.JwtClaimTypes.Name) ??
                                         claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
-                        string userName = null;
-                        if (nameClaim == null)
-                        {
-                            userName = emailClaim.Value.Substring(0, emailClaim.Value.IndexOf("@"));
-                        }
+                        string userName = nameClaim == null ? emailClaim.Value.Substring(0, emailClaim.Value.IndexOf("@")) : nameClaim.Value;
 
                         userName = userName.Replace(" ", "");
                         int tries = 1;
@@ -318,11 +316,11 @@ namespace OrchardCore.Users.Controllers
                             userName = userName + r.Next(10);
                             tries++;
                         }
-
-                        if (user == null)
-                            throw new InvalidOperationException("Could not create username");
                     }
                 }
+
+                if (user == null)
+                    throw new InvalidOperationException($"Could not create user. Allow register users: {userCanRegister}");
 
                 await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(provider, providerUserId, provider));
                 return user;
