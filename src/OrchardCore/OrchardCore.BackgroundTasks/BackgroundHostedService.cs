@@ -52,7 +52,6 @@ namespace OrchardCore.BackgroundTasks
 
                 await shells.ForEachAsync(async shell =>
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(10));
                     if (shell.Released || stoppingToken.IsCancellationRequested)
                     {
                         return;

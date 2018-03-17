@@ -46,7 +46,7 @@ namespace OrchardCore.Modules
                 {
                     if (!shellContext.IsActivated || shellContext.IsActivating)
                     {
-                        await shellContext.SemaphoreSlim.WaitAsync();
+                        await shellContext.Semaphore.WaitAsync();
 
                         try
                         {
@@ -59,7 +59,7 @@ namespace OrchardCore.Modules
 
                                 foreach (var tenantEvent in tenantEvents)
                                 {
-                                    tenantEvent.ActivatingAsync().Wait();
+                                    await tenantEvent.ActivatingAsync();
                                 }
 
                                 httpContext.Items["BuildPipeline"] = true;
@@ -67,15 +67,14 @@ namespace OrchardCore.Modules
 
                                 foreach (var tenantEvent in tenantEvents.Reverse())
                                 {
-                                    tenantEvent.ActivatedAsync().Wait();
+                                    await tenantEvent.ActivatedAsync();
                                 }
-
-                                shellContext.IsActivating = false;
                             }
                         }
                         finally
                         {
-                            shellContext.SemaphoreSlim.Release();
+                            shellContext.IsActivating = false;
+                            shellContext.Semaphore.Release();
                         }
                     }
 

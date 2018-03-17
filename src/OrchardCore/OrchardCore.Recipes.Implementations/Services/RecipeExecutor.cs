@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DeferredTasks;
@@ -172,7 +172,7 @@ namespace OrchardCore.Recipes.Services
 
                     shellContext.IsActivated = true;
 
-                    foreach (var tenantEvent in tenantEvents)
+                    foreach (var tenantEvent in tenantEvents.Reverse())
                     {
                         await tenantEvent.ActivatedAsync();
                     }
