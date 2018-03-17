@@ -1,93 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <ApplicationIcon />
-    <OutputType>Library</OutputType>
-    <StartupObject />
     <TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Evaluators\**" />
-    <Compile Remove="Models\**" />
-    <EmbeddedResource Remove="Evaluators\**" />
-    <EmbeddedResource Remove="Models\**" />
-    <None Remove="Evaluators\**" />
-    <None Remove="Models\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Assets\Scripts\activity-picker.ts" />
-    <None Remove="Assets\Scripts\workflow-canvas.ts" />
-    <None Remove="Assets\Scripts\workflow-url-generator.ts" />
-    <None Remove="Assets\Scripts\workflow-viewer.ts" />
-    <None Remove="README.md" />
-    <None Remove="Views\Activity.DesignReadonly.cshtml" />
-    <None Remove="Views\Items\CorrelateTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\CorrelateTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\CorrelateTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\EmailTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\EmailTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\EmailTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\ForkTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\ForkTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\ForkTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\ForLoopTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\ForLoopTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\ForLoopTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\HttpRedirectTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\HttpRedirectTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\HttpRedirectTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\HttpRequestEvent.Fields.Design.cshtml" />
-    <None Remove="Views\Items\HttpRequestEvent.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\HttpRequestEvent.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\HttpRequestFilterEvent.Fields.Design.cshtml" />
-    <None Remove="Views\Items\HttpRequestFilterEvent.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\HttpRequestFilterEvent.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\HttpRequestTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\HttpRequestTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\HttpRequestTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\IfElseTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\IfElseTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\IfElseTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\JoinTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\JoinTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\JoinTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\LogTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\LogTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\LogTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\MissingActivity.Fields.Design.cshtml" />
-    <None Remove="Views\Items\ScriptTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\ScriptTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\ScriptTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\SetOutputTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\SetOutputTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\SetOutputTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\SetPropertyTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\SetPropertyTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\SetPropertyTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\SignalEvent.Fields.Design.cshtml" />
-    <None Remove="Views\Items\SignalEvent.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\SignalEvent.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\TimerEvent.Fields.Design.cshtml" />
-    <None Remove="Views\Items\TimerEvent.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\TimerEvent.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\Items\WhileLoopTask.Fields.Design.cshtml" />
-    <None Remove="Views\Items\WhileLoopTask.Fields.Edit.cshtml" />
-    <None Remove="Views\Items\WhileLoopTask.Fields.Thumbnail.cshtml" />
-    <None Remove="Views\WorkflowInstance\Details.cshtml" />
-    <None Remove="Views\WorkflowInstance\Index.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Http\Assets\Scripts\workflow-url-generator.ts" />
-    <Content Include="Assets\Scripts\workflow-canvas.ts" />
-    <Content Include="Assets\Scripts\activity-picker.ts" />
-    <Content Include="Assets\Scripts\workflow-viewer.ts" />
-    <Content Include="Assets\Scripts\workflow-models.ts" />
-    <Content Include="Assets\Scripts\workflow-editor.ts" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
@@ -108,14 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="docs\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Assets.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
@@ -125,20 +33,6 @@
   <ItemGroup>
     <TypeScriptCompile Include="Assets\Lib\jquery\typings.d.ts" />
     <TypeScriptCompile Include="Assets\Lib\jsplumb\typings.d.ts" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Assets\Images\cog.png">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-      <Pack>true</Pack>
-    </None>
-    <None Update="Assets\Images\menu.workflows.png">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-      <Pack>true</Pack>
-    </None>
-    <None Update="Styles\workflows-activity.css">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
