@@ -16,12 +16,13 @@
       }
     },
     "web": {
-      "commandName": "web",
+      "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:5000",
+      "launchUrl": "http://localhost:7000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "http://localhost:7000"
     }
   }
 }
