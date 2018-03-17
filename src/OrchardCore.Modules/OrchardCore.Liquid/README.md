@@ -466,7 +466,7 @@ Renders a specific named tag with its properties
 
 Input
 ```liquid
-{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_duration: "00:05:00", cache_tag: "alias:main-menu" %}
+{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu" %}
 ```
 
 ### zone

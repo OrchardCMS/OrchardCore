@@ -11,15 +11,16 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 {
     public abstract class BaseShapeTagHelper : TagHelper
     {
-        private static readonly string[] InternalProperties = new[] { "id", "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-duration" };
-        private static readonly char[] Separators = new[] { ',', ' ' };
+        private static readonly string[] InternalProperties = { "id", "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-fixed-duration", "cache-sliding-duration" };
+        private static readonly char[] Separators = { ',', ' ' };
 
         protected IShapeFactory _shapeFactory;
         protected IDisplayHelperFactory _displayHelperFactory;
 
         public string Type { get; set; }
         public string Cache { get; set; }
-        public TimeSpan? Duration { get; set; }
+        public TimeSpan? FixedDuration { get; set; }
+        public TimeSpan? SlidingDuration { get; set; }
         public string Context { get; set; }
         public string Tag { get; set; }
         public string Dependency { get; set; }
@@ -68,12 +69,21 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 Tag = Convert.ToString(output.Attributes["cache-tag"].Value);
             }
 
-            if (!Duration.HasValue && output.Attributes.ContainsName("cache-duration"))
+            if (!FixedDuration.HasValue && output.Attributes.ContainsName("cache-fixed-duration"))
             {
                 TimeSpan timespan;
-                if (TimeSpan.TryParse(Convert.ToString(output.Attributes["cache-duration"].Value), out timespan))
+                if (TimeSpan.TryParse(Convert.ToString(output.Attributes["cache-fixed-duration"].Value), out timespan))
                 {
-                    Duration = timespan;
+                    FixedDuration = timespan;
+                }
+            }
+
+            if (!SlidingDuration.HasValue && output.Attributes.ContainsName("cache-sliding-duration"))
+            {
+                TimeSpan timespan;
+                if (TimeSpan.TryParse(Convert.ToString(output.Attributes["cache-sliding-duration"].Value), out timespan))
+                {
+                    SlidingDuration = timespan;
                 }
             }
 
@@ -92,9 +102,14 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
                 metadata.Cache(Cache);
 
-                if (Duration.HasValue)
+                if (FixedDuration.HasValue)
                 {
-                    metadata.Cache().WithDuration(Duration.Value);
+                    metadata.Cache().WithDuration(FixedDuration.Value);
+                }
+
+                if (SlidingDuration.HasValue)
+                {
+                    metadata.Cache().WithSlidingExpiration(SlidingDuration.Value);
                 }
 
                 if (!string.IsNullOrWhiteSpace(Context))

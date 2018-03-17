@@ -87,6 +87,7 @@ namespace OrchardCore.DynamicCache.Services
             }
         }
 
+        // todo: should this method be in another service?
         public Task TagRemovedAsync(string tag, IEnumerable<string> keys)
         {
             return Task.WhenAll(keys.Select(key => _dynamicCache.RemoveAsync(key)));
