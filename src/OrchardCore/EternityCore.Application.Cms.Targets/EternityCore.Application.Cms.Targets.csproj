@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\src\OrchardCore\OrchardCore.Application.Cms.Targets\OrchardCore.Application.Cms.Targets.targets" Link="OrchardCore.Application.Cms.Targets.targets" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Admin\OrchardCore.Admin.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Authentication\OrchardCore.Authentication.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Commons\OrchardCore.Commons.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.CustomSettings\OrchardCore.CustomSettings.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Features\OrchardCore.Features.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.HomeRoute\OrchardCore.HomeRoute.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Mvc\OrchardCore.Mvc.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Navigation\OrchardCore.Navigation.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Recipes\OrchardCore.Recipes.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Resources\OrchardCore.Resources.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Settings\OrchardCore.Settings.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Setup\OrchardCore.Setup.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Themes\OrchardCore.Themes.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Themes\TheAdmin\TheAdmin.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Themes\TheTheme\TheTheme.csproj" />
+    <ProjectReference Include="..\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" />
+    <ProjectReference Include="..\OrchardCore.Environment.Commands\OrchardCore.Environment.Commands.csproj" />
+    <ProjectReference Include="..\OrchardCore.Modules\OrchardCore.Modules.csproj" />
+    <ProjectReference Include="..\OrchardCore.Security\OrchardCore.Security.csproj" />
+  </ItemGroup>
+
+</Project>
