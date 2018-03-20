@@ -42,7 +42,7 @@
     <MicrosoftAspNetCoreHostingPackageVersion>2.0.2</MicrosoftAspNetCoreHostingPackageVersion>
     <MicrosoftAspNetCoreHostingServerAbstractionsPackageVersion>2.0.2</MicrosoftAspNetCoreHostingServerAbstractionsPackageVersion>
     <MicrosoftAspNetCoreHostingWindowsServicesPackageVersion>2.0.2</MicrosoftAspNetCoreHostingWindowsServicesPackageVersion>
-    <MicrosoftAspNetCoreHtmlAbstractionsPackageVersion>2.0.2</MicrosoftAspNetCoreHtmlAbstractionsPackageVersion>
+    <MicrosoftAspNetCoreHtmlAbstractionsPackageVersion>2.0.1</MicrosoftAspNetCoreHtmlAbstractionsPackageVersion>
     <MicrosoftAspNetCoreHttpAbstractionsPackageVersion>2.0.2</MicrosoftAspNetCoreHttpAbstractionsPackageVersion>
     <MicrosoftAspNetCoreHttpExtensionsPackageVersion>2.0.2</MicrosoftAspNetCoreHttpExtensionsPackageVersion>
     <MicrosoftAspNetCoreHttpFeaturesPackageVersion>2.0.2</MicrosoftAspNetCoreHttpFeaturesPackageVersion>
