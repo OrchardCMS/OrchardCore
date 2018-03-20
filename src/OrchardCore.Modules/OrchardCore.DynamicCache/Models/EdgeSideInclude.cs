@@ -10,7 +10,6 @@ namespace OrchardCore.DynamicCache.Models
         public string CacheId { get; set; }
         public ICollection<string> Contexts { get; set; }
         public IEnumerable<string> Tags { get; set; }
-        public IEnumerable<string> Dependencies { get; set; }
         public TimeSpan? Duration { get; set; }
         public TimeSpan? SlidingExpirationWindow { get; set; }
 
@@ -21,7 +20,6 @@ namespace OrchardCore.DynamicCache.Models
                 CacheId = cacheContext.CacheId,
                 Contexts = cacheContext.Contexts,
                 Tags = cacheContext.Tags,
-                Dependencies = cacheContext.Dependencies,
                 Duration = cacheContext.Duration,
                 SlidingExpirationWindow = cacheContext.SlidingExpirationWindow
             };
@@ -31,8 +29,7 @@ namespace OrchardCore.DynamicCache.Models
         {
             var cacheContext = new CacheContext(CacheId)
                 .AddContext(Contexts.ToArray())
-                .AddTag(Tags.ToArray())
-                .AddDependency(Dependencies.ToArray());
+                .AddTag(Tags.ToArray());
 
             if (Duration.HasValue)
             {

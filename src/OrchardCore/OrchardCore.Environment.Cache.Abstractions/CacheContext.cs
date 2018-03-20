@@ -8,7 +8,6 @@ namespace OrchardCore.Environment.Cache
     {
         private HashSet<string> _contexts;
         private HashSet<string> _tags;
-        private HashSet<string> _dependencies;
         private string _cacheId;
         private TimeSpan? _duration;
         private TimeSpan? _slidingExpirationWindow;
@@ -70,39 +69,6 @@ namespace OrchardCore.Environment.Cache
             return this;
         }
 
-        /// <summary>
-        /// Defines a dimension that will invalidate the cache entry when it changes.
-        /// For instance by using <code>"features"</code> every time the list of features
-        /// will change the value of the cache will be invalidated.
-        /// </summary>
-        public CacheContext AddDependency(params string[] dependencies)
-        {
-            if (_dependencies == null)
-            {
-                _dependencies = new HashSet<string>();
-            }
-
-            foreach (var dependency in dependencies)
-            {
-                _dependencies.Add(dependency);
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        /// Removes a specific dependency.
-        /// </summary>
-        public CacheContext RemoveDependency(string dependency)
-        {
-            if (_dependencies != null)
-            {
-                _dependencies.Remove(dependency);
-            }
-
-            return this;
-        }
-
         public CacheContext AddTag(params string[] tags)
         {
             if (_tags == null)
@@ -131,7 +97,6 @@ namespace OrchardCore.Environment.Cache
         public string CacheId => _cacheId;
         public ICollection<string> Contexts => (ICollection<string>) _contexts ?? Array.Empty<string>();
         public IEnumerable<string> Tags => _tags ?? Enumerable.Empty<string>();
-        public IEnumerable<string> Dependencies => _dependencies ?? Enumerable.Empty<string>();
         public TimeSpan? Duration => _duration;
         public TimeSpan? SlidingExpirationWindow => _slidingExpirationWindow;
 

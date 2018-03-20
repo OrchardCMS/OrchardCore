@@ -28,7 +28,7 @@ namespace OrchardCore.Environment.Cache
             }
         }
 
-        public void AddTag(params string[] tag)
+        public void AddDependencies(params string[] tag)
         {
             if (_scopes.Count > 0)
             {
@@ -38,10 +38,8 @@ namespace OrchardCore.Environment.Cache
 
         private void MergeCacheContexts(CacheContext into, CacheContext from)
         {
-            // todo: do we need to merge contexts? if inner cache items have more specific contexts than the outer objects, then the ESIs will handle this?
             into.AddContext(from.Contexts.ToArray());
             into.AddTag(from.Tags.ToArray());
-            into.AddDependency(from.Dependencies.ToArray());
 
             var slidingExpiration = GetMostRestrictiveTimespan(into.SlidingExpirationWindow, from.SlidingExpirationWindow);
             if (slidingExpiration.HasValue)

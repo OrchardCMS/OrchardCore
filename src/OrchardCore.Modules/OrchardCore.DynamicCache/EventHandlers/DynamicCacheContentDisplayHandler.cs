@@ -18,7 +18,8 @@ namespace OrchardCore.DynamicCache.EventHandlers
 
         public Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context)
         {
-            _cacheScopeManager.AddTag($"contentitemid:{contentItem.ContentItemId}");
+            // todo: when building display- create dictionary of shape/ cache tag. when displaying shape- check dictionary of any tags should be added
+            _cacheScopeManager.AddDependencies($"contentitemid:{contentItem.ContentItemId}");
 
             return Task.CompletedTask;
         }

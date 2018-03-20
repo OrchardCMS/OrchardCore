@@ -19,16 +19,16 @@
 {% shape_remove_item Model.Content "BodyPart" %}
 
 {% cache "a" %}
-A {{ "now" | date: "%T" }} (No Duration) <br />
-{% cache "a1", tags: "a1", contexts: "user", fixed_duration: "0:5:0" %}
-A1 {{ "now" | date: "%T" }} (5 Minutes) <br />
-{% endcache %}
-{% cache "a2", tags: "a2", contexts: "user", fixed_duration: "0:0:1" %}
-A2 {{ "now" | date: "%T" }} (1 Second) <br />
-{% cache "a2a", tags: "a2a", contexts: "user", fixed_duration: "0:0:5" %}
-A2A {{ "now" | date: "%T" }} (5 Seconds) <br />
-{% endcache %}
-{% endcache %}
+    A {{ "now" | date: "%T" }} (No Duration) <br />
+    {% cache "a1", tags: "a1", contexts: "user", fixed_duration: "0:5:0" %}
+        A1 {{ "now" | date: "%T" }} (5 Minutes) <br />
+    {% endcache %}
+    {% cache "a2", tags: "a2", contexts: "user", fixed_duration: "0:0:1" %}
+        A2 {{ "now" | date: "%T" }} (1 Second) <br />
+        {% cache "a2a", tags: "a2a", contexts: "user", fixed_duration: "0:0:5" %}
+            A2A {{ "now" | date: "%T" }} (5 Seconds) <br />
+        {% endcache %}
+    {% endcache %}
 {% endcache %}
 
 {% cache "blog" %}

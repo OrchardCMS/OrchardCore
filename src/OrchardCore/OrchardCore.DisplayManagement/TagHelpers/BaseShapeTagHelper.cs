@@ -23,7 +23,6 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         public TimeSpan? SlidingDuration { get; set; }
         public string Context { get; set; }
         public string Tag { get; set; }
-        public string Dependency { get; set; }
 
         [ViewContext]
         public ViewContext ViewContext { get; set; }
@@ -57,11 +56,6 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             if (string.IsNullOrWhiteSpace(Context) && output.Attributes.ContainsName("cache-context"))
             {
                 Context = Convert.ToString(output.Attributes["cache-context"].Value);
-            }
-
-            if (string.IsNullOrWhiteSpace(Dependency) && output.Attributes.ContainsName("cache-dependency"))
-            {
-                Dependency = Convert.ToString(output.Attributes["cache-dependency"].Value);
             }
 
             if (string.IsNullOrWhiteSpace(Tag) && output.Attributes.ContainsName("cache-tag"))
@@ -122,12 +116,6 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 {
                     var tags = Tag.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddTag(tags);
-                }
-
-                if (!string.IsNullOrWhiteSpace(Dependency))
-                {
-                    var dependency = Dependency.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
-                    metadata.Cache().AddDependency(dependency);
                 }
             }
 

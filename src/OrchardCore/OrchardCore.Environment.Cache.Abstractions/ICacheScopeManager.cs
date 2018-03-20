@@ -4,10 +4,10 @@ namespace OrchardCore.Environment.Cache
     {
         void EnterScope(CacheContext context);
         void ExitScope();
-        /// <summary>
-        /// Add the given tag(s) to the innermost cache context
+        /// <summary> 
+        /// Add the given dependencies to the current innermost cache context
         /// </summary>
-        /// <param name="tag">The tag(s) to add</param>
-        void AddTag(params string[] tag);
+        /// <param name="dependencies">The dependencies to add</param>
+        void AddDependencies(params string[] dependencies);
     }
 }

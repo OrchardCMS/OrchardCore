@@ -70,9 +70,8 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterBlock<HelperBlock>("block");
             Factory.RegisterBlock<NamedHelperBlock>("a");
             Factory.RegisterBlock<NamedHelperBlock>("zone");
-
-            // todo: modules cannot register their own blocks yet, and cache block lives in the Dynamic Cache module
-            // figure out a way to arrange this logically
+            
+            // Dynamic caching
             Factory.RegisterBlock<CacheBlock>("cache");
 
             NamedHelperTag.RegisterDefaultArgument("shape", "type");
