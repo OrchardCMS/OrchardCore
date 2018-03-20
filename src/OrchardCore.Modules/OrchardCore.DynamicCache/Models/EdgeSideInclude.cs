@@ -10,8 +10,9 @@ namespace OrchardCore.DynamicCache.Models
         public string CacheId { get; set; }
         public ICollection<string> Contexts { get; set; }
         public IEnumerable<string> Tags { get; set; }
-        public TimeSpan? Duration { get; set; }
-        public TimeSpan? SlidingExpirationWindow { get; set; }
+        public DateTimeOffset? ExpiresOn { get; set; }
+        public TimeSpan? ExpiresAfter { get; set; }
+        public TimeSpan? ExpiresSliding { get; set; }
 
         internal static EdgeSideInclude FromCacheContext(CacheContext cacheContext)
         {
@@ -20,8 +21,9 @@ namespace OrchardCore.DynamicCache.Models
                 CacheId = cacheContext.CacheId,
                 Contexts = cacheContext.Contexts,
                 Tags = cacheContext.Tags,
-                Duration = cacheContext.Duration,
-                SlidingExpirationWindow = cacheContext.SlidingExpirationWindow
+                ExpiresOn = cacheContext.ExpiresOn,
+                ExpiresAfter = cacheContext.ExpiresAfter,
+                ExpiresSliding = cacheContext.ExpiresSliding
             };
         }
 
@@ -31,14 +33,20 @@ namespace OrchardCore.DynamicCache.Models
                 .AddContext(Contexts.ToArray())
                 .AddTag(Tags.ToArray());
 
-            if (Duration.HasValue)
+            if (ExpiresOn.HasValue)
             {
-                cacheContext.WithDuration(Duration.Value);
+                cacheContext.WithExpiryOn(ExpiresOn.Value);
             }
 
-            if (SlidingExpirationWindow.HasValue)
+
+            if (ExpiresAfter.HasValue)
             {
-                cacheContext.WithSlidingExpiration(SlidingExpirationWindow.Value);
+                cacheContext.WithExpiryAfter(ExpiresAfter.Value);
+            }
+
+            if (ExpiresSliding.HasValue)
+            {
+                cacheContext.WithExpirySliding(ExpiresSliding.Value);
             }
 
             return cacheContext;

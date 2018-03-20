@@ -24,8 +24,8 @@ namespace OrchardCore.DisplayManagement.Liquid
             sb.AppendLine($"<!-- CACHE BLOCK: {cache.CacheId} ({Guid.NewGuid()})");
             sb.AppendLine($"        CONTEXTS: {String.Join(", ", cache.Contexts)}");
             sb.AppendLine($"            TAGS: {String.Join(", ", cache.Tags)}");
-            sb.AppendLine($"          DURING: {cache.Duration}");
-            sb.AppendLine($"         SLIDING: {cache.SlidingExpirationWindow}");
+            sb.AppendLine($"          DURING: {cache.ExpiresAfter}");
+            sb.AppendLine($"         SLIDING: {cache.ExpiresSliding}");
             sb.AppendLine("-->");
 
             sb.AppendLine(metadata.ChildContent.ToString());

@@ -75,12 +75,13 @@ namespace OrchardCore.DynamicCache.Services
 
             var options = new DistributedCacheEntryOptions
             {
-                SlidingExpiration = context.SlidingExpirationWindow,
-                AbsoluteExpirationRelativeToNow = context.Duration
+                AbsoluteExpiration = context.ExpiresOn,
+                SlidingExpiration = context.ExpiresSliding,
+                AbsoluteExpirationRelativeToNow = context.ExpiresAfter
             };
 
             // Default duration is sliding expiration (permanent as long as it's used)
-            if (!options.SlidingExpiration.HasValue && !options.AbsoluteExpirationRelativeToNow.HasValue)
+            if (!options.AbsoluteExpiration.HasValue && !options.SlidingExpiration.HasValue && !options.AbsoluteExpirationRelativeToNow.HasValue)
             {
                 options.SlidingExpiration = new TimeSpan(0, 1, 0);
             }

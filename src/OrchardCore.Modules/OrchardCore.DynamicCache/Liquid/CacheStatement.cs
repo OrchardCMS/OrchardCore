@@ -36,11 +36,11 @@ namespace OrchardCore.DynamicCache.Liquid
             var loggerFactory = services.GetService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger<CacheStatement>();
 
-            if (dynamicCache == null)
+            if (dynamicCache == null || cacheScopeManager == null)
             {
-                logger.LogInformation(@"Liquid cache block entered without an available IDynamicCacheService. 
+                logger.LogInformation(@"Liquid cache block entered without an available IDynamicCacheService or ICacheScopeManager. 
                                         The contents of the cache block will not be cached. 
-                                        To enable caching, make sure that a feature that contains an implementation of IDynamicCacheService is enabled (for example, 'Dynamic Cache').");
+                                        To enable caching, make sure that a feature that contains an implementation of IDynamicCacheService and ICacheScopeManager is enabled (for example, 'Dynamic Cache').");
 
                 await writer.WriteAsync(await EvaluateStatementsAsync(encoder, context));
 
@@ -64,12 +64,12 @@ namespace OrchardCore.DynamicCache.Liquid
 
             if (TimeSpan.TryParse(durationString, out var duration))
             {
-                cacheContext.WithDuration(duration);
+                cacheContext.WithExpiryAfter(duration);
             }
 
             if (TimeSpan.TryParse(slidingDurationString, out var slidingDuration))
             {
-                cacheContext.WithSlidingExpiration(slidingDuration);
+                cacheContext.WithExpirySliding(slidingDuration);
             }
             
             var cacheResult = await dynamicCache.GetCachedValueAsync(cacheContext.CacheId);
@@ -92,8 +92,9 @@ namespace OrchardCore.DynamicCache.Liquid
                 debugContent.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})");
                 debugContent.WriteLine($"        CONTEXTS: {String.Join(", ", cacheContext.Contexts)}");
                 debugContent.WriteLine($"            TAGS: {String.Join(", ", cacheContext.Tags)}");
-                debugContent.WriteLine($"          DURING: {cacheContext.Duration}");
-                debugContent.WriteLine($"         SLIDING: {cacheContext.SlidingExpirationWindow}");
+                debugContent.WriteLine($"      EXPIRES ON: {cacheContext.ExpiresOn}");
+                debugContent.WriteLine($"   EXPIRES AFTER: {cacheContext.ExpiresAfter}");
+                debugContent.WriteLine($" EXPIRES SLIDING: {cacheContext.ExpiresSliding}");
                 debugContent.WriteLine("-->");
                 debugContent.WriteLine(content);
                 debugContent.WriteLine($"<!-- END CACHE BLOCK: {cacheContext.CacheId} -->");

@@ -98,12 +98,12 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
                 if (FixedDuration.HasValue)
                 {
-                    metadata.Cache().WithDuration(FixedDuration.Value);
+                    metadata.Cache().WithExpiryAfter(FixedDuration.Value);
                 }
 
                 if (SlidingDuration.HasValue)
                 {
-                    metadata.Cache().WithSlidingExpiration(SlidingDuration.Value);
+                    metadata.Cache().WithExpirySliding(SlidingDuration.Value);
                 }
 
                 if (!string.IsNullOrWhiteSpace(Context))

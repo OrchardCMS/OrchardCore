@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace OrchardCore.Environment.Cache
 {
+    // todo: does this belong in dynamic cache?
     public class CacheScopeManager : ICacheScopeManager
     {
         private readonly Stack<CacheContext> _scopes;
@@ -28,11 +29,67 @@ namespace OrchardCore.Environment.Cache
             }
         }
 
-        public void AddDependencies(params string[] tag)
+        public void AddDependencies(params string[] dependencies)
         {
             if (_scopes.Count > 0)
             {
-                _scopes.Peek().AddTag(tag);
+                _scopes.Peek().AddTag(dependencies);
+            }
+        }
+
+        public void AddContexts(params string[] contexts)
+        {
+            if (_scopes.Count > 0)
+            {
+                _scopes.Peek().AddTag(contexts);
+            }
+        }
+
+        public void WithExpiryOn(DateTimeOffset expiryOn)
+        {
+            if (_scopes.Count <= 0)
+            {
+                return;
+            }
+
+            var scope = _scopes.Peek();
+            var value = GetMostRestrictiveDateTimeOffset(scope.ExpiresOn, expiryOn);
+
+            if (value.HasValue)
+            {
+                scope.WithExpiryOn(value.Value);
+            }
+        }
+
+        public void WithExpiryAfter(TimeSpan expiryAfter)
+        {
+            if (_scopes.Count <= 0)
+            {
+                return;
+            }
+
+            var scope = _scopes.Peek();
+            var value = GetMostRestrictiveTimespan(scope.ExpiresAfter, expiryAfter);
+
+            if (value.HasValue)
+            {
+                scope.WithExpiryAfter(value.Value);
+            }
+        }
+
+        public void WithExpirySliding(TimeSpan expirySliding)
+        {
+            if (_scopes.Count <= 0)
+            {
+                return;
+            }
+
+            var scope = _scopes.Peek();
+            var value = GetMostRestrictiveTimespan(scope.ExpiresSliding, expirySliding);
+
+            if (value.HasValue)
+            {
+                scope.WithExpirySliding(value.Value);
             }
         }
 
@@ -41,17 +98,33 @@ namespace OrchardCore.Environment.Cache
             into.AddContext(from.Contexts.ToArray());
             into.AddTag(from.Tags.ToArray());
 
-            var slidingExpiration = GetMostRestrictiveTimespan(into.SlidingExpirationWindow, from.SlidingExpirationWindow);
-            if (slidingExpiration.HasValue)
+            var offset = GetMostRestrictiveDateTimeOffset(into.ExpiresOn, from.ExpiresOn);
+            if (offset.HasValue)
             {
-                into.WithSlidingExpiration(slidingExpiration.Value);
+                into.WithExpiryOn(offset.Value);
             }
 
-            var duration = GetMostRestrictiveTimespan(into.Duration, from.Duration);
+            var slidingExpiration = GetMostRestrictiveTimespan(into.ExpiresSliding, from.ExpiresSliding);
+            if (slidingExpiration.HasValue)
+            {
+                into.WithExpirySliding(slidingExpiration.Value);
+            }
+
+            var duration = GetMostRestrictiveTimespan(into.ExpiresAfter, from.ExpiresAfter);
             if (duration.HasValue)
             {
-                into.WithDuration(duration.Value);
+                into.WithExpiryAfter(duration.Value);
             }
+        }
+
+        private DateTimeOffset? GetMostRestrictiveDateTimeOffset(DateTimeOffset? a, DateTimeOffset? b)
+        {
+            if (a.HasValue && b.HasValue)
+            {
+                return b < a ? b : a;
+            }
+
+            return a ?? b;
         }
 
         private TimeSpan? GetMostRestrictiveTimespan(TimeSpan? a, TimeSpan? b)
