@@ -13,20 +13,17 @@ namespace OrchardCore.Workflows.Evaluators
 {
     public class JavaScriptWorkflowScriptEvaluator : IWorkflowScriptEvaluator
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly IScriptingManager _scriptingManager;
         private readonly IEnumerable<IWorkflowExecutionContextHandler> _workflowContextHandlers;
         private readonly ILogger<JavaScriptWorkflowScriptEvaluator> _logger;
 
         public JavaScriptWorkflowScriptEvaluator(
-            IServiceProvider serviceProvider,
             IScriptingManager scriptingManager,
             IEnumerable<IWorkflowExecutionContextHandler> workflowContextHandlers,
             IStringLocalizer<JavaScriptWorkflowScriptEvaluator> localizer,
             ILogger<JavaScriptWorkflowScriptEvaluator> logger
         )
         {
-            _serviceProvider = serviceProvider;
             _scriptingManager = scriptingManager;
             _workflowContextHandlers = workflowContextHandlers;
             _logger = logger;

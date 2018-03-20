@@ -83,7 +83,7 @@ namespace OrchardCore.Tests.Workflows
             var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
             var globalMethodProviders = new IGlobalMethodProvider[0];
             var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders, serviceProvider);
-            var scriptEvaluator = new JavaScriptWorkflowScriptEvaluator(serviceProvider, scriptingManager, workflowContextHandlers.Resolve(), new Mock<IStringLocalizer<JavaScriptWorkflowScriptEvaluator>>().Object, new Mock<ILogger<JavaScriptWorkflowScriptEvaluator>>().Object);
+            var scriptEvaluator = new JavaScriptWorkflowScriptEvaluator(scriptingManager, workflowContextHandlers.Resolve(), new Mock<IStringLocalizer<JavaScriptWorkflowScriptEvaluator>>().Object, new Mock<ILogger<JavaScriptWorkflowScriptEvaluator>>().Object);
             var liquidOptions = new Mock<IOptions<LiquidOptions>>();
             liquidOptions.SetupGet(x => x.Value).Returns(() => new LiquidOptions());
             var liquidTemplateManager = new LiquidTemplateManager(memoryCache, liquidOptions.Object, serviceProvider);
