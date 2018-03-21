@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace OrchardCore.BackgroundTasks
+namespace OrchardCore.Modules.Internal
 {
     /// <summary>
     /// Base class for implementing a long running <see cref="IHostedService"/>.

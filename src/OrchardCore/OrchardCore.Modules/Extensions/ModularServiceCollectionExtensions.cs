@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.BackgroundTasks;
+using Microsoft.Extensions.Hosting;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
@@ -104,7 +104,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddLogging();
             services.AddOptions();
             services.AddLocalization();
-            services.AddBackgroundHostedService();
+            services.AddBackgroundService();
             services.AddHostingShellServices();
             services.AddExtensionManagerHost();
             services.AddWebEncoders();
@@ -116,6 +116,14 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
 
             return services;
+        }
+
+        public static IServiceCollection AddBackgroundService(this IServiceCollection services)
+        {
+            return services
+                .AddSingleton<ModularBackgroundService>()
+                .AddSingleton<IHostedService>(sp => sp.GetRequiredService<ModularBackgroundService>())
+                .AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ModularBackgroundService>());
         }
     }
 }

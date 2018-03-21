@@ -9,14 +9,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NCrontab;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
 
-namespace OrchardCore.BackgroundTasks
+namespace OrchardCore.Modules
 {
-    internal class BackgroundHostedService : BackgroundService, IShellDescriptorManagerEventHandler
+    internal class ModularBackgroundService : Internal.BackgroundService, IShellDescriptorManagerEventHandler
     {
         private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
@@ -26,10 +27,10 @@ namespace OrchardCore.BackgroundTasks
         private readonly IShellHost _shellHost;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public BackgroundHostedService(
+        public ModularBackgroundService(
             IShellHost shellHost,
             IHttpContextAccessor httpContextAccessor,
-            ILogger<BackgroundHostedService> logger)
+            ILogger<ModularBackgroundService> logger)
         {
             _shellHost = shellHost;
             _httpContextAccessor = httpContextAccessor;
