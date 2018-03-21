@@ -1,6 +1,6 @@
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DynamicCache.EventHandlers;
 using OrchardCore.DynamicCache.Services;
@@ -16,7 +16,8 @@ namespace OrchardCore.DynamicCache
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IDynamicCacheService, DefaultDynamicCacheService>();
-            services.AddScoped<IContentDisplayHandler, DynamicCacheContentDisplayHandler>();
+
+            services.AddShapeAttributes<CachedShapeWrapperShapes>();
 
             // Register the type as it implements multiple interfaces
             services.AddScoped<DynamicCacheShapeDisplayEvents>();

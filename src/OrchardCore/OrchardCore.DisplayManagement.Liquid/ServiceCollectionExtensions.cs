@@ -29,8 +29,6 @@ namespace OrchardCore.DisplayManagement.Liquid
             services.AddSingleton<TagHelperSharedState>();
 
             services.AddScoped<ILiquidTemplateEventHandler, RequestLiquidTemplateEventHandler>();
-            
-            services.AddShapeAttributes<CacheBlockShapes>();
 
             return services;
         }

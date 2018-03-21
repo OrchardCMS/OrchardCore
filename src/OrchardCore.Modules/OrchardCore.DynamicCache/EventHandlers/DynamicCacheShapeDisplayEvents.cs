@@ -31,9 +31,16 @@ namespace OrchardCore.DynamicCache.EventHandlers
 
         public async Task DisplayingAsync(ShapeDisplayContext context)
         {
+            var debugMode = true;
+
             // The shape has cache settings and no content yet
             if (context.ShapeMetadata.IsCached && context.ChildContent == null)
             {
+                if (debugMode)
+                {
+                    context.ShapeMetadata.Wrappers.Add("CachedShapeWrapper");
+                }
+
                 var cacheContext = context.ShapeMetadata.Cache();
                 _cacheScopeManager.EnterScope(cacheContext);
 
