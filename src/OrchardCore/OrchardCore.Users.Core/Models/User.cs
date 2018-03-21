@@ -14,6 +14,7 @@ namespace OrchardCore.Users.Models
         public string SecurityStamp { get; set; }
         public bool EmailConfirmed { get; set; }
         public IList<string> RoleNames { get; set; } = new List<string>();
+        public string TimeZone;
 
         public override string ToString()
         {
