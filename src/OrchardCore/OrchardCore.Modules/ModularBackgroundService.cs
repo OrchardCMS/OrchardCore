@@ -92,8 +92,13 @@ namespace OrchardCore.Modules
 
                             if (!_schedulers.TryGetValue(tenant + taskName, out Scheduler scheduler))
                             {
-                                _schedulers[tenant + taskName] = scheduler = new Scheduler(tenant, task, startUtc);
+                                _schedulers[tenant + taskName] = scheduler = new Scheduler(tenant, startUtc);
                             }
+
+                            var definition = await scope.GetBackgroundTaskDefinitionAsync(taskType);
+
+                            scheduler.Enable = definition.Enable;
+                            scheduler.Schedule = definition.Schedule;
 
                             if (!scheduler.ShouldRun())
                             {
@@ -160,18 +165,15 @@ namespace OrchardCore.Modules
             }
         }
 
-        private class Scheduler
+        private class Scheduler : BackgroundTaskDefinition
         {
-            public Scheduler(string tenant, IBackgroundTask task, DateTime startUtc)
+            public Scheduler(string tenant, DateTime startUtc)
             {
                 Tenant = tenant;
-                var attribute = task.GetType().GetCustomAttribute<BackgroundTaskAttribute>();
-                Schedule = attribute?.Schedule ?? "* * * * *";
                 StartUtc = startUtc;
             }
 
             public string Tenant { get; }
-            public string Schedule { get; }
             public DateTime StartUtc { get; private set; }
 
             public bool ShouldRun()
@@ -181,7 +183,7 @@ namespace OrchardCore.Modules
                 if (now >= CrontabSchedule.Parse(Schedule).GetNextOccurrence(StartUtc))
                 {
                     StartUtc = now;
-                    return true;
+                    return Enable;
                 }
 
                 return false;
@@ -233,6 +235,23 @@ namespace OrchardCore.Modules
         public static IBackgroundTask GetBackgroundTaskOfType(this IServiceScope scope, Type type)
         {
             return scope.ServiceProvider.GetServices<IBackgroundTask>().FirstOrDefault(t => t.GetType() == type);
+        }
+
+        public static async Task<BackgroundTaskDefinition> GetBackgroundTaskDefinitionAsync(this IServiceScope scope, Type type)
+        {
+            var providers = scope.ServiceProvider.GetServices<IBackgroundTaskDefinitionProvider>();
+
+            foreach (var provider in providers.OrderBy(p => p.Order))
+            {
+                var definition = await provider.GetDefinitionAsync(type);
+
+                if (definition != null && !(definition is NotFoundBackgroundTaskDefinition))
+                {
+                    return definition;
+                }
+            }
+
+            return new BackgroundTaskDefinition();
         }
     }
 }

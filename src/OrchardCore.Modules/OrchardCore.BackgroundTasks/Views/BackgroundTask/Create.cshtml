@@ -1,6 +1,6 @@
 @model BackgroundTaskViewModel
 
-<h1>@RenderTitleSegments(T["Create Task Options"])</h1>
+<h1>@RenderTitleSegments(T["Create Task Definition"])</h1>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post">
@@ -13,7 +13,7 @@
                 <option value="@name">@name</option>
             }
         </select>
-        <div class="hint">@T["The task on which these options will apply."]</div>
+        <div class="hint">@T["The task on which this definition will apply."]</div>
     </div>
 
     <div class="form-group" asp-validation-class-for="Enable">
@@ -21,7 +21,7 @@
             <input asp-for="Enable" type="checkbox" />
             @T["Enable"]
         </label>
-        <span class="hint">@T["Whether this task is enabled or not."]</span>
+        <span class="hint">@T["Whether the task is enabled or not."]</span>
     </div>
 
     <div class="form-group" asp-validation-class-for="Schedule">
@@ -33,7 +33,7 @@
     <div class="form-group" asp-validation-class-for="Description">
         <label asp-for="Description">@T["Description"]</label>
         <input asp-for="Description" class="form-control" />
-        <span class="hint">@T["The description of this task."]</span>
+        <span class="hint">@T["The description of the task."]</span>
     </div>
 
     <fieldset>

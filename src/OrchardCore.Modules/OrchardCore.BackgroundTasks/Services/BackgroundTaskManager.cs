@@ -31,27 +31,7 @@ namespace OrchardCore.BackgroundTasks.Services
             _session = session;
         }
 
-        public IChangeToken ChangeToken => _signal.GetToken(CacheKey);
         public IEnumerable<string> Names => _backgroundTasks.Select(t => t.GetType().FullName);
-
-        public async Task<string> GetScheduleAsync(string name)
-        {
-            var document = await GetDocumentAsync();
-
-            if (document.Tasks.TryGetValue(name, out var task))
-            {
-                return task.Schedule;
-            }
-
-            var attributes = GetAttributes();
-
-            if (attributes.TryGetValue(name, out var attribute))
-            {
-                return attribute.Schedule ?? "* * * * *";
-            }
-
-            return "* * * * *";
-        }
 
         public IDictionary<string, BackgroundTaskAttribute> GetAttributes()
         {

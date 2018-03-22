@@ -1,11 +1,11 @@
 @model BackgroundTaskIndexViewModel
 
-<h1>@RenderTitleSegments(T["Tasks Options"])</h1>
+<h1>@RenderTitleSegments(T["Task Definitions"])</h1>
 
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Options"]</a>
+            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Definition"]</a>
         </li>
     </ul>
 </nav>
@@ -38,7 +38,7 @@
     else
     {
         <div class="alert alert-info" role="alert">
-            @T["<strong>Nothing here!</strong> There are no background tasks for the moment."]
+            @T["<strong>Nothing here!</strong> There are no task definition for the moment."]
         </div>
     }
 </form>

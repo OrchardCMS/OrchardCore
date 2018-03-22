@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.BackgroundTasks.Services;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
@@ -11,9 +10,10 @@ namespace OrchardCore.BackgroundTasks
         public override void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddScoped<BackgroundTaskManager>()
+                .AddScoped<Services.BackgroundTaskManager>()
                 .AddScoped<IPermissionProvider, Permissions>()
-                .AddScoped<INavigationProvider, AdminMenu>();
+                .AddScoped<INavigationProvider, AdminMenu>()
+                .AddScoped<IBackgroundTaskDefinitionProvider, Services.BackgroundTaskDefinitionProvider>();
         }
     }
 }
