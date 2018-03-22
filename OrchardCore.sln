@@ -318,7 +318,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseThemeSample2", "test\Or
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DerivedThemeSample2", "test\OrchardCore.Tests.Modules\DerivedThemeSample2\DerivedThemeSample2.csproj", "{713E40F9-E711-43B5-B9B3-985325C7BF91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.BackgroundTasks", "src\OrchardCore.Modules\OrchardCore.BackgroundTasks\OrchardCore.BackgroundTasks.csproj", "{E9FE7A12-C114-45B9-84F1-5986E849AC02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.BackgroundTasks", "src\OrchardCore.Modules\OrchardCore.BackgroundTasks\OrchardCore.BackgroundTasks.csproj", "{E9FE7A12-C114-45B9-84F1-5986E849AC02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1038,7 +1038,7 @@ Global
 		{55C32754-82E3-4E0C-B71A-A2C7EAE3D486} = {72E15FB1-45AB-46CB-B332-40FDFDD2B272}
 		{DFF19F43-F724-4A80-9267-7B2C40D1DC6D} = {72E15FB1-45AB-46CB-B332-40FDFDD2B272}
 		{713E40F9-E711-43B5-B9B3-985325C7BF91} = {72E15FB1-45AB-46CB-B332-40FDFDD2B272}
-		{E9FE7A12-C114-45B9-84F1-5986E849AC02} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{E9FE7A12-C114-45B9-84F1-5986E849AC02} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

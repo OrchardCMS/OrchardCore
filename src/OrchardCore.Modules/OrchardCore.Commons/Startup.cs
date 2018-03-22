@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.Data;
 using OrchardCore.DeferredTasks;
 using OrchardCore.DisplayManagement;
@@ -26,6 +27,7 @@ namespace OrchardCore.Commons
         {
             services.AddDeferredTasks();
             services.AddDataAccess();
+            //services.AddBackgroundTasks();
             services.AddResourceManagement();
             services.AddGeneratorTagFilter();
             services.AddCaching();

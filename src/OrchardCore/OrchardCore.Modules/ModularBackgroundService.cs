@@ -2,12 +2,12 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NCrontab;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
@@ -95,18 +95,23 @@ namespace OrchardCore.Modules
                                 _schedulers[tenant + taskName] = scheduler = new Scheduler(tenant, startUtc);
                             }
 
-                            var definition = await scope.GetBackgroundTaskDefinitionAsync(taskType);
-
-                            scheduler.Enable = definition.Enable;
-                            scheduler.Schedule = definition.Schedule;
-
-                            if (!scheduler.ShouldRun())
-                            {
-                                continue;
-                            }
-
                             try
                             {
+                                var options = await scope.GetBackgroundTaskOptionsAsync(taskType);
+
+                                if (options is NotFoundBackgroundTaskOptions)
+                                {
+                                    continue;
+                                }
+
+                                scheduler.Enable = options.Enable;
+                                scheduler.Schedule = options.Schedule;
+
+                                if (!scheduler.ShouldRun())
+                                {
+                                    continue;
+                                }
+
                                 if (Logger.IsEnabled(LogLevel.Information))
                                 {
                                     Logger.LogInformation(
@@ -165,7 +170,7 @@ namespace OrchardCore.Modules
             }
         }
 
-        private class Scheduler : BackgroundTaskDefinition
+        private class Scheduler : BackgroundTaskOptions
         {
             public Scheduler(string tenant, DateTime startUtc)
             {
@@ -237,21 +242,22 @@ namespace OrchardCore.Modules
             return scope.ServiceProvider.GetServices<IBackgroundTask>().FirstOrDefault(t => t.GetType() == type);
         }
 
-        public static async Task<BackgroundTaskDefinition> GetBackgroundTaskDefinitionAsync(this IServiceScope scope, Type type)
+        public static async Task<BackgroundTaskOptions> GetBackgroundTaskOptionsAsync(this IServiceScope scope, Type type)
         {
-            var providers = scope.ServiceProvider.GetServices<IBackgroundTaskDefinitionProvider>();
+            var providers = scope.ServiceProvider.GetService<IOptions<BackgroundTasksOptions>>()
+                .Value.OptionsProviders;
 
             foreach (var provider in providers.OrderBy(p => p.Order))
             {
-                var definition = await provider.GetDefinitionAsync(type);
+                var options = await provider.GetOptionsAsync(type);
 
-                if (definition != null && !(definition is NotFoundBackgroundTaskDefinition))
+                if (options != null && !(options is NotFoundBackgroundTaskOptions))
                 {
-                    return definition;
+                    return options;
                 }
             }
 
-            return new BackgroundTaskDefinition();
+            return new NotFoundBackgroundTaskOptions();
         }
     }
 }

@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks.Models;
 using OrchardCore.Environment.Cache;
 using YesSql;
@@ -32,33 +30,6 @@ namespace OrchardCore.BackgroundTasks.Services
         }
 
         public IEnumerable<string> Names => _backgroundTasks.Select(t => t.GetType().FullName);
-
-        public IDictionary<string, BackgroundTaskAttribute> GetAttributes()
-        {
-            if (!_memoryCache.TryGetValue<IDictionary<string, BackgroundTaskAttribute>>(
-                nameof(BackgroundTaskAttribute), out var attributes))
-            {
-                if (attributes == null)
-                {
-                    lock (_memoryCache)
-                    {
-                        if (!_memoryCache.TryGetValue(nameof(BackgroundTaskAttribute), out attributes))
-                        {
-                            attributes = new Dictionary<string, BackgroundTaskAttribute>();
-
-                            foreach (var task in _backgroundTasks)
-                            {
-                                var name = task.GetType().FullName;
-                                var attribute = task.GetType().GetCustomAttribute<BackgroundTaskAttribute>();
-                                attributes[name] = attribute;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return attributes;
-        }
 
         /// <inheritdoc/>
         public async Task<BackgroundTaskDocument> GetDocumentAsync()
@@ -102,11 +73,11 @@ namespace OrchardCore.BackgroundTasks.Services
             _signal.SignalToken(CacheKey);
         }
         
-        public async Task UpdateAsync(string name, BackgroundTask task)
+        public async Task UpdateAsync(string name, BackgroundTaskDefinition definition)
         {
             var document = await GetDocumentAsync();
 
-            document.Tasks[name] = task;
+            document.Tasks[name] = definition;
             _session.Save(document);
 
             _memoryCache.Set(CacheKey, document);

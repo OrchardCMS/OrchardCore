@@ -1,13 +1,10 @@
 using System.Collections.Generic;
+using OrchardCore.BackgroundTasks.Models;
 
 namespace OrchardCore.BackgroundTasks.ViewModels
 {
-    public class BackgroundTaskViewModel
+    public class BackgroundTaskViewModel : BackgroundTaskDefinition
     {
-        public string Name { get; set; }
-        public bool Enable { get; set; }
-        public string Schedule { get; set; }
-        public string Description { get; set; }
         public IEnumerable<string> Names { get; set; }
     }
 }

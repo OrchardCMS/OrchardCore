@@ -104,7 +104,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             if (ModelState.IsValid)
             {
-                var backgroundTask = new BackgroundTask
+                var backgroundTask = new BackgroundTaskDefinition
                 {
                     Name = model.Name,
                     Enable = model.Enable,
@@ -175,7 +175,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             if (ModelState.IsValid)
             {
-                var backgroundTask = new BackgroundTask
+                var backgroundTask = new BackgroundTaskDefinition
                 {
                     Name = model.Name,
                     Enable = model.Enable,

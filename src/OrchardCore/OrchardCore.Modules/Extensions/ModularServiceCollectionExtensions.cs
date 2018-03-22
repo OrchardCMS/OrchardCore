@@ -1,10 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
@@ -123,13 +120,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddBackgroundService(this IServiceCollection services)
         {
-            services
+            return services
                 .AddSingleton<ModularBackgroundService>()
                 .AddSingleton<IHostedService>(sp => sp.GetRequiredService<ModularBackgroundService>())
-                .AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ModularBackgroundService>())
-                .AddSingleton<IBackgroundTaskDefinitionProvider, BackgroundTaskDefinitionProvider>();
-
-            return services;
+                .AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ModularBackgroundService>());
         }
     }
 }
