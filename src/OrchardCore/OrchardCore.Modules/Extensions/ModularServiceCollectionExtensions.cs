@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
@@ -116,14 +115,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
 
             return services;
-        }
-
-        public static IServiceCollection AddBackgroundService(this IServiceCollection services)
-        {
-            return services
-                .AddSingleton<ModularBackgroundService>()
-                .AddSingleton<IHostedService>(sp => sp.GetRequiredService<ModularBackgroundService>())
-                .AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ModularBackgroundService>());
         }
     }
 }
