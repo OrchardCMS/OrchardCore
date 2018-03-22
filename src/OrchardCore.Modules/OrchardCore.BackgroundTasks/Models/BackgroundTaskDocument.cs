@@ -9,7 +9,7 @@ namespace OrchardCore.BackgroundTasks.Models
         public Dictionary<string, BackgroundTaskDefinition> Tasks { get; } = new Dictionary<string, BackgroundTaskDefinition>();
     }
 
-    public class BackgroundTaskDefinition : BackgroundTaskOptions
+    public class BackgroundTaskDefinition : BackgroundTaskSettings
     {
         public string Name { get; set; }
         public string Description { get; set; }

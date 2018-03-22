@@ -97,15 +97,13 @@ namespace OrchardCore.Modules
 
                             try
                             {
-                                var options = await scope.GetBackgroundTaskOptionsAsync(taskType);
+                                var settings = await scope.GetBackgroundTaskSettingsAsync(taskType);
 
-                                if (options is NotFoundBackgroundTaskOptions)
+                                if (settings != BackgroundTaskSettings.None)
                                 {
-                                    continue;
+                                    scheduler.Enable = settings.Enable;
+                                    scheduler.Schedule = settings.Schedule;
                                 }
-
-                                scheduler.Enable = options.Enable;
-                                scheduler.Schedule = options.Schedule;
 
                                 if (!scheduler.ShouldRun())
                                 {
@@ -170,7 +168,7 @@ namespace OrchardCore.Modules
             }
         }
 
-        private class Scheduler : BackgroundTaskOptions
+        private class Scheduler : BackgroundTaskSettings
         {
             public Scheduler(string tenant, DateTime startUtc)
             {
@@ -242,22 +240,22 @@ namespace OrchardCore.Modules
             return scope.ServiceProvider.GetServices<IBackgroundTask>().FirstOrDefault(t => t.GetType() == type);
         }
 
-        public static async Task<BackgroundTaskOptions> GetBackgroundTaskOptionsAsync(this IServiceScope scope, Type type)
+        public static async Task<BackgroundTaskSettings> GetBackgroundTaskSettingsAsync(this IServiceScope scope, Type type)
         {
-            var providers = scope.ServiceProvider.GetService<IOptions<BackgroundTasksOptions>>()
-                .Value.OptionsProviders;
+            var providers = scope.ServiceProvider.GetService<IOptions<BackgroundTaskOptions>>()
+                .Value.SettingsProviders;
 
             foreach (var provider in providers.OrderBy(p => p.Order))
             {
-                var options = await provider.GetOptionsAsync(type);
+                var settings = await provider.GetSettingsAsync(type);
 
-                if (options != null && !(options is NotFoundBackgroundTaskOptions))
+                if (settings != null && settings != BackgroundTaskSettings.None)
                 {
-                    return options;
+                    return settings;
                 }
             }
 
-            return new NotFoundBackgroundTaskOptions();
+            return BackgroundTaskSettings.None;
         }
     }
 }

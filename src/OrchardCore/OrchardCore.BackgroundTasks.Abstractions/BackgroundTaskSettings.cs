@@ -1,10 +1,9 @@
-using System;
-
 namespace OrchardCore.BackgroundTasks
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-    public class BackgroundTaskAttribute : Attribute
+    public class BackgroundTaskSettings
     {
+        public static BackgroundTaskSettings None = new BackgroundTaskSettings() { Enable = false };
+
         public bool Enable { get; set; } = true;
         public string Schedule { get; set; } = "* * * * *";
     }

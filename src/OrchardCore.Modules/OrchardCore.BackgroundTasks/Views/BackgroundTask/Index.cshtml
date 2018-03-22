@@ -12,10 +12,10 @@
 
 <form asp-action="Index"> @* the form is necessary to generate and antiforgery token for the delete action *@
 
-    @if (Model.BackgroundTasks.Any())
+    @if (Model.Tasks.Any())
     {
         <ul class="list-group">
-            @foreach (var entry in Model.BackgroundTasks)
+            @foreach (var entry in Model.Tasks)
             {
                 <li class="list-group-item">
                     <div class="properties">
@@ -24,10 +24,10 @@
                             <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                         <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
-                        @if (!String.IsNullOrWhiteSpace(entry.BackgroundTask.Description))
+                        @if (!String.IsNullOrWhiteSpace(entry.Definition.Description))
                         {
                         <span class="hint">
-                            @T["— {0}", entry.BackgroundTask.Description]
+                            @T["— {0}", entry.Definition.Description]
                         </span>
                         }
                     </div>

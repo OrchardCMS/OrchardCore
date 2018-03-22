@@ -5,18 +5,18 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.BackgroundTasks.Services
 {
-    public class BackgroundTaskOptionsProvider : IBackgroundTaskOptionsProvider
+    public class BackgroundTaskDocumentSettingsProvider : IBackgroundTaskSettingsProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public BackgroundTaskOptionsProvider(IHttpContextAccessor httpContextAccessor)
+        public BackgroundTaskDocumentSettingsProvider(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
 
         public int Order => 50;
 
-        public async Task<BackgroundTaskOptions> GetOptionsAsync(Type type)
+        public async Task<BackgroundTaskSettings> GetSettingsAsync(Type type)
         {
             var backgroundTaskManager = _httpContextAccessor.HttpContext
                 .RequestServices.GetRequiredService<BackgroundTaskManager>();
@@ -25,14 +25,14 @@ namespace OrchardCore.BackgroundTasks.Services
 
             if (document.Tasks.TryGetValue(type.FullName, out var task))
             {
-                return new BackgroundTaskOptions()
+                return new BackgroundTaskSettings()
                 {
                     Enable = task.Enable,
                     Schedule = task.Schedule,
                 };
             }
 
-            return new NotFoundBackgroundTaskOptions();
+            return BackgroundTaskSettings.None;
         }
     }
 }

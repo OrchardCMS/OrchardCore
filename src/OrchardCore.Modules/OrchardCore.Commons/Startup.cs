@@ -27,7 +27,7 @@ namespace OrchardCore.Commons
         {
             services.AddDeferredTasks();
             services.AddDataAccess();
-            //services.AddBackgroundTasks();
+            services.AddBackgroundTaskAttributes();
             services.AddResourceManagement();
             services.AddGeneratorTagFilter();
             services.AddCaching();

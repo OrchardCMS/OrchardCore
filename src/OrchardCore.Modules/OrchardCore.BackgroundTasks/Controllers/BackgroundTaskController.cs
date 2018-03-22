@@ -69,7 +69,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var model = new BackgroundTaskIndexViewModel
             {
-                BackgroundTasks = tasks.Select(kvp => new BackgroundTaskEntry { Name = kvp.Key, BackgroundTask = kvp.Value }).ToList(),
+                Tasks = tasks.Select(kvp => new BackgroundTaskEntry { Name = kvp.Key, Definition = kvp.Value }).ToList(),
                 Pager = pagerShape
             };
 
@@ -104,7 +104,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             if (ModelState.IsValid)
             {
-                var backgroundTask = new BackgroundTaskDefinition
+                var definition = new BackgroundTaskDefinition
                 {
                     Name = model.Name,
                     Enable = model.Enable,
@@ -112,7 +112,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                     Description = model.Description
                 };
 
-                await _backgroundTaskManager.UpdateAsync(model.Name, backgroundTask);
+                await _backgroundTaskManager.UpdateAsync(model.Name, definition);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -136,14 +136,14 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return RedirectToAction("Create", new { name });
             }
 
-            var backgroundTask = document.Tasks[name];
+            var definition = document.Tasks[name];
 
             var model = new BackgroundTaskViewModel
             {
                 Name = name,
-                Enable = backgroundTask.Enable,
-                Schedule = backgroundTask.Schedule,
-                Description = backgroundTask.Description,
+                Enable = definition.Enable,
+                Schedule = definition.Schedule,
+                Description = definition.Description,
                 Names = _backgroundTaskManager.Names
             };
 
@@ -175,7 +175,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             if (ModelState.IsValid)
             {
-                var backgroundTask = new BackgroundTaskDefinition
+                var definition = new BackgroundTaskDefinition
                 {
                     Name = model.Name,
                     Enable = model.Enable,
@@ -184,7 +184,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 };
 
                 await _backgroundTaskManager.RemoveAsync(sourceName);
-                await _backgroundTaskManager.UpdateAsync(model.Name, backgroundTask);
+                await _backgroundTaskManager.UpdateAsync(model.Name, definition);
 
                 return RedirectToAction(nameof(Index));
             }
