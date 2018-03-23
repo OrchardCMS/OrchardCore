@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NCrontab;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -22,7 +21,8 @@ namespace OrchardCore.Modules
         private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
 
-        private readonly ConcurrentDictionary<string, Scheduler> _schedulers = new ConcurrentDictionary<string, Scheduler>();
+        private readonly ConcurrentDictionary<string, BackgroundTaskState> _taskStates =
+            new ConcurrentDictionary<string, BackgroundTaskState>();
 
         private readonly IShellHost _shellHost;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -41,9 +41,13 @@ namespace OrchardCore.Modules
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            stoppingToken.Register(() => Logger.LogDebug($"BackgroundHostedService is stopping."));
+            stoppingToken.Register(() =>
+            {
+                Logger.LogDebug($"{nameof(ModularBackgroundService)} is stopping.");
+                StopBackgroundTaskStates();
+            });
 
-            var startUtc = DateTime.UtcNow;
+            var referenceTime = DateTime.UtcNow;
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -90,9 +94,9 @@ namespace OrchardCore.Modules
                                 continue;
                             }
 
-                            if (!_schedulers.TryGetValue(tenant + taskName, out Scheduler scheduler))
+                            if (!_taskStates.TryGetValue(tenant + taskName, out BackgroundTaskState taskState))
                             {
-                                _schedulers[tenant + taskName] = scheduler = new Scheduler(tenant, startUtc);
+                                _taskStates[tenant + taskName] = taskState = new BackgroundTaskState(tenant, referenceTime);
                             }
 
                             try
@@ -101,11 +105,11 @@ namespace OrchardCore.Modules
 
                                 if (settings != BackgroundTaskSettings.None)
                                 {
-                                    scheduler.Enable = settings.Enable;
-                                    scheduler.Schedule = settings.Schedule;
+                                    taskState.Enable = settings.Enable;
+                                    taskState.Schedule = settings.Schedule;
                                 }
 
-                                if (!scheduler.ShouldRun())
+                                if (!taskState.CanRun())
                                 {
                                     continue;
                                 }
@@ -117,7 +121,11 @@ namespace OrchardCore.Modules
                                         tenant, taskName);
                                 }
 
+                                taskState.Run();
+
                                 await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
+
+                                taskState.Idle();
 
                                 if (Logger.IsEnabled(LogLevel.Information))
                                 {
@@ -129,6 +137,8 @@ namespace OrchardCore.Modules
 
                             catch (Exception ex)
                             {
+                                taskState.Fault(ex);
+
                                 if (Logger.IsEnabled(LogLevel.Error))
                                 {
                                     Logger.LogError(ex,
@@ -140,7 +150,7 @@ namespace OrchardCore.Modules
                     }
                 });
 
-                startUtc = DateTime.UtcNow;
+                referenceTime = DateTime.UtcNow;
                 await Task.Delay(MinIdleTime, stoppingToken);
                 await pollingDelay;
             }
@@ -148,7 +158,7 @@ namespace OrchardCore.Modules
 
         Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
         {
-            CleanTenantSchedulers(tenant);
+            CleanTenantBackgroundTaskStates(tenant);
             return Task.CompletedTask;
         }
 
@@ -158,45 +168,27 @@ namespace OrchardCore.Modules
                 .OrderBy(s => s.Settings?.Name).ToArray() ?? Enumerable.Empty<ShellContext>();
         }
 
-        private void CleanTenantSchedulers(string tenant)
+        private void CleanTenantBackgroundTaskStates(string tenant)
         {
-            var keys = _schedulers.Where(kv => kv.Value.Tenant == tenant).Select(kv => kv.Key).ToArray();
+            var keys = _taskStates.Where(kv => kv.Value.Tenant == tenant).Select(kv => kv.Key).ToArray();
 
             foreach (var key in keys)
             {
-                _schedulers.TryRemove(key, out var scheduler);
+                _taskStates.TryRemove(key, out var scheduler);
             }
         }
 
-        private class Scheduler : BackgroundTaskSettings
+        private void StopBackgroundTaskStates()
         {
-            public Scheduler(string tenant, DateTime startUtc)
+            foreach (var state in _taskStates.Values)
             {
-                Tenant = tenant;
-                StartUtc = startUtc;
-            }
-
-            public string Tenant { get; }
-            public DateTime StartUtc { get; private set; }
-
-            public bool ShouldRun()
-            {
-                var now = DateTime.UtcNow;
-
-                if (now >= CrontabSchedule.Parse(Schedule).GetNextOccurrence(StartUtc))
-                {
-                    StartUtc = now;
-                    return Enable;
-                }
-
-                return false;
+                state.Stop();
             }
         }
     }
 
     internal static class EnumerableExtensions
     {
-
         public static Task ForEachAsync<T>(this IEnumerable<T> source, Func<T, Task> body)
         {
             var partitionCount = System.Environment.ProcessorCount;
