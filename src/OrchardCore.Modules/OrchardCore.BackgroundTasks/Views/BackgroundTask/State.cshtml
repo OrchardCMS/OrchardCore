@@ -1,10 +1,9 @@
 @model BackgroundTaskStateViewModel
 
-<h1>@RenderTitleSegments(T["Task State"])</h1>
+<h1>@RenderTitleSegments(T["Background Task State"])</h1>
 
-<h3>@Model.Name</h3>
+<h2>@Model.Name</h2>
 <h2>Enable: @Model.State.Enable</h2>
-<h2>ReferenceTime: @Model.State.ReferenceTime</h2>
 <h2>LastStartTime: @Model.State.LastStartTime</h2>
 <h2>NextStartTime: @Model.State.NextStartTime</h2>
 <h2>RunningTime: @Model.State.RunningTime</h2>

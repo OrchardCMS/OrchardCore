@@ -92,11 +92,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var state = await _backgroundTaskStateProvider.GetStateAsync(_shellSettings.Name, name);
 
-            if (state == BackgroundTaskState.Empty)
-            {
-                return NotFound();
-            }
-
             var model = new BackgroundTaskStateViewModel
             {
                 Name = name,

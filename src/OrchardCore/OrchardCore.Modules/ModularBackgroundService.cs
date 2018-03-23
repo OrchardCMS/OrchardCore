@@ -22,8 +22,8 @@ namespace OrchardCore.Modules
         private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
 
-        private readonly ConcurrentDictionary<string, BackgroundTaskState> _taskStates =
-            new ConcurrentDictionary<string, BackgroundTaskState>();
+        private readonly ConcurrentDictionary<string, BackgroundTaskScheduler> _schedulers =
+            new ConcurrentDictionary<string, BackgroundTaskScheduler>();
 
         private readonly IShellHost _shellHost;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -45,7 +45,7 @@ namespace OrchardCore.Modules
             stoppingToken.Register(() =>
             {
                 Logger.LogDebug($"{nameof(ModularBackgroundService)} is stopping.");
-                StopBackgroundTaskStates();
+                StopBackgroundTaskSchedulers();
             });
 
             var referenceTime = DateTime.UtcNow;
@@ -95,9 +95,9 @@ namespace OrchardCore.Modules
                                 continue;
                             }
 
-                            if (!_taskStates.TryGetValue(tenant + taskName, out BackgroundTaskState taskState))
+                            if (!_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
                             {
-                                _taskStates[tenant + taskName] = taskState = new BackgroundTaskState(tenant, referenceTime);
+                                _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, referenceTime);
                             }
 
                             try
@@ -106,11 +106,11 @@ namespace OrchardCore.Modules
 
                                 if (settings != BackgroundTaskSettings.None)
                                 {
-                                    taskState.Enable = settings.Enable;
-                                    taskState.Schedule = settings.Schedule;
+                                    scheduler.Enable = settings.Enable;
+                                    scheduler.Schedule = settings.Schedule;
                                 }
 
-                                if (!taskState.CanRun())
+                                if (!scheduler.CanRun())
                                 {
                                     continue;
                                 }
@@ -122,11 +122,11 @@ namespace OrchardCore.Modules
                                         tenant, taskName);
                                 }
 
-                                taskState.Run();
+                                scheduler.Run();
 
                                 await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
 
-                                taskState.Idle();
+                                scheduler.Idle();
 
                                 if (Logger.IsEnabled(LogLevel.Information))
                                 {
@@ -138,7 +138,7 @@ namespace OrchardCore.Modules
 
                             catch (Exception ex)
                             {
-                                taskState.Fault(ex);
+                                scheduler.Fault(ex);
 
                                 if (Logger.IsEnabled(LogLevel.Error))
                                 {
@@ -157,14 +157,25 @@ namespace OrchardCore.Modules
             }
 
             Logger.LogDebug($"{nameof(ModularBackgroundService)} is stopping.");
-            StopBackgroundTaskStates();
+            StopBackgroundTaskSchedulers();
         }
 
         Task<BackgroundTaskState> IBackgroundTaskStateProvider.GetStateAsync(string tenant, string taskName)
         {
-            if (_taskStates.TryGetValue(tenant + taskName, out BackgroundTaskState taskState))
+            if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
             {
-                return Task.FromResult(taskState);
+                var state = new BackgroundTaskState()
+                {
+                    LastStartTime = scheduler.LastStartTime,
+                    NextStartTime = scheduler.NextStartTime,
+                    RunningTime = scheduler.RunningTime,
+                    TotalTime = scheduler.TotalTime,
+                    StartCount = scheduler.StartCount,
+                    FaultMessage = scheduler.FaultMessage,
+                    Status = scheduler.Status
+                };
+
+                return Task.FromResult(state);
             }
 
             return Task.FromResult(BackgroundTaskState.Empty);
@@ -172,7 +183,7 @@ namespace OrchardCore.Modules
 
         Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
         {
-            CleanTenantBackgroundTaskStates(tenant);
+            CleanTenantBackgroundTaskSchedulers(tenant);
             return Task.CompletedTask;
         }
 
@@ -182,21 +193,21 @@ namespace OrchardCore.Modules
                 .OrderBy(s => s.Settings?.Name).ToArray() ?? Enumerable.Empty<ShellContext>();
         }
 
-        private void CleanTenantBackgroundTaskStates(string tenant)
+        private void CleanTenantBackgroundTaskSchedulers(string tenant)
         {
-            var keys = _taskStates.Where(kv => kv.Value.Tenant == tenant).Select(kv => kv.Key).ToArray();
+            var keys = _schedulers.Where(kv => kv.Value.Tenant == tenant).Select(kv => kv.Key).ToArray();
 
             foreach (var key in keys)
             {
-                _taskStates.TryRemove(key, out var scheduler);
+                _schedulers.TryRemove(key, out var scheduler);
             }
         }
 
-        private void StopBackgroundTaskStates()
+        private void StopBackgroundTaskSchedulers()
         {
-            foreach (var state in _taskStates.Values)
+            foreach (var scheduler in _schedulers.Values)
             {
-                state.Stop();
+                scheduler.Stop();
             }
         }
     }
