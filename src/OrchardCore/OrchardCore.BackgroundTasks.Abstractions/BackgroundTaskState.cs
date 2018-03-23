@@ -5,6 +5,10 @@ namespace OrchardCore.BackgroundTasks
 {
     public class BackgroundTaskState : BackgroundTaskSettings
     {
+        public static BackgroundTaskState Empty = new BackgroundTaskState() { Enable = false };
+
+        public BackgroundTaskState() { }
+
         public BackgroundTaskState(string tenant, DateTime referenceTime)
         {
             Tenant = tenant;

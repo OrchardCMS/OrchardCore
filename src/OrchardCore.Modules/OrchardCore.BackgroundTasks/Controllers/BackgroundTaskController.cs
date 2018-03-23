@@ -14,19 +14,24 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.BackgroundTasks.Controllers
 {
     [Admin]
     public class BackgroundTaskController : Controller, IUpdateModel
     {
+        private readonly ShellSettings _shellSettings;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IBackgroundTaskStateProvider _backgroundTaskStateProvider;
         private readonly BackgroundTaskManager _backgroundTaskManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         
         public BackgroundTaskController(
+            ShellSettings shellSettings,
             IAuthorizationService authorizationService,
+            IBackgroundTaskStateProvider backgroundTaskStateProvider,
             BackgroundTaskManager backgroundTaskManager,
             IShapeFactory shapeFactory,
             ISiteService siteService,
@@ -34,7 +39,9 @@ namespace OrchardCore.BackgroundTasks.Controllers
             IHtmlLocalizer<BackgroundTaskController> htmlLocalizer,
             INotifier notifier)
         {
+            _shellSettings = shellSettings;
             _authorizationService = authorizationService;
+            _backgroundTaskStateProvider = backgroundTaskStateProvider;
             _backgroundTaskManager = backgroundTaskManager;
             New = shapeFactory;
             _siteService = siteService;
@@ -71,6 +78,29 @@ namespace OrchardCore.BackgroundTasks.Controllers
             {
                 Tasks = tasks.Select(kvp => new BackgroundTaskEntry { Name = kvp.Key, Definition = kvp.Value }).ToList(),
                 Pager = pagerShape
+            };
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> State(string name)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
+            {
+                return Unauthorized();
+            }
+
+            var state = await _backgroundTaskStateProvider.GetStateAsync(_shellSettings.Name, name);
+
+            if (state == BackgroundTaskState.Empty)
+            {
+                return NotFound();
+            }
+
+            var model = new BackgroundTaskStateViewModel
+            {
+                Name = name,
+                State = state
             };
 
             return View(model);

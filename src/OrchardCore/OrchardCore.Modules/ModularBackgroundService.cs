@@ -16,7 +16,8 @@ using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.Modules
 {
-    internal class ModularBackgroundService : Internal.BackgroundService, IShellDescriptorManagerEventHandler
+    internal class ModularBackgroundService : Internal.BackgroundService,
+        IBackgroundTaskStateProvider, IShellDescriptorManagerEventHandler
     {
         private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
@@ -154,6 +155,19 @@ namespace OrchardCore.Modules
                 await Task.Delay(MinIdleTime, stoppingToken);
                 await pollingDelay;
             }
+
+            Logger.LogDebug($"{nameof(ModularBackgroundService)} is stopping.");
+            StopBackgroundTaskStates();
+        }
+
+        Task<BackgroundTaskState> IBackgroundTaskStateProvider.GetStateAsync(string tenant, string taskName)
+        {
+            if (_taskStates.TryGetValue(tenant + taskName, out BackgroundTaskState taskState))
+            {
+                return Task.FromResult(taskState);
+            }
+
+            return Task.FromResult(BackgroundTaskState.Empty);
         }
 
         Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)

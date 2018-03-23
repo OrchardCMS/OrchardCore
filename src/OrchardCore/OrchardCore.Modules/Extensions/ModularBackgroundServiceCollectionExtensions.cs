@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Hosting;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 
@@ -11,7 +12,8 @@ namespace Microsoft.Extensions.DependencyInjection
             return services
                 .AddSingleton<ModularBackgroundService>()
                 .AddSingleton<IHostedService>(sp => sp.GetRequiredService<ModularBackgroundService>())
-                .AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ModularBackgroundService>());
+                .AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ModularBackgroundService>())
+                .AddSingleton<IBackgroundTaskStateProvider>(sp => sp.GetRequiredService<ModularBackgroundService>());
         }
     }
 }
