@@ -21,7 +21,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
     [Admin]
     public class BackgroundTaskController : Controller, IUpdateModel
     {
-        private readonly ShellSettings _shellSettings;
+        private readonly String _tenant;
         private readonly IAuthorizationService _authorizationService;
         private readonly IBackgroundTaskStateProvider _backgroundTaskStateProvider;
         private readonly BackgroundTaskManager _backgroundTaskManager;
@@ -39,7 +39,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             IHtmlLocalizer<BackgroundTaskController> htmlLocalizer,
             INotifier notifier)
         {
-            _shellSettings = shellSettings;
+            _tenant = shellSettings.Name;
             _authorizationService = authorizationService;
             _backgroundTaskStateProvider = backgroundTaskStateProvider;
             _backgroundTaskManager = backgroundTaskManager;
@@ -64,38 +64,28 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
+
             var document = await _backgroundTaskManager.GetDocumentAsync();
 
-            var count = document.Tasks.Count;
-
-            var tasks = document.Tasks.OrderBy(x => x.Key)
+            var definitions = document.Tasks.OrderBy(x => x.Key)
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
+            var states = await _backgroundTaskStateProvider.GetStatesAsync(_tenant);
+
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(document.Tasks.Count);
 
             var model = new BackgroundTaskIndexViewModel
             {
-                Tasks = tasks.Select(kvp => new BackgroundTaskEntry { Name = kvp.Key, Definition = kvp.Value }).ToList(),
+                Tasks = definitions.Select(kvp => new BackgroundTaskEntry
+                {
+                    Name = kvp.Key,
+                    Definition = kvp.Value,
+                    State = states.FirstOrDefault(s => kvp.Key == s.Name) ?? BackgroundTaskState.Empty
+                })
+                .ToList(),
+
                 Pager = pagerShape
-            };
-
-            return View(model);
-        }
-
-        public async Task<IActionResult> State(string name)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
-            {
-                return Unauthorized();
-            }
-
-            var state = await _backgroundTaskStateProvider.GetStateAsync(_shellSettings.Name, name);
-
-            var model = new BackgroundTaskStateViewModel
-            {
-                Name = name,
-                State = state
             };
 
             return View(model);

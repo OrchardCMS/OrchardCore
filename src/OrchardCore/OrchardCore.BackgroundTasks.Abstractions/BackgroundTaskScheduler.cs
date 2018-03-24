@@ -5,8 +5,9 @@ namespace OrchardCore.BackgroundTasks
 {
     public class BackgroundTaskScheduler : BackgroundTaskState
     {
-        public BackgroundTaskScheduler(string tenant, DateTime referenceTime)
+        public BackgroundTaskScheduler(string tenant, string name, DateTime referenceTime)
         {
+            Name = name;
             Tenant = tenant;
             ReferenceTime = referenceTime;
         }
@@ -14,6 +15,23 @@ namespace OrchardCore.BackgroundTasks
         public string Tenant { get; }
         public DateTime ReferenceTime { get; private set; }
         public override DateTime NextStartTime => CrontabSchedule.Parse(Schedule).GetNextOccurrence(ReferenceTime);
+
+        public BackgroundTaskState CloneState()
+        {
+            return new BackgroundTaskState()
+            {
+                Name = Name,
+                Enable = Enable,
+                Schedule = Schedule,
+                LastStartTime = LastStartTime,
+                NextStartTime = NextStartTime,
+                LastExecutionTime = LastExecutionTime,
+                TotalExecutionTime = TotalExecutionTime,
+                StartCount = StartCount,
+                FaultMessage = FaultMessage,
+                Status = Status
+            };
+        }
 
         public bool CanRun()
         {
@@ -32,15 +50,14 @@ namespace OrchardCore.BackgroundTasks
             if (Status == BackgroundTaskStatus.Running)
             {
                 Status = BackgroundTaskStatus.Idle;
-                RunningTime = DateTime.UtcNow - LastStartTime;
-                TotalTime += RunningTime;
+                LastExecutionTime = DateTime.UtcNow - LastStartTime;
+                TotalExecutionTime += LastExecutionTime;
             }
         }
 
         public void Stop()
         {
             Idle();
-
             Status = BackgroundTaskStatus.Stopped;
         }
 
@@ -48,9 +65,20 @@ namespace OrchardCore.BackgroundTasks
         {
             Idle();
             Stop();
-
             Status = BackgroundTaskStatus.Faulted;
             FaultMessage = exception.Message;
+        }
+
+        public void Reset()
+        {
+            StartCount = 0;
+            LastExecutionTime = new TimeSpan();
+            TotalExecutionTime = new TimeSpan();
+
+            if (Status == BackgroundTaskStatus.Running)
+            {
+                Status = BackgroundTaskStatus.Idle;
+            }
         }
     }
 }

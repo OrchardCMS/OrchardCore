@@ -13,6 +13,7 @@ namespace OrchardCore.BackgroundTasks.ViewModels
     {
         public string Name { get; set; }
         public BackgroundTaskDefinition Definition { get; set; }
+        public BackgroundTaskState State { get; set; }
         public bool IsChecked { get; set; }
     }
 }

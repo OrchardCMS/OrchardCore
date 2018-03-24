@@ -21,17 +21,81 @@
                     <div class="properties">
                         <div class="related">
                             <a asp-action="Edit" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="State" asp-route-name="@entry.Name" class="btn btn-success btn-sm">@T["State"]</a>
                             <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                         <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
                         @if (!String.IsNullOrWhiteSpace(entry.Definition.Description))
                         {
-                        <span class="hint">
-                            @T["— {0}", entry.Definition.Description]
-                        </span>
+                            <span class="hint">
+                                @T["— {0}", entry.Definition.Description]
+                          </span>
                         }
                     </div>
+                    @if (entry.State == BackgroundTaskState.Empty)
+                    {
+                        <span class="badge badge-secondary" title="@T["Undefined"]">
+                            <i class="fa fa-question" aria-hidden="true"></i> @T["Undefined"]
+                        </span>
+                    }
+                    else
+                    {
+                        if (entry.State.Enable)
+                        {
+                            <span class="badge badge-success" title="@T["Enabled"]">
+                                <i class="fa fa-check" aria-hidden="true"></i> @T["Enabled"]
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-warning" title="@T["Disabled"]">
+                                <i class="fa fa-ban" aria-hidden="true"></i> @T["Disabled"]
+                            </span>
+                        }
+
+                        if (entry.State.Enable && entry.State.Status == BackgroundTaskStatus.Idle)
+                        {
+                            <span class="badge badge-info" title="@T["Idle"]">
+                                <i class="fa fa-coffee" aria-hidden="true"></i> @T["Idle"]
+                            </span>
+                            <span class="badge badge-light" title="@T["Next Start Time"]">
+                                <i class="fa fa-clock-o" aria-hidden="true"></i> @T["Next"] @entry.State.NextStartTime
+                            </span>
+                        }
+                        else if (entry.State.Status == BackgroundTaskStatus.Running)
+                        {
+                            <span class="badge badge-success" title="@T["Running"]">
+                                <i class="fa fa-refresh fa-spin" aria-hidden="true"></i> @T["Running"]
+                            </span>
+                        }
+                        else if (entry.State.Status == BackgroundTaskStatus.Stopped)
+                        {
+                            <span class="badge badge-warning" title="@T["Stopped"]">
+                                <i class="fa fa-power-off" aria-hidden="true"></i> @T["Stopped"]
+                            </span>
+                        }
+                        else if (entry.State.Status == BackgroundTaskStatus.Faulted)
+                        {
+                            <span class="badge badge-danger" title="@T["Faulted"]">
+                                <i class="fa fa-warning" aria-hidden="true"></i> @T["Faulted"]
+                            </span>
+                        }
+
+                        if (entry.State.StartCount > 0)
+                        {
+                            <span class="badge badge-success" title="@T["Last Start Time"]">
+                                <i class="fa fa-clock-o" aria-hidden="true"></i> @T["Last"] @entry.State.LastStartTime
+                            </span>
+                            <span class="badge badge-light" title="@T["Last Execution Time"]">
+                                <i class="fa fa-stopwatch" aria-hidden="true"></i> @entry.State.LastExecutionTime.ToString(@"hh\:mm\:ss\.fff")
+                            </span>
+                           <span class="badge badge-success" title="@T["Start Count"]">
+                                <i class="fa fa-refresh fa-spin" aria-hidden="true"></i> @entry.State.StartCount
+                            </span>
+                            <span class="badge badge-light" title="@T["Total Execution Time"]">
+                                <i class="fa fa-stopwatch" aria-hidden="true"></i> @entry.State.TotalExecutionTime.ToString(@"hh\:mm\:ss\.fff")
+                            </span>
+                        }
+                    }
                 </li>
             }
         </ul>

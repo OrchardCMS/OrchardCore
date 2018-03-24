@@ -97,7 +97,7 @@ namespace OrchardCore.Modules
 
                             if (!_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
                             {
-                                _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, referenceTime);
+                                _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime);
                             }
 
                             try
@@ -164,21 +164,16 @@ namespace OrchardCore.Modules
         {
             if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
             {
-                var state = new BackgroundTaskState()
-                {
-                    LastStartTime = scheduler.LastStartTime,
-                    NextStartTime = scheduler.NextStartTime,
-                    RunningTime = scheduler.RunningTime,
-                    TotalTime = scheduler.TotalTime,
-                    StartCount = scheduler.StartCount,
-                    FaultMessage = scheduler.FaultMessage,
-                    Status = scheduler.Status
-                };
-
-                return Task.FromResult(state);
+                return Task.FromResult(scheduler.CloneState());
             }
 
             return Task.FromResult(BackgroundTaskState.Empty);
+        }
+
+        Task<IEnumerable<BackgroundTaskState>> IBackgroundTaskStateProvider.GetStatesAsync(string tenant)
+        {
+            return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
+                .Select(kv => kv.Value.CloneState()));
         }
 
         Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
