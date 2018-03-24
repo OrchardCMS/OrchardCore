@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Modules.Abstractions\OrchardCore.Modules.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.BackgroundTasks.Abstractions\OrchardCore.BackgroundTasks.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Environment.Extensions\OrchardCore.Environment.Extensions.csproj" />
     <ProjectReference Include="..\OrchardCore.Environment.Shell\OrchardCore.Environment.Shell.csproj" />
   </ItemGroup>

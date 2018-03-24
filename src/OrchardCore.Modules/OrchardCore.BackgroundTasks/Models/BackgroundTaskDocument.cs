@@ -11,7 +11,6 @@ namespace OrchardCore.BackgroundTasks.Models
 
     public class BackgroundTaskDefinition : BackgroundTaskSettings
     {
-        public string Name { get; set; }
         public string Description { get; set; }
     }
 }

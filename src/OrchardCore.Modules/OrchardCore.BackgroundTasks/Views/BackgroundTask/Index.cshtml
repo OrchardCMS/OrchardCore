@@ -31,15 +31,15 @@
                           </span>
                         }
                     </div>
-                    @if (entry.State == BackgroundTaskState.Empty)
+                    @if (entry.State == BackgroundTaskState.Undefined)
                     {
-                        <span class="badge badge-secondary" title="@T["Undefined"]">
-                            <i class="fa fa-question" aria-hidden="true"></i> @T["Undefined"]
+                        <span class="badge badge-secondary" title="@T["Not Available"]">
+                            <i class="fa fa-question" aria-hidden="true"></i> @T["Not Available"]
                         </span>
                     }
                     else
                     {
-                        if (entry.State.Enable)
+                        if (entry.Settings.Enable)
                         {
                             <span class="badge badge-success" title="@T["Enabled"]">
                                 <i class="fa fa-check" aria-hidden="true"></i> @T["Enabled"]
@@ -52,7 +52,7 @@
                             </span>
                         }
 
-                        if (entry.State.Enable && entry.State.Status == BackgroundTaskStatus.Idle)
+                        if (entry.Settings.Enable && entry.State.Status == BackgroundTaskStatus.Idle)
                         {
                             <span class="badge badge-info" title="@T["Idle"]">
                                 <i class="fa fa-coffee" aria-hidden="true"></i> @T["Idle"]

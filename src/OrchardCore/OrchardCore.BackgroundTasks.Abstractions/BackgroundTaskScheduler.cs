@@ -3,81 +3,67 @@ using NCrontab;
 
 namespace OrchardCore.BackgroundTasks
 {
-    public class BackgroundTaskScheduler : BackgroundTaskState
+    public class BackgroundTaskScheduler
     {
         public BackgroundTaskScheduler(string tenant, string name, DateTime referenceTime)
         {
-            Name = name;
             Tenant = tenant;
             ReferenceTime = referenceTime;
+            Settings = new BackgroundTaskSettings() { Name = name };
+            State = new BackgroundTaskState() { Name = name };
         }
 
         public string Tenant { get; }
         public DateTime ReferenceTime { get; private set; }
-        public override DateTime NextStartTime => CrontabSchedule.Parse(Schedule).GetNextOccurrence(ReferenceTime);
-
-        public BackgroundTaskState CloneState()
-        {
-            return new BackgroundTaskState()
-            {
-                Name = Name,
-                Enable = Enable,
-                Schedule = Schedule,
-                LastStartTime = LastStartTime,
-                NextStartTime = NextStartTime,
-                LastExecutionTime = LastExecutionTime,
-                TotalExecutionTime = TotalExecutionTime,
-                StartCount = StartCount,
-                FaultMessage = FaultMessage,
-                Status = Status
-            };
-        }
+        public BackgroundTaskSettings Settings { get; }
+        public BackgroundTaskState State { get; }
 
         public bool CanRun()
         {
-            return Enable && Status == BackgroundTaskStatus.Idle && DateTime.UtcNow >= NextStartTime;
+            State.NextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(ReferenceTime);
+            return Settings.Enable && State.Status == BackgroundTaskStatus.Idle && DateTime.UtcNow >= State.NextStartTime;
         }
 
         public void Run()
         {
-            Status = BackgroundTaskStatus.Running;
-            LastStartTime = ReferenceTime = DateTime.UtcNow;
-            StartCount += 1;
+            State.Status = BackgroundTaskStatus.Running;
+            State.LastStartTime = ReferenceTime = DateTime.UtcNow;
+            State.StartCount += 1;
         }
 
         public void Idle()
         {
-            if (Status == BackgroundTaskStatus.Running)
+            if (State.Status == BackgroundTaskStatus.Running)
             {
-                Status = BackgroundTaskStatus.Idle;
-                LastExecutionTime = DateTime.UtcNow - LastStartTime;
-                TotalExecutionTime += LastExecutionTime;
+                State.Status = BackgroundTaskStatus.Idle;
+                State.LastExecutionTime = DateTime.UtcNow - State.LastStartTime;
+                State.TotalExecutionTime += State.LastExecutionTime;
             }
         }
 
         public void Stop()
         {
             Idle();
-            Status = BackgroundTaskStatus.Stopped;
+            State.Status = BackgroundTaskStatus.Stopped;
         }
 
         public void Fault(Exception exception)
         {
             Idle();
             Stop();
-            Status = BackgroundTaskStatus.Faulted;
-            FaultMessage = exception.Message;
+            State.Status = BackgroundTaskStatus.Faulted;
+            State.FaultMessage = exception.Message;
         }
 
         public void Reset()
         {
-            StartCount = 0;
-            LastExecutionTime = new TimeSpan();
-            TotalExecutionTime = new TimeSpan();
+            State.StartCount = 0;
+            State.LastExecutionTime = new TimeSpan();
+            State.TotalExecutionTime = new TimeSpan();
 
-            if (Status == BackgroundTaskStatus.Running)
+            if (State.Status != BackgroundTaskStatus.Running)
             {
-                Status = BackgroundTaskStatus.Idle;
+                State.Status = BackgroundTaskStatus.Idle;
             }
         }
     }

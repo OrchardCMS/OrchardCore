@@ -12,18 +12,19 @@ using OrchardCore.BackgroundTasks.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.BackgroundTasks.Controllers
 {
     [Admin]
     public class BackgroundTaskController : Controller, IUpdateModel
     {
-        private readonly String _tenant;
+        private readonly string _tenant;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IBackgroundTaskStateProvider _backgroundTaskStateProvider;
+        private readonly IModularBackgroundService _backgroundService;
         private readonly BackgroundTaskManager _backgroundTaskManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
@@ -31,7 +32,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         public BackgroundTaskController(
             ShellSettings shellSettings,
             IAuthorizationService authorizationService,
-            IBackgroundTaskStateProvider backgroundTaskStateProvider,
+            IModularBackgroundService backgroundService,
             BackgroundTaskManager backgroundTaskManager,
             IShapeFactory shapeFactory,
             ISiteService siteService,
@@ -41,7 +42,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             _tenant = shellSettings.Name;
             _authorizationService = authorizationService;
-            _backgroundTaskStateProvider = backgroundTaskStateProvider;
+            _backgroundService = backgroundService;
             _backgroundTaskManager = backgroundTaskManager;
             New = shapeFactory;
             _siteService = siteService;
@@ -71,7 +72,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize);
 
-            var states = await _backgroundTaskStateProvider.GetStatesAsync(_tenant);
+            var settings = await _backgroundService.GetSettingsAsync(_tenant);
+            var states = await _backgroundService.GetStatesAsync(_tenant);
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(document.Tasks.Count);
 
@@ -81,7 +83,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 {
                     Name = kvp.Key,
                     Definition = kvp.Value,
-                    State = states.FirstOrDefault(s => kvp.Key == s.Name) ?? BackgroundTaskState.Empty
+                    Settings = settings.FirstOrDefault(s => kvp.Key == s.Name) ?? BackgroundTaskSettings.None,
+                    State = states.FirstOrDefault(s => kvp.Key == s.Name) ?? BackgroundTaskState.Undefined
                 })
                 .ToList(),
 

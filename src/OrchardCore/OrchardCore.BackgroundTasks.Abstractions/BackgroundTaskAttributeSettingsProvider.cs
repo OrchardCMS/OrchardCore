@@ -16,6 +16,7 @@ namespace OrchardCore.BackgroundTasks
             {
                 return Task.FromResult(new BackgroundTaskSettings
                 {
+                    Name = type.FullName,
                     Enable = attribute.Enable,
                     Schedule = attribute.Schedule
                 });

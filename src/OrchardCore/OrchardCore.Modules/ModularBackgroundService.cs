@@ -17,7 +17,7 @@ using OrchardCore.Hosting.ShellBuilders;
 namespace OrchardCore.Modules
 {
     internal class ModularBackgroundService : Internal.BackgroundService,
-        IBackgroundTaskStateProvider, IShellDescriptorManagerEventHandler
+        IModularBackgroundService, IShellDescriptorManagerEventHandler
     {
         private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
@@ -106,8 +106,8 @@ namespace OrchardCore.Modules
 
                                 if (settings != BackgroundTaskSettings.None)
                                 {
-                                    scheduler.Enable = settings.Enable;
-                                    scheduler.Schedule = settings.Schedule;
+                                    scheduler.Settings.Enable = settings.Enable;
+                                    scheduler.Settings.Schedule = settings.Schedule;
                                 }
 
                                 if (!scheduler.CanRun())
@@ -160,20 +160,36 @@ namespace OrchardCore.Modules
             StopBackgroundTaskSchedulers();
         }
 
-        Task<BackgroundTaskState> IBackgroundTaskStateProvider.GetStateAsync(string tenant, string taskName)
+        public Task<IEnumerable<BackgroundTaskSettings>> GetSettingsAsync(string tenant)
+        {
+            return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
+                .Select(kv => kv.Value.Settings));
+        }
+
+        public Task<IEnumerable<BackgroundTaskState>> GetStatesAsync(string tenant)
+        {
+            return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
+                .Select(kv => kv.Value.State));
+        }
+
+        public Task<BackgroundTaskSettings> GetSettingsAsync(string tenant, string taskName)
         {
             if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
             {
-                return Task.FromResult(scheduler.CloneState());
+                return Task.FromResult(scheduler.Settings);
             }
 
-            return Task.FromResult(BackgroundTaskState.Empty);
+            return Task.FromResult(BackgroundTaskSettings.None);
         }
 
-        Task<IEnumerable<BackgroundTaskState>> IBackgroundTaskStateProvider.GetStatesAsync(string tenant)
+        public Task<BackgroundTaskState> GetStateAsync(string tenant, string taskName)
         {
-            return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
-                .Select(kv => kv.Value.CloneState()));
+            if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
+            {
+                return Task.FromResult(scheduler.State);
+            }
+
+            return Task.FromResult(BackgroundTaskState.Undefined);
         }
 
         Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)

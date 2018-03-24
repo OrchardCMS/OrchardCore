@@ -4,6 +4,7 @@ namespace OrchardCore.BackgroundTasks
     {
         public static BackgroundTaskSettings None = new BackgroundTaskSettings() { Enable = false };
 
+        public string Name { get; set; }
         public bool Enable { get; set; } = true;
         public string Schedule { get; set; } = "* * * * *";
     }
