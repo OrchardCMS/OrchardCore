@@ -3,7 +3,7 @@ using OrchardCore.BackgroundTasks.Models;
 
 namespace OrchardCore.BackgroundTasks.ViewModels
 {
-    public class BackgroundTaskViewModel : BackgroundTaskDefinition
+    public class BackgroundTaskViewModel : BackgroundTask
     {
         public IEnumerable<string> Names { get; set; }
     }

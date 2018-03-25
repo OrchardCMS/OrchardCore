@@ -1,6 +1,6 @@
 @model BackgroundTaskViewModel
 
-<h1>@RenderTitleSegments(T["Create Task Definition"])</h1>
+<h1>@RenderTitleSegments(T["Create Task Settings"])</h1>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post">
@@ -13,7 +13,7 @@
                 <option value="@name">@name</option>
             }
         </select>
-        <div class="hint">@T["The task on which this definition will apply."]</div>
+        <div class="hint">@T["The task on which this settings will apply."]</div>
     </div>
 
     <div class="form-group" asp-validation-class-for="Enable">

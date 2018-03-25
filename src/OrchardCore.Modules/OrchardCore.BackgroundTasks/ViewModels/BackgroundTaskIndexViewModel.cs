@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using OrchardCore.BackgroundTasks.Models;
 
 namespace OrchardCore.BackgroundTasks.ViewModels
 {
@@ -13,7 +12,7 @@ namespace OrchardCore.BackgroundTasks.ViewModels
     public class BackgroundTaskEntry
     {
         public string Name { get; set; }
-        public BackgroundTaskDefinition Definition { get; set; }
+        public string Description { get; set; }
         public BackgroundTaskSettings Settings { get; set; }
         public BackgroundTaskState State { get; set; }
         public bool IsChecked { get; set; }

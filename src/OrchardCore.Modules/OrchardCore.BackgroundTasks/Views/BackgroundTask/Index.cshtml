@@ -1,11 +1,11 @@
 @model BackgroundTaskIndexViewModel
 
-<h1>@RenderTitleSegments(T["Background Tasks Schedulers"])</h1>
+<h1>@RenderTitleSegments(T["Background Tasks"])</h1>
 
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Definition"]</a>
+            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Settings"]</a>
         </li>
     </ul>
 </nav>
@@ -53,10 +53,10 @@ else
                             </div>
                         </div>
                         <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
-                        @if (!String.IsNullOrWhiteSpace(entry.Definition.Description))
+                        @if (!String.IsNullOrWhiteSpace(entry.Description))
                         {
                             <span class="hint">
-                                @T["— {0}", entry.Definition.Description]
+                                @T["— {0}", entry.Description]
                           </span>
                         }
                     </div>

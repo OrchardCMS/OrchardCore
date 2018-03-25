@@ -73,11 +73,11 @@ namespace OrchardCore.BackgroundTasks.Services
             _signal.SignalToken(CacheKey);
         }
         
-        public async Task UpdateAsync(string name, BackgroundTaskDefinition definition)
+        public async Task UpdateAsync(string name, BackgroundTask task)
         {
             var document = await GetDocumentAsync();
 
-            document.Tasks[name] = definition;
+            document.Tasks[name] = task;
             _session.Save(document);
 
             _memoryCache.Set(CacheKey, document);
