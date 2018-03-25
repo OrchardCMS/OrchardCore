@@ -79,6 +79,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var model = new BackgroundTaskIndexViewModel
             {
+                IsRunning = _backgroundService.IsRunning,
+
                 Tasks = definitions.Select(kvp => new BackgroundTaskEntry
                 {
                     Name = kvp.Key,

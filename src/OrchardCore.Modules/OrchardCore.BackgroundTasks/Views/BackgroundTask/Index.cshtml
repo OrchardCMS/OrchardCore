@@ -10,10 +10,20 @@
     </ul>
 </nav>
 
-<div class="alert alert-success" role="alert">
-    <span><i class="fa fa-refresh fa-spin" aria-hidden="true"></i></span>
-    @T["The Background Service is running."]
-</div>
+@if (Model.IsRunning)
+{
+    <div class="alert alert-success" role="alert">
+        <span><i class="fa fa-refresh fa-spin" aria-hidden="true"></i></span>
+        @T["The Background Service is running."]
+    </div>
+}
+else
+{
+    <div class="alert alert-warning" role="alert">
+        <span><i class="fa fa-refresh" aria-hidden="true"></i></span>
+        @T["The Background Service is stopped."]
+    </div>
+}
 
 <form asp-action="Index"> @* the form is necessary to generate and antiforgery token for the delete action *@
 
