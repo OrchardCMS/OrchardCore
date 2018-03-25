@@ -28,6 +28,10 @@ namespace OrchardCore.BackgroundTasks
         {
             State.Status = BackgroundTaskStatus.Running;
             State.LastStartTime = ReferenceTime = DateTime.UtcNow;
+
+            State.NextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(ReferenceTime)
+                + TimeSpan.FromSeconds(ReferenceTime.Second);
+
             State.StartCount += 1;
         }
 
@@ -49,7 +53,14 @@ namespace OrchardCore.BackgroundTasks
             State.FaultMessage = exception.Message;
         }
 
-        public void Command(CommandCode code)
+        public BackgroundTaskScheduler CommandOnCopy(CommandCode code)
+        {
+            var scheduler = Copy();
+            scheduler.Command(code);
+            return scheduler;
+        }
+
+        private void Command(CommandCode code)
         {
             if (code == CommandCode.Lock)
             {

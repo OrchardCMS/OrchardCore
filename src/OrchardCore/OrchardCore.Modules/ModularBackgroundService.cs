@@ -165,9 +165,7 @@ namespace OrchardCore.Modules
         {
             if (_schedulers.TryRemove(tenant + taskName, out BackgroundTaskScheduler scheduler))
             {
-                scheduler = scheduler.Copy();
-                scheduler.Command(code);
-                _schedulers[tenant + taskName] = scheduler;
+                _schedulers[tenant + taskName] = scheduler.CommandOnCopy(code);
             }
         }
 
@@ -175,7 +173,7 @@ namespace OrchardCore.Modules
         {
             if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
             {
-                return Task.FromResult(scheduler.Settings);
+                return Task.FromResult(scheduler.Settings.Copy());
             }
 
             return Task.FromResult(BackgroundTaskSettings.None);
@@ -184,14 +182,14 @@ namespace OrchardCore.Modules
         public Task<IEnumerable<BackgroundTaskSettings>> GetSettingsAsync(string tenant)
         {
             return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
-                .Select(kv => kv.Value.Settings));
+                .Select(kv => kv.Value.Settings.Copy()));
         }
 
         public Task<BackgroundTaskState> GetStateAsync(string tenant, string taskName)
         {
             if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
             {
-                return Task.FromResult(scheduler.State);
+                return Task.FromResult(scheduler.State.Copy());
             }
 
             return Task.FromResult(BackgroundTaskState.Undefined);
@@ -200,7 +198,7 @@ namespace OrchardCore.Modules
         public Task<IEnumerable<BackgroundTaskState>> GetStatesAsync(string tenant)
         {
             return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
-                .Select(kv => kv.Value.State));
+                .Select(kv => kv.Value.State.Copy()));
         }
 
         Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
