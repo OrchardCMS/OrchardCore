@@ -45,18 +45,26 @@ namespace OrchardCore.Modules
         {
             stoppingToken.Register(() =>
             {
-                IsRunning = false;
                 Logger.LogDebug($"{nameof(ModularBackgroundService)} is stopping.");
+                IsRunning = false;
             });
 
-            IsRunning = true;
             var referenceTime = DateTime.UtcNow;
+
+            IEnumerable<ShellContext> shells = null;
+            while ((shells?.Count() ?? 0) < 1)
+            {
+                shells = GetRunningShells();
+                await Task.Delay(MinIdleTime, stoppingToken);
+            }
+
+            IsRunning = true;
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 var pollingDelay = Task.Delay(PollingTime, stoppingToken);
 
-                var shells = GetRunningShells();
+                shells = GetRunningShells();
 
                 await shells.ForEachAsync(async shell =>
                 {
@@ -165,7 +173,7 @@ namespace OrchardCore.Modules
         {
             if (_schedulers.TryRemove(tenant + taskName, out BackgroundTaskScheduler scheduler))
             {
-                _schedulers[tenant + taskName] = scheduler.CommandOnCopy(code);
+                _schedulers[tenant + taskName] = scheduler.Command(code);
             }
         }
 
@@ -173,7 +181,7 @@ namespace OrchardCore.Modules
         {
             if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
             {
-                return Task.FromResult(scheduler.Settings.Copy());
+                return Task.FromResult(scheduler.Settings.Clone());
             }
 
             return Task.FromResult(BackgroundTaskSettings.None);
@@ -182,14 +190,14 @@ namespace OrchardCore.Modules
         public Task<IEnumerable<BackgroundTaskSettings>> GetSettingsAsync(string tenant)
         {
             return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
-                .Select(kv => kv.Value.Settings.Copy()));
+                .Select(kv => kv.Value.Settings.Clone()));
         }
 
         public Task<BackgroundTaskState> GetStateAsync(string tenant, string taskName)
         {
             if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
             {
-                return Task.FromResult(scheduler.State.Copy());
+                return Task.FromResult(scheduler.State.Clone());
             }
 
             return Task.FromResult(BackgroundTaskState.Undefined);
@@ -198,7 +206,7 @@ namespace OrchardCore.Modules
         public Task<IEnumerable<BackgroundTaskState>> GetStatesAsync(string tenant)
         {
             return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
-                .Select(kv => kv.Value.State.Copy()));
+                .Select(kv => kv.Value.State.Clone()));
         }
 
         Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)

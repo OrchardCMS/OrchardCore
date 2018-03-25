@@ -21,17 +21,21 @@ namespace OrchardCore.BackgroundTasks
         public bool CanRun()
         {
             State.NextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(ReferenceTime);
-            return Settings.Enable && State.Status == BackgroundTaskStatus.Idle && DateTime.UtcNow >= State.NextStartTime;
+
+            if (DateTime.UtcNow >= State.NextStartTime)
+            {
+                ReferenceTime = DateTime.UtcNow;
+                State.NextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(ReferenceTime);
+                return Settings.Enable && State.Status == BackgroundTaskStatus.Idle;
+            }
+
+            return false;
         }
 
         public void Run()
         {
             State.Status = BackgroundTaskStatus.Running;
             State.LastStartTime = ReferenceTime = DateTime.UtcNow;
-
-            State.NextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(ReferenceTime)
-                + TimeSpan.FromSeconds(ReferenceTime.Second);
-
             State.StartCount += 1;
         }
 
@@ -50,47 +54,44 @@ namespace OrchardCore.BackgroundTasks
         {
             Idle();
             State.Status = BackgroundTaskStatus.Locked;
-            State.FaultMessage = exception.Message;
+            State.FaultMessage = DateTime.UtcNow.ToString() + ' ' + exception.Message;
         }
 
-        public BackgroundTaskScheduler CommandOnCopy(CommandCode code)
+        public BackgroundTaskScheduler Command(CommandCode code)
         {
-            var scheduler = Copy();
-            scheduler.Command(code);
-            return scheduler;
-        }
+            var scheduler = Clone();
 
-        private void Command(CommandCode code)
-        {
             if (code == CommandCode.Lock)
             {
-                State.Status = BackgroundTaskStatus.Locked;
+                scheduler.State.Status = BackgroundTaskStatus.Locked;
             }
             else if (code == CommandCode.Unlock)
             {
-                if (State.Status == BackgroundTaskStatus.Locked)
+                if (scheduler.State.Status == BackgroundTaskStatus.Locked)
                 {
-                    State.Status = BackgroundTaskStatus.Idle;
+                    scheduler.State.Status = BackgroundTaskStatus.Idle;
                 }
             }
             else if (code == CommandCode.ResetCount)
             {
-                State.StartCount = 0;
-                State.LastExecutionTime = new TimeSpan();
-                State.TotalExecutionTime = new TimeSpan();
+                scheduler.State.StartCount = 0;
+                scheduler.State.LastExecutionTime = new TimeSpan();
+                scheduler.State.TotalExecutionTime = new TimeSpan();
             }
             else if (code == CommandCode.ResetFault)
             {
-                State.FaultMessage = String.Empty;
+                scheduler.State.FaultMessage = String.Empty;
             }
+
+            return scheduler;
         }
 
-        public BackgroundTaskScheduler Copy()
+        public BackgroundTaskScheduler Clone()
         {
             return new BackgroundTaskScheduler(Tenant, State.Name, ReferenceTime)
             {
-                Settings = Settings.Copy(),
-                State = State.Copy()
+                Settings = Settings.Clone(),
+                State = State.Clone()
             };
         }
 

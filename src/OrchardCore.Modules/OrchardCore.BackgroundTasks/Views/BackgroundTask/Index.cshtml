@@ -1,6 +1,6 @@
 @model BackgroundTaskIndexViewModel
 
-<h1>@RenderTitleSegments(T["Background Tasks"])</h1>
+<h1>@RenderTitleSegments(T["Background Tasks Schedulers"])</h1>
 
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto">
@@ -21,7 +21,7 @@ else
 {
     <div class="alert alert-warning" role="alert">
         <span><i class="fa fa-refresh" aria-hidden="true"></i></span>
-        @T["The Background Service is stopped."]
+        @T["The Background Service is stopped or not yet started."]
     </div>
 }
 
@@ -63,19 +63,13 @@ else
 
                     @if (entry.State == BackgroundTaskState.Undefined)
                     {
-                        <span class="badge badge-secondary" title="@T["Not yet available"]">
-                            <i class="fa fa-question" aria-hidden="true"></i> @T["Not yet available"]
+                        <span class="badge badge-secondary" title="@T["Not Available"]">
+                            <i class="fa fa-question" aria-hidden="true"></i> @T["Not Available"]
                         </span>
                     }
                     else
                     {
-                        if (entry.Settings.Enable)
-                        {
-                            <span class="badge badge-success" title="@T["Enabled"]">
-                                <i class="fa fa-check" aria-hidden="true"></i> @T["Enabled"]
-                            </span>
-                        }
-                        else
+                        if (!entry.Settings.Enable)
                         {
                             <span class="badge badge-warning" title="@T["Disabled"]">
                                 <i class="fa fa-ban" aria-hidden="true"></i> @T["Disabled"]
@@ -88,7 +82,7 @@ else
                                 <i class="fa fa-coffee" aria-hidden="true"></i> @T["Idle"]
                             </span>
                             <span class="badge badge-light" title="@T["Next Start Time"]">
-                                <i class="fa fa-clock-o" aria-hidden="true"></i> @T["Next"] @entry.State.NextStartTime
+                                <i class="fa fa-clock-o" aria-hidden="true"></i> @T["Next"] @entry.State.NextStartTime.ToShortDateString() @entry.State.NextStartTime.ToShortTimeString()
                             </span>
                         }
                         else if (entry.State.Status == BackgroundTaskStatus.Running)
@@ -107,7 +101,7 @@ else
                         if (entry.State.StartCount > 0)
                         {
                             <span class="badge badge-success" title="@T["Last Start Time"]">
-                                <i class="fa fa-clock-o" aria-hidden="true"></i> @T["Last"] @entry.State.LastStartTime
+                                <i class="fa fa-clock-o" aria-hidden="true"></i> @T["Last"] @entry.State.LastStartTime.ToShortDateString() @entry.State.LastStartTime.ToShortTimeString()
                             </span>
                             <span class="badge badge-light" title="@T["Last Execution Time"]">
                                 <i class="fa fa-stopwatch" aria-hidden="true"></i> @entry.State.LastExecutionTime.ToString(@"hh\:mm\:ss\.fff")
@@ -125,7 +119,6 @@ else
                 if (!string.IsNullOrWhiteSpace(entry.State.FaultMessage))
                 {
                     <li class="alert alert-danger" role="alert">
-                        <span title="@T["Faulted"]"><i class="fa fa-warning" aria-hidden="true"></i></span>
                         @entry.State.FaultMessage
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>

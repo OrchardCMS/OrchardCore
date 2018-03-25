@@ -15,7 +15,7 @@ namespace OrchardCore.BackgroundTasks
         public BackgroundTaskStatus Status { get; set; }
         public string FaultMessage { get; set; }
 
-        public BackgroundTaskState Copy()
+        public BackgroundTaskState Clone()
         {
             return MemberwiseClone() as BackgroundTaskState;
         }
