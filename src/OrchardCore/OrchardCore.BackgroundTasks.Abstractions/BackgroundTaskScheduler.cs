@@ -15,8 +15,8 @@ namespace OrchardCore.BackgroundTasks
 
         public string Tenant { get; }
         public DateTime ReferenceTime { get; private set; }
-        public BackgroundTaskSettings Settings { get; }
-        public BackgroundTaskState State { get; }
+        public BackgroundTaskSettings Settings { get; private set; }
+        public BackgroundTaskState State { get; private set; }
 
         public bool CanRun()
         {
@@ -36,35 +36,59 @@ namespace OrchardCore.BackgroundTasks
             if (State.Status == BackgroundTaskStatus.Running)
             {
                 State.Status = BackgroundTaskStatus.Idle;
-                State.LastExecutionTime = DateTime.UtcNow - State.LastStartTime;
-                State.TotalExecutionTime += State.LastExecutionTime;
             }
-        }
 
-        public void Stop()
-        {
-            Idle();
-            State.Status = BackgroundTaskStatus.Stopped;
+            State.LastExecutionTime = DateTime.UtcNow - State.LastStartTime;
+            State.TotalExecutionTime += State.LastExecutionTime;
         }
 
         public void Fault(Exception exception)
         {
             Idle();
-            Stop();
-            State.Status = BackgroundTaskStatus.Faulted;
+            State.Status = BackgroundTaskStatus.Locked;
             State.FaultMessage = exception.Message;
         }
 
-        public void Reset()
+        public void Command(CommandCode code)
         {
-            State.StartCount = 0;
-            State.LastExecutionTime = new TimeSpan();
-            State.TotalExecutionTime = new TimeSpan();
-
-            if (State.Status != BackgroundTaskStatus.Running)
+            if (code == CommandCode.Lock)
             {
-                State.Status = BackgroundTaskStatus.Idle;
+                State.Status = BackgroundTaskStatus.Locked;
             }
+            else if (code == CommandCode.Unlock)
+            {
+                if (State.Status == BackgroundTaskStatus.Locked)
+                {
+                    State.Status = BackgroundTaskStatus.Idle;
+                }
+            }
+            else if (code == CommandCode.ResetCount)
+            {
+                State.StartCount = 0;
+                State.LastExecutionTime = new TimeSpan();
+                State.TotalExecutionTime = new TimeSpan();
+            }
+            else if (code == CommandCode.ResetFault)
+            {
+                State.FaultMessage = String.Empty;
+            }
+        }
+
+        public BackgroundTaskScheduler Copy()
+        {
+            return new BackgroundTaskScheduler(Tenant, State.Name, ReferenceTime)
+            {
+                Settings = Settings.Copy(),
+                State = State.Copy()
+            };
+        }
+
+        public enum CommandCode
+        {
+            Lock,
+            Unlock,
+            ResetCount,
+            ResetFault
         }
     }
 }

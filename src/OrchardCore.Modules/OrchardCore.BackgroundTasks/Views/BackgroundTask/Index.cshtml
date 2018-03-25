@@ -10,6 +10,11 @@
     </ul>
 </nav>
 
+<div class="alert alert-success" role="alert">
+    <span><i class="fa fa-refresh fa-spin" aria-hidden="true"></i></span>
+    @T["The Background Service is running."]
+</div>
+
 <form asp-action="Index"> @* the form is necessary to generate and antiforgery token for the delete action *@
 
     @if (Model.Tasks.Any())
@@ -22,6 +27,20 @@
                         <div class="related">
                             <a asp-action="Edit" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
                             <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @T["Actions"]
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+
+                            @if (true)
+                            {
+                                <a asp-action="Lock" asp-route-name="@entry.Name" class="dropdown-item btn-sm" itemprop="UnsafeUrl">@T["Lock "]</a>
+                                <a asp-action="Unlock" asp-route-name="@entry.Name" class="dropdown-item btn-sm" itemprop="UnsafeUrl">@T["Unlock"]</a>
+                                <div class="dropdown-divider"></div>
+                                <a asp-action="ResetCount" asp-route-name="@entry.Name" class="dropdown-item btn-sm" itemprop="UnsafeUrl">@T["Reset Count "]</a>
+                                <a asp-action="ResetFault" asp-route-name="@entry.Name" class="dropdown-item btn-sm" itemprop="UnsafeUrl">@T["Reset Fault"]</a>
+                            }
+                            </div>
                         </div>
                         <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
                         @if (!String.IsNullOrWhiteSpace(entry.Definition.Description))
@@ -31,6 +50,7 @@
                           </span>
                         }
                     </div>
+
                     @if (entry.State == BackgroundTaskState.Undefined)
                     {
                         <span class="badge badge-secondary" title="@T["Not Available"]">
@@ -67,16 +87,10 @@
                                 <i class="fa fa-refresh fa-spin" aria-hidden="true"></i> @T["Running"]
                             </span>
                         }
-                        else if (entry.State.Status == BackgroundTaskStatus.Stopped)
+                        else if (entry.State.Status == BackgroundTaskStatus.Locked)
                         {
-                            <span class="badge badge-warning" title="@T["Stopped"]">
-                                <i class="fa fa-power-off" aria-hidden="true"></i> @T["Stopped"]
-                            </span>
-                        }
-                        else if (entry.State.Status == BackgroundTaskStatus.Faulted)
-                        {
-                            <span class="badge badge-danger" title="@T["Faulted"]">
-                                <i class="fa fa-warning" aria-hidden="true"></i> @T["Faulted"]
+                            <span class="badge badge-warning" title="@T["Locked"]">
+                                <i class="fa fa-lock" aria-hidden="true"></i> @T["Locked"]
                             </span>
                         }
 
@@ -89,7 +103,7 @@
                                 <i class="fa fa-stopwatch" aria-hidden="true"></i> @entry.State.LastExecutionTime.ToString(@"hh\:mm\:ss\.fff")
                             </span>
                            <span class="badge badge-success" title="@T["Start Count"]">
-                                <i class="fa fa-refresh fa-spin" aria-hidden="true"></i> @entry.State.StartCount
+                                <i class="fa fa-refresh" aria-hidden="true"></i> @entry.State.StartCount
                             </span>
                             <span class="badge badge-light" title="@T["Total Execution Time"]">
                                 <i class="fa fa-stopwatch" aria-hidden="true"></i> @entry.State.TotalExecutionTime.ToString(@"hh\:mm\:ss\.fff")
@@ -97,6 +111,17 @@
                         }
                     }
                 </li>
+
+                if (!string.IsNullOrWhiteSpace(entry.State.FaultMessage))
+                {
+                    <li class="alert alert-danger" role="alert">
+                        <span title="@T["Faulted"]"><i class="fa fa-warning" aria-hidden="true"></i></span>
+                        @entry.State.FaultMessage
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </li>
+                }
             }
         </ul>
     }

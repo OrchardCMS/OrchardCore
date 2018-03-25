@@ -11,12 +11,8 @@ namespace OrchardCore.BackgroundTasks
         /// </summary>
         Running,
         /// <summary>
-        /// The task is currently stopped.
+        /// The task is currently locked.
         /// </summary>
-        Stopped,
-        /// <summary>
-        /// The task is currently stopped.
-        /// </summary>
-        Faulted
+        Locked,
     }
 }

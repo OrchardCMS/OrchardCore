@@ -7,5 +7,10 @@ namespace OrchardCore.BackgroundTasks
         public string Name { get; set; }
         public bool Enable { get; set; } = true;
         public string Schedule { get; set; } = "* * * * *";
+
+        public BackgroundTaskSettings Copy()
+        {
+            return MemberwiseClone() as BackgroundTaskSettings;
+        }
     }
 }

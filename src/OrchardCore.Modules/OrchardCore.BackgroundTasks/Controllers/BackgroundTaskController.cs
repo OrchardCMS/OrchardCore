@@ -233,5 +233,57 @@ namespace OrchardCore.BackgroundTasks.Controllers
             
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Lock(string name)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
+            {
+                return Unauthorized();
+            }
+
+            _backgroundService.Command(_tenant, name, BackgroundTaskScheduler.CommandCode.Lock);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Unlock(string name)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
+            {
+                return Unauthorized();
+            }
+
+            _backgroundService.Command(_tenant, name, BackgroundTaskScheduler.CommandCode.Unlock);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetCount(string name)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
+            {
+                return Unauthorized();
+            }
+
+            _backgroundService.Command(_tenant, name, BackgroundTaskScheduler.CommandCode.ResetCount);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetFault(string name)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
+            {
+                return Unauthorized();
+            }
+
+            _backgroundService.Command(_tenant, name, BackgroundTaskScheduler.CommandCode.ResetFault);
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

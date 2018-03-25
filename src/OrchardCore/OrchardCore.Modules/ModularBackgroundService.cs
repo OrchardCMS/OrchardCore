@@ -39,15 +39,17 @@ namespace OrchardCore.Modules
         }
 
         public ILogger Logger { get; set; }
+        public bool IsRunning { get; private set; }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             stoppingToken.Register(() =>
             {
+                IsRunning = false;
                 Logger.LogDebug($"{nameof(ModularBackgroundService)} is stopping.");
-                StopBackgroundTaskSchedulers();
             });
 
+            IsRunning = true;
             var referenceTime = DateTime.UtcNow;
 
             while (!stoppingToken.IsCancellationRequested)
@@ -156,20 +158,17 @@ namespace OrchardCore.Modules
                 await pollingDelay;
             }
 
-            Logger.LogDebug($"{nameof(ModularBackgroundService)} is stopping.");
-            StopBackgroundTaskSchedulers();
+            IsRunning = false;
         }
 
-        public Task<IEnumerable<BackgroundTaskSettings>> GetSettingsAsync(string tenant)
+        public void Command(string tenant, string taskName, BackgroundTaskScheduler.CommandCode code)
         {
-            return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
-                .Select(kv => kv.Value.Settings));
-        }
-
-        public Task<IEnumerable<BackgroundTaskState>> GetStatesAsync(string tenant)
-        {
-            return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
-                .Select(kv => kv.Value.State));
+            if (_schedulers.TryRemove(tenant + taskName, out BackgroundTaskScheduler scheduler))
+            {
+                scheduler = scheduler.Copy();
+                scheduler.Command(code);
+                _schedulers[tenant + taskName] = scheduler;
+            }
         }
 
         public Task<BackgroundTaskSettings> GetSettingsAsync(string tenant, string taskName)
@@ -182,6 +181,12 @@ namespace OrchardCore.Modules
             return Task.FromResult(BackgroundTaskSettings.None);
         }
 
+        public Task<IEnumerable<BackgroundTaskSettings>> GetSettingsAsync(string tenant)
+        {
+            return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
+                .Select(kv => kv.Value.Settings));
+        }
+
         public Task<BackgroundTaskState> GetStateAsync(string tenant, string taskName)
         {
             if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
@@ -190,6 +195,12 @@ namespace OrchardCore.Modules
             }
 
             return Task.FromResult(BackgroundTaskState.Undefined);
+        }
+
+        public Task<IEnumerable<BackgroundTaskState>> GetStatesAsync(string tenant)
+        {
+            return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
+                .Select(kv => kv.Value.State));
         }
 
         Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
@@ -211,14 +222,6 @@ namespace OrchardCore.Modules
             foreach (var key in keys)
             {
                 _schedulers.TryRemove(key, out var scheduler);
-            }
-        }
-
-        private void StopBackgroundTaskSchedulers()
-        {
-            foreach (var scheduler in _schedulers.Values)
-            {
-                scheduler.Stop();
             }
         }
     }

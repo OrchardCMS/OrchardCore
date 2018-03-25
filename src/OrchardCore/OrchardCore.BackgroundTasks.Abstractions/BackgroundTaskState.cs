@@ -14,5 +14,10 @@ namespace OrchardCore.BackgroundTasks
         public TimeSpan TotalExecutionTime { get; set; }
         public BackgroundTaskStatus Status { get; set; }
         public string FaultMessage { get; set; }
+
+        public BackgroundTaskState Copy()
+        {
+            return MemberwiseClone() as BackgroundTaskState;
+        }
     }
 }
