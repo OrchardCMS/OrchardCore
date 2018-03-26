@@ -82,6 +82,14 @@ namespace OrchardCore.BackgroundTasks
             {
                 scheduler.State.FaultMessage = String.Empty;
             }
+            else if (code == CommandCode.Disable)
+            {
+                scheduler.Settings.Enable = false;
+            }
+            else if (code == CommandCode.Enable)
+            {
+                scheduler.Settings.Enable = true;
+            }
 
             return scheduler;
         }
@@ -100,7 +108,9 @@ namespace OrchardCore.BackgroundTasks
             Lock,
             Unlock,
             ResetCount,
-            ResetFault
+            ResetFault,
+            Disable,
+            Enable
         }
     }
 }

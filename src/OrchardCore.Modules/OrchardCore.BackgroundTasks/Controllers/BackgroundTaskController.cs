@@ -206,6 +206,10 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 await _backgroundTaskManager.RemoveAsync(sourceName);
                 await _backgroundTaskManager.UpdateAsync(model.Name, task);
 
+                _backgroundService.Command(_tenant, task.Name, task.Enable
+                    ? BackgroundTaskScheduler.CommandCode.Enable
+                    : BackgroundTaskScheduler.CommandCode.Disable);
+
                 return RedirectToAction(nameof(Index));
             }
 
