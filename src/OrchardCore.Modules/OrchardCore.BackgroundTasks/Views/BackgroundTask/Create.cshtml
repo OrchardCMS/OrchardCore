@@ -7,13 +7,8 @@
 
     <div class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
-        <select asp-for="Name" class="form-control">
-            @foreach (var name in Model.Names)
-            {
-                <option value="@name">@name</option>
-            }
-        </select>
-        <div class="hint">@T["The task on which this settings will apply."]</div>
+        <input asp-for="Name" class="form-control" readonly />
+        <span class="hint">@T["The task on which this settings will apply."]</span>
     </div>
 
     <div class="form-group" asp-validation-class-for="Enable">

@@ -29,7 +29,7 @@ namespace OrchardCore.BackgroundTasks.Services
             _session = session;
         }
 
-        public IEnumerable<string> Names => _backgroundTasks.Select(t => t.GetType().FullName);
+        public IEnumerable<string> TaskNames => _backgroundTasks.Select(t => t.GetType().FullName);
 
         /// <inheritdoc/>
         public async Task<BackgroundTaskDocument> GetDocumentAsync()

@@ -2,14 +2,6 @@
 
 <h1>@RenderTitleSegments(T["Background Tasks"])</h1>
 
-<nav class="admin-toolbar">
-    <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Settings"]</a>
-        </li>
-    </ul>
-</nav>
-
 @if (Model.IsRunning)
 {
     <div class="alert alert-success" role="alert">
@@ -32,7 +24,7 @@ else
         <ul class="list-group">
             @foreach (var entry in Model.Tasks)
             {
-                <li class="list-group-item">
+                <li class="list-group-item disabled">
                     <div class="properties">
                         <div class="related">
                             <a asp-action="Edit" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
@@ -41,17 +33,19 @@ else
                                 @T["Actions"]
                             </button>
                             <div class="dropdown-menu dropdown-menu-right">
-
-                            @if (true)
-                            {
                                 <a asp-action="Lock" asp-route-name="@entry.Name" class="dropdown-item btn-sm" itemprop="UnsafeUrl">@T["Lock "]</a>
                                 <a asp-action="Unlock" asp-route-name="@entry.Name" class="dropdown-item btn-sm" itemprop="UnsafeUrl">@T["Unlock"]</a>
                                 <div class="dropdown-divider"></div>
                                 <a asp-action="ResetCount" asp-route-name="@entry.Name" class="dropdown-item btn-sm" itemprop="UnsafeUrl">@T["Reset Count "]</a>
                                 <a asp-action="ResetFault" asp-route-name="@entry.Name" class="dropdown-item btn-sm" itemprop="UnsafeUrl">@T["Reset Fault"]</a>
-                            }
                             </div>
                         </div>
+                        @if (entry.Overridden)
+                        {
+                            <span class="badge badge-primary" title="@T["Overridden"]">
+                                <i class="fa fa-check" aria-hidden="true"></i>
+                            </span>
+                        }
                         <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
                         @if (!String.IsNullOrWhiteSpace(entry.Description))
                         {
@@ -128,10 +122,10 @@ else
             }
         </ul>
     }
-    else
+    else if (Model.IsRunning)
     {
         <div class="alert alert-info" role="alert">
-            @T["<strong>Nothing here!</strong> There are no task definition for the moment."]
+            @T["<strong>Nothing here!</strong> There are no background task for the moment."]
         </div>
     }
 </form>
