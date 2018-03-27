@@ -236,6 +236,11 @@ namespace OrchardCore.Environment.Shell
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Marks the specific tenant as released, such that a new shell is created for subsequent requests,
+        /// while existing requests get flushed.
+        /// </summary>
+        /// <param name="settings"></param>
         public void ReloadShellContext(ShellSettings settings)
         {
             ShellContext context;

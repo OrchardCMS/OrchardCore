@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,66 +36,84 @@ namespace OrchardCore.Modules
             // Register the shell settings as a custom feature.
             httpContext.Features.Set(shellSetting);
 
+            var disposeContext = false;
+
             // We only serve the next request if the tenant has been resolved.
             if (shellSetting != null)
             {
                 var shellContext = _orchardHost.GetOrCreateShellContext(shellSetting);
 
                 var existingRequestServices = httpContext.RequestServices;
-                using (var scope = shellContext.EnterServiceScope())
+
+                try
                 {
-                    if (!shellContext.IsActivated)
+                    using (var scope = shellContext.EnterServiceScope(false))
                     {
-                        lock (shellContext)
+                        if (!shellContext.IsActivated)
                         {
-                            // The tenant gets activated here
-                            if (!shellContext.IsActivated)
+                            lock (shellContext)
+                            {
+                                // The tenant gets activated here
+                                if (!shellContext.IsActivated)
+                                {
+                                    var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+
+                                    foreach (var tenantEvent in tenantEvents)
+                                    {
+                                        tenantEvent.ActivatingAsync().Wait();
+                                    }
+
+                                    httpContext.Items["BuildPipeline"] = true;
+                                    shellContext.IsActivated = true;
+
+                                    foreach (var tenantEvent in tenantEvents.Reverse())
+                                    {
+                                        tenantEvent.ActivatedAsync().Wait();
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!shellContext.RequestStarted())
+                        {
+                            // The tenant is restarting
+                            httpContext.Response.StatusCode = (int)HttpStatusCode.ServiceUnavailable;
+                            return;
+                        }
+
+                        try
+                        {
+                            await _next.Invoke(httpContext);
+                        }
+                        finally
+                        {
+                            // Call all terminating events before releasing the shell context
+                            if (shellContext.RequestEnded())
                             {
                                 var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
 
                                 foreach (var tenantEvent in tenantEvents)
                                 {
-                                    tenantEvent.ActivatingAsync().Wait();
+                                    await tenantEvent.TerminatingAsync();
                                 }
-
-                                httpContext.Items["BuildPipeline"] = true;
-                                shellContext.IsActivated = true;
 
                                 foreach (var tenantEvent in tenantEvents.Reverse())
                                 {
-                                    tenantEvent.ActivatedAsync().Wait();
+                                    await tenantEvent.TerminatedAsync();
                                 }
+
+                                // We can't dispose the shell context here as we are in a 'using' block with a service scope issued from this shell.
+                                // We need to dispose the shell context container after the service scope.
+                                disposeContext = true;
                             }
                         }
                     }
-
-                    shellContext.RequestStarted();
-
-                    try
+                }
+                finally
+                {
+                    if (disposeContext)
                     {
-                        await _next.Invoke(httpContext);
-                    }
-                    finally
-                    {
-                        shellContext.RequestEnded();
-
-                        // Call all terminating events before releasing the shell context
-                        if (shellContext.CanTerminate)
-                        {
-                            var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-
-                            foreach (var tenantEvent in tenantEvents)
-                            {
-                                await tenantEvent.TerminatingAsync();
-                            }
-
-                            foreach (var tenantEvent in tenantEvents.Reverse())
-                            {
-                                await tenantEvent.TerminatedAsync();
-                            }
-
-                            shellContext.Dispose();
-                        }
+                        shellContext.Dispose();
                     }
                 }
             }
