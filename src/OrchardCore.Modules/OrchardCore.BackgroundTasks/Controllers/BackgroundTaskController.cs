@@ -66,10 +66,13 @@ namespace OrchardCore.BackgroundTasks.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
+            var allTaskNames = _backgroundTaskManager.TaskNames;
             var document = await _backgroundTaskManager.GetDocumentAsync();
-            var taskNames = _backgroundTaskManager.TaskNames.Except(document.Tasks.Keys);
-            var settings = await _backgroundService.GetSettingsAsync(_tenant);
-            var states = await _backgroundService.GetStatesAsync(_tenant);
+            var taskNames = allTaskNames.Except(document.Tasks.Keys);
+
+            var settings = (await _backgroundService.GetSettingsAsync(_tenant));
+            var states = (await _backgroundService.GetStatesAsync(_tenant));
+            var stateNames = states.Select(state => state.Name);
 
             var taskEntries = document.Tasks.Select(kvp => new BackgroundTaskEntry
             {
@@ -77,7 +80,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 Description = kvp.Value.Description,
                 Settings = settings.FirstOrDefault(s => kvp.Key == s.Name) ?? BackgroundTaskSettings.None,
                 State = states.FirstOrDefault(s => kvp.Key == s.Name) ?? BackgroundTaskState.Undefined,
-                Overridden = true
+                HasSettings = true
             })
             .Concat(taskNames.Select(name => new BackgroundTaskEntry
             {
@@ -96,6 +99,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             var model = new BackgroundTaskIndexViewModel
             {
                 IsRunning = _backgroundService.IsRunning,
+                HasPendingChanges = !stateNames.SequenceEqual(allTaskNames),
                 Tasks = taskEntries,
                 Pager = pagerShape
             };
@@ -245,9 +249,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             await _backgroundTaskManager.RemoveAsync(name);
-
-            _notifier.Success(H["Task Settings deleted successfully"]);
-            
             return RedirectToAction(nameof(Index));
         }
 

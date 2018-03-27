@@ -10,14 +10,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.Modules
 {
-    internal class ModularBackgroundService : Internal.BackgroundService,
-        IModularBackgroundService, IShellDescriptorManagerEventHandler
+    internal class ModularBackgroundService : Internal.BackgroundService, IModularBackgroundService
     {
         private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
@@ -65,6 +63,8 @@ namespace OrchardCore.Modules
                 var pollingDelay = Task.Delay(PollingTime, stoppingToken);
 
                 shells = GetRunningShells();
+                var tenants = shells.Select(s => s.Settings?.Name);
+                CleanBackgroundTaskSchedulers(tenants);
 
                 await shells.ForEachAsync(async shell =>
                 {
@@ -75,12 +75,13 @@ namespace OrchardCore.Modules
 
                     IEnumerable<Type> taskTypes;
 
+                    var tenant = shell.Settings?.Name;
+
                     using (var scope = shell.EnterServiceScope())
                     {
                         taskTypes = scope.GetBackgroundTaskTypes();
+                        CleanTenantBackgroundTaskSchedulers(tenant, taskTypes);
                     }
-
-                    var tenant = shell.Settings?.Name;
 
                     if (taskTypes.Count() > 0)
                     {
@@ -209,25 +210,34 @@ namespace OrchardCore.Modules
                 .Select(kv => kv.Value.State.Clone()));
         }
 
-        Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
-        {
-            CleanTenantBackgroundTaskSchedulers(tenant);
-            return Task.CompletedTask;
-        }
-
         private IEnumerable<ShellContext> GetRunningShells()
         {
             return _shellHost.ListShellContexts()?.Where(s => s.Settings?.State == TenantState.Running)
                 .OrderBy(s => s.Settings?.Name).ToArray() ?? Enumerable.Empty<ShellContext>();
         }
 
-        private void CleanTenantBackgroundTaskSchedulers(string tenant)
+        private void CleanBackgroundTaskSchedulers(IEnumerable<string> tenants)
         {
-            var keys = _schedulers.Where(kv => kv.Value.Tenant == tenant).Select(kv => kv.Key).ToArray();
+            var keys = _schedulers.Where(kv => !tenants.Contains(kv.Value.Tenant)).Select(kv => kv.Key).ToArray();
 
             foreach (var key in keys)
             {
                 _schedulers.TryRemove(key, out var scheduler);
+            }
+        }
+
+        private void CleanTenantBackgroundTaskSchedulers(string tenant, IEnumerable<Type> taskTypes)
+        {
+            var validKeys = taskTypes.Select(type => tenant + type.FullName);
+
+            var keys = _schedulers.Where(kv => kv.Value.Tenant == tenant).Select(kv => kv.Key).ToArray();
+
+            foreach (var key in keys)
+            {
+                if (!validKeys.Contains(key))
+                {
+                    _schedulers.TryRemove(key, out var scheduler);
+                }
             }
         }
     }

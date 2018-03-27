@@ -5,6 +5,7 @@ namespace OrchardCore.BackgroundTasks.ViewModels
     public class BackgroundTaskIndexViewModel
     {
         public bool IsRunning { get; set; }
+        public bool HasPendingChanges { get; set; }
         public IList<BackgroundTaskEntry> Tasks { get; set; }
         public dynamic Pager { get; set; }
     }
@@ -15,6 +16,6 @@ namespace OrchardCore.BackgroundTasks.ViewModels
         public string Description { get; set; }
         public BackgroundTaskSettings Settings { get; set; }
         public BackgroundTaskState State { get; set; }
-        public bool Overridden { get; set; }
+        public bool HasSettings { get; set; }
     }
 }

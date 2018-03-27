@@ -4,10 +4,21 @@
 
 @if (Model.IsRunning)
 {
-    <div class="alert alert-success" role="alert">
-        <span><i class="fa fa-refresh fa-spin" aria-hidden="true"></i></span>
-        @T["The Background Service is running."]
-    </div>
+    if (!Model.HasPendingChanges)
+    {
+        <div class="alert alert-success" role="alert">
+            <span><i class="fa fa-refresh fa-spin" aria-hidden="true"></i></span>
+            @T["The Background Service is running."]
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <span><i class="fa fa-refresh fa-spin" aria-hidden="true"></i></span>
+            @T["The Background Service is running but there are some pending changes that will be taken into account in a minute."
+                + " Please wait before adding any settings, the form might not be prefilled with the default values which are currently used."]
+        </div>
+    }
 }
 else
 {
@@ -24,11 +35,18 @@ else
         <ul class="list-group">
             @foreach (var entry in Model.Tasks)
             {
-                <li class="list-group-item disabled">
+                <li class="list-group-item">
                     <div class="properties">
                         <div class="related">
-                            <a asp-action="Edit" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            @if (entry.HasSettings)
+                            {
+                                <a asp-action="Edit" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                                <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            }
+                            else
+                            {
+                                <a asp-action="Create" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Add Settings"]</a>
+                            }
                             <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @T["Actions"]
                             </button>
@@ -40,18 +58,16 @@ else
                                 <a asp-action="ResetFault" asp-route-name="@entry.Name" class="dropdown-item btn-sm" itemprop="UnsafeUrl">@T["Reset Fault"]</a>
                             </div>
                         </div>
-                        @if (entry.Overridden)
+                        @if (entry.HasSettings)
                         {
-                            <span class="badge badge-primary" title="@T["Overridden"]">
-                                <i class="fa fa-check" aria-hidden="true"></i>
-                            </span>
+                            <span class="text-primary"><a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a></span>
+                            <span class="hint">@T["—"]</span>
+                            <span class="text-primary" title="@T["Settings"]"><i class="fa fa-cog" aria-hidden="true"></i></span>
+                            <span class="hint">@entry.Description</span>
                         }
-                        <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
-                        @if (!String.IsNullOrWhiteSpace(entry.Description))
+                        else
                         {
-                            <span class="hint">
-                                @T["— {0}", entry.Description]
-                          </span>
+                            <span class="text-secondary">@entry.Name</span>
                         }
                     </div>
 
