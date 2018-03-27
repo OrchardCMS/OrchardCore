@@ -174,7 +174,7 @@ namespace OrchardCore.Hosting.ShellBuilders
             public IServiceProvider ServiceProvider { get; }
 
             /// <summary>
-            /// Returns true is the shell context should be dispose consequently to this scope being released.
+            /// Returns true is the shell context should be disposed consequently to this scope being released.
             /// </summary>
             private bool ScopeReleased()
             {
