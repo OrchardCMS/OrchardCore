@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders.Models;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Hosting.ShellBuilders
 {
@@ -32,11 +34,10 @@ namespace OrchardCore.Hosting.ShellBuilders
         /// Creates a standalone service scope that can be used to resolve local services and
         /// replaces <see cref="HttpContext.RequestServices"/> with it.
         /// </summary>
-        /// <param name="track">Whether the returned scope is preventing the context from being recycled.</param>
         /// <remarks>
         /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
         /// </remarks>
-        public IServiceScope EnterServiceScope(bool track = true)
+        public IServiceScope EnterServiceScope()
         {
             if (_disposed)
             {
@@ -48,7 +49,10 @@ namespace OrchardCore.Hosting.ShellBuilders
                 throw new InvalidOperationException("Can't use EnterServiceScope on a released context");
             }
 
-            return new ServiceScopeWrapper(track ? this : null, ServiceProvider.CreateScope());
+            // Prevent the context from being released until the end of the scope
+            Interlocked.Increment(ref _refCount);
+
+            return new ServiceScopeWrapper(this, ServiceProvider.CreateScope());
         }
 
         /// <summary>
@@ -61,30 +65,7 @@ namespace OrchardCore.Hosting.ShellBuilders
         /// </summary>
         public int ActiveRequests => _refCount;
 
-        /// <summary>
-        /// Returns whether the shell can be used for new requests.
-        /// </summary>
-        public bool RequestStarted()
-        {
-            if (_released)
-            {
-                return false;
-            }
-
-            Interlocked.Increment(ref _refCount);
-
-            return true;
-        }
-
-        /// <summary>
-        /// Returns whether the shell can be released as a result of the request being ended.
-        /// </summary>
-        public bool RequestEnded()
-        {
-            var refCount = Interlocked.Decrement(ref _refCount);
-            return _released && refCount == 0;
-        }
-
+        
         public bool CanTerminate => _released && _refCount == 0 && !_disposed;
 
         /// <summary>
@@ -188,20 +169,50 @@ namespace OrchardCore.Hosting.ShellBuilders
                 _httpContext = httpContextAccessor.HttpContext;
                 _existingServices = _httpContext.RequestServices;
                 _httpContext.RequestServices = ServiceProvider;
-
-                // Prevents the context from being released until the end of the scope
-                _shellContext?.RequestStarted();
             }
 
             public IServiceProvider ServiceProvider { get; }
 
+            /// <summary>
+            /// Returns true is the shell context should be dispose consequently to this scope being released.
+            /// </summary>
+            private bool ScopeReleased()
+            {
+                var refCount = Interlocked.Decrement(ref _shellContext._refCount);
+
+                if (_shellContext._released && refCount == 0)
+                {
+                    var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
+
+                    foreach (var tenantEvent in tenantEvents)
+                    {
+                        tenantEvent.TerminatingAsync().GetAwaiter().GetResult();
+                    }
+
+                    foreach (var tenantEvent in tenantEvents.Reverse())
+                    {
+                        tenantEvent.TerminatedAsync().GetAwaiter().GetResult();
+                    }
+
+                    return true;
+                }
+
+                return false;
+            }
+
             public void Dispose()
             {
+                var disposeShellContext = ScopeReleased();
+
                 _httpContext.RequestServices = _existingServices;
                 _serviceScope.Dispose();
-                _shellContext?.RequestEnded();
-
+                
                 GC.SuppressFinalize(this);
+
+                if (disposeShellContext)
+                {
+                    _shellContext.Dispose();
+                }
             }
 
             ~ServiceScopeWrapper()
