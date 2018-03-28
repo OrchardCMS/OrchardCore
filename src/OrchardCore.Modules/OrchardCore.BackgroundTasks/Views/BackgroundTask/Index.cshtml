@@ -15,8 +15,7 @@
     {
         <div class="alert alert-info" role="alert">
             <span><i class="fa fa-refresh fa-spin" aria-hidden="true"></i></span>
-            @T["The Background Service is running but there are some pending changes that will be taken into account in a minute."
-                + " Please wait before adding any settings, the form might not be prefilled with the default values which are currently used."]
+            @T["The Background Service is running but there are some pending changes."]
         </div>
     }
 }
@@ -60,10 +59,9 @@ else
                         </div>
                         @if (entry.HasSettings)
                         {
-                            <span class="text-primary"><a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a></span>
-                            <span class="hint">@T["—"]</span>
                             <span class="text-primary" title="@T["Settings"]"><i class="fa fa-cog" aria-hidden="true"></i></span>
-                            <span class="hint">@entry.Description</span>
+                            <span class="text-primary"><a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a></span>
+                            <span class="hint">@T["— {0}", entry.Description]</span>
                         }
                         else
                         {

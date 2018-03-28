@@ -115,11 +115,7 @@ namespace OrchardCore.Modules
                             {
                                 var settings = await scope.GetBackgroundTaskSettingsAsync(taskType);
 
-                                if (settings != BackgroundTaskSettings.None)
-                                {
-                                    scheduler.Settings.Enable = settings.Enable;
-                                    scheduler.Settings.Schedule = settings.Schedule;
-                                }
+                                scheduler.Settings = settings;
 
                                 if (!scheduler.CanRun())
                                 {
@@ -302,7 +298,7 @@ namespace OrchardCore.Modules
                 }
             }
 
-            return BackgroundTaskSettings.None;
+            return new BackgroundTaskSettings() { Name = type.FullName };
         }
     }
 }

@@ -18,7 +18,8 @@ namespace OrchardCore.BackgroundTasks
                 {
                     Name = type.FullName,
                     Enable = attribute.Enable,
-                    Schedule = attribute.Schedule
+                    Schedule = attribute.Schedule,
+                    Provider = GetType().FullName
                 });
             }
 

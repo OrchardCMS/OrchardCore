@@ -66,13 +66,19 @@ namespace OrchardCore.BackgroundTasks.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            var allTaskNames = _backgroundTaskManager.TaskNames;
+            var allTaskNames = _backgroundTaskManager.TaskNames.OrderBy(n => n);
             var document = await _backgroundTaskManager.GetDocumentAsync();
-            var taskNames = allTaskNames.Except(document.Tasks.Keys);
+            var documentTaskNames = document.Tasks.Keys.OrderBy(k => k);
+            var otherTaskNames = allTaskNames.Except(documentTaskNames);
 
             var settings = (await _backgroundService.GetSettingsAsync(_tenant));
             var states = (await _backgroundService.GetStatesAsync(_tenant));
-            var stateNames = states.Select(state => state.Name);
+
+            var allSettingsNames = settings.Select(s => s.Name).OrderBy(n => n);
+
+            var documentSettingsNames = settings
+                .Where(s => s.Provider == typeof(BackgroundTaskDocumentSettingsProvider).FullName)
+                .Select(s => s.Name).OrderBy(n => n);
 
             var taskEntries = document.Tasks.Select(kvp => new BackgroundTaskEntry
             {
@@ -82,7 +88,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 State = states.FirstOrDefault(s => kvp.Key == s.Name) ?? BackgroundTaskState.Undefined,
                 HasSettings = true
             })
-            .Concat(taskNames.Select(name => new BackgroundTaskEntry
+            .Concat(otherTaskNames.Select(name => new BackgroundTaskEntry
             {
                 Name = name,
                 Description = String.Empty,
@@ -99,7 +105,10 @@ namespace OrchardCore.BackgroundTasks.Controllers
             var model = new BackgroundTaskIndexViewModel
             {
                 IsRunning = _backgroundService.IsRunning,
-                HasPendingChanges = !stateNames.SequenceEqual(allTaskNames),
+
+                HasPendingChanges = !allSettingsNames.SequenceEqual(allTaskNames) ||
+                    !documentSettingsNames.SequenceEqual(documentTaskNames),
+
                 Tasks = taskEntries,
                 Pager = pagerShape
             };
