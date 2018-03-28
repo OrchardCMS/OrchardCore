@@ -95,6 +95,11 @@ namespace OrchardCore.Hosting.ShellBuilders
                 foreach (var dependent in _dependents)
                 {
                     dependent.Release();
+
+                    if (dependent.ActiveScopes == 0)
+                    {
+                        dependent.Dispose();
+                    }
                 }
             }
         }

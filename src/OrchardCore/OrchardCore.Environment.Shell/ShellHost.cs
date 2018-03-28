@@ -84,7 +84,6 @@ namespace OrchardCore.Environment.Shell
             {
                 if (_shellContexts.TryRemove(settings.Name, out var context))
                 {
-                    context.Dispose();
                     return GetOrCreateShellContext(settings);
                 }
             }
