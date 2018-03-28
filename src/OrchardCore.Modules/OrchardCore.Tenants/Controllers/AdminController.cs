@@ -59,10 +59,6 @@ namespace OrchardCore.Tenants.Controllers
                 }).ToList()
             };
 
-            var DefaultShell = shells.FirstOrDefault(s => s.Settings.Name == "Default");
-            var AlphaShell = shells.FirstOrDefault(s => s.Settings.Name == "Alpha");
-            DefaultShell.AddDependentShell(AlphaShell);
-
             return View(model);
         }
 
