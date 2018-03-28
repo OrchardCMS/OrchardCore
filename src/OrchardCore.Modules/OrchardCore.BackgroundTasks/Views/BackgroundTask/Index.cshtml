@@ -37,7 +37,7 @@ else
                 <li class="list-group-item">
                     <div class="properties">
                         <div class="related">
-                            @if (entry.HasSettings)
+                            @if (entry.HasDocumentSettings)
                             {
                                 <a asp-action="Edit" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
                                 <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
@@ -57,7 +57,7 @@ else
                                 <a asp-action="ResetFault" asp-route-name="@entry.Name" class="dropdown-item btn-sm" itemprop="UnsafeUrl">@T["Reset Fault"]</a>
                             </div>
                         </div>
-                        @if (entry.HasSettings)
+                        @if (entry.HasDocumentSettings)
                         {
                             <span class="text-primary" title="@T["Settings"]"><i class="fa fa-cog" aria-hidden="true"></i></span>
                             <span class="text-primary"><a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a></span>

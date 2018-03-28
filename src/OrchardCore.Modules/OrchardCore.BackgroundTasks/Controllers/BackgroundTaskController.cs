@@ -86,14 +86,15 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 Description = kvp.Value.Description,
                 Settings = settings.FirstOrDefault(s => kvp.Key == s.Name) ?? BackgroundTaskSettings.None,
                 State = states.FirstOrDefault(s => kvp.Key == s.Name) ?? BackgroundTaskState.Undefined,
-                HasSettings = true
+                HasDocumentSettings = true
             })
             .Concat(otherTaskNames.Select(name => new BackgroundTaskEntry
             {
                 Name = name,
                 Description = String.Empty,
                 Settings = settings.FirstOrDefault(s => name == s.Name) ?? BackgroundTaskSettings.None,
-                State = states.FirstOrDefault(s => name == s.Name) ?? BackgroundTaskState.Undefined
+                State = states.FirstOrDefault(s => name == s.Name) ?? BackgroundTaskState.Undefined,
+                HasDocumentSettings = false
             }))
             .OrderBy(entry => entry.Name)
             .Skip(pager.GetStartIndex())

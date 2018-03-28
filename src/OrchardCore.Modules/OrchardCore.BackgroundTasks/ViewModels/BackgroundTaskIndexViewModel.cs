@@ -16,6 +16,6 @@ namespace OrchardCore.BackgroundTasks.ViewModels
         public string Description { get; set; }
         public BackgroundTaskSettings Settings { get; set; }
         public BackgroundTaskState State { get; set; }
-        public bool HasSettings { get; set; }
+        public bool HasDocumentSettings { get; set; }
     }
 }
