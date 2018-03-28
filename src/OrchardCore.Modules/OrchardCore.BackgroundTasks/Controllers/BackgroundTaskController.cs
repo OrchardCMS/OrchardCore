@@ -68,7 +68,11 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var allTaskNames = _backgroundTaskManager.TaskNames.OrderBy(n => n);
             var document = await _backgroundTaskManager.GetDocumentAsync();
-            var documentTaskNames = document.Tasks.Keys.OrderBy(k => k);
+
+            var documentTaskNames = document.Tasks.Keys
+                .Where(k => allTaskNames.Contains(k))
+                .OrderBy(k => k);
+
             var otherTaskNames = allTaskNames.Except(documentTaskNames);
 
             var settings = (await _backgroundService.GetSettingsAsync(_tenant));
@@ -163,11 +167,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 };
 
                 await _backgroundTaskManager.UpdateAsync(model.Name, task);
-
-                _backgroundService.Command(_tenant, task.Name, task.Enable
-                    ? BackgroundTaskScheduler.CommandCode.Enable
-                    : BackgroundTaskScheduler.CommandCode.Disable);
-
                 return RedirectToAction(nameof(Index));
             }
 
@@ -231,11 +230,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 };
 
                 await _backgroundTaskManager.UpdateAsync(model.Name, task);
-
-                _backgroundService.Command(_tenant, task.Name, task.Enable
-                    ? BackgroundTaskScheduler.CommandCode.Enable
-                    : BackgroundTaskScheduler.CommandCode.Disable);
-
                 return RedirectToAction(nameof(Index));
             }
 

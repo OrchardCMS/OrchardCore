@@ -115,7 +115,7 @@ namespace OrchardCore.Modules
                             {
                                 var settings = await scope.GetBackgroundTaskSettingsAsync(taskType);
 
-                                scheduler.Settings = settings;
+                                scheduler.Settings = settings.Clone();
 
                                 if (!scheduler.CanRun())
                                 {
