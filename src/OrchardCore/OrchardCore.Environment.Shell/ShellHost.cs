@@ -72,13 +72,24 @@ namespace OrchardCore.Environment.Shell
 
         public ShellContext GetOrCreateShellContext(ShellSettings settings)
         {
-            return _shellContexts.GetOrAdd(settings.Name, tenant =>
+            var shell = _shellContexts.GetOrAdd(settings.Name, tenant =>
             {
                 var shellContext = CreateShellContextAsync(settings).Result;
                 RegisterShell(shellContext);
 
                 return shellContext;
             });
+
+            if (shell.Released && shell.ActiveScopes == 0)
+            {
+                if (_shellContexts.TryRemove(settings.Name, out var context))
+                {
+                    context.Dispose();
+                    return GetOrCreateShellContext(settings);
+                }
+            }
+
+            return shell;
         }
 
         public void UpdateShellSettings(ShellSettings settings)

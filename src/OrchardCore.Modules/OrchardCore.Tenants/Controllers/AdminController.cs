@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -58,6 +58,10 @@ namespace OrchardCore.Tenants.Controllers
                     IsDefaultTenant = string.Equals(x.Settings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
                 }).ToList()
             };
+
+            var DefaultShell = shells.FirstOrDefault(s => s.Settings.Name == "Default");
+            var AlphaShell = shells.FirstOrDefault(s => s.Settings.Name == "Alpha");
+            DefaultShell.AddDependentShell(AlphaShell);
 
             return View(model);
         }

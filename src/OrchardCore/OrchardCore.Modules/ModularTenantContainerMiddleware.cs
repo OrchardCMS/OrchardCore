@@ -40,8 +40,6 @@ namespace OrchardCore.Modules
             {
                 var shellContext = _orchardHost.GetOrCreateShellContext(shellSetting);
 
-                var existingRequestServices = httpContext.RequestServices;
-
                 using (var scope = shellContext.EnterServiceScope())
                 {
                     if (!shellContext.IsActivated)
