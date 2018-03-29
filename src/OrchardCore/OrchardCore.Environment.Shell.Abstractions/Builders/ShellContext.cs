@@ -91,7 +91,10 @@ namespace OrchardCore.Hosting.ShellBuilders
                 {
                     dependent.Release();
                 }
-                
+
+                _dependents.Clear();
+                _dependents = null;
+
                 // A ShellContext is usually disposed when the last scope is disposed, but if there are no scopes
                 // then we need to dispose it right away
                 if (_refCount == 0)
