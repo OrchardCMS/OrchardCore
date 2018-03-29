@@ -116,13 +116,13 @@ namespace OrchardCore.Environment.Shell
 
                     if (!_shellsByHostAndPrefix.TryGetValue(hostAndNoPrefix, out result))
                     {
-                        // 3. Search for Host only match
+                        // 4. Search for Host only match
 
                         hostAndNoPrefix = GetHostAndPrefix(host, "/", false);
 
                         if (!_shellsByHostAndPrefix.TryGetValue(hostAndNoPrefix, out result))
                         {
-                            // 4. Search for Prefix only match
+                            // 5. Search for Prefix only match
 
                             var noHostAndPrefix = GetHostAndPrefix("", appRelativePath, false);
 
