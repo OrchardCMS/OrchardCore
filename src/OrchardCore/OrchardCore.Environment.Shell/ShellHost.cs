@@ -80,12 +80,10 @@ namespace OrchardCore.Environment.Shell
                 return shellContext;
             });
 
-            if (shell.Released && shell.ActiveScopes == 0)
+            if (shell.Released)
             {
-                if (_shellContexts.TryRemove(settings.Name, out var context))
-                {
-                    return GetOrCreateShellContext(settings);
-                }
+                _shellContexts.TryRemove(settings.Name, out var context);
+                return GetOrCreateShellContext(settings);
             }
 
             return shell;
