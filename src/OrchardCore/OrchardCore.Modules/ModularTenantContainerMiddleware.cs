@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,7 @@ namespace OrchardCore.Modules
         private readonly RequestDelegate _next;
         private readonly IShellHost _orchardHost;
         private readonly IRunningShellTable _runningShellTable;
+        private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         public ModularTenantContainerMiddleware(
             RequestDelegate next,
@@ -44,7 +47,11 @@ namespace OrchardCore.Modules
                 {
                     if (!shellContext.IsActivated)
                     {
-                        lock (shellContext)
+                        var semaphore = _semaphores.GetOrAdd(shellSetting.Name, (name) => new SemaphoreSlim(0));
+
+                        await semaphore.WaitAsync();
+
+                        try
                         {
                             // The tenant gets activated here
                             if (!shellContext.IsActivated)
@@ -53,18 +60,23 @@ namespace OrchardCore.Modules
 
                                 foreach (var tenantEvent in tenantEvents)
                                 {
-                                    tenantEvent.ActivatingAsync().Wait();
+                                    await tenantEvent.ActivatingAsync();
                                 }
 
                                 httpContext.Items["BuildPipeline"] = true;
 
                                 foreach (var tenantEvent in tenantEvents.Reverse())
                                 {
-                                    tenantEvent.ActivatedAsync().Wait();
+                                    await tenantEvent.ActivatedAsync();
                                 }
 
-                                shellContext.IsActivated = true;                            
+                                shellContext.IsActivated = true;
                             }
+                        }
+                        finally
+                        {                            
+                            semaphore.Release();
+                            _semaphores.TryRemove(shellSetting.Name, out semaphore);
                         }
                     }
                     
