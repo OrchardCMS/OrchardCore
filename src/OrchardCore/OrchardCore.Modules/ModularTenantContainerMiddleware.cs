@@ -63,7 +63,8 @@ namespace OrchardCore.Modules
                                     tenantEvent.ActivatedAsync().Wait();
                                 }
 
-                                shellContext.IsActivated = true;                            }
+                                shellContext.IsActivated = true;                            
+                            }
                         }
                     }
                     
