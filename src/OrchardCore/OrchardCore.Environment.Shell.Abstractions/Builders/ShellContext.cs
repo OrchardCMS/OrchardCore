@@ -19,7 +19,7 @@ namespace OrchardCore.Hosting.ShellBuilders
         private bool _disposed = false;
         private volatile int _refCount = 0;
         private bool _released = false;
-        private HashSet<ShellContext> _dependents;
+        private List<WeakReference<ShellContext>> _dependents;
 
         public ShellSettings Settings { get; set; }
         public ShellBlueprint Blueprint { get; set; }
@@ -89,11 +89,11 @@ namespace OrchardCore.Hosting.ShellBuilders
 
                 foreach (var dependent in _dependents)
                 {
-                    dependent.Release();
+                    if (dependent.TryGetTarget(out var shellContext))
+                    {
+                        shellContext.Release();
+                    }
                 }
-
-                _dependents.Clear();
-                _dependents = null;
 
                 // A ShellContext is usually disposed when the last scope is disposed, but if there are no scopes
                 // then we need to dispose it right away
@@ -113,11 +113,14 @@ namespace OrchardCore.Hosting.ShellBuilders
             {
                 if (_dependents == null)
                 {
-                    _dependents = new HashSet<ShellContext>();
+                    _dependents = new List<WeakReference<ShellContext>>();
                 }
 
+                // Remove any previous instance that represent the same tenant in case it has been released (restarted).
+                _dependents.RemoveAll(x => !x.TryGetTarget(out var shell) || shell.Settings.Name == shellContext.Settings.Name);
+
                 // The same item can safely be added multiple times in a Hashset
-                _dependents.Add(shellContext);
+                _dependents.Add(new WeakReference<ShellContext>(shellContext));
             }
         }
 
