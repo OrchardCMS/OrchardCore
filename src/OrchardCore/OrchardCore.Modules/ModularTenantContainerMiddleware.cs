@@ -42,7 +42,7 @@ namespace OrchardCore.Modules
 
                 using (var scope = shellContext.EnterServiceScope())
                 {
-                    if (!shellContext.IsActivated || shellContext.IsActivating)
+                    if (!shellContext.IsActivated)
                     {
                         lock (shellContext)
                         {
@@ -59,15 +59,13 @@ namespace OrchardCore.Modules
                                 }
 
                                 httpContext.Items["BuildPipeline"] = true;
-                                shellContext.IsActivated = true;
 
                                 foreach (var tenantEvent in tenantEvents.Reverse())
                                 {
                                     tenantEvent.ActivatedAsync().Wait();
                                 }
 
-                                shellContext.IsActivating = false;
-                            }
+                                shellContext.IsActivated = true;                            }
                         }
                     }
                     
