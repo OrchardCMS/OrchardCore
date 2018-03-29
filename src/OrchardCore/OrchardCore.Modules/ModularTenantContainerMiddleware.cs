@@ -49,8 +49,6 @@ namespace OrchardCore.Modules
                             // The tenant gets activated here
                             if (!shellContext.IsActivated)
                             {
-                                shellContext.IsActivating = true;
-
                                 var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
 
                                 foreach (var tenantEvent in tenantEvents)
