@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,7 @@ namespace OrchardCore.Modules
         private readonly RequestDelegate _next;
         private readonly IShellHost _orchardHost;
         private readonly IRunningShellTable _runningShellTable;
+        private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         public ModularTenantContainerMiddleware(
             RequestDelegate next,
@@ -40,12 +43,15 @@ namespace OrchardCore.Modules
             {
                 var shellContext = _orchardHost.GetOrCreateShellContext(shellSetting);
 
-                var existingRequestServices = httpContext.RequestServices;
                 using (var scope = shellContext.EnterServiceScope())
                 {
                     if (!shellContext.IsActivated)
                     {
-                        lock (shellContext)
+                        var semaphore = _semaphores.GetOrAdd(shellSetting.Name, (name) => new SemaphoreSlim(1));
+
+                        await semaphore.WaitAsync();
+
+                        try
                         {
                             // The tenant gets activated here
                             if (!shellContext.IsActivated)
@@ -54,48 +60,27 @@ namespace OrchardCore.Modules
 
                                 foreach (var tenantEvent in tenantEvents)
                                 {
-                                    tenantEvent.ActivatingAsync().Wait();
+                                    await tenantEvent.ActivatingAsync();
                                 }
 
                                 httpContext.Items["BuildPipeline"] = true;
-                                shellContext.IsActivated = true;
 
                                 foreach (var tenantEvent in tenantEvents.Reverse())
                                 {
-                                    tenantEvent.ActivatedAsync().Wait();
+                                    await tenantEvent.ActivatedAsync();
                                 }
+
+                                shellContext.IsActivated = true;
                             }
                         }
-                    }
-
-                    shellContext.RequestStarted();
-
-                    try
-                    {
-                        await _next.Invoke(httpContext);
-                    }
-                    finally
-                    {
-                        shellContext.RequestEnded();
-
-                        // Call all terminating events before releasing the shell context
-                        if (shellContext.CanTerminate)
-                        {
-                            var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-
-                            foreach (var tenantEvent in tenantEvents)
-                            {
-                                await tenantEvent.TerminatingAsync();
-                            }
-
-                            foreach (var tenantEvent in tenantEvents.Reverse())
-                            {
-                                await tenantEvent.TerminatedAsync();
-                            }
-
-                            shellContext.Dispose();
+                        finally
+                        {                            
+                            semaphore.Release();
+                            _semaphores.TryRemove(shellSetting.Name, out semaphore);
                         }
                     }
+                    
+                    await _next.Invoke(httpContext);
                 }
             }
         }
