@@ -99,34 +99,28 @@ namespace OrchardCore.Environment.Shell
 
         private bool TryMatchInternal(string host, string appRelativePath, bool fallbackToDefault, out ShellSettings result)
         {
-            // 1. Search for Host:Port + Prefix match
-            var hostAndPrefix = GetHostAndPrefix(host, appRelativePath, true);
+            // We can skip some checks for port matching if we know the host doesn't contain one
+            var hasPort = host.Contains(':');
 
-            if (!_shellsByHostAndPrefix.TryGetValue(hostAndPrefix, out result))
+            // 1. Search for Host:Port + Prefix match
+
+            if (!hasPort || !_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(host, appRelativePath, true), out result))
             {
                 // 2. Search for Host + Prefix match
 
-                hostAndPrefix = GetHostAndPrefix(host, appRelativePath, false);
-
-                if (!_shellsByHostAndPrefix.TryGetValue(hostAndPrefix, out result))
+                if (!_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(host, appRelativePath, false), out result))
                 {
                     // 3. Search for Host:Port only match
 
-                    var hostAndNoPrefix = GetHostAndPrefix(host, "/", true);
-
-                    if (!_shellsByHostAndPrefix.TryGetValue(hostAndNoPrefix, out result))
+                    if (!hasPort || !_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(host, "/", true), out result))
                     {
                         // 4. Search for Host only match
 
-                        hostAndNoPrefix = GetHostAndPrefix(host, "/", false);
-
-                        if (!_shellsByHostAndPrefix.TryGetValue(hostAndNoPrefix, out result))
+                        if (!_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(host, "/", false), out result))
                         {
                             // 5. Search for Prefix only match
 
-                            var noHostAndPrefix = GetHostAndPrefix("", appRelativePath, false);
-
-                            if (!_shellsByHostAndPrefix.TryGetValue(noHostAndPrefix, out result))
+                            if (!_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix("", appRelativePath, false), out result))
                             {
                                 result = null;
                                 return false;
