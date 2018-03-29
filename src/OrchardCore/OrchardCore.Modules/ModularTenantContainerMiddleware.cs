@@ -40,8 +40,6 @@ namespace OrchardCore.Modules
             {
                 var shellContext = _orchardHost.GetOrCreateShellContext(shellSetting);
 
-                var existingRequestServices = httpContext.RequestServices;
-
                 using (var scope = shellContext.EnterServiceScope())
                 {
                     if (!shellContext.IsActivated)
@@ -59,12 +57,13 @@ namespace OrchardCore.Modules
                                 }
 
                                 httpContext.Items["BuildPipeline"] = true;
-                                shellContext.IsActivated = true;
 
                                 foreach (var tenantEvent in tenantEvents.Reverse())
                                 {
                                     tenantEvent.ActivatedAsync().Wait();
                                 }
+
+                                shellContext.IsActivated = true;                            
                             }
                         }
                     }

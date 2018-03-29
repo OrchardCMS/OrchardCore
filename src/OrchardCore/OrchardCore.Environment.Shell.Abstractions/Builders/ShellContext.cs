@@ -49,10 +49,7 @@ namespace OrchardCore.Hosting.ShellBuilders
                 throw new InvalidOperationException("Can't use EnterServiceScope on a released context");
             }
 
-            // Prevent the context from being released until the end of the scope
-            Interlocked.Increment(ref _refCount);
-
-            return new ServiceScopeWrapper(this, ServiceProvider.CreateScope());
+            return new ServiceScopeWrapper(this);
         }
 
         /// <summary>
@@ -61,12 +58,9 @@ namespace OrchardCore.Hosting.ShellBuilders
         public bool Released => _released;
 
         /// <summary>
-        /// Returns the number of active requests on this tenant.
+        /// Returns the number of active scopes on this tenant.
         /// </summary>
-        public int ActiveRequests => _refCount;
-
-        
-        public bool CanTerminate => _released && _refCount == 0 && !_disposed;
+        public int ActiveScopes => _refCount;
 
         /// <summary>
         /// Mark the <see cref="ShellContext"/> has a candidate to be released.
@@ -96,6 +90,13 @@ namespace OrchardCore.Hosting.ShellBuilders
                 foreach (var dependent in _dependents)
                 {
                     dependent.Release();
+                }
+                
+                // A ShellContext is usually disposed when the last scope is disposed, but if there are no scopes
+                // then we need to dispose it right away
+                if (_refCount == 0)
+                {
+                    Dispose();
                 }
             }
         }
@@ -132,7 +133,6 @@ namespace OrchardCore.Hosting.ShellBuilders
             }
 
             IsActivated = false;
-
             Settings = null;
             Blueprint = null;
 
@@ -153,11 +153,14 @@ namespace OrchardCore.Hosting.ShellBuilders
             private readonly IServiceProvider _existingServices;
             private readonly HttpContext _httpContext;
 
-            public ServiceScopeWrapper(ShellContext shellContext, IServiceScope serviceScope)
+            public ServiceScopeWrapper(ShellContext shellContext)
             {
-                ServiceProvider = serviceScope.ServiceProvider;
+                // Prevent the context from being released until the end of the scope
+                Interlocked.Increment(ref shellContext._refCount);
+
                 _shellContext = shellContext;
-                _serviceScope = serviceScope;
+                _serviceScope = shellContext.ServiceProvider.CreateScope();
+                ServiceProvider = _serviceScope.ServiceProvider;
 
                 var httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
 
