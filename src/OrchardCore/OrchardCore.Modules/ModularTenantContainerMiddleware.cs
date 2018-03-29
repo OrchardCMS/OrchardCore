@@ -47,7 +47,7 @@ namespace OrchardCore.Modules
                 {
                     if (!shellContext.IsActivated)
                     {
-                        var semaphore = _semaphores.GetOrAdd(shellSetting.Name, (name) => new SemaphoreSlim(0));
+                        var semaphore = _semaphores.GetOrAdd(shellSetting.Name, (name) => new SemaphoreSlim(1));
 
                         await semaphore.WaitAsync();
 
