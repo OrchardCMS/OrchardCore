@@ -18,14 +18,19 @@ namespace OrchardCore.BackgroundTasks
         public BackgroundTaskSettings Settings { get; set; }
         public BackgroundTaskState State { get; set; }
 
+        public DateTime GetNextStartTime()
+        {
+            return CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(ReferenceTime);
+        }
+
         public bool CanRun()
         {
-            State.NextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(ReferenceTime);
+            State.NextStartTime = GetNextStartTime();
 
             if (DateTime.UtcNow >= State.NextStartTime)
             {
                 ReferenceTime = DateTime.UtcNow;
-                State.NextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(ReferenceTime);
+                State.NextStartTime = GetNextStartTime();
                 return Settings.Enable && State.Status == BackgroundTaskStatus.Idle;
             }
 

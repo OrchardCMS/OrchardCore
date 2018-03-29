@@ -9,7 +9,6 @@ namespace OrchardCore.BackgroundTasks
         public string Name { get; set; } = String.Empty;
         public bool Enable { get; set; } = true;
         public string Schedule { get; set; } = "* * * * *";
-        public string Provider { get; set; } = String.Empty;
 
         public BackgroundTaskSettings Clone()
         {

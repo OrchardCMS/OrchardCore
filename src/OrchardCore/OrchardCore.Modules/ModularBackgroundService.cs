@@ -174,6 +174,18 @@ namespace OrchardCore.Modules
             }
         }
 
+        public Task PreSetSettingsAsync(string tenant, string taskName, BackgroundTaskSettings settings)
+        {
+            if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
+            {
+                scheduler = scheduler.Clone();
+                scheduler.Settings = settings.Clone();
+                _schedulers[tenant + taskName] = scheduler;
+            }
+
+            return Task.CompletedTask;
+        }
+
         public Task<BackgroundTaskSettings> GetSettingsAsync(string tenant, string taskName)
         {
             if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
@@ -194,7 +206,9 @@ namespace OrchardCore.Modules
         {
             if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
             {
-                return Task.FromResult(scheduler.State.Clone());
+                scheduler = scheduler.Clone();
+                scheduler.State.NextStartTime = scheduler.GetNextStartTime();
+                return Task.FromResult(scheduler.State);
             }
 
             return Task.FromResult(BackgroundTaskState.Undefined);
@@ -203,7 +217,12 @@ namespace OrchardCore.Modules
         public Task<IEnumerable<BackgroundTaskState>> GetStatesAsync(string tenant)
         {
             return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
-                .Select(kv => kv.Value.State.Clone()));
+                .Select(kv =>
+                {
+                    var scheduler = kv.Value.Clone();
+                    scheduler.State.NextStartTime = scheduler.GetNextStartTime();
+                    return scheduler.State;
+                }));
         }
 
         private IEnumerable<ShellContext> GetRunningShells()
