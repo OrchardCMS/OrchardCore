@@ -43,4 +43,17 @@ namespace OrchardCore.Commons
             serviceProvider.AddTagHelpers(typeof(ShapeTagHelper).Assembly);
         }
     }
+
+    /// <summary>
+    /// Deferred tasks middleware is registered early as it has to run very late.
+    /// </summary>
+    public class DeferredTasksStartup : StartupBase
+    {
+        public override int Order => -50;
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            app.AddDeferredTasks();
+        }
+    }
 }

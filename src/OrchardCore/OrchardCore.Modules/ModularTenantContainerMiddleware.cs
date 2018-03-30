@@ -1,8 +1,9 @@
+using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Modules
@@ -15,6 +16,7 @@ namespace OrchardCore.Modules
         private readonly RequestDelegate _next;
         private readonly IShellHost _orchardHost;
         private readonly IRunningShellTable _runningShellTable;
+        private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         public ModularTenantContainerMiddleware(
             RequestDelegate next,
@@ -31,30 +33,29 @@ namespace OrchardCore.Modules
             // Ensure all ShellContext are loaded and available.
             _orchardHost.Initialize();
 
-            var shellSettings = _runningShellTable.Match(httpContext);
+            var shellSetting = _runningShellTable.Match(httpContext);
 
             // Register the shell settings as a custom feature.
-            httpContext.Features.Set(shellSettings);
+            httpContext.Features.Set(shellSetting);
 
             // We only serve the next request if the tenant has been resolved.
-            if (shellSettings != null)
+            if (shellSetting != null)
             {
-                var shellContext = _orchardHost.GetOrCreateShellContext(shellSettings);
+                var shellContext = _orchardHost.GetOrCreateShellContext(shellSetting);
 
-                IDeferredTaskEngine deferredTaskEngine;
                 using (var scope = shellContext.EnterServiceScope())
                 {
-                    if (!shellContext.IsActivated || shellContext.IsActivating)
+                    if (!shellContext.IsActivated)
                     {
-                        await shellContext.Semaphore.WaitAsync();
+                        var semaphore = _semaphores.GetOrAdd(shellSetting.Name, (name) => new SemaphoreSlim(1));
+
+                        await semaphore.WaitAsync();
 
                         try
                         {
                             // The tenant gets activated here
                             if (!shellContext.IsActivated)
                             {
-                                shellContext.IsActivating = true;
-
                                 var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
 
                                 foreach (var tenantEvent in tenantEvents)
@@ -63,63 +64,23 @@ namespace OrchardCore.Modules
                                 }
 
                                 httpContext.Items["BuildPipeline"] = true;
-                                shellContext.IsActivated = true;
 
                                 foreach (var tenantEvent in tenantEvents.Reverse())
                                 {
                                     await tenantEvent.ActivatedAsync();
                                 }
+
+                                shellContext.IsActivated = true;
                             }
                         }
                         finally
-                        {
-                            shellContext.IsActivating = false;
-                            shellContext.Semaphore.Release();
+                        {                            
+                            semaphore.Release();
+                            _semaphores.TryRemove(shellSetting.Name, out semaphore);
                         }
                     }
-
-                    shellContext.RequestStarted();
-
-                    try
-                    {
-                        await _next.Invoke(httpContext);
-                        deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
-                    }
-                    finally
-                    {
-                        shellContext.RequestEnded();
-
-                        // Call all terminating events before releasing the shell context
-                        if (shellContext.CanTerminate)
-                        {
-                            var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-
-                            foreach (var tenantEvent in tenantEvents)
-                            {
-                                await tenantEvent.TerminatingAsync();
-                            }
-
-                            foreach (var tenantEvent in tenantEvents.Reverse())
-                            {
-                                await tenantEvent.TerminatedAsync();
-                            }
-                        }
-                    }
-                }
-
-                // Create a new scope only if there are pending tasks
-                if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
-                {
-                    shellContext = _orchardHost.GetOrCreateShellContext(shellSettings);
-
-                    if (!shellContext.Released)
-                    {
-                        using (var scope = shellContext.EnterServiceScope())
-                        {
-                            var context = new DeferredTaskContext(scope.ServiceProvider);
-                            await deferredTaskEngine.ExecuteTasksAsync(context);
-                        }
-                    }
+                    
+                    await _next.Invoke(httpContext);
                 }
             }
         }
