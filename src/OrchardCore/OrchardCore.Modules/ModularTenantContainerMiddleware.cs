@@ -44,7 +44,7 @@ namespace OrchardCore.Modules
             {
                 var shellContext = _orchardHost.GetOrCreateShellContext(shellSettings);
 
-                IDeferredTaskEngine deferredTaskEngine;
+                var hasPendingTasks = false;
                 using (var scope = shellContext.EnterServiceScope())
                 {
                     if (!shellContext.IsActivated)
@@ -83,21 +83,19 @@ namespace OrchardCore.Modules
                     }
                     
                     await _next.Invoke(httpContext);
-                    deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+                    hasPendingTasks = deferredTaskEngine.HasPendingTasks;
                 }
 
                 // Create a new scope only if there are pending tasks
-                if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
+                if (hasPendingTasks)
                 {
                     shellContext = _orchardHost.GetOrCreateShellContext(shellSettings);
 
-                    if (!shellContext.Released)
+                    using (var scope = shellContext.EnterServiceScope())
                     {
-                        using (var scope = shellContext.EnterServiceScope())
-                        {
-                            var context = new DeferredTaskContext(scope.ServiceProvider);
-                            await deferredTaskEngine.ExecuteTasksAsync(context);
-                        }
+                        var context = new DeferredTaskContext(scope.ServiceProvider);
+                        await deferredTaskEngine.ExecuteTasksAsync(context);
                     }
                 }
             }
