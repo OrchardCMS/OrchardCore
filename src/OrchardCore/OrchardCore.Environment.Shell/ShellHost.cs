@@ -3,13 +3,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -72,13 +72,21 @@ namespace OrchardCore.Environment.Shell
 
         public ShellContext GetOrCreateShellContext(ShellSettings settings)
         {
-            return _shellContexts.GetOrAdd(settings.Name, tenant =>
+            var shell = _shellContexts.GetOrAdd(settings.Name, tenant =>
             {
                 var shellContext = CreateShellContextAsync(settings).Result;
                 RegisterShell(shellContext);
 
                 return shellContext;
             });
+
+            if (shell.Released)
+            {
+                _shellContexts.TryRemove(settings.Name, out var context);
+                return GetOrCreateShellContext(settings);
+            }
+
+            return shell;
         }
 
         public void UpdateShellSettings(ShellSettings settings)
@@ -185,7 +193,7 @@ namespace OrchardCore.Environment.Shell
 
                 return Task.FromResult(new ShellContext { Settings = settings });
             }
-            else if(settings.State == TenantState.Running || settings.State == TenantState.Initializing)
+            else if (settings.State == TenantState.Running || settings.State == TenantState.Initializing)
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -231,16 +239,16 @@ namespace OrchardCore.Environment.Shell
             if (_shellContexts.TryRemove(tenant, out var context))
             {
                 context.Release();
-
-                if (context.CanDispose)
-                {
-                    context.Dispose();
-                }
             }
 
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Marks the specific tenant as released, such that a new shell is created for subsequent requests,
+        /// while existing requests get flushed.
+        /// </summary>
+        /// <param name="settings"></param>
         public void ReloadShellContext(ShellSettings settings)
         {
             ShellContext context;
@@ -248,13 +256,7 @@ namespace OrchardCore.Environment.Shell
             if (_shellContexts.TryRemove(settings.Name, out context))
             {
                 _runningShellTable.Remove(settings);
-
                 context.Release();
-
-                if (context.CanDispose)
-                {
-                    context.Dispose();
-                }
             }
 
             GetOrCreateShellContext(settings);
@@ -262,7 +264,7 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellContext> ListShellContexts()
         {
-            return _shellContexts?.Values;
+            return _shellContexts.Values;
         }
 
         /// <summary>
@@ -287,5 +289,5 @@ namespace OrchardCore.Environment.Shell
                 shellSettings.State == TenantState.Uninitialized ||
                 shellSettings.State == TenantState.Initializing;
         }
-}
+    }
 }
