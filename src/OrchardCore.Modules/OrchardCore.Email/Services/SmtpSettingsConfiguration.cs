@@ -11,15 +11,13 @@ namespace OrchardCore.Email.Services
     {
         private readonly ISiteService _site;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ShellSettings _shellSettings;
 
-        public SmtpSettingsConfiguration(ISiteService site,
-            IDataProtectionProvider dataProtectionProvider,
-            ShellSettings shellSettings)
+        public SmtpSettingsConfiguration(
+            ISiteService site,
+            IDataProtectionProvider dataProtectionProvider)
         {
             _site = site;
             _dataProtectionProvider = dataProtectionProvider;
-            _shellSettings = shellSettings;
         }
 
         public void Configure(SmtpSettings options)
@@ -41,7 +39,7 @@ namespace OrchardCore.Email.Services
             // Decrypt the password
             if (!String.IsNullOrWhiteSpace(settings.Password))
             {
-                var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration), _shellSettings.Name);
+                var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
                 options.Password = protector.Unprotect(settings.Password);
             }
         }

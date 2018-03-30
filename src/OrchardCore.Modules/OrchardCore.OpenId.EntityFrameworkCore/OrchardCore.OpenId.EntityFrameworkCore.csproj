@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.OpenId.Core.EntityFrameworkCore\OrchardCore.OpenId.Core.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\OrchardCore.OpenId\OrchardCore.OpenId.csproj" />
   </ItemGroup>
 

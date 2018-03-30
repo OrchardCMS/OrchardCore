@@ -391,8 +391,14 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            if (_contentDefinitionManager.GetPartDefinition(viewModel.Name) != null)
+            if (string.IsNullOrEmpty(viewModel.Name))
+            {
+                ModelState.AddModelError("Name", S["Name is Required."]);
+            }
+            else if (_contentDefinitionManager.GetPartDefinition(viewModel.Name) != null)
+            {
                 ModelState.AddModelError("Name", S["Cannot add part named '{0}'. It already exists.", viewModel.Name]);
+            }
 
             if (!ModelState.IsValid)
                 return View(viewModel);
