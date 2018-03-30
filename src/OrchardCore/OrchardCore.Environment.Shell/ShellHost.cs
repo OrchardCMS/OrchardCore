@@ -264,7 +264,7 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellContext> ListShellContexts()
         {
-            return _shellContexts.Values;
+            return _shellContexts?.Values;
         }
 
         /// <summary>

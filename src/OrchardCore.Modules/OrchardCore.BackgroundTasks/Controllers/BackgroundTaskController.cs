@@ -159,14 +159,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 };
 
                 await _backgroundTaskManager.UpdateAsync(model.Name, task);
-
-                await _backgroundService.PreSetSettingsAsync(_tenant, task.Name,
-                    new BackgroundTaskSettings()
-                    {
-                        Name = task.Name,
-                        Enable = task.Enable,
-                        Schedule = task.Schedule
-                    });
+                await _backgroundService.UpdateSettingsAsync(_tenant, task.Name);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -231,14 +224,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 };
 
                 await _backgroundTaskManager.UpdateAsync(model.Name, task);
-
-                await _backgroundService.PreSetSettingsAsync(_tenant, task.Name,
-                    new BackgroundTaskSettings()
-                    {
-                        Name = task.Name,
-                        Enable = task.Enable,
-                        Schedule = task.Schedule
-                    });
+                await _backgroundService.UpdateSettingsAsync(_tenant, task.Name);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -263,9 +249,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             await _backgroundTaskManager.RemoveAsync(name);
-
-            await _backgroundService.PreSetSettingsAsync(_tenant, name,
-                new BackgroundTaskSettings() { Name = name });
+            await _backgroundService.UpdateSettingsAsync(_tenant, name);
 
             return RedirectToAction(nameof(Index));
         }

@@ -174,18 +174,6 @@ namespace OrchardCore.Modules
             }
         }
 
-        public Task PreSetSettingsAsync(string tenant, string taskName, BackgroundTaskSettings settings)
-        {
-            if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
-            {
-                scheduler = scheduler.Clone();
-                scheduler.Settings = settings.Clone();
-                _schedulers[tenant + taskName] = scheduler;
-            }
-
-            return Task.CompletedTask;
-        }
-
         public Task<BackgroundTaskSettings> GetSettingsAsync(string tenant, string taskName)
         {
             if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
@@ -223,6 +211,39 @@ namespace OrchardCore.Modules
                     scheduler.State.NextStartTime = scheduler.GetNextStartTime();
                     return scheduler.State;
                 }));
+        }
+
+        public async Task UpdateSettingsAsync(string tenant, string taskName)
+        {
+            if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
+            {
+                if (TryGetRunningShell(tenant, out ShellContext shell))
+                {
+                    using (var scope = shell.EnterServiceScope())
+                    {
+                        var task = scope.GetBackgroundTaskByTypeName(taskName);
+
+                        if (task == null)
+                        {
+                            return;
+                        }
+
+                        var settings = await scope.GetBackgroundTaskSettingsAsync(task.GetType());
+
+                        scheduler = scheduler.Clone();
+                        scheduler.Settings = settings.Clone();
+                        _schedulers[tenant + taskName] = scheduler;
+                    }
+                }
+            }
+        }
+
+        private bool TryGetRunningShell(string tenant, out ShellContext context)
+        {
+            context = _shellHost.ListShellContexts()?.FirstOrDefault(s => s.Settings.Name == tenant &&
+                s.Settings?.State == TenantState.Running);
+
+            return context != null;
         }
 
         private IEnumerable<ShellContext> GetRunningShells()
@@ -300,6 +321,11 @@ namespace OrchardCore.Modules
         public static IBackgroundTask GetBackgroundTaskOfType(this IServiceScope scope, Type type)
         {
             return scope.ServiceProvider.GetServices<IBackgroundTask>().FirstOrDefault(t => t.GetType() == type);
+        }
+
+        public static IBackgroundTask GetBackgroundTaskByTypeName(this IServiceScope scope, string name)
+        {
+            return scope.ServiceProvider.GetServices<IBackgroundTask>().FirstOrDefault(t => t.GetType().FullName == name);
         }
 
         public static async Task<BackgroundTaskSettings> GetBackgroundTaskSettingsAsync(this IServiceScope scope, Type type)

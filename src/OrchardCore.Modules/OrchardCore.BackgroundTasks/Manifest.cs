@@ -6,5 +6,5 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "This module provides tools to manage background tasks.",
-    Category = "Background Tasks"
+    Category = "Tasks"
 )]
