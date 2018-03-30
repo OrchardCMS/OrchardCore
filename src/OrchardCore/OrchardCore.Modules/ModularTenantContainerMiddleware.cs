@@ -94,6 +94,7 @@ namespace OrchardCore.Modules
 
                     using (var scope = shellContext.EnterServiceScope())
                     {
+                        var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
                         var context = new DeferredTaskContext(scope.ServiceProvider);
                         await deferredTaskEngine.ExecuteTasksAsync(context);
                     }
