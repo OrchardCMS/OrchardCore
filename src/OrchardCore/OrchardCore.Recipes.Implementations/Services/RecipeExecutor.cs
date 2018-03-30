@@ -1,18 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Scripting;
@@ -125,16 +125,6 @@ namespace OrchardCore.Recipes.Services
                                             {
                                                 capturedException.Throw();
                                             }
-
-                                            if (recipeStep.InnerRecipes != null)
-                                            {
-                                                foreach (var descriptor in recipeStep.InnerRecipes)
-                                                {
-                                                    var innerExecutionId = Guid.NewGuid().ToString();
-                                                    await ExecuteAsync(innerExecutionId, descriptor, environment);
-                                                }
-
-                                            }
                                         }
                                     }
                                 }
@@ -167,14 +157,14 @@ namespace OrchardCore.Recipes.Services
 
                     foreach (var tenantEvent in tenantEvents)
                     {
-                        await tenantEvent.ActivatingAsync();
+                        tenantEvent.ActivatingAsync().Wait();
                     }
 
                     shellContext.IsActivated = true;
 
-                    foreach (var tenantEvent in tenantEvents.Reverse())
+                    foreach (var tenantEvent in tenantEvents)
                     {
-                        await tenantEvent.ActivatedAsync();
+                        tenantEvent.ActivatedAsync().Wait();
                     }
                 }
 
@@ -249,7 +239,7 @@ namespace OrchardCore.Recipes.Services
             {
                 case JTokenType.Array:
                     var array = (JArray)node;
-                    for (var i=0; i < array.Count; i++)
+                    for (var i = 0; i < array.Count; i++)
                     {
                         EvaluateJsonTree(scriptingManager, context, array[i]);
                     }

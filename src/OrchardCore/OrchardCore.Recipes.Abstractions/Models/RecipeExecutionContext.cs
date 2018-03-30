@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Recipes.Models
@@ -10,6 +9,5 @@ namespace OrchardCore.Recipes.Models
         public string Name { get; set; }
         public JObject Step { get; set; }
         public RecipeDescriptor RecipeDescriptor { get; set; }
-        public IEnumerable<RecipeDescriptor> InnerRecipes { get; set; }
     }
 }

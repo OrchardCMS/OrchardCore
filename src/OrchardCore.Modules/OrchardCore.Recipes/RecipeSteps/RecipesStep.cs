@@ -26,7 +26,7 @@ namespace OrchardCore.Recipes.RecipeSteps
         /*
          {
             "name": "recipes",
-            "Values": [
+            "recipes": [
                 { "executionid": "OrchardCore.Setup", name="Core" }
             ]
          }
@@ -40,12 +40,11 @@ namespace OrchardCore.Recipes.RecipeSteps
 
             var step = context.Step.ToObject<InternalStep>();
             var recipesDictionary = new Dictionary<string, IDictionary<string, RecipeDescriptor>>();
-            IList<RecipeDescriptor> innerRecipes = new List<RecipeDescriptor>();
 
             foreach (var recipe in step.Values)
             {
                 IDictionary<string, RecipeDescriptor> recipes;
-                
+
                 if (!recipesDictionary.TryGetValue(recipe.ExecutionId, out recipes))
                 {
                     var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
@@ -58,10 +57,9 @@ namespace OrchardCore.Recipes.RecipeSteps
                     throw new ArgumentException($"No recipe named '{recipe.Name}' was found in extension '{recipe.ExecutionId}'.");
                 }
 
-                innerRecipes.Add(recipes[recipe.Name]);
+                var executionId = Guid.NewGuid().ToString();
+                await _recipeManager.ExecuteAsync(executionId, recipes[recipe.Name], context.Environment);
             }
-
-            context.InnerRecipes = innerRecipes;
         }
 
         private class InternalStep
