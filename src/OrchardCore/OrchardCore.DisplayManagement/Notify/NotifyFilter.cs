@@ -137,7 +137,10 @@ namespace OrchardCore.DisplayManagement.Notify
 
         private IDataProtector CreateTenantProtector()
         {
-            return _dataProtectionProvider.CreateProtector(nameof(NotifyFilter), _tenantPath);
+            // Note: this filter is not located in a module that depends on the DataProtection module.
+            // As such, we can't guarantee the key ring is not shared between tenants. To ensure cookies
+            // encrypted by this tenant can't be read by another one, a sub-protector is always created.
+            return _dataProtectionProvider.CreateProtector(nameof(NotifyFilter), _shellSettings.Name);
         }
 
         private string SerializeNotifyEntry(NotifyEntry[] notifyEntries)
