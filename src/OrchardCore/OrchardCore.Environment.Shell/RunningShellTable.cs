@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -58,13 +58,13 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
-        public ShellSettings Match(string host, string appRelativePath)
+        public ShellSettings Match(string host, string appRelativePath, bool fallbackToDefault = true)
         {
             _lock.EnterReadLock();
             try
             {
                 // Specific match?
-                if(TryMatchInternal(host, appRelativePath, out ShellSettings result))
+                if(TryMatchInternal(host, appRelativePath, fallbackToDefault, out ShellSettings result))
                 {
                     return result;
                 }
@@ -72,19 +72,19 @@ namespace OrchardCore.Environment.Shell
                 // Search for star mapping
                 // Optimization: only if a mapping with a '*' has been added
 
-                if (_hasStarMapping && TryMatchStarMapping(host, appRelativePath, out result))
+                if (_hasStarMapping && TryMatchStarMapping(host, appRelativePath, fallbackToDefault, out result))
                 {
                     return result;
                 }
 
                 // Check if the Default tenant is a catch-all
-                if (DefaultIsCatchAll())
+                if (fallbackToDefault && DefaultIsCatchAll())
                 {
                     return _default;
                 }
 
                 // Search for another catch-all 
-                if (TryMatchInternal("", "/", out result))
+                if (fallbackToDefault && TryMatchInternal("", "/", fallbackToDefault, out result))
                 {
                     return result;
                 }
@@ -97,27 +97,35 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
-        private bool TryMatchInternal(string host, string appRelativePath, out ShellSettings result)
+        private bool TryMatchInternal(string host, string appRelativePath, bool fallbackToDefault, out ShellSettings result)
         {
-            // 1. Search for Host + Prefix match
-            var hostAndPrefix = GetHostAndPrefix(host, appRelativePath);
+            // We can skip some checks for port matching if we know the host doesn't contain one
+            var hasPort = host.Contains(':');
 
-            if (!_shellsByHostAndPrefix.TryGetValue(hostAndPrefix, out result))
+            // 1. Search for Host:Port + Prefix match
+
+            if (!hasPort || !_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(host, appRelativePath, true), out result))
             {
-                // 2. Search for Host only match
+                // 2. Search for Host + Prefix match
 
-                var hostAndNoPrefix = GetHostAndPrefix(host, "/");
-
-                if (!_shellsByHostAndPrefix.TryGetValue(hostAndNoPrefix, out result))
+                if (!_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(host, appRelativePath, false), out result))
                 {
-                    // 3. Search for Prefix only match
+                    // 3. Search for Host:Port only match
 
-                    var noHostAndPrefix = GetHostAndPrefix("", appRelativePath);
-
-                    if (!_shellsByHostAndPrefix.TryGetValue(noHostAndPrefix, out result))
+                    if (!hasPort || !_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(host, "/", true), out result))
                     {
-                        result = null;
-                        return false;
+                        // 4. Search for Host only match
+
+                        if (!_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix(host, "/", false), out result))
+                        {
+                            // 5. Search for Prefix only match
+
+                            if (!_shellsByHostAndPrefix.TryGetValue(GetHostAndPrefix("", appRelativePath, false), out result))
+                            {
+                                result = null;
+                                return false;
+                            }
+                        }
                     }
                 }
             }
@@ -125,9 +133,9 @@ namespace OrchardCore.Environment.Shell
             return true;
         }
 
-        private bool TryMatchStarMapping(string host, string appRelativePath, out ShellSettings result)
+        private bool TryMatchStarMapping(string host, string appRelativePath, bool fallbackToDefault, out ShellSettings result)
         {
-            if (TryMatchInternal("*." + host, appRelativePath, out result))
+            if (TryMatchInternal("*." + host, appRelativePath, fallbackToDefault, out result))
             {
                 return true;
             }
@@ -137,7 +145,7 @@ namespace OrchardCore.Environment.Shell
             // Take the longest subdomain and look for a mapping
             while (-1 != (index = host.IndexOf('.', index + 1)))
             {
-                if(TryMatchInternal("*" + host.Substring(index), appRelativePath, out result))
+                if(TryMatchInternal("*" + host.Substring(index), appRelativePath, fallbackToDefault, out result))
                 {
                     return true;
                 }
@@ -147,13 +155,16 @@ namespace OrchardCore.Environment.Shell
             return false;
         }
 
-        private string GetHostAndPrefix(string host, string appRelativePath)
+        private string GetHostAndPrefix(string host, string appRelativePath, bool includePort)
         {
-            // removing the port from the host
-            var hostLength = host.IndexOf(':');
-            if (hostLength != -1)
+            if (!includePort)
             {
-                host = host.Substring(0, hostLength);
+                // removing the port from the host
+                var hostLength = host.IndexOf(':');
+                if (hostLength != -1)
+                {
+                    host = host.Substring(0, hostLength);
+                }
             }
 
             // appRelativePath starts with /
