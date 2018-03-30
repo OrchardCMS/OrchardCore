@@ -239,7 +239,7 @@ namespace OrchardCore.Recipes.Services
             {
                 case JTokenType.Array:
                     var array = (JArray)node;
-                    for (var i = 0; i < array.Count; i++)
+                    for (var i=0; i < array.Count; i++)
                     {
                         EvaluateJsonTree(scriptingManager, context, array[i]);
                     }

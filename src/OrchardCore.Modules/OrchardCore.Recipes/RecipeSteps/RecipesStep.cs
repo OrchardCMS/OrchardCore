@@ -44,7 +44,7 @@ namespace OrchardCore.Recipes.RecipeSteps
             foreach (var recipe in step.Values)
             {
                 IDictionary<string, RecipeDescriptor> recipes;
-
+                
                 if (!recipesDictionary.TryGetValue(recipe.ExecutionId, out recipes))
                 {
                     var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
