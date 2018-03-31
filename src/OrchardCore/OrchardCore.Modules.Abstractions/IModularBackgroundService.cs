@@ -11,7 +11,7 @@ namespace OrchardCore.Modules
         Task<IEnumerable<BackgroundTaskSettings>> GetSettingsAsync(string tenant);
         Task<BackgroundTaskState> GetStateAsync(string tenant, string taskName);
         Task<IEnumerable<BackgroundTaskState>> GetStatesAsync(string tenant);
-        Task UpdateSettingsAsync(string tenant, string taskName);
         bool IsRunning { get; }
+        Task UpdateAsync();
     }
 }

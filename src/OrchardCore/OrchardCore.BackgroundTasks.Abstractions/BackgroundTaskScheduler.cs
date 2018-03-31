@@ -14,7 +14,7 @@ namespace OrchardCore.BackgroundTasks
         }
 
         public string Tenant { get; }
-        public DateTime ReferenceTime { get; private set; }
+        public DateTime ReferenceTime { get; set; }
         public BackgroundTaskSettings Settings { get; set; }
         public BackgroundTaskState State { get; set; }
 

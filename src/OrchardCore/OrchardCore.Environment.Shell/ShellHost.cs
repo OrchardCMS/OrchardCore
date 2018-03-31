@@ -27,7 +27,6 @@ namespace OrchardCore.Environment.Shell
         private readonly IRunningShellTable _runningShellTable;
         private readonly ILogger _logger;
 
-        private readonly static object _syncLock = new object();
         private ConcurrentDictionary<string, ShellContext> _shellContexts;
         private readonly IExtensionManager _extensionManager;
 
