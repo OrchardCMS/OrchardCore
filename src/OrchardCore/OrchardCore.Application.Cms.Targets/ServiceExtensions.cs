@@ -17,8 +17,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddModules(modules => 
             {
                 modules.WithDefaultFeatures(
-                    "OrchardCore.Mvc", "OrchardCore.Settings", "OrchardCore.Setup",
-                    "OrchardCore.Recipes", "OrchardCore.Commons");
+                    "OrchardCore.Antiforgery", "OrchardCore.Mvc", "OrchardCore.Settings",
+                    "OrchardCore.Setup", "OrchardCore.Recipes", "OrchardCore.Commons");
             });
 
             return services;
