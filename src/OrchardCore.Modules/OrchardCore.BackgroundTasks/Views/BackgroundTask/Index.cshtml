@@ -4,20 +4,10 @@
 
 @if (Model.IsRunning)
 {
-    if (!Model.HasPendingChanges)
-    {
-        <div class="alert alert-success" role="alert">
-            <span><i class="fa fa-refresh fa-spin" aria-hidden="true"></i></span>
-            @T["The Background Service is running."]
-        </div>
-    }
-    else
-    {
-        <div class="alert alert-info" role="alert">
-            <span><i class="fa fa-refresh fa-spin" aria-hidden="true"></i></span>
-            @T["The Background Service is running but there are some pending changes."]
-        </div>
-    }
+    <div class="alert alert-success" role="alert">
+        <span><i class="fa fa-refresh fa-spin" aria-hidden="true"></i></span>
+        @T["The Background Service is running."]
+    </div>
 }
 else
 {

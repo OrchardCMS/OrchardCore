@@ -10,12 +10,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.Modules
 {
-    internal class ModularBackgroundService : Internal.BackgroundService, IModularBackgroundService
+    internal class ModularBackgroundService : Internal.BackgroundService,
+        IModularBackgroundService, IShellDescriptorManagerEventHandler
     {
         private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
@@ -233,17 +235,29 @@ namespace OrchardCore.Modules
                 }));
         }
 
-        public Task UpdateAsync()
+        public Task UpdateAsync(int millisecondsDelay = 0)
         {
             if (!_updateSource.IsCancellationRequested)
             {
                 lock (this)
                 {
-                    _updateSource.Cancel();
+                    if (millisecondsDelay <= 0)
+                    {
+                        _updateSource.Cancel();
+                    }
+                    else
+                    {
+                        _updateSource.CancelAfter(millisecondsDelay);
+                    }
                 }
             }
 
             return Task.CompletedTask;
+        }
+
+        Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
+        {
+            return UpdateAsync(500);
         }
 
         private IEnumerable<ShellContext> GetRunningShells()

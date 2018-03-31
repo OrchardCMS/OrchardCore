@@ -66,17 +66,11 @@ namespace OrchardCore.BackgroundTasks.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            var allTaskNames = _backgroundTaskManager.TaskNames.OrderBy(n => n);
+            var allTaskNames = _backgroundTaskManager.TaskNames;
             var document = await _backgroundTaskManager.GetDocumentAsync();
-
-            var documentTaskNames = document.Tasks.Keys
-                .Where(k => allTaskNames.Contains(k))
-                .OrderBy(k => k);
-
-            var otherTaskNames = allTaskNames.Except(documentTaskNames);
+            var otherTaskNames = allTaskNames.Except(document.Tasks.Keys);
 
             var settings = (await _backgroundService.GetSettingsAsync(_tenant));
-            var allSettingsNames = settings.Select(s => s.Name).OrderBy(n => n);
             var states = (await _backgroundService.GetStatesAsync(_tenant));
 
             var taskEntries = document.Tasks.Select(kvp => new BackgroundTaskEntry
@@ -105,7 +99,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             var model = new BackgroundTaskIndexViewModel
             {
                 IsRunning = _backgroundService.IsRunning,
-                HasPendingChanges = !allSettingsNames.SequenceEqual(allTaskNames),
                 Tasks = taskEntries,
                 Pager = pagerShape
             };
