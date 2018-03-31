@@ -14,3 +14,6 @@
     display: none;
 }
 
+.widget-editor:not(.collapsed) .widget-editor-btn-expand {
+    display: none;
+}
