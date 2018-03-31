@@ -1,4 +1,4 @@
-﻿.widget-editor.collapsed .card-body, .widget-editor.collapsed .card-footer {
+.widget-editor.collapsed .card-body, .widget-editor.collapsed .card-footer {
     display: none;
 }
 
@@ -10,10 +10,6 @@
     display: inline-block;
 }
 
-.widget-editor-btn-expand, .collapsed .widget-editor-btn-collapse {
-    display: none;
-}
-
-.widget-editor:not(.collapsed) .widget-editor-btn-expand {
+.widget-editor:not(.collapsed) .widget-editor-btn-expand, .collapsed .widget-editor-btn-collapse {
     display: none;
 }
