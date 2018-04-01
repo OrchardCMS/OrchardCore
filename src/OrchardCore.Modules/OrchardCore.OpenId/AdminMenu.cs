@@ -71,6 +71,17 @@ namespace OrchardCore.OpenId
                                   .LocalNav());
                     });
                 }
+
+                if (features.Any(feature => feature.Id == OpenIdConstants.Features.Client))
+                {
+                    category.Add(T["Clients"], "5", client =>
+                    {
+                        client.Add(T["OpenID Connect Idp"], "5", applications => applications
+                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "OrchardCore.OpenId.Client" })
+                                  .Permission(Permissions.ManageClientSettings)
+                                  .LocalNav());
+                    });
+                }
             });
         }
     }

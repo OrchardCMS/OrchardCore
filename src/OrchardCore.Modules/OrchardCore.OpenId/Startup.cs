@@ -2,6 +2,7 @@ using AspNet.Security.OAuth.Validation;
 using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -138,4 +139,32 @@ namespace OrchardCore.OpenId
             });
         }
     }
+
+    [Feature(OpenIdConstants.Features.Client)]
+    public class ClientStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSecurity();
+
+            services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IDisplayDriver<ISite>, OpenIdConnectSettingsDisplayDriver>();
+            services.AddSingleton<IOpenIdClientService, OpenIdClientService>();
+            services.AddAuthentication().AddCookie();
+
+            // Register the options initializers required by OpenIdConnect,
+            services.TryAddEnumerable(new[]
+            {
+                // Orchard-specific initializers:
+                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, OpenIdClientConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<OpenIdConnectOptions>, OpenIdClientConfiguration>(),
+
+                // Built-in initializers:
+                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>()
+            });
+        }
+
+    }
+
 }

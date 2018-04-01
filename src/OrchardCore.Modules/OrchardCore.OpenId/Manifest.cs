@@ -51,3 +51,16 @@ using OrchardCore.OpenId;
         "OrchardCore.DataProtection"
     }
 )]
+
+[assembly: Feature(
+    Id = OpenIdConstants.Features.Client,
+    Name = "OpenID Connect Client",
+    Category = "OpenID Connect",
+    Description = "Auhenticates users from external OpenID Connect Idp.",
+    Dependencies = new[]
+    {
+        OpenIdConstants.Features.Core,
+        "OrchardCore.Authentication",
+        "OrchardCore.DataProtection"
+    }
+)]

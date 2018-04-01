@@ -17,12 +17,16 @@ namespace OrchardCore.OpenId
         public static readonly Permission ManageValidationSettings
             = new Permission(nameof(ManageValidationSettings), "View and edit the OpenID Connect server settings.");
 
+        public static readonly Permission ManageClientSettings
+            = new Permission(nameof(ManageClientSettings), "View and edit the OpenID Connect client settings.");
+
         public IEnumerable<Permission> GetPermissions()
         {
             yield return ManageApplications;
             yield return ManageScopes;
             yield return ManageServerSettings;
             yield return ManageValidationSettings;
+            yield return ManageClientSettings;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -35,7 +39,8 @@ namespace OrchardCore.OpenId
                     ManageApplications,
                     ManageScopes,
                     ManageServerSettings,
-                    ManageValidationSettings
+                    ManageValidationSettings,
+                    ManageClientSettings
                 }
             };
         }
