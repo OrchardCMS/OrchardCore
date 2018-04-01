@@ -10,14 +10,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.Modules
 {
-    internal class ModularBackgroundService : Internal.BackgroundService,
-        IModularBackgroundService, IShellDescriptorManagerEventHandler
+    internal class ModularBackgroundService : Internal.BackgroundService, IModularBackgroundService
     {
         private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
@@ -44,8 +42,6 @@ namespace OrchardCore.Modules
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            IsRunning = true;
-
             stoppingToken.Register(() =>
             {
                 Logger.LogDebug($"{nameof(ModularBackgroundService)} is stopping.");
@@ -57,9 +53,11 @@ namespace OrchardCore.Modules
             IEnumerable<ShellContext> shells = null;
             while ((shells?.Count() ?? 0) < 1)
             {
-                shells = GetRunningShells();
                 await Task.Delay(MinIdleTime, stoppingToken);
+                shells = GetRunningShells();
             }
+
+            IsRunning = true;
 
             _updateSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
 
@@ -169,11 +167,19 @@ namespace OrchardCore.Modules
                 });
 
                 referenceTime = DateTime.UtcNow;
+                var minIdleDelay = Task.Delay(MinIdleTime, _updateSource.Token);
 
                 try
                 {
-                    await Task.Delay(MinIdleTime, _updateSource.Token);
-                    await pollingDelay;
+                    while (!minIdleDelay.IsCompleted || !pollingDelay.IsCompleted)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(1), _updateSource.Token);
+
+                        if (shells.Any(s => s.Released) || shells.Count() != GetRunningShells().Count())
+                        {
+                            _updateSource.Cancel();
+                        }
+                    }
                 }
                 catch
                 {
@@ -184,12 +190,29 @@ namespace OrchardCore.Modules
                     lock (this)
                     {
                         _updateSource.Dispose();
-                        _updateSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+
+                        if (!stoppingToken.IsCancellationRequested)
+                        {
+                            _updateSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+                        }
                     }
                 }
             }
 
             IsRunning = false;
+        }
+
+        public Task UpdateAsync()
+        {
+            if (!(_updateSource?.IsCancellationRequested ?? true))
+            {
+                lock (this)
+                {
+                    _updateSource.Cancel();
+                }
+            }
+
+            return Task.CompletedTask;
         }
 
         public void Command(string tenant, string taskName, BackgroundTaskScheduler.CommandCode code)
@@ -229,41 +252,14 @@ namespace OrchardCore.Modules
         public Task<IEnumerable<BackgroundTaskState>> GetStatesAsync(string tenant)
         {
             return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
-                .Select(kv =>
-                {
-                    return kv.Value.State.Clone();
-                }));
-        }
-
-        public Task UpdateAsync(int millisecondsDelay = 0)
-        {
-            if (!_updateSource.IsCancellationRequested)
-            {
-                lock (this)
-                {
-                    if (millisecondsDelay <= 0)
-                    {
-                        _updateSource.Cancel();
-                    }
-                    else
-                    {
-                        _updateSource.CancelAfter(millisecondsDelay);
-                    }
-                }
-            }
-
-            return Task.CompletedTask;
-        }
-
-        Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
-        {
-            return UpdateAsync(500);
+                .Select(kv => kv.Value.State.Clone()));
         }
 
         private IEnumerable<ShellContext> GetRunningShells()
         {
-            return _shellHost.ListShellContexts()?.Where(s => s.Settings?.State == TenantState.Running)
-                .OrderBy(s => s.Settings?.Name).ToArray() ?? Enumerable.Empty<ShellContext>();
+            return _shellHost.ListShellContexts()?
+                .Where(s => s.Settings?.State == TenantState.Running)
+                .ToArray() ?? Enumerable.Empty<ShellContext>();
         }
 
         private void CleanBackgroundTaskSchedulers(IEnumerable<string> tenants)
