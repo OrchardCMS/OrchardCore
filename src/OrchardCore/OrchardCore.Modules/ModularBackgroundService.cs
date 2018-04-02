@@ -48,8 +48,6 @@ namespace OrchardCore.Modules
                 Logger.LogDebug($"{nameof(ModularBackgroundService)} is stopping.");
             });
 
-            var referenceTime = DateTime.UtcNow;
-
             IEnumerable<ShellContext> shells = null;
             while ((shells?.Count() ?? 0) < 1)
             {
@@ -62,38 +60,30 @@ namespace OrchardCore.Modules
             var updateSource = CancellationTokenSource.CreateLinkedTokenSource(
                 _updateSource.Token, stoppingToken);
 
+            bool updateSchedulers = true;
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 var pollingDelay = Task.Delay(PollingTime, updateSource.Token);
 
                 shells = GetRunningShells();
-                var tenants = shells.Select(s => s.Settings?.Name);
-                CleanBackgroundTaskSchedulers(tenants);
 
-                await shells.ForEachAsync(async shell =>
+                if (updateSchedulers)
                 {
-                    IEnumerable<Type> taskTypes;
+                    await UpdateSchedulers(shells, stoppingToken);
+                    updateSchedulers = false;
+                }
+
+                await GetShellsToRun(shells).ForEachAsync(async shell =>
+                {
                     var tenant = shell.Settings?.Name;
+                    var schedulers = GetTenantSchedulersToRun(tenant);
 
-                    if (shell.Released || stoppingToken.IsCancellationRequested)
-                    {
-                        return;
-                    }
+                    _httpContextAccessor.HttpContext = shell.GetBackgroundHttpContext();
 
-                    using (var scope = shell.EnterServiceScope())
+                    foreach (var scheduler in schedulers)
                     {
-                        taskTypes = scope.GetBackgroundTaskTypes();
-                        CleanTenantBackgroundTaskSchedulers(tenant, taskTypes);
-                    }
-
-                    if (taskTypes.Count() > 0)
-                    {
-                        _httpContextAccessor.HttpContext = shell.GetBackgroundHttpContext();
-                    }
-
-                    foreach (var taskType in taskTypes)
-                    {
-                        var taskName = taskType.FullName;
+                        var taskName = scheduler.Name;
 
                         if (shell.Released || stoppingToken.IsCancellationRequested)
                         {
@@ -102,34 +92,15 @@ namespace OrchardCore.Modules
 
                         using (var scope = shell.EnterServiceScope())
                         {
-                            var task = scope.GetBackgroundTaskOfType(taskType);
+                            var task = scope.GetBackgroundTaskByTypeName(taskName);
 
                             if (task == null)
                             {
                                 continue;
                             }
 
-                            if (!_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
-                            {
-                                _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime);
-                            }
-
                             try
                             {
-                                var settings = await scope.GetBackgroundTaskSettingsAsync(taskType);
-
-                                if (!scheduler.Settings.Schedule.Equals(settings.Schedule))
-                                {
-                                    scheduler.ReferenceTime = referenceTime;
-                                }
-
-                                scheduler.Settings = settings.Clone();
-
-                                if (!scheduler.CanRun())
-                                {
-                                    continue;
-                                }
-
                                 if (Logger.IsEnabled(LogLevel.Information))
                                 {
                                     Logger.LogInformation(
@@ -166,7 +137,6 @@ namespace OrchardCore.Modules
                     }
                 });
 
-                referenceTime = DateTime.UtcNow;
                 var minIdleDelay = Task.Delay(MinIdleTime, updateSource.Token);
 
                 try
@@ -193,14 +163,84 @@ namespace OrchardCore.Modules
                     }
 
                     updateSource.Dispose();
-
                     updateSource = CancellationTokenSource.CreateLinkedTokenSource(
                         _updateSource.Token, stoppingToken);
+                    updateSchedulers = true;
                 }
             }
 
             updateSource.Dispose();
             IsRunning = false;
+        }
+
+        protected async Task UpdateSchedulers(IEnumerable<ShellContext> shells, CancellationToken stoppingToken)
+        {
+            var referenceTime = DateTime.UtcNow;
+            var tenants = shells.Select(s => s.Settings?.Name);
+            CleanSchedulers(tenants);
+
+            await shells.ForEachAsync(async shell =>
+            {
+                IEnumerable<Type> taskTypes;
+                var tenant = shell.Settings?.Name;
+
+                _httpContextAccessor.HttpContext = shell.GetBackgroundHttpContext();
+
+                if (shell.Released || stoppingToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                using (var scope = shell.EnterServiceScope())
+                {
+                    taskTypes = scope.GetBackgroundTaskTypes();
+                    CleanTenantSchedulers(tenant, taskTypes);
+
+                    if (!taskTypes.Any())
+                    {
+                        return;
+                    }
+
+                    foreach (var taskType in taskTypes)
+                    {
+                        if (shell.Released || stoppingToken.IsCancellationRequested)
+                        {
+                            return;
+                        }
+
+                        var taskName = taskType.FullName;
+
+                        if (!_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
+                        {
+                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime);
+                        }
+
+                        try
+                        {
+                            var settings = await scope.GetBackgroundTaskSettingsAsync(taskType);
+
+                            if (!scheduler.Settings.Schedule.Equals(settings.Schedule))
+                            {
+                                scheduler.ReferenceTime = referenceTime;
+                            }
+
+                            scheduler.Settings = settings.Clone();
+                        }
+
+                        catch (Exception ex)
+                        {
+                            scheduler.Fault(ex);
+
+                            if (Logger.IsEnabled(LogLevel.Error))
+                            {
+                                Logger.LogError(ex,
+                                    "Error while updating settings of background task \"{0}\" on tenant \"{1}\".",
+                                    tenant, taskName);
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         public Task UpdateAsync()
@@ -259,7 +299,14 @@ namespace OrchardCore.Modules
                 .ToArray() ?? Enumerable.Empty<ShellContext>();
         }
 
-        private void CleanBackgroundTaskSchedulers(IEnumerable<string> tenants)
+        private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)
+        {
+            var schedulers = _schedulers.Where(s => s.Value.CanRun());
+            var tenants = schedulers.Select(s => s.Value.Tenant).ToArray();
+            return shells.Where(s => tenants.Contains(s.Settings?.Name));
+        }
+
+        private void CleanSchedulers(IEnumerable<string> tenants)
         {
             var keys = _schedulers.Where(kv => !tenants.Contains(kv.Value.Tenant)).Select(kv => kv.Key).ToArray();
 
@@ -269,7 +316,7 @@ namespace OrchardCore.Modules
             }
         }
 
-        private void CleanTenantBackgroundTaskSchedulers(string tenant, IEnumerable<Type> taskTypes)
+        private void CleanTenantSchedulers(string tenant, IEnumerable<Type> taskTypes)
         {
             var validKeys = taskTypes.Select(type => tenant + type.FullName);
 
@@ -282,6 +329,11 @@ namespace OrchardCore.Modules
                     _schedulers.TryRemove(key, out var scheduler);
                 }
             }
+        }
+
+        private IEnumerable<BackgroundTaskScheduler> GetTenantSchedulersToRun(string tenant)
+        {
+            return _schedulers.Where(s => s.Value.Tenant == tenant && s.Value.CanRun()).Select(s => s.Value);
         }
     }
 
@@ -328,6 +380,11 @@ namespace OrchardCore.Modules
         public static IBackgroundTask GetBackgroundTaskOfType(this IServiceScope scope, Type type)
         {
             return scope.ServiceProvider.GetServices<IBackgroundTask>().FirstOrDefault(t => t.GetType() == type);
+        }
+
+        public static IBackgroundTask GetBackgroundTaskByTypeName(this IServiceScope scope, string type)
+        {
+            return scope.ServiceProvider.GetServices<IBackgroundTask>().FirstOrDefault(t => t.GetType().FullName == type);
         }
 
         public static async Task<BackgroundTaskSettings> GetBackgroundTaskSettingsAsync(this IServiceScope scope, Type type)

@@ -7,12 +7,14 @@ namespace OrchardCore.BackgroundTasks
     {
         public BackgroundTaskScheduler(string tenant, string name, DateTime referenceTime)
         {
+            Name = name;
             Tenant = tenant;
             ReferenceTime = referenceTime;
             Settings = new BackgroundTaskSettings() { Name = name };
             State = new BackgroundTaskState() { Name = name };
         }
 
+        public string Name { get; }
         public string Tenant { get; }
         public DateTime ReferenceTime { get; set; }
         public BackgroundTaskSettings Settings { get; set; }
