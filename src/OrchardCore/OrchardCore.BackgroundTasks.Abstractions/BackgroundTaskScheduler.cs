@@ -29,9 +29,13 @@ namespace OrchardCore.BackgroundTasks
 
             if (DateTime.UtcNow >= State.NextStartTime)
             {
+                if (Settings.Enable && State.Status == BackgroundTaskStatus.Idle)
+                {
+                    return true;
+                }
+
                 ReferenceTime = DateTime.UtcNow;
                 State.NextStartTime = GetNextStartTime();
-                return Settings.Enable && State.Status == BackgroundTaskStatus.Idle;
             }
 
             return false;
@@ -41,6 +45,7 @@ namespace OrchardCore.BackgroundTasks
         {
             State.Status = BackgroundTaskStatus.Running;
             State.LastStartTime = ReferenceTime = DateTime.UtcNow;
+            State.NextStartTime = GetNextStartTime();
             State.StartCount += 1;
         }
 

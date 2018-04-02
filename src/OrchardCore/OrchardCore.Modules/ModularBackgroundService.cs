@@ -19,8 +19,9 @@ namespace OrchardCore.Modules
     {
         private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
+        private static readonly object _synLock = new object();
 
-        private CancellationTokenSource _updateSource;
+        private CancellationTokenSource _updateSource = new CancellationTokenSource();
         private readonly ConcurrentDictionary<string, BackgroundTaskScheduler> _schedulers =
             new ConcurrentDictionary<string, BackgroundTaskScheduler>();
 
@@ -45,7 +46,6 @@ namespace OrchardCore.Modules
             stoppingToken.Register(() =>
             {
                 Logger.LogDebug($"{nameof(ModularBackgroundService)} is stopping.");
-                IsRunning = false;
             });
 
             var referenceTime = DateTime.UtcNow;
@@ -59,11 +59,12 @@ namespace OrchardCore.Modules
 
             IsRunning = true;
 
-            _updateSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+            var updateSource = CancellationTokenSource.CreateLinkedTokenSource(
+                _updateSource.Token, stoppingToken);
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var pollingDelay = Task.Delay(PollingTime, _updateSource.Token);
+                var pollingDelay = Task.Delay(PollingTime, updateSource.Token);
 
                 shells = GetRunningShells();
                 var tenants = shells.Select(s => s.Settings?.Name);
@@ -71,14 +72,13 @@ namespace OrchardCore.Modules
 
                 await shells.ForEachAsync(async shell =>
                 {
+                    IEnumerable<Type> taskTypes;
+                    var tenant = shell.Settings?.Name;
+
                     if (shell.Released || stoppingToken.IsCancellationRequested)
                     {
                         return;
                     }
-
-                    IEnumerable<Type> taskTypes;
-
-                    var tenant = shell.Settings?.Name;
 
                     using (var scope = shell.EnterServiceScope())
                     {
@@ -167,13 +167,13 @@ namespace OrchardCore.Modules
                 });
 
                 referenceTime = DateTime.UtcNow;
-                var minIdleDelay = Task.Delay(MinIdleTime, _updateSource.Token);
+                var minIdleDelay = Task.Delay(MinIdleTime, updateSource.Token);
 
                 try
                 {
                     while (!minIdleDelay.IsCompleted || !pollingDelay.IsCompleted)
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(1), _updateSource.Token);
+                        await Task.Delay(TimeSpan.FromSeconds(1), updateSource.Token);
 
                         if (shells.Any(s => s.Released) || shells.Count() != GetRunningShells().Count())
                         {
@@ -181,35 +181,33 @@ namespace OrchardCore.Modules
                         }
                     }
                 }
-                catch
+                catch (OperationCanceledException)
                 {
                 }
 
-                if (_updateSource.IsCancellationRequested)
+                if (_updateSource.IsCancellationRequested && !stoppingToken.IsCancellationRequested)
                 {
-                    lock (this)
+                    lock (_synLock)
                     {
-                        _updateSource.Dispose();
-
-                        if (!stoppingToken.IsCancellationRequested)
-                        {
-                            _updateSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-                        }
+                        _updateSource = new CancellationTokenSource();
                     }
+
+                    updateSource.Dispose();
+
+                    updateSource = CancellationTokenSource.CreateLinkedTokenSource(
+                        _updateSource.Token, stoppingToken);
                 }
             }
 
+            updateSource.Dispose();
             IsRunning = false;
         }
 
         public Task UpdateAsync()
         {
-            if (!(_updateSource?.IsCancellationRequested ?? true))
+            lock (_synLock)
             {
-                lock (this)
-                {
-                    _updateSource.Cancel();
-                }
+                _updateSource.Cancel();
             }
 
             return Task.CompletedTask;
@@ -257,8 +255,7 @@ namespace OrchardCore.Modules
 
         private IEnumerable<ShellContext> GetRunningShells()
         {
-            return _shellHost.ListShellContexts()?
-                .Where(s => s.Settings?.State == TenantState.Running)
+            return _shellHost.ListShellContexts()?.Where(s => s.Settings?.State == TenantState.Running)
                 .ToArray() ?? Enumerable.Empty<ShellContext>();
         }
 
