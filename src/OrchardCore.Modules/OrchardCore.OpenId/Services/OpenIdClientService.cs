@@ -1,14 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Collections.Immutable;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
@@ -21,90 +15,68 @@ namespace OrchardCore.OpenId.Services
     {
         private readonly ISiteService _siteService;
         private readonly IStringLocalizer<OpenIdClientService> T;
-        private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ShellSettings _shellSettings;
 
-        public OpenIdClientService(ISiteService siteService,
+        public OpenIdClientService(
+            ISiteService siteService,
             ShellSettings shellSettings,
-            IStringLocalizer<OpenIdClientService> stringLocalizer,
-            IDataProtectionProvider dataProtectionProvider)
+            IStringLocalizer<OpenIdClientService> stringLocalizer)
         {
             _shellSettings = shellSettings;
             _siteService = siteService;
             T = stringLocalizer;
-            _dataProtectionProvider = dataProtectionProvider;
         }
 
-        public async Task<OpenIdClientSettings> GetOpenIdConnectSettings()
+        public async Task<OpenIdClientSettings> GetSettingsAsync()
         {
-            var settings = await _siteService.GetSiteSettingsAsync();
-            var result = settings.As<OpenIdClientSettings>();
-            if (result == null)
-            {
-                result = new OpenIdClientSettings();
-            }
-            return result;
+            var container = await _siteService.GetSiteSettingsAsync();
+            return container.As<OpenIdClientSettings>();
         }
 
-        public bool IsValidOpenIdConnectSettings(OpenIdClientSettings settings, ModelStateDictionary modelState)
+        public async Task UpdateSettingsAsync(OpenIdClientSettings settings)
         {
             if (settings == null)
             {
-                modelState.AddModelError("", T["Settings are not stablished."]);
-                return false;
+                throw new ArgumentNullException(nameof(settings));
             }
 
-            ValidateUrisSchema(new string[] { settings.Authority }, !settings.TestingModeEnabled, modelState, "Authority");
-
-            return modelState.IsValid;
+            var container = await _siteService.GetSiteSettingsAsync();
+            container.Properties[nameof(OpenIdClientSettings)] = JObject.FromObject(settings);
+            await _siteService.UpdateSiteSettingsAsync(container);
         }
 
-        public bool IsValidOpenIdConnectSettings(OpenIdClientSettings settings)
+        public Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(OpenIdClientSettings settings)
         {
-            var modelState = new ModelStateDictionary();
-            return IsValidOpenIdConnectSettings(settings, modelState);
-        }
-
-        public string Protect(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                return value;
-            var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientSettings), _shellSettings.Name);
-            return protector.Protect(value);
-        }
-
-        public string Unprotect(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                return value;
-            var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientSettings), _shellSettings.Name);
-            return protector.Unprotect(value);
-        }
-
-        public async Task UpdateOpenIdConnectSettingsAsync(OpenIdClientSettings settings)
-        {
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            siteSettings.Properties[nameof(OpenIdClientSettings)] = JObject.FromObject(settings);
-            await _siteService.UpdateSiteSettingsAsync(siteSettings);
-        }
-
-        private void ValidateUrisSchema(IEnumerable<string> uriStrings, bool onlyAllowHttps, ModelStateDictionary modelState, string modelStateKey)
-        {
-            if (uriStrings == null)
+            if (settings == null)
             {
-                modelState.AddModelError(modelStateKey, T["Invalid url."]);
-                return;
+                throw new ArgumentNullException(nameof(settings));
             }
-            foreach (var uriString in uriStrings.Select(a => (a ?? "").Trim()))
+
+            var results = ImmutableArray.CreateBuilder<ValidationResult>();
+
+            if (string.IsNullOrEmpty(settings.Authority))
             {
-                Uri uri;
-                if (!Uri.TryCreate(uriString, UriKind.Absolute, out uri) || ((onlyAllowHttps || uri.Scheme != "http") && uri.Scheme != "https"))
+                results.Add(new ValidationResult(T["The authority cannot be null or empty."], new[]
                 {
-                    var message = onlyAllowHttps ? T["Invalid url. Non https urls are only allowed in testing mode."] : T["Invalid url."];
-                    modelState.AddModelError(modelStateKey, T[message]);
-                }
+                    nameof(settings.Authority)
+                }));
             }
-        }
+            else if (!Uri.TryCreate(settings.Authority, UriKind.Absolute, out Uri uri) || !uri.IsWellFormedOriginalString())
+            {
+                results.Add(new ValidationResult(T["The authority must be a valid absolute URL."], new[]
+                {
+                    nameof(settings.Authority)
+                }));
+            }
+            else if (!string.IsNullOrEmpty(uri.Query) || !string.IsNullOrEmpty(uri.Fragment))
+            {
+                results.Add(new ValidationResult(T["The authority cannot contain a query string or a fragment."], new[]
+                {
+                    nameof(settings.Authority)
+                }));
+            }
 
+            return Task.FromResult(results.ToImmutable());
+        }
     }
 }

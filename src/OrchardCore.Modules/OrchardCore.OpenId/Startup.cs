@@ -42,6 +42,27 @@ namespace OrchardCore.OpenId
         }
     }
 
+    [Feature(OpenIdConstants.Features.Client)]
+    public class ClientStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<IOpenIdClientService, OpenIdClientService>();
+            services.AddScoped<IDisplayDriver<ISite>, OpenIdClientSettingsDisplayDriver>();
+
+            // Register the options initializers required by the OpenID Connect client handler.
+            services.TryAddEnumerable(new[]
+            {
+                // Orchard-specific initializers:
+                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, OpenIdClientConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<OpenIdConnectOptions>, OpenIdClientConfiguration>(),
+
+                // Built-in initializers:
+                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>()
+            });
+        }
+    }
+
     [Feature(OpenIdConstants.Features.Server)]
     public class ServerStartup : StartupBase
     {
@@ -139,32 +160,4 @@ namespace OrchardCore.OpenId
             });
         }
     }
-
-    [Feature(OpenIdConstants.Features.Client)]
-    public class ClientStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSecurity();
-
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, OpenIdConnectSettingsDisplayDriver>();
-            services.AddSingleton<IOpenIdClientService, OpenIdClientService>();
-            services.AddAuthentication().AddCookie();
-
-            // Register the options initializers required by OpenIdConnect,
-            services.TryAddEnumerable(new[]
-            {
-                // Orchard-specific initializers:
-                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, OpenIdClientConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<OpenIdConnectOptions>, OpenIdClientConfiguration>(),
-
-                // Built-in initializers:
-                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>()
-            });
-        }
-
-    }
-
 }

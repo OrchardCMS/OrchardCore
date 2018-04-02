@@ -8,18 +8,6 @@
     <span class="hint">@T["Display name of the IdP"]</span>
 </fieldset>
 
-
-<fieldset class="form-group">
-    <div class="form-check">
-        <label class="form-check-label">
-            <input asp-for="TestingModeEnabled" type="checkbox" data-toggle="collapse active" data-target="#certArea" class="form-check-input" checked="@Model.TestingModeEnabled" />
-            @T["Enable Testing Mode"]
-        </label>
-    </div>
-    <span class="hint">@T["Disables https requirement and uses an ephemeral signing key."]</span>
-</fieldset>
-
-
 <fieldset class="form-group" asp-validation-class-for="Authority">
     <label asp-for="Authority">@T["Authority"] <span asp-validation-for="Authority"></span></label>
     <input asp-for="Authority" class="form-control" />

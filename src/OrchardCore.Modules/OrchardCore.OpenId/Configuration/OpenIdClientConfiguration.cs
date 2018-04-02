@@ -1,35 +1,48 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
+using OrchardCore.OpenId.Settings;
 
 namespace OrchardCore.OpenId.Configuration
 {
     [Feature(OpenIdConstants.Features.Client)]
-    public class OpenIdClientConfiguration : IConfigureOptions<AuthenticationOptions>, IConfigureNamedOptions<OpenIdConnectOptions>
+    public class OpenIdClientConfiguration :
+        IConfigureOptions<AuthenticationOptions>,
+        IConfigureNamedOptions<OpenIdConnectOptions>
     {
-        private readonly IOpenIdClientService _openIdConnectService;
+        private readonly IOpenIdClientService _clientService;
+        private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger<OpenIdClientConfiguration> _logger;
 
-        public OpenIdClientConfiguration(IOpenIdClientService openIdConnectService, ILogger<OpenIdClientConfiguration> logger)
+        public OpenIdClientConfiguration(
+            IOpenIdClientService clientService,
+            IDataProtectionProvider dataProtectionProvider,
+            ILogger<OpenIdClientConfiguration> logger)
         {
-            _openIdConnectService = openIdConnectService;
+            _clientService = clientService;
+            _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
         }
 
         public void Configure(AuthenticationOptions options)
         {
-            var settings = _openIdConnectService.GetOpenIdConnectSettings().GetAwaiter().GetResult();
-            if (!_openIdConnectService.IsValidOpenIdConnectSettings(settings))
+            var settings = GetClientSettingsAsync().GetAwaiter().GetResult();
+            if (settings == null)
             {
-                _logger.LogWarning("The OpenID Connect module is not correctly configured.");
                 return;
             }
 
-            // Register the OpenIddict handler in the authentication handlers collection.
+            // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(OpenIdConnectDefaults.AuthenticationScheme, builder =>
             {
                 builder.DisplayName = settings.DisplayName;
@@ -39,39 +52,56 @@ namespace OrchardCore.OpenId.Configuration
 
         public void Configure(string name, OpenIdConnectOptions options)
         {
-            var settings = _openIdConnectService.GetOpenIdConnectSettings().GetAwaiter().GetResult();
-            if (name != OpenIdConnectDefaults.AuthenticationScheme)
-                return;
-
-            if (_openIdConnectService.IsValidOpenIdConnectSettings(settings))
+            // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
+            if (!string.Equals(name, OpenIdConnectDefaults.AuthenticationScheme, StringComparison.Ordinal))
             {
-                options.Authority = settings.Authority;
-                options.ClientId = settings.ClientId;
-                options.SignedOutRedirectUri = settings.SignedOutRedirectUri;
-                options.SignedOutCallbackPath = settings.SignedOutCallbackPath;
+                return;
+            }
 
-                options.RequireHttpsMetadata = !settings.TestingModeEnabled;
+            var settings = GetClientSettingsAsync().GetAwaiter().GetResult();
+            if (settings == null)
+            {
+                return;
+            }
 
-                options.ResponseType = Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectResponseType.IdToken;
-                options.CallbackPath = settings.CallbackPath;
+            options.Authority = settings.Authority;
+            options.ClientId = settings.ClientId;
+            options.SignedOutRedirectUri = settings.SignedOutRedirectUri;
+            options.SignedOutCallbackPath = settings.SignedOutCallbackPath;
 
-                foreach (var item in settings?.AllowedScopes)
+            options.RequireHttpsMetadata = settings.Authority.StartsWith(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
+
+            options.ResponseType = OpenIdConnectResponseType.IdToken;
+            options.CallbackPath = settings.CallbackPath;
+
+            if (settings.AllowedScopes != null)
+            {
+                foreach (var scope in settings.AllowedScopes)
                 {
-                    options.Scope.Add(item);
+                    options.Scope.Add(scope);
                 }
+            }
 
-                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-                {
-                    NameClaimType = "name",
-                    RoleClaimType = "role"
-                };
-
-                if (!string.IsNullOrWhiteSpace(settings.ClientSecret))
-                    options.ClientSecret = _openIdConnectService.Unprotect(settings.ClientSecret);
+            if (!string.IsNullOrEmpty(settings.ClientSecret))
+            {
+                var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
+                options.ClientSecret = protector.Unprotect(settings.ClientSecret);
             }
         }
 
-        public void Configure(OpenIdConnectOptions options) { }
+        public void Configure(OpenIdConnectOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
+        private async Task<OpenIdClientSettings> GetClientSettingsAsync()
+        {
+            var settings = await _clientService.GetSettingsAsync();
+            if ((await _clientService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
+            {
+                _logger.LogWarning("The OpenID Connect module is not correctly configured.");
+
+                return null;
+            }
+
+            return settings;
+        }
     }
 }

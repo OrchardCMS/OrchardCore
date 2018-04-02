@@ -11,22 +11,22 @@ namespace OrchardCore.OpenId
         public static readonly Permission ManageScopes
             = new Permission(nameof(ManageScopes), "View, add, edit and remove the OpenID Connect scopes.");
 
+        public static readonly Permission ManageClientSettings
+            = new Permission(nameof(ManageClientSettings), "View and edit the OpenID Connect client settings.");
+
         public static readonly Permission ManageServerSettings
             = new Permission(nameof(ManageServerSettings), "View and edit the OpenID Connect server settings.");
 
         public static readonly Permission ManageValidationSettings
             = new Permission(nameof(ManageValidationSettings), "View and edit the OpenID Connect server settings.");
 
-        public static readonly Permission ManageClientSettings
-            = new Permission(nameof(ManageClientSettings), "View and edit the OpenID Connect client settings.");
-
         public IEnumerable<Permission> GetPermissions()
         {
             yield return ManageApplications;
             yield return ManageScopes;
+            yield return ManageClientSettings;
             yield return ManageServerSettings;
             yield return ManageValidationSettings;
-            yield return ManageClientSettings;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -38,9 +38,9 @@ namespace OrchardCore.OpenId
                 {
                     ManageApplications,
                     ManageScopes,
+                    ManageClientSettings,
                     ManageServerSettings,
-                    ManageValidationSettings,
-                    ManageClientSettings
+                    ManageValidationSettings
                 }
             };
         }

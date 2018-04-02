@@ -23,13 +23,8 @@
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.Validation" Version="$(OAuthValidationPackageVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerPackageVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(MicrosoftAspNetCoreAuthenticationOpenIdConnectPackageVersion)" />
     <PackageReference Include="OpenIddict" Version="$(OpenIddictVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect">
-      <HintPath>..\..\..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.authentication.openidconnect\2.0.3\lib\netstandard2.0\Microsoft.AspNetCore.Authentication.OpenIdConnect.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

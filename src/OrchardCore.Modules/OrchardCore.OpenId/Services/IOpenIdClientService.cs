@@ -1,16 +1,14 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using OrchardCore.OpenId.Settings;
+using System.Collections.Immutable;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using OrchardCore.OpenId.Settings;
 
 namespace OrchardCore.OpenId.Services
 {
     public interface IOpenIdClientService
     {
-        Task<OpenIdClientSettings> GetOpenIdConnectSettings();
-        Task UpdateOpenIdConnectSettingsAsync(OpenIdClientSettings settings);
-        bool IsValidOpenIdConnectSettings(OpenIdClientSettings settings, ModelStateDictionary modelState);
-        bool IsValidOpenIdConnectSettings(OpenIdClientSettings settings);
-        string Protect(string value);
-        string Unprotect(string value);
+        Task<OpenIdClientSettings> GetSettingsAsync();
+        Task UpdateSettingsAsync(OpenIdClientSettings settings);
+        Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(OpenIdClientSettings settings);
     }
 }

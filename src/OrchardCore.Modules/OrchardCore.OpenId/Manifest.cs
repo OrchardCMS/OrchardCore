@@ -9,6 +9,19 @@ using OrchardCore.OpenId;
 )]
 
 [assembly: Feature(
+    Id = OpenIdConstants.Features.Client,
+    Name = "OpenID Client",
+    Category = "OpenID Connect",
+    Description = "Auhenticates users from an external OpenID Connect identity provider.",
+    Dependencies = new[]
+    {
+        OpenIdConstants.Features.Core,
+        "OrchardCore.Authentication",
+        "OrchardCore.DataProtection"
+    }
+)]
+
+[assembly: Feature(
     Id = OpenIdConstants.Features.Core,
     Name = "OpenID Core Components",
     Category = "OpenID Connect",
@@ -44,19 +57,6 @@ using OrchardCore.OpenId;
     Name = "OpenID Token Validation",
     Category = "OpenID Connect",
     Description = "Validates tokens issued by the Orchard OpenID server or by a remote server supporting JWT and OpenID Connect discovery.",
-    Dependencies = new[]
-    {
-        OpenIdConstants.Features.Core,
-        "OrchardCore.Authentication",
-        "OrchardCore.DataProtection"
-    }
-)]
-
-[assembly: Feature(
-    Id = OpenIdConstants.Features.Client,
-    Name = "OpenID Connect Client",
-    Category = "OpenID Connect",
-    Description = "Auhenticates users from external OpenID Connect Idp.",
     Dependencies = new[]
     {
         OpenIdConstants.Features.Core,
