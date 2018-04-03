@@ -19,6 +19,7 @@ namespace OrchardCore.BackgroundTasks
         public DateTime ReferenceTime { get; set; }
         public BackgroundTaskSettings Settings { get; set; }
         public BackgroundTaskState State { get; set; }
+        public bool Updated { get; set; }
 
         public DateTime GetNextStartTime()
         {

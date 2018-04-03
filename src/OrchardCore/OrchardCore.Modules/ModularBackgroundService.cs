@@ -60,6 +60,7 @@ namespace OrchardCore.Modules
             var updateSource = CancellationTokenSource.CreateLinkedTokenSource(
                 _updateSource.Token, stoppingToken);
 
+            IEnumerable<ShellContext> previousShells = Enumerable.Empty<ShellContext>();
             bool updateSchedulers = true;
 
             while (!stoppingToken.IsCancellationRequested)
@@ -70,9 +71,11 @@ namespace OrchardCore.Modules
 
                 if (updateSchedulers)
                 {
-                    await UpdateSchedulers(shells, stoppingToken);
+                    await UpdateSchedulers(previousShells, shells, stoppingToken);
                     updateSchedulers = false;
                 }
+
+                previousShells = shells;
 
                 await GetShellsToRun(shells).ForEachAsync(async shell =>
                 {
@@ -165,6 +168,7 @@ namespace OrchardCore.Modules
                     updateSource.Dispose();
                     updateSource = CancellationTokenSource.CreateLinkedTokenSource(
                         _updateSource.Token, stoppingToken);
+
                     updateSchedulers = true;
                 }
             }
@@ -173,13 +177,28 @@ namespace OrchardCore.Modules
             IsRunning = false;
         }
 
-        protected async Task UpdateSchedulers(IEnumerable<ShellContext> shells, CancellationToken stoppingToken)
+        protected async Task UpdateSchedulers(IEnumerable<ShellContext> previousShells,
+            IEnumerable<ShellContext> runningShells, CancellationToken stoppingToken)
         {
             var referenceTime = DateTime.UtcNow;
-            var tenants = shells.Select(s => s.Settings?.Name);
-            CleanSchedulers(tenants);
 
-            await shells.ForEachAsync(async shell =>
+            var tenantsToClean = previousShells.Where(s => s.Released).Select(s => s.Settings?.Name);
+
+            if (tenantsToClean.Any())
+            {
+                CleanSchedulers(tenantsToClean);
+            }
+
+            var runningTenants = runningShells.Select(s => s.Settings?.Name);
+            var previousTenants = previousShells.Where(s => !s.Released).Select(s => s.Settings?.Name);
+
+            var tenantsToAdd = runningTenants.Where(t => !previousTenants.Contains(t));
+            var tenantsToUpdate = _schedulers.Where(s => !s.Value.Updated).Select(s => s.Value.Tenant);
+            var tenantsToAddOrUpdate = tenantsToAdd.Concat(tenantsToUpdate).Distinct();
+
+            var shellsToUpdate = runningShells.Where(s => tenantsToAddOrUpdate.Contains(s.Settings?.Name));
+
+            await shellsToUpdate.ForEachAsync(async shell =>
             {
                 IEnumerable<Type> taskTypes;
                 var tenant = shell.Settings?.Name;
@@ -215,6 +234,11 @@ namespace OrchardCore.Modules
                             _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime);
                         }
 
+                        if (scheduler.Updated)
+                        {
+                            continue;
+                        }
+
                         try
                         {
                             var settings = await scope.GetBackgroundTaskSettingsAsync(taskType);
@@ -225,6 +249,7 @@ namespace OrchardCore.Modules
                             }
 
                             scheduler.Settings = settings.Clone();
+                            scheduler.Updated = true;
                         }
 
                         catch (Exception ex)
@@ -243,8 +268,15 @@ namespace OrchardCore.Modules
             });
         }
 
-        public Task UpdateAsync()
+        public Task UpdateAsync(string tenant, string taskName)
         {
+            if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
+            {
+                scheduler = scheduler.Clone();
+                scheduler.Updated = false;
+                _schedulers[tenant + taskName] = scheduler;
+            }
+
             lock (_synLock)
             {
                 _updateSource.Cancel();
@@ -308,7 +340,7 @@ namespace OrchardCore.Modules
 
         private void CleanSchedulers(IEnumerable<string> tenants)
         {
-            var keys = _schedulers.Where(kv => !tenants.Contains(kv.Value.Tenant)).Select(kv => kv.Key).ToArray();
+            var keys = _schedulers.Where(kv => tenants.Contains(kv.Value.Tenant)).Select(kv => kv.Key).ToArray();
 
             foreach (var key in keys)
             {
@@ -375,11 +407,6 @@ namespace OrchardCore.Modules
         public static IEnumerable<Type> GetBackgroundTaskTypes(this IServiceScope scope)
         {
             return scope.ServiceProvider.GetServices<IBackgroundTask>().Select(t => t.GetType());
-        }
-
-        public static IBackgroundTask GetBackgroundTaskOfType(this IServiceScope scope, Type type)
-        {
-            return scope.ServiceProvider.GetServices<IBackgroundTask>().FirstOrDefault(t => t.GetType() == type);
         }
 
         public static IBackgroundTask GetBackgroundTaskByTypeName(this IServiceScope scope, string type)

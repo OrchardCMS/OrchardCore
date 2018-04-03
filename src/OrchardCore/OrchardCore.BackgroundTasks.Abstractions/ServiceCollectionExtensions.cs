@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 
 namespace OrchardCore.BackgroundTasks
 {
@@ -8,11 +6,10 @@ namespace OrchardCore.BackgroundTasks
     {
         public static IServiceCollection AddBackgroundTaskAttributes(this IServiceCollection services)
         {
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<BackgroundTaskOptions>,
-                BackgroundTaskAttributeOptionsSetup>());
-
-            return services;
+            return services.Configure<BackgroundTaskOptions>(options =>
+            {
+                options.SettingsProviders.Add(new BackgroundTaskAttributeSettingsProvider());
+            });
         }
     }
 }

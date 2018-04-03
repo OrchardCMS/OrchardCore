@@ -8,7 +8,7 @@ namespace OrchardCore.BackgroundTasks
 
         public string Name { get; set; } = String.Empty;
         public bool Enable { get; set; } = true;
-        public string Schedule { get; set; } = "* * * * *";
+        public string Schedule { get; set; } = "*/5 * * * *";
 
         public BackgroundTaskSettings Clone()
         {

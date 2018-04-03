@@ -8,7 +8,7 @@ using OrchardCore.OpenId.Services.Managers;
 
 namespace OrchardCore.OpenId.Tasks
 {
-    [BackgroundTask(Schedule = "* * * * *")]
+    [BackgroundTask(Schedule = "*/30 * * * *")]
     public class OpenIdBackgroundTask : IBackgroundTask
     {
         private readonly ILogger<OpenIdBackgroundTask> _logger;

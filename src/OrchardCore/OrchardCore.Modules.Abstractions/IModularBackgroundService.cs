@@ -6,7 +6,7 @@ namespace OrchardCore.Modules
 {
     public interface IModularBackgroundService
     {
-        Task UpdateAsync();
+        Task UpdateAsync(string tenant, string taskName);
         void Command(string tenant, string taskName, BackgroundTaskScheduler.CommandCode code);
         Task<BackgroundTaskSettings> GetSettingsAsync(string tenant, string taskName);
         Task<IEnumerable<BackgroundTaskSettings>> GetSettingsAsync(string tenant);
