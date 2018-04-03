@@ -32,6 +32,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
+using SixLabors.ImageSharp.Web.Memory;
 using SixLabors.ImageSharp.Web.Processors;
 
 namespace OrchardCore.Media
@@ -88,6 +89,7 @@ namespace OrchardCore.Media
                         options.Configuration = Configuration.Default;
                         options.MaxBrowserCacheDays = 7;
                         options.MaxCacheDays = 365;
+                        options.CachedNameLength = 12;
                         options.OnValidate = validation =>
                         {
                             // Force some parameters to prevent disk filling.
@@ -142,9 +144,11 @@ namespace OrchardCore.Media
                         options.OnProcessed = _ => { };
                         options.OnPrepareResponse = _ => { };
                     })
-                    .SetUriParser<QueryCollectionUriParser>()
-                    .SetCache<PhysicalFileSystemCache>()
+                    .SetRequestParser<QueryCollectionRequestParser>()
+                    .SetBufferManager<PooledBufferManager>()
+                    .SetCacheHash<CacheHash>()
                     .SetAsyncKeyLock<AsyncKeyLock>()
+                    .SetCache<PhysicalFileSystemCache>()
                     .AddResolver<MediaFileSystemResolver>()
                     .AddProcessor<ResizeWebProcessor>();
 
