@@ -49,7 +49,7 @@ namespace OrchardCore.Email.Services
                 }
                 catch
                 {
-                    _logger.LogError("The Smtp password could not be decrypted. It must have been encrypted using a different key.");
+                    _logger.LogError("The Smtp password could not be decrypted. It may have been encrypted using a different key.");
                 }
             }
         }
