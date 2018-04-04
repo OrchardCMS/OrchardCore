@@ -80,7 +80,7 @@ namespace OrchardCore.Modules
                     var tenant = shell.Settings?.Name;
                     var schedulers = GetSchedulersToRun(tenant);
 
-                    _httpContextAccessor.HttpContext = shell.GetBackgroundHttpContext();
+                    _httpContextAccessor.HttpContext = shell.GetHttpContext();
 
                     foreach (var scheduler in schedulers)
                     {
@@ -102,8 +102,7 @@ namespace OrchardCore.Modules
 
                             try
                             {
-                                Logger.Information("Start processing background task \"{0}\" on tenant \"{1}\".",
-                                    taskName, tenant);
+                                Logger.Information($"Start processing background task {taskName} on tenant {tenant}.");
 
                                 scheduler.Run();
 
@@ -111,16 +110,14 @@ namespace OrchardCore.Modules
 
                                 scheduler.Idle();
 
-                                Logger.Information("Finished processing background task \"{0}\" on tenant \"{1}\".",
-                                    taskName, tenant);
+                                Logger.Information($"Finished processing background task {taskName} on tenant {tenant}.");
                             }
 
                             catch (Exception ex)
                             {
                                 scheduler.Fault(ex);
 
-                                Logger.Error("Error while processing background task \"{0}\" on tenant \"{1}\".",
-                                    taskName, tenant);
+                                Logger.Error($"Error while processing background task {taskName} on tenant {tenant}.");
                             }
                         }
                     }
@@ -186,20 +183,20 @@ namespace OrchardCore.Modules
             }
 
             var runningTenants = runningShells.Select(s => s.Settings?.Name);
-            var updatedTenants = previousShells.Where(s => !s.Released).Select(s => s.Settings?.Name);
+            var previousTenants = previousShells.Select(s => s.Settings?.Name).Except(tenantsToClean);
 
-            var tenantsToUpdate = runningTenants.Where(t => !updatedTenants.Contains(t))
-                .Concat(_schedulers.Where(s => !s.Value.Updated).Select(s => s.Value.Tenant))
-                .Distinct();
+            var tenantsToAdd = runningTenants.Where(t => !previousTenants.Contains(t));
+            var tenantsToUpdate = _schedulers.Where(s => !s.Value.Updated).Select(s => s.Value.Tenant);
 
-            var shellsToUpdate = runningShells.Where(s => tenantsToUpdate.Contains(s.Settings?.Name));
+            var tenantsToAddOrUpdate = tenantsToAdd.Concat(tenantsToUpdate).Distinct();
+            var shellsToUpdate = runningShells.Where(s => tenantsToAddOrUpdate.Contains(s.Settings?.Name));
 
             await shellsToUpdate.ForEachAsync(async shell =>
             {
                 IEnumerable<Type> taskTypes;
                 var tenant = shell.Settings?.Name;
 
-                _httpContextAccessor.HttpContext = shell.GetBackgroundHttpContext();
+                _httpContextAccessor.HttpContext = shell.GetHttpContext();
 
                 if (shell.Released || stoppingToken.IsCancellationRequested)
                 {
@@ -251,9 +248,7 @@ namespace OrchardCore.Modules
                         catch (Exception ex)
                         {
                             scheduler.Fault(ex);
-
-                            Logger.Error("Error while updating settings of background task \"{0}\" on tenant \"{1}\".",
-                                taskName, tenant);
+                            Logger.Error($"Error while updating settings of background task {taskName} on tenant {tenant}.");
                         }
                     }
                 }
@@ -385,7 +380,7 @@ namespace OrchardCore.Modules
 
     internal static class ShellExtensions
     {
-        public static HttpContext GetBackgroundHttpContext(this ShellContext shell)
+        public static HttpContext GetHttpContext(this ShellContext shell)
         {
             var httpContext = new DefaultHttpContext();
             httpContext.Request.Host = new HostString(shell.Settings?.RequestUrlHost ?? "localhost");
@@ -428,19 +423,19 @@ namespace OrchardCore.Modules
 
     internal static class LoggerExtensions
     {
-        public static void Information(this ILogger logger, string message, string taskName, string tenant)
+        public static void Information(this ILogger logger, string message)
         {
             if (logger.IsEnabled(LogLevel.Information))
             {
-                logger.LogInformation(message, taskName, tenant);
+                logger.LogInformation(message);
             }
         }
 
-        public static void Error(this ILogger logger, string message, string taskName, string tenant)
+        public static void Error(this ILogger logger, string message)
         {
             if (logger.IsEnabled(LogLevel.Error))
             {
-                logger.LogError(message, taskName, tenant);
+                logger.LogError(message);
             }
         }
     }
