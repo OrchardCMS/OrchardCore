@@ -319,7 +319,8 @@ namespace OrchardCore.Modules
 
         private IEnumerable<ShellContext> GetRunningShells()
         {
-            return _shellHost.ListShellContexts()?.Where(s => s.Settings?.State == TenantState.Running)
+            return _shellHost.ListShellContexts()?
+                .Where(s => s.Settings?.State == TenantState.Running && (s.IsActivated || s.ActiveScopes == 0))
                 .ToArray() ?? Enumerable.Empty<ShellContext>();
         }
 
