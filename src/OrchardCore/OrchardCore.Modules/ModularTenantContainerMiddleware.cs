@@ -58,21 +58,25 @@ namespace OrchardCore.Modules
                             // The tenant gets activated here
                             if (!shellContext.IsActivated)
                             {
-                                var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-
-                                foreach (var tenantEvent in tenantEvents)
+                                using (var activatingScope = shellContext.EnterServiceScope())
                                 {
-                                    await tenantEvent.ActivatingAsync();
+
+                                    var tenantEvents = activatingScope.ServiceProvider.GetServices<IModularTenantEvents>();
+
+                                    foreach (var tenantEvent in tenantEvents)
+                                    {
+                                        await tenantEvent.ActivatingAsync();
+                                    }
+
+                                    httpContext.Items["BuildPipeline"] = true;
+
+                                    foreach (var tenantEvent in tenantEvents.Reverse())
+                                    {
+                                        await tenantEvent.ActivatedAsync();
+                                    }
+
+                                    shellContext.IsActivated = true;
                                 }
-
-                                httpContext.Items["BuildPipeline"] = true;
-
-                                foreach (var tenantEvent in tenantEvents.Reverse())
-                                {
-                                    await tenantEvent.ActivatedAsync();
-                                }
-
-                                shellContext.IsActivated = true;
                             }
                         }
                         finally
