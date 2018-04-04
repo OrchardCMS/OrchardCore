@@ -185,11 +185,10 @@ namespace OrchardCore.Modules
             var runningTenants = runningShells.Select(s => s.Settings?.Name);
             var previousTenants = previousShells.Select(s => s.Settings?.Name).Except(tenantsToClean);
 
-            var tenantsToAdd = runningTenants.Where(t => !previousTenants.Contains(t));
-            var tenantsToUpdate = _schedulers.Where(s => !s.Value.Updated).Select(s => s.Value.Tenant);
+            var tenantsToUpdate = runningTenants.Except(previousTenants).Concat(_schedulers
+                .Where(s => !s.Value.Updated).Select(s => s.Value.Tenant)).Distinct();
 
-            var tenantsToAddOrUpdate = tenantsToAdd.Concat(tenantsToUpdate).Distinct();
-            var shellsToUpdate = runningShells.Where(s => tenantsToAddOrUpdate.Contains(s.Settings?.Name));
+            var shellsToUpdate = runningShells.Where(s => tenantsToUpdate.Contains(s.Settings?.Name));
 
             await shellsToUpdate.ForEachAsync(async shell =>
             {
