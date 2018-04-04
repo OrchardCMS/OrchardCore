@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -186,34 +187,101 @@ namespace OrchardCore.Users.Controllers
             }
         }
 
-        /// <summary>
-        /// initiate roundtrip to external authentication provider
-        /// </summary>
+        //
+        // POST: /Account/ExternalLogin
         [HttpPost]
-        [SecurityHeaders]
         [AllowAnonymous]
-        public IActionResult ExternalLogin(string provider, string returnUrl)
+        [ValidateAntiForgeryToken]
+        public ActionResult ExternalLogin(string provider, string returnUrl)
         {
             // start challenge and roundtrip the return URL and 
             var props = new AuthenticationProperties()
             {
-                RedirectUri = Url.Action("ExternalLoginCallback"),
+                RedirectUri = Url.Action("ExternalLoginCallback", "Account"),
                 Items =
                     {
                         { "returnUrl", returnUrl },
                         { "scheme", provider },
                     }
             };
+            // Request a redirect to the external login provider
             return Challenge(props, provider);
+        }
+
+        //
+        // GET: /Account/ExternalLoginCallback
+        [AllowAnonymous]
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
+        {
+            var loginInfo = await this._signInManager.GetExternalLoginInfoAsync();
+            if (loginInfo == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            // Sign in the user with this external login provider if the user already has a login
+            var result = await this._signInManager.ExternalLoginSignInAsync(loginInfo.LoginProvider, loginInfo.ProviderKey, false);
+
+            if (result.Succeeded)
+            {
+                return RedirectToLocal(returnUrl);
+            }
+
+            // If the user does not have an account, then prompt the user to create an account
+            ViewBag.ReturnUrl = returnUrl;
+            ViewBag.LoginProvider = loginInfo.LoginProvider;
+
+            var email= loginInfo.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email) ??
+                  loginInfo.Principal.FindFirstValue(ClaimTypes.Email);
+
+            return View("ExternalLoginConfirmation", new RegisterViewModel { Email = email,   });
+
+        }
+
+        //
+        // POST: /Account/ExternalLoginConfirmation
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExternalLoginConfirmation(RegistrationViewModel model, string returnUrl)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Manage");
+            }
+
+            if (ModelState.IsValid)
+            {
+                // Get the information about the user from the external login provider
+                var info = await AuthenticationManager.GetExternalLoginInfoAsync();
+                if (info == null)
+                {
+                    return View("ExternalLoginFailure");
+                }
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var result = await UserManager.CreateAsync(user);
+                if (result.Succeeded)
+                {
+                    result = await this._userManager.AddLoginAsync(user.Id, info.Login);
+                    if (result.Succeeded)
+                    {
+                        await this._signInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        return RedirectToLocal(returnUrl);
+                    }
+                }
+                AddErrors(result);
+            }
+
+            ViewBag.ReturnUrl = returnUrl;
+            return View(model);
         }
 
         /// <summary>
         /// Post processing of external authentication
         /// </summary>
         [HttpGet]
-        [SecurityHeaders]
         [AllowAnonymous]
-        public async Task<IActionResult> ExternalLoginCallback()
+        public async Task<IActionResult> ExternalLoginCallback1()
         {
             // read external identity from the temporary cookie
             var result = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
@@ -227,7 +295,7 @@ namespace OrchardCore.Users.Controllers
             // try to determine the unique id of the external user (issued by the provider)
             // the most common claim type for that are the sub claim and the NameIdentifier
             // depending on the external provider, some other claim type might be used
-            var userIdClaim = externalUser.FindFirst(IdentityModel.JwtClaimTypes.Subject) ??
+            var userIdClaim = externalUser.FindFirst(OpenIdConnectConstants.Claims.Subject) ??
                               externalUser.FindFirst(ClaimTypes.NameIdentifier) ??
                               throw new Exception("Unknown userid");
 
@@ -279,7 +347,7 @@ namespace OrchardCore.Users.Controllers
         {
             try
             {
-                var emailClaim = claims.FirstOrDefault(c => c.Type == IdentityModel.JwtClaimTypes.Email) ??
+                var emailClaim = claims.FirstOrDefault(c => c.Type == OpenIdConnectConstants.Claims.Email) ??
                                   claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
 
                 if (emailClaim == null)
@@ -296,8 +364,8 @@ namespace OrchardCore.Users.Controllers
                     userCanRegister = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>()?.UsersCanRegister ?? false;
                     if (userCanRegister)
                     {
-                        var nameClaim = claims.FirstOrDefault(c => c.Type == IdentityModel.JwtClaimTypes.PreferredUserName) ??
-                                        claims.FirstOrDefault(c => c.Type == IdentityModel.JwtClaimTypes.Name) ??
+                        var nameClaim = claims.FirstOrDefault(c => c.Type == OpenIdConnectConstants.Claims.PreferredUsername) ??
+                                        claims.FirstOrDefault(c => c.Type == OpenIdConnectConstants.Claims.Name) ??
                                         claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
                         string userName = nameClaim == null ? emailClaim.Value.Substring(0, emailClaim.Value.IndexOf("@")) : nameClaim.Value;
 
@@ -333,13 +401,13 @@ namespace OrchardCore.Users.Controllers
 
         private void ProcessLoginCallbackForOidc(AuthenticateResult externalResult, List<Claim> localClaims, AuthenticationProperties localSignInProps)
         {
-            // if the external system sent a session id claim, copy it over
-            // so we can use it for single sign-out
-            var sid = externalResult.Principal.Claims.FirstOrDefault(x => x.Type == IdentityModel.JwtClaimTypes.SessionId);
-            if (sid != null)
-            {
-                localClaims.Add(new Claim(IdentityModel.JwtClaimTypes.SessionId, sid.Value));
-            }
+            //// if the external system sent a session id claim, copy it over
+            //// so we can use it for single sign-out
+            //var sid = externalResult.Principal.Claims.FirstOrDefault(x => x.Type == OpenIdConnectConstants.Claims.SessionId);
+            //if (sid != null)
+            //{
+            //    localClaims.Add(new Claim(OpenIdConnectConstants.Claims.SessionId, sid.Value));
+            //}
 
             // if the external provider issued an id_token, we'll keep it for signout
             var id_token = externalResult.Properties.GetTokenValue("id_token");
