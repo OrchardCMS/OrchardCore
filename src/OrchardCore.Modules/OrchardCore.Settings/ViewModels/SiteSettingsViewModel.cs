@@ -9,6 +9,6 @@ namespace OrchardCore.Settings.ViewModels
     {
         public string SiteName { get; set; }
         public string TimeZone { get; set; }
-        public IEnumerable<dynamic> TimeZones { get; set; }
+        public IEnumerable<TimeZoneViewModel> TimeZones { get; set; }
     }
 }

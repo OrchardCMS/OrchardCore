@@ -10,18 +10,6 @@ using System.Collections.Generic;
 
 namespace OrchardCore.Settings.Drivers
 {
-    public class TimeZone
-    {
-        public string Id;
-        public string DisplayName;
-
-        public TimeZone(string id, string displayName)
-        {
-            this.Id = id;
-            this.DisplayName = displayName;
-        }
-    }
-
     public class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
     {
         public const string GroupId = "general";
@@ -34,7 +22,7 @@ namespace OrchardCore.Settings.Drivers
         /// The two-letter country code to get timezones for.
         /// Returns all timezones if null or empty.
         /// </param>
-        public IEnumerable<TimeZone> GetTimeZones(string countryCode)
+        public IEnumerable<TimeZoneViewModel> GetTimeZones(string countryCode)
         {
             var now = SystemClock.Instance.GetCurrentInstant();
             var tzdb = DateTimeZoneProviders.Tzdb;
@@ -45,10 +33,11 @@ namespace OrchardCore.Settings.Drivers
                       location.CountryCode.Equals(countryCode,
                                                   StringComparison.OrdinalIgnoreCase)
                 let zoneId = location.ZoneId
+                let comment = location.Comment
                 let tz = tzdb[zoneId]
                 let offset = tz.GetZoneInterval(now).StandardOffset
                 orderby offset, zoneId
-                select new TimeZone(zoneId, string.Format("({0:+HH:mm}) {1}", offset, zoneId));
+                select new TimeZoneViewModel(zoneId, string.Format("({0:+HH:mm}) {1}", offset, zoneId), comment);
 
             return list;
         }
