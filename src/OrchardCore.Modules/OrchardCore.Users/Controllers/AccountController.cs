@@ -213,68 +213,85 @@ namespace OrchardCore.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
         {
-            var loginInfo = await this._signInManager.GetExternalLoginInfoAsync();
+            AuthenticateResult authenticateResult = null;
+            string loginProvider;
+            string providerKey;
+            string email;
+
+            var loginInfo = await _signInManager.GetExternalLoginInfoAsync();
             if (loginInfo == null)
             {
+                authenticateResult = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
+                if (authenticateResult?.Succeeded != true)
+                {
+                    return RedirectToAction("Login");
+                }
+
+                loginProvider = authenticateResult.Properties.Items["scheme"];
+                providerKey = authenticateResult.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Subject) ?? authenticateResult.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+                email = authenticateResult.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email) ?? authenticateResult.Principal.FindFirstValue(ClaimTypes.Email);
+
+                // If the user does not have an account, then prompt the user to create an account
+                ViewBag.ReturnUrl = returnUrl;
+                ViewBag.LoginProvider = loginInfo.LoginProvider;
+
+                return View("Register", new RegisterViewModel { Email = email, UserName = providerKey });
+            }
+            else
+            {
+                loginProvider = loginInfo?.LoginProvider;
+                providerKey = loginInfo.ProviderKey;
+                email = loginInfo.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email) ?? loginInfo.Principal.FindFirstValue(ClaimTypes.Email);
+
+                // Sign in the user with this external login provider if the user already has a login
+                var signInResult = await this._signInManager.ExternalLoginSignInAsync(loginInfo.LoginProvider, loginInfo.ProviderKey, false);
+
+                if (signInResult.Succeeded)
+                {
+                    return RedirectToLocal(returnUrl);
+                }
+
                 return RedirectToAction("Login");
             }
-
-            // Sign in the user with this external login provider if the user already has a login
-            var result = await this._signInManager.ExternalLoginSignInAsync(loginInfo.LoginProvider, loginInfo.ProviderKey, false);
-
-            if (result.Succeeded)
-            {
-                return RedirectToLocal(returnUrl);
-            }
-
-            // If the user does not have an account, then prompt the user to create an account
-            ViewBag.ReturnUrl = returnUrl;
-            ViewBag.LoginProvider = loginInfo.LoginProvider;
-
-            var email= loginInfo.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email) ??
-                  loginInfo.Principal.FindFirstValue(ClaimTypes.Email);
-
-            return View("ExternalLoginConfirmation", new RegisterViewModel { Email = email,   });
-
         }
 
-        //
-        // POST: /Account/ExternalLoginConfirmation
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ExternalLoginConfirmation(RegistrationViewModel model, string returnUrl)
-        {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "Manage");
-            }
+        ////
+        //// POST: /Account/ExternalLoginConfirmation
+        //[HttpPost]
+        //[AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> ExternalLoginConfirmation(RegisterViewModel model, string returnUrl)
+        //{
+        //    if (User.Identity.IsAuthenticated)
+        //    {
+        //        return RedirectToAction("Index", "Manage");
+        //    }
 
-            if (ModelState.IsValid)
-            {
-                // Get the information about the user from the external login provider
-                var info = await AuthenticationManager.GetExternalLoginInfoAsync();
-                if (info == null)
-                {
-                    return View("ExternalLoginFailure");
-                }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await UserManager.CreateAsync(user);
-                if (result.Succeeded)
-                {
-                    result = await this._userManager.AddLoginAsync(user.Id, info.Login);
-                    if (result.Succeeded)
-                    {
-                        await this._signInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                        return RedirectToLocal(returnUrl);
-                    }
-                }
-                AddErrors(result);
-            }
+        //    if (ModelState.IsValid)
+        //    {
+        //        // Get the information about the user from the external login provider
+        //        var info = await AuthenticationManager.GetExternalLoginInfoAsync();
+        //        if (info == null)
+        //        {
+        //            return View("ExternalLoginFailure");
+        //        }
+        //        var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+        //        var result = await UserManager.CreateAsync(user);
+        //        if (result.Succeeded)
+        //        {
+        //            result = await this._userManager.AddLoginAsync(user.Id, info.Login);
+        //            if (result.Succeeded)
+        //            {
+        //                await this._signInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+        //                return RedirectToLocal(returnUrl);
+        //            }
+        //        }
+        //        AddErrors(result);
+        //    }
 
-            ViewBag.ReturnUrl = returnUrl;
-            return View(model);
-        }
+        //    ViewBag.ReturnUrl = returnUrl;
+        //    return View(model);
+        //}
 
         /// <summary>
         /// Post processing of external authentication
