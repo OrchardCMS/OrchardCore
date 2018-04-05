@@ -113,11 +113,11 @@ namespace OrchardCore.Modules
                                 Logger.Information($"Finished processing background task {taskName} on tenant {tenant}.");
                             }
 
-                            catch (Exception ex)
+                            catch (Exception e)
                             {
-                                scheduler.Fault(ex);
+                                scheduler.Fault(e);
 
-                                Logger.Error($"Error while processing background task {taskName} on tenant {tenant}.");
+                                Logger.Error(e, $"Error while processing background task {taskName} on tenant {tenant}.");
                             }
                         }
                     }
@@ -205,7 +205,7 @@ namespace OrchardCore.Modules
                 using (var scope = shell.EnterServiceScope())
                 {
                     taskTypes = scope.GetTaskTypes();
-                    CleanTenantSchedulers(tenant, taskTypes);
+                    CleanSchedulers(tenant, taskTypes);
 
                     if (!taskTypes.Any())
                     {
@@ -244,10 +244,10 @@ namespace OrchardCore.Modules
                             scheduler.Updated = true;
                         }
 
-                        catch (Exception ex)
+                        catch (Exception e)
                         {
-                            scheduler.Fault(ex);
-                            Logger.Error($"Error while updating settings of background task {taskName} on tenant {tenant}.");
+                            scheduler.Fault(e);
+                            Logger.Error(e, $"Error while updating settings of background task {taskName} on tenant {tenant}.");
                         }
                     }
                 }
@@ -335,7 +335,7 @@ namespace OrchardCore.Modules
             }
         }
 
-        private void CleanTenantSchedulers(string tenant, IEnumerable<Type> taskTypes)
+        private void CleanSchedulers(string tenant, IEnumerable<Type> taskTypes)
         {
             var validKeys = taskTypes.Select(type => tenant + type.FullName);
 
@@ -430,11 +430,11 @@ namespace OrchardCore.Modules
             }
         }
 
-        public static void Error(this ILogger logger, string message)
+        public static void Error(this ILogger logger, Exception e, string message)
         {
             if (logger.IsEnabled(LogLevel.Error))
             {
-                logger.LogError(message);
+                logger.LogError(e, message);
             }
         }
     }
