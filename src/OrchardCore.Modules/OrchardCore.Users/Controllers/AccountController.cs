@@ -175,6 +175,14 @@ namespace OrchardCore.Users.Controllers
             return View();
         }
 
+        private void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+        }
+
         private IActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
@@ -187,72 +195,103 @@ namespace OrchardCore.Users.Controllers
             }
         }
 
-        //
-        // POST: /Account/ExternalLogin
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult ExternalLogin(string provider, string returnUrl)
+        public ActionResult ExternalLogin(string provider, string returnUrl = null)
         {
-            // start challenge and roundtrip the return URL and 
-            var props = new AuthenticationProperties()
-            {
-                RedirectUri = Url.Action("ExternalLoginCallback", "Account"),
-                Items =
-                    {
-                        { "returnUrl", returnUrl },
-                        { "scheme", provider },
-                    }
-            };
-            // Request a redirect to the external login provider
-            return Challenge(props, provider);
+            // Request a redirect to the external login provider.
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
         }
 
-        //
-        // GET: /Account/ExternalLoginCallback
+        [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
-            AuthenticateResult authenticateResult = null;
-            string loginProvider;
-            string providerKey;
-            string email;
 
-            var loginInfo = await _signInManager.GetExternalLoginInfoAsync();
-            if (loginInfo == null)
+            if (remoteError != null)
             {
-                authenticateResult = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
-                if (authenticateResult?.Succeeded != true)
-                {
-                    return RedirectToAction("Login");
-                }
+                _logger.LogError($"Error from external provider: {remoteError}");
+                return RedirectToAction(nameof(Login));
+            }
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
 
-                loginProvider = authenticateResult.Properties.Items["scheme"];
-                providerKey = authenticateResult.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Subject) ?? authenticateResult.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
-                email = authenticateResult.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email) ?? authenticateResult.Principal.FindFirstValue(ClaimTypes.Email);
-
-                // If the user does not have an account, then prompt the user to create an account
-                ViewBag.ReturnUrl = returnUrl;
-                ViewBag.LoginProvider = loginInfo.LoginProvider;
-
-                return View("Register", new RegisterViewModel { Email = email, UserName = providerKey });
+            // Sign in the user with this external login provider if the user already has a login.
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("User logged in with {Name} provider.", info.LoginProvider);
+                return RedirectToLocal(returnUrl);
+            }
+            if (result.IsLockedOut)
+            {
+                return RedirectToAction(nameof(Login));
+                //return RedirectToAction(nameof(Lockout));
             }
             else
             {
-                loginProvider = loginInfo?.LoginProvider;
-                providerKey = loginInfo.ProviderKey;
-                email = loginInfo.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email) ?? loginInfo.Principal.FindFirstValue(ClaimTypes.Email);
+                // If the user does not have an account, then ask the user to create an account.
 
-                // Sign in the user with this external login provider if the user already has a login
-                var signInResult = await this._signInManager.ExternalLoginSignInAsync(loginInfo.LoginProvider, loginInfo.ProviderKey, false);
-
-                if (signInResult.Succeeded)
+                if (!(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister)
                 {
-                    return RedirectToLocal(returnUrl);
+                    return NotFound();
                 }
 
-                return RedirectToAction("Login");
+                ViewData["ReturnUrl"] = returnUrl;
+                ViewData["LoginProvider"] = info.LoginProvider;
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                var userName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? info.Principal.FindFirstValue(OpenIdConnectConstants.Claims.GivenName) ?? info.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Name);
+
+                return View("ExternalLogin", new ExternalLoginViewModel { UserName = userName, Email = email });
             }
+
+
+            //AuthenticateResult authenticateResult = null;
+            //string loginProvider;
+            //string providerKey;
+            //string email;
+
+            //var loginInfo = await _signInManager.GetExternalLoginInfoAsync();
+            //if (loginInfo == null)
+            //{
+            //    authenticateResult = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
+            //    if (authenticateResult?.Succeeded != true)
+            //    {
+            //        return RedirectToAction("Login");
+            //    }
+
+            //    loginProvider = authenticateResult.Properties.Items["scheme"];
+            //    providerKey = authenticateResult.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Subject) ?? authenticateResult.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            //    email = authenticateResult.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email) ?? authenticateResult.Principal.FindFirstValue(ClaimTypes.Email);
+
+            //    // If the user does not have an account, then prompt the user to create an account
+            //    ViewBag.ReturnUrl = returnUrl;
+            //    ViewBag.LoginProvider = loginInfo.LoginProvider;
+
+            //    return View("Register", new RegisterViewModel { Email = email, UserName = providerKey });
+            //}
+            //else
+            //{
+            //    loginProvider = loginInfo?.LoginProvider;
+            //    providerKey = loginInfo.ProviderKey;
+            //    email = loginInfo.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email) ?? loginInfo.Principal.FindFirstValue(ClaimTypes.Email);
+
+            //    // Sign in the user with this external login provider if the user already has a login
+            //    var signInResult = await this._signInManager.ExternalLoginSignInAsync(loginInfo.LoginProvider, loginInfo.ProviderKey, false);
+
+            //    if (signInResult.Succeeded)
+            //    {
+            //        return RedirectToLocal(returnUrl);
+            //    }
+
+            //    return RedirectToAction("Login");
+            //}
         }
 
         ////
@@ -359,6 +398,47 @@ namespace OrchardCore.Users.Controllers
 
             return Redirect("~/");
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginViewModel model, string returnUrl = null)
+        {
+            if (!(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister)
+            {
+                return NotFound();
+            }
+
+            ViewData["ReturnUrl"] = returnUrl;
+
+            if (ModelState.IsValid)
+            {
+                // Get the information about the user from the external login provider
+                var info = await _signInManager.GetExternalLoginInfoAsync();
+                if (info == null)
+                {
+                    throw new ApplicationException("Error loading external login information during confirmation.");
+                }
+
+                var user = await _userService.CreateUserAsync(model.UserName, model.Email, new string[0], model.Password, (key, message) => ModelState.AddModelError(key, message));
+
+                if (user != null)
+                {
+                    var result = await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
+                    if (result.Succeeded)
+                    {
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        _logger.LogInformation(3, "User created an account with password and linked it to {Name} provider.", info.LoginProvider);
+                        return RedirectToLocal(returnUrl);
+                    }
+                    AddErrors(result);
+                }
+            }
+
+            return View(nameof(ExternalLogin), model);
+        }
+
+
 
         private async Task<IUser> AutoProvisionUser(string provider, string providerUserId, IEnumerable<Claim> claims)
         {
