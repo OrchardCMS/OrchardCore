@@ -48,149 +48,95 @@ namespace OrchardCore.Modules
                 Logger.LogDebug($"{nameof(ModularBackgroundService)} is stopping.");
             });
 
-            IEnumerable<ShellContext> runningShells = null;
-            while ((runningShells?.Count() ?? 0) < 1)
+            while (GetRunningShells().Count() < 1)
             {
                 await Task.Delay(MinIdleTime, stoppingToken);
-                runningShells = GetRunningShells();
             }
 
             IsRunning = true;
 
-            var signalUpdate = CancellationTokenSource.CreateLinkedTokenSource(_signalUpdate.Token, stoppingToken);
-            IEnumerable<ShellContext> previousShells = Enumerable.Empty<ShellContext>();
-            bool updateSchedulers = true;
+            CancellationTokenSource signalUpdate = null;
+            var previousShells = Enumerable.Empty<ShellContext>();
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var pollingDelay = Task.Delay(PollingTime, signalUpdate.Token);
+                var runningShells = GetRunningShells();
 
-                runningShells = GetRunningShells();
-
-                if (updateSchedulers)
+                if (SignalUpdate(ref signalUpdate, stoppingToken))
                 {
-                    await UpdateSchedulers(previousShells, runningShells, stoppingToken);
-                    updateSchedulers = false;
+                    await UpdateAsync(previousShells, runningShells, stoppingToken);
                 }
 
                 previousShells = runningShells;
 
-                await GetShellsToRun(runningShells).ForEachAsync(async shell =>
-                {
-                    var tenant = shell.Settings?.Name;
-                    var schedulers = GetSchedulersToRun(tenant);
+                var pollingDelay = Task.Delay(PollingTime, signalUpdate.Token);
 
-                    _httpContextAccessor.HttpContext = shell.GetHttpContext();
+                await RunAsync(runningShells, stoppingToken);
 
-                    foreach (var scheduler in schedulers)
-                    {
-                        var taskName = scheduler.Name;
-
-                        if (shell.Released || stoppingToken.IsCancellationRequested)
-                        {
-                            break;
-                        }
-
-                        using (var scope = shell.EnterServiceScope())
-                        {
-                            var task = scope.GetTaskByTypeName(taskName);
-
-                            if (task == null)
-                            {
-                                continue;
-                            }
-
-                            try
-                            {
-                                Logger.Information($"Start processing background task {taskName} on tenant {tenant}.");
-
-                                scheduler.Run();
-
-                                await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
-
-                                scheduler.Idle();
-
-                                Logger.Information($"Finished processing background task {taskName} on tenant {tenant}.");
-                            }
-
-                            catch (Exception e)
-                            {
-                                scheduler.Fault(e);
-
-                                Logger.Error(e, $"Error while processing background task {taskName} on tenant {tenant}.");
-                            }
-                        }
-                    }
-                });
-
-                await WaitingAsync(runningShells, pollingDelay, signalUpdate);
-                updateSchedulers = SignalUpdate(ref signalUpdate, stoppingToken);
+                await WaitAsync(runningShells, pollingDelay, signalUpdate);
             }
 
             signalUpdate.Dispose();
             IsRunning = false;
         }
 
-        private async Task WaitingAsync(IEnumerable<ShellContext> shells, Task pollingDelay, CancellationTokenSource signalUpdate)
+        private async Task RunAsync(IEnumerable<ShellContext> runningShells, CancellationToken stoppingToken)
         {
-            var minIdleDelay = Task.Delay(MinIdleTime, signalUpdate.Token);
-
-            try
+            await GetShellsToRun(runningShells).ForEachAsync(async shell =>
             {
-                while (!minIdleDelay.IsCompleted || !pollingDelay.IsCompleted)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(1), signalUpdate.Token);
+                var tenant = shell.Settings?.Name;
+                var schedulers = GetSchedulersToRun(tenant);
 
-                    if (shells.Any(s => s.Released) || shells.Count() != GetRunningShells().Count())
+                _httpContextAccessor.HttpContext = shell.GetHttpContext();
+
+                foreach (var scheduler in schedulers)
+                {
+                    var taskName = scheduler.Name;
+
+                    if (shell.Released || stoppingToken.IsCancellationRequested)
                     {
-                        _signalUpdate.Cancel();
+                        break;
+                    }
+
+                    using (var scope = shell.EnterServiceScope())
+                    {
+                        var task = scope.GetTaskByTypeName(taskName);
+
+                        if (task == null)
+                        {
+                            continue;
+                        }
+
+                        try
+                        {
+                            Logger.Information($"Start processing background task {taskName} on tenant {tenant}.");
+
+                            scheduler.Run();
+
+                            await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
+
+                            scheduler.Idle();
+
+                            Logger.Information($"Finished processing background task {taskName} on tenant {tenant}.");
+                        }
+
+                        catch (Exception e)
+                        {
+                            scheduler.Fault(e);
+
+                            Logger.Error(e, $"Error while processing background task {taskName} on tenant {tenant}.");
+                        }
                     }
                 }
-            }
-            catch (OperationCanceledException)
-            {
-            }
+            });
         }
 
-        private bool SignalUpdate(ref CancellationTokenSource signalUpdate, CancellationToken stoppingToken)
-        {
-            if (_signalUpdate.IsCancellationRequested && !stoppingToken.IsCancellationRequested)
-            {
-                lock (_synLock)
-                {
-                    _signalUpdate = new CancellationTokenSource();
-                }
-
-                signalUpdate.Dispose();
-                signalUpdate = CancellationTokenSource.CreateLinkedTokenSource(_signalUpdate.Token, stoppingToken);
-
-                return true;
-            }
-
-            return false;
-        }
-
-        private async Task UpdateSchedulers(IEnumerable<ShellContext> previousShells,
+        private async Task UpdateAsync(IEnumerable<ShellContext> previousShells,
             IEnumerable<ShellContext> runningShells, CancellationToken stoppingToken)
         {
             var referenceTime = DateTime.UtcNow;
 
-            var tenantsToClean = previousShells.Where(s => s.Released).Select(s => s.Settings?.Name);
-
-            if (tenantsToClean.Any())
-            {
-                CleanSchedulers(tenantsToClean);
-            }
-
-            var runningTenants = runningShells.Select(s => s.Settings?.Name);
-            var previousTenants = previousShells.Select(s => s.Settings?.Name).Except(tenantsToClean);
-
-            var tenantsToUpdate = runningTenants.Except(previousTenants).Concat(_schedulers
-                .Where(s => !s.Value.Updated).Select(s => s.Value.Tenant)).Distinct();
-
-            var shellsToUpdate = runningShells.Where(s => tenantsToUpdate.Contains(s.Settings?.Name));
-
-            await shellsToUpdate.ForEachAsync(async shell =>
+            await GetShellsToUpdate(previousShells, runningShells).ForEachAsync(async shell =>
             {
                 IEnumerable<Type> taskTypes;
                 var tenant = shell.Settings?.Name;
@@ -252,6 +198,54 @@ namespace OrchardCore.Modules
                     }
                 }
             });
+        }
+
+        private async Task WaitAsync(IEnumerable<ShellContext> shells, Task pollingDelay, CancellationTokenSource signalUpdate)
+        {
+            var minIdleDelay = Task.Delay(MinIdleTime, signalUpdate.Token);
+
+            try
+            {
+                while (!minIdleDelay.IsCompleted || !pollingDelay.IsCompleted)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1), signalUpdate.Token);
+
+                    if (shells.Any(s => s.Released) || shells.Count() != GetRunningShells().Count())
+                    {
+                        _signalUpdate.Cancel();
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+            }
+        }
+
+        private bool SignalUpdate(ref CancellationTokenSource signalUpdate, CancellationToken stoppingToken)
+        {
+            if (signalUpdate == null || _signalUpdate.IsCancellationRequested)
+            {
+                if (signalUpdate != null)
+                {
+                    lock (_synLock)
+                    {
+                        _signalUpdate = new CancellationTokenSource();
+                    }
+
+                    signalUpdate.Dispose();
+                }
+
+                signalUpdate = CreateSignalUpdate(stoppingToken);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private CancellationTokenSource CreateSignalUpdate(CancellationToken stoppingToken)
+        {
+            return CancellationTokenSource.CreateLinkedTokenSource(_signalUpdate.Token, stoppingToken);
         }
 
         public Task UpdateAsync(string tenant, string taskName)
@@ -325,6 +319,30 @@ namespace OrchardCore.Modules
             return shells.Where(s => tenants.Contains(s.Settings?.Name));
         }
 
+        private IEnumerable<ShellContext> GetShellsToUpdate(IEnumerable<ShellContext> previousShells,
+            IEnumerable<ShellContext> runningShells)
+        {
+            var tenantsToClean = previousShells.Where(s => s.Released).Select(s => s.Settings?.Name);
+
+            if (tenantsToClean.Any())
+            {
+                CleanSchedulers(tenantsToClean);
+            }
+
+            var runningTenants = runningShells.Select(s => s.Settings?.Name);
+            var previousTenants = previousShells.Select(s => s.Settings?.Name).Except(tenantsToClean);
+
+            var tenantsToUpdate = runningTenants.Except(previousTenants).Concat(_schedulers
+                .Where(s => !s.Value.Updated).Select(s => s.Value.Tenant)).Distinct();
+
+            return runningShells.Where(s => tenantsToUpdate.Contains(s.Settings?.Name));
+        }
+
+        private IEnumerable<BackgroundTaskScheduler> GetSchedulersToRun(string tenant)
+        {
+            return _schedulers.Where(s => s.Value.Tenant == tenant && s.Value.CanRun()).Select(s => s.Value);
+        }
+
         private void CleanSchedulers(IEnumerable<string> tenants)
         {
             var keys = _schedulers.Where(kv => tenants.Contains(kv.Value.Tenant)).Select(kv => kv.Key).ToArray();
@@ -348,11 +366,6 @@ namespace OrchardCore.Modules
                     _schedulers.TryRemove(key, out var scheduler);
                 }
             }
-        }
-
-        private IEnumerable<BackgroundTaskScheduler> GetSchedulersToRun(string tenant)
-        {
-            return _schedulers.Where(s => s.Value.Tenant == tenant && s.Value.CanRun()).Select(s => s.Value);
         }
     }
 
