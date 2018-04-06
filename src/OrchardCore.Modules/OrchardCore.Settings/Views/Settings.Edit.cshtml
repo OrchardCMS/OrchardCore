@@ -25,4 +25,5 @@
     @if(Model.TimeZone != null){
     <div>Selected time zone time (@Model.TimeZone) : @SystemClock.Instance.GetCurrentInstant().InZone(DateTimeZoneProviders.Tzdb.GetZoneOrNull(Model.TimeZone))</div>
     }
+    <div>Daylight Saving Time : @SystemClock.Instance.GetCurrentInstant().InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).IsDaylightSavingTime()</div>
 </fieldset>
