@@ -13,7 +13,7 @@
         <option value="">@T["Local to server"]</option>
         @foreach (var timezone in Model.TimeZones)
         {
-            <option value="@timezone.Id" selected="@(Model.TimeZone == timezone.Id)">@timezone.DisplayName - @timezone.Comment</option>
+            <option value="@timezone.Id" selected="@(Model.TimeZone == timezone.Id)">@timezone.DisplayName @if(timezone.Comment != null){ <text> - </text> @timezone.Comment }</option>
         }
     </select>
     <span class="hint">@T["Determines the default time zone used when displaying and editing dates and times."]</span>
