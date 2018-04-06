@@ -74,9 +74,9 @@ namespace OrchardCore.Modules
                                     {
                                         await tenantEvent.ActivatedAsync();
                                     }
-
-                                    shellContext.IsActivated = true;
                                 }
+
+                                shellContext.IsActivated = true;
                             }
                         }
                         finally
