@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Scripting
 {
@@ -19,9 +20,10 @@ namespace OrchardCore.Scripting
         /// Executes some prefixed script by looking for a matching scripting engine.
         /// </summary>
         /// <param name="directive">The directive to execute. A directive is made of a </param>
+        /// <param name="fileProvider">An optional <see cref="IFileProvider"/> instance.</param>
         /// <param name="scopedMethodProviders">A list of method providers scoped to the script evaluation.</param>
         /// <returns>The result of the script if any.</returns>
-        object Evaluate(string directive, IEnumerable<IGlobalMethodProvider> scopedMethodProviders = null);
+        object Evaluate(string directive, IFileProvider fileProvider, string basePath, IEnumerable<IGlobalMethodProvider> scopedMethodProviders);
 
         /// <summary>
         /// The list of available method providers for this <see cref="IScriptingManager"/>

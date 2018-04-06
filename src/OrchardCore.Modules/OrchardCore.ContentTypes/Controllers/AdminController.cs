@@ -331,12 +331,15 @@ namespace OrchardCore.ContentTypes.Controllers
             var partToAdd = viewModel.SelectedPartName;
 
             _contentDefinitionService.AddReusablePartToType(viewModel.Name, viewModel.DisplayName, viewModel.Description, partToAdd, typeViewModel.Name);
-            _notifier.Success(T["The \"{0}\" part has been added.", partToAdd]);
 
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
                 return await AddReusablePartTo(id);
+            }
+            else
+            {
+                _notifier.Success(T["The \"{0}\" part has been added.", partToAdd]);
             }
 
             return RedirectToAction("Edit", new { id });
@@ -391,8 +394,14 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            if (_contentDefinitionManager.GetPartDefinition(viewModel.Name) != null)
+            if (string.IsNullOrEmpty(viewModel.Name))
+            {
+                ModelState.AddModelError("Name", S["Name is Required."]);
+            }
+            else if (_contentDefinitionManager.GetPartDefinition(viewModel.Name) != null)
+            {
                 ModelState.AddModelError("Name", S["Cannot add part named '{0}'. It already exists.", viewModel.Name]);
+            }
 
             if (!ModelState.IsValid)
                 return View(viewModel);

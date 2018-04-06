@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Liquid.Internal;
 using OrchardCore.DisplayManagement.Razor;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
@@ -25,6 +26,8 @@ namespace OrchardCore.DisplayManagement.Liquid
             services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, LiquidViewsFeatureProvider>();
             services.AddScoped<IRazorViewExtensionProvider, LiquidViewExtensionProvider>();
             services.AddSingleton<TagHelperSharedState>();
+
+            services.AddScoped<ILiquidTemplateEventHandler, RequestLiquidTemplateEventHandler>();
             return services;
         }
     }

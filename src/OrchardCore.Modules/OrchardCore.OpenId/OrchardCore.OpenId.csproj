@@ -5,6 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.BackgroundTasks.Abstractions\OrchardCore.BackgroundTasks.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Entities.DisplayManagement\OrchardCore.Entities.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
@@ -12,13 +14,14 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Navigation\OrchardCore.Environment.Navigation.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.OpenId.Core\OrchardCore.OpenId.Core.csproj" />
     <ProjectReference Include="..\OrchardCore.Roles\OrchardCore.Roles.csproj" />
     <ProjectReference Include="..\OrchardCore.Settings\OrchardCore.Settings.csproj" />
     <ProjectReference Include="..\OrchardCore.Users\OrchardCore.Users.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNet.Security.OAuth.Validation" Version="$(AspNetContribSecurityOAuthValidationPackageVersion)" />
+    <PackageReference Include="AspNet.Security.OAuth.Validation" Version="$(OAuthValidationPackageVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerPackageVersion)" />
     <PackageReference Include="OpenIddict" Version="$(OpenIddictVersion)" />
   </ItemGroup>

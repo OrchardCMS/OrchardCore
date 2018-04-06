@@ -1,7 +1,5 @@
-@using OrchardCore.Setup.Controllers
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Html
-@using System.IO;
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject Microsoft.Extensions.Options.IOptions<IdentityOptions> identityOptions
 @model OrchardCore.Setup.ViewModels.SetupViewModel
@@ -16,29 +14,34 @@
     var options = identityOptions.Value;
     var passwordOptions = new HtmlContentBuilder();
     IHtmlContent separator = HtmlString.Empty;
+    string passwordRegex = "";
 
     if (options.Password.RequireNonAlphanumeric)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one non-alphanumeric"]);
         separator = T[", "];
+        passwordRegex += @"(?=.*[^A-Za-z0-9])";
     }
 
     if (options.Password.RequireUppercase)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one uppercase"]);
         separator = T[", "];
+        passwordRegex += @"(?=.*[A-Z])";
     }
 
     if (options.Password.RequireLowercase)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one lowercase"]);
         separator = T[", "];
+        passwordRegex += @"(?=.*[a-z])";
     }
 
     if (options.Password.RequireDigit)
     {
         passwordOptions.AppendHtml(separator).AppendHtml(T["one digit"]);
         separator = T[", "];
+        passwordRegex += @"(?=.*[0-9])";
     }
 
     if (separator != HtmlString.Empty)
@@ -47,6 +50,7 @@
     }
 
     passwordOptions.AppendHtml(separator).AppendHtml(T["{0} characters in total", options.Password.RequiredLength]);
+    passwordRegex += $".{{{options.Password.RequiredLength},}}";
 
     if (options.Password.RequiredUniqueChars > 1)
     {
@@ -58,8 +62,8 @@
 
 <form asp-action="Index">
 
-    <div class="jumbotron">
-        <h1>@T["SETUP"]</h1>
+    <div class="jumbotron mt-5">
+        <h1>@T["Setup"]</h1>
         <p class="lead">@T["Please answer a few questions to configure your site."]</p>
     </div>
 
@@ -74,13 +78,13 @@
         <fieldset class="form-group col-md-6" asp-validation-class-for="SiteName">
             <div>
                 <label asp-for="SiteName">@T["What is the name of your site?"]</label>
-                <input asp-for="SiteName" class="form-control" autofocus />
+                <input asp-for="SiteName" class="form-control" autofocus required />
                 <span asp-validation-for="SiteName" class="text-danger">@T["The site name is required."]</span>
                 <span class="text-muted form-text small">@T["This is used as the default title of your pages."]</span>
             </div>
         </fieldset>
         <fieldset class="form-group col-md-6">
-            <input type="hidden" asp-for="RecipeName" />
+            <input type="hidden" asp-for="RecipeName" required />
             <nav>
                 <div asp-validation-class-for="RecipeName">
                     <label asp-for="SiteName">@T["Recipe"]</label>
@@ -124,15 +128,15 @@
             <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
             @if (Model.DatabaseProviderPreset)
             {
-                <input asp-for="DatabaseProvider" readonly class="form-control form-control-static" />
+                <input asp-for="DatabaseProvider" readonly class="form-control form-control-static" required />
             }
             else
             {
-                <select asp-for="DatabaseProvider" class="form-control">
-                @foreach (var provider in Model.DatabaseProviders)
-                {
-                    <option value="@provider.Value" data-connection-string="@provider.HasConnectionString">@provider.Name</option>
-                }
+                <select asp-for="DatabaseProvider" class="form-control" required>
+                    @foreach (var provider in Model.DatabaseProviders)
+                    {
+                        <option value="@provider.Value" data-connection-string="@provider.HasConnectionString">@provider.Name</option>
+                    }
                 </select>
             }
             <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
@@ -152,7 +156,7 @@
         }
     </div>
 
-    @if (Model.ConnectionStringPreset || (! string.IsNullOrEmpty(Model.DatabaseProvider) && !Model.DatabaseProviders.SingleOrDefault(dp => dp.Value == Model.DatabaseProvider).HasConnectionString))
+    @if (Model.ConnectionStringPreset || (!string.IsNullOrEmpty(Model.DatabaseProvider) && !Model.DatabaseProviders.SingleOrDefault(dp => dp.Value == Model.DatabaseProvider).HasConnectionString))
     {
         <input asp-for="ConnectionString" type="hidden" />
     }
@@ -163,8 +167,10 @@
                 <label asp-for="ConnectionString">@T["Connection string"]</label>
 
                 <div class="input-group mb-2 mb-sm-0">
-                    <input asp-for="ConnectionString" class="form-control pwd" type="password" />
-                    <div class="input-group-addon reveal" title="@T["Show/hide connection string"]"><i class="fa fa-eye-slash" aria-hidden="true"></i></div>
+                    <input asp-for="ConnectionString" class="form-control pwd" type="password" required />
+                    <div class="input-group-append reveal" title="@T["Show/hide connection string"]">
+                        <button type="button" class="btn btn-secondary" tabindex="-1" aria-hidden="true"><i class="fa fa-eye-slash"></i></button>
+                    </div>
                 </div>
 
                 <span asp-validation-for="ConnectionString" class="text-danger"></span>
@@ -179,12 +185,12 @@
     <div class="row">
         <div class="form-group col-md-6" asp-validation-class-for="UserName">
             <label asp-for="UserName">@T["User name"]</label>
-            <input asp-for="UserName" class="form-control" />
+            <input asp-for="UserName" class="form-control" required />
             <span asp-validation-for="UserName" class="text-danger">@T["The user name is required."]</span>
         </div>
         <div class="form-group col-md-6" asp-validation-class-for="Email">
             <label for="Email">@T["Email"]</label>
-            <input asp-for="Email" class="form-control" type="email" />
+            <input asp-for="Email" class="form-control" type="email" required />
             <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
         </div>
     </div>
@@ -192,14 +198,14 @@
     <div class="row">
         <div class="form-group col-md-6" asp-validation-class-for="Password">
             <label asp-for="Password">@T["Password"]</label>
-            <input asp-for="Password" type="password" class="form-control" data-toggle="popover" data-placement="top" data-trigger="focus" title="@T["Password strength"]" data-content="@passwordTooltip" />
+            <input asp-for="Password" type="password" class="form-control" data-toggle="popover" data-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-content="@passwordTooltip" required pattern="@passwordRegex" />
             <div id="passwordStrength"></div>
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
 
         <div class="form-group col-md-6" asp-validation-class-for="PasswordConfirmation">
             <label asp-for="PasswordConfirmation">@T["Password Confirmation"]</label>
-            <input asp-for="PasswordConfirmation" type="password" class="form-control" />
+            <input asp-for="PasswordConfirmation" type="password" class="form-control" title="@passwordTooltip" required pattern="@passwordRegex" />
             <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
         </div>
     </div>
@@ -230,9 +236,21 @@
             var $pwd = $(".pwd");
             if ($pwd.attr('type') === 'password') {
                 $pwd.attr('type', 'text');
+                $(this).find('button > i').toggleClass('fa-eye-slash fa-eye');
+                $pwd.focus();
             } else {
                 $pwd.attr('type', 'password');
+                $(this).find('button > i').toggleClass('fa-eye fa-eye-slash');
+                $pwd.focus();
             }
+        });
+
+        $("#DatabaseProvider").change(function () {
+            $("#DatabaseProvider option:selected").each(function () {
+                $(this).data("connection-string").toLowerCase() === "true"
+                    ? $(".pwd").attr('required', 'required')
+                    : $(".pwd").removeAttr('required');
+            });
         });
     })
     //]]>

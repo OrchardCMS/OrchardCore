@@ -6,7 +6,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Embedded;
-using OrchardCore.Modules.FileProviders;
+using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.Modules
 {
@@ -58,13 +58,14 @@ namespace OrchardCore.Modules
     {
         public const string ModulesPath = ".Modules";
         public static string ModulesRoot = ModulesPath + "/";
-        private const string ModuleNamesMap = "module.names.map";
 
         public Application(string application)
         {
             Name = application;
             Assembly = Assembly.Load(new AssemblyName(application));
-            ModuleNames = new EmbeddedFileProvider(Assembly).GetFileInfo(ModuleNamesMap).ReadAllLines();
+
+            ModuleNames = Assembly.GetCustomAttributes<ModuleNameAttribute>()
+                .Select(m => m.Name).ToArray();
         }
 
         public string Name { get; }
@@ -74,9 +75,8 @@ namespace OrchardCore.Modules
 
     public class Module
     {
-        public const string ContentPath = "Content";
+        public const string ContentPath = "wwwroot";
         public static string ContentRoot = ContentPath + "/";
-        private const string ModuleAssetsMap = "module.assets.map";
 
         private readonly string _baseNamespace;
         private readonly DateTimeOffset _lastModified;
@@ -87,16 +87,35 @@ namespace OrchardCore.Modules
             if (!string.IsNullOrWhiteSpace(name))
             {
                 Name = name;
-                Root = Application.ModulesRoot + Name + '/';
+                SubPath = Application.ModulesRoot + Name;
+                Root = SubPath + '/';
+
                 Assembly = Assembly.Load(new AssemblyName(name));
-                Assets = new EmbeddedFileProvider(Assembly).GetFileInfo(ModuleAssetsMap).ReadAllLines().Select(a => new Asset(a));
-                AssetPaths = Assets.Select(a => a.ModuleAssetPath);
+
+                Assets = Assembly.GetCustomAttributes<ModuleAssetAttribute>()
+                    .Select(a => new Asset(a.Asset)).ToArray();
+
+                AssetPaths = Assets.Select(a => a.ModuleAssetPath).ToArray();
+
+                var moduleInfos = Assembly.GetCustomAttributes<ModuleAttribute>();
+
+                ModuleInfo = 
+                    moduleInfos.Where(f => !(f is ModuleMarkerAttribute)).FirstOrDefault() ??
+                    moduleInfos.Where(f => f is ModuleMarkerAttribute).FirstOrDefault() ??
+                    new ModuleAttribute { Name = Name };
+
+                var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
+                    .Where(f => !(f is ModuleAttribute));
+
+                ModuleInfo.Features.AddRange(features);
+                ModuleInfo.Id = Name;
             }
             else
             {
-                Name = Root = string.Empty;
+                Name = Root = SubPath = String.Empty;
                 Assets = Enumerable.Empty<Asset>();
                 AssetPaths = Enumerable.Empty<string>();
+                ModuleInfo = new ModuleAttribute();
             }
 
             _baseNamespace = Name + '.';
@@ -105,9 +124,11 @@ namespace OrchardCore.Modules
 
         public string Name { get; }
         public string Root { get; }
+        public string SubPath { get; }
         public Assembly Assembly { get; }
         public IEnumerable<Asset> Assets { get; }
         public IEnumerable<string> AssetPaths { get; }
+        public ModuleAttribute ModuleInfo { get; }
 
         public IFileInfo GetFileInfo(string subpath)
         {
@@ -149,7 +170,7 @@ namespace OrchardCore.Modules
 
             if (index == -1)
             {
-                ModuleAssetPath = asset;
+                ModuleAssetPath = string.Empty;
                 ProjectAssetPath = string.Empty;
             }
             else

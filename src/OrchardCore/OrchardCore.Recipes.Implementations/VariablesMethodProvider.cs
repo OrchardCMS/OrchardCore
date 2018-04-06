@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Scripting;
@@ -22,7 +22,7 @@ namespace OrchardCore.Recipes
                     while (value.StartsWith("[") && value.EndsWith("]"))
                     {
                         value = value.Trim('[', ']');
-                        value = (ScriptingManager.Evaluate(value) ?? "").ToString();
+                        value = (ScriptingManager.Evaluate(value, null, null, null) ?? "").ToString();
                         variables[name] = new JValue(value);
                     }
 

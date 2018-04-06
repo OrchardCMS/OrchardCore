@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Implementation
 {
@@ -77,7 +76,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = shapeMetadata.Prefix ?? "";
 
             // Evaluate global Shape Display Events
-            _shapeDisplayEvents.Invoke(sde => sde.Displaying(displayContext), _logger);
+            await _shapeDisplayEvents.InvokeAsync(sde => sde.DisplayingAsync(displayContext), _logger);
 
             // Find base shape association using only the fundamental shape type.
             // Alternates that may already be registered do not affect the "displaying" event calls.
@@ -142,10 +141,10 @@ namespace OrchardCore.DisplayManagement.Implementation
                 shape.Metadata.Wrappers.Clear();
             }
 
-            _shapeDisplayEvents.Invoke(sde =>
+            await _shapeDisplayEvents.InvokeAsync(async sde =>
             {
                 var prior = displayContext.ChildContent = displayContext.ShapeMetadata.ChildContent;
-                sde.Displayed(displayContext);
+                await sde.DisplayedAsync(displayContext);
                 // update the child content if the context variable has been reassigned
                 if (prior != displayContext.ChildContent)
                     displayContext.ShapeMetadata.ChildContent = displayContext.ChildContent;

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The scripting provides an API allowing you to evaluate custom scripts in different languages.
+The scripting module provides an API allowing you to evaluate custom scripts in different languages.
 
 ## Usage
 
@@ -20,7 +20,7 @@ public interface IScriptingManager
 
 To evaluate an expression using a scripting engine, you must know which ones are available in the system. 
 For instance, a JavaScript one is available by default and its prefix is `js`.
-To return the current date and time as a string we could to something like this:
+To return the current date and time as a string we could do something like this:
 
 ```
 var scriptingManager = serviceProvider.GetService<IScriptingManager>();
@@ -43,3 +43,12 @@ var scriptingManager = serviceProvider.GetService<IScriptingManager>();
 var globalMethodProvider = new MyGlobalMethodProvider();
 scriptingManager.GlobalMethodProviders.Add(globalMethodProvider);
 ```
+
+## File
+
+The File scripting engine provides methods to read file contents.
+
+| Name | Example | Description |
+| ---- | ---- | -------- |
+| `text` | `file:raw('../wwwroot/template.html')` | Returns the content of a text file. |
+| `base64` | `file:base64('../wwwroot/image.jpg')` | Returns the base64 encoded content of a file. |

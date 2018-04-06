@@ -16,16 +16,13 @@ namespace OrchardCore.Recipes.Services
     {
         private readonly IExtensionManager _extensionManager;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly IOptions<RecipeHarvestingOptions> _recipeOptions;
 
         public ApplicationRecipeHarvester(IExtensionManager extensionManager,
             IHostingEnvironment hostingEnvironment,
-            IOptions<RecipeHarvestingOptions> recipeOptions,
             ILogger<RecipeHarvester> logger)
         {
             _extensionManager = extensionManager;
             _hostingEnvironment = hostingEnvironment;
-            _recipeOptions = recipeOptions;
 
             Logger = logger;
         }
@@ -35,7 +32,7 @@ namespace OrchardCore.Recipes.Services
 
         public Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
         {
-            return RecipeHarvester.HarvestRecipesAsync("Recipes", _recipeOptions.Value, _hostingEnvironment);
+            return RecipeHarvester.HarvestRecipesAsync("Recipes", _hostingEnvironment);
         }
     }
 }

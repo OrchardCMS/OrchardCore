@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,7 @@ namespace OrchardCore.BackgroundTasks
     public class BackgroundTaskService : IBackgroundTaskService, IDisposable
     {
         private static TimeSpan DontStart = TimeSpan.FromMilliseconds(-1);
-        private static TimeSpan StartNow = TimeSpan.FromMilliseconds(0);
+        private static TimeSpan Delay = TimeSpan.FromSeconds(1);
 
         private readonly Dictionary<string, IEnumerable<IBackgroundTask>> _tasks;
         private readonly IApplicationLifetime _applicationLifetime;
@@ -36,7 +37,7 @@ namespace OrchardCore.BackgroundTasks
             _applicationLifetime = applicationLifetime;
             _tasks = tasks.GroupBy(GetGroupName).ToDictionary(x => x.Key, x => x.Select(i => i));
             _states = tasks.ToDictionary(x => x, x => BackgroundTaskState.Idle);
-            _timers = _tasks.Keys.ToDictionary(x => x, x => new Timer(DoWorkAsync, x, Timeout.Infinite, Timeout.Infinite));
+            _timers = _tasks.Keys.ToDictionary(x => x, x => CreateTimer(DoWorkAsync, x));
             _periods = _tasks.Keys.ToDictionary(x => x, x => TimeSpan.FromMinutes(1));
             Logger = logger;
         }
@@ -51,7 +52,7 @@ namespace OrchardCore.BackgroundTasks
                 {
                     var timer = _timers[group];
                     var period = _periods[group];
-                    timer.Change(StartNow, period);
+                    timer.Change(Delay, period);
                 }
             }
         }
@@ -60,8 +61,8 @@ namespace OrchardCore.BackgroundTasks
         // c.f. http://stackoverflow.com/questions/25007670/using-async-await-inside-the-timer-elapsed-event-handler-within-a-windows-servic
         private async void DoWorkAsync(object group)
         {
-            // DoWork is not re-entrant as Timer will not call the callback until the previous callback has returned.
-            // This way if a tasks takes longer than the period itself, DoWork is not called while it's still running.
+            // DoWork needs to be re-entrant as Timer may call the callback before the previous callback has returned.
+            // So, because a task may take longer than the period itself, DoWork needs to check if it's still running.
             ShellContext shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
 
             var groupName = group as string ?? "";
@@ -74,7 +75,7 @@ namespace OrchardCore.BackgroundTasks
                 {
                     try
                     {
-                        if (_states[task] == BackgroundTaskState.Stopped)
+                        if (_states[task] != BackgroundTaskState.Idle)
                         {
                             return;
                         }
@@ -82,7 +83,7 @@ namespace OrchardCore.BackgroundTasks
                         lock (_states)
                         {
                             // Ensure Terminate() was not called before
-                            if (_states[task] == BackgroundTaskState.Stopped)
+                            if (_states[task] != BackgroundTaskState.Idle)
                             {
                                 return;
                             }
@@ -106,7 +107,7 @@ namespace OrchardCore.BackgroundTasks
                     {
                         if (Logger.IsEnabled(LogLevel.Error))
                         {
-                            Logger.LogError($"Error while processing background task \"{taskName}\": {ex.Message}");
+                            Logger.LogError(ex, $"Error while processing background task \"{taskName}\"");
                         }
                     }
                     finally
@@ -165,6 +166,33 @@ namespace OrchardCore.BackgroundTasks
             foreach(var timer in _timers.Values)
             {
                 timer.Dispose();
+            }
+        }
+
+        [SecuritySafeCritical]
+        private static Timer CreateTimer(TimerCallback callback, string name)
+        {
+            // Prevent the current execution context from being captured to ensure async-local
+            // elements like the HTTP context of the initiating request are not flowed and accessible
+            // from background tasks, which would prevent the HTTP context instance from being GCed.
+
+            var restore = false;
+            try
+            {
+                if (!ExecutionContext.IsFlowSuppressed())
+                {
+                    ExecutionContext.SuppressFlow();
+                    restore = true;
+                }
+
+                return new Timer(callback, name, Timeout.Infinite, Timeout.Infinite);
+            }
+            finally
+            {
+                if (restore)
+                {
+                    ExecutionContext.RestoreFlow();
+                }
             }
         }
     }

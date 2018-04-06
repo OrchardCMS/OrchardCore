@@ -1,14 +1,14 @@
 {% zone "Header" %}
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
-    <header class="intro-header" style="background-image: url('{{ "~/TheBlogTheme/img/home-bg.jpg" | href }}')">
+    <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/home-bg.jpg" | href }}')">
+        <div class="overlay"></div>
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="col-lg-8 col-md-10 mx-auto">
                     <div class="site-heading">
                         <h1>{{ Model.ContentItem.Content.TitlePart.Title }}</h1>
-                        <hr class="small" />
-                        <span class="subheading">{% display Model.Content.BodyPart %}</span>
+                        <span class="subheading">{{ Model.Content.BodyPart | shape_render }}</span>
                     </div>
                 </div>
             </div>
@@ -16,4 +16,5 @@
     </header>
 {% endzone %}
 
-{% display Model.Content | remove_item: "BodyPart" %}
+{% shape_remove_item Model.Content "BodyPart" %}
+{{ Model.Content | shape_render }}

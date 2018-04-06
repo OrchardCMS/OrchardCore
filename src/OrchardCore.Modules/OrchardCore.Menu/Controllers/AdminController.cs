@@ -213,7 +213,7 @@ namespace OrchardCore.Menu.Controllers
                 return View(model);
             }
 
-            menuItem.Merge(contentItem.Content, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union });
+            menuItem.Merge(contentItem.Content, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
 
             _session.Save(menu);
 

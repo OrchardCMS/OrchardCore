@@ -136,7 +136,7 @@ namespace OrchardCore.Media.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("An error occured while uploading a media: " + ex.Message);
+                    _logger.LogError(ex, "An error occured while uploading a media");
 
                     result.Add(new
                     {

@@ -9,6 +9,9 @@
     <None Include="OrchardCore.Module.Targets.props" Pack="true">
       <PackagePath>build\$(TargetFramework)\OrchardCore.Module.Targets.props</PackagePath>
     </None>
+    <None Include="OrchardCore.Module.Targets.targets" Pack="true">
+      <PackagePath>build\$(TargetFramework)\OrchardCore.Module.Targets.targets</PackagePath>
+    </None>
     <None Include="Package.Build.props" Pack="true">
       <PackagePath>build\$(TargetFramework)\Package.Build.props</PackagePath>
     </None>

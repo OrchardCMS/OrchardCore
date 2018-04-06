@@ -21,6 +21,7 @@ namespace Microsoft.AspNetCore.Builder
             
             // Ensure the shell tenants are loaded when a request comes in
             // and replaces the current service provider for the tenant's one.
+            app.UseMiddleware<PoweredByMiddleware>();
             app.UseMiddleware<ModularTenantContainerMiddleware>();
 
             app.ConfigureModules(modules);
@@ -49,11 +50,7 @@ namespace Microsoft.AspNetCore.Builder
                 var availableExtensions = extensionManager.GetExtensions();
                 foreach (var extension in availableExtensions)
                 {
-                    var contentPath = extension.ExtensionFileInfo.PhysicalPath != null
-                        ? Path.Combine(extension.ExtensionFileInfo.PhysicalPath, "Content")
-                        : null;
-
-                    var contentSubPath = Path.Combine(extension.SubPath, "Content");
+                    var contentSubPath = Path.Combine(extension.SubPath, "wwwroot");
 
                     if (env.ContentRootFileProvider.GetDirectoryContents(contentSubPath).Exists)
                     {
@@ -62,28 +59,12 @@ namespace Microsoft.AspNetCore.Builder
                         {
                             var fileProviders = new List<IFileProvider>();
                             fileProviders.Add(new ModuleProjectContentFileProvider(env, contentSubPath));
-
-                            if (contentPath != null)
-                            {
-                                fileProviders.Add(new PhysicalFileProvider(contentPath));
-                            }
-                            else
-                            {
-                                fileProviders.Add(new ModuleEmbeddedFileProvider(env, contentSubPath));
-                            }
-
+                            fileProviders.Add(new ModuleEmbeddedFileProvider(env, contentSubPath));
                             fileProvider = new CompositeFileProvider(fileProviders);
                         }
                         else
                         {
-                            if (contentPath != null)
-                            {
-                                fileProvider = new PhysicalFileProvider(contentPath);
-                            }
-                            else
-                            {
-                                fileProvider = new ModuleEmbeddedFileProvider(env, contentSubPath);
-                            }
+                            fileProvider = new ModuleEmbeddedFileProvider(env, contentSubPath);
                         }
 
                         app.UseStaticFiles(new StaticFileOptions

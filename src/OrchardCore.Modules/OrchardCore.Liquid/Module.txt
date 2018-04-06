@@ -1,9 +1,0 @@
-Name: Liquid
-AntiForgery: enabled
-Author: The Orchard Team
-Website: http://orchardproject.net
-Version: 2.0.x
-OrchardVersion: 2.0.x
-Description: The liquid module enables content items to have liquid syntax.
-Dependencies: OrchardCore.Contents, OrchardCore.ContentTypes
-Category: Content Management

@@ -1,9 +1,0 @@
-Name: Body
-AntiForgery: enabled
-Author: The Orchard Team
-Website: http://orchardproject.net
-Version: 2.0.x
-OrchardVersion: 2.0.x
-Description: The body module enables content items to have bodies.
-Dependencies: OrchardCore.Contents, OrchardCore.ContentTypes, OrchardCore.Liquid
-Category: Content Management

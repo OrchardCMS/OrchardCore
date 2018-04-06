@@ -107,7 +107,7 @@ namespace OrchardCore.Modules
 
         private string NormalizePath(string path)
         {
-            return path.Replace('\\', '/').Trim('/');
+            return path.Replace('\\', '/').Trim('/').Replace("//", "/");
         }
     }
 }

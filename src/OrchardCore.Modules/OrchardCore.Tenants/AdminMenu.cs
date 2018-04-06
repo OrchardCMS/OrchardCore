@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Navigation;
 using System;
 using OrchardCore.Environment.Shell;
@@ -31,8 +31,8 @@ namespace OrchardCore.Tenants
             }
 
             builder
-                .Add(T["Design"], "10", design => design
-                    .AddClass("menu-design").Id("design")
+                .Add(T["Configuration"], "10", configuration => configuration
+                    .AddClass("menu-configuration").Id("configuration")
                     .Add(T["Tenants"], "5", deployment => deployment
                         .Action("Index", "Admin", new { area = "OrchardCore.Tenants" })
                         .Permission(Permissions.ManageTenants)
