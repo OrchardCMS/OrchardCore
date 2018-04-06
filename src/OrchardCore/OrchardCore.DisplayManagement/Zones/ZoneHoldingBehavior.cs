@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Shapes;
 
@@ -184,7 +183,7 @@ namespace OrchardCore.DisplayManagement.Zones
             {
                 result = null;
             }
-            else if (binder.ReturnType.GetTypeInfo().IsValueType)
+            else if (binder.ReturnType.IsValueType)
             {
                 result = Activator.CreateInstance(binder.ReturnType);
             }

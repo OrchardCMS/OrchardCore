@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -52,7 +53,7 @@ namespace OrchardCore.Environment.Navigation
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError($"An exception occured while building the menu: {name}", e);
+                    _logger.LogError(e, $"An exception occurred while building the menu: {name}");
                 }
             }
 

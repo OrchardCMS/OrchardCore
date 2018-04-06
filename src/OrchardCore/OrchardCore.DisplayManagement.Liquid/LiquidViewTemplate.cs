@@ -41,7 +41,22 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterTag<RenderBodyTag>("render_body");
             Factory.RegisterTag<RenderSectionTag>("render_section");
             Factory.RegisterTag<RenderTitleSegmentsTag>("page_title");
-            Factory.RegisterTag<DisplayTag>("display");
+            Factory.RegisterTag<AntiForgeryTokenTag>("antiforgerytoken");
+            Factory.RegisterTag<LayoutTag>("layout");
+
+            Factory.RegisterTag<ClearAlternatesTag>("shape_clear_alternates");
+            Factory.RegisterTag<AddAlternatesTag>("shape_add_alternates");
+            Factory.RegisterTag<ClearWrappers>("shape_clear_wrappers");
+            Factory.RegisterTag<AddWrappersTag>("shape_add_wrappers");
+            Factory.RegisterTag<ClearClassesTag>("shape_clear_classes");
+            Factory.RegisterTag<AddClassesTag>("shape_add_classes");
+            Factory.RegisterTag<ClearAttributesTag>("shape_clear_attributes");
+            Factory.RegisterTag<AddAttributesTag>("shape_add_attributes");
+            Factory.RegisterTag<ShapeTypeTag>("shape_type");
+            Factory.RegisterTag<ShapePositionTag>("shape_position");
+            Factory.RegisterTag<ShapeTabTag>("shape_tab");
+            Factory.RegisterTag<RemoveItemTag>("shape_remove_item");
+            Factory.RegisterTag<ShapePagerTag>("shape_pager");
 
             Factory.RegisterTag<HelperTag>("helper");
             Factory.RegisterTag<NamedHelperTag>("shape");
@@ -93,7 +108,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                         }
                         else
                         {
-                            throw new Exception(String.Join(System.Environment.NewLine, errors));
+                            throw new Exception($"Failed to parse liquid file {path}: {String.Join(System.Environment.NewLine, errors)}");
                         }
                     }
                 }
@@ -195,6 +210,12 @@ namespace OrchardCore.DisplayManagement.Liquid
             var layout = await layoutAccessor.GetLayoutAsync();
             context.AmbientValues.Add("ThemeLayout", layout);
 
+            var view = displayContext.ViewContext.View;
+            if (view is RazorView razorView)
+            {
+                context.AmbientValues.Add("LiquidPage", razorView.RazorPage);
+            }
+
             // TODO: Extract the request culture
 
             foreach (var handler in services.GetServices<ILiquidTemplateEventHandler>())
@@ -202,8 +223,12 @@ namespace OrchardCore.DisplayManagement.Liquid
                 await handler.RenderingAsync(context);
             }
 
-            context.MemberAccessStrategy.Register(displayContext.Value.GetType());
-            context.LocalScope.SetValue("Model", displayContext.Value);
+            var model = displayContext.Value;
+            if (model != null)
+            {
+                context.MemberAccessStrategy.Register(model.GetType());
+                context.LocalScope.SetValue("Model", model);
+            }
         }
     }
 }

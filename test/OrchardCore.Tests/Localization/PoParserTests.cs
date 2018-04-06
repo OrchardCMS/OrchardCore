@@ -1,6 +1,5 @@
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using OrchardCore.Localization;
 using OrchardCore.Localization.PortableObject;
 using Xunit;
@@ -187,7 +186,7 @@ namespace OrchardCore.Tests.Localization
         {
             var parser = new PoParser();
 
-            var testAssembly = typeof(PoParserTests).GetTypeInfo().Assembly;
+            var testAssembly = typeof(PoParserTests).Assembly;
             using (var resource = testAssembly.GetManifestResourceStream("OrchardCore.Tests.Localization.PoFiles." + resourceName + ".po"))
             {
                 using (var reader = new StreamReader(resource))

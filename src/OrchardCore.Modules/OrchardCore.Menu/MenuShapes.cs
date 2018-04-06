@@ -52,7 +52,7 @@ namespace OrchardCore.Menu
                         return;
                     }
 
-                    menu.MenuName = contentManager.PopulateAspect<ContentItemMetadata>(menuContentItem).DisplayText;
+                    menu.MenuName = (await contentManager.PopulateAspectAsync<ContentItemMetadata>(menuContentItem)).DisplayText;
 
                     var menuItems = menuContentItem.As<MenuItemsListPart>()?.MenuItems;
 
@@ -64,7 +64,7 @@ namespace OrchardCore.Menu
                     // The first level of menu item shapes is created.
                     // Each other level is created when the menu item is displayed.
 
-                    foreach(var contentItem in menuItems)
+                    foreach (var contentItem in menuItems)
                     {
                         dynamic shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
                         {

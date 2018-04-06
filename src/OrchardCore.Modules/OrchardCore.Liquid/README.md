@@ -7,25 +7,27 @@ For more information about the Liquid syntax, please refer to this site: https:/
 
 ### HTML escaping
 
-All outputs are encoded into HTML by default. It means that any string that returns some HTML reserved chars will
-be converted to the corresponding HTML entities. If you need to render some raw HTML chars you can use the `Raw` filter.
+All outputs are encoded into HTML by default.
+This means that any HTML reserved chars will be converted to the corresponding HTML entities.
+If you need to render some raw HTML chars you can use the `Raw` filter.
 
 ## Content Item Filters
 
-All the default filters that are available in the standard Liquid syntax are available in OrchardCore. On top of that each Orchard module can
-provide custom filters for their own purpose. Here is a list of common filters that apply to content items.
+All the default filters that are available in the standard Liquid syntax are available in OrchardCore.
+On top of that each Orchard module can provide custom filters for their own purpose.
+Here is a list of common filters that apply to content items.
 
 ### display_url
 
-Returns the url of the content item
+Returns the URL of the content item
 
 Input
-```
+```liquid
 {{ Model.ContentItem | display_url }}
 ```
 
 Output
-```
+```text
 /blog/my-blog-post
 ```
 
@@ -34,26 +36,26 @@ Output
 Returns the title of the content item
 
 Input
-```
+```liquid
 {{ Model.ContentItem | display_text }}
 ```
 
 Output
-```
+```text
 My Blog Post
 ```
 
 ### slugify
 
-Convert a text into a string that can be used in a url.
+Convert a text into a string that can be used in a URL.
 
 Input
-```
+```liquid
 {{ "This is some text" | slugify }}
 ```
 
 Output
-```
+```text
 this-is-some-text
 ```
 
@@ -61,15 +63,14 @@ this-is-some-text
 
 Returns the container content item of another content item.
 
-
 Input
-```
+```liquid
 {{ Model.ContentItem | container | display_text }}
 ```
 In this example we assume `ContentItem` represents a blog post.
 
 Output
-```
+```text
 Blog
 ```
 
@@ -78,14 +79,16 @@ Blog
 Converts a UTC date and time to the local date and time based on the site settings.
 
 Input
-```
+```liquid
 {{ "now" | local | date: "%c" }}
+```
 or
+```liquid
 {{ Model.ContentItem.CreatedUtc | local | date: "%c" }}
 ```
 
 Output
-```
+```text
 Wednesday, 02 August 2017 11:54:48
 ```
 
@@ -94,26 +97,26 @@ Wednesday, 02 August 2017 11:54:48
 Localizes a string using the current culture.
 
 Input
-```
+```liquid
 {{ "Hello!" | t }}
 ```
 
 Output
-```
+```text
 Bonjour!
 ```
 
 ### html_class
 
-Converts a string into a friendly html class.
+Converts a string into a friendly HTML class.
 
 Input
-```
+```liquid
 {{ "LandingPage" | html_class }}
 ```
 
 Output
-```
+```text
 landing-page
 ```
 
@@ -122,7 +125,7 @@ landing-page
 Converts a Markdown string to HTML.
 
 Input
-```
+```liquid
 {{ "### Services" | markdownify }}
 ```
 
@@ -170,15 +173,15 @@ The convention is that each Part is exposed by its name as the first level.
 If the content item has custom fields, they will be available under a part whose name will match the content type.
 
 For example, assuming the type `Product` has a Text field named `Size`, access the value of this field for a 
-content item would be:
+content item as follows:
 
-```
+```liquid
 {{ Model.ContentItem.Content.Product.Size.Text }}
 ```
 
 Similarly, if the content item has a `Title` part, we can access it like this:
 
-```
+```liquid
 {{ Model.ContentItem.Content.TitlePart.Title }}
 ```
 
@@ -194,143 +197,102 @@ The following properties are available on the `User` object.
 
 ### Site
 
-Gives access to the current site settings, e.g Site.SiteName
+Gives access to the current site settings, e.g `Site.SiteName`.
+
+| Property | Example | Description |
+| -------- | ------- |------------ |
+| `BaseUrl` |  | The base URL of the site | 
+| `Calendar` |  | The site's calendar | 
+| `Culture` | `en-us` | The site's culture as an ISO language code | 
+| `MaxPagedCount` | `0` | The maximum number of pages that can be paged | 
+| `MaxPageSize` | `100` | The maximum page size that can be set by a user | 
+| `PageSize` | `10` | The default page size of lists | 
+| `SiteName` | `My Site` | The friendly name of the site | 
+| `SuperUser` | `admin` | The user name of the site's super user | 
+| `TimeZone` | `Mountain Standard Time` | The site's time zone | 
+| `UseCdn` | `false` | Enable/disable the use of a CDN | 
+
+### Request
+
+Represents the current request.
+
+The following properties are available on the `Request` object.
+
+| Property | Example | Description |
+| --------- | ---- |------------ |
+| `QueryString` | `?sort=name&page=1` | The query string |
+| `ContentType` | `application/x-www-form-urlencoded; charset=UTF-8` | The `Content-Type` header |
+| `ContentLength` | `600` | The `Content-Length` header |
+| `Cookies` | Usage: `Request.Cookies.orchauth_Default` | The collection of cookies for this request |
+| `Headers` | Usage: `Request.Headers.accept` | The request headers |
+| `Query` | Usage: `Request.Query.sort` | The query value collection parsed from `QueryString` |
+| `Form` | Usage: `Request.Form.value` | The collection of form values |
+| `Protocol` | `https` | The protocol of this request |
+| `Path` | `/OrchardCore.ContentPreview/Preview/Render` | The path of the request, unescaped |
+| `PathBase` | `/mytenant` | The base path of the request, unescaped |
+| `Host` | `localhost:44300` | The `Host` header. May contain the port |
+| `IsHttps` | `true` | True if the scheme of the request is `https` |
+| `Scheme` | `https` | The scheme of the request |
+| `Method` | `GET` | The HTTP method  |
 
 ## Shape Filters
 
-These filters let you create, filter and display shapes.
+These filters let you create and filter shapes.
 
-### new_shape
+### shape_new
 
 Returns a shape with the specified name as input.
 
 Input
-```
-{% assign date_time = "DateTime" | new_shape %}
+```liquid
+{% assign date_time = "DateTime" | shape_new %}
 ```
 
-### shape_string
+### shape_render
 
-Renders a shape to a string value.
+Renders a shape.
 
 Input
+```liquid
+{{ Model.Content | shape_render }}
+
 ```
-{{ "DateTime" | new_shape | shape_string }}
+
+### shape_stringify
+
+Converts a shape to its string representation. Contrary to `shape_render` the result of this filter will
+be encoded if rendered in the output.
+
+Input
+```liquid
+{{ "DateTime" | shape_new | shape_stringify }}
 
 ```
 
 Output
-```
+```text
 Monday, September 11, 2017 3:29:26 PM
 ```
 
-### clear_alternates
-
-Removes any alternates from an input shape.
-
-Input
-```
-{{ my_shape | clear_alternates }}
-
-```
-
-### add_alternates
-
-Adds alternates to an input shape.
-
-Input
-```
-{{ my_shape | add_alternates: "alternate1 alternate2" }}
-
-```
-
-### clear_classes
-
-Removes any classes from an input shape.
-
-Input
-```
-{{ my_shape | clear_classes }}
-
-```
-
-### add_classes
-
-Adds classes to an input shape.
-
-Input
-```
-{{ my_shape | add_classes: "class1 class2" }}
-
-```
-
-### shape_type
-
-Replaces the shape type of an input shape.
-
-Input
-```
-{{ my_shape | shape_type: "OtherShapeType" }}
-
-```
-
-### display_type
-
-Replaces the display type of an input shape.
-
-Input
-```
-{{ my_shape | display_type: "Summary" }}
-
-```
-
-### shape_position
-
-Replaces the position of an input shape.
-
-Input
-```
-{{ my_shape | shape_position: "Content:before" }}
-
-```
-
-### shape_tab
-
-Replaces the tab of an input shape.
-Input
-```
-{{ my_shape | shape_tab: "properties" }}
-
-```
-
-### remove_item
-
-Removes a named shape from an input shape items.
-
-Input
-```
-{% display Model.Content | remove_item: "BodyPart" %}
-```
-
-In this example, the `Model.Content` property evaluates to a zone shape, typically from a Content Item shape template, which contains the `BodyPart` shape
-rendered for the Body Part element. This call will remove the specific shape named `BodyPart`.
-
-### set_properties
-
-Replaces a property of an input shape.
-
-```
-{{ Model.Pager | set_properties: next_class: 'next', next_text: '>>' }}
-```
-
 ## Layout Tags
+
+### layout
+
+Sets the layout of a view.
+
+Input
+```liquid
+{% layout "CustomLayout" %}
+```
+
+Internally an alternate is added to the current theme `Layout` shape.
 
 ### render_body
 
 In a layout, renders the body of the current view.
 
 Input
-```
+```liquid
 {% render_body %}
 ```
 
@@ -339,7 +301,7 @@ Input
 In a layout, renders the section with the specified name.
 
 Input
-```
+```liquid
 {% render_section "Header", required: false %}
 ```
 
@@ -348,7 +310,7 @@ Input
 Alters and renders the title of the current page.
 
 Input
-```
+```liquid
 {% page_title Site.SiteName, position: "before", separator: " - " %}
 ```
 
@@ -358,29 +320,144 @@ The default parameter is a text that is appended to the current value of the tit
 
 ## Shape Tags
 
-### display
+### shape_clear_alternates
 
-Renders a shape. Similar to the `shape_string` filter.
+Removes any alternates from a shape.
 
 Input
-```
-{% assign date_time = "DateTime" | new_shape %}
-{% display date_time %}
+```liquid
+{% shape_clear_alternates my_shape %}
+
 ```
 
-Output
-```
-Monday, September 11, 2017 3:29:26 PM
+### shape_add_alternates
+
+Adds alternates to a shape.
+
+Input
+```liquid
+{% shape_add_alternates my_shape "alternate1", "alternate2" %}
+{% shape_add_alternates my_shape "alternate1 alternate2" %}
 ```
 
-### build_display
+### shape_clear_wrappers
 
-Creates the display shape for a content item. It can be used in conjunction with `display` 
+Removes any wrappers from a shape.
+
+Input
+```liquid
+{% shape_clear_wrappers my_shape %}
+
+```
+
+### shape_add_wrappers
+
+Adds wrappers to a shape.
+
+Input
+```liquid
+{% shape_add_wrappers my_shape "wrapper1", "wrapper2" %}
+{% shape_add_wrappers my_shape "wrapper1 wrapper2" %}
+```
+
+### shape_clear_classes
+
+Removes any classes from a shape.
+
+Input
+```liquid
+{% shape_clear_classes my_shape %}
+```
+
+### shape_add_classes
+
+Adds classes to a shape.
+
+Input
+```liquid
+{% shape_add_classes my_shape "class1 class2" %}
+{% shape_add_classes my_shape "class1", "class2" %}
+```
+
+### shape_clear_attributes
+
+Removes any attributes from a shape.
+
+Input
+```liquid
+{% shape_clear_attributes my_shape %}
+```
+
+### shape_add_attributes
+
+Adds attributes to a shape.
+
+Input
+```liquid
+{% shape_add_attributes my_shape attr_name1: "value1", attr_name2: "value2" ... %}
+```
+
+### shape_type
+
+Sets the type of a shape.
+
+Input
+```liquid
+{% shape_type my_shape "Summary" %}
+```
+
+Whenever the type is changed, it is recommended to clear the shape alternates before using the `shape_clear_alternates` tag.
+
+### shape_position
+
+Sets the position of a shape.
+
+Input
+```liquid
+{% shape_position my_shape "Content:before" %}
+
+```
+
+### shape_tab
+
+Sets the tab of a shape.
+
+Input
+```liquid
+{% shape_tab my_shape "properties" %}
+
+```
+
+### shape_remove_item
+
+Removes a shape by its name in a Zone.
+
+Input
+```liquid
+{% shape_remove_item Model.Content "BodyPart" %}
+{{ Model.Content | shape_render }}
+```
+
+In this example, the `Model.Content` property evaluates to a zone shape, typically from a Content Item shape template, which contains the `BodyPart` shape
+rendered for the Body Part element. This call will remove the specific shape named `BodyPart`.
+
+### shape_pager
+
+Replaces the properties of a Pager shape.
+
+Input
+```liquid
+{% shape_pager Model.Pager next_class: 'next', next_text: '>>' %}
+```
+
+### shape_build_display
+
+Creates the display shape for a content item. It can be used in conjunction with `shape_render` 
 to render a content item.
 
 Input
-```
-{% display mycontentitem | build_display: "Detail"  %}
+```liquid
+{{ mycontentitem | shape_build_display: "Detail" | shape_render }}
 ```
 
 ### shape
@@ -388,7 +465,7 @@ Input
 Renders a specific named tag with its properties
 
 Input
-```
+```liquid
 {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_duration: "00:05:00", cache_tag: "alias:main-menu" %}
 ```
 
@@ -397,17 +474,17 @@ Input
 Renders some HTML content in the specified zone.
 
 Input
-```
+```liquid
 {% zone "Header" %}
     <!-- some content goes here -->
 {% endzone %}
 ```
 
-The content of this block can then be reused from the Layout using the `{% display Model.Header %}` code.
+The content of this block can then be reused from the Layout using the `{{ Model.Header | shape_render }}` code.
 
 ## Tag Helper tags
 
-ASP.NET Core MVC provides a set of tag helpers to render predefined html outputs. The Liquid module provides a way to call into these Tag Helpers using custom liquid tags.
+ASP.NET Core MVC provides a set of tag helpers to render predefined HTML outputs. The Liquid module provides a way to call into these Tag Helpers using custom liquid tags.
 
 ### link
 
@@ -432,6 +509,15 @@ Invokes the `style` tag helper from the **Orchard.ResourceManagement** package.
 ### a
 
 Invokes the `a` tag helper from the MVC package.
+
+### antiforgerytoken
+
+Renders a `<hidden>` element (antiforgery token) that will be validated when the containing `<form>` is submitted.
+
+Example
+```liquid
+{% antiforgerytoken %}
+```
 
 ## CREDITS
 

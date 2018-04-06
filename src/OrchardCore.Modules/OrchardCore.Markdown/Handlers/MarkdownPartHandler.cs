@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -17,19 +18,19 @@ namespace OrchardCore.Markdown.Handlers
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public override void GetContentItemAspect(ContentItemAspectContext context, MarkdownPart part)
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context, MarkdownPart part)
         {
             context.For<BodyAspect>(bodyAspect =>
             {
-
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
                 var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(MarkdownPart));
                 var settings = contentTypePartDefinition.GetSettings<MarkdownPartSettings>();
-
                 var html = Markdig.Markdown.ToHtml(part.Markdown ?? "");
 
                 bodyAspect.Body = new HtmlString(html);
             });
+
+            return Task.CompletedTask;
         }
     }
 }

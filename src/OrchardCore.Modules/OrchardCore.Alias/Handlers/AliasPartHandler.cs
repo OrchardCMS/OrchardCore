@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Fluid;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Settings;
@@ -29,8 +30,8 @@ namespace OrchardCore.Alias.Handlers
             _tagCache = tagCache;
             _liquidTemplateManager = liquidTemplateManager;
         }
-        
-        public override void Updated(UpdateContentContext context, AliasPart part)
+
+        public async override Task UpdatedAsync(UpdateContentContext context, AliasPart part)
         {
             // Compute the Path only if it's empty
             if (!String.IsNullOrEmpty(part.Alias))
@@ -45,10 +46,10 @@ namespace OrchardCore.Alias.Handlers
                 var templateContext = new TemplateContext();
                 templateContext.SetValue("ContentItem", part.ContentItem);
 
-                part.Alias = _liquidTemplateManager.RenderAsync(pattern, templateContext).GetAwaiter().GetResult();
+                part.Alias = await _liquidTemplateManager.RenderAsync(pattern, templateContext);
             }
         }
-        
+
         /// <summary>
         /// Get the pattern from the AutoroutePartSettings property for its type
         /// </summary>
@@ -61,19 +62,19 @@ namespace OrchardCore.Alias.Handlers
             return pattern;
         }
 
-        public override void Published(PublishContentContext context, AliasPart instance)
+        public override Task PublishedAsync(PublishContentContext context, AliasPart instance)
         {
-            _tagCache.RemoveTag($"alias:{instance.Alias}");
+            return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
         }
 
-        public override void Removed(RemoveContentContext context, AliasPart instance)
+        public override Task RemovedAsync(RemoveContentContext context, AliasPart instance)
         {
-            _tagCache.RemoveTag($"alias:{instance.Alias}");
+            return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
         }
 
-        public override void Unpublished(PublishContentContext context, AliasPart instance)
+        public override Task UnpublishedAsync(PublishContentContext context, AliasPart instance)
         {
-            _tagCache.RemoveTag($"alias:{instance.Alias}");
+            return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
         }
     }
 }

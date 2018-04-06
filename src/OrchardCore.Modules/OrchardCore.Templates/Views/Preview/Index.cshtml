@@ -3,86 +3,166 @@
     Title.AddSegment(T["Template Preview"]);
 }
 
-<script asp-name="jquery" at="Foot"></script>
+<style asp-name="bootstrap" use-cdn="true"></style>
+<script asp-name="bootstrap" use-cdn="true" at="Foot"></script>
 <script asp-src="/OrchardCore.Templates/js.cookie.js" depends-on="jquery" at="Foot"></script>
 
-<iframe id="iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;">
+<resources type="Header" />
+
+<iframe id="iframe" style="display:none; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden;z-index:999990;">
     Your browser doesn't support iframes
 </iframe>
 
+<iframe id="iframe2" style="display:none; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden;z-index:999990;">
+    Your browser doesn't support iframes
+</iframe>
+
+<div id="notConnectedWarning" class="alert alert-info alert-dismissible fade show collapse" role="alert" style="position:fixed; height:60px; top:10px;right:40px; display:none; z-index:999999;">
+    <button type="button" id="close-warning" class="close" aria-label="Close" style="position: relative; padding: 0 0 0 1rem; margin-top: -0.2rem;">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <span>@T["Preview Disconnected"] </span>
+</div>
+
+<div id="serverErrorWarning" class="alert alert-warning alert-dismissible fade show" role="alert" style="position:fixed; top:10px;right:40px; display:none; z-index:999999;">
+    <button type="button" id="close-server-warning" class="close" aria-label="Close" style="position: relative; padding: 0 0 0 1rem; margin-top: -0.2rem;">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <p>@T["Preview Error"] </p>
+    <ul></ul>
+</div>
+
+<div id="indexPreviewUrl" style="display:none" data-value="@Url.Action("Index", "Preview" , new { area="OrchardCore.Templates" })"></div>
+<div id="renderPreviewUrl" style="display:none" data-value="@Url.Action("Render", "Preview" , new { area="OrchardCore.Templates" })"></div>
+<div id="contentPreviewUrl" style="display:none" data-value="@Url.Content("~/")"></div>
+
 <resources type="Footer" />
 
-<div id="renderPreviewUrl" style="display:none" data-value="@Url.Content("~/")"></div>
-
 <script type="text/javascript">
+    var indexPreviewUrl = $(document.getElementById('indexPreviewUrl')).data('value');
     var renderPreviewUrl = $(document.getElementById('renderPreviewUrl')).data('value');
+    var contentPreviewUrl = $(document.getElementById('contentPreviewUrl')).data('value');
+    var iframe = document.getElementById('iframe');
+    var iframe2 = document.getElementById('iframe2');
+    var previewEventTimer = null;
+    var previewRenderTimer = null;
 
-    $(function() {
+    $(function () {
         $(window).on('storage', function (ev) {
-            if (ev.key != "OrchardCore.templates") return;
-
-            renderPreview(ev.originalEvent.newValue)
+            if (ev.key == 'OrchardCore.templates:not-connected') {
+                $(notConnectedWarning).show();
+            }
+            else if (ev.key == 'OrchardCore.templates') {
+                if (ev.originalEvent.newValue != null) {
+                    // Smooth event cascading
+                    clearTimeout(previewEventTimer);
+                    previewEventTimer = setTimeout(function () { renderPreview(ev.originalEvent.newValue); }, 150);
+                    $(notConnectedWarning).hide();
+                }
+            }
         });
-        
-        // notify the editor to render the preview
-        localStorage.setItem('OrchardCore.templates:ready', '');
-        localStorage.removeItem('OrchardCore.templates:ready');        
-        renderPreview(localStorage.getItem('OrchardCore.templates'));
+
+        // override default behaviour of Bootstrap's. We only hide, not remove the alert.
+        $('#close-warning').on('click', function () {
+            $('#notConnectedWarning').hide();
+        });
+
+        $('#close-server-warning').on('click', function () {
+            $('#serverErrorWarning').hide();
+        });
+
+        var preview = localStorage.getItem('OrchardCore.templates');
+
+        if (preview == null) {
+            // notify the editor to render the preview
+            localStorage.setItem('OrchardCore.templates:ready', '');
+            localStorage.removeItem('OrchardCore.templates:ready');
+        }
+        else {
+            renderPreview(preview);
+        }
     });
 
-    var iframe = document.getElementById('iframe');
-
     iframe.onload = function () {
-        renderPreviewUrl = this.contentWindow.location;
-        $(iframe.contentWindow).scrollTop(scrollTop);
+        if (previewRendering) {
+            $(this.contentWindow).scrollTop(scrollTop);
+            this.style.display = 'block';
 
-        var count = Cookies.get('orchard:templates:count');
-        Cookies.remove("orchard:templates:count", { path: "/" });
-        for (i = 0; i < count; i++) {
-            Cookies.remove("orchard:templates:" + i, { path: "/" });
+            if (iframe2 && iframe2.contentWindow) {
+                iframe2.style.display = 'none';
+                iframe2.contentWindow.document.open();
+                iframe2.contentWindow.document.write(previewRenderData);
+                iframe2.contentWindow.document.close();
+            }
+            previewRendering = false;
+        }
+
+        if (this.contentWindow && this.contentWindow.location.pathname != indexPreviewUrl) {
+            contentPreviewUrl = this.contentWindow.location.pathname;
+            if (iframe2 && iframe2.contentWindow) {
+                iframe2.contentWindow.location = this.contentWindow.location;
+            }
         }
     }
 
-    var scrollTop;
-    var rendering;
+    var previewRendering;
+    var previewRenderData;
+    var scrollTop = 0;
 
     function renderPreview(value) {
 
-        renderRequested = true;
-
-        // Squashes all event calls into one
-        if (rendering) {
-            return;
+        if (previewRendering) {
+            // Defer the last rendering
+            clearTimeout(previewRenderTimer);
+            previewRenderTimer = setTimeout(function () { renderPreview(value); }, 100);
         }
 
-        // Pump renderPreview calls
-        while (renderRequested) {
-            renderRequested = false;
-            rendering = true;
-            try {
-                var formData = value;
-                if (!formData) return;
+        previewRendering = true;
+        clearTimeout(previewRenderTimer);
 
-                var encoded = window.btoa(unescape(encodeURIComponent(formData)));
+        try {
 
-                var chunks = Math.floor(encoded.length / 1364) + 1;
-                Cookies.set("orchard:templates:count", chunks, { path: "/" });
-
-                for (i = 0; i < chunks; i++) {
-                    var chunk = encoded.slice(i * 1364, (i + 1) * 1364);
-                    Cookies.remove("orchard:templates:" + i, { path: "/" });
-                    Cookies.set("orchard:templates:" + i, chunk, { path: "/" });
-                }
-
-                scrollTop = $(iframe.contentWindow).scrollTop();
-                iframe.contentWindow.location = renderPreviewUrl;
+            var formData = JSON.parse(value);
+            if (!formData) {
+                previewRendering = false;
+                return;
             }
-            catch (e) {
-                console.error('Error while previewing: ' + e);
-            }
-            finally {
-                rendering = false;
-            }
+            formData += '&' + $.param({ 'Alias': contentPreviewUrl || "" });
+
+            $.post(renderPreviewUrl, formData)
+                .done(function (data) {
+                    if (iframe && iframe.contentWindow && iframe2 && iframe2.contentWindow) {
+
+                        // A full writing of the frame document causes the iframe to be re-loaded.
+                        // So, better to update the scroll position on the related 'onload' event.
+                        // Then, we use 2 frames to cancel the flicker that this deferring causes.
+
+                        scrollTop = $(iframe.contentWindow).scrollTop();
+                        $(iframe2.contentWindow).scrollTop(scrollTop);
+                        iframe2.style.display = 'block';
+
+                        iframe.style.display = 'none';
+                        iframe.contentWindow.document.open();
+                        iframe.contentWindow.document.write(data);
+                        iframe.contentWindow.document.close();
+                        previewRenderData = data;
+                    }
+                    $(serverErrorWarning).hide();
+                })
+                .fail(function (data) {
+                    if (data.status) {
+                        var ul = $('#serverErrorWarning ul').empty();
+                        var error = 'Status code ' + data.status;
+                        console.error(error);
+                        $('<li/>').text(error).appendTo(ul);
+                        $(serverErrorWarning).show();
+                    }
+                    previewRendering = false;
+                });
+        }
+        catch (e) {
+            previewRendering = false;
+            console.log('Error while previewing: ' + e);
         }
     }
 

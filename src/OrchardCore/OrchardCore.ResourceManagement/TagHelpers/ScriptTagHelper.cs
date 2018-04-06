@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -41,7 +42,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             _resourceManager = resourceManager;
         }
 
-        public override void Process(TagHelperContext context, TagHelperOutput output)
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             output.SuppressOutput();
 
@@ -175,7 +176,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     definition.SetVersion(Version);
                 }
-                
+
                 // If At is specified then we also render it
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -205,7 +206,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             {
                 // Custom script content
 
-                var childContent = output.GetChildContentAsync().GetAwaiter().GetResult();
+                var childContent = await output.GetChildContentAsync();
 
                 var builder = new TagBuilder("script");
                 builder.InnerHtml.AppendHtml(childContent);

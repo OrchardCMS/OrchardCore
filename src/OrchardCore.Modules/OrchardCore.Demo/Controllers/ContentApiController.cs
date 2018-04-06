@@ -61,7 +61,7 @@ namespace OrchardCore.Demo.Controllers
                 return Unauthorized();
             }
 
-            _contentManager.Create(contentItem);
+            await _contentManager.CreateAsync(contentItem);
 
             return new ObjectResult(contentItem);
         }

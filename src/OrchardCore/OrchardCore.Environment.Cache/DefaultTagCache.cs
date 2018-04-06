@@ -5,6 +5,7 @@ using System.Linq;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Environment.Cache
 {
@@ -61,14 +62,16 @@ namespace OrchardCore.Environment.Cache
             return Enumerable.Empty<string>();
         }
 
-        public void RemoveTag(string tag)
+        public Task RemoveTagAsync(string tag)
         {
             HashSet<string> set;
 
             if (_dictionary.TryRemove(tag, out set))
             {
-                _tagRemovedEventHandlers.Invoke(x => x.TagRemoved(tag, set), _logger);
+                return _tagRemovedEventHandlers.InvokeAsync(x => x.TagRemovedAsync(tag, set), _logger);
             }
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -35,7 +35,7 @@ namespace OrchardCore.Media
                     return null;
                 }
 
-                return mediaFactory.CreateMedia(stream, file.Path, mimeType, file.Length, contentType);
+                return await mediaFactory.CreateMediaAsync(stream, file.Path, mimeType, file.Length, contentType);
             }
         }
 

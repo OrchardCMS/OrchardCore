@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using Esprima;
 using Jint;
-using Jint.Parser;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Scripting.JavaScript
@@ -25,7 +26,7 @@ namespace OrchardCore.Scripting.JavaScript
 
         public string Prefix => "js";
 
-        public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider)
+        public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
         {
             var engine = new Engine();
             
@@ -53,8 +54,8 @@ namespace OrchardCore.Scripting.JavaScript
 
 			var parsedAst = _memoryCache.GetOrCreate(script, entry =>
 			{
-				var parser = new JavaScriptParser();
-				return parser.Parse(script);
+				var parser = new JavaScriptParser(script);
+				return parser.ParseProgram();
 			});
 
 			var result = jsScope.Engine.Execute(parsedAst).GetCompletionValue()?.ToObject();

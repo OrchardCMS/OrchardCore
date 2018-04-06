@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 
@@ -11,6 +12,16 @@ namespace OrchardCore.Environment.Shell
         public ShellSettingsManager(IEnumerable<IShellSettingsConfigurationProvider> configurationProviders)
         {
             _configurationProviders = configurationProviders.OrderBy(x => x.Order);
+        }
+
+        public ShellSettings GetSettings(string name)
+        {
+            if (!TryGetSettings(name, out ShellSettings settings))
+            {
+                throw new ArgumentException("The specified tenant name is not valid.", nameof(name));
+            }
+
+            return settings;
         }
 
         public IEnumerable<ShellSettings> LoadSettings()
@@ -54,6 +65,11 @@ namespace OrchardCore.Environment.Shell
 
         public void SaveSettings(ShellSettings settings)
         {
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
             var configuration = new Dictionary<string, string> { { settings.Name, null } };
 
             var settingsconfiguration = settings.Configuration;
@@ -69,6 +85,22 @@ namespace OrchardCore.Environment.Shell
             {
                 provider.SaveToSource(settings.Name, configuration);
             }
+        }
+
+        /// <summary>
+        /// Tries to retrieve the shell settings associated with the specified tenant.
+        /// </summary>
+        /// <returns><c>true</c> if the settings could be found, <c>false</c> otherwise.</returns>
+        public bool TryGetSettings(string name, out ShellSettings settings)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("The tenant name cannot be null or empty.", nameof(name));
+            }
+
+            settings = LoadSettings().FirstOrDefault(s => string.Equals(s.Name, name, StringComparison.Ordinal));
+
+            return settings != null;
         }
     }
 }

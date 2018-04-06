@@ -11,5 +11,6 @@ namespace OrchardCore.Flows.ViewModels
         public IEnumerable<ContentItem> ContentItems => BagPart.ContentItems;
         public BuildPartDisplayContext BuildPartDisplayContext { get; set; }
         public BagPartSettings Settings { get; set; }
+        public string DisplayType => Settings?.DisplayType;
     }
 }

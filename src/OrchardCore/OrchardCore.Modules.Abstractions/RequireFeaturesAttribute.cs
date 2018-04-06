@@ -32,7 +32,7 @@ namespace OrchardCore.Modules
 
         public static IList<string> GetRequiredFeatureNamesForType(Type type)
         {
-            var attribute = type.GetTypeInfo().GetCustomAttributes<RequireFeaturesAttribute>(false).FirstOrDefault();
+            var attribute = type.GetCustomAttributes<RequireFeaturesAttribute>(false).FirstOrDefault();
 
             return attribute?.RequiredFeatureNames ?? Array.Empty<string>();
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -19,6 +19,6 @@ namespace OrchardCore.Mvc
         public override string Name => _assembly.GetName().Name + ".TagHelpers";
 
         public IEnumerable<TypeInfo> Types => _assembly.ExportedTypes
-            .Select(t => t.GetTypeInfo()).Where(t => t.IsSubclassOf(typeof(TagHelper)));
+            .Select(t => IntrospectionExtensions.GetTypeInfo(t)).Where(t => t.IsSubclassOf(typeof(TagHelper)));
     }
 }

@@ -76,24 +76,26 @@ namespace OrchardCore.Templates.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Create(TemplateViewModel model)
+        public async Task<IActionResult> Create(TemplateViewModel model, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
                 return Unauthorized();
             }
 
+            ViewData["ReturnUrl"] = returnUrl;
             return View(new TemplateViewModel());
         }
 
         [HttpPost, ActionName("Create")]
-        public async Task<IActionResult> CreatePost(TemplateViewModel model)
+        public async Task<IActionResult> CreatePost(TemplateViewModel model, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
                 return Unauthorized();
             }
 
+            ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
                 if (String.IsNullOrWhiteSpace(model.Name))
@@ -108,14 +110,14 @@ namespace OrchardCore.Templates.Controllers
 
                 await _templatesManager.UpdateTemplateAsync(model.Name, template);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToReturnUrlOrIndex(returnUrl);
             }
 
             // If we got this far, something failed, redisplay form
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(string name)
+        public async Task<IActionResult> Edit(string name, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
@@ -126,7 +128,7 @@ namespace OrchardCore.Templates.Controllers
 
             if (!templatesDocument.Templates.ContainsKey(name))
             {
-                return RedirectToAction("Create", new { name });
+                return RedirectToAction("Create", new { name, returnUrl });
             }
 
             var template = templatesDocument.Templates[name];
@@ -138,11 +140,12 @@ namespace OrchardCore.Templates.Controllers
                 Description = template.Description
             };
 
+            ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(string sourceName, TemplateViewModel model)
+        public async Task<IActionResult> Edit(string sourceName, TemplateViewModel model, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
@@ -172,15 +175,16 @@ namespace OrchardCore.Templates.Controllers
                 await _templatesManager.RemoveTemplateAsync(sourceName);
                 await _templatesManager.UpdateTemplateAsync(model.Name, template);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToReturnUrlOrIndex(returnUrl);
             }
 
             // If we got this far, something failed, redisplay form
+            ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(string name)
+        public async Task<IActionResult> Delete(string name, string returnUrl)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
@@ -198,7 +202,19 @@ namespace OrchardCore.Templates.Controllers
 
             _notifier.Success(H["Template deleted successfully"]);
             
-            return RedirectToAction(nameof(Index));
+            return RedirectToReturnUrlOrIndex(returnUrl);
+        }
+
+        private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)
+        {
+            if ((String.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

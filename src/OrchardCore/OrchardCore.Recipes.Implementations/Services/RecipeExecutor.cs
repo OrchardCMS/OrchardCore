@@ -1,18 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Scripting;
@@ -21,7 +21,6 @@ namespace OrchardCore.Recipes.Services
 {
     public class RecipeExecutor : IRecipeExecutor
     {
-        private readonly RecipeHarvestingOptions _recipeOptions;
         private readonly IApplicationLifetime _applicationLifetime;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _orchardHost;
@@ -34,7 +33,6 @@ namespace OrchardCore.Recipes.Services
         public RecipeExecutor(
             IEnumerable<IRecipeEventHandler> recipeEventHandlers,
             IRecipeStore recipeStore,
-            IOptions<RecipeHarvestingOptions> recipeOptions,
             IApplicationLifetime applicationLifetime,
             ShellSettings shellSettings,
             IShellHost orchardHost,
@@ -46,7 +44,6 @@ namespace OrchardCore.Recipes.Services
             _applicationLifetime = applicationLifetime;
             _recipeEventHandlers = recipeEventHandlers;
             _recipeStore = recipeStore;
-            _recipeOptions = recipeOptions.Value;
             Logger = logger;
             T = localizer;
         }
@@ -96,7 +93,8 @@ namespace OrchardCore.Recipes.Services
                                                 Name = child.Value<string>("name"),
                                                 Step = child,
                                                 ExecutionId = executionId,
-                                                Environment = environment
+                                                Environment = environment,
+                                                RecipeDescriptor = recipeDescriptor
                                             };
 
                                             var stepResult = new RecipeStepResult { StepName = recipeStep.Name };
@@ -126,6 +124,16 @@ namespace OrchardCore.Recipes.Services
                                             if (stepResult.IsSuccessful == false)
                                             {
                                                 capturedException.Throw();
+                                            }
+
+                                            if (recipeStep.InnerRecipes != null)
+                                            {
+                                                foreach (var descriptor in recipeStep.InnerRecipes)
+                                                {
+                                                    var innerExecutionId = Guid.NewGuid().ToString();
+                                                    await ExecuteAsync(innerExecutionId, descriptor, environment);
+                                                }
+
                                             }
                                         }
                                     }
@@ -159,15 +167,15 @@ namespace OrchardCore.Recipes.Services
 
                     foreach (var tenantEvent in tenantEvents)
                     {
-                        tenantEvent.ActivatingAsync().Wait();
+                        await tenantEvent.ActivatingAsync();
+                    }
+
+                    foreach (var tenantEvent in tenantEvents.Reverse())
+                    {
+                        await tenantEvent.ActivatedAsync();
                     }
 
                     shellContext.IsActivated = true;
-
-                    foreach (var tenantEvent in tenantEvents)
-                    {
-                        tenantEvent.ActivatedAsync().Wait();
-                    }
                 }
 
                 var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
@@ -216,7 +224,7 @@ namespace OrchardCore.Recipes.Services
         /// <summary>
         /// Traverse all the nodes of the recipe steps and replaces their value if they are scripted.
         /// </summary>
-        private void EvaluateScriptNodes(RecipeExecutionContext recipeStep, IScriptingManager scriptingManager)
+        private void EvaluateScriptNodes(RecipeExecutionContext context, IScriptingManager scriptingManager)
         {
             if (_variablesMethodProvider != null)
             {
@@ -229,27 +237,27 @@ namespace OrchardCore.Recipes.Services
                 throw new Exception(T["Recipe cancelled, application is restarting"]);
             }
 
-            EvaluateJsonTree(scriptingManager, recipeStep.Step);
+            EvaluateJsonTree(scriptingManager, context, context.Step);
         }
 
         /// <summary>
         /// Traverse all the nodes of the json document and replaces their value if they are scripted.
         /// </summary>
-        private void EvaluateJsonTree(IScriptingManager scriptingManager, JToken node)
+        private void EvaluateJsonTree(IScriptingManager scriptingManager, RecipeExecutionContext context, JToken node)
         {
             switch (node.Type)
             {
                 case JTokenType.Array:
                     var array = (JArray)node;
-                    for (var i=0; i < array.Count; i++)
+                    for (var i = 0; i < array.Count; i++)
                     {
-                        EvaluateJsonTree(scriptingManager, array[i]);
+                        EvaluateJsonTree(scriptingManager, context, array[i]);
                     }
                     break;
                 case JTokenType.Object:
                     foreach (var property in (JObject)node)
                     {
-                        EvaluateJsonTree(scriptingManager, property.Value);
+                        EvaluateJsonTree(scriptingManager, context, property.Value);
                     }
                     break;
 
@@ -261,7 +269,7 @@ namespace OrchardCore.Recipes.Services
                     while (value.StartsWith("[") && value.EndsWith("]"))
                     {
                         value = value.Trim('[', ']');
-                        value = (scriptingManager.Evaluate(value) ?? "").ToString();
+                        value = (scriptingManager.Evaluate(value, context.RecipeDescriptor.FileProvider, context.RecipeDescriptor.BasePath, null) ?? "").ToString();
                         ((JValue)node).Value = value;
                     }
                     break;

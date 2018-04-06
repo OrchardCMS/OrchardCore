@@ -50,8 +50,8 @@
                                 <input type="hidden" asp-for="Prefixes" value="@prefix" />
                                 <input type="hidden" asp-for="ContentTypes" value="@widget.ContentType" />
                             </div>
-                                        }
-                                    }
+                        }
+                    }
                 </div>
 
                 <div class="btn-group ">
@@ -74,7 +74,7 @@
                 </div>
             </div>
         </div>
-                                    }
+    }
 
     @if (Context.Items["WidgetsListPart.Edit"] == null)
     {
@@ -84,10 +84,10 @@
         @foreach (var type in widgetContentTypes)
         {
             // Render a mock widget so that its resources are included in the page
-            var contentItem = ContentManager.New(type.Name);
+            var contentItem = await ContentManager.NewAsync(type.Name);
             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
         }
-        
+
         <script asp-src="/OrchardCore.Widgets/Scripts/widgetslist.edit.js" at="Foot" depends-on="admin"></script>
         <style asp-src="/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
     }

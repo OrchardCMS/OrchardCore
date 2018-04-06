@@ -75,7 +75,7 @@ namespace OrchardCore.ContentPreview.Controllers
             }
 
             var contentItemType = Request.Form["ContentItemType"];
-            var contentItem = _contentManager.New(contentItemType);
+            var contentItem = await _contentManager.NewAsync(contentItemType);
 
             // Assign the ids from the currently edited item so that validation thinks
             // it's working on the same item. For instance if drivers are checking name unicity

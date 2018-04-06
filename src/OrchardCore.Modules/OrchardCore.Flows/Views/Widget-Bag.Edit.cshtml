@@ -10,7 +10,7 @@
     <div class="widget-editor-header card-header text-muted">
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa fa-minus" aria-hidden="true"></i></button>
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-plus" aria-hidden="true"></i></button>
-        @T["{0} — <span class=\"hint\">{1}</span>", ContentManager.PopulateAspect<ContentItemMetadata>(contentItem).DisplayText, contentType]
+        @T["{0} — <span class=\"hint\">{1}</span>", (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).DisplayText, contentType]
         <div class="btn-group btn-group-sm float-right" role="group">
             @* We don't render an Insert button as the container type is not known here *@
             <button type="button" class="btn btn-secondary widget-delete" itemprop="RemoveUrl"><i class="fa fa-trash" aria-hidden="true"></i></button>

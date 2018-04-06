@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Environment.Shell.Builders
@@ -22,10 +21,8 @@ namespace OrchardCore.Environment.Shell.Builders
                 // Register the singleton instances to all containers
                 if (service.Lifetime == ServiceLifetime.Singleton)
                 {
-                    var serviceTypeInfo = service.ServiceType.GetTypeInfo();
-
                     // Treat open-generic registrations differently
-                    if (serviceTypeInfo.IsGenericType && serviceTypeInfo.GenericTypeArguments.Length == 0)
+                    if (service.ServiceType.IsGenericType && service.ServiceType.GenericTypeArguments.Length == 0)
                     {
                         // There is no Func based way to register an open-generic type, instead of
                         // tenantServiceCollection.AddSingleton(typeof(IEnumerable<>), typeof(List<>));

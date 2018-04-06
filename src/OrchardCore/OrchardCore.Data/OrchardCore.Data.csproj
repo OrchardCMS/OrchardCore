@@ -19,6 +19,10 @@
     <PackageReference Include="YesSql.Provider.MySql" Version="$(YesSqlProvidersVersion)" />
     <PackageReference Include="YesSql.Provider.SqLite" Version="$(YesSqlProvidersVersion)" />
     <PackageReference Include="YesSql.Provider.PostgreSql" Version="$(YesSqlProvidersVersion)" />
+
+    <!-- Upgrade to a specific version of sqlite to allow for "-r winx64" to be used -->
+    <!-- c.f. https://github.com/ericsink/SQLitePCL.raw/issues/194 -->
+    <PackageReference Include="SQLitePCLRaw.bundle_green" Version="1.1.10-*" />
   </ItemGroup>
 
 </Project>

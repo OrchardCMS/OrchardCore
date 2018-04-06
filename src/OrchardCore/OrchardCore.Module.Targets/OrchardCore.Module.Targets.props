@@ -1,98 +1,25 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!-- 
+  <!--
     This file is packaged with "OrchardCore.Module.Targets.nupkg" in "./build" such that any
-    Module that references it will embedd in its assembly all its static assets.
+    Module that references it will embedd in its assembly all assets files and mapping infos.
   -->
 
   <PropertyGroup>
     <ModuleManifest>Name: $(MSBuildProjectName)</ModuleManifest>
-    <ModuleAssetExcludes>**\*.cs;*.csproj*;obj\**;bin\**;Assets.json;Assets\**;Properties\**;*.props;*.targets;**/.*/**</ModuleAssetExcludes>
-    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+    <ModuleAssetExcludes>Assets.*;Assets\**;**\*.props;**\*.targets</ModuleAssetExcludes>
+    <ModuleDefaultAssetExcludes>$(ModuleAssetExcludes);**\node_modules\**;node_modules\**</ModuleDefaultAssetExcludes>
+    <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\jspm_packages\**;jspm_packages\**</ModuleDefaultAssetExcludes>
+    <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\bower_components\**;bower_components\**</ModuleDefaultAssetExcludes>
     <ModuleType Condition="'$(ModuleType)' == ''">Module</ModuleType>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="**\*" Exclude="$(ModuleAssetExcludes)" />
+    <None Include="$(ModuleNoneIncludes)" Exclude="$(ModuleNoneExcludes)" />
+    <EmbeddedResource Include="**\*" Exclude="$(ModuleDefaultAssetExcludes);$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
   </ItemGroup>
-
-  <Target Name="EmbeddModuleAssets" BeforeTargets="BeforeBuild">
-
-    <RemoveDuplicates Inputs="@(EmbeddedResource)">
-      <Output TaskParameter="Filtered" ItemName="ModuleAssetFiles"/>
-    </RemoveDuplicates>
-
-    <ItemGroup>
-      <ModuleAssets
-        Include=".Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)|%(ModuleAssetFiles.FullPath)"
-        Condition="'%(ModuleAssetFiles.Link)' == ''"/>
-
-      <ModuleAssets
-        Include=".Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.Link)|%(ModuleAssetFiles.FullPath)"
-        Condition="'%(ModuleAssetFiles.Link)' != ''" />
-
-      <ModuleAssets Include=".Modules\$(MSBuildProjectName)\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')" />
-    </ItemGroup>
-
-    <MakeDir Directories="$(IntermediateOutputPath)" ContinueOnError="True"/>
-
-    <WriteLinesToFile
-      File="$(IntermediateOutputPath)module.assets.map"
-      Lines="@(ModuleAssets)"
-      Condition="'@(ModuleAssets)' != ''"
-      Overwrite="true"
-      Encoding="utf-8"
-      ContinueOnError="true" />
-
-    <Message Text="Generating manifest file: $(MSBuildProjectName)" Importance="high" Condition="!Exists('$(ModuleType).txt')" />
-
-    <WriteLinesToFile
-      File="obj\$(ModuleType).txt"
-      Lines="$(ModuleManifest)"
-      Condition="!Exists('$(ModuleType).txt')"
-      Overwrite="true"
-      Encoding="utf-8"
-      ContinueOnError="true" />
-    <Delete
-      Files="obj\$(ModuleType).txt"
-      Condition="Exists('obj\$(ModuleType).txt') and Exists('$(ModuleType).txt')"
-      ContinueOnError="true" />
-
-    <ItemGroup>
-      <EmbeddedResource Remove="@(EmbeddedResource)" />
-      <EmbeddedResource Include="@(ModuleAssetFiles)" />
-      <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' == ''">
-        <LogicalName>$([System.String]::new('$(MSBuildProjectName).%(RelativeDir)%(FileName)%(Extension)').Replace('\', '>').Replace('/', '>'))</LogicalName>
-      </EmbeddedResource>
-      <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' != ''">
-        <LogicalName>$([System.String]::new('$(MSBuildProjectName).%(EmbeddedResource.Link)').Replace('\', '>').Replace('/', '>'))</LogicalName>
-      </EmbeddedResource>
-      <EmbeddedResource Include="$(IntermediateOutputPath)module.assets.map">
-        <Link>module.assets.map</Link>
-      </EmbeddedResource>
-      <EmbeddedResource Include="obj\$(ModuleType).txt" Condition="!Exists('$(ModuleType).txt')">
-        <Link>$(ModuleType).txt</Link>
-      </EmbeddedResource>
-    </ItemGroup>
-  </Target>
-
-  <Target Name="UpdateModuleAssets" AfterTargets="CreateManifestResourceNames">
-    <ItemGroup>
-      <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.WithCulture)' == 'true'">
-        <WithCulture>false</WithCulture>
-        <Culture></Culture>
-      </EmbeddedResource>
-    </ItemGroup>
-  </Target>
-
-  <Target Name="GetModuleLinkedRazorFiles" Returns="@(ModuleLinkedRazorFiles)">
-    <ItemGroup>
-      <ModuleLinkedRazorFiles Include="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' != ''">
-        <ToRelativePath>$(MSBuildProjectName)\%(EmbeddedResource.Link)</ToRelativePath>
-        <FromFullPath>%(EmbeddedResource.FullPath)</FromFullPath>
-      </ModuleLinkedRazorFiles>
-    </ItemGroup>
-  </Target>
 
   <!-- Adds a custom .props file to the generated module package -->
 

@@ -105,7 +105,7 @@ namespace OrchardCore.Widgets.Drivers
                 var zone = model.Zones[i];
                 var prefix = model.Prefixes[i];
 
-                var contentItem = _contentManager.New(contentType);
+                var contentItem = await _contentManager.NewAsync(contentType);
 
                 contentItem.Weld(new WidgetMetadata());
 

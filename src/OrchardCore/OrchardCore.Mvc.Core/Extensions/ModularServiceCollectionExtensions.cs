@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
@@ -13,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.RazorPages;
@@ -51,7 +51,7 @@ namespace OrchardCore.Mvc
             AddModularFrameworkParts(applicationServices, builder.PartManager);
 
             builder.AddModularRazorViewEngine(applicationServices);
-            builder.AddModularRazorPages();
+            builder.AddModularRazorPages(applicationServices);
 
             // Use a custom IViewCompilerProvider so that all tenants reuse the same ICompilerCache instance
             builder.Services.Replace(new ServiceDescriptor(typeof(IViewCompilerProvider), typeof(SharedViewCompilerProvider), ServiceLifetime.Singleton));
@@ -84,13 +84,13 @@ namespace OrchardCore.Mvc
 
         private static void AddDefaultFrameworkParts(ApplicationPartManager partManager)
         {
-            var mvcTagHelpersAssembly = typeof(InputTagHelper).GetTypeInfo().Assembly;
+            var mvcTagHelpersAssembly = typeof(InputTagHelper).Assembly;
             if (!partManager.ApplicationParts.OfType<AssemblyPart>().Any(p => p.Assembly == mvcTagHelpersAssembly))
             {
                 partManager.ApplicationParts.Add(new AssemblyPart(mvcTagHelpersAssembly));
             }
 
-            var mvcRazorAssembly = typeof(UrlResolutionTagHelper).GetTypeInfo().Assembly;
+            var mvcRazorAssembly = typeof(UrlResolutionTagHelper).Assembly;
             if (!partManager.ApplicationParts.OfType<AssemblyPart>().Any(p => p.Assembly == mvcRazorAssembly))
             {
                 partManager.ApplicationParts.Add(new AssemblyPart(mvcRazorAssembly));

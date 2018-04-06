@@ -1,14 +1,22 @@
-﻿using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
 using System;
+using System.Collections.Immutable;
+using System.Linq;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Environment.Navigation;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 
 namespace OrchardCore.OpenId
 {
     public class AdminMenu : INavigationProvider
     {
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+        private readonly ShellDescriptor _shellDescriptor;
+
+        public AdminMenu(
+            IStringLocalizer<AdminMenu> localizer,
+            ShellDescriptor shellDescriptor)
         {
             T = localizer;
+            _shellDescriptor = shellDescriptor;
         }
 
         public IStringLocalizer T { get; set; }
@@ -20,20 +28,50 @@ namespace OrchardCore.OpenId
                 return;
             }
 
-            builder
-                .Add(T["Design"], design => design
-                    .Add(T["Security"], "5", security => security
-                        .Add(T["OpenID Connect Apps"], "15", installed => installed
-                            .Action("Index", "Admin", "OrchardCore.OpenId")
-                            .Permission(Permissions.ManageOpenIdApplications)
-                            .LocalNav()
-                        ))
-                    .Add(T["Settings"], settings => settings
-                        .Add(T["OpenID Connect"], "10", entry => entry
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "open id" })
-                            .LocalNav()
-                        ))
-                );
+            builder.Add(T["OpenID Connect"], "15", category =>
+            {
+                category.AddClass("openid").Id("openid");
+
+                var features = _shellDescriptor.Features.ToImmutableArray();
+                if (features.Any(feature => feature.Id == OpenIdConstants.Features.Server) ||
+                    features.Any(feature => feature.Id == OpenIdConstants.Features.Validation))
+                {
+                    category.Add(T["Settings"], "1", settings =>
+                    {
+                        if (features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
+                        {
+                            settings.Add(T["Authorization server"], "1", server => server
+                                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "OrchardCore.OpenId.Server" })
+                                    .Permission(Permissions.ManageServerSettings)
+                                    .LocalNav());
+                        }
+
+                        if (features.Any(feature => feature.Id == OpenIdConstants.Features.Validation))
+                        {
+                            settings.Add(T["Token validation"], "2", validation => validation
+                                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "OrchardCore.OpenId.Validation" })
+                                    .Permission(Permissions.ManageValidationSettings)
+                                    .LocalNav());
+                        }
+                    });
+                }
+
+                if (features.Any(feature => feature.Id == OpenIdConstants.Features.Management))
+                {
+                    category.Add(T["Management"], "2", management =>
+                    {
+                        management.Add(T["Applications"], "1", applications => applications
+                                  .Action("Index", "Application", "OrchardCore.OpenId")
+                                  .Permission(Permissions.ManageApplications)
+                                  .LocalNav());
+
+                        management.Add(T["Scopes"], "2", applications => applications
+                                  .Action("Index", "Scope", "OrchardCore.OpenId")
+                                  .Permission(Permissions.ManageScopes)
+                                  .LocalNav());
+                    });
+                }
+            });
         }
     }
 }

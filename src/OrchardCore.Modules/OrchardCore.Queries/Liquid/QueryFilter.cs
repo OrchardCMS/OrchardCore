@@ -8,7 +8,7 @@ namespace OrchardCore.Queries.Liquid
 {
     public class QueryFilter : ILiquidFilter
     {
-        private IQueryManager _queryManager;
+        private readonly IQueryManager _queryManager;
 
         public QueryFilter(IQueryManager queryManager)
         {
@@ -17,18 +17,18 @@ namespace OrchardCore.Queries.Liquid
 
         public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            var query = await _queryManager.GetQueryAsync(input.ToStringValue());
+            var query = input.ToObjectValue() as Query;
 
             if (query == null)
             {
-                return null;
+                return NilValue.Instance;
             }
 
             var parameters = new Dictionary<string, object>();
 
             foreach (var name in arguments.Names)
             {
-                parameters.Add(name, arguments[name]);
+                parameters.Add(name, arguments[name].ToObjectValue());
             }
 
             var result = await _queryManager.ExecuteQueryAsync(query, parameters);

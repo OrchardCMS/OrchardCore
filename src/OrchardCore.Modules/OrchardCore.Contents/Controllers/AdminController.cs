@@ -109,7 +109,7 @@ namespace OrchardCore.Contents.Controllers
             else
             {
                 var listableTypes = (await GetListableTypesAsync()).Select(t => t.Name).ToArray();
-                if(listableTypes.Any())
+                if (listableTypes.Any())
                 {
                     query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
                 }
@@ -159,7 +159,7 @@ namespace OrchardCore.Contents.Controllers
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
             var contentItemSummaries = new List<dynamic>();
-            foreach(var contentItem in pageOfContentItems)
+            foreach (var contentItem in pageOfContentItems)
             {
                 contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
             }
@@ -178,9 +178,9 @@ namespace OrchardCore.Contents.Controllers
             var creatable = new List<ContentTypeDefinition>();
             foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
             {
-                if(ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
+                if (ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
                 {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, _contentManager.New(ctd.Name));
+                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
                     if (authorized)
                     {
                         creatable.Add(ctd);
@@ -197,7 +197,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 if (ctd.Settings.ToObject<ContentTypeSettings>().Listable)
                 {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, _contentManager.New(ctd.Name));
+                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
                     if (authorized)
                     {
                         listable.Add(ctd);
@@ -301,7 +301,7 @@ namespace OrchardCore.Contents.Controllers
                 return NotFound();
             }
 
-            var contentItem = _contentManager.New(id);
+            var contentItem = await _contentManager.NewAsync(id);
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
@@ -334,14 +334,15 @@ namespace OrchardCore.Contents.Controllers
         public async Task<IActionResult> CreateAndPublishPOST(string id, string returnUrl)
         {
             // pass a dummy content to the authorization check to check for "own" variations
-            var dummyContent = _contentManager.New(id);
+            var dummyContent = await _contentManager.NewAsync(id);
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, dummyContent))
             {
                 return Unauthorized();
             }
 
-            return await CreatePOST(id, returnUrl, async contentItem => {
+            return await CreatePOST(id, returnUrl, async contentItem =>
+            {
                 await _contentManager.PublishAsync(contentItem);
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
@@ -354,7 +355,7 @@ namespace OrchardCore.Contents.Controllers
 
         private async Task<IActionResult> CreatePOST(string id, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
         {
-            var contentItem = _contentManager.New(id);
+            var contentItem = await _contentManager.NewAsync(id);
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
@@ -369,7 +370,7 @@ namespace OrchardCore.Contents.Controllers
                 return View(model);
             }
 
-            _contentManager.Create(contentItem, VersionOptions.Draft);
+            await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
 
             await conditionallyPublish(contentItem);
 
@@ -378,7 +379,7 @@ namespace OrchardCore.Contents.Controllers
                 return LocalRedirect(returnUrl);
             }
 
-            var adminRouteValues = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem).AdminRouteValues;
+            var adminRouteValues = (await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).AdminRouteValues;
             return RedirectToRoute(adminRouteValues);
         }
 

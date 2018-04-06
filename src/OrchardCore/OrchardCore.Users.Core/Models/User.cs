@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 using OrchardCore.Entities;
 
 namespace OrchardCore.Users.Models
@@ -14,9 +15,10 @@ namespace OrchardCore.Users.Models
         public string SecurityStamp { get; set; }
         public bool EmailConfirmed { get; set; }
         public IList<string> RoleNames { get; set; } = new List<string>();
+        public IList<UserLoginInfo> LoginInfos { get; set; } = new List<UserLoginInfo>();
 
         public override string ToString()
-        {
+        {            
             return UserName;
         }
     }

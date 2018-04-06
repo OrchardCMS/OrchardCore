@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.Body.Model;
 using OrchardCore.Body.Settings;
@@ -17,19 +18,19 @@ namespace OrchardCore.Body.Handlers
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public override void GetContentItemAspect(ContentItemAspectContext context, BodyPart part)
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context, BodyPart part)
         {
             context.For<BodyAspect>(bodyAspect =>
             {
-
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
                 var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(BodyPart));
                 var settings = contentTypePartDefinition.GetSettings<BodyPartSettings>();
-
                 var body = part.Body;
 
                 bodyAspect.Body = new HtmlString(body);
             });
+
+            return Task.CompletedTask;
         }
     }
 }

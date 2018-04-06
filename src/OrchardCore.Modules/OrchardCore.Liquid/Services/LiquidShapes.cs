@@ -38,7 +38,6 @@ namespace OrchardCore.Liquid.Services
         {
             builder.Describe("LiquidPart").OnProcessing(BuildViewModelAsync);
             builder.Describe("LiquidPart_Summary").OnProcessing(BuildViewModelAsync);
-            builder.Describe("LiquidPart_Edit").OnProcessing(BuildViewModelAsync);            
         }
     }
 }
