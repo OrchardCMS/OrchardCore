@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.BackgroundTasks.Models;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.BackgroundTasks.Services
 {
-    public class BackgroundTaskManager
+    public class BackgroundTaskManager : IModularTenantEvents
     {
+        private readonly IModularBackgroundService _backgroundService;
         private readonly IEnumerable<IBackgroundTask> _backgroundTasks;
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
@@ -18,11 +20,13 @@ namespace OrchardCore.BackgroundTasks.Services
         private const string CacheKey = nameof(BackgroundTaskManager);
 
         public BackgroundTaskManager(
+            IModularBackgroundService backgroundService,
             IEnumerable<IBackgroundTask> backgroundTasks,
             IMemoryCache memoryCache,
             ISignal signal,
             ISession session)
         {
+            _backgroundService = backgroundService;
             _backgroundTasks = backgroundTasks;
             _memoryCache = memoryCache;
             _signal = signal;
@@ -82,6 +86,26 @@ namespace OrchardCore.BackgroundTasks.Services
 
             _memoryCache.Set(CacheKey, document);
             _signal.SignalToken(CacheKey);
+        }
+
+        public Task ActivatingAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task ActivatedAsync()
+        {
+            return _backgroundService.UpdateAsync();
+        }
+
+        public Task TerminatingAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task TerminatedAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

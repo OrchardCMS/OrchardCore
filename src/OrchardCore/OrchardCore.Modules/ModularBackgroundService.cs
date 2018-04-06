@@ -55,37 +55,34 @@ namespace OrchardCore.Modules
 
             IsRunning = true;
 
-            CancellationTokenSource signalUpdate = null;
-            var previousShells = Enumerable.Empty<ShellContext>();
+            var signalUpdate = CreateSignalUpdate(stoppingToken);
+            var previousTenants = Enumerable.Empty<Tenant>();
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var runningShells = GetRunningShells();
-
-                if (SignalUpdate(ref signalUpdate, stoppingToken))
-                {
-                    await UpdateAsync(previousShells, runningShells, stoppingToken);
-                }
-
-                previousShells = runningShells;
+                var runningTenants = GetRunningTenants();
+                await UpdateAsync(previousTenants, runningTenants, stoppingToken);
+                previousTenants = runningTenants;
 
                 var pollingDelay = Task.Delay(PollingTime, signalUpdate.Token);
 
-                await RunAsync(runningShells, stoppingToken);
-
-                await WaitAsync(runningShells, pollingDelay, signalUpdate);
+                await RunAsync(runningTenants, stoppingToken);
+                await WaitAsync(runningTenants, pollingDelay, signalUpdate);
+                signalUpdate = SignalUpdate(signalUpdate, stoppingToken);
             }
 
             signalUpdate.Dispose();
+            _signalUpdate.Dispose();
             IsRunning = false;
         }
 
-        private async Task RunAsync(IEnumerable<ShellContext> runningShells, CancellationToken stoppingToken)
+        private async Task RunAsync(IEnumerable<Tenant> runningTenants, CancellationToken stoppingToken)
         {
-            await GetShellsToRun(runningShells).ForEachAsync(async shell =>
+            await GetTenantsToRun(runningTenants).ForEachAsync(async tenant =>
             {
-                var tenant = shell.Settings?.Name;
-                var schedulers = GetSchedulersToRun(tenant);
+                var shell = tenant.Shell;
+
+                var schedulers = GetSchedulersToRun(tenant.Name);
 
                 _httpContextAccessor.HttpContext = shell.GetHttpContext();
 
@@ -109,7 +106,7 @@ namespace OrchardCore.Modules
 
                         try
                         {
-                            Logger.Information($"Start processing background task {taskName} on tenant {tenant}.");
+                            Logger.Information($"Start processing background task {taskName} on tenant {tenant.Name}.");
 
                             scheduler.Run();
 
@@ -117,29 +114,30 @@ namespace OrchardCore.Modules
 
                             scheduler.Idle();
 
-                            Logger.Information($"Finished processing background task {taskName} on tenant {tenant}.");
+                            Logger.Information($"Finished processing background task {taskName} on tenant {tenant.Name}.");
                         }
 
                         catch (Exception e)
                         {
                             scheduler.Fault(e);
 
-                            Logger.Error(e, $"Error while processing background task {taskName} on tenant {tenant}.");
+                            Logger.Error(e, $"Error while processing background task {taskName} on tenant {tenant.Name}.");
                         }
                     }
                 }
             });
         }
 
-        private async Task UpdateAsync(IEnumerable<ShellContext> previousShells,
-            IEnumerable<ShellContext> runningShells, CancellationToken stoppingToken)
+        private async Task UpdateAsync(IEnumerable<Tenant> previousTenants,
+            IEnumerable<Tenant> runningTenants, CancellationToken stoppingToken)
         {
             var referenceTime = DateTime.UtcNow;
 
-            await GetShellsToUpdate(previousShells, runningShells).ForEachAsync(async shell =>
+            await GetTenantsToUpdate(previousTenants, runningTenants).ForEachAsync(async tenant =>
             {
+                var shell = tenant.Shell;
+
                 IEnumerable<Type> taskTypes;
-                var tenant = shell.Settings?.Name;
 
                 _httpContextAccessor.HttpContext = shell.GetHttpContext();
 
@@ -151,7 +149,7 @@ namespace OrchardCore.Modules
                 using (var scope = shell.EnterServiceScope())
                 {
                     taskTypes = scope.GetTaskTypes();
-                    CleanSchedulers(tenant, taskTypes);
+                    CleanSchedulers(tenant.Name, taskTypes);
 
                     if (!taskTypes.Any())
                     {
@@ -167,9 +165,9 @@ namespace OrchardCore.Modules
 
                         var taskName = taskType.FullName;
 
-                        if (!_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
+                        if (!_schedulers.TryGetValue(tenant.Name + taskName, out BackgroundTaskScheduler scheduler))
                         {
-                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime);
+                            _schedulers[tenant.Name + taskName] = scheduler = new BackgroundTaskScheduler(tenant.Name, taskName, referenceTime);
                         }
 
                         if (scheduler.Updated)
@@ -193,59 +191,74 @@ namespace OrchardCore.Modules
                         catch (Exception e)
                         {
                             scheduler.Fault(e);
-                            Logger.Error(e, $"Error while updating settings of background task {taskName} on tenant {tenant}.");
+                            Logger.Error(e, $"Error while updating settings of background task {taskName} on tenant {tenant.Name}.");
                         }
                     }
                 }
             });
         }
 
-        private async Task WaitAsync(IEnumerable<ShellContext> shells, Task pollingDelay, CancellationTokenSource signalUpdate)
+        private async Task WaitAsync(IEnumerable<Tenant> tenants, Task pollingDelay, CancellationTokenSource signalUpdate)
         {
-            var minIdleDelay = Task.Delay(MinIdleTime, signalUpdate.Token);
-
             try
             {
-                while (!minIdleDelay.IsCompleted || !pollingDelay.IsCompleted)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(1), signalUpdate.Token);
-
-                    if (shells.Any(s => s.Released) || shells.Count() != GetRunningShells().Count())
-                    {
-                        _signalUpdate.Cancel();
-                    }
-                }
+                await Task.Delay(MinIdleTime, signalUpdate.Token);
+                await pollingDelay;
             }
             catch (OperationCanceledException)
             {
             }
         }
 
-        private bool SignalUpdate(ref CancellationTokenSource signalUpdate, CancellationToken stoppingToken)
+        private CancellationTokenSource SignalUpdate(CancellationTokenSource signalUpdate, CancellationToken stoppingToken)
         {
-            if (signalUpdate == null || _signalUpdate.IsCancellationRequested)
+            if (_signalUpdate.IsCancellationRequested && !stoppingToken.IsCancellationRequested)
             {
-                if (signalUpdate != null)
+                lock (_synLock)
                 {
-                    lock (_synLock)
-                    {
-                        _signalUpdate = new CancellationTokenSource();
-                    }
-
-                    signalUpdate.Dispose();
+                    _signalUpdate.Dispose();
+                    _signalUpdate = new CancellationTokenSource();
                 }
 
+                signalUpdate.Dispose();
                 signalUpdate = CreateSignalUpdate(stoppingToken);
-
-                return true;
             }
 
-            return false;
+            return signalUpdate;
         }
 
         private CancellationTokenSource CreateSignalUpdate(CancellationToken stoppingToken)
         {
             return CancellationTokenSource.CreateLinkedTokenSource(_signalUpdate.Token, stoppingToken);
+        }
+
+        public Task UpdateAsync()
+        {
+            lock (_synLock)
+            {
+                _signalUpdate.CancelAfter(TimeSpan.FromMilliseconds(1500));
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task UpdateAsync(string tenant)
+        {
+            var values = _schedulers.Where(s => s.Value.Name == tenant).Select(s => s.Value).ToArray();
+
+            foreach (var value in values)
+            {
+                var scheduler = value.Clone();
+                scheduler.Updated = false;
+                _schedulers[tenant + scheduler.Name] = scheduler;
+            }
+
+            lock (_synLock)
+            {
+                _signalUpdate.Cancel();
+            }
+
+            return Task.CompletedTask;
         }
 
         public Task UpdateAsync(string tenant, string taskName)
@@ -305,6 +318,18 @@ namespace OrchardCore.Modules
                 .Select(kv => kv.Value.State.Clone()));
         }
 
+        private class Tenant
+        {
+            public Tenant(ShellContext shell)
+            {
+                Name = shell.Settings?.Name;
+                Shell = shell;
+            }
+
+            public string Name { get; }
+            public ShellContext Shell { get; }
+        }
+
         private IEnumerable<ShellContext> GetRunningShells()
         {
             return _shellHost.ListShellContexts()?
@@ -312,30 +337,35 @@ namespace OrchardCore.Modules
                 .ToArray() ?? Enumerable.Empty<ShellContext>();
         }
 
-        private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)
+        private IEnumerable<Tenant> GetRunningTenants()
         {
-            var schedulers = _schedulers.Where(s => s.Value.CanRun());
-            var tenants = schedulers.Select(s => s.Value.Tenant).ToArray();
-            return shells.Where(s => tenants.Contains(s.Settings?.Name));
+            return GetRunningShells().Select(s => new Tenant(s));
         }
 
-        private IEnumerable<ShellContext> GetShellsToUpdate(IEnumerable<ShellContext> previousShells,
-            IEnumerable<ShellContext> runningShells)
+        private IEnumerable<Tenant> GetTenantsToRun(IEnumerable<Tenant> tenants)
         {
-            var tenantsToClean = previousShells.Where(s => s.Released).Select(s => s.Settings?.Name);
+            var schedulers = _schedulers.Where(s => s.Value.CanRun());
+            var tenantsToRun = schedulers.Select(s => s.Value.Tenant);
+            return tenants.Where(s => tenantsToRun.Contains(s.Name));
+        }
+
+        private IEnumerable<Tenant> GetTenantsToUpdate(IEnumerable<Tenant> previousTenants,
+            IEnumerable<Tenant> runningTenants)
+        {
+            var tenantsToClean = previousTenants.Where(t => t.Shell.Released).Select(t => t.Name);
 
             if (tenantsToClean.Any())
             {
                 CleanSchedulers(tenantsToClean);
             }
 
-            var runningTenants = runningShells.Select(s => s.Settings?.Name);
-            var previousTenants = previousShells.Select(s => s.Settings?.Name).Except(tenantsToClean);
+            var runningTenantNames = runningTenants.Select(t => t.Name);
+            var previousTenantNames = previousTenants.Select(t => t.Name).Except(tenantsToClean);
 
-            var tenantsToUpdate = runningTenants.Except(previousTenants).Concat(_schedulers
+            var tenantsToUpdate = runningTenantNames.Except(previousTenantNames).Concat(_schedulers
                 .Where(s => !s.Value.Updated).Select(s => s.Value.Tenant)).Distinct();
 
-            return runningShells.Where(s => tenantsToUpdate.Contains(s.Settings?.Name));
+            return runningTenants.Where(s => tenantsToUpdate.Contains(s.Name));
         }
 
         private IEnumerable<BackgroundTaskScheduler> GetSchedulersToRun(string tenant)
