@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.Environment.Shell;
@@ -26,6 +27,7 @@ namespace OrchardCore.DisplayManagement.Notify
         private bool _shouldDeleteCookie;
         private string _tenantPath;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly ILogger<NotifyFilter> _logger;
 
         public NotifyFilter(
             INotifier notifier,
@@ -33,9 +35,11 @@ namespace OrchardCore.DisplayManagement.Notify
             IShapeFactory shapeFactory,
             ShellSettings shellSettings,
             IDataProtectionProvider dataProtectionProvider,
-            HtmlEncoder htmlEncoder)
+            HtmlEncoder htmlEncoder,
+            ILogger<NotifyFilter> logger)
         {
             _htmlEncoder = htmlEncoder;
+            _logger = logger;
             _dataProtectionProvider = dataProtectionProvider;
             _shellSettings = shellSettings;
 
@@ -174,6 +178,8 @@ namespace OrchardCore.DisplayManagement.Notify
             catch
             {
                 messageEntries = null;
+
+                _logger.LogWarning("The notification entries could not be decrypted");
             }
         }
     }
