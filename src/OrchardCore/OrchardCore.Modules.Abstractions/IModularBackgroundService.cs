@@ -14,6 +14,5 @@ namespace OrchardCore.Modules
         Task<IEnumerable<BackgroundTaskState>> GetStatesAsync(string tenant);
         Task UpdateAsync(string tenant, string taskName);
         Task UpdateAsync(string tenant);
-        Task UpdateAsync();
     }
 }

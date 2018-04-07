@@ -9,7 +9,7 @@ using YesSql;
 
 namespace OrchardCore.BackgroundTasks.Services
 {
-    public class BackgroundTaskManager : IModularTenantEvents
+    public class BackgroundTaskManager
     {
         private readonly IModularBackgroundService _backgroundService;
         private readonly IEnumerable<IBackgroundTask> _backgroundTasks;
@@ -86,26 +86,6 @@ namespace OrchardCore.BackgroundTasks.Services
 
             _memoryCache.Set(CacheKey, document);
             _signal.SignalToken(CacheKey);
-        }
-
-        public Task ActivatingAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task ActivatedAsync()
-        {
-            return _backgroundService.UpdateAsync();
-        }
-
-        public Task TerminatingAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task TerminatedAsync()
-        {
-            return Task.CompletedTask;
         }
     }
 }

@@ -12,7 +12,6 @@ namespace OrchardCore.BackgroundTasks
         {
             services
                 .AddScoped<BackgroundTaskManager>()
-                .AddScoped<IModularTenantEvents>(sp => sp.GetRequiredService<BackgroundTaskManager>())
                 .AddScoped<IPermissionProvider, Permissions>()
                 .AddScoped<INavigationProvider, AdminMenu>()
                 .AddBackgroundTaskDocument();
