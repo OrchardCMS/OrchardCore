@@ -84,7 +84,7 @@ namespace OrchardCore.Modules
                     
                     await _next.Invoke(httpContext);
                     var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
-                    hasPendingTasks = deferredTaskEngine.HasPendingTasks;
+                    hasPendingTasks = deferredTaskEngine?.HasPendingTasks ?? false;
                 }
 
                 // Create a new scope only if there are pending tasks
