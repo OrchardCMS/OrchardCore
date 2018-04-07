@@ -15,6 +15,7 @@ namespace OrchardCore.Users.Drivers
         {
             return Shape<RegistrationSettings>("RegistrationSettings_Edit", model => {
                 model.UsersCanRegister = section.UsersCanRegister;
+                model.EnableLostPassword = section.EnableLostPassword;
 
             }).Location("Content:5").OnGroup(GroupId);
         }
