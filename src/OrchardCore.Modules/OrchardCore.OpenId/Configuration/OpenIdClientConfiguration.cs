@@ -85,7 +85,15 @@ namespace OrchardCore.OpenId.Configuration
             if (!string.IsNullOrEmpty(settings.ClientSecret))
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
-                options.ClientSecret = protector.Unprotect(settings.ClientSecret);
+
+                try
+                {
+                    options.ClientSecret = protector.Unprotect(settings.ClientSecret);
+                }
+                catch
+                {
+                    _logger.LogError("The client secret could not be decrypted. It may have been encrypted using a different key.");
+                }
             }
         }
 
