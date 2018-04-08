@@ -69,7 +69,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 MockSignInManager(mockUserManager).Object,
                 mockUserManager,
                 Mock.Of<ILogger<AccountController>>(),
-                mockSiteService
+                mockSiteService,
                 Mock.Of<ISmtpService>(),
                 Mock.Of<ICompositeViewEngine>(),
                 Mock.Of<IStringLocalizer<AdminController>>(),
