@@ -1,4 +1,5 @@
 using System;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -12,6 +13,7 @@ using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
+using OrchardCore.Email;
 
 namespace OrchardCore.Users.Controllers
 {
@@ -23,19 +25,24 @@ namespace OrchardCore.Users.Controllers
         private readonly UserManager<IUser> _userManager;
         private readonly ILogger _logger;
         private readonly ISiteService _siteService;
+        private readonly ISmtpService _smtpService;
 
         public AccountController(
             IUserService userService,
             SignInManager<IUser> signInManager,
             UserManager<IUser> userManager,
             ILogger<AccountController> logger,
-            ISiteService siteService)
+            ISiteService siteService,
+            ISmtpService smtpService
+            )
+
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _userService = userService;
             _logger = logger;
             _siteService = siteService;
+            _smtpService = smtpService;
         }
 
         [HttpGet]
@@ -200,7 +207,7 @@ namespace OrchardCore.Users.Controllers
                 if (user != null)
                 {
                     user.ResetToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(user.ResetToken));
-                    // send email with callback link
+                    await SendResetPasswordEmail(user);
                 }
             }
 
@@ -248,6 +255,27 @@ namespace OrchardCore.Users.Controllers
         public IActionResult ResetPasswordConfirmation()
         {
             return View();
+        }
+
+        private async Task SendResetPasswordEmail(User user)
+        {
+            var site = await _siteService.GetSiteSettingsAsync();
+
+            if (string.IsNullOrWhiteSpace(site.BaseUrl))
+            {
+                site.BaseUrl = string.Concat(HttpContext.Request.Scheme, "://", HttpContext.Request.Headers["Host"]);
+            }
+
+            var link = string.Concat(site.BaseUrl, "/OrchardCore.Users/Account/ResetPassword?code=", user.ResetToken);
+
+            await _smtpService.SendAsync(new MailMessage(new MailAddress("no-reply@here.com"), new MailAddress(user.Email))
+            {
+                Subject = "Password recovery",
+                // don't know if there is a template engine
+                Body = string.Concat("Click on the following link to reset your password: <a href=\"", link, "\">", link, "</a>"),
+                IsBodyHtml = true
+            });
+
         }
     }
 }
