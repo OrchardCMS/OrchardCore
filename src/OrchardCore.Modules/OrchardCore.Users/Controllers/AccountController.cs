@@ -268,7 +268,7 @@ namespace OrchardCore.Users.Controllers
 
             var link = string.Concat(site.BaseUrl, "/OrchardCore.Users/Account/ResetPassword?code=", user.ResetToken);
 
-            await _smtpService.SendAsync(new MailMessage(new MailAddress("no-reply@here.com"), new MailAddress(user.Email))
+            await _smtpService.SendAsync(new MailMessage(new MailAddress(string.Concat("no-reply@", HttpContext.Request.Headers["Host"])), new MailAddress(user.Email))
             {
                 Subject = "Password recovery",
                 // don't know if there is a template engine
