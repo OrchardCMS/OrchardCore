@@ -66,13 +66,14 @@ namespace OrchardCore.BackgroundTasks.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            var allTaskNames = _backgroundTaskManager.TaskNames;
+            var allTaskNames = _backgroundTaskManager.TaskNames.OrderBy(n => n);
             var document = await _backgroundTaskManager.GetDocumentAsync();
             var otherTaskNames = allTaskNames.Except(document.Tasks.Keys);
 
             var states = (await _backgroundService.GetStatesAsync(_tenant));
+            var stateNames = states.Select(s => s.Name).OrderBy(s => s);
 
-            if (states.Count() != allTaskNames.Count())
+            if (!allTaskNames.SequenceEqual(stateNames))
             {
                 await _backgroundService.UpdateAsync(_tenant);
                 states = (await _backgroundService.GetStatesAsync(_tenant));
