@@ -162,15 +162,15 @@ namespace OrchardCore.Modules
                             _schedulers[tenant.Name + taskName] = scheduler = new BackgroundTaskScheduler(tenant.Name, taskName, referenceTime);
                         }
 
-                        if (scheduler.Updated && !scheduler.Released)
+                        if (!scheduler.Released && scheduler.Updated)
                         {
                             continue;
                         }
 
+                        scheduler = scheduler.Clone();
+
                         try
                         {
-                            scheduler = scheduler.Clone();
-
                             var settings = await scope.GetTaskSettingsAsync(taskType);
 
                             if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule))
@@ -181,14 +181,18 @@ namespace OrchardCore.Modules
                             scheduler.Settings = settings.Clone();
                             scheduler.Released = false;
                             scheduler.Updated = true;
-
-                            _schedulers[tenant.Name + taskName] = scheduler;
+                            scheduler.CanRun();
                         }
 
                         catch (Exception e)
                         {
                             scheduler.Fault(e);
                             Logger.Error(e, $"Error while updating settings of background task {taskName} on tenant {tenant.Name}.");
+                        }
+
+                        finally
+                        {
+                            _schedulers[tenant.Name + taskName] = scheduler;
                         }
                     }
                 }
@@ -214,7 +218,6 @@ namespace OrchardCore.Modules
             if (shell != null)
             {
                 await UpdateAsync(Enumerable.Empty<Tenant>(), new Tenant[] { new Tenant(shell) }, CancellationToken.None);
-                var schedulers = GetSchedulersToRun(tenant);
             }
         }
 
@@ -222,9 +225,7 @@ namespace OrchardCore.Modules
         {
             if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
             {
-                scheduler = scheduler.Clone();
-                scheduler.Updated = false;
-                _schedulers[tenant + taskName] = scheduler;
+                _schedulers[tenant + taskName] = scheduler.Clone(s => s.Updated = false);
             }
 
             return UpdateAsync(tenant);
@@ -234,7 +235,7 @@ namespace OrchardCore.Modules
         {
             if (_schedulers.TryRemove(tenant + taskName, out BackgroundTaskScheduler scheduler))
             {
-                _schedulers[tenant + taskName] = scheduler.Command(code);
+                _schedulers[tenant + taskName] = scheduler.Clone(s => s.Command(code));
             }
         }
 
@@ -302,7 +303,7 @@ namespace OrchardCore.Modules
 
         private IEnumerable<Tenant> GetTenantsToUpdate(IEnumerable<Tenant> previousTenants, IEnumerable<Tenant> runningTenants)
         {
-            var tenantsToRelease = previousTenants.Where(t => t.Shell.Released).Select(t => t.Name);
+            var tenantsToRelease = previousTenants.Where(t => t.Shell.Released).Select(t => t.Name).ToArray();
 
             if (tenantsToRelease.Any())
             {
@@ -328,9 +329,7 @@ namespace OrchardCore.Modules
             {
                 if (_schedulers.TryGetValue(key, out BackgroundTaskScheduler scheduler))
                 {
-                    scheduler = scheduler.Clone();
-                    scheduler.Released = true;
-                    _schedulers[key] = scheduler;
+                    _schedulers[key] = scheduler.Clone(s => s.Released = true);
                 }
             }
         }

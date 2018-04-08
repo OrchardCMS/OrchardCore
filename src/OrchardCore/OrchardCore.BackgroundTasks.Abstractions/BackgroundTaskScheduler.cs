@@ -71,33 +71,29 @@ namespace OrchardCore.BackgroundTasks
             State.FaultMessage = DateTime.UtcNow.ToString() + ' ' + exception.Message;
         }
 
-        public BackgroundTaskScheduler Command(CommandCode code)
+        public void Command(CommandCode code)
         {
-            var scheduler = Clone();
-
             if (code == CommandCode.Lock)
             {
-                scheduler.State.Status = BackgroundTaskStatus.Locked;
+                State.Status = BackgroundTaskStatus.Locked;
             }
             else if (code == CommandCode.Unlock)
             {
-                if (scheduler.State.Status == BackgroundTaskStatus.Locked)
+                if (State.Status == BackgroundTaskStatus.Locked)
                 {
-                    scheduler.State.Status = BackgroundTaskStatus.Idle;
+                    State.Status = BackgroundTaskStatus.Idle;
                 }
             }
             else if (code == CommandCode.ResetCount)
             {
-                scheduler.State.StartCount = 0;
-                scheduler.State.LastExecutionTime = new TimeSpan();
-                scheduler.State.TotalExecutionTime = new TimeSpan();
+                State.StartCount = 0;
+                State.LastExecutionTime = new TimeSpan();
+                State.TotalExecutionTime = new TimeSpan();
             }
             else if (code == CommandCode.ResetFault)
             {
-                scheduler.State.FaultMessage = String.Empty;
+                State.FaultMessage = String.Empty;
             }
-
-            return scheduler;
         }
 
         public BackgroundTaskScheduler Clone()
@@ -107,6 +103,13 @@ namespace OrchardCore.BackgroundTasks
                 Settings = Settings.Clone(),
                 State = State.Clone()
             };
+        }
+
+        public BackgroundTaskScheduler Clone(Action<BackgroundTaskScheduler> action)
+        {
+            var scheduler = Clone();
+            action(scheduler);
+            return scheduler;
         }
 
         public enum CommandCode
