@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using OrchardCore.Environment.Shell;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using NSwag.Annotations;
 
 namespace OrchardCore.Apis.OpenApi
 {
@@ -70,13 +73,26 @@ namespace OrchardCore.Apis.OpenApi
             {
                 foreach (var description in group.Items)
                 {
-                    // [ProducesResponseType()]
-
                     var responses = new OpenApiResponses();
 
-                    foreach (var rt in description.SupportedResponseTypes)
+                    var controller = ((ControllerActionDescriptor)description.ActionDescriptor);
+
+                    var skippedMethod = controller
+                        .MethodInfo.GetCustomAttribute<SwaggerIgnoreAttribute>();
+
+                    if (skippedMethod != null)
                     {
-                        responses[rt.StatusCode.ToString()] = new OpenApiResponse { };
+                        continue;
+                    }
+
+                    var supportedResponses = controller
+                        .MethodInfo.GetCustomAttributes<SwaggerResponseAttribute>();
+                    
+                    foreach (var supportedResponse in supportedResponses)
+                    {
+                        responses[supportedResponse.StatusCode] = new OpenApiResponse {
+                            Description = supportedResponse.Description,
+                        };
                     }
 
                     document.Paths.Add(
