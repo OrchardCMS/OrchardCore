@@ -283,6 +283,7 @@ $link-padding-left: 16px !default;
             top: 40px;
         }
 
+
         #left-nav ul.menu-admin > li > label {
             background-color: $gray-700;
             color: $gray-100;
@@ -292,7 +293,9 @@ $link-padding-left: 16px !default;
         // formatting of icons
         #left-nav ul.menu-admin > li label span.icon {
             display: inline-block !important;
-            margin-right: 20px;
+            margin: 0px 20px 0px 0px;
+            padding-bottom: 0px;
+            padding-top: 0px;
             font-size: 16px !important;
             color: $gray-700;
             background-color: $gray-100;
@@ -307,14 +310,20 @@ $link-padding-left: 16px !default;
         #left-nav ul.menu-admin > li label span.icon:hover {
             color: $gray-100;
             background-color: $gray-700;
+        
         }
         // hide chevrons on first level
         #left-nav ul.menu-admin > li > label span:last-child {
             color: rgba(255, 0, 0, 0); // don't use display:none. don't use opacity.
         }
-
+    }
+    
+    // fixing a flickering that occurs on compact leftbar while icons load.
+    html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > label {
+        background-color: $gray-100 !important;
     }
 }
+
 
 
 

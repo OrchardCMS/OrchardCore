@@ -16,5 +16,12 @@
       "Assets/js/*.js"
     ],
     "output": "wwwroot/Scripts/TheAdmin.js"
+  },
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/js/userPreferencesLoader/userPreferencesLoader.js"
+    ],
+    "output": "wwwroot/Scripts/userPreferencesLoader.js"
   }
 ]

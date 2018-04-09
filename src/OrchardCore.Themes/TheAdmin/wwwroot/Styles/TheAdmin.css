@@ -6368,7 +6368,9 @@ a.text-dark:hover, a.text-dark:focus {
       margin: 0px; }
     .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li label span.icon {
       display: inline-block !important;
-      margin-right: 20px;
+      margin: 0px 20px 0px 0px;
+      padding-bottom: 0px;
+      padding-top: 0px;
       font-size: 16px !important;
       color: #495057;
       background-color: #f8f9fa;
@@ -6380,7 +6382,9 @@ a.text-dark:hover, a.text-dark:focus {
       color: #f8f9fa;
       background-color: #495057; }
     .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > label span:last-child {
-      color: rgba(255, 0, 0, 0); } }
+      color: rgba(255, 0, 0, 0); }
+  html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > label {
+    background-color: #f8f9fa !important; } }
 
 @media (max-width: 767.98px) {
   #ta-left-sidebar {

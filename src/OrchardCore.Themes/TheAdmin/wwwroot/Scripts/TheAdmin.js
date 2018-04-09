@@ -6349,6 +6349,11 @@ function getConfirmRemoveMessage() {
 }
 
 $(function () {
+    $("body").removeClass("preload");
+});
+
+
+$(function () {
     $("body").on("click", "[itemprop~='RemoveUrl']", function () {
         // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled in base.js
         if ($(this).filter("[itemprop~='UnsafeUrl']").length == 1) {
@@ -6485,12 +6490,26 @@ function isNumber(str) {
 }
 
 
+// When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
+// UserPreferencesLoader has already added the needed class.
+$(function () {
+    ps = new PerfectScrollbar('#left-nav');
+
+    if ($('body').hasClass('left-sidebar-compact')) {
+        setCompactStatus();
+    }
+});
+
+
+
 $('#leftbar-toggler').click(function () {
     $('body').toggleClass('left-sidebar-hidden');
 
     if ($('body').hasClass('left-sidebar-hidden')) {
         $('body').removeClass('leftbar-visible-on-small');
     }
+
+    persistAdminPreferences();
 });
 
 
@@ -6505,11 +6524,21 @@ $('#small-screen-leftbar-toggler').click(function () {
         $('#left-nav').addClass('ps');
         $('#left-nav ul.menu-admin > li > ul').addClass('collapse');
     }
+    persistAdminPreferences();
 });
 
 
 
 $('.leftbar-compactor').click(function () {
+    $('body').hasClass('left-sidebar-compact') ? unSetCompactStatus() : setCompactStatus();
+
+    persistAdminPreferences();
+});
+
+
+
+
+function setCompactStatus() {
     // This if is to avoid that when sliding from expanded to compact the 
     // underliyng ul is visible while shrinking. It is ugly.    
     if (!$('body').hasClass('left-sidebar-compact')) {
@@ -6520,32 +6549,36 @@ $('.leftbar-compactor').click(function () {
         }, 200);
     }
 
-
-    $('body').toggleClass('left-sidebar-compact');
+    $('body').addClass('left-sidebar-compact');
     $('body').removeClass('leftbar-visible-on-small');
 
-    // when compacted, perfect scroll has to be deactivated,
-    // because it enforces overflow:hidden and we need the 
-    // submenus floating on the left when hovering the icons.
-    // Todo: confirm that there is no other way.
-    $('#left-nav').toggleClass('ps');
-    $('#left-nav').toggleClass('ps--active-y'); // need this too because of Edge IE11
-
-    // When leftbar is expanded  all ul tags are collapsed. 
+    // When leftbar is expanded  all ul tags are collapsed.
     // When leftbar is compacted we don't want the first level collapsed. 
     // We want it expanded so that hovering over the root buttons shows the full submenu
-    $('#left-nav ul.menu-admin > li > ul').toggleClass('collapse');
+    $('#left-nav ul.menu-admin > li > ul').removeClass('collapse');
+    $('#left-nav').removeClass('ps');
+    $('#left-nav').removeClass('ps--active-y'); // need this too because of Edge IE11
 
 
     // Fixing a positioning issue on the button on IE/Edge
     if (isIE()) {
-        if ($('body').hasClass('left-sidebar-compact')) {
-            $('.leftbar-compactor').css('margin-top', '-100px');
-        } else {
-            $('.leftbar-compactor').css('margin-top', '0px');
-        }
+       $('.leftbar-compactor').css('margin-top', '-100px');       
     }
-});
+}
+
+
+
+function unSetCompactStatus() {
+    $('body').removeClass('left-sidebar-compact');
+
+    $('#left-nav ul.menu-admin > li > ul').addClass('collapse');
+    $('#left-nav').addClass('ps');
+
+    // Fixing a positioning issue on the button on IE/Edge
+    if (isIE()) {
+        $('.leftbar-compactor').css('margin-top', '0px');
+    }
+}
 
 
 // This detector is only required in order to fix a positioning issue of the leftbar button compactor on IE/Edege
@@ -6604,12 +6637,6 @@ function isIE() {
 //        }
 //    });
 //});
-$(document).ready(function () {	
-    ps = new PerfectScrollbar('#left-nav');
-});
-$(window).on('load', function () {
-    $("body").removeClass("preload");
-});
 /*!
  * perfect-scrollbar v1.3.0
  * (c) 2017 Hyunje Jun
@@ -9365,3 +9392,17 @@ $(function () {
 	Sortable.version = '1.4.2';
 	return Sortable;
 });
+
+// Each time the sidebar status is modified, that is persisted to localStorage.
+// When the page is loaded again, userPreferencesLoader.js will read that info to 
+// restore the sidebar to the previous state.
+function persistAdminPreferences() {
+    setTimeout(function () {
+        var adminPreferences = {};        
+        adminPreferences.leftSidebarHidden = $('body').hasClass('left-sidebar-hidden') ? true : false;
+        adminPreferences.leftbarVisibleOnSmall = $('body').hasClass('leftbar-visible-on-small') ? true : false;
+        adminPreferences.leftSidebarCompact = $('body').hasClass('left-sidebar-compact') ? true : false;
+        
+        localStorage.setItem('adminPreferences', JSON.stringify(adminPreferences));
+    }, 200);
+}
