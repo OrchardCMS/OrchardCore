@@ -6419,7 +6419,8 @@ a.text-dark:hover, a.text-dark:focus {
   border-top: 1px solid #dee2e6;
   background-color: transparent;
   font-size: 1.4rem;
-  color: #495057; }
+  color: #495057;
+  cursor: pointer; }
   .leftbar-compactor:focus {
     outline: none; }
   @media (max-width: 767.98px) {

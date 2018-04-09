@@ -396,6 +396,7 @@ $link-padding-left: 16px !default;
     background-color: transparent;
     font-size: 1.4rem;
     color: $gray-700;
+    cursor: pointer;
 
     &:focus {
         outline: none;
