@@ -28,7 +28,7 @@ namespace OrchardCore.Environment.Shell
         private readonly ILogger _logger;
 
         private readonly static object _syncLock = new object();
-        private ConcurrentDictionary<string, ShellContext> _shellContexts;
+        private ConcurrentDictionary<string, Lazy<ShellContext>> _shellContexts;
         private readonly IExtensionManager _extensionManager;
 
         public ShellHost(
@@ -53,7 +53,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Ensures shells are activated, or re-activated if extensions have changed
         /// </summary>
-        IDictionary<string, ShellContext> BuildCurrent()
+        IDictionary<string, Lazy<ShellContext>> BuildCurrent()
         {
             if (_shellContexts == null)
             {
@@ -61,7 +61,7 @@ namespace OrchardCore.Environment.Shell
                 {
                     if (_shellContexts == null)
                     {
-                        _shellContexts = new ConcurrentDictionary<string, ShellContext>();
+                        _shellContexts = new ConcurrentDictionary<string, Lazy<ShellContext>>();
                         CreateAndRegisterShellsAsync().Wait();
                     }
                 }
@@ -72,13 +72,12 @@ namespace OrchardCore.Environment.Shell
 
         public ShellContext GetOrCreateShellContext(ShellSettings settings)
         {
-            var shell = _shellContexts.GetOrAdd(settings.Name, tenant =>
+            var shell = _shellContexts.GetOrAdd(settings.Name, new Lazy<ShellContext>(() =>
             {
                 var shellContext = CreateShellContextAsync(settings).Result;
                 RegisterShell(shellContext);
-
                 return shellContext;
-            });
+            })).Value;
 
             if (shell.Released)
             {
@@ -116,7 +115,7 @@ namespace OrchardCore.Environment.Shell
             if (allSettings.Length == 0)
             {
                 var setupContext = await CreateSetupContextAsync();
-                RegisterShell(setupContext);
+                AddAndRegisterShell(setupContext);
             }
             else
             {
@@ -146,9 +145,9 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Registers the shell settings in RunningShellTable
+        /// Whether or not a shell can be activated and added to the running shells.
         /// </summary>
-        private void RegisterShell(ShellContext context)
+        private bool CanRegisterShell(ShellContext context)
         {
             if (!CanRegisterShell(context.Settings))
             {
@@ -157,16 +156,38 @@ namespace OrchardCore.Environment.Shell
                     _logger.LogDebug("Skipping shell context registration for tenant {0}", context.Settings.Name);
                 }
 
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Registers the shell settings in RunningShellTable
+        /// </summary>
+        private void RegisterShell(ShellContext context)
+        {
+            if (!CanRegisterShell(context))
+            {
                 return;
             }
 
-            if (_shellContexts.TryAdd(context.Settings.Name, context))
+            RegisterSettings(context.Settings);
+        }
+
+        /// <summary>
+        /// Adds the shell and registers its settings in RunningShellTable
+        /// </summary>
+        private void AddAndRegisterShell(ShellContext context)
+        {
+            if (!CanRegisterShell(context))
             {
-                if (_logger.IsEnabled(LogLevel.Debug))
-                {
-                    _logger.LogDebug("Registering shell context for tenant {0}", context.Settings.Name);
-                }
-                _runningShellTable.Add(context.Settings);
+                return;
+            }
+
+            if (_shellContexts.TryAdd(context.Settings.Name, new Lazy<ShellContext>(() => context)))
+            {
+                RegisterSettings(context.Settings);
             }
         }
 
@@ -238,7 +259,7 @@ namespace OrchardCore.Environment.Shell
 
             if (_shellContexts.TryRemove(tenant, out var context))
             {
-                context.Release();
+                context.Value.Release();
             }
 
             return Task.CompletedTask;
@@ -251,12 +272,10 @@ namespace OrchardCore.Environment.Shell
         /// <param name="settings"></param>
         public void ReloadShellContext(ShellSettings settings)
         {
-            ShellContext context;
-
-            if (_shellContexts.TryRemove(settings.Name, out context))
+            if (_shellContexts.TryRemove(settings.Name, out var context))
             {
                 _runningShellTable.Remove(settings);
-                context.Release();
+                context.Value.Release();
             }
 
             GetOrCreateShellContext(settings);
@@ -264,7 +283,8 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellContext> ListShellContexts()
         {
-            return _shellContexts.Values;
+            // Prevent to acquire all the locks at once.
+            return _shellContexts?.Select(kv => kv.Value.Value);
         }
 
         /// <summary>
@@ -289,5 +309,18 @@ namespace OrchardCore.Environment.Shell
                 shellSettings.State == TenantState.Uninitialized ||
                 shellSettings.State == TenantState.Initializing;
         }
-}
+
+        /// <summary>
+        /// Registers the shell settings in RunningShellTable
+        /// </summary>
+        private void RegisterSettings(ShellSettings settings)
+        {
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Registering shell context for tenant {0}", settings.Name);
+            }
+
+            _runningShellTable.Add(settings);
+        }
+    }
 }

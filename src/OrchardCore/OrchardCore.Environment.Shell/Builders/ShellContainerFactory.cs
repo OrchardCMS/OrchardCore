@@ -86,9 +86,6 @@ namespace OrchardCore.Environment.Shell.Builders
             }
 
             (moduleServiceProvider as IDisposable).Dispose();
-
-            // add already instanciated services like DefaultOrchardHost
-            var applicationServiceDescriptors = _applicationServices.Where(x => x.Lifetime == ServiceLifetime.Singleton);
             
             var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
 

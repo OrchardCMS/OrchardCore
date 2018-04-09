@@ -126,6 +126,12 @@ namespace OrchardCore.Hosting.ShellBuilders
 
         public void Dispose()
         {
+            Close();
+            GC.SuppressFinalize(this);
+        }
+
+        public void Close()
+        {
             if (_disposed)
             {
                 return;
@@ -143,13 +149,11 @@ namespace OrchardCore.Hosting.ShellBuilders
             Blueprint = null;
 
             _disposed = true;
-
-            GC.SuppressFinalize(this);
         }
 
         ~ShellContext()
         {
-            Dispose();
+            Close();
         }
 
         internal class ServiceScopeWrapper : IServiceScope
@@ -216,17 +220,10 @@ namespace OrchardCore.Hosting.ShellBuilders
                 _httpContext.RequestServices = _existingServices;
                 _serviceScope.Dispose();
                 
-                GC.SuppressFinalize(this);
-
                 if (disposeShellContext)
                 {
                     _shellContext.Dispose();
                 }
-            }
-
-            ~ServiceScopeWrapper()
-            {
-                Dispose();
             }
         }
     }
