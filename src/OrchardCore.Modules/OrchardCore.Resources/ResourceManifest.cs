@@ -102,6 +102,18 @@ namespace OrchardCore.Resources
                 .SetCdnIntegrity("sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN")
                 .SetVersion("4.7.0")
                 ;
+
+            manifest
+                .DefineScript("font-awesome")
+                .SetCdn("https://use.fontawesome.com/releases/v5.0.8/js/all.js")
+                .SetVersion("5.0.8")
+                ;
+
+            manifest
+                .DefineScript("font-awesome-v4-shims")
+                .SetCdn("https://use.fontawesome.com/releases/v5.0.8/js/v4-shims.js")
+                .SetVersion("5.0.8")
+                ;
         }
     }
 }

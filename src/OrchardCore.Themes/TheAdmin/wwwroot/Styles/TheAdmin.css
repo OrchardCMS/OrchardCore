@@ -3,6 +3,123 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+/*
+ * Container style
+ */
+.ps {
+  overflow: hidden !important;
+  overflow-anchor: none;
+  -ms-overflow-style: none;
+  touch-action: auto;
+  -ms-touch-action: auto;
+}
+
+/*
+ * Scrollbar rail styles
+ */
+.ps__rail-x {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+  height: 15px;
+  /* there must be 'bottom' or 'top' for ps__rail-x */
+  bottom: 0px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps__rail-y {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+  width: 15px;
+  /* there must be 'right' or 'left' for ps__rail-y */
+  right: 0;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps--active-x > .ps__rail-x,
+.ps--active-y > .ps__rail-y {
+  display: block;
+  background-color: transparent;
+}
+
+.ps:hover > .ps__rail-x,
+.ps:hover > .ps__rail-y,
+.ps--focus > .ps__rail-x,
+.ps--focus > .ps__rail-y,
+.ps--scrolling-x > .ps__rail-x,
+.ps--scrolling-y > .ps__rail-y {
+  opacity: 0.6;
+}
+
+.ps .ps__rail-x:hover,
+.ps .ps__rail-y:hover,
+.ps .ps__rail-x:focus,
+.ps .ps__rail-y:focus,
+.ps .ps__rail-x.ps--clicking,
+.ps .ps__rail-y.ps--clicking {
+  background-color: #eee;
+  opacity: 0.9;
+}
+
+/*
+ * Scrollbar thumb styles
+ */
+.ps__thumb-x {
+  background-color: #aaa;
+  border-radius: 6px;
+  transition: background-color .2s linear, height .2s ease-in-out;
+  -webkit-transition: background-color .2s linear, height .2s ease-in-out;
+  height: 6px;
+  /* there must be 'bottom' for ps__thumb-x */
+  bottom: 2px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps__thumb-y {
+  background-color: #aaa;
+  border-radius: 6px;
+  transition: background-color .2s linear, width .2s ease-in-out;
+  -webkit-transition: background-color .2s linear, width .2s ease-in-out;
+  width: 6px;
+  /* there must be 'right' for ps__thumb-y */
+  right: 2px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps__rail-x:hover > .ps__thumb-x,
+.ps__rail-x:focus > .ps__thumb-x,
+.ps__rail-x.ps--clicking .ps__thumb-x {
+  background-color: #999;
+  height: 11px;
+}
+
+.ps__rail-y:hover > .ps__thumb-y,
+.ps__rail-y:focus > .ps__thumb-y,
+.ps__rail-y.ps--clicking .ps__thumb-y {
+  background-color: #999;
+  width: 11px;
+}
+
+/* MS supports */
+@supports (-ms-overflow-style: none) {
+  .ps {
+    overflow: auto !important;
+  }
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .ps {
+    overflow: auto !important;
+  }
+}
+
 /*!
  * Bootstrap v4.0.0 (https://getbootstrap.com)
  * Copyright 2011-2018 The Bootstrap Authors
@@ -1521,62 +1638,66 @@ select.form-control-lg:not([size]):not([multiple]), .input-group-lg > select.for
   background-color: rgba(220, 53, 69, 0.8);
   border-radius: .2rem; }
 
-.was-validated .form-control:invalid, .form-control.is-invalid, .was-validated
+.was-validated .form-control:invalid, .form-control.is-invalid, .form-control.input-validation-error, .form-control.has-validation-error, .was-validated
 .custom-select:invalid,
-.custom-select.is-invalid {
+.custom-select.is-invalid,
+.custom-select.input-validation-error,
+.custom-select.has-validation-error {
   border-color: #dc3545; }
-  .was-validated .form-control:invalid:focus, .form-control.is-invalid:focus, .was-validated
+  .was-validated .form-control:invalid:focus, .form-control.is-invalid:focus, .form-control.input-validation-error:focus, .form-control.has-validation-error:focus, .was-validated
   .custom-select:invalid:focus,
-  .custom-select.is-invalid:focus {
+  .custom-select.is-invalid:focus,
+  .custom-select.input-validation-error:focus,
+  .custom-select.has-validation-error:focus {
     border-color: #dc3545;
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25); }
   .was-validated .form-control:invalid ~ .invalid-feedback, .was-validated .form-control:invalid ~ .field-validation-error,
-  .was-validated .form-control:invalid ~ .invalid-tooltip, .form-control.is-invalid ~ .invalid-feedback, .form-control.is-invalid ~ .field-validation-error,
-  .form-control.is-invalid ~ .invalid-tooltip, .was-validated
+  .was-validated .form-control:invalid ~ .invalid-tooltip, .form-control.is-invalid ~ .invalid-feedback, .form-control.input-validation-error ~ .invalid-feedback, .form-control.has-validation-error ~ .invalid-feedback, .form-control.is-invalid ~ .field-validation-error, .form-control.input-validation-error ~ .field-validation-error, .form-control.has-validation-error ~ .field-validation-error,
+  .form-control.is-invalid ~ .invalid-tooltip, .form-control.input-validation-error ~ .invalid-tooltip, .form-control.has-validation-error ~ .invalid-tooltip, .was-validated
   .custom-select:invalid ~ .invalid-feedback, .was-validated
   .custom-select:invalid ~ .field-validation-error,
   .was-validated
   .custom-select:invalid ~ .invalid-tooltip,
-  .custom-select.is-invalid ~ .invalid-feedback,
-  .custom-select.is-invalid ~ .field-validation-error,
-  .custom-select.is-invalid ~ .invalid-tooltip {
+  .custom-select.is-invalid ~ .invalid-feedback, .custom-select.input-validation-error ~ .invalid-feedback, .custom-select.has-validation-error ~ .invalid-feedback,
+  .custom-select.is-invalid ~ .field-validation-error, .custom-select.input-validation-error ~ .field-validation-error, .custom-select.has-validation-error ~ .field-validation-error,
+  .custom-select.is-invalid ~ .invalid-tooltip, .custom-select.input-validation-error ~ .invalid-tooltip, .custom-select.has-validation-error ~ .invalid-tooltip {
     display: block; }
 
-.was-validated .form-check-input:invalid ~ .form-check-label, .form-check-input.is-invalid ~ .form-check-label {
+.was-validated .form-check-input:invalid ~ .form-check-label, .form-check-input.is-invalid ~ .form-check-label, .form-check-input.input-validation-error ~ .form-check-label, .form-check-input.has-validation-error ~ .form-check-label {
   color: #dc3545; }
 
 .was-validated .form-check-input:invalid ~ .invalid-feedback, .was-validated .form-check-input:invalid ~ .field-validation-error,
-.was-validated .form-check-input:invalid ~ .invalid-tooltip, .form-check-input.is-invalid ~ .invalid-feedback, .form-check-input.is-invalid ~ .field-validation-error,
-.form-check-input.is-invalid ~ .invalid-tooltip {
+.was-validated .form-check-input:invalid ~ .invalid-tooltip, .form-check-input.is-invalid ~ .invalid-feedback, .form-check-input.input-validation-error ~ .invalid-feedback, .form-check-input.has-validation-error ~ .invalid-feedback, .form-check-input.is-invalid ~ .field-validation-error, .form-check-input.input-validation-error ~ .field-validation-error, .form-check-input.has-validation-error ~ .field-validation-error,
+.form-check-input.is-invalid ~ .invalid-tooltip, .form-check-input.input-validation-error ~ .invalid-tooltip, .form-check-input.has-validation-error ~ .invalid-tooltip {
   display: block; }
 
-.was-validated .custom-control-input:invalid ~ .custom-control-label, .custom-control-input.is-invalid ~ .custom-control-label {
+.was-validated .custom-control-input:invalid ~ .custom-control-label, .custom-control-input.is-invalid ~ .custom-control-label, .custom-control-input.input-validation-error ~ .custom-control-label, .custom-control-input.has-validation-error ~ .custom-control-label {
   color: #dc3545; }
-  .was-validated .custom-control-input:invalid ~ .custom-control-label::before, .custom-control-input.is-invalid ~ .custom-control-label::before {
+  .was-validated .custom-control-input:invalid ~ .custom-control-label::before, .custom-control-input.is-invalid ~ .custom-control-label::before, .custom-control-input.input-validation-error ~ .custom-control-label::before, .custom-control-input.has-validation-error ~ .custom-control-label::before {
     background-color: #efa2a9; }
 
 .was-validated .custom-control-input:invalid ~ .invalid-feedback, .was-validated .custom-control-input:invalid ~ .field-validation-error,
-.was-validated .custom-control-input:invalid ~ .invalid-tooltip, .custom-control-input.is-invalid ~ .invalid-feedback, .custom-control-input.is-invalid ~ .field-validation-error,
-.custom-control-input.is-invalid ~ .invalid-tooltip {
+.was-validated .custom-control-input:invalid ~ .invalid-tooltip, .custom-control-input.is-invalid ~ .invalid-feedback, .custom-control-input.input-validation-error ~ .invalid-feedback, .custom-control-input.has-validation-error ~ .invalid-feedback, .custom-control-input.is-invalid ~ .field-validation-error, .custom-control-input.input-validation-error ~ .field-validation-error, .custom-control-input.has-validation-error ~ .field-validation-error,
+.custom-control-input.is-invalid ~ .invalid-tooltip, .custom-control-input.input-validation-error ~ .invalid-tooltip, .custom-control-input.has-validation-error ~ .invalid-tooltip {
   display: block; }
 
-.was-validated .custom-control-input:invalid:checked ~ .custom-control-label::before, .custom-control-input.is-invalid:checked ~ .custom-control-label::before {
+.was-validated .custom-control-input:invalid:checked ~ .custom-control-label::before, .custom-control-input.is-invalid:checked ~ .custom-control-label::before, .custom-control-input.input-validation-error:checked ~ .custom-control-label::before, .custom-control-input.has-validation-error:checked ~ .custom-control-label::before {
   background-color: #e4606d; }
 
-.was-validated .custom-control-input:invalid:focus ~ .custom-control-label::before, .custom-control-input.is-invalid:focus ~ .custom-control-label::before {
+.was-validated .custom-control-input:invalid:focus ~ .custom-control-label::before, .custom-control-input.is-invalid:focus ~ .custom-control-label::before, .custom-control-input.input-validation-error:focus ~ .custom-control-label::before, .custom-control-input.has-validation-error:focus ~ .custom-control-label::before {
   box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(220, 53, 69, 0.25); }
 
-.was-validated .custom-file-input:invalid ~ .custom-file-label, .custom-file-input.is-invalid ~ .custom-file-label {
+.was-validated .custom-file-input:invalid ~ .custom-file-label, .custom-file-input.is-invalid ~ .custom-file-label, .custom-file-input.input-validation-error ~ .custom-file-label, .custom-file-input.has-validation-error ~ .custom-file-label {
   border-color: #dc3545; }
-  .was-validated .custom-file-input:invalid ~ .custom-file-label::before, .custom-file-input.is-invalid ~ .custom-file-label::before {
+  .was-validated .custom-file-input:invalid ~ .custom-file-label::before, .custom-file-input.is-invalid ~ .custom-file-label::before, .custom-file-input.input-validation-error ~ .custom-file-label::before, .custom-file-input.has-validation-error ~ .custom-file-label::before {
     border-color: inherit; }
 
 .was-validated .custom-file-input:invalid ~ .invalid-feedback, .was-validated .custom-file-input:invalid ~ .field-validation-error,
-.was-validated .custom-file-input:invalid ~ .invalid-tooltip, .custom-file-input.is-invalid ~ .invalid-feedback, .custom-file-input.is-invalid ~ .field-validation-error,
-.custom-file-input.is-invalid ~ .invalid-tooltip {
+.was-validated .custom-file-input:invalid ~ .invalid-tooltip, .custom-file-input.is-invalid ~ .invalid-feedback, .custom-file-input.input-validation-error ~ .invalid-feedback, .custom-file-input.has-validation-error ~ .invalid-feedback, .custom-file-input.is-invalid ~ .field-validation-error, .custom-file-input.input-validation-error ~ .field-validation-error, .custom-file-input.has-validation-error ~ .field-validation-error,
+.custom-file-input.is-invalid ~ .invalid-tooltip, .custom-file-input.input-validation-error ~ .invalid-tooltip, .custom-file-input.has-validation-error ~ .invalid-tooltip {
   display: block; }
 
-.was-validated .custom-file-input:invalid:focus ~ .custom-file-label, .custom-file-input.is-invalid:focus ~ .custom-file-label {
+.was-validated .custom-file-input:invalid:focus ~ .custom-file-label, .custom-file-input.is-invalid:focus ~ .custom-file-label, .custom-file-input.input-validation-error:focus ~ .custom-file-label, .custom-file-input.has-validation-error:focus ~ .custom-file-label {
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25); }
 
 .form-inline {
@@ -6007,10 +6128,10 @@ a.text-info:hover, a.text-info:focus {
 a.text-warning:hover, a.text-warning:focus {
   color: #d39e00 !important; }
 
-.text-danger, .input-validation-error, .has-validation-error {
+.text-danger {
   color: #dc3545 !important; }
 
-a.text-danger:hover, a.input-validation-error:hover, a.has-validation-error:hover, a.text-danger:focus, a.input-validation-error:focus, a.has-validation-error:focus {
+a.text-danger:hover, a.text-danger:focus {
   color: #bd2130 !important; }
 
 .text-light {
@@ -6094,63 +6215,66 @@ a.text-dark:hover, a.text-dark:focus {
         @extend .hidden-xs-down;
     }*/ }
   .ta-wrapper .ta-navbar-top {
-    min-height: 55px; }
+    min-height: 59px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    z-index: 8; }
   .ta-wrapper .ta-navbar-brand {
     margin-left: 4px; }
   .ta-wrapper #ta-left-sidebar {
     width: 260px;
     height: 100%;
-    z-index: 1;
+    z-index: 7;
     position: fixed;
-    top: 55px;
+    top: 0;
+    bottom: 0;
     color: #343a40;
-    border-right: 1px solid rgba(0, 0, 0, 0.05); }
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    left: 0px;
+    transition: left 0.5s ease-in-out; }
+    .ta-wrapper #ta-left-sidebar #left-nav {
+      position: relative;
+      margin-top: 59px;
+      height: calc(100% - 59px); }
     .ta-wrapper #ta-left-sidebar ul {
       margin: 0;
       padding: 0; }
-    .ta-wrapper #ta-left-sidebar input[type=checkbox]:checked + label > .chevron > i {
+    .ta-wrapper #ta-left-sidebar label[aria-expanded="true"] .chevron {
       transform: rotate(90deg);
       transition-duration: 0.2s; }
-    .ta-wrapper #ta-left-sidebar input[type=checkbox] + label > .chevron > i {
+    .ta-wrapper #ta-left-sidebar label[aria-expanded="false"] .chevron {
       transition-duration: 0.2s; }
-    .ta-wrapper #ta-left-sidebar input[type=checkbox] {
-      position: absolute;
-      opacity: 0; }
-    .ta-wrapper #ta-left-sidebar input[type=checkbox] + label + ul {
-      max-height: 0;
-      opacity: 0;
-      transition: max-height 0.2s, opacity 0.2s, ease-in-out; }
-      .ta-wrapper #ta-left-sidebar input[type=checkbox] + label + ul li > label > .chevron {
-        display: none; }
-    .ta-wrapper #ta-left-sidebar input[type=checkbox]:checked + label + ul {
-      overflow-y: hidden;
-      max-height: 500px;
-      /* approximate max height */
-      opacity: 1;
-      transition: max-height 0.5s, opacity 0.5s, ease-in-out; }
-      .ta-wrapper #ta-left-sidebar input[type=checkbox]:checked + label + ul li > label > .chevron {
-        display: block; }
+    .ta-wrapper #ta-left-sidebar .collapse {
+      display: none; }
+    .ta-wrapper #ta-left-sidebar .collapse.show {
+      display: block; }
     .ta-wrapper #ta-left-sidebar label, .ta-wrapper #ta-left-sidebar a {
       position: relative;
       display: block;
       margin: 0; }
-    .ta-wrapper #ta-left-sidebar nav > ul {
-      display: block;
+    .ta-wrapper #ta-left-sidebar #left-nav ul {
+      margin: 0;
+      padding: 0;
       white-space: nowrap; }
-      .ta-wrapper #ta-left-sidebar nav > ul li {
+      .ta-wrapper #ta-left-sidebar #left-nav ul li {
         position: relative;
         margin: 0;
         padding: 0;
         display: list-item;
         list-style: none;
         line-height: 2.5em; }
+        .ta-wrapper #ta-left-sidebar #left-nav ul li label {
+          cursor: pointer; }
+    .ta-wrapper #ta-left-sidebar #left-nav ul.menu-admin {
+      margin-bottom: 100px; }
     .ta-wrapper #ta-left-sidebar .chevron {
       position: absolute;
-      top: 0;
+      top: 33%;
       left: 100%;
       margin-left: -25px; }
     .ta-wrapper #ta-left-sidebar .icon {
       padding-right: 10px; }
+      .ta-wrapper #ta-left-sidebar .icon .fa {
+        min-width: 16px; }
     .ta-wrapper #ta-left-sidebar li label,
     .ta-wrapper #ta-left-sidebar li a,
     .ta-wrapper #ta-left-sidebar li a:hover,
@@ -6164,35 +6288,49 @@ a.text-dark:hover, a.text-dark:focus {
       color: #f8f9fa; }
     .ta-wrapper #ta-left-sidebar li.active > a {
       background-color: #6c757d;
+      border-left: 4px solid #343a40;
+      color: #f8f9fa !important;
+      padding-left: 34px !important; }
+    .ta-wrapper #ta-left-sidebar li.active > label {
+      background-color: #b4bdc4;
       color: #f8f9fa !important; }
     .ta-wrapper #ta-left-sidebar li ul > li > a,
     .ta-wrapper #ta-left-sidebar li ul > li > label {
       background-color: #e9ecef;
       color: #495057 !important;
-      padding-left: 32px !important; }
+      padding-left: 38px !important; }
     .ta-wrapper #ta-left-sidebar li ul > li > a:hover,
     .ta-wrapper #ta-left-sidebar li ul > li > label:hover {
       color: #f8f9fa !important; }
     .ta-wrapper #ta-left-sidebar li ul > li ul > li > a {
       padding-left: 48px !important; }
+    .ta-wrapper #ta-left-sidebar li ul > li ul > .active > a {
+      padding-left: 44px !important; }
   .ta-wrapper .ta-content {
-    padding-right: 15px;
-    padding-left: 15px;
-    margin-left: 0;
-    margin-top: 55px;
-    padding-top: 1em;
-    border-top: 1px solid rgba(0, 0, 0, 0.05); }
+    padding: 15px;
+    margin-top: 59px; }
   @media (min-width: 576px) {
     .ta-wrapper .ta-content {
-      margin-left: 260px; } }
-  @media (max-width: 575.98px) {
+      margin-left: 260px;
+      transition: margin-left 0.5s ease-in-out; } }
+  @media (max-width: 767.98px) {
     .ta-wrapper #ta-left-sidebar {
-      left: -260px; }
-    .ta-wrapper .collapsing {
-      /*margin-left: 0;
-            transition: margin-left 0.5s ease-in-out;*/ }
-    .ta-wrapper .in {
-      /*margin-left:0;*/ } }
+      left: -260px;
+      transition: left 0.5s ease-in-out; }
+    .ta-wrapper .ta-content {
+      margin-left: 0;
+      transition: margin-left 0.5s ease-in-out; } }
+
+.hint {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-all;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto; }
 
 .validation-summary-errors {
   padding-bottom: 0; }
@@ -6211,59 +6349,6 @@ label .field-validation-error::before {
 
 .ui-sortable {
   min-height: 1rem; }
-
-.ta-left-sidebar-nano {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden; }
-
-.ta-left-sidebar-nano > .nano-content {
-  position: absolute;
-  overflow: scroll;
-  overflow-x: hidden;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0; }
-
-.ta-left-sidebar-nano > .nano-content:focus {
-  outline: thin dotted; }
-
-.ta-left-sidebar-nano > .nano-content::-webkit-scrollbar {
-  display: none; }
-
-.has-scrollbar > .nano-content::-webkit-scrollbar {
-  display: block; }
-
-.ta-left-sidebar-nano > .nano-pane {
-  position: absolute;
-  width: 10px;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  visibility: hidden\9;
-  /* Target only IE7 and IE8 with this hack */
-  opacity: .01;
-  -webkit-transition: .2s;
-  -moz-transition: .2s;
-  -o-transition: .2s;
-  transition: .2s; }
-
-.ta-left-sidebar-nano > .nano-pane > .nano-slider {
-  background: #444;
-  background: rgba(0, 0, 0, 0.5);
-  position: relative;
-  margin: 0 1px; }
-
-.ta-left-sidebar-nano:hover > .nano-pane, .nano-pane.active, .nano-pane.flashed {
-  visibility: visible\9;
-  /* Target only IE7 and IE8 with this hack */
-  opacity: 0.99; }
-
-.ta-left-sidebar-nano .nano-content {
-  /* preventing last bottom item is not visible when scrolling to bottom */
-  padding-bottom: 100px; }
 
 /*!
  * Bootstrap v4.0.0 (https://getbootstrap.com)

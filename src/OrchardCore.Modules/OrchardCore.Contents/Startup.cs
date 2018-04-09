@@ -1,4 +1,5 @@
 using System;
+using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +9,6 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;
-using OrchardCore.Contents.Filters;
 using OrchardCore.Contents.Handlers;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Contents.Liquid;
@@ -19,6 +19,7 @@ using OrchardCore.Contents.TagHelpers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
@@ -27,7 +28,6 @@ using OrchardCore.Lists.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Mvc;
 using OrchardCore.Recipes;
-using OrchardCore.Scripting;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents
@@ -50,7 +50,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentAliasProvider, ContentItemIdAliasProvider>();
             services.AddScoped<IContentItemIndexHandler, ContentItemIndexCoordinator>();
 
-            services.AddSingleton<IGlobalMethodProvider, IdGeneratorMethod>();
+            services.AddIdGeneration();
             services.AddScoped<IDataMigration, Migrations>();
 
             // Common Part
@@ -62,8 +62,6 @@ namespace OrchardCore.Contents
             // Feeds
             // TODO: Move to feature
             services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
-
-            services.AddLiquidFilter<BuildDisplayFilter>("build_display");
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -127,7 +125,9 @@ namespace OrchardCore.Contents
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddLiquidFilter<ContentFilter>("content");
+            services.AddScoped<ILiquidTemplateEventHandler, ContentLiquidTemplateEventHandler>();
+
+            services.AddLiquidFilter<BuildDisplayFilter>("shape_build_display");
         }
     }
 }

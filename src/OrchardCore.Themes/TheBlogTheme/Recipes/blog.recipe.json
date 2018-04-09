@@ -21,6 +21,9 @@
       "disable": [],
       "enable": [
         // SaaS
+        "OrchardCore.Antiforgery",
+        "OrchardCore.Authentication",
+        "OrchardCore.DataProtection",
         "OrchardCore.Mvc",
         "OrchardCore.HomeRoute",
         "OrchardCore.Admin",
@@ -574,11 +577,29 @@
       "ContentParts": [
         {
           "Name": "BlogPost",
-          "Settings": {}
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Subtitle",
+              "Settings": {
+                "DisplayName": "Subtitle"
+              }
+            }
+          ]
         },
         {
           "Name": "Article",
-          "Settings": {}
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Subtitle",
+              "Settings": {
+                "DisplayName": "Subtitle"
+              }
+            }
+          ]
         },
         {
           "Name": "Blockquote",
@@ -744,7 +765,7 @@
             "Title": "Blog"
           },
           "BodyPart": {
-            "Body": "<p>This is the description of your blog</p>"
+            "Body": "This is the description of your blog"
           },
           "AutoroutePart": {
             "Path": "blog"
@@ -770,6 +791,11 @@
           },
           "AutoroutePart": {
             "Path": "blog/post-1"
+          },
+          "BlogPost": {
+            "Subtitle": {
+              "Text": "Problems look mighty small from 150 miles up"
+            }
           }
         },
         {
@@ -788,6 +814,11 @@
           },
           "TitlePart": {
             "Title": "About"
+          },
+          "Article": {
+            "Subtitle": {
+              "Text": "This is what I do."
+            }
           }
         },
         {
@@ -798,7 +829,7 @@
           "Owner": "[js: parameters('AdminUsername')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LayerMetadata": {
-            "Title": "Copyright",
+            "Title": "Footer",
             "Layer": "Always",
             "Zone": "Footer",
             "RenderTitle": false,
@@ -806,7 +837,7 @@
           },
           "RawHtml": {
             "Content": {
-              "Html": "<!-- This widget is configured in the layers section -->\n<div class=\"col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1\">\n    <ul class=\"list-inline text-center\">\n        <li>\n            <a href=\"#\">\n                <span class=\"fa-stack fa-lg\">\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\n                    <i class=\"fa fa-twitter fa-stack-1x fa-inverse\"></i>\n                </span>\n            </a>\n        </li>\n        <li>\n            <a href=\"#\">\n                <span class=\"fa-stack fa-lg\">\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\n                    <i class=\"fa fa-facebook fa-stack-1x fa-inverse\"></i>\n                </span>\n            </a>\n        </li>\n        <li>\n            <a href=\"#\">\n                <span class=\"fa-stack fa-lg\">\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\n                    <i class=\"fa fa-github fa-stack-1x fa-inverse\"></i>\n                </span>\n            </a>\n        </li>\n    </ul>\n    <p class=\"copyright text-muted\">Copyright ©</p></div>"
+              "Html": "[file:text('Snippets/footer.html')]"
             }
           }
         }

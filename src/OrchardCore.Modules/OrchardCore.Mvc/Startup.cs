@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc
 {

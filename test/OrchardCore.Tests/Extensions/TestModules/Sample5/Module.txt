@@ -1,3 +1,0 @@
-﻿Name: AnotherSample
-Path: Sample 5
-Author: Some One

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Esprima;
 using Jint;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Scripting.JavaScript
@@ -25,7 +26,7 @@ namespace OrchardCore.Scripting.JavaScript
 
         public string Prefix => "js";
 
-        public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider)
+        public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
         {
             var engine = new Engine();
             

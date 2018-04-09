@@ -161,7 +161,13 @@ namespace OrchardCore.Lucene
         public async Task<LuceneSettings> GetLuceneSettingsAsync()
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            return siteSettings.As<LuceneSettings>();
+
+            if (siteSettings.Has<LuceneSettings>())
+            {
+                return siteSettings.As<LuceneSettings>();
+            }
+
+            return null;
         }
     }
 }

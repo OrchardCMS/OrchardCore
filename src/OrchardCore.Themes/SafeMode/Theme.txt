@@ -1,6 +1,0 @@
-Name: Safe Mode Theme
-AntiForgery: enabled
-Author: The Orchard Team
-Website: http://orchardproject.net
-Description: A fail-safe theme when no other themes are available.
-Tags: hidden

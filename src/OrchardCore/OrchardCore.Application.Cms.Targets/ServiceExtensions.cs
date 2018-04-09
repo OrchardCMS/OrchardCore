@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<ModularServiceCollection> configure = null)
         {
             services.AddThemingHost();
-            services.AddManifestDefinition("Theme.txt", "theme");
+            services.AddManifestDefinition("theme");
             services.AddSitesFolder();
             services.AddCommands();
             services.AddAuthentication();
@@ -22,7 +22,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 configure?.Invoke(modules);
 
                 modules.WithDefaultFeatures(
-                    "OrchardCore.Mvc", 
+                    "OrchardCore.Antiforgery",
+					"OrchardCore.Mvc", 
                     "OrchardCore.Settings", 
                     "OrchardCore.Setup",
                     "OrchardCore.Recipes", 

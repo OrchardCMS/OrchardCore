@@ -86,7 +86,7 @@ namespace OrchardCore.Lists.Drivers
 
                 containedItems = containedItems.Reverse();
 
-                // There is always an After ras we clicked on Before
+                // There is always an After as we clicked on Before
                 pager.Before = null;
                 pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
 
