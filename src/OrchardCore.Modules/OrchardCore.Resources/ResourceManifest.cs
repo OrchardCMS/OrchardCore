@@ -73,26 +73,26 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("popper")
                 .SetUrl("/OrchardCore.Resources/Scripts/popper.js", "/OrchardCore.Resources/Scripts/popper.min.js")
-                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js", "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.js")
-                .SetCdnIntegrity("sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q")
-                .SetVersion("1.12.9")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js", "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.js")
+                .SetCdnIntegrity("sha256-wqAoCRn9//AnHSl4qbXVhqdvmgFQqN5Elqp4Eb2wOXA=")
+                .SetVersion("1.14.3")
                 ;
 
             manifest
                 .DefineScript("bootstrap")
                 .SetDependencies("jQuery", "popper")
                 .SetUrl("/OrchardCore.Resources/Scripts/bootstrap.min.js", "/OrchardCore.Resources/Scripts/bootstrap.js")
-                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js", "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.js")
-                .SetCdnIntegrity("sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl")
-                .SetVersion("4.0.0")
+                .SetCdn("https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js", "https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.js")
+                .SetCdnIntegrity("sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm")
+                .SetVersion("4.1.0")
                 ;
 
             manifest
                 .DefineStyle("bootstrap")
                 .SetUrl("/OrchardCore.Resources/Styles/bootstrap.min.css", "/OrchardCore.Resources/Styles/bootstrap.css")
-                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css", "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.css")
-                .SetCdnIntegrity("sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm")
-                .SetVersion("4.0.0")
+                .SetCdn("https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css", "https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.css")
+                .SetCdnIntegrity("sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4")
+                .SetVersion("4.1.0")
                 ;
 
             manifest
@@ -105,14 +105,14 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("font-awesome")
-                .SetCdn("https://use.fontawesome.com/releases/v5.0.8/js/all.js")
-                .SetVersion("5.0.8")
+                .SetCdn("https://use.fontawesome.com/releases/v5.0.9/js/all.js")
+                .SetVersion("5.0.9")
                 ;
 
             manifest
                 .DefineScript("font-awesome-v4-shims")
-                .SetCdn("https://use.fontawesome.com/releases/v5.0.8/js/v4-shims.js")
-                .SetVersion("5.0.8")
+                .SetCdn("https://use.fontawesome.com/releases/v5.0.9/js/v4-shims.js")
+                .SetVersion("5.0.9")
                 ;
         }
     }
