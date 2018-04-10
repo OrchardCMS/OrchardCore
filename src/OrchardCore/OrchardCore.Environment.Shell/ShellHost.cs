@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Modules;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Builders;
@@ -86,6 +87,28 @@ namespace OrchardCore.Environment.Shell
             }
 
             return shell;
+        }
+
+        public IServiceScope EnterServiceScope(ShellSettings settings, out ShellContext context)
+        {
+            context = GetOrCreateShellContext(settings);
+
+            if (context.TryEnterServiceScope(out var scope))
+            {
+                return scope;
+            }
+
+            _shellContexts.TryRemove(settings.Name, out var value);
+
+            context = _shellContexts.GetOrAdd(settings.Name, new Lazy<ShellContext>(() =>
+            {
+                var shellContext = CreateShellContextAsync(settings).Result;
+                scope = shellContext.EnterServiceScope();
+                RegisterShell(shellContext);
+                return shellContext;
+            })).Value;
+
+            return scope;
         }
 
         public void UpdateShellSettings(ShellSettings settings)

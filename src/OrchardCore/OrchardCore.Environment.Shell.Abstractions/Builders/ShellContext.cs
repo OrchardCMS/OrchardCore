@@ -52,6 +52,26 @@ namespace OrchardCore.Hosting.ShellBuilders
             return new ServiceScopeWrapper(this);
         }
 
+        public bool TryEnterServiceScope(out IServiceScope scope)
+        {
+            if (_released)
+            {
+                scope = null;
+                return false;
+            }
+
+            scope = new ServiceScopeWrapper(this);
+
+            if (_released)
+            {
+                scope.Dispose();
+                scope = null;
+                return false;
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// Whether the <see cref="ShellContext"/> instance has been released, for instance when a tenant is changed.
         /// </summary>

@@ -157,8 +157,7 @@ namespace OrchardCore.Recipes.Services
 
         private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
         {
-            var shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
-            using (var scope = shellContext.EnterServiceScope())
+            using (var scope = _orchardHost.EnterServiceScope(_shellSettings, out var shellContext))
             {
                 if (!shellContext.IsActivated)
                 {
@@ -207,8 +206,7 @@ namespace OrchardCore.Recipes.Services
 
             // The recipe execution might have invalidated the shell by enabling new features,
             // so the deferred tasks need to run on an updated shell context if necessary.
-            shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
-            using (var scope = shellContext.EnterServiceScope())
+            using (var scope = _orchardHost.EnterServiceScope(_shellSettings, out var shellContext))
             {
                 var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
 

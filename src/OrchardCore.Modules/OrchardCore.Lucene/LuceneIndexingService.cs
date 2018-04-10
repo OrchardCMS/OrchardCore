@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
+using OrchardCore.Modules;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Lucene
@@ -71,12 +71,10 @@ namespace OrchardCore.Lucene
 
             IndexingTask[] batch;
 
-            var shellContext = _shellHost.GetOrCreateShellContext(_shellSettings);
-
             do
             {
                 // Create a scope for the content manager
-                using (var scope = shellContext.EnterServiceScope())
+                using (var scope = _shellHost.EnterServiceScope(_shellSettings, out var shellContext))
                 {
                     // Load the next batch of tasks
                     batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
