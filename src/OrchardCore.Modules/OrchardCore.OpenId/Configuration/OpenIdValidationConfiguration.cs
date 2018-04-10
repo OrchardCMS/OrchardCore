@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -209,18 +210,22 @@ namespace OrchardCore.OpenId.Configuration
                 !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
             {
                 var shellSettings = _shellSettingsManager.GetSettings(settings.Tenant);
-                using (var scope = _shellHost.EnterServiceScope(shellSettings, out var context))
-                {
-                    // If the other tenant is released, ensure the current tenant is also restarted as it
-                    // relies on a data protection provider whose lifetime is managed by the other tenant.
-                    // To make sure the other tenant is not disposed before all the pending requests are
-                    // processed by the current tenant, a tenant dependency is manually added.
-                    context.AddDependentShell(_shellHost.GetOrCreateShellContext(_shellSettings));
 
-                    // Note: the data protection provider is always registered as a singleton and thus will
-                    // survive the current scope, which is mainly used to prevent the other tenant from being
-                    // released before we have a chance to declare the current tenant as a dependent tenant.
-                    options.DataProtectionProvider = scope.ServiceProvider.GetDataProtectionProvider();
+                if (shellSettings.State == TenantState.Running)
+                {
+                    using (var scope = _shellHost.EnterServiceScope(shellSettings, out var context))
+                    {
+                        // If the other tenant is released, ensure the current tenant is also restarted as it
+                        // relies on a data protection provider whose lifetime is managed by the other tenant.
+                        // To make sure the other tenant is not disposed before all the pending requests are
+                        // processed by the current tenant, a tenant dependency is manually added.
+                        context.AddDependentShell(_shellHost.GetOrCreateShellContext(_shellSettings));
+
+                        // Note: the data protection provider is always registered as a singleton and thus will
+                        // survive the current scope, which is mainly used to prevent the other tenant from being
+                        // released before we have a chance to declare the current tenant as a dependent tenant.
+                        options.DataProtectionProvider = scope.ServiceProvider.GetDataProtectionProvider();
+                    }
                 }
             }
 
