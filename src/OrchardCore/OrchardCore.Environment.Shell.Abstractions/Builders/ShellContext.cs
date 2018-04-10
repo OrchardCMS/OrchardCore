@@ -82,16 +82,15 @@ namespace OrchardCore.Hosting.ShellBuilders
 
             lock (this)
             {
-                if (_dependents == null)
+                if (_dependents != null)
                 {
-                    return;
-                }
 
-                foreach (var dependent in _dependents)
-                {
-                    if (dependent.TryGetTarget(out var shellContext))
+                    foreach (var dependent in _dependents)
                     {
-                        shellContext.Release();
+                        if (dependent.TryGetTarget(out var shellContext))
+                        {
+                            shellContext.Release();
+                        }
                     }
                 }
 
@@ -109,6 +108,17 @@ namespace OrchardCore.Hosting.ShellBuilders
         /// </summary>
         public void AddDependentShell(ShellContext shellContext)
         {
+            if (shellContext.Released)
+            {
+                return;
+            }
+
+            if (_released)
+            {
+                shellContext.Release();
+                return;
+            }
+
             lock (this)
             {
                 if (_dependents == null)
@@ -119,18 +129,16 @@ namespace OrchardCore.Hosting.ShellBuilders
                 // Remove any previous instance that represent the same tenant in case it has been released (restarted).
                 _dependents.RemoveAll(x => !x.TryGetTarget(out var shell) || shell.Settings.Name == shellContext.Settings.Name);
 
-                // The same item can safely be added multiple times in a Hashset
                 _dependents.Add(new WeakReference<ShellContext>(shellContext));
             }
         }
 
         public void Dispose()
         {
-            Close();
-            GC.SuppressFinalize(this);
+            Dispose(true);
         }
 
-        public void Close()
+        public void Dispose(bool disposing)
         {
             if (_disposed)
             {
@@ -149,11 +157,16 @@ namespace OrchardCore.Hosting.ShellBuilders
             Blueprint = null;
 
             _disposed = true;
+
+            if (disposing)
+            {
+                GC.SuppressFinalize(this);
+            }
         }
 
         ~ShellContext()
         {
-            Close();
+            Dispose(false);
         }
 
         internal class ServiceScopeWrapper : IServiceScope
@@ -191,9 +204,9 @@ namespace OrchardCore.Hosting.ShellBuilders
             /// </summary>
             private bool ScopeReleased()
             {
-                var refCount = Interlocked.Decrement(ref _shellContext._refCount);
+                var refCount = Interlocked.CompareExchange(ref _shellContext._refCount, 1, 1);
 
-                if (_shellContext._released && refCount == 0)
+                if (_shellContext._released && refCount == 1)
                 {
                     var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
 
@@ -219,11 +232,13 @@ namespace OrchardCore.Hosting.ShellBuilders
 
                 _httpContext.RequestServices = _existingServices;
                 _serviceScope.Dispose();
-                
+
                 if (disposeShellContext)
                 {
                     _shellContext.Dispose();
                 }
+
+                Interlocked.Decrement(ref _shellContext._refCount);
             }
         }
     }
