@@ -29,12 +29,6 @@
     <div class="ta-wrapper">
         <div class="ta-navbar-top">
             <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@site.SiteName</span></a>
-            <button id="leftbar-toggler" type="button" aria-controls="ta-left-sidebar" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <button id="small-screen-leftbar-toggler" type="button" aria-controls="ta-left-sidebar" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
             <div class="collapse navbar-collapse" id="navbar-links">
                 <div class="mr-auto">
                     @await RenderSectionAsync("NavbarTop", required: false)
@@ -48,6 +42,12 @@
                     <button type="submit" class="btn btn-link nav-link" role="button"><i class="fa fa-sign-out" aria-hidden="true"></i> @T["Log off"]</button>
                 </form>
             </div>
+            <button id="leftbar-toggler" type="button" aria-controls="ta-left-sidebar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <button id="small-screen-leftbar-toggler" type="button" aria-controls="ta-left-sidebar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
         </div>
 
         <div id="ta-left-sidebar">
