@@ -1,9 +1,15 @@
-﻿@model SiteSettingsViewModel
+@model SiteSettingsViewModel
 
 <fieldset class="form-group" asp-validation-class-for="SiteName">
     <label asp-for="SiteName">@T["Site name"] <span asp-validation-for="SiteName"></span></label>
     <input asp-for="SiteName" class="form-control" />
     <span class="hint">@T["The site name."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="BaseUrl">
+    <label asp-for="BaseUrl">@T["Base url"] <span asp-validation-for="BaseUrl"></span></label>
+    <input asp-for="BaseUrl" class="form-control" />
+    <span class="hint">@T["Enter the fully qualified base URL of the web site."]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="TimeZone">
