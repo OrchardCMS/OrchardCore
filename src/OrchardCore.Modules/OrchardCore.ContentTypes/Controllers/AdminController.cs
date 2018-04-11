@@ -331,12 +331,15 @@ namespace OrchardCore.ContentTypes.Controllers
             var partToAdd = viewModel.SelectedPartName;
 
             _contentDefinitionService.AddReusablePartToType(viewModel.Name, viewModel.DisplayName, viewModel.Description, partToAdd, typeViewModel.Name);
-            _notifier.Success(T["The \"{0}\" part has been added.", partToAdd]);
 
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
                 return await AddReusablePartTo(id);
+            }
+            else
+            {
+                _notifier.Success(T["The \"{0}\" part has been added.", partToAdd]);
             }
 
             return RedirectToAction("Edit", new { id });

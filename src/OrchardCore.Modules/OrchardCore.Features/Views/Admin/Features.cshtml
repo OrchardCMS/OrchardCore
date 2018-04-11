@@ -69,8 +69,8 @@
                     var features = featureGroup.OrderBy(f => f.Descriptor.Name);
                     var categoryFeatureNames = String.Join(" ", features.Select(f => f.Descriptor.Name));
                 }
-                <h2 data-filter-value="@categoryFeatureNames">@categoryName</h2>
-                <ul class="list-group" data-filter-value="@categoryFeatureNames">
+                <h2 data-filter-value="@categoryName @categoryFeatureNames">@categoryName</h2>
+                <ul class="list-group" data-filter-value="@categoryName @categoryFeatureNames">
                     @{
                         foreach (var feature in features)
                         {
@@ -91,7 +91,7 @@
                             var showDisable = true; // categoryName.ToString() != "Core";
                             var showEnable = Model.IsAllowed(feature.Descriptor.Extension) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup";
 
-                            <li class="list-group-item" data-filter-value="@featureName">
+                            <li class="list-group-item" data-filter-value="@categoryName @featureName">
                                 <div class="row">
                                     <div class="col-md-10">
                                         @* Display the checkbox ?*@
