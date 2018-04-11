@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Email\OrchardCore.Email.csproj" />
     <ProjectReference Include="..\OrchardCore.Entities\OrchardCore.Entities.csproj" />
     <ProjectReference Include="..\OrchardCore.Security.Abstractions\OrchardCore.Security.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Users.Abstractions\OrchardCore.Users.Abstractions.csproj" />

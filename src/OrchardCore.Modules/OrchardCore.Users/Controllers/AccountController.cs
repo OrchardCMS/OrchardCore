@@ -43,8 +43,8 @@ namespace OrchardCore.Users.Controllers
             ISiteService siteService,
             ISmtpService smtpService,
             ICompositeViewEngine viewEngine,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer)
+            IStringLocalizer<AccountController> stringLocalizer,
+            IHtmlLocalizer<AccountController> htmlLocalizer)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -289,19 +289,10 @@ namespace OrchardCore.Users.Controllers
             message.To.Add(user.Email);
             message.Subject = T["Reset your password"];
 
-            ISite site = await _siteService.GetSiteSettingsAsync();
-
-            string siteUrl = site.BaseUrl;
-
-            if (String.IsNullOrWhiteSpace(siteUrl))
-            {
-                siteUrl = string.Format("{0}://{1}", HttpContext.Request.Scheme, HttpContext.Request.Headers["Host"]);
-            }
-
             LostPasswordViewModel model = new LostPasswordViewModel()
             {
                 User = user,
-                LostPasswordUrl = $"{siteUrl}/OrchardCore.Users/Account/ResetPassword?code={user.ResetToken}"
+                LostPasswordUrl = Url.Action("ResetPassword", "Account", new { code = user.ResetToken }, HttpContext.Request.Scheme)
             };
             // Todo: Find a way to render a shape
             string template = await RenderViewAsString("Template.User.LostPassword", model);

@@ -42,8 +42,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 mockSiteService,
                 Mock.Of<ISmtpService>(),
                 Mock.Of<ICompositeViewEngine>(),
-                Mock.Of<IStringLocalizer<AdminController>>(),
-                Mock.Of<IHtmlLocalizer<AdminController>>());
+                Mock.Of<IStringLocalizer<AccountController>>(),
+                Mock.Of<IHtmlLocalizer<AccountController>>());
 
             var result = await controller.Register();
             Assert.IsType<NotFoundResult>(result);
@@ -72,8 +72,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 mockSiteService,
                 Mock.Of<ISmtpService>(),
                 Mock.Of<ICompositeViewEngine>(),
-                Mock.Of<IStringLocalizer<AdminController>>(),
-                Mock.Of<IHtmlLocalizer<AdminController>>());
+                Mock.Of<IStringLocalizer<AccountController>>(),
+                Mock.Of<IHtmlLocalizer<AccountController>>());
 
 
             var result = await controller.Register();

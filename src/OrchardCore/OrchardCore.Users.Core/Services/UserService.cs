@@ -170,7 +170,7 @@ namespace OrchardCore.Users.Services
                 user = await _userManager.FindByEmailAsync(userIdentifier);
             }
 
-            return await Task.FromResult(user);
+            return user;
         }
 
         private void ProcessValidationErrors(IEnumerable<IdentityError> errors, User user, Action<string, string> reportError)
