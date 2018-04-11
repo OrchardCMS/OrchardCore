@@ -95,6 +95,84 @@ namespace OrchardCore.Users.Services
             return _userManager.GetUserAsync(principal);
         }
 
+        public async Task<IUser> GetForgotPasswordUserAsync(string userIdentifier)
+        {
+            if (string.IsNullOrWhiteSpace(userIdentifier))
+            {
+                return await Task.FromResult<IUser>(null);
+            }
+
+            var iUser = await FindByUsernameOrEmailAsync(userIdentifier);
+            if (iUser == null)
+            {
+                return await Task.FromResult<IUser>(null);
+            }
+
+            var user = (User)iUser;
+            user.ResetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            return user;
+        }
+
+        public async Task<bool> ResetPasswordAsync(string userIdentifier, string resetToken, string newPassword, Action<string, string> reportError)
+        {
+            var result = true;
+            if (string.IsNullOrWhiteSpace(userIdentifier))
+            {
+                reportError("UserName", T["A user name or email is required."]);
+                result = false;
+            }
+
+            if (string.IsNullOrWhiteSpace(newPassword))
+            {
+                reportError("Password", T["A password is required."]);
+                result = false;
+            }
+
+            if (string.IsNullOrWhiteSpace(resetToken))
+            {
+                reportError("Token", T["A token is required."]);
+                result = false;
+            }
+
+            if (!result)
+            {
+                return result;
+            }
+
+            var iUser = await FindByUsernameOrEmailAsync(userIdentifier);
+            if (iUser == null)
+            {
+                return false;
+            }
+
+            var identityResult = await _userManager.ResetPasswordAsync(iUser, resetToken, newPassword);
+
+            if (!identityResult.Succeeded)
+            {
+                ProcessValidationErrors(identityResult.Errors, (User)iUser, reportError);
+            }
+
+            return identityResult.Succeeded;
+        }
+
+        /// <summary>
+        /// Gets the user, if any, associated with the normalized value of the specified identifier, which can refer both to username or email
+        /// </summary>
+        /// <param name="userIdentification">The username or email address to refer to</param>
+        private async Task<IUser> FindByUsernameOrEmailAsync(string userIdentifier)
+        {
+            userIdentifier = userIdentifier.Normalize();
+
+            var user = await _userManager.FindByNameAsync(userIdentifier);
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(userIdentifier);
+            }
+
+            return await Task.FromResult(user);
+        }
+
         private void ProcessValidationErrors(IEnumerable<IdentityError> errors, User user, Action<string, string> reportError)
         {
             foreach (var error in errors)
