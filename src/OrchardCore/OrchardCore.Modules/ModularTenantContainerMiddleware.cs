@@ -88,7 +88,7 @@ namespace OrchardCore.Modules
                 // Create a new scope only if there are pending tasks
                 if (hasPendingTasks)
                 {
-                    using (var scope = _orchardHost.EnterServiceScope(shellSettings, out var shellContext))
+                    using (var scope = _orchardHost.EnterServiceScope(shellSettings))
                     {
                         var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
                         var context = new DeferredTaskContext(scope.ServiceProvider);

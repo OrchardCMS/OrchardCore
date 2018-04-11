@@ -8,6 +8,7 @@ using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.OpenId.Services.Managers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
@@ -128,9 +129,13 @@ namespace OrchardCore.OpenId.Services
                 {
                     results.Add(new ValidationResult(T["The specified tenant is not valid."]));
                 }
+                else if (tenant.State != TenantState.Running)
+                {
+                    results.Add(new ValidationResult(T["The specified tenant is not running."]));
+                }
                 else
                 {
-                    using (var scope = _shellHost.EnterServiceScope(tenant, out var context))
+                    using (var scope = _shellHost.EnterServiceScope(tenant))
                     {
                         var manager = scope.ServiceProvider.GetService<OpenIdScopeManager>();
                         if (manager == null)

@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
@@ -71,9 +73,13 @@ namespace OrchardCore.OpenId.Drivers
                 model.Audience = settings.Audience;
                 model.Tenant = settings.Tenant;
 
-                model.AvailableTenants = (from tenant in _shellSettingsManager.LoadSettings().AsParallel()
-                                          let provider = _shellHost.GetOrCreateShellContext(tenant).ServiceProvider
-                                          let descriptor = provider.GetRequiredService<ShellDescriptor>()
+                Func<IServiceScope, bool> disposeScope = s => { s.Dispose(); return true; };
+
+                model.AvailableTenants = (from tenant in _shellSettingsManager.LoadSettings()
+                                            .Where(s => s.State == TenantState.Running).AsParallel()
+                                          let scope = _shellHost.EnterServiceScope(tenant)
+                                          let descriptor = scope.ServiceProvider.GetRequiredService<ShellDescriptor>()
+                                          let disposed = disposeScope(scope)
                                           where descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server)
                                           select tenant.Name).ToList();
             }).Location("Content:2").OnGroup(SettingsGroupId);

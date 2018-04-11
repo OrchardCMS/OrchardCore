@@ -206,7 +206,7 @@ namespace OrchardCore.Recipes.Services
 
             // The recipe execution might have invalidated the shell by enabling new features,
             // so the deferred tasks need to run on an updated shell context if necessary.
-            using (var scope = _orchardHost.EnterServiceScope(_shellSettings, out var shellContext))
+            using (var scope = _orchardHost.EnterServiceScope(_shellSettings))
             {
                 var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
 

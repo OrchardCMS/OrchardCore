@@ -89,6 +89,11 @@ namespace OrchardCore.Environment.Shell
             return shell;
         }
 
+        public IServiceScope EnterServiceScope(ShellSettings settings)
+        {
+            return EnterServiceScope(settings, out var context);
+        }
+
         public IServiceScope EnterServiceScope(ShellSettings settings, out ShellContext context)
         {
             context = GetOrCreateShellContext(settings);
