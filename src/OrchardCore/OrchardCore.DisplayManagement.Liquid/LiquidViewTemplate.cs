@@ -74,7 +74,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             // Dynamic caching
             Factory.RegisterBlock<CacheBlock>("cache");
             Factory.RegisterTag<CacheDependencyTag>("cache_dependency");
-            Factory.RegisterTag<CacheContextTag>("cache_context");
+            Factory.RegisterTag<CacheContextTag>("cache_vary_by");
             Factory.RegisterTag<CacheExpiresOnTag>("cache_expires_on");
             Factory.RegisterTag<CacheExpiresAfterTag>("cache_expires_after");
             Factory.RegisterTag<CacheExpiresSlidingTag>("cache_expires_sliding");

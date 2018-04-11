@@ -41,7 +41,7 @@ namespace OrchardCore.Environment.Cache
         {
             if (_scopes.Count > 0)
             {
-                _scopes.Peek().AddTag(contexts);
+                _scopes.Peek().AddContext(contexts);
             }
         }
 

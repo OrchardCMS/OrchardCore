@@ -53,10 +53,10 @@ namespace OrchardCore.DynamicCache.Liquid
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
             var cacheKey = arguments.At(0).ToStringValue();
-            var contexts = arguments["contexts"].ToStringValue();
-            var tags = arguments["tags"].ToStringValue();
-            var durationString = arguments["fixed_duration"].ToStringValue();
-            var slidingDurationString = arguments["sliding_duration"].ToStringValue();
+            var contexts = arguments["vary_by"].ToStringValue();
+            var tags = arguments["dependencies"].ToStringValue();
+            var durationString = arguments["expires_after"].ToStringValue();
+            var slidingDurationString = arguments["expires_sliding"].ToStringValue();
 
             var cacheContext = new CacheContext(cacheKey)
                 .AddContext(contexts.Split(splitChars, StringSplitOptions.RemoveEmptyEntries))
@@ -90,8 +90,8 @@ namespace OrchardCore.DynamicCache.Liquid
             {
                 var debugContent = new StringWriter();
                 debugContent.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})");
-                debugContent.WriteLine($"        CONTEXTS: {String.Join(", ", cacheContext.Contexts)}");
-                debugContent.WriteLine($"            TAGS: {String.Join(", ", cacheContext.Tags)}");
+                debugContent.WriteLine($"         VARY BY: {String.Join(", ", cacheContext.Contexts)}");
+                debugContent.WriteLine($"    DEPENDENCIES: {String.Join(", ", cacheContext.Tags)}");
                 debugContent.WriteLine($"      EXPIRES ON: {cacheContext.ExpiresOn}");
                 debugContent.WriteLine($"   EXPIRES AFTER: {cacheContext.ExpiresAfter}");
                 debugContent.WriteLine($" EXPIRES SLIDING: {cacheContext.ExpiresSliding}");

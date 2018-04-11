@@ -33,35 +33,35 @@ the `ShapeMetadata`). The markup will be retrieved from the cache and returned a
 If a cached section is invalidated, the markup for the section will be regenerated on the next request, and then placed back into the cache for subsequent requests to take advantage of.
 
 - If its children are still cached then their cached value will be used.
-- Invalidating a shape will also invalidate all parent shapes.
+- Invalidating a block will also invalidate all parent blocks.
 
 For instance, if `Section B2` is invalidated, `Section B` will also be invalidated. When the Layout is rendered, the `Section B` code will run 
 again, as will `Section B2`, but the cached content of `Section B1` will be reused.
 
-Cached sections can be 'tagged', which allows the cache to know when the cached value should be invalidated. 
+Cached sections can define dependencies, which allows the cache to know when the cached value should be invalidated. 
 
 For example- if a cache section includes the body of a content item, you may want to automatically invalidate this cache section whenever that content item changes.
-You can do this by tagging the cache section with the `contentitemid:{ContentItemId}` tag. 
+You can do this by adding the dependencies `contentitemid:{ContentItemId}` to the cache section. 
 
 Cached sections can also be configured with a sliding expiration window, an absolute expiration window, or both. 
 If no expiration window is provided, a default sliding window of one minute will be used.
 If both types of expiration windows are supplied, the sliding policy will be used, up to the maximum absolute time allowed by the absolute expiration window. 
 
-### Well-known Cache tags
-Here is a list of common cache tag values that can be used to invalidate cache entries.
+### Well-known Cache dependencies
+Here is a list of common cache dependency values that can be used to invalidate cache entries.
 
-| Tag | Description |
+| Dependency | Description |
 | --------- | ----------- |
-| `contentitemid:{ContentItemId}` | Triggered when a content item described with its unique id (`{ContentItemId}`) is Published, Unpublished or Removed. |
-| `alias:{Alias}` | Triggered when a content item with a specific alias (`{Alias}`) is Published, Unpublished or Removed. |
+| `contentitemid:{ContentItemId}` | Invalidated when a content item described with its unique id (`{ContentItemId}`) is Published, Unpublished or Removed. |
+| `alias:{Alias}` | Invalidated when a content item with a specific alias (`{Alias}`) is Published, Unpublished or Removed. |
 
-You can create your own tags by calling `RemoveTagAsync()` on `ITagCache` in response to events.
+You can create your own dependencies by calling `RemoveTagAsync()` on `ITagCache` in response to events.
 
 ## Varying cached sections (Contexts)
 You may have a cached section that needs to be varied depending on the context of the request. 
 An example of this would be a header section that is included on every page on the site, but contains different markup for each user (e.g. a log in form, or the currently logged in user's username etc...').
 
-You can do this by adding 'contexts' to the cache policy of a cached section.
+You can do this by adding 'vary by' values (called contexts) to the cache policy of a cached section.
 
 Adding a `user` context to the header example given above would create a unique cache item for each user that logs in to your site
 
@@ -82,7 +82,19 @@ Contexts can be parameterized, for instance `query:age` will pick the `age` valu
 | `user.roles` | The roles of the current user. |
 | `route` | The current request path. |
 
-You can create your own Contexts by implementing `ICacheContextProvider`
+You can create your own Contexts by implementing `ICacheContextProvider`.
+
+### Fallback Contexts
+
+Sometimes you may want to vary by a known value that is not an available context. 
+
+For example: You may wish to cache all your blog posts so that you can quickly display lists of your posts throughout your site. If the cache ID for the cache block was `blog-post`, you can use a known value as a context to vary the cache item for each blog post. In this case, you could use the Content Item ID as a context:
+
+```
+{% cache "blog-post-summary", vary_by: Model.ContentItemId %}
+    ...
+{% endcache %}
+```
 
 ## Usage
 Cached sections can be configured to encompass a shape, or they can be explicitly added to markup with the `cache` liquid block, or the `cache` razor tag helper:
@@ -123,12 +135,12 @@ When using shape tag helpers, the following attributes can be used:
 | `cache-context` | `cache_context` | A set of space/comma-separated context values. | No |
 | `cache-dependency` | `cache_dependency` | A set of space/comma-separated dependency values. | No |
 | `cache-tag` | `cache_tag` | A set of space/comma-separated tag values. | No |
-| `cache-fixed-duration` | `cache_fixed_duration` | The cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
-| `cache-sliding-duration` | `cache_sliding_duration` | The sliding cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
+| `cache-fixed-duration` | `cache_expires_after` | The cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
+| `cache-sliding-duration` | `cache_expires_sliding` | The sliding cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
 
 e.g.: to cache the menu shape in a liquid template, you would use this markup:
 
-`{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu" %}`
+`{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_expires_after: "00:05:00", cache_tag: "alias:main-menu" %}`
 
 ### Liquid cache block
 The liquid `cache` block can be used to cache sections of markup. `cache` blocks can be nested.
@@ -139,9 +151,8 @@ The liquid `cache` block can be used to cache sections of markup. `cache` blocks
 | `id` | The identifier of the cached shape. | Yes (this is the default first argument- no need to explicitly specify the name of this argument)  |
 | `contexts` | A set of space/comma-separated context values. | No |
 | `dependencies` | A set of space/comma-separated dependency values. | No |
-| `tags` | A set of space/comma-separated tag values. | No |
-| `fixed_duration` | The cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
-| `sliding_duration` | The sliding cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
+| `expires_after` | The cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
+| `expires_sliding` | The sliding cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
 
 #### Examples
 Simple block:
@@ -156,12 +167,12 @@ Nested blocks:
 ```
 {% cache "a" %}
     A {{ "now" | date: "%T" }} (No Duration) <br />
-    {% cache "a1", tags: "a1", contexts: "user", fixed_duration: "0:5:0" %}
+    {% cache "a1", dependencies: "a1", vary_by: "user", expires_after: "0:5:0" %}
         A1 {{ "now" | date: "%T" }} (5 Minutes) <br />
     {% endcache %}
-    {% cache "a2", tags: "a2", fixed_duration: "0:0:1" %}
+    {% cache "a2", dependencies: "a2", expires_after: "0:0:1" %}
         A2 {{ "now" | date: "%T" }} (1 Second) <br />
-        {% cache "a2a", tags: "a2a", contexts: "route", sliding_duration: "0:0:5" %}
+        {% cache "a2a", dependencies: "a2a", contexts: "route", expires_sliding: "0:0:5" %}
             A2A {{ "now" | date: "%T" }} (5 Seconds) <br />
         {% endcache %}
     {% endcache %}

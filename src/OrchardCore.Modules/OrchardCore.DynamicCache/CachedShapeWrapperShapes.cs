@@ -19,8 +19,8 @@ namespace OrchardCore.DynamicCache
             var cache = metadata.Cache();
 
             sb.AppendLine($"<!-- CACHED SHAPE: {cache.CacheId} ({Guid.NewGuid()})");
-            sb.AppendLine($"         CONTEXTS: {String.Join(", ", cache.Contexts)}");
-            sb.AppendLine($"             TAGS: {String.Join(", ", cache.Tags)}");
+            sb.AppendLine($"          VARY BY: {String.Join(", ", cache.Contexts)}");
+            sb.AppendLine($"     DEPENDENCIES: {String.Join(", ", cache.Tags)}");
             sb.AppendLine($"       EXPIRES ON: {cache.ExpiresOn}");
             sb.AppendLine($"    EXPIRES AFTER: {cache.ExpiresAfter}");
             sb.AppendLine($"  EXPIRES SLIDING: {cache.ExpiresSliding}");

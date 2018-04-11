@@ -32,7 +32,7 @@
 
 <body>
     {% cache "menu-wrapper" %}
-    {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu" %}
+    {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_expires_after: "00:05:00", cache_tag: "alias:main-menu" %}
     {% endcache %}
 
     {% render_section "Header", required: false %}

@@ -19,6 +19,7 @@ namespace OrchardCore.Environment.Cache
             services.AddScoped<ICacheContextProvider, RolesCacheContextProvider>();
             services.AddScoped<ICacheContextProvider, RouteCacheContextProvider>();
             services.AddScoped<ICacheContextProvider, UserCacheContextProvider>();
+            services.AddScoped<ICacheContextProvider, KnownValueCacheContextProvider>();
 
             // MVC is already registering IMemoryCache as host singleton. We are registering it again
             // in this module so that there is one instance for each tenant.

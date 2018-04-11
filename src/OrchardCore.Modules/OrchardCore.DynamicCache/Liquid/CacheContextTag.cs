@@ -4,16 +4,22 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
+using Fluid.Tags;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Cache;
-using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DynamicCache.Liquid
 {
-    public class CacheContextTag : ExpressionArgumentsTag
+    public class CacheContextTag : ArgumentsTag
     {
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
+        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments)
         {
+            if (arguments.Length < 1)
+            {
+                // No context has been provided, so return
+                return Completion.Normal;
+            }
+
             if (!context.AmbientValues.TryGetValue("Services", out var servicesObj))
             {
                 throw new ArgumentException("Services missing while invoking 'cache_context' tag");
@@ -28,9 +34,9 @@ namespace OrchardCore.DynamicCache.Liquid
                 return Completion.Normal;
             }
 
-            var contextToAdd = (await expression.EvaluateAsync(context)).ToStringValue();
+            var contextToAdd = await arguments[0].Expression.EvaluateAsync(context);
 
-            cacheScopeManager.AddContexts(contextToAdd);
+            cacheScopeManager.AddContexts(contextToAdd.ToStringValue());
 
             return Completion.Normal;
         }

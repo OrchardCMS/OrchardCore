@@ -1,3 +1,5 @@
+{% cache "blog-post-summary" %}
+{% cache_vary_by Model.ContentItem.ContentItemId %}
 <div class="post-preview">
     {% a display_for:Model.ContentItem %}
     <h2 class="post-title">
@@ -13,7 +15,7 @@
         {{ "Posted by" | t }}
 
         {% assign cacheKey = "SummaryBlogPostAuthor-" | append: User.Identity.Name %}
-        {% cache cacheKey, contexts: "user", sliding_duration: "0:0:5" %}
+        {% cache cacheKey, vary_by: "user", expires_sliding: "0:0:5" %}
         <a href="#">
             {% if Model.ContentItem.Owner == User.Identity.Name %}
             {{ "You" | t }}
@@ -27,3 +29,4 @@
     </p>
 </div>
 <hr />
+{% endcache %}
