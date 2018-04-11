@@ -13,5 +13,6 @@ namespace OrchardCore.OpenId.Settings
         public string SignedOutRedirectUri { get; set; }
         public string SignedOutCallbackPath { get; set; }
         public IEnumerable<string> AllowedScopes { get; set; }
+        public string ResponseType { get; set; }
     }
 }

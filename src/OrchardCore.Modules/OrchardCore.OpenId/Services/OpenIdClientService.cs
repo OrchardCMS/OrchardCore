@@ -76,6 +76,15 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
+            if (string.IsNullOrEmpty(settings.ResponseType))
+            {
+                results.Add(new ValidationResult(T["The response type cannot be null or empty."], new[]
+                {
+                    nameof(settings.ResponseType)
+                }));
+            }
+
+
             return Task.FromResult(results.ToImmutable());
         }
     }

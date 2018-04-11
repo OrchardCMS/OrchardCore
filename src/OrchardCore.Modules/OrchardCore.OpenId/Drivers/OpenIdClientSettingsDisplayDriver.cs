@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -72,6 +73,18 @@ namespace OrchardCore.OpenId.Drivers
                 model.ClientSecret = settings.ClientSecret;
                 model.SignedOutCallbackPath = settings.SignedOutCallbackPath;
                 model.SignedOutRedirectUri = settings.SignedOutRedirectUri;
+
+                if (settings.ResponseType == OpenIdConnectResponseType.IdToken)
+                {
+                    model.UseImplicitFlow = true;
+                }
+                else if (settings.ResponseType == OpenIdConnectResponseType.CodeIdToken)
+                {
+                    model.UseHybridFlow = true;
+                }
+                else
+                    model.UseManualFlow = true;
+
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -97,6 +110,12 @@ namespace OrchardCore.OpenId.Drivers
                 settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
                 settings.SignedOutRedirectUri = model.SignedOutRedirectUri;
 
+                if (model.UseHybridFlow)
+                    settings.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+                else if (model.UseImplicitFlow)
+                    settings.ResponseType = OpenIdConnectResponseType.IdToken;
+                else
+                    settings.ResponseType = model.ResponseType;
                 // Restore the client secret if the input is empty (i.e if it hasn't been reset).
                 if (string.IsNullOrEmpty(settings.ClientSecret))
                 {

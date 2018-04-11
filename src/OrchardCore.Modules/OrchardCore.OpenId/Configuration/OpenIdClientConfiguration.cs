@@ -71,7 +71,7 @@ namespace OrchardCore.OpenId.Configuration
 
             options.RequireHttpsMetadata = settings.Authority.StartsWith(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
 
-            options.ResponseType = OpenIdConnectResponseType.IdToken;
+            options.ResponseType = settings.ResponseType;
             options.CallbackPath = settings.CallbackPath;
 
             if (settings.AllowedScopes != null)
@@ -82,7 +82,7 @@ namespace OrchardCore.OpenId.Configuration
                 }
             }
 
-            if (!string.IsNullOrEmpty(settings.ClientSecret))
+            if (settings.ResponseType.Contains(OpenIdConnectResponseType.Code) && !string.IsNullOrEmpty(settings.ClientSecret))
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
 

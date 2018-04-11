@@ -19,5 +19,9 @@ namespace OrchardCore.OpenId.ViewModels
         [RegularExpression(@"\/[-A-Za-z0-9+&@#\/%?=~_|!:,.;]+[-A-Za-z0-9+&@#\/%=~_|]", ErrorMessage="Invalid path")]
         public string SignedOutCallbackPath { get; set; }
         public string AllowedScopes { get; set; }
+        public string ResponseType { get; set;}
+        public bool UseImplicitFlow { get; set; }
+        public bool UseHybridFlow { get; set; }
+        public bool UseManualFlow { get; set; }
     }
 }

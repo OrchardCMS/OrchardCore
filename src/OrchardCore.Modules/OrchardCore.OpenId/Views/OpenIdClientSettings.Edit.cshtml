@@ -3,27 +3,21 @@
 
 
 <fieldset class="form-group" asp-validation-class-for="DisplayName">
-    <label asp-for="DisplayName">@T["Display Name"] <span asp-validation-for="DisplayName"></span></label>
+    <label>@T["Display Name"] <span asp-validation-for="DisplayName"></span></label>
     <input asp-for="DisplayName" class="form-control" />
     <span class="hint">@T["Display name of the IdP"]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="Authority">
-    <label asp-for="Authority">@T["Authority"] <span asp-validation-for="Authority"></span></label>
+    <label>@T["Authority"] <span asp-validation-for="Authority"></span></label>
     <input asp-for="Authority" class="form-control" />
     <span class="hint">@T["Authority to use when making OpenIdConnect calls"]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="ClientId">
-    <label asp-for="ClientId">@T["ClientId"] <span asp-validation-for="ClientId"></span></label>
+    <label>@T["ClientId"] <span asp-validation-for="ClientId"></span></label>
     <input asp-for="ClientId" class="form-control" />
     <span class="hint">@T["the 'client_id'"]</span>
-</fieldset>
-
-<fieldset class="form-group" asp-validation-class-for="ClientSecret">
-    <label asp-for="ClientSecret">@T["Client Secret"] <span asp-validation-for="ClientSecret"></span></label>
-    <input asp-for="ClientSecret" class="form-control" type="password" />
-    <span class="hint">@T["the 'client_secret'"]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="CallbackPath">
@@ -37,3 +31,88 @@
     <input asp-for="AllowedScopes" class="form-control" />
     <span class="hint">@T["Scopes to request from IdP"]</span>
 </fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="UseImplicitFlow">
+    <div class="form-check">
+        <label class="form-check-label">
+            <input class="form-check-input" asp-for="UseImplicitFlow" />
+            @T["Use Implicit Flow"]
+        </label>
+    </div>
+    <span class="hint">@T["configure id_token response_type. https://openid.net/specs/openid-connect-core-1_0.html#Authentication"]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="UseHybridFlow">
+    <div class="form-check">
+        <label class="form-check-label">
+            <input class="form-check-input" asp-for="UseHybridFlow" />
+            @T["Use Hybrid Flow"]
+        </label>
+    </div>
+    <span class="hint">@T["configure code id_token response_type. https://openid.net/specs/openid-connect-core-1_0.html#Authentication"]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="UseManualFlow">
+    <div class="form-check">
+        <label class="form-check-label">
+            <input class="form-check-input" asp-for="UseManualFlow" />
+            @T["Use Manual Flow"]
+        </label>
+    </div>
+    <span class="hint">@T["manually configure response_type. https://openid.net/specs/openid-connect-core-1_0.html#Authentication"]</span>
+</fieldset>
+
+<fieldset class="form-group collapse" asp-validation-class-for="ClientSecret">
+    <label>@T["Client Secret"] <span asp-validation-for="ClientSecret"></span></label>
+    <input asp-for="ClientSecret" class="form-control" type="password" />
+    <span class="hint">@T["the 'client_secret'"]</span>
+</fieldset>
+
+<fieldset class="form-group collapse" asp-validation-class-for="ResponseType">
+    <label>@T["Response Type"] <span asp-validation-for="ResponseType"></span></label>
+    <input asp-for="ResponseType" class="form-control" />
+    <span class="hint">@T["Define the Response Type"]</span>
+</fieldset>
+
+<script at="Foot" type="text/javascript">
+////<![CDATA[
+    window.onload = function () {
+        refreshFlows();
+        $("#@Html.IdFor(m => m.UseHybridFlow), #@Html.IdFor(m => m.UseImplicitFlow), #@Html.IdFor(m => m.UseManualFlow)").change(function () {
+            $('input[type="checkbox"]').not(this).prop('checked', false);
+            refreshFlows();
+        });
+        function refreshFlows(e) {
+            var useImplicitFlow = $("#@Html.IdFor(m => m.UseImplicitFlow)");
+            var useHybridFlow = $("#@Html.IdFor(m => m.UseHybridFlow)");
+            var useManualFlow = $("#@Html.IdFor(m => m.UseManualFlow)");
+            var clientSecret = $("#@Html.IdFor(m => m.ClientSecret)");
+            var responseType = $("#@Html.IdFor(m => m.ResponseType)");
+
+            var useImplicitFlowChecked = useImplicitFlow.prop("checked");
+            var useHybridFlowChecked = useHybridFlow.prop("checked");
+
+            if (useImplicitFlowChecked || useHybridFlowChecked) {
+                clientSecret.prop("value", null);
+                responseType.prop("text", null);
+                useManualFlow.prop("checked", false);
+            } else {
+                useManualFlow.prop("checked", true);
+            }
+
+
+            if (useHybridFlowChecked) {
+                clientSecret.parent().collapse("show");
+                responseType.parent().collapse("hide");
+            } else if (useImplicitFlowChecked) {
+                clientSecret.parent().collapse("hide");
+                responseType.parent().collapse("hide");
+            } else {
+                clientSecret.parent().collapse("show");
+                responseType.parent().collapse("show");
+            }
+
+        }
+    };
+//]]>
+</script>
