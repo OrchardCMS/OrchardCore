@@ -54,30 +54,29 @@ namespace OrchardCore.Modules
 
             IsRunning = true;
 
-            var previousTenants = Enumerable.Empty<Tenant>();
+            var previousShells = Enumerable.Empty<ShellContext>();
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var runningTenants = GetRunningTenants();
-                await UpdateAsync(previousTenants, runningTenants, stoppingToken);
-                previousTenants = runningTenants;
+                var runningShells = GetRunningShells();
+                await UpdateAsync(previousShells, runningShells, stoppingToken);
+                previousShells = runningShells;
 
                 var pollingDelay = Task.Delay(PollingTime, stoppingToken);
 
-                await RunAsync(runningTenants, stoppingToken);
+                await RunAsync(runningShells, stoppingToken);
                 await WaitAsync(pollingDelay, stoppingToken);
             }
 
             IsRunning = false;
         }
 
-        private async Task RunAsync(IEnumerable<Tenant> runningTenants, CancellationToken stoppingToken)
+        private async Task RunAsync(IEnumerable<ShellContext> runningShells, CancellationToken stoppingToken)
         {
-            await GetTenantsToRun(runningTenants).ForEachAsync(async tenant =>
+            await GetShellsToRun(runningShells).ForEachAsync(async shell =>
             {
-                var shell = tenant.Shell;
-
-                var schedulers = GetSchedulersToRun(tenant.Name);
+                var tenant = shell.Settings.Name;
+                var schedulers = GetSchedulersToRun(tenant);
 
                 _httpContextAccessor.HttpContext = shell.GetHttpContext();
 
@@ -90,6 +89,8 @@ namespace OrchardCore.Modules
                         break;
                     }
 
+                    // Todo: use a version which returns a scope atomically, see #1669.
+                    // And then we could get rid of checking if shell.Released (see above).
                     using (var scope = shell.EnterServiceScope())
                     {
                         var task = scope.GetTaskByTypeName(taskName);
@@ -101,7 +102,7 @@ namespace OrchardCore.Modules
 
                         try
                         {
-                            Logger.Information($"Start processing background task {taskName} on tenant {tenant.Name}.");
+                            Logger.Information($"Start processing background task {taskName} on tenant {tenant}.");
 
                             scheduler.Run();
 
@@ -109,27 +110,27 @@ namespace OrchardCore.Modules
 
                             scheduler.Idle();
 
-                            Logger.Information($"Finished processing background task {taskName} on tenant {tenant.Name}.");
+                            Logger.Information($"Finished processing background task {taskName} on tenant {tenant}.");
                         }
 
                         catch (Exception e)
                         {
                             scheduler.Fault(e);
 
-                            Logger.Error(e, $"Error while processing background task {taskName} on tenant {tenant.Name}.");
+                            Logger.Error(e, $"Error while processing background task {taskName} on tenant {tenant}.");
                         }
                     }
                 }
             });
         }
 
-        private async Task UpdateAsync(IEnumerable<Tenant> previousTenants, IEnumerable<Tenant> runningTenants, CancellationToken stoppingToken)
+        private async Task UpdateAsync(IEnumerable<ShellContext> previousShells, IEnumerable<ShellContext> runningShells, CancellationToken stoppingToken)
         {
             var referenceTime = DateTime.UtcNow;
 
-            await GetTenantsToUpdate(previousTenants, runningTenants).ForEachAsync(async tenant =>
+            await GetShellsToUpdate(previousShells, runningShells).ForEachAsync(async shell =>
             {
-                var shell = tenant.Shell;
+                var tenant = shell.Settings.Name;
 
                 IEnumerable<Type> taskTypes;
 
@@ -138,10 +139,12 @@ namespace OrchardCore.Modules
                     return;
                 }
 
+                // Todo: use a version which returns a scope atomically, see #1669.
+                // And then we could get rid of checking if shell.Released (see above).
                 using (var scope = shell.EnterServiceScope())
                 {
                     taskTypes = scope.GetTaskTypes();
-                    CleanSchedulers(tenant.Name, taskTypes);
+                    CleanSchedulers(tenant, taskTypes);
 
                     if (!taskTypes.Any())
                     {
@@ -157,9 +160,9 @@ namespace OrchardCore.Modules
 
                         var taskName = taskType.FullName;
 
-                        if (!_schedulers.TryGetValue(tenant.Name + taskName, out BackgroundTaskScheduler scheduler))
+                        if (!_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
                         {
-                            _schedulers[tenant.Name + taskName] = scheduler = new BackgroundTaskScheduler(tenant.Name, taskName, referenceTime);
+                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime);
                         }
 
                         if (!scheduler.Released && scheduler.Updated)
@@ -187,12 +190,12 @@ namespace OrchardCore.Modules
                         catch (Exception e)
                         {
                             scheduler.Fault(e);
-                            Logger.Error(e, $"Error while updating settings of background task {taskName} on tenant {tenant.Name}.");
+                            Logger.Error(e, $"Error while updating settings of background task {taskName} on tenant {tenant}.");
                         }
 
                         finally
                         {
-                            _schedulers[tenant.Name + taskName] = scheduler;
+                            _schedulers[tenant + taskName] = scheduler;
                         }
                     }
                 }
@@ -213,11 +216,11 @@ namespace OrchardCore.Modules
 
         public async Task UpdateAsync(string tenant)
         {
-            var shell = GetRunningShells().FirstOrDefault(s => s.Settings?.Name == tenant);
+            var shell = GetRunningShells().FirstOrDefault(s => s.Settings.Name == tenant);
 
             if (shell != null)
             {
-                await UpdateAsync(Enumerable.Empty<Tenant>(), new Tenant[] { new Tenant(shell) }, CancellationToken.None);
+                await UpdateAsync(Enumerable.Empty<ShellContext>(), new [] { shell }, CancellationToken.None);
             }
         }
 
@@ -271,49 +274,31 @@ namespace OrchardCore.Modules
                 .Select(kv => kv.Value.State.Clone()).ToArray().AsEnumerable());
         }
 
-        private class Tenant
-        {
-            public Tenant(ShellContext shell)
-            {
-                Name = shell.Settings?.Name;
-                Shell = shell;
-            }
-
-            public string Name { get; }
-            public ShellContext Shell { get; }
-        }
-
         private IEnumerable<ShellContext> GetRunningShells()
         {
-            return _shellHost.ListShellContexts()?
-                .Where(s => s.Settings?.State == TenantState.Running && !s.Released && (s.IsActivated || s.ActiveScopes == 0))
-                .ToArray() ?? Enumerable.Empty<ShellContext>();
+            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running &&
+                (s.IsActivated || s.ActiveScopes == 0)).ToArray();
         }
 
-        private IEnumerable<Tenant> GetRunningTenants()
-        {
-            return GetRunningShells().Select(s => new Tenant(s)).ToArray();
-        }
-
-        private IEnumerable<Tenant> GetTenantsToRun(IEnumerable<Tenant> tenants)
+        private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)
         {
             var tenantsToRun = _schedulers.Where(s => s.Value.CanRun()).Select(s => s.Value.Tenant).Distinct().ToArray();
-            return tenants.Where(t => tenantsToRun.Contains(t.Name)).ToArray();
+            return shells.Where(s => tenantsToRun.Contains(s.Settings.Name)).ToArray();
         }
 
-        private IEnumerable<Tenant> GetTenantsToUpdate(IEnumerable<Tenant> previousTenants, IEnumerable<Tenant> runningTenants)
+        private IEnumerable<ShellContext> GetShellsToUpdate(IEnumerable<ShellContext> previousShells, IEnumerable<ShellContext> runningShells)
         {
-            var tenantsToRelease = previousTenants.Where(t => t.Shell.Released).Select(t => t.Name).ToArray();
+            var tenantsToRelease = previousShells.Where(s => s.Released).Select(s => s.Settings.Name).ToArray();
 
             if (tenantsToRelease.Any())
             {
                 ReleaseSchedulers(tenantsToRelease);
             }
 
-            var validTenants = previousTenants.Select(t => t.Name).Except(tenantsToRelease);
-            var tenantsToadd = runningTenants.Select(t => t.Name).Except(validTenants).ToArray();
+            var validTenants = previousShells.Select(s => s.Settings.Name).Except(tenantsToRelease);
+            var tenantsToadd = runningShells.Select(s => s.Settings.Name).Except(validTenants).ToArray();
 
-            return runningTenants.Where(t => tenantsToadd.Contains(t.Name)).ToArray();
+            return runningShells.Where(s => tenantsToadd.Contains(s.Settings.Name)).ToArray();
         }
 
         private IEnumerable<BackgroundTaskScheduler> GetSchedulersToRun(string tenant)
@@ -376,8 +361,8 @@ namespace OrchardCore.Modules
         public static HttpContext GetHttpContext(this ShellContext shell)
         {
             var httpContext = new DefaultHttpContext();
-            httpContext.Request.Host = new HostString(shell.Settings?.RequestUrlHost ?? "localhost");
-            httpContext.Request.Path = "/" + shell.Settings?.RequestUrlPrefix ?? "";
+            httpContext.Request.Host = new HostString(shell.Settings.RequestUrlHost ?? "localhost");
+            httpContext.Request.Path = "/" + shell.Settings.RequestUrlPrefix ?? "";
             httpContext.Items["IsBackground"] = true;
             return httpContext;
         }

@@ -263,8 +263,22 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellContext> ListShellContexts()
         {
-            // Prevent to acquire all the locks at once.
-            return _shellContexts?.Select(kv => kv.Value);
+            if (_shellContexts == null)
+            {
+                return Enumerable.Empty<ShellContext>();
+            }
+
+            var shells = _shellContexts.Select(kv => kv.Value).ToArray();
+
+            return shells.Select(shell =>
+            {
+                if (shell.Released)
+                {
+                    return GetOrCreateShellContext(shell.Settings);
+                }
+
+                return shell;
+            }).ToArray();
         }
 
         /// <summary>

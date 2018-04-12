@@ -138,7 +138,6 @@ namespace OrchardCore.Hosting.ShellBuilders
             }
 
             IsActivated = false;
-            Settings = null;
             Blueprint = null;
 
             _disposed = true;
