@@ -324,8 +324,15 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellContext> ListShellContexts()
         {
-            // Prevent to acquire all the locks at once.
-            return _shellContexts?.Select(kv => kv.Value.Value);
+            return _shellContexts?.Select(kv =>
+            {
+                if (kv.Value.Value.Released)
+                {
+                    return GetOrCreateShellContext(kv.Value.Value.Settings);
+                }
+
+                return kv.Value.Value;
+            });
         }
 
         /// <summary>
