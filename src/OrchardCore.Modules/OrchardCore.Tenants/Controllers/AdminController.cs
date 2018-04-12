@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Hosting.ShellBuilders;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
@@ -45,15 +47,15 @@ namespace OrchardCore.Tenants.Controllers
 
         public IActionResult Index()
         {
-            var settings = _shellSettingsManager.LoadSettings();
+            var shells = GetShells();
 
             var model = new AdminIndexViewModel
             {
-                ShellSettingsEntries = settings.Select(s => new ShellSettingsEntry
+                ShellSettingsEntries = shells.Select(x => new ShellSettingsEntry
                 {
-                    Name = s.Name,
-                    ShellSettings = s,
-                    IsDefaultTenant = string.Equals(s.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
+                    Name = x.Settings.Name,
+                    ShellSettings = x.Settings,
+                    IsDefaultTenant = string.Equals(x.Settings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
                 }).ToList()
             };
 
@@ -131,12 +133,16 @@ namespace OrchardCore.Tenants.Controllers
                 return Unauthorized();
             }
 
-            var shellSettings = _shellSettingsManager.LoadSettings().FirstOrDefault(s => string.Equals(s.Name, id, StringComparison.Ordinal));
+            var shellContext = GetShells()
+                .Where(x => string.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefault();
 
-            if (shellSettings == null)
+            if (shellContext == null)
             {
                 return NotFound();
             }
+
+            var shellSettings = shellContext.Settings;
 
             var model = new EditTenantViewModel
             {
@@ -176,12 +182,16 @@ namespace OrchardCore.Tenants.Controllers
                 ValidateViewModel(model, false);
             }
 
-            var shellSettings = _shellSettingsManager.LoadSettings().FirstOrDefault(s => string.Equals(s.Name, model.Name, StringComparison.Ordinal));
+            var shellContext = GetShells()
+                .Where(x => string.Equals(x.Settings.Name, model.Name, StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefault();
 
-            if (shellSettings == null)
+            if (shellContext == null)
             {
                 return NotFound();
             }
+
+            var shellSettings = shellContext.Settings;
 
             if (ModelState.IsValid)
             {
@@ -229,12 +239,16 @@ namespace OrchardCore.Tenants.Controllers
                 return Unauthorized();
             }
 
-            var shellSettings = _shellSettingsManager.LoadSettings().FirstOrDefault(s => string.Equals(s.Name, id, StringComparison.Ordinal));
+            var shellContext = GetShells()
+                .Where(x => string.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefault();
 
-            if (shellSettings == null)
+            if (shellContext == null)
             {
                 return NotFound();
             }
+
+            var shellSettings = shellContext.Settings;
 
             if (string.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
             {
@@ -267,12 +281,18 @@ namespace OrchardCore.Tenants.Controllers
                 return Unauthorized();
             }
 
-            var shellSettings = _shellSettingsManager.LoadSettings().FirstOrDefault(s => string.Equals(s.Name, id, StringComparison.Ordinal));
+            var shellContext = _orchardHost
+                .ListShellContexts()
+                .OrderBy(x => x.Settings.Name)
+                .Where(x => string.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefault();
 
-            if (shellSettings == null)
+            if (shellContext == null)
             {
                 return NotFound();
             }
+
+            var shellSettings = shellContext.Settings;
 
             if (shellSettings.State != TenantState.Disabled)
             {
@@ -298,9 +318,13 @@ namespace OrchardCore.Tenants.Controllers
                 return Unauthorized();
             }
 
-            var shellSettings = _shellSettingsManager.LoadSettings().FirstOrDefault(s => string.Equals(s.Name, id, StringComparison.Ordinal));
+            var shellContext = _orchardHost
+                .ListShellContexts()
+                .OrderBy(x => x.Settings.Name)
+                .Where(x => string.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefault();
 
-            if (shellSettings == null)
+            if (shellContext == null)
             {
                 return NotFound();
             }
@@ -311,6 +335,7 @@ namespace OrchardCore.Tenants.Controllers
 
             var redirectUrl = Url.Action(nameof(Index));
 
+            var shellSettings = shellContext.Settings;
             _orchardHost.ReloadShellContext(shellSettings);
 
             return Redirect(redirectUrl);
@@ -323,9 +348,9 @@ namespace OrchardCore.Tenants.Controllers
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["The tenant name is mandatory."]);
             }
 
-            var allSettings = _shellSettingsManager.LoadSettings();
+            var allShells = GetShells();
 
-            if (newTenant && allSettings.Any(s => string.Equals(s.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
+            if (newTenant && allShells.Any(tenant => string.Equals(tenant.Settings.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["A tenant with the same name already exists.", model.Name]);
             }
@@ -340,8 +365,8 @@ namespace OrchardCore.Tenants.Controllers
                 ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
             }
 
-            var allOtherSettings = allSettings.Where(s => !string.Equals(s.Name, model.Name, StringComparison.OrdinalIgnoreCase));
-            if (allOtherSettings.Any(s => string.Equals(s.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && string.Equals(s.RequestUrlHost, model.RequestUrlHost, StringComparison.OrdinalIgnoreCase)))
+            var allOtherShells = allShells.Where(tenant => !string.Equals(tenant.Settings.Name, model.Name, StringComparison.OrdinalIgnoreCase));
+            if (allOtherShells.Any(tenant => string.Equals(tenant.Settings.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && string.Equals(tenant.Settings.RequestUrlHost, model.RequestUrlHost, StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["A tenant with the same host and prefix already exists.", model.Name]);
             }
@@ -353,6 +378,11 @@ namespace OrchardCore.Tenants.Controllers
                     ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["The url prefix can not contains more than one segment."]);
                 }
             }
+        }
+
+        private IEnumerable<ShellContext> GetShells()
+        {
+            return _orchardHost.ListShellContexts().OrderBy(x => x.Settings.Name);
         }
 
         private bool IsDefaultShell()
