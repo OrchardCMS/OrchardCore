@@ -76,23 +76,22 @@ namespace OrchardCore.Modules
             await GetShellsToRun(runningShells).ForEachAsync(async shell =>
             {
                 var tenant = shell.Settings.Name;
+
                 var schedulers = GetSchedulersToRun(tenant);
 
                 _httpContextAccessor.HttpContext = shell.GetHttpContext();
 
                 foreach (var scheduler in schedulers)
                 {
-                    var taskName = scheduler.Name;
-
-                    if (shell.Released || stoppingToken.IsCancellationRequested)
+                    if (stoppingToken.IsCancellationRequested)
                     {
                         break;
                     }
 
-                    // Todo: use a version which returns a scope atomically, see #1669.
-                    // And then we could get rid of checking if shell.Released (see above).
-                    using (var scope = shell.EnterServiceScope())
+                    using (var scope = _shellHost.EnterServiceScope(shell.Settings))
                     {
+                        var taskName = scheduler.Name;
+
                         var task = scope.GetTaskByTypeName(taskName);
 
                         if (task == null)
@@ -132,18 +131,9 @@ namespace OrchardCore.Modules
             {
                 var tenant = shell.Settings.Name;
 
-                IEnumerable<Type> taskTypes;
-
-                if (shell.Released || stoppingToken.IsCancellationRequested)
+                using (var scope = _shellHost.EnterServiceScope(shell.Settings))
                 {
-                    return;
-                }
-
-                // Todo: use a version which returns a scope atomically, see #1669.
-                // And then we could get rid of checking if shell.Released (see above).
-                using (var scope = shell.EnterServiceScope())
-                {
-                    taskTypes = scope.GetTaskTypes();
+                    var taskTypes = scope.GetTaskTypes();
                     CleanSchedulers(tenant, taskTypes);
 
                     if (!taskTypes.Any())
@@ -153,7 +143,7 @@ namespace OrchardCore.Modules
 
                     foreach (var taskType in taskTypes)
                     {
-                        if (shell.Released || stoppingToken.IsCancellationRequested)
+                        if (stoppingToken.IsCancellationRequested)
                         {
                             return;
                         }

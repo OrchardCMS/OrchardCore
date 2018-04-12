@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.Environment.Shell
@@ -17,6 +18,27 @@ namespace OrchardCore.Environment.Shell
         /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to get.</param>
         /// <returns></returns>
         ShellContext GetOrCreateShellContext(ShellSettings settings);
+
+        /// <summary>
+        /// Creates a standalone service scope that can be used to resolve local services and
+        /// replaces <see cref="HttpContext.RequestServices"/> with it.
+        /// </summary>
+        /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to get.</param>
+        /// <remarks>
+        /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
+        /// </remarks>
+        IServiceScope EnterServiceScope(ShellSettings settings);
+
+        /// <summary>
+        /// Creates a standalone service scope that can be used to resolve local services and
+        /// replaces <see cref="HttpContext.RequestServices"/> with it.
+        /// </summary>
+        /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to get.</param>
+        /// <param name="context">The <see cref="ShellContext"/> used to create the service scope.</param>
+        /// <remarks>
+        /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
+        /// </remarks>
+        IServiceScope EnterServiceScope(ShellSettings settings, out ShellContext context);
 
         /// <summary>
         /// Updates an existing shell configuration.

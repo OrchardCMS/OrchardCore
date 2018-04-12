@@ -52,6 +52,26 @@ namespace OrchardCore.Hosting.ShellBuilders
             return new ServiceScopeWrapper(this);
         }
 
+        public bool TryEnterServiceScope(out IServiceScope scope)
+        {
+            if (_released)
+            {
+                scope = null;
+                return false;
+            }
+
+            scope = new ServiceScopeWrapper(this);
+
+            if (_released)
+            {
+                scope.Dispose();
+                scope = null;
+                return false;
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// Whether the <see cref="ShellContext"/> instance has been released, for instance when a tenant is changed.
         /// </summary>
@@ -82,16 +102,15 @@ namespace OrchardCore.Hosting.ShellBuilders
 
             lock (this)
             {
-                if (_dependents == null)
+                if (_dependents != null)
                 {
-                    return;
-                }
 
-                foreach (var dependent in _dependents)
-                {
-                    if (dependent.TryGetTarget(out var shellContext))
+                    foreach (var dependent in _dependents)
                     {
-                        shellContext.Release();
+                        if (dependent.TryGetTarget(out var shellContext))
+                        {
+                            shellContext.Release();
+                        }
                     }
                 }
 
@@ -109,6 +128,17 @@ namespace OrchardCore.Hosting.ShellBuilders
         /// </summary>
         public void AddDependentShell(ShellContext shellContext)
         {
+            if (shellContext.Released)
+            {
+                return;
+            }
+
+            if (_released)
+            {
+                shellContext.Release();
+                return;
+            }
+
             lock (this)
             {
                 if (_dependents == null)
@@ -124,6 +154,11 @@ namespace OrchardCore.Hosting.ShellBuilders
         }
 
         public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        public void Dispose(bool disposing)
         {
             if (_disposed)
             {
@@ -142,12 +177,15 @@ namespace OrchardCore.Hosting.ShellBuilders
 
             _disposed = true;
 
-            GC.SuppressFinalize(this);
+            if (disposing)
+            {
+                GC.SuppressFinalize(this);
+            }
         }
 
         ~ShellContext()
         {
-            Dispose();
+            Dispose(false);
         }
 
         internal class ServiceScopeWrapper : IServiceScope
@@ -185,9 +223,9 @@ namespace OrchardCore.Hosting.ShellBuilders
             /// </summary>
             private bool ScopeReleased()
             {
-                var refCount = Interlocked.Decrement(ref _shellContext._refCount);
+                var refCount = Interlocked.CompareExchange(ref _shellContext._refCount, 1, 1);
 
-                if (_shellContext._released && refCount == 0)
+                if (_shellContext._released && refCount == 1)
                 {
                     var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
 
@@ -214,17 +252,12 @@ namespace OrchardCore.Hosting.ShellBuilders
                 _httpContext.RequestServices = _existingServices;
                 _serviceScope.Dispose();
 
-                GC.SuppressFinalize(this);
-
                 if (disposeShellContext)
                 {
                     _shellContext.Dispose();
                 }
-            }
 
-            ~ServiceScopeWrapper()
-            {
-                Dispose();
+                Interlocked.Decrement(ref _shellContext._refCount);
             }
         }
     }

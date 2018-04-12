@@ -74,11 +74,6 @@ namespace OrchardCore.Lucene
 
             var shellContext = _shellHost.GetOrCreateShellContext(_shellSettings);
 
-            if (shellContext.Settings?.State != TenantState.Running)
-            {
-                return;
-            }
-
             do
             {
                 // Create a scope for the content manager
@@ -140,7 +135,7 @@ namespace OrchardCore.Lucene
                     _indexingState.Update();
 
                 } 
-            } while (batch.Length == BatchSize && !shellContext.Released);
+            } while (batch.Length == BatchSize);
         }
 
         /// <summary>
