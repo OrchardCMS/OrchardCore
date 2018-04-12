@@ -324,16 +324,21 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellContext> ListShellContexts()
         {
+            if (_shellContexts == null)
+            {
+                return Enumerable.Empty<ShellContext>();
+            }
+
             var shells = _shellContexts.Select(kv => kv.Value.Value).ToArray();
 
-            return shells.Select(s =>
+            return shells.Select(shell =>
             {
-                if (s.Released)
+                if (shell.Released)
                 {
-                    return GetOrCreateShellContext(s.Settings);
+                    return GetOrCreateShellContext(shell.Settings);
                 }
 
-                return s;
+                return shell;
             }).ToArray();
         }
 
