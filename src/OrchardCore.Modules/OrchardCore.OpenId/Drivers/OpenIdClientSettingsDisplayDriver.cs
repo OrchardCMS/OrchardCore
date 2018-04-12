@@ -117,14 +117,14 @@ namespace OrchardCore.OpenId.Drivers
                 else
                     settings.ResponseType = model.ResponseType;
                 // Restore the client secret if the input is empty (i.e if it hasn't been reset).
-                if (string.IsNullOrEmpty(settings.ClientSecret))
+                if (string.IsNullOrEmpty(model.ClientSecret))
                 {
                     settings.ClientSecret = previousClientSecret;
                 }
                 else
                 {
                     var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
-                    settings.ClientSecret = protector.Protect(settings.ClientSecret);
+                    settings.ClientSecret = protector.Protect(model.ClientSecret);
                 }
 
                 foreach (var result in await _clientService.ValidateSettingsAsync(settings))

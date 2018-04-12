@@ -66,13 +66,13 @@ namespace OrchardCore.OpenId.Configuration
 
             options.Authority = settings.Authority;
             options.ClientId = settings.ClientId;
-            options.SignedOutRedirectUri = settings.SignedOutRedirectUri;
-            options.SignedOutCallbackPath = settings.SignedOutCallbackPath;
-
+            options.SignedOutRedirectUri = settings.SignedOutRedirectUri ?? options.SignedOutRedirectUri;
+            options.SignedOutCallbackPath = settings.SignedOutCallbackPath ?? options.SignedOutCallbackPath;
             options.RequireHttpsMetadata = settings.Authority.StartsWith(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
 
             options.ResponseType = settings.ResponseType;
-            options.CallbackPath = settings.CallbackPath;
+
+            options.CallbackPath = settings.CallbackPath ?? options.CallbackPath;
 
             if (settings.AllowedScopes != null)
             {
