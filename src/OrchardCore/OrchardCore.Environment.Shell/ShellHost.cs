@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
@@ -11,6 +10,7 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -173,24 +173,6 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Whether or not a shell can be activated and added to the running shells.
-        /// </summary>
-        private bool CanRegisterShell(ShellContext context)
-        {
-            if (!CanRegisterShell(context.Settings))
-            {
-                if (_logger.IsEnabled(LogLevel.Debug))
-                {
-                    _logger.LogDebug("Skipping shell context registration for tenant {0}", context.Settings.Name);
-                }
-
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// Registers the shell settings in RunningShellTable
         /// </summary>
         private void RegisterShell(ShellContext context)
@@ -217,6 +199,24 @@ namespace OrchardCore.Environment.Shell
             {
                 RegisterShellSettings(context.Settings);
             }
+        }
+
+        /// <summary>
+        /// Whether or not a shell can be activated and added to the running shells.
+        /// </summary>
+        private bool CanRegisterShell(ShellContext context)
+        {
+            if (!CanRegisterShell(context.Settings))
+            {
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Skipping shell context registration for tenant {0}", context.Settings.Name);
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
