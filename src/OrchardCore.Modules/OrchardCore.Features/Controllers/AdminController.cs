@@ -63,7 +63,7 @@ namespace OrchardCore.Features.Controllers
                 .GetFeatures()
                 .Where(f => !f.Extension.IsTheme()))
             {
-                //var dependentFeatures = _extensionManager.GetDependentFeatures(moduleFeatureInfo.Id);
+                var dependentFeatures = _extensionManager.GetDependentFeatures(moduleFeatureInfo.Id);
                 var featureDependencies = _extensionManager.GetFeatureDependencies(moduleFeatureInfo.Id);
 
                 var moduleFeature = new ModuleFeature
@@ -72,7 +72,7 @@ namespace OrchardCore.Features.Controllers
                     IsEnabled = enabledFeatures.Contains(moduleFeatureInfo),
                     //IsRecentlyInstalled = _moduleService.IsRecentlyInstalled(f.Extension),
                     //NeedsUpdate = featuresThatNeedUpdate.Contains(f.Id),
-                    //DependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id).ToList(),
+                    DependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id).ToList(),
                     FeatureDependencies = featureDependencies.Where(d => d.Id != moduleFeatureInfo.Id).ToList()
                 };
 
