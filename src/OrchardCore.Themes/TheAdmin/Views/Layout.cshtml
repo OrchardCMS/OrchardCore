@@ -42,17 +42,11 @@
                     <button type="submit" class="btn btn-link nav-link" role="button"><i class="fa fa-sign-out" aria-hidden="true"></i> @T["Log off"]</button>
                 </form>
             </div>
-            <button id="leftbar-toggler" type="button" aria-controls="ta-left-sidebar" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <button id="small-screen-leftbar-toggler" type="button" aria-controls="ta-left-sidebar" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
         </div>
 
         <div id="ta-left-sidebar">
-            @await RenderSectionAsync("Navigation", required: false)
-            <button class="leftbar-compactor" type="button"><span> <i class="fas fa-chevron-left" aria-hidden="false"></i> </span></button>
+            <button class="leftbar-compactor" type="button"><span> <i class="fas fa-bars" aria-hidden="false"></i> </span></button>
+            @await RenderSectionAsync("Navigation", required: false)            
         </div>
 
         <div class="ta-content">

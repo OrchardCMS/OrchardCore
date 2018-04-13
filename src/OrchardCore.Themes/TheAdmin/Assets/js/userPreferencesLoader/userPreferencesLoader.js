@@ -11,15 +11,6 @@ var observer = new MutationObserver(function (mutations) {
 
                 var adminPreferences = JSON.parse(localStorage.getItem('adminPreferences'));
                 if (adminPreferences != null) {
-
-                    if (adminPreferences.leftSidebarHidden == true) {
-                        body.className += ' left-sidebar-hidden';
-                    }
-
-                    if (adminPreferences.leftbarVisibleOnSmall == true) {
-                        body.className += ' leftbar-visible-on-small';
-                    }
-
                     if (adminPreferences.leftSidebarCompact == true) {
                         body.className += ' left-sidebar-compact';
                     }

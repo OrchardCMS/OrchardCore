@@ -4,8 +4,6 @@
 function persistAdminPreferences() {
     setTimeout(function () {
         var adminPreferences = {};        
-        adminPreferences.leftSidebarHidden = $('body').hasClass('left-sidebar-hidden') ? true : false;
-        adminPreferences.leftbarVisibleOnSmall = $('body').hasClass('leftbar-visible-on-small') ? true : false;
         adminPreferences.leftSidebarCompact = $('body').hasClass('left-sidebar-compact') ? true : false;
         
         localStorage.setItem('adminPreferences', JSON.stringify(adminPreferences));
