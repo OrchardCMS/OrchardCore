@@ -4,6 +4,7 @@
 // we alter the variable before importing boostrap as _variables.scss will use !default
 
 @import "src/OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/scss/bootstrap.scss";
+@import "codemirror.scss";
 
 $top-nav-height: 59px;
 $left-navigation-width: 260px;
