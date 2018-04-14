@@ -1,9 +1,9 @@
+using OrchardCore.Email.Workflows.Activities;
+using OrchardCore.Email.Workflows.ViewModels;
 using OrchardCore.Workflows.Display;
-using OrchardCore.Workflows.Email.Activities;
-using OrchardCore.Workflows.Email.ViewModels;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Workflows.Email.Drivers
+namespace OrchardCore.Email.Workflows.Drivers
 {
     public class EmailTaskDisplay : ActivityDisplayDriver<EmailTask, EmailTaskViewModel>
     {

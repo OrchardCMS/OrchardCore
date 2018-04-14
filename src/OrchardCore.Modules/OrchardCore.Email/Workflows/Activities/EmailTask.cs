@@ -1,41 +1,32 @@
-using System;
 using System.Collections.Generic;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Liquid;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Workflows.Email.Activities
+namespace OrchardCore.Email.Workflows.Activities
 {
-    // TODO: Move this to the OrchardCore.Email module when available.
-    // This implementation should not be considered complete, but a starting point.
     public class EmailTask : TaskActivity
     {
+        private readonly ISmtpService _smtpService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IOptions<SmtpOptions> _smtpOptions;
-        private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<EmailTask> _logger;
 
         public EmailTask(
+            ISmtpService smtpService,
             IWorkflowExpressionEvaluator expressionEvaluator,
             IStringLocalizer<EmailTask> localizer, 
-            IOptions<SmtpOptions> smtpOptions, 
             ILiquidTemplateManager liquidTemplateManager, 
-            IServiceProvider serviceProvider, 
             ILogger<EmailTask> logger
         )
         {
+            _smtpService = smtpService;
             _expressionEvaluator = expressionEvaluator;
-            _smtpOptions = smtpOptions;
-            _liquidTemplateManager = liquidTemplateManager;
-            _serviceProvider = serviceProvider;
             _logger = logger;
             T = localizer;
         }
@@ -71,31 +62,41 @@ namespace OrchardCore.Workflows.Email.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(T["Done"], T["Failed"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var host = _smtpOptions.Value.Host;
-            var port = _smtpOptions.Value.Port;
+            var senderTask = _expressionEvaluator.EvaluateAsync(Sender, workflowContext);
+            var recipientsTask = _expressionEvaluator.EvaluateAsync(Recipients, workflowContext);
+            var subjectTask = _expressionEvaluator.EvaluateAsync(Subject, workflowContext);
+            var bodyTask = _expressionEvaluator.EvaluateAsync(Body, workflowContext);
 
-            using (var smtpClient = new SmtpClient(host, port))
+            await Task.WhenAll(senderTask, recipientsTask, subjectTask, bodyTask);
+            var sender = !string.IsNullOrWhiteSpace(senderTask.Result) ? senderTask.Result.Trim() : null;
+            var message = new MailMessage
             {
-                var senderTask = _expressionEvaluator.EvaluateAsync(Sender, workflowContext);
-                var recipientsTask = _expressionEvaluator.EvaluateAsync(Recipients, workflowContext);
-                var subjectTask = _expressionEvaluator.EvaluateAsync(Subject, workflowContext);
-                var bodyTask = _expressionEvaluator.EvaluateAsync(Body, workflowContext);
+                Subject = subjectTask.Result.Trim(),
+                Body = bodyTask.Result?.Trim(),
+                IsBodyHtml = true
+            };
 
-                await Task.WhenAll(senderTask, recipientsTask, subjectTask, bodyTask);
-                var mailMessage = new MailMessage(senderTask.Result?.Trim(), recipientsTask.Result, subjectTask.Result?.Trim(), bodyTask.Result?.Trim())
-                {
-                    IsBodyHtml = true
-                };
+            message.To.Add(recipientsTask.Result.Trim());
 
-                await smtpClient.SendMailAsync(mailMessage);
+            if(!string.IsNullOrWhiteSpace(senderTask.Result))
+            {
+                message.From = new MailAddress(senderTask.Result.Trim());
+            }
 
+            var result = await _smtpService.SendAsync(message);
+
+            if (!result.Succeeded)
+            {
                 return Outcomes("Done");
             }
+
+            workflowContext.LastResult = result;
+            return Outcomes("Failed");
         }
     }
 }

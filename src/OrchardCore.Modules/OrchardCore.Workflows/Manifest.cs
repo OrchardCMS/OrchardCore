@@ -27,14 +27,6 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Workflows.Email",
-    Name = "Email Workflow Activities",
-    Description = "Provides email-related services and activities.",
-    Dependencies = new[] { "OrchardCore.Workflows" },
-    Category = "Workflows"
-)]
-
-[assembly: Feature(
     Id = "OrchardCore.Workflows.Timers",
     Name = "Timer Workflow Activities",
     Description = "Provides timer-based services and activities.",
