@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -14,10 +16,14 @@ namespace OrchardCore.Email.Drivers
     {
         public const string GroupId = "SmtpSettings";
         private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly IShellHost _orchardHost;
+        private readonly ShellSettings _currentShellSettings;
 
-        public SmtpSettingsDisplayDriver(IDataProtectionProvider dataProtectionProvider)
+        public SmtpSettingsDisplayDriver(IDataProtectionProvider dataProtectionProvider, IShellHost orchardHost, ShellSettings currentShellSettings)
         {
             _dataProtectionProvider = dataProtectionProvider;
+            _orchardHost = orchardHost;
+            _currentShellSettings = currentShellSettings;
         }
 
         public override IDisplayResult Edit(SmtpSettings section)
@@ -65,6 +71,9 @@ namespace OrchardCore.Email.Drivers
                     var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
                     section.Password = protector.Protect(section.Password);
                 }
+
+                // Reload the tenant to apply the settings
+                _orchardHost.ReloadShellContext(_currentShellSettings);
             }
 
             return Edit(section);
