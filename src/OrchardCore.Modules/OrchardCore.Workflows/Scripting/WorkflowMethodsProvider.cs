@@ -8,7 +8,7 @@ namespace OrchardCore.Workflows.Scripting
     public class WorkflowMethodsProvider : IGlobalMethodProvider
     {
         private readonly GlobalMethod _workflowMethod;
-        private readonly GlobalMethod _workflowUidMethod;
+        private readonly GlobalMethod _workflowInstanceIdMethod;
         private readonly GlobalMethod _inputMethod;
         private readonly GlobalMethod _outputMethod;
         private readonly GlobalMethod _propertyMethod;
@@ -23,9 +23,9 @@ namespace OrchardCore.Workflows.Scripting
                 Method = serviceProvider => (Func<object>)(() => workflowContext)
             };
 
-            _workflowUidMethod = new GlobalMethod
+            _workflowInstanceIdMethod = new GlobalMethod
             {
-                Name = "workflowUid",
+                Name = "workflowInstanceId",
                 Method = serviceProvider => (Func<string>)(() => workflowContext.WorkflowInstanceRecord.WorkflowInstanceId)
             };
 
@@ -62,7 +62,7 @@ namespace OrchardCore.Workflows.Scripting
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new[] { _workflowMethod, _workflowUidMethod, _inputMethod, _outputMethod, _propertyMethod, _resultMethod, _correlationIdMethod };
+            return new[] { _workflowMethod, _workflowInstanceIdMethod, _inputMethod, _outputMethod, _propertyMethod, _resultMethod, _correlationIdMethod };
         }
     }
 }
