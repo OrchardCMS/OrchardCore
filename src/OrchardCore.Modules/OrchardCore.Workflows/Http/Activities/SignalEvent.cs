@@ -6,15 +6,18 @@ using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities
 {
     public class SignalEvent : EventActivity
     {
         public static string EventName => nameof(SignalEvent);
+        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
-        public SignalEvent(IStringLocalizer<SignalEvent> localizer)
+        public SignalEvent(IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<SignalEvent> localizer)
         {
+            _expressionEvaluator = expressionEvaluator;
             T = localizer;
         }
 
@@ -31,7 +34,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var signalName = await workflowContext.EvaluateExpressionAsync(SignalName);
+            var signalName = await _expressionEvaluator.EvaluateAsync(SignalName, workflowContext);
             return string.Equals(workflowContext.Input.GetValue<string>("Signal"), signalName, StringComparison.OrdinalIgnoreCase);
         }
 

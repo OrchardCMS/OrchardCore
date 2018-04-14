@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -33,12 +34,15 @@ namespace OrchardCore.Tests.Workflows
         [Fact]
         public async Task CanExecuteSimpleWorkflow()
         {
-            var localizer = new Mock<IStringLocalizer>();
+            var serviceProvider = CreateServiceProvider();
+            var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
+            var expressionEvaluator = CreateWorkflowExpressionEvaluator(serviceProvider);
+            var localizer = new Mock<IStringLocalizer<AddTask>>();
 
             var stringBuilder = new StringBuilder();
             var output = new StringWriter(stringBuilder);
-            var addTask = new AddTask(localizer.Object);
-            var writeLineTask = new WriteLineTask(localizer.Object, output);
+            var addTask = new AddTask(scriptEvaluator, localizer.Object);
+            var writeLineTask = new WriteLineTask(scriptEvaluator, localizer.Object, output);
             var workflowDefinition = new WorkflowDefinition
             {
                 Id = 1,
@@ -57,7 +61,7 @@ namespace OrchardCore.Tests.Workflows
                 }
             };
 
-            var workflowManager = CreateWorkflowManager(new IActivity[] { addTask, writeLineTask }, workflowDefinition);
+            var workflowManager = CreateWorkflowManager(serviceProvider, new IActivity[] { addTask, writeLineTask }, scriptEvaluator, expressionEvaluator, workflowDefinition);
             var a = 10d;
             var b = 22d;
             var expectedResult = (a + b).ToString() + System.Environment.NewLine;
@@ -68,26 +72,61 @@ namespace OrchardCore.Tests.Workflows
             Assert.Equal(expectedResult, actualResult);
         }
 
-        private WorkflowManager CreateWorkflowManager(IEnumerable<IActivity> activities, WorkflowDefinition workflowDefinition)
+        private IServiceProvider CreateServiceProvider()
         {
             var services = new ServiceCollection();
             services.AddScoped(typeof(Resolver<>));
             services.AddScoped(provider => new Mock<IShapeFactory>().Object);
             services.AddScoped(provider => new Mock<IViewLocalizer>().Object);
-            services.AddScoped<IWorkflowExecutionContextHandler, DefaultWorkflowExecutionContextHandler>(); // Necessary for tests involving script expressions.
+            services.AddScoped<IWorkflowExecutionContextHandler, DefaultWorkflowExecutionContextHandler>();
 
-            var serviceProvider = services.BuildServiceProvider();
+            return services.BuildServiceProvider();
+        }
+
+        private IWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider)
+        {
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var javaScriptEngine = new JavaScriptEngine(memoryCache, new Mock<IStringLocalizer<JavaScriptEngine>>().Object);
             var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
             var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
             var globalMethodProviders = new IGlobalMethodProvider[0];
             var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders, serviceProvider);
-            var scriptEvaluator = new JavaScriptWorkflowScriptEvaluator(scriptingManager, workflowContextHandlers.Resolve(), new Mock<IStringLocalizer<JavaScriptWorkflowScriptEvaluator>>().Object, new Mock<ILogger<JavaScriptWorkflowScriptEvaluator>>().Object);
+
+            return new JavaScriptWorkflowScriptEvaluator(
+                scriptingManager, 
+                workflowContextHandlers.Resolve(), 
+                new Mock<IStringLocalizer<JavaScriptWorkflowScriptEvaluator>>().Object, 
+                new Mock<ILogger<JavaScriptWorkflowScriptEvaluator>>().Object
+            );
+        }
+
+        private IWorkflowExpressionEvaluator CreateWorkflowExpressionEvaluator(IServiceProvider serviceProvider)
+        {
             var liquidOptions = new Mock<IOptions<LiquidOptions>>();
+            var memoryCache = new MemoryCache(new MemoryCacheOptions());
+            var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
             liquidOptions.SetupGet(x => x.Value).Returns(() => new LiquidOptions());
             var liquidTemplateManager = new LiquidTemplateManager(memoryCache, liquidOptions.Object, serviceProvider);
-            var liquidEvaluator = new LiquidWorkflowExpressionEvaluator(serviceProvider, liquidTemplateManager, new Mock<IStringLocalizer<LiquidWorkflowExpressionEvaluator>>().Object, workflowContextHandlers.Resolve(), new Mock<ILogger<LiquidWorkflowExpressionEvaluator>>().Object);
+
+            return new LiquidWorkflowExpressionEvaluator(
+                serviceProvider, 
+                liquidTemplateManager, 
+                new Mock<IStringLocalizer<LiquidWorkflowExpressionEvaluator>>().Object, 
+                workflowContextHandlers.Resolve(), 
+                new Mock<ILogger<LiquidWorkflowExpressionEvaluator>>().Object
+            );
+        }
+
+        private WorkflowManager CreateWorkflowManager(
+            IServiceProvider serviceProvider,
+            IEnumerable<IActivity> activities, 
+            IWorkflowScriptEvaluator scriptEvaluator, 
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            WorkflowDefinition workflowDefinition
+        )
+        {
+            var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
+            var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
             var activityLibrary = new Mock<IActivityLibrary>();
             var workflowDefinitionStore = new Mock<IWorkflowDefinitionStore>();
             var workflowInstanceStore = new Mock<IWorkflowInstanceStore>();
@@ -102,7 +141,7 @@ namespace OrchardCore.Tests.Workflows
                 workflowDefinitionStore.Object,
                 workflowInstanceStore.Object,
                 workflowInstanceIdGenerator.Object,
-                liquidEvaluator,
+                expressionEvaluator,
                 scriptEvaluator,
                 workflowContextHandlers,
                 workflowValueSerializers,

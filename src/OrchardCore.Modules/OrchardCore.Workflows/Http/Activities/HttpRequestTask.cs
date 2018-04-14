@@ -9,17 +9,24 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities
 {
     public class HttpRequestTask : TaskActivity
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
-        public HttpRequestTask(IStringLocalizer<HttpRequestTask> localizer, IHttpContextAccessor httpContextAccessor)
+        public HttpRequestTask(
+            IStringLocalizer<HttpRequestTask> localizer, 
+            IHttpContextAccessor httpContextAccessor,
+            IWorkflowExpressionEvaluator expressionEvaluator
+        )
         {
             T = localizer;
             _httpContextAccessor = httpContextAccessor;
+            _expressionEvaluator = expressionEvaluator;
         }
 
         private IStringLocalizer T { get; }
@@ -148,7 +155,7 @@ namespace OrchardCore.Workflows.Http.Activities
         {
             using (var httpClient = new HttpClient())
             {
-                var headersText = await workflowContext.EvaluateExpressionAsync(Headers);
+                var headersText = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext);
                 var headers = ParseHeaders(headersText);
 
                 foreach (var header in headers)
@@ -157,14 +164,14 @@ namespace OrchardCore.Workflows.Http.Activities
                 }
 
                 var httpMethod = HttpMethod;
-                var url = await workflowContext.EvaluateExpressionAsync(Url);
+                var url = await _expressionEvaluator.EvaluateAsync(Url, workflowContext);
                 var request = new HttpRequestMessage(new HttpMethod(httpMethod), url);
                 var postMethods = new[] { HttpMethods.Patch, HttpMethods.Post, HttpMethods.Put };
 
                 if (postMethods.Any(x => string.Equals(x, httpMethod, StringComparison.OrdinalIgnoreCase)))
                 {
-                    var body = await workflowContext.EvaluateExpressionAsync(Body);
-                    var contentType = await workflowContext.EvaluateExpressionAsync(ContentType);
+                    var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext);
+                    var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext);
                     var content = new StringContent(body, Encoding.UTF8, contentType);
                 }
 

@@ -5,15 +5,18 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Tests.Workflows.Activities
 {
     public class WriteLineTask : TaskActivity
     {
+        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         private readonly TextWriter _output;
 
-        public WriteLineTask(IStringLocalizer t, TextWriter output)
+        public WriteLineTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer t, TextWriter output)
         {
+            _scriptEvaluator = scriptEvaluator;
             _output = output;
             T = t;
         }
@@ -35,7 +38,7 @@ namespace OrchardCore.Tests.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var text = await workflowContext.EvaluateScriptAsync(Text);
+            var text = await _scriptEvaluator.EvaluateAsync(Text, workflowContext);
             _output.WriteLine(text);
             return Outcomes("Done");
         }

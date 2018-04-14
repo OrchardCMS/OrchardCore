@@ -4,16 +4,19 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
     public class LogTask : TaskActivity
     {
         private readonly ILogger<LogTask> _logger;
+        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
 
-        public LogTask(ILogger<LogTask> logger, IStringLocalizer<NotifyTask> localizer)
+        public LogTask(ILogger<LogTask> logger, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<NotifyTask> localizer)
         {
             _logger = logger;
+            _scriptEvaluator = scriptEvaluator;
             T = localizer;
         }
 
@@ -40,7 +43,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var text = await workflowContext.EvaluateExpressionAsync(Text);
+            var text = await _scriptEvaluator.EvaluateAsync(Text, workflowContext);
             var logLevel = LogLevel;
 
             _logger.Log(logLevel, 0, text, null, (state, error) => state.ToString());

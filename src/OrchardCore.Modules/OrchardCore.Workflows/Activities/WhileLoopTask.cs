@@ -3,16 +3,20 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
     public class WhileLoopTask : TaskActivity
     {
-        public WhileLoopTask(IStringLocalizer<WhileLoopTask> localizer)
+        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+
+        public WhileLoopTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<WhileLoopTask> localizer)
         {
+            _scriptEvaluator = scriptEvaluator;
             T = localizer;
         }
-
+        
         private IStringLocalizer T { get; }
 
         public override string Name => nameof(WhileLoopTask);
@@ -34,7 +38,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var loop = await workflowContext.EvaluateScriptAsync(Condition);
+            var loop = await _scriptEvaluator.EvaluateAsync(Condition, workflowContext);
             return Outcomes(loop ? "Iterate" : "Done");
         }
     }

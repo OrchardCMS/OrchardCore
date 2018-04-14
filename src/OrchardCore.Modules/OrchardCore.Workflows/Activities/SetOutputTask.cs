@@ -3,13 +3,17 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
     public class SetOutputTask : TaskActivity
     {
-        public SetOutputTask(IStringLocalizer<SetOutputTask> localizer)
+        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+
+        public SetOutputTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<SetOutputTask> localizer)
         {
+            _scriptEvaluator = scriptEvaluator;
             T = localizer;
         }
 
@@ -37,7 +41,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var value = await workflowContext.EvaluateScriptAsync(Value);
+            var value = await _scriptEvaluator.EvaluateAsync(Value, workflowContext);
             workflowContext.Output[OutputName] = value;
 
             return Outcomes("Done");

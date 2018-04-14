@@ -5,12 +5,13 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows.Activities
 {
     public abstract class ContentEvent : ContentActivity, IEvent
     {
-        protected ContentEvent(IContentManager contentManager, IStringLocalizer localizer) : base(contentManager, localizer)
+        protected ContentEvent(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer) : base(contentManager, scriptEvaluator, localizer)
         {
         }
 

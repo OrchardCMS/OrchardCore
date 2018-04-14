@@ -1,11 +1,12 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows.Activities
 {
     public class ContentPublishedEvent : ContentEvent
     {
-        public ContentPublishedEvent(IContentManager contentManager, IStringLocalizer<ContentCreatedEvent> localizer) : base(contentManager, localizer)
+        public ContentPublishedEvent(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ContentCreatedEvent> localizer) : base(contentManager, scriptEvaluator, localizer)
         {
         }
 

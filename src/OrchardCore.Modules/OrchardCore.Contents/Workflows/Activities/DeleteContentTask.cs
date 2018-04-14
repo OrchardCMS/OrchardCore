@@ -5,12 +5,13 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows.Activities
 {
     public class DeleteContentTask : ContentTask
     {
-        public DeleteContentTask(IContentManager contentManager, IStringLocalizer<DeleteContentTask> localizer) : base(contentManager, localizer)
+        public DeleteContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<DeleteContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
         {
         }
 

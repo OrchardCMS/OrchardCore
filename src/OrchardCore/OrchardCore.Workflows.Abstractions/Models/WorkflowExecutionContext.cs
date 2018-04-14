@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Scripting;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Models
@@ -11,8 +9,6 @@ namespace OrchardCore.Workflows.Models
     public class WorkflowExecutionContext
     {
         private readonly IEnumerable<IWorkflowExecutionContextHandler> _handlers;
-        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         private readonly ILogger<WorkflowExecutionContext> _logger;
 
         public WorkflowExecutionContext
@@ -32,8 +28,6 @@ namespace OrchardCore.Workflows.Models
         )
         {
             _handlers = handlers;
-            _expressionEvaluator = expressionEvaluator;
-            _scriptEvaluator = scriptEvaluator;
             _logger = logger;
 
             Input = input ?? new Dictionary<string, object>();
@@ -96,17 +90,7 @@ namespace OrchardCore.Workflows.Models
         {
             return Activities[activityId];
         }
-
-        public Task<T> EvaluateExpressionAsync<T>(WorkflowExpression<T> expression)
-        {
-            return _expressionEvaluator.EvaluateAsync(expression, this);
-        }
-
-        public Task<T> EvaluateScriptAsync<T>(WorkflowExpression<T> expression, params IGlobalMethodProvider[] scopedMethodProviders)
-        {
-            return _scriptEvaluator.EvaluateAsync(expression, this, scopedMethodProviders);
-        }
-
+        
         public void Fault(Exception exception, ActivityContext activityContext)
         {
             WorkflowInstanceRecord.Status = WorkflowStatus.Faulted;

@@ -3,13 +3,17 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
     public class CorrelateTask : TaskActivity
     {
-        public CorrelateTask(IStringLocalizer<CorrelateTask> localizer)
+        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+
+        public CorrelateTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<CorrelateTask> localizer)
         {
+            _scriptEvaluator = scriptEvaluator;
             T = localizer;
         }
 
@@ -31,7 +35,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var value = (await workflowContext.EvaluateExpressionAsync(Value))?.Trim();
+            var value = (await _scriptEvaluator.EvaluateAsync(Value, workflowContext))?.Trim();
             workflowContext.CorrelationId = value;
 
             return Outcomes("Done");

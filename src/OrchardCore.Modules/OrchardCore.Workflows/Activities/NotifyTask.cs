@@ -5,23 +5,25 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
     public class NotifyTask : TaskActivity
     {
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
+        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
 
-        public NotifyTask(INotifier notifier, IStringLocalizer<NotifyTask> s)
+        public NotifyTask(INotifier notifier, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<NotifyTask> t)
         {
             _notifier = notifier;
-
-            S = s;
+            _scriptEvaluator = scriptEvaluator;
+            T = t;
         }
-
+        
+        private IStringLocalizer T { get; set; }
         public override string Name => nameof(NotifyTask);
-        public override LocalizedString Category => S["UI"];
+        public override LocalizedString Category => T["UI"];
 
         public NotifyType NotificationType
         {
@@ -37,12 +39,12 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(S["Done"]);
+            return Outcomes(T["Done"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var message = await workflowContext.EvaluateExpressionAsync(Message);
+            var message = await _scriptEvaluator.EvaluateAsync(Message, workflowContext);
             _notifier.Add(NotificationType, new LocalizedHtmlString(nameof(NotifyTask), message));
 
             return Outcomes("Done");

@@ -3,13 +3,17 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
     public class IfElseTask : TaskActivity
     {
-        public IfElseTask(IStringLocalizer<IfElseTask> localizer)
+        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+
+        public IfElseTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<IfElseTask> localizer)
         {
+            _scriptEvaluator = scriptEvaluator;
             T = localizer;
         }
 
@@ -34,7 +38,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var result = await workflowContext.EvaluateScriptAsync(Condition);
+            var result = await _scriptEvaluator.EvaluateAsync(Condition, workflowContext);
             return Outcomes(result ? "True" : "False");
         }
     }

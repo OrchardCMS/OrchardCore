@@ -5,12 +5,13 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows.Activities
 {
     public class PublishContentTask : ContentTask
     {
-        public PublishContentTask(IContentManager contentManager, IStringLocalizer<PublishContentTask> localizer) : base(contentManager, localizer)
+        public PublishContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<PublishContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
         {
         }
 

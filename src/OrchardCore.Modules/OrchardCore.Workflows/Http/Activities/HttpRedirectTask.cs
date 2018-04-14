@@ -5,17 +5,24 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities
 {
     public class HttpRedirectTask : TaskActivity
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
-        public HttpRedirectTask(IStringLocalizer<HttpRedirectTask> localizer, IHttpContextAccessor httpContextAccessor)
+        public HttpRedirectTask(
+            IStringLocalizer<HttpRedirectTask> localizer, 
+            IHttpContextAccessor httpContextAccessor, 
+            IWorkflowExpressionEvaluator expressionEvaluator
+        )
         {
             T = localizer;
             _httpContextAccessor = httpContextAccessor;
+            _expressionEvaluator = expressionEvaluator;
         }
 
         private IStringLocalizer T { get; }
@@ -42,7 +49,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var location = await workflowContext.EvaluateExpressionAsync(Location);
+            var location = await _expressionEvaluator.EvaluateAsync(Location, workflowContext);
 
             _httpContextAccessor.HttpContext.Response.Redirect(location, Permanent);
             return Outcomes("Done");

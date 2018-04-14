@@ -1,16 +1,19 @@
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
     public class ForLoopTask : TaskActivity
     {
-        public ForLoopTask(IStringLocalizer<ForLoopTask> localizer)
+        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+
+        public ForLoopTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ForLoopTask> localizer)
         {
+            _scriptEvaluator = scriptEvaluator;
             T = localizer;
         }
 
@@ -44,7 +47,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var count = await workflowContext.EvaluateScriptAsync(Count);
+            var count = await _scriptEvaluator.EvaluateAsync(Count, workflowContext);
 
             if (Index < count)
             {

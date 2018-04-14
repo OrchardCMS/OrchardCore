@@ -9,6 +9,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Email.Activities
 {
@@ -16,20 +17,29 @@ namespace OrchardCore.Workflows.Email.Activities
     // This implementation should not be considered complete, but a starting point.
     public class EmailTask : TaskActivity
     {
+        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         private readonly IOptions<SmtpOptions> _smtpOptions;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<EmailTask> _logger;
 
-        public EmailTask(IStringLocalizer<EmailTask> localizer, IOptions<SmtpOptions> smtpOptions, ILiquidTemplateManager liquidTemplateManager, IServiceProvider serviceProvider, ILogger<EmailTask> logger)
+        public EmailTask(
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IStringLocalizer<EmailTask> localizer, 
+            IOptions<SmtpOptions> smtpOptions, 
+            ILiquidTemplateManager liquidTemplateManager, 
+            IServiceProvider serviceProvider, 
+            ILogger<EmailTask> logger
+        )
         {
+            _expressionEvaluator = expressionEvaluator;
             _smtpOptions = smtpOptions;
             _liquidTemplateManager = liquidTemplateManager;
             _serviceProvider = serviceProvider;
             _logger = logger;
             T = localizer;
         }
-
+        
         private IStringLocalizer T { get; }
         public override string Name => nameof(EmailTask);
         public override LocalizedString Category => T["Messaging"];
@@ -71,11 +81,16 @@ namespace OrchardCore.Workflows.Email.Activities
 
             using (var smtpClient = new SmtpClient(host, port))
             {
-                var sender = (await workflowContext.EvaluateExpressionAsync(Sender))?.Trim();
-                var recipients = await workflowContext.EvaluateExpressionAsync(Recipients);
-                var subject = (await workflowContext.EvaluateExpressionAsync(Subject))?.Trim();
-                var body = await workflowContext.EvaluateExpressionAsync(Body);
-                var mailMessage = new MailMessage(sender, recipients, subject, body) { IsBodyHtml = true };
+                var senderTask = _expressionEvaluator.EvaluateAsync(Sender, workflowContext);
+                var recipientsTask = _expressionEvaluator.EvaluateAsync(Recipients, workflowContext);
+                var subjectTask = _expressionEvaluator.EvaluateAsync(Subject, workflowContext);
+                var bodyTask = _expressionEvaluator.EvaluateAsync(Body, workflowContext);
+
+                await Task.WhenAll(senderTask, recipientsTask, subjectTask, bodyTask);
+                var mailMessage = new MailMessage(senderTask.Result?.Trim(), recipientsTask.Result, subjectTask.Result?.Trim(), bodyTask.Result?.Trim())
+                {
+                    IsBodyHtml = true
+                };
 
                 await smtpClient.SendMailAsync(mailMessage);
 
