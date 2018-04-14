@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace OrchardCore.Workflows.Services
 
         public Task<IEnumerable<WorkflowInstance>> ListAsync(int? skip = null, int? take = null)
         {
-            var query = _session.Query<WorkflowInstance>();
+            var query = (IQuery<WorkflowInstance>)_session.Query<WorkflowInstance, WorkflowInstanceIndex>().OrderByDescending(x => x.CreatedUtc);
 
             if (skip != null)
             {
@@ -41,7 +42,7 @@ namespace OrchardCore.Workflows.Services
             {
                 query = query.Take(take.Value);
             }
-
+            
             return query.ListAsync();
         }
 

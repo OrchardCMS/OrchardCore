@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using OrchardCore.Workflows.Models;
 using YesSql.Indexes;
@@ -8,6 +9,7 @@ namespace OrchardCore.Workflows.Indexes
     {
         public string WorkflowDefinitionId { get; set; }
         public string WorkflowInstanceId { get; set; }
+        public DateTime CreatedUtc { get; set; }
     }
 
     public class WorkflowInstanceBlockingActivitiesIndex : MapIndex
@@ -29,7 +31,8 @@ namespace OrchardCore.Workflows.Indexes
                     new WorkflowInstanceIndex
                     {
                         WorkflowDefinitionId = workflowInstance.WorkflowDefinitionId,
-                        WorkflowInstanceId = workflowInstance.WorkflowInstanceId
+                        WorkflowInstanceId = workflowInstance.WorkflowInstanceId,
+                        CreatedUtc = workflowInstance.CreatedUtc
                     }
                 );
 

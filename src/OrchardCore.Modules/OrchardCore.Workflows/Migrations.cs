@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.Data.Migration;
 using OrchardCore.Workflows.Indexes;
 
@@ -25,6 +26,7 @@ namespace OrchardCore.Workflows
             SchemaBuilder.CreateMapIndexTable(nameof(WorkflowInstanceIndex), table => table
                 .Column<string>("WorkflowDefinitionId")
                 .Column<string>("WorkflowInstanceId")
+                .Column<DateTime>("CreatedUtc")
             );
 
             SchemaBuilder.CreateMapIndexTable(nameof(WorkflowInstanceBlockingActivitiesIndex), table => table
