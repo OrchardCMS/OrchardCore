@@ -145,7 +145,7 @@ The following Liquid tags, properties and filters are available by default to an
 The following activities are available with any default Orchard installation:
 
 | Activity | Type | Description | Documentation |
-| -------- | ---- | ----------- |
+| -------- | ---- | ----------- | ------------- |
 | **Workflows** | * | * | * |
 | Correlate | Task | Correlate the current workflow instance with a value. | [link] |
 | For Each | Task | Iterate over a list. | [link] |
