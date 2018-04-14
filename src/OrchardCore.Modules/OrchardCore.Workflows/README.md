@@ -16,7 +16,17 @@ In order for a workflow to execute, at least one activity must be marked as the 
 A workflow can have more than one start event. This allows you to trigger (run) a workflow in response to various types of events.
 
 Each activity has one or more **outcomes**, which represent a source endpoint from which a connection can be made to the next activity, which are called transitions.
-By connecting activities, you are effectively creating a program that can be executed by Orchard in response to a multitude of events. 
+By connecting activities, you are effectively creating a program that can be executed by Orchard in response to a multitude of events.
+
+![The workflow editor ](docs/workflow-editor.png)
+
+1. Activity Picker (Task / Event)
+2. Activity actions (click an activity to display activity actions)
+3. An activity configured as the starting activity of the workflow.
+4. An activity.
+5. An Outcome ("Done") of an activity.
+6. A transition between two activities (from "Content Created" via the "Done" outcome to the "Send Email" activity).
+7. The workflow editor design surface.
 
 ## Vocabulary
 
@@ -180,7 +190,7 @@ The following activities are available with any default Orchard installation:
 
 ## Walkthroughs
 
-TODO: setup a few example workflows that also demonstrates scripting and expressions.
+### 
 
 ## Developing Custom Activities
 
