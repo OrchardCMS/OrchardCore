@@ -2,45 +2,231 @@
 
 The Workflows module provides a way for users to visually implement business rules using flowchart diagrams.
 
-A simple use case scenario for a workflow is a _content approval_ workflow, where some administrative user received an email when a contributor creates a new article. The email can contain actions such as an _Approve_ and _Reject_ link. When one of these links are clicked, the workflow execution resumes and either approves or rejects the article in question.
+**TOC**
 
-![Example of a rudimentary content approval workflow](docs/sample-workflow-1.png)
+- General concepts
+- Vocabulary
+- Workflow Execution
+- Scripts and Expressions
+- Activities out of the box
+- Walkthroughs
+- Developing Custom Activities
 
-A workflow and its activities are analogous to a C# function and its statements.
+## General Concepts
 
-## Anatomy of a Workflow
-
-A workflow is a essentially collection of activities that are connected to eachother. These connections are called transitions.
+A workflow is a collection of **activities** that are connected to eachother. These connections are called **transitions**.
 Activities and their transitions are stored in a **Workflow Definition**.
 
-In order for a workflow to execute, at least one activity must be marked as the start of the workflow. The starting activity typically represents an **event**, for example _Content Created_.
-Each activity has one or more **outcomes**, which represent a source endpoint from which a connection can be made to the next activity. This connection is called a transition.
+A workflow is essentially a visual script, where each activity is a statement of that script.
 
+There are two types of activities: **Task** and **Event**.
+A Task activity typically performs an action, such as publishing a content item, while an Event activity typically listens for an event to happen before execution continues.
+
+In order for a workflow to execute, at least one activity must be marked as the *start of the workflow*. Only Event activities can be marked as the start of a workflow. An example of such an event actiivty is _Content Created_, which executes whenever a content item is created.
+A workflow can have more than one start event. This allows you to trigger (run) a workflow in response to various types of events.
+
+Each activity has one or more **outcomes**, which represent a source endpoint from which a connection can be made to the next activity, which are called transitions.
 By connecting activities, you are effectively creating a program that can be executed by Orchard in response to a multitude of events. 
+
+## Vocabulary
+
+When working with Orchard Workflows, you will encounter the following terms:
+
+- Workflow Definition
+- Workflow Instance
+- Activity
+- Task
+- Event
+- Workflow Editor
+- Activity Editor
+- Activity Picker
+- Outcome
+- Transition
+- Workflow Manager
+- Correlation
+
+**Workflow Definition**
+
+A document (as in a "document-DB" document) that contains all the necessary information about a workflow, such as its name, whether it's enabled or not, its set of activities and their transitions.
+
+**Workflow Instance**
+
+A document that represents an "instance" of a workflow definition. A workflow instance contains runtime-state of a workflow. Whenever a workflow is started, a new workflow instance is created of a given workflow definition.
+
+**Activity**
+
+A step in a workflow definition. An activity performs an action and provides zero or more outcomes, which are used to connect to the next activity to execute. There are two types of activities: Task and Event.
+
+**Task**
+
+A specialized type of activity. Tasks perform actions such as sending emails, publishing content and making HTP requests.
+
+**Event**
+
+A specialized type of activity. Like tasks, events can perform actions, but typically all they do is halt the workflow, awaiting for an event to happen before continuing on to the next activity. When an event is configured as the starting activity of a workflow, that workflow is started when that event is triggered.
+
+**Workflow Editor**
+
+An editor that allows you to create and manage a workflow definition using a drag & drop visual interface.
+
+**Activity Editor**
+
+Most activities expose settings that can be configured via the activity editor. To configure an activity, you can either double-click an activity on the design surface of the workflow editor, or click an activity once to activate a small popup that provides various actions you can perform on an activity. One of these actions is the Edit action.
+
+**Activity Picker**
+
+When you are in the Workflow Editor, you use the Activity Picker to add activities to the design surface. Open the activity picker by clicking _Add Task_ or _Add Event_ to add a task or event, respectively.
+
+**Outcome**
+
+Each activity has zero or more outcomes. When an activity has executed, it yields control back to the workflow manager along with a list of outcomes. The workflow manager uses this list of outcomes to determine which activities to execute next.
+Although many activities support multiple outcomes, they typically return only one of them when done executing. For example, the _Send Email_ activity has two possible outcomes: "Done" and "Failed". When the email was sent successfully, it yields "Done" as the outcome, and "Failed" otherwise.
+
+**Transition**
+
+A transition is the connection between the outcome of one activity to another activity. Transitions are created using drag & drop operations in the workflow editor.
+
+**Workflow Manager**
+
+A service class that can execute workflows. When a workflow is executed, it takes care of creating a workflow instance which is then executed.
+
+**Correlation**
+
+Correlation is the act of associating a workflow instance with one or more _identifiers_. These identifiers can be anything. For example, when a workflow has the _Content Created_ event as its starting point, the workflow instance will be associated, or rather _correlated_ to the content item ID that was just created.
+This allows long-running workflow scenarios where only workflow instances associated with a given content item ID are resumed.
 
 ## Workflow Execution
 
-When a workflow executes, the **Workflow Manager** first creates a **Workflow Instance**. A workflow instance maintains state about the execution, such as which activity to execute next and state that can be provided by individual activities.
+When a workflow executes, the **Workflow Manager** creates a **Workflow Instance**. A workflow instance maintains state about the execution, such as which activity to execute next and state that can be provided by individual activities.
+Workflows can be **short-running** as well as **long-running**.
 
-Workflows can be short-lived as well as long-lived (aka "long-running"). When a workflow executes without encountering any **blocking** activities (i.e. activities that wait for an event to occur, such as _Signal_), the workflow will run to completion and then go out of memory.
+### Short-running workflows
 
-If, on the other hand, workflow execution _does_ encounter a blocking activity, the workflow manager will halt execution and **persist** the workflow instance.
+When a workflow executes without encountering any **blocking** activities (i.e. activities that wait for an event to occur, such as _Signal_), the workflow will run to completion in one go.
 
-When an event occurs on which a halted workflow instance is waiting, the workflow manager will load the workflow instance back into memory, and resume its execution.
+### Long-running workflows
 
-## Anatomy of an Activity
+When a workflow executes and encounters a blocking activity (such as an event), the workflow manager will _halt_ execution and persist the workflow instance to the underlying persistence layer.
+When the appropriate event is triggered (which could happen seconds, days, weeks or even years from now), the workflow manager will load the workflow instance from storage and resume execution.
 
-An activity represents a single step in a workflow, and are implemented as regular .NET classes that ultimately implement the `IActivity` interface
+## Scripts and Expressions
 
-Some activities implement `IEvent`, which is itself derived from `IActivity`. Event activities are typically added as the root activity to kick-off a workflow in response to an event that is represented by that activity event.
+Many activities have settings that can contain either **JavaScript** or **Liquid** syntax.
+For example, when adding the **Notify** activity, its editor shows the folling fields:
 
-Most activity implementations derive either from `TaskActivity` or `EventActivity`, since not all activities need to care about all available methods.
+![The Notify Task editor](docs/add-notify-task.png)
 
-The `IActivity` interface has the following members:
+These type of fields allow you to enter Liquid markup, enabling access to system-wide variables and filters as well as variables from the **workflow execution context**.
+
+### JavaScript Functions
+
+The following JavaScript functions are available by default to any activity that supports script expressions:
+
+- `workflow(): WorkflowExecutionContext`
+- `workflowInstanceId(): string`
+- `input(name: string): any`
+- `output(name: string, value: any): void`
+- `property(name: string): any`
+- `lastResult(): any`
+- `correlationId(): string`
+
+**workflow**
+Returns the `WorkflowExecutionContext`, which in turn provides the following properties and methods you can use:
+
+- `WorkflowInstanceRecord: WorkflowInstance`
+- `WorkflowDefinitionRecord: WorkflowDefinition`
+- `Activities: IDictionary<string, ActivityContext>`
+- `WorkflowInstanceId: string`
+- `CorrelationId: string`
+- `Input: IDictionary<string, object>`
+- `Output: IDictionary<string, object>`
+- `Properties: IDictionary<string, object>`
+- `LastResult: object`
+- `Status: WorkflowStatus`
+
+Example:
+`workflow()`
+
+**workflowInstanceId**
+Returns the unique workflow instance ID.
+
+Example:
+`workflowInstanceId()`
+
+**input**
+Returns the input parameter with the specified name. Input to the workflow is provided when the workflow is executed by the workflow manager. For example, when the _Content Created_ event handler is triggered, it provides the created `ContentItem` as part of the workflow's input (named `"Content"`):
+
+```csharp
+public class ContentsHandler : ContentHandlerBase
+{
+    public override async Task CreatedAsync(CreateContentContext context)
+    {
+        await _workflowManager.TriggerEventAsync(nameof(ContentCreatedEvent), input: new { Content = context.ContentItem }, correlationId: context.ContentItem.ContentItemId);
+    }
+}
+```
+
+Example:
+`input("Content").ContentType`
+
+**output**
+Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. This could be useful in applications where a workflow is executed and a particular set of outputs is expected.
+
+Example:
+`output("Answer", 42)`
+
+**property**
+Returns the property value with the specified name. Properties are a dictionary that the workflow can read and write information from and to.
+
+Example:
+`property("MyProperty")`
+
+**lastResult**
+Returns the value, if any, that the previous activity provided. For example, the HTTP Request activity sets the last result to an object that provides HTTP response information such as status code, headers and content.
+
+Example:
+`lastResult().StatusCode`
+
+**correlationId**
+Returns the correlation value of the workflow instance.
+
+Example:
+`correlationId()`
+
+## Activities out of the box
+
+TODO: describe all of the out-of-box activities
+
+## Walkthroughs
+
+TODO: setup a few example workflows that also demonstrates scripting and expressions.
+
+## Developing Custom Activities
+
+Orchard is built to be extended, and the Workflows module is no different. When creating your own module, you can develop custom workflow activities. Developing custom activities typically involve the following:
+
+1. Create a new class that directly or indirectly implements `IActivity`. In most cases, you either derive from `TaskActivity` or `EventActivity`, depending on whether your activity represents an event or not. Although not required, it is recommended to keep this class in a folder called **Activities**.
+2. Create a new **display driver** class that directly or indirectly implements `IDisplayDriver`. An activity display driver controls the activity's display on the **workflow editor canvas**, the **activity picker** and the **activity editor**. Although not required, it is recommended to keep this class in a folder called **Drivers**. 
+3. Optionally implement a **view model** if your activity has properties that the user should be able to configure.
+4. Implement the various Razor views for the various shapes provided by the driver. Although not required, it is recommended to store these files in the **Views/Items** folder. Note that it is required for your views to be discoverable by the display engine.  
+
+### Activity Display Types
+An activity has the following display types:
+
+- Thumbnail
+- Design
+
+**Thumbnail**
+Used when the activity is rendered as part of the activity picker.
+
+**Design**
+Used when the activity is rendered as part of the workflow editor design surface.
+
+### IActivity
+`IActivity` has the following members:
 
 - Name
 - Category
-- Description
 - Properties
 - HasEditor
 - GetPossibleOutcomes
@@ -115,24 +301,69 @@ public class NotifyTask : TaskActivity
 }
 ```
 
-## Script & Liquid syntax
+The following is an example of a simple activity display driver:
 
-When working with certain activities, you will notice that certain fields of an activity has support for **Script** or **Liquid** syntax.
+```csharp
+public class NotifyTaskDisplay : ActivityDisplayDriver<NotifyTask, NotifyTaskViewModel>
+{
+    protected override void EditActivity(NotifyTask activity, NotifyTaskViewModel model)
+    {
+        model.NotificationType = activity.NotificationType;
+        model.Message = activity.Message.Expression;
+    }
 
-For example, when adding the **Notify** activity, its editor shows the folling fields:
+    protected override void UpdateActivity(NotifyTaskViewModel model, NotifyTask activity)
+    {
+        activity.NotificationType = model.NotificationType;
+        activity.Message = new WorkflowExpression<string>(model.Message);
+    }
+}
+```
 
-![The Notify Task editor](docs/add-notify-task.png)
+The above code performs a simple mapping of a `NotifyTask` to a `NotifyTaskViewModel` and vice versa. This simple implementation is possible because the actual creation of the necessaty editor and display shapes are taken care of by `ActivityDisplayDriver<TActivity, TEditViewModel`, which looks like this (modified to focus on the important parts):
 
-These type of fields allow you to enter Liquid markup, enabling access to system-wide variables and filters as well as variables from the **workflow execution context**.
+```csharp
+public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : ActivityDisplayDriver<TActivity> where TActivity : class, IActivity where TEditViewModel : class, new()
+{
+    private static string ThumbnailshapeType = $"{typeof(TActivity).Name}_Fields_Thumbnail";
+    private static string DesignShapeType = $"{typeof(TActivity).Name}_Fields_Design";
+    private static string EditShapeType = $"{typeof(TActivity).Name}_Fields_Edit";
 
-## Creating Custom Workflow Activities  
+    public override IDisplayResult Display(TActivity activity)
+    {
+        return Combine(
+            Shape(ThumbnailshapeType, new ActivityViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
+            Shape(DesignShapeType, new ActivityViewModel<TActivity>(activity)).Location("Design", "Content")
+        );
+    }
 
-Orchard is built to be extended, and the Workflows module is no different. When creating your own module, you can develop custom workflow activities. Developing custom activities typically involve the following:
+    public override IDisplayResult Edit(TActivity activity)
+    {
+        return Initialize<TEditViewModel>(EditShapeType, model =>
+        {
+            return EditActivityAsync(activity, model);
+        }).Location("Content");
+    }
 
-1. Create a new class that directly or indirectly implements `IActivity`. In most cases, you either derive from `TaskActivity` or `EventActivity`, depending on whether your activity represents an event or not. Although not required, it is recommended to keep this class in a folder called **Activities**.
-2. Create a new **display driver** class that directly or indirectly implements `IDisplayDriver`. The purpose of an activity display driver is three-fold: to control the activity's display on the **workflow editor canvas**, in the **activity picker** and in the **activity editor**. Although not required, it is recommended to keep this class in a folder called **Drivers**. 
-3. Optionally implement a **view model** if your activity has properties that the user should be able to configure.
-4. Implement the various Razor views for the various shapes provided by the driver. Although not required, it is recommended to store these files in the **Views/Items** folder. Note that it is required for your views to be discoverable by the display engine.  
+    public async override Task<IDisplayResult> UpdateAsync(TActivity activity, IUpdateModel updater)
+    {
+        var viewModel = new TEditViewModel();
+        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        {
+            await UpdateActivityAsync(viewModel, activity);
+        }
+
+        return Edit(activity);
+    }
+}
+```
+
+Notice that the shape names are derived from the activity type, effectively implementing a naming convention for the shape template names to use.
+Continuing with the `NotifyTask` example, we now need to create the following Razor files:
+
+- NotifyTask.Fields.Design.cshtml
+- NotifyTask.Fields.Thumbnail.cshtml
+- NotifyTask.Fields.Edit.cshtml
 
 ## CREDITS
 
