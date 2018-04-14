@@ -122,76 +122,15 @@ These type of fields allow you to enter Liquid markup, enabling access to system
 
 The following JavaScript functions are available by default to any activity that supports script expressions:
 
-- `workflow(): WorkflowExecutionContext`
-- `workflowInstanceId(): string`
-- `input(name: string): any`
-- `output(name: string, value: any): void`
-- `property(name: string): any`
-- `lastResult(): any`
-- `correlationId(): string`
-
-**workflow**
-Returns the `WorkflowExecutionContext`, which in turn provides the following properties and methods you can use:
-
-- `WorkflowInstanceRecord: WorkflowInstance`
-- `WorkflowDefinitionRecord: WorkflowDefinition`
-- `Activities: IDictionary<string, ActivityContext>`
-- `WorkflowInstanceId: string`
-- `CorrelationId: string`
-- `Input: IDictionary<string, object>`
-- `Output: IDictionary<string, object>`
-- `Properties: IDictionary<string, object>`
-- `LastResult: object`
-- `Status: WorkflowStatus`
-
-Example:
-`workflow()`
-
-**workflowInstanceId**
-Returns the unique workflow instance ID.
-
-Example:
-`workflowInstanceId()`
-
-**input**
-Returns the input parameter with the specified name. Input to the workflow is provided when the workflow is executed by the workflow manager. For example, when the _Content Created_ event handler is triggered, it provides the created `ContentItem` as part of the workflow's input (named `"Content"`):
-
-```csharp
-public class ContentsHandler : ContentHandlerBase
-{
-    public override async Task CreatedAsync(CreateContentContext context)
-    {
-        await _workflowManager.TriggerEventAsync(nameof(ContentCreatedEvent), input: new { Content = context.ContentItem }, correlationId: context.ContentItem.ContentItemId);
-    }
-}
-```
-
-Example:
-`input("Content").ContentType`
-
-**output**
-Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. This could be useful in applications where a workflow is executed and a particular set of outputs is expected.
-
-Example:
-`output("Answer", 42)`
-
-**property**
-Returns the property value with the specified name. Properties are a dictionary that the workflow can read and write information from and to.
-
-Example:
-`property("MyProperty")`
-
-**lastResult**
-Returns the value, if any, that the previous activity provided. For example, the HTTP Request activity sets the last result to an object that provides HTTP response information such as status code, headers and content.
-
-Example:
-`lastResult().StatusCode`
-
-**correlationId**
-Returns the correlation value of the workflow instance.
-
-Example:
-`correlationId()`
+Function | Description | Example
+________ | ___________ | _______
+`workflow(): WorkflowExecutionContext` | Returns the `WorkflowExecutionContext` which provides access to all information related to the current workflow execution context. | workflow()
+`workflowInstanceId(): string` | Returns the unique workflow instance ID. | `workflowInstanceId()`
+`input(name: string): any` | Returns the input parameter with the specified name. Input to the workflow is provided when the workflow is executed by the workflow manager. | `input("Content").ContentType`
+`output(name: string, value: any): void` | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. | `output("Answer", 42)`
+`property(name: string): any` | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. | `property("MyProperty")`
+`lastResult(): any` | Returns the value that the previous activity provided, if any. | lastResult()
+`correlationId(): string` | Returns the correlation value of the workflow instance. | `correlationId()`
 
 ## Activities out of the box
 
