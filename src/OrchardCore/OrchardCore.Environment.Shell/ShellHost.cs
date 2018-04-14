@@ -103,6 +103,11 @@ namespace OrchardCore.Environment.Shell
                 return scope;
             }
 
+            if (settings.State == TenantState.Disabled)
+            {
+                return null;
+            }
+
             _shellContexts.TryRemove(settings.Name, out var value);
 
             context = _shellContexts.GetOrAdd(settings.Name, new Lazy<ShellContext>(() =>
@@ -250,7 +255,7 @@ namespace OrchardCore.Environment.Shell
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
-                    _logger.LogDebug("Creating disabled shell context for tenant {0} setup", settings.Name);
+                    _logger.LogDebug("Creating disabled shell context for tenant {0}", settings.Name);
                 }
 
                 return Task.FromResult(new ShellContext { Settings = settings });

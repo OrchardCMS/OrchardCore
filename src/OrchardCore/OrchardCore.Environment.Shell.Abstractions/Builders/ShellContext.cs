@@ -54,22 +54,17 @@ namespace OrchardCore.Hosting.ShellBuilders
 
         public bool TryEnterServiceScope(out IServiceScope scope)
         {
-            if (_released)
-            {
-                scope = null;
-                return false;
-            }
-
             scope = new ServiceScopeWrapper(this);
 
-            if (_released)
+            if (!_released && scope.ServiceProvider != null)
             {
-                scope.Dispose();
-                scope = null;
-                return false;
+                return true;
             }
 
-            return true;
+            (scope as ServiceScopeWrapper).Dispose();
+            scope = null;
+
+            return false;
         }
 
         /// <summary>
@@ -165,6 +160,8 @@ namespace OrchardCore.Hosting.ShellBuilders
                 return;
             }
 
+            _disposed = true;
+
             // Disposes all the services registered for this shell
             if (ServiceProvider != null)
             {
@@ -174,8 +171,6 @@ namespace OrchardCore.Hosting.ShellBuilders
 
             IsActivated = false;
             Blueprint = null;
-
-            _disposed = true;
 
             if (disposing)
             {
@@ -201,6 +196,12 @@ namespace OrchardCore.Hosting.ShellBuilders
                 Interlocked.Increment(ref shellContext._refCount);
 
                 _shellContext = shellContext;
+
+                if (_shellContext.ServiceProvider == null)
+                {
+                    return;
+                }
+
                 _serviceScope = shellContext.ServiceProvider.CreateScope();
                 ServiceProvider = _serviceScope.ServiceProvider;
 
@@ -247,14 +248,17 @@ namespace OrchardCore.Hosting.ShellBuilders
 
             public void Dispose()
             {
-                var disposeShellContext = ScopeReleased();
-
-                _httpContext.RequestServices = _existingServices;
-                _serviceScope.Dispose();
-
-                if (disposeShellContext)
+                if (_serviceScope != null)
                 {
-                    _shellContext.Dispose();
+                    var disposeShellContext = ScopeReleased();
+
+                    _httpContext.RequestServices = _existingServices;
+                    _serviceScope.Dispose();
+
+                    if (disposeShellContext)
+                    {
+                        _shellContext.Dispose();
+                    }
                 }
 
                 Interlocked.Decrement(ref _shellContext._refCount);
