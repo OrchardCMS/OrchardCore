@@ -27,6 +27,8 @@ By connecting activities, you are effectively creating a program that can be exe
 5. An Outcome ("Done") of an activity.
 6. A transition between two activities (from "Content Created" via the "Done" outcome to the "Send Email" activity).
 7. The workflow editor design surface.
+8. Edit the workflow definition properties (Name, Enabled, etc.)
+9. List the workflow instances for this workflow definition.
 
 ## Vocabulary
 
