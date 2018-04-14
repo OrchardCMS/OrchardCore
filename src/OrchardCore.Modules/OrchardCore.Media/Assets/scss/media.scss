@@ -46,6 +46,8 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
         a {
             color: $gray-dark;
             text-decoration: none;
+
+
         }
     }
 
@@ -69,9 +71,10 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
         cursor: pointer;
     }
 
-    .open {
-        &:before {
-            content: '\f0d7';
+    .opened {
+        svg{
+            transform: rotate(90deg);
+            -webkit-transform: rotate(90deg);
         }
     }
 

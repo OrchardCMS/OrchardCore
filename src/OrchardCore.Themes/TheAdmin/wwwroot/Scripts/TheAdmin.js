@@ -6506,7 +6506,7 @@ $(function () {
     });
 });
 $(document).ready(function () {	
-    ps = new PerfectScrollbar('#ta-left-sidebar');
+    ps = new PerfectScrollbar('#left-nav');
 });
 /*!
  * perfect-scrollbar v1.3.0

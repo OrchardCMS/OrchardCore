@@ -13,12 +13,10 @@ namespace OrchardCore.Email.Drivers
     public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSettings>
     {
         public const string GroupId = "SmtpSettings";
-        private readonly ShellSettings _shellSettings;
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
-        public SmtpSettingsDisplayDriver(ShellSettings shellSettings, IDataProtectionProvider dataProtectionProvider)
+        public SmtpSettingsDisplayDriver(IDataProtectionProvider dataProtectionProvider)
         {
-            _shellSettings = shellSettings;
             _dataProtectionProvider = dataProtectionProvider;
         }
 
@@ -64,7 +62,7 @@ namespace OrchardCore.Email.Drivers
                 else
                 {
                     // encrypt the password
-                    var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration), _shellSettings.Name);
+                    var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
                     section.Password = protector.Protect(section.Password);
                 }
             }

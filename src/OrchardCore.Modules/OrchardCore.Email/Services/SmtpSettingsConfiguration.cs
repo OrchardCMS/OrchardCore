@@ -1,8 +1,8 @@
 using System;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Services
@@ -11,15 +11,16 @@ namespace OrchardCore.Email.Services
     {
         private readonly ISiteService _site;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ShellSettings _shellSettings;
+        private readonly ILogger<SmtpSettingsConfiguration> _logger;
 
-        public SmtpSettingsConfiguration(ISiteService site,
+        public SmtpSettingsConfiguration(
+            ISiteService site,
             IDataProtectionProvider dataProtectionProvider,
-            ShellSettings shellSettings)
+            ILogger<SmtpSettingsConfiguration> logger)
         {
             _site = site;
             _dataProtectionProvider = dataProtectionProvider;
-            _shellSettings = shellSettings;
+            _logger = logger;
         }
 
         public void Configure(SmtpSettings options)
@@ -41,8 +42,15 @@ namespace OrchardCore.Email.Services
             // Decrypt the password
             if (!String.IsNullOrWhiteSpace(settings.Password))
             {
-                var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration), _shellSettings.Name);
-                options.Password = protector.Unprotect(settings.Password);
+                try
+                {
+                    var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
+                    options.Password = protector.Unprotect(settings.Password);
+                }
+                catch
+                {
+                    _logger.LogError("The Smtp password could not be decrypted. It may have been encrypted using a different key.");
+                }
             }
         }
     }
