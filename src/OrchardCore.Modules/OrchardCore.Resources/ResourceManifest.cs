@@ -22,8 +22,8 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("jQuery")
-                .SetCdn("https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
-                .SetVersion("3.2.1")
+                .SetCdn("https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js")
+                .SetVersion("3.3.1")
                 ;
 
             manifest
