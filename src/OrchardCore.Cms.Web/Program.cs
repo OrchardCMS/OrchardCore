@@ -12,6 +12,7 @@ namespace OrchardCore.Cms.Web
 
         public static IWebHost BuildWebHost(string[] args)
             => WebHost.CreateDefaultBuilder(args)
+                .UseKestrel(c => c.AddServerHeader = false)
                 .UseNLogWeb()
                 .UseStartup<Startup>()
                 .Build();
