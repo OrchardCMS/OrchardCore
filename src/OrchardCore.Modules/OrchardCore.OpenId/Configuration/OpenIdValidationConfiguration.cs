@@ -79,11 +79,6 @@ namespace OrchardCore.OpenId.Configuration
             // this using block won't be disposed until the service scope itself is released.
             using (var scope = CreateTenantScope(settings.Tenant))
             {
-                if (scope == null)
-                {
-                    return;
-                }
-
                 var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
                 if (service == null)
                 {
@@ -148,11 +143,6 @@ namespace OrchardCore.OpenId.Configuration
             // this using block won't be disposed until the service scope itself is released.
             using (var scope = CreateTenantScope(settings.Tenant))
             {
-                if (scope == null)
-                {
-                    return;
-                }
-
                 var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
                 if (service == null)
                 {
@@ -256,13 +246,7 @@ namespace OrchardCore.OpenId.Configuration
             }
 
             var settings = _shellSettingsManager.GetSettings(tenant);
-
-            if (settings.State == TenantState.Running)
-            {
-                return _shellHost.EnterServiceScope(settings);
-            }
-
-            return null;
+            return _shellHost.EnterServiceScope(settings);
         }
 
         private async Task<OpenIdServerSettings> GetServerSettingsAsync(IOpenIdServerService service)

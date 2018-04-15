@@ -129,9 +129,9 @@ namespace OrchardCore.OpenId.Services
                 {
                     results.Add(new ValidationResult(T["The specified tenant is not valid."]));
                 }
-                else if (tenant.State != TenantState.Running)
+                else if (tenant.State == TenantState.Disabled)
                 {
-                    results.Add(new ValidationResult(T["The specified tenant is not running."]));
+                    results.Add(new ValidationResult(T["The specified tenant is disabled."]));
                 }
                 else
                 {
