@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
@@ -83,6 +84,32 @@ namespace OrchardCore.OpenId.Services
                     nameof(settings.ResponseType)
                 }));
             }
+            else if (settings.ResponseType != OpenIdConnectResponseType.Code && settings.ResponseType != OpenIdConnectResponseType.CodeIdToken &&
+                settings.ResponseType != OpenIdConnectResponseType.CodeIdTokenToken && settings.ResponseType != OpenIdConnectResponseType.CodeToken &&
+                settings.ResponseType != OpenIdConnectResponseType.IdToken && settings.ResponseType != OpenIdConnectResponseType.IdTokenToken)
+            {
+                results.Add(new ValidationResult(T["Unknown response type ."], new[]
+                {
+                    nameof(settings.ResponseType)
+                }));
+            }
+
+            if (string.IsNullOrEmpty(settings.ResponseMode))
+            {
+                results.Add(new ValidationResult(T["The response mode cannot be null or empty."], new[]
+                {
+                    nameof(settings.ResponseMode)
+                }));
+            }
+            else if (settings.ResponseMode != OpenIdConnectResponseMode.FormPost && settings.ResponseMode != OpenIdConnectResponseMode.Fragment &&
+                settings.ResponseMode != OpenIdConnectResponseMode.Query)
+            {
+                results.Add(new ValidationResult(T["Unknown response mode."], new[]
+                {
+                    nameof(settings.ResponseMode)
+                }));
+            }
+
 
 
             return Task.FromResult(results.ToImmutable());

@@ -73,17 +73,33 @@ namespace OrchardCore.OpenId.Drivers
                 model.ClientSecret = settings.ClientSecret;
                 model.SignedOutCallbackPath = settings.SignedOutCallbackPath;
                 model.SignedOutRedirectUri = settings.SignedOutRedirectUri;
+                model.ResponseMode = settings.ResponseMode;
 
-                if (settings.ResponseType == OpenIdConnectResponseType.IdToken)
+                if (settings.ResponseType == OpenIdConnectResponseType.Code)
                 {
-                    model.UseImplicitFlow = true;
+                    model.UseCodeFlow = true;
                 }
                 else if (settings.ResponseType == OpenIdConnectResponseType.CodeIdToken)
                 {
-                    model.UseHybridFlow = true;
+                    model.UseCodeIdTokenFlow = true;
                 }
-                else
-                    model.UseManualFlow = true;
+                else if (settings.ResponseType == OpenIdConnectResponseType.CodeIdTokenToken)
+                {
+                    model.UseCodeIdTokenTokenFlow = true;
+                }
+                else if (settings.ResponseType == OpenIdConnectResponseType.CodeToken)
+                {
+                    model.UseCodeTokenFlow = true;
+                }
+                else if (settings.ResponseType == OpenIdConnectResponseType.IdToken)
+                {
+                    model.UseIdTokenFlow = true;
+                }
+                else if (settings.ResponseType == OpenIdConnectResponseType.IdTokenToken)
+                {
+                    model.UseIdTokenTokenFlow = true;
+                }
+
 
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
@@ -102,20 +118,57 @@ namespace OrchardCore.OpenId.Drivers
                 var model = new OpenIdClientSettingsViewModel();
                 await updater.TryUpdateModelAsync(model, Prefix);
 
+                model.AllowedScopes = model.AllowedScopes ?? string.Empty;
+
                 settings.DisplayName = model.DisplayName;
-                settings.AllowedScopes = model.AllowedScopes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                settings.AllowedScopes = model.AllowedScopes.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 settings.Authority = model.Authority;
                 settings.CallbackPath = model.CallbackPath;
                 settings.ClientId = model.ClientId;
                 settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
                 settings.SignedOutRedirectUri = model.SignedOutRedirectUri;
+                settings.ResponseMode = model.ResponseMode;
 
-                if (model.UseHybridFlow)
+                bool useClientSecret = true;
+
+                if (model.UseCodeFlow)
+                {
+                    settings.ResponseType = OpenIdConnectResponseType.Code;
+
+                }
+                else if (model.UseCodeIdTokenFlow)
+                {
                     settings.ResponseType = OpenIdConnectResponseType.CodeIdToken;
-                else if (model.UseImplicitFlow)
+                }
+                else if (model.UseCodeIdTokenTokenFlow)
+                {
+                    settings.ResponseType = OpenIdConnectResponseType.CodeIdTokenToken;
+                }
+                else if (model.UseCodeTokenFlow)
+                {
+                    settings.ResponseType = OpenIdConnectResponseType.CodeToken;
+                }
+                else if (model.UseIdTokenFlow)
+                {
                     settings.ResponseType = OpenIdConnectResponseType.IdToken;
+                    useClientSecret = false;
+                }
+                else if (model.UseIdTokenTokenFlow)
+                {
+                    settings.ResponseType = OpenIdConnectResponseType.IdTokenToken;
+                    useClientSecret = false;
+                }
                 else
-                    settings.ResponseType = model.ResponseType;
+                {
+                    settings.ResponseType = OpenIdConnectResponseType.None;
+                    useClientSecret = false;
+                }
+
+                if (!useClientSecret)
+                {
+                    model.ClientSecret = previousClientSecret = null;
+                }
+
                 // Restore the client secret if the input is empty (i.e if it hasn't been reset).
                 if (string.IsNullOrEmpty(model.ClientSecret))
                 {

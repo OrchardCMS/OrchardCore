@@ -16,12 +16,15 @@ namespace OrchardCore.OpenId.ViewModels
         public string CallbackPath { get; set; }
         [Url(ErrorMessage = "Invalid signeout redirect url")]
         public string SignedOutRedirectUri { get; set; }
-        [RegularExpression(@"\/[-A-Za-z0-9+&@#\/%?=~_|!:,.;]+[-A-Za-z0-9+&@#\/%=~_|]", ErrorMessage="Invalid path")]
+        [RegularExpression(@"\/[-A-Za-z0-9+&@#\/%?=~_|!:,.;]+[-A-Za-z0-9+&@#\/%=~_|]", ErrorMessage = "Invalid path")]
         public string SignedOutCallbackPath { get; set; }
         public string AllowedScopes { get; set; }
-        public string ResponseType { get; set;}
-        public bool UseImplicitFlow { get; set; }
-        public bool UseHybridFlow { get; set; }
-        public bool UseManualFlow { get; set; }
+        public string ResponseMode { get; set; }
+        public bool UseCodeFlow { get; set; }
+        public bool UseCodeIdTokenTokenFlow { get; set; }
+        public bool UseCodeIdTokenFlow { get; set; }
+        public bool UseCodeTokenFlow { get; set; }
+        public bool UseIdTokenFlow { get; set; }
+        public bool UseIdTokenTokenFlow { get; set; }
     }
 }

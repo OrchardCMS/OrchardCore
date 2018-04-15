@@ -70,6 +70,7 @@ namespace OrchardCore.OpenId.Configuration
             options.SignedOutCallbackPath = settings.SignedOutCallbackPath ?? options.SignedOutCallbackPath;
             options.RequireHttpsMetadata = settings.Authority.StartsWith(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
 
+            options.ResponseMode = settings.ResponseMode;
             options.ResponseType = settings.ResponseType;
 
             options.CallbackPath = settings.CallbackPath ?? options.CallbackPath;
