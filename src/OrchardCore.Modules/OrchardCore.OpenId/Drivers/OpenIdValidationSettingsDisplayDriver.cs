@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -73,11 +73,23 @@ namespace OrchardCore.OpenId.Drivers
                 model.Audience = settings.Audience;
                 model.Tenant = settings.Tenant;
 
-                model.AvailableTenants = (from tenant in _shellSettingsManager.LoadSettings().Where(s => s.State == TenantState.Running).AsParallel()
-                                          let provider = _shellHost.GetOrCreateShellContext(tenant).ServiceProvider
-                                          let descriptor = provider.GetRequiredService<ShellDescriptor>()
-                                          where descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server)
-                                          select tenant.Name).ToList();
+                var availableTenants = new List<string>();
+                var tenants = _shellSettingsManager.LoadSettings().Where(s => s.State != TenantState.Disabled);
+
+                foreach (var tenant in tenants)
+                {
+                    using (var scope = _shellHost.EnterServiceScope(tenant))
+                    {
+                        var descriptor = scope.ServiceProvider.GetRequiredService<ShellDescriptor>();
+                        if (descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
+                        {
+                            availableTenants.Add(tenant.Name);
+                        }
+                    }
+                }
+
+                model.AvailableTenants = availableTenants;
+
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
