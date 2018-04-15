@@ -48,6 +48,7 @@
     <MicrosoftAspNetCoreHttpFeaturesPackageVersion>2.0.2</MicrosoftAspNetCoreHttpFeaturesPackageVersion>
     <MicrosoftAspNetCoreHttpOverridesPackageVersion>2.0.2</MicrosoftAspNetCoreHttpOverridesPackageVersion>
     <MicrosoftAspNetCoreHttpPackageVersion>2.0.2</MicrosoftAspNetCoreHttpPackageVersion>
+    <MicrosoftAspNetCoreHttpsPolicyPackageVersion>2.1.0-preview2-final</MicrosoftAspNetCoreHttpsPolicyPackageVersion>
     <MicrosoftAspNetCoreIdentityEntityFrameworkCorePackageVersion>2.0.2</MicrosoftAspNetCoreIdentityEntityFrameworkCorePackageVersion>
     <MicrosoftAspNetCoreIdentityPackageVersion>2.0.2</MicrosoftAspNetCoreIdentityPackageVersion>
     <MicrosoftAspNetCoreIdentityServiceAbstractionsPackageVersion>2.0.1</MicrosoftAspNetCoreIdentityServiceAbstractionsPackageVersion>
@@ -89,7 +90,6 @@
     <MicrosoftAspNetCoreResponseCachingAbstractionsPackageVersion>2.0.2</MicrosoftAspNetCoreResponseCachingAbstractionsPackageVersion>
     <MicrosoftAspNetCoreResponseCachingPackageVersion>2.0.2</MicrosoftAspNetCoreResponseCachingPackageVersion>
     <MicrosoftAspNetCoreResponseCompressionPackageVersion>2.0.2</MicrosoftAspNetCoreResponseCompressionPackageVersion>
-    <MicrosoftAspNetCoreRewritePackageVersion>2.0.2</MicrosoftAspNetCoreRewritePackageVersion>
     <MicrosoftAspNetCoreRoutingAbstractionsPackageVersion>2.0.2</MicrosoftAspNetCoreRoutingAbstractionsPackageVersion>
     <MicrosoftAspNetCoreRoutingPackageVersion>2.0.2</MicrosoftAspNetCoreRoutingPackageVersion>
     <MicrosoftAspNetCoreServerHttpSysPackageVersion>2.0.2</MicrosoftAspNetCoreServerHttpSysPackageVersion>
