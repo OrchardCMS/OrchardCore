@@ -16,6 +16,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Security.SecurityHeaders;
 using OrchardCore.Settings;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
@@ -48,11 +49,14 @@ namespace OrchardCore.Users
                 template: LoginPath,
                 defaults: new { controller = "Account", action = "Login" }
             );
+
+            builder.UseSecurityHeaders();
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSecurity();
+            services.AddSecurityHeaders();
 
             // Adds the default token providers used to generate tokens for reset passwords, change email
             // and change telephone number operations, and for two factor authentication token generation.

@@ -11,6 +11,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="$(MicrosoftAspNetCoreAuthorizationPackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.0-preview2-final" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="SecurityHeaders\" />
+  </ItemGroup>
 </Project>
