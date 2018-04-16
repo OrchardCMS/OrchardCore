@@ -77,6 +77,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 },
                 mounted: function () {
                     this.selectRoot();
+                    this.$refs.rootFolder.toggle();
                 },
                 methods: {
                     selectFolder: function (folder) {
