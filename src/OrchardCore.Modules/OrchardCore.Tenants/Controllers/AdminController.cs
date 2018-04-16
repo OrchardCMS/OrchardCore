@@ -258,7 +258,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (shellSettings.State != TenantState.Running)
             {
-                _notifier.Error(H["You can only disable a Running shell."]);
+                _notifier.Error(H["You can only disable an Enabled tenant."]);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -296,7 +296,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (shellSettings.State != TenantState.Disabled)
             {
-                _notifier.Error(H["You can only enable a Disabled shell."]);
+                _notifier.Error(H["You can only enable a Disabled tenant."]);
             }
 
             shellSettings.State = TenantState.Running;
