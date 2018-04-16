@@ -103,6 +103,11 @@ namespace OrchardCore.Environment.Shell
                 return scope;
             }
 
+            if (settings.State == TenantState.Disabled)
+            {
+                return null;
+            }
+
             _shellContexts.TryRemove(settings.Name, out var value);
 
             context = _shellContexts.GetOrAdd(settings.Name, new Lazy<ShellContext>(() =>
@@ -250,7 +255,7 @@ namespace OrchardCore.Environment.Shell
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
-                    _logger.LogDebug("Creating disabled shell context for tenant {0} setup", settings.Name);
+                    _logger.LogDebug("Creating disabled shell context for tenant {0}", settings.Name);
                 }
 
                 return Task.FromResult(new ShellContext { Settings = settings });
@@ -324,22 +329,10 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellContext> ListShellContexts()
         {
-            if (_shellContexts == null)
-            {
-                return Enumerable.Empty<ShellContext>();
-            }
-
-            var shells = _shellContexts.Select(kv => kv.Value.Value).ToArray();
-
-            return shells.Select(shell =>
-            {
-                if (shell.Released)
-                {
-                    return GetOrCreateShellContext(shell.Settings);
-                }
-
-                return shell;
-            }).ToArray();
+            return _shellContexts?.Select(kv => kv.Value.Value).ToArray()
+                // When a dependent shell is released it is not removed from the dictionary.
+                .Select(shell => !shell.Released ? shell : GetOrCreateShellContext(shell.Settings))
+                .ToArray() ?? Enumerable.Empty<ShellContext>();
         }
 
         /// <summary>

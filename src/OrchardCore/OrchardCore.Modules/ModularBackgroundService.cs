@@ -83,7 +83,7 @@ namespace OrchardCore.Modules
 
                 foreach (var scheduler in schedulers)
                 {
-                    if (stoppingToken.IsCancellationRequested)
+                    if (shell.Released || stoppingToken.IsCancellationRequested)
                     {
                         break;
                     }
@@ -92,7 +92,7 @@ namespace OrchardCore.Modules
                     {
                         var taskName = scheduler.Name;
 
-                        var task = scope.GetTaskByTypeName(taskName);
+                        var task = scope?.GetTaskByTypeName(taskName);
 
                         if (task == null)
                         {
@@ -131,9 +131,20 @@ namespace OrchardCore.Modules
             {
                 var tenant = shell.Settings.Name;
 
+                if (shell.Released || stoppingToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
                 using (var scope = _shellHost.EnterServiceScope(shell.Settings))
                 {
-                    var taskTypes = scope.GetTaskTypes();
+                    var taskTypes = scope?.GetTaskTypes();
+
+                    if (taskTypes == null)
+                    {
+                        return;
+                    }
+
                     CleanSchedulers(tenant, taskTypes);
 
                     if (!taskTypes.Any())
@@ -143,11 +154,6 @@ namespace OrchardCore.Modules
 
                     foreach (var taskType in taskTypes)
                     {
-                        if (stoppingToken.IsCancellationRequested)
-                        {
-                            return;
-                        }
-
                         var taskName = taskType.FullName;
 
                         if (!_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
