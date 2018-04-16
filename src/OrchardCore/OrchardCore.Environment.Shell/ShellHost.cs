@@ -329,7 +329,10 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellContext> ListShellContexts()
         {
-            return _shellContexts?.Select(kv => kv.Value.Value).ToArray() ?? Enumerable.Empty<ShellContext>();
+            return _shellContexts?.Select(kv => kv.Value.Value).ToArray()
+                // When a dependent shell is released it is not removed and recreated.
+                .Select(shell => !shell.Released ? shell : GetOrCreateShellContext(shell.Settings))
+                .ToArray() ?? Enumerable.Empty<ShellContext>();
         }
 
         /// <summary>
