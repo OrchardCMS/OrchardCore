@@ -111,7 +111,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                 Name = query.Name,
                 ResolvedType = new ListGraphType(typetype),
-                Resolver = new SlowFuncFieldResolver<object, Task<object>>(async context => {
+                Resolver = new AsyncFieldResolver<object, object>(async context => {
                     var iquery = await _queryManager.GetQueryAsync(context.FieldName);
 
                     var parameters = context.GetArgument<string>("Parameters");
@@ -140,7 +140,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                 Name = query.Name,
                 ResolvedType = typetype.ResolvedType,
-                Resolver = new SlowFuncFieldResolver<object, Task<object>>(async context => {
+                Resolver = new AsyncFieldResolver<object, object>(async context => {
                     var iquery = await _queryManager.GetQueryAsync(context.FieldName);
 
                     var parameters = context.GetArgument<string>("Parameters");

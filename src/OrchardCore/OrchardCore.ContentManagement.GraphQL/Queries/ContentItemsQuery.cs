@@ -30,7 +30,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 new QueryArgument<StringGraphType> { Name = "contentItemVersionId", Description = "the id of the version" }
             );
 
-            Resolver = new SlowFuncFieldResolver<Task<IEnumerable<ContentItem>>>(async context => {
+            Resolver = new AsyncFieldResolver<IEnumerable<ContentItem>>(async context => {
                 var versionOptions = GetVersionOptions(context);
 
                 if (context.HasPopulatedArgument("contentItemId"))

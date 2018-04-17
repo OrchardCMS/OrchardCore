@@ -24,7 +24,7 @@ namespace OrchardCore.Queries.GraphQL.Mutations
 
             Type = typeof(DeletionStatusObjectGraphType);
 
-            Resolver = new SlowFuncFieldResolver<object, Task<DeletionStatus>>(async (context) => {
+            Resolver = new AsyncFieldResolver<object, DeletionStatus>(async (context) => {
                 var name = context.GetArgument<string>("Name");
 
                 await queryManager.DeleteQueryAsync(name);

@@ -21,7 +21,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations
 
             Type = typeof(DeletionStatusObjectGraphType);
 
-            Resolver = new SlowFuncFieldResolver<object, Task<DeletionStatus>>(async (context) => {
+            Resolver = new AsyncFieldResolver<object, DeletionStatus>(async (context) => {
                 var contentItemId = context.GetArgument<string>("ContentItemId");
 
                 var contentItem = await contentManager.GetAsync(contentItemId);

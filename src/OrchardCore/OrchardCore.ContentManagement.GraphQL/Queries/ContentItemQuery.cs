@@ -21,7 +21,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                         Name = "contentItemId", Description = "content item id" }
                 );
 
-            Resolver = new SlowFuncFieldResolver<object, Task<ContentItem>>(async (context) => {
+            Resolver = new AsyncFieldResolver<object, ContentItem>(async (context) => {
                 var contentItem = await contentManager.GetAsync(context.GetArgument<string>("contentItemId"));
 
                 //if (!await authorizationService.AuthorizeAsync((context.UserContext as GraphQLUserContext)?.User, Permissions.ViewContent, contentItem))

@@ -41,7 +41,7 @@ namespace OrchardCore.Setup.GraphQL
 
             Type = typeof(CreateTenantOutcomeType);
 
-            Resolver = new SlowFuncFieldResolver<object, Task<object>>(async (context) => {
+            Resolver = new AsyncFieldResolver<object, object>(async (context) => {
                 var model = context.MapArgumentsTo<SetupViewModel>();
 
                 model.DatabaseProviders = _databaseProviders;
