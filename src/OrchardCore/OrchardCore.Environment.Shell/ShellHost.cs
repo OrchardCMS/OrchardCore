@@ -73,16 +73,17 @@ namespace OrchardCore.Environment.Shell
 
         public ShellContext GetOrCreateShellContext(ShellSettings settings)
         {
-            var shell = _shellContexts.GetOrAdd(settings.Name, new Lazy<ShellContext>(() =>
+            var shell = GetOrAddShellContext(settings, out var scope);
+
+            if (scope != null)
             {
-                var shellContext = CreateShellContextAsync(settings).Result;
-                RegisterShell(shellContext);
-                return shellContext;
-            })).Value;
+                scope.Dispose();
+                return shell;
+            }
 
             if (shell.Released)
             {
-                _shellContexts.TryRemove(settings.Name, out var context);
+                _shellContexts.TryRemove(settings.Name, out var value);
                 return GetOrCreateShellContext(settings);
             }
 
@@ -96,20 +97,39 @@ namespace OrchardCore.Environment.Shell
 
         public IServiceScope EnterServiceScope(ShellSettings settings, out ShellContext context)
         {
-            context = GetOrCreateShellContext(settings);
+            context = GetOrAddShellContext(settings, out var scope);
 
-            if (context.TryEnterServiceScope(out var scope))
+            if (scope != null || context.TryEnterServiceScope(out scope))
             {
                 return scope;
             }
 
-            // A newly created disabled shell has a null service provider.
-            if (settings.State == TenantState.Disabled)
+            if (context.Released)
             {
-                return null;
+                _shellContexts.TryRemove(settings.Name, out var value);
+                return EnterServiceScope(settings, out context);
             }
 
-            return EnterServiceScope(settings, out context);
+            // The scope is null only for a recreated disabled shell which has a null service provider.
+            // But it is not null for a disabled shell which is still in use and then not yet released.
+            return scope;
+        }
+
+        internal ShellContext GetOrAddShellContext(ShellSettings settings, out IServiceScope serviceScope)
+        {
+            IServiceScope scope = null;
+
+            var shell = _shellContexts.GetOrAdd(settings.Name, new Lazy<ShellContext>(() =>
+            {
+                var shellContext = CreateShellContextAsync(settings).Result;
+                shellContext.TryEnterServiceScope(out scope);
+                RegisterShell(shellContext);
+                return shellContext;
+            })).Value;
+
+            serviceScope = scope;
+
+            return shell;
         }
 
         public void UpdateShellSettings(ShellSettings settings)
