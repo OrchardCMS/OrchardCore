@@ -1,5 +1,5 @@
 {% cache "blog-post-summary" %}
-{% cache_vary_by Model.ContentItem.ContentItemId %}
+{% cache Model.ContentItem.ContentItemId %}
 <div class="post-preview">
     {% a display_for:Model.ContentItem %}
     <h2 class="post-title">
@@ -29,4 +29,5 @@
     </p>
 </div>
 <hr />
+{% endcache %}
 {% endcache %}

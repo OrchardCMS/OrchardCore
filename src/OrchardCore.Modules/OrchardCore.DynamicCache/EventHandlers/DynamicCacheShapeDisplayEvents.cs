@@ -44,7 +44,7 @@ namespace OrchardCore.DynamicCache.EventHandlers
                 var cacheContext = context.ShapeMetadata.Cache();
                 _cacheScopeManager.EnterScope(cacheContext);
 
-                var cachedContent = await _dynamicCacheService.GetCachedValueAsync(cacheContext.CacheId);
+                var cachedContent = await _dynamicCacheService.GetCachedValueAsync(cacheContext);
 
                 if (cachedContent != null)
                 {

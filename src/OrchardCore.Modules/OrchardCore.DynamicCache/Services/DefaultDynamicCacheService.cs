@@ -28,20 +28,16 @@ namespace OrchardCore.DynamicCache.Services
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<string> GetCachedValueAsync(string cacheId)
+        public async Task<string> GetCachedValueAsync(CacheContext context)
         {
-            var context = await GetCachedContextAsync(cacheId);
+            context = await GetCachedContextAsync(context);
             if (context == null)
             {
                 // We don't know the context, so we must treat this as a cache miss
                 return null;
             }
-
-            var cacheEntries = context.Contexts.Count > 0
-                ? await _cacheContextManager.GetDiscriminatorsAsync(context.Contexts)
-                : Enumerable.Empty<CacheContextEntry>();
-
-            var cacheKey = GetCacheKey(context.CacheId, cacheEntries);
+            
+            var cacheKey = await GetCacheKey(context);
 
             var content = await GetCachedStringAsync(cacheKey);
 
@@ -57,15 +53,14 @@ namespace OrchardCore.DynamicCache.Services
         
         public async Task SetCachedValueAsync(CacheContext context, string value)
         {
-            var cacheEntries = await _cacheContextManager.GetDiscriminatorsAsync(context.Contexts);
-            var cacheKey = GetCacheKey(context.CacheId, cacheEntries);
+            var cacheKey = await GetCacheKey(context);
             
             _localCache[cacheKey] = value;
             var esi = JsonConvert.SerializeObject(EdgeSideInclude.FromCacheContext(context));
             
             await Task.WhenAll(
                 SetCachedValueAsync(cacheKey, value, context),
-                SetCachedValueAsync(GetCacheContextCacheKey(context.CacheId), esi, context)
+                SetCachedValueAsync(await GetCacheContextCacheKey(context), esi, context)
             );
         }
 
@@ -123,16 +118,11 @@ namespace OrchardCore.DynamicCache.Services
                 var esiModel = JsonConvert.DeserializeObject<EdgeSideInclude>(esi);
                 var cacheContext = esiModel.ToCacheContext();
 
-                var cacheEntries = cacheContext.Contexts.Count > 0
-                    ? await _cacheContextManager.GetDiscriminatorsAsync(cacheContext.Contexts)
-                    : Enumerable.Empty<CacheContextEntry>();
-
                 _cacheScopeManager.EnterScope(cacheContext);
 
                 try
                 {
-                    var cachedFragmentKey = GetCacheKey(cacheContext.CacheId, cacheEntries);
-                    var htmlContent = await GetCachedValueAsync(cachedFragmentKey);
+                    var htmlContent = await GetCachedValueAsync(cacheContext);
 
                     // Expired child cache entry? This and all parent cache items are invalid.
                     if (htmlContent == null)
@@ -164,20 +154,24 @@ namespace OrchardCore.DynamicCache.Services
             return content;
         }
 
-        private string GetCacheKey(string cacheId, IEnumerable<CacheContextEntry> cacheEntries)
+        private async Task<string> GetCacheKey(CacheContext context)
         {
+            var cacheEntries = context.Contexts.Count > 0
+                ? await _cacheContextManager.GetDiscriminatorsAsync(context.Contexts)
+                : Enumerable.Empty<CacheContextEntry>();
+
             if (!cacheEntries.Any())
             {
-                return cacheId;
+                return context.CacheId;
             }
 
-            var key = cacheId + "/" + cacheEntries.GetContextHash();
+            var key = context.CacheId + "/" + cacheEntries.GetContextHash();
             return key;
         }
 
-        private string GetCacheContextCacheKey(string cacheId)
+        private async Task<string> GetCacheContextCacheKey(CacheContext context)
         {
-            return "cachecontext-" + cacheId;
+            return "cachecontext-" + await GetCacheKey(context);
         }
 
         private async Task<string> GetCachedStringAsync(string cacheKey)
@@ -196,9 +190,9 @@ namespace OrchardCore.DynamicCache.Services
             return Encoding.UTF8.GetString(bytes);
         }
 
-        private async Task<CacheContext> GetCachedContextAsync(string cacheId)
+        private async Task<CacheContext> GetCachedContextAsync(CacheContext context)
         {
-            var cachedValue = await GetCachedStringAsync(GetCacheContextCacheKey(cacheId));
+            var cachedValue = await GetCachedStringAsync(await GetCacheContextCacheKey(context));
 
             if (cachedValue == null)
             {

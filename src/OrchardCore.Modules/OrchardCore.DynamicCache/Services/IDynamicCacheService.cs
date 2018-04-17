@@ -5,7 +5,7 @@ namespace OrchardCore.DynamicCache.Services
 {
     public interface IDynamicCacheService
     {
-        Task<string> GetCachedValueAsync(string cacheId);
+        Task<string> GetCachedValueAsync(CacheContext context);
         Task SetCachedValueAsync(CacheContext context, string value); 
         Task<string> ProcessEdgeSideIncludesAsync(string value);
     }

@@ -72,7 +72,7 @@ namespace OrchardCore.DynamicCache.Liquid
                 cacheContext.WithExpirySliding(slidingDuration);
             }
             
-            var cacheResult = await dynamicCache.GetCachedValueAsync(cacheContext.CacheId);
+            var cacheResult = await dynamicCache.GetCachedValueAsync(cacheContext);
             if (cacheResult != null)
             {
                 await writer.WriteAsync(cacheResult);
