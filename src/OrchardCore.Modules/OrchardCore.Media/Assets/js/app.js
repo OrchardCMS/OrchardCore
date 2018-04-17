@@ -160,7 +160,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     self.mediaItems.splice(index, 1)
                                     bus.$emit('mediaDeleted', media);
                                 }
-                                self.selectMedia = null;
+                                self.selectedMedia = null;
                             },
                             error: function (error) {
                                 console.error(error.responseText);
