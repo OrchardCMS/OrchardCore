@@ -74,12 +74,17 @@ namespace OrchardCore.OpenId.Drivers
                 model.Tenant = settings.Tenant;
 
                 var availableTenants = new List<string>();
-                var tenants = _shellSettingsManager.LoadSettings().Where(s => s.State != TenantState.Disabled);
+                var tenants = _shellSettingsManager.LoadSettings().Where(s => s.State == TenantState.Running);
 
                 foreach (var tenant in tenants)
                 {
                     using (var scope = _shellHost.EnterServiceScope(tenant))
                     {
+                        if (scope == null)
+                        {
+                            continue;
+                        }
+
                         var descriptor = scope.ServiceProvider.GetRequiredService<ShellDescriptor>();
                         if (descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
                         {

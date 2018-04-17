@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Hosting.ShellBuilders
@@ -56,14 +57,15 @@ namespace OrchardCore.Hosting.ShellBuilders
         {
             scope = new ServiceScopeWrapper(this);
 
+            // A newly created shell which is disabled has a null service provider.
             if (!_released && scope.ServiceProvider != null)
             {
                 return true;
             }
 
             (scope as ServiceScopeWrapper).Dispose();
-            scope = null;
 
+            scope = null;
             return false;
         }
 
@@ -93,10 +95,15 @@ namespace OrchardCore.Hosting.ShellBuilders
             // resolve or use its services. We then call this method to count the remaining references and dispose it 
             // when the number reached zero.
 
-            _released = true;
-
             lock (this)
             {
+                if (_released == true)
+                {
+                    return;
+                }
+
+                _released = true;
+
                 if (_dependents != null)
                 {
 
@@ -128,8 +135,10 @@ namespace OrchardCore.Hosting.ShellBuilders
                 return;
             }
 
+            // If already released.
             if (_released)
             {
+                // The dependent is released.
                 shellContext.Release();
                 return;
             }
@@ -150,17 +159,16 @@ namespace OrchardCore.Hosting.ShellBuilders
 
         public void Dispose()
         {
-            Dispose(true);
+            Close();
+            GC.SuppressFinalize(this);
         }
 
-        public void Dispose(bool disposing)
+        public void Close()
         {
             if (_disposed)
             {
                 return;
             }
-
-            _disposed = true;
 
             // Disposes all the services registered for this shell
             if (ServiceProvider != null)
@@ -172,15 +180,12 @@ namespace OrchardCore.Hosting.ShellBuilders
             IsActivated = false;
             Blueprint = null;
 
-            if (disposing)
-            {
-                GC.SuppressFinalize(this);
-            }
+            _disposed = true;
         }
 
         ~ShellContext()
         {
-            Dispose(false);
+            Close();
         }
 
         internal class ServiceScopeWrapper : IServiceScope
@@ -192,7 +197,7 @@ namespace OrchardCore.Hosting.ShellBuilders
 
             public ServiceScopeWrapper(ShellContext shellContext)
             {
-                // Prevent the context from being released until the end of the scope
+                // Prevent the context from being disposed until the end of the scope
                 Interlocked.Increment(ref shellContext._refCount);
 
                 _shellContext = shellContext;
@@ -226,21 +231,30 @@ namespace OrchardCore.Hosting.ShellBuilders
             {
                 var refCount = Interlocked.CompareExchange(ref _shellContext._refCount, 1, 1);
 
-                if (_shellContext._released && refCount == 1)
+                if (refCount == 1)
                 {
-                    var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
-
-                    foreach (var tenantEvent in tenantEvents)
+                    // A disabled shell still in use is released by its last scope.
+                    if (_shellContext.Settings.State == TenantState.Disabled)
                     {
-                        tenantEvent.TerminatingAsync().GetAwaiter().GetResult();
+                        _shellContext.Release();
                     }
 
-                    foreach (var tenantEvent in tenantEvents.Reverse())
+                    if (_shellContext._released)
                     {
-                        tenantEvent.TerminatedAsync().GetAwaiter().GetResult();
-                    }
+                        var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
 
-                    return true;
+                        foreach (var tenantEvent in tenantEvents)
+                        {
+                            tenantEvent.TerminatingAsync().GetAwaiter().GetResult();
+                        }
+
+                        foreach (var tenantEvent in tenantEvents.Reverse())
+                        {
+                            tenantEvent.TerminatedAsync().GetAwaiter().GetResult();
+                        }
+
+                        return true;
+                    }
                 }
 
                 return false;

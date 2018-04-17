@@ -103,22 +103,13 @@ namespace OrchardCore.Environment.Shell
                 return scope;
             }
 
+            // A newly created disabled shell has a null service provider.
             if (settings.State == TenantState.Disabled)
             {
                 return null;
             }
 
-            _shellContexts.TryRemove(settings.Name, out var value);
-
-            context = _shellContexts.GetOrAdd(settings.Name, new Lazy<ShellContext>(() =>
-            {
-                var shellContext = CreateShellContextAsync(settings).Result;
-                scope = shellContext.EnterServiceScope();
-                RegisterShell(shellContext);
-                return shellContext;
-            })).Value;
-
-            return scope;
+            return EnterServiceScope(settings, out context);
         }
 
         public void UpdateShellSettings(ShellSettings settings)
@@ -318,6 +309,17 @@ namespace OrchardCore.Environment.Shell
         /// <param name="settings"></param>
         public void ReloadShellContext(ShellSettings settings)
         {
+            if (settings.State == TenantState.Disabled)
+            {
+                // If a disabled shell is still in use it will be released and then disposed by its last scope.
+                // Knowing that it is still removed from the running shell table, so that it is no more served.
+                if (_shellContexts.TryGetValue(settings.Name, out var value) && value.Value.ActiveScopes > 0)
+                {
+                    _runningShellTable.Remove(settings);
+                    return;
+                }
+            }
+
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
                 _runningShellTable.Remove(settings);

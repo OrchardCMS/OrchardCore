@@ -129,32 +129,39 @@ namespace OrchardCore.OpenId.Services
                 {
                     results.Add(new ValidationResult(T["The specified tenant is not valid."]));
                 }
-                else if (tenant.State == TenantState.Disabled)
-                {
-                    results.Add(new ValidationResult(T["The specified tenant is disabled."]));
-                }
                 else
                 {
                     using (var scope = _shellHost.EnterServiceScope(tenant))
                     {
-                        var manager = scope.ServiceProvider.GetService<OpenIdScopeManager>();
-                        if (manager == null)
+                        if (scope == null)
                         {
-                            results.Add(new ValidationResult(T["The specified tenant is not valid."], new[]
+                            results.Add(new ValidationResult(T["The specified tenant is disabled."], new[]
                             {
                                 nameof(settings.Tenant)
                             }));
                         }
                         else
                         {
-                            var resource = OpenIdConstants.Prefixes.Tenant + _shellSettings.Name;
-                            var scopes = await manager.FindByResourceAsync(resource);
-                            if (scopes.IsDefaultOrEmpty)
+                            var manager = scope.ServiceProvider.GetService<OpenIdScopeManager>();
+
+                            if (manager == null)
                             {
-                                results.Add(new ValidationResult(T["No appropriate scope was found."], new[]
+                                results.Add(new ValidationResult(T["The specified tenant is not valid."], new[]
                                 {
+                                nameof(settings.Tenant)
+                            }));
+                            }
+                            else
+                            {
+                                var resource = OpenIdConstants.Prefixes.Tenant + _shellSettings.Name;
+                                var scopes = await manager.FindByResourceAsync(resource);
+                                if (scopes.IsDefaultOrEmpty)
+                                {
+                                    results.Add(new ValidationResult(T["No appropriate scope was found."], new[]
+                                    {
                                     nameof(settings.Tenant)
                                 }));
+                                }
                             }
                         }
                     }
