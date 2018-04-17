@@ -86,6 +86,7 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                         this.mediaItems.splice(0, 1);
                     }
                 }
+                this.selectedMedia = null;
             }
         },
         watch: {
