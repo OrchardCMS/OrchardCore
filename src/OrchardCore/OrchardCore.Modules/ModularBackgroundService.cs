@@ -83,16 +83,21 @@ namespace OrchardCore.Modules
 
                 foreach (var scheduler in schedulers)
                 {
-                    if (shell.Released || stoppingToken.IsCancellationRequested)
+                    if (stoppingToken.IsCancellationRequested)
                     {
                         break;
                     }
 
                     using (var scope = _shellHost.EnterServiceScope(shell.Settings))
                     {
+                        if (scope == null)
+                        {
+                            break;
+                        }
+
                         var taskName = scheduler.Name;
 
-                        var task = scope?.GetTaskByTypeName(taskName);
+                        var task = scope.GetTaskByTypeName(taskName);
 
                         if (task == null)
                         {
@@ -131,20 +136,19 @@ namespace OrchardCore.Modules
             {
                 var tenant = shell.Settings.Name;
 
-                if (shell.Released || stoppingToken.IsCancellationRequested)
+                if (stoppingToken.IsCancellationRequested)
                 {
                     return;
                 }
 
                 using (var scope = _shellHost.EnterServiceScope(shell.Settings))
                 {
-                    var taskTypes = scope?.GetTaskTypes();
-
-                    if (taskTypes == null)
+                    if (scope == null)
                     {
                         return;
                     }
 
+                    var taskTypes = scope.GetTaskTypes();
                     CleanSchedulers(tenant, taskTypes);
 
                     if (!taskTypes.Any())

@@ -73,16 +73,17 @@ namespace OrchardCore.Environment.Shell
 
         public ShellContext GetOrCreateShellContext(ShellSettings settings)
         {
-            var shell = _shellContexts.GetOrAdd(settings.Name, new Lazy<ShellContext>(() =>
+            var shell = GetOrAddShellContext(settings, out var scope);
+
+            if (scope != null)
             {
-                var shellContext = CreateShellContextAsync(settings).Result;
-                RegisterShell(shellContext);
-                return shellContext;
-            })).Value;
+                scope.Dispose();
+                return shell;
+            }
 
             if (shell.Released)
             {
-                _shellContexts.TryRemove(settings.Name, out var context);
+                _shellContexts.TryRemove(settings.Name, out var value);
                 return GetOrCreateShellContext(settings);
             }
 
@@ -96,29 +97,39 @@ namespace OrchardCore.Environment.Shell
 
         public IServiceScope EnterServiceScope(ShellSettings settings, out ShellContext context)
         {
-            context = GetOrCreateShellContext(settings);
+            context = GetOrAddShellContext(settings, out var scope);
 
-            if (context.TryEnterServiceScope(out var scope))
+            if (scope != null || context.TryEnterServiceScope(out scope))
             {
                 return scope;
             }
 
-            if (settings.State == TenantState.Disabled)
+            if (context.Released)
             {
-                return null;
+                _shellContexts.TryRemove(settings.Name, out var value);
+                return EnterServiceScope(settings, out context);
             }
 
-            _shellContexts.TryRemove(settings.Name, out var value);
+            // The scope is null only for a recreated disabled shell which has a null service provider.
+            // But it is not null for a disabled shell which is still in use and then not yet released.
+            return scope;
+        }
 
-            context = _shellContexts.GetOrAdd(settings.Name, new Lazy<ShellContext>(() =>
+        internal ShellContext GetOrAddShellContext(ShellSettings settings, out IServiceScope serviceScope)
+        {
+            IServiceScope scope = null;
+
+            var shell = _shellContexts.GetOrAdd(settings.Name, new Lazy<ShellContext>(() =>
             {
                 var shellContext = CreateShellContextAsync(settings).Result;
-                scope = shellContext.EnterServiceScope();
+                shellContext.TryEnterServiceScope(out scope);
                 RegisterShell(shellContext);
                 return shellContext;
             })).Value;
 
-            return scope;
+            serviceScope = scope;
+
+            return shell;
         }
 
         public void UpdateShellSettings(ShellSettings settings)
@@ -318,6 +329,17 @@ namespace OrchardCore.Environment.Shell
         /// <param name="settings"></param>
         public void ReloadShellContext(ShellSettings settings)
         {
+            if (settings.State == TenantState.Disabled)
+            {
+                // If a disabled shell is still in use it will be released and then disposed by its last scope.
+                // Knowing that it is still removed from the running shell table, so that it is no more served.
+                if (_shellContexts.TryGetValue(settings.Name, out var value) && value.Value.ActiveScopes > 0)
+                {
+                    _runningShellTable.Remove(settings);
+                    return;
+                }
+            }
+
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
                 _runningShellTable.Remove(settings);
@@ -330,7 +352,7 @@ namespace OrchardCore.Environment.Shell
         public IEnumerable<ShellContext> ListShellContexts()
         {
             return _shellContexts?.Select(kv => kv.Value.Value).ToArray()
-                // When a dependent shell is released it is not removed from the dictionary.
+                // When a dependent shell is released it is not removed and recreated.
                 .Select(shell => !shell.Released ? shell : GetOrCreateShellContext(shell.Settings))
                 .ToArray() ?? Enumerable.Empty<ShellContext>();
         }
