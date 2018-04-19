@@ -77,6 +77,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 },
                 mounted: function () {
                     this.selectRoot();
+                    this.$refs.rootFolder.toggle();
                 },
                 methods: {
                     selectFolder: function (folder) {
@@ -2106,7 +2107,9 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                     $("#mediaApp").show();
                     var modal = $(modalBodyElement).modal();
                     $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
-                        mediaFieldApp.mediaItems.push(mediaApp.selectedMedia);
+                        if (mediaApp.selectedMedia != null) {
+                            mediaFieldApp.mediaItems.push(mediaApp.selectedMedia);
+                        }
 
                         modal.modal('hide');
                         return true;
