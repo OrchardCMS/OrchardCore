@@ -73,10 +73,13 @@ namespace OrchardCore.Autoroute.Routing
         private async Task<RouteValueDictionary> GetContentItemDisplayRoutes(HttpContext context, string contentItemId)
         {
             if (string.IsNullOrEmpty(contentItemId))
+            {
                 return null;
+            }
+
             var contentManager = context.RequestServices.GetService<IContentManager>();
             var contentItem = await contentManager.GetAsync(contentItemId);
-            return contentItem == null ? null : contentManager.PopulateAspect<ContentItemMetadata>(contentItem)?.DisplayRouteValues;
+            return contentItem == null ? null : (await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem))?.DisplayRouteValues;
         }
 
         private async Task EnsureRouteData(RouteContext context, string contentItemId)
