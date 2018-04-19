@@ -1,7 +1,7 @@
 @model OrchardCore.Email.SmtpSettings
 @using System.Net.Mail
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings will be saved in order to apply them."]</p>
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
 <fieldset class="form-group" asp-validation-class-for="DefaultSender">
     <label asp-for="DefaultSender">@T["Sender email address"] <span asp-validation-for="DefaultSender"></span></label>
