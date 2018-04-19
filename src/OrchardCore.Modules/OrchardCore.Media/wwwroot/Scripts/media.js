@@ -165,6 +165,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     self.mediaItems.splice(index, 1)
                                     bus.$emit('mediaDeleted', media);
                                 }
+                                self.selectedMedia = null;
                             },
                             error: function (error) {
                                 console.error(error.responseText);
@@ -2125,6 +2126,7 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                         this.mediaItems.splice(0, 1);
                     }
                 }
+                this.selectedMedia = null;
             }
         },
         watch: {
