@@ -3,6 +3,11 @@ function getConfirmRemoveMessage() {
 }
 
 $(function () {
+    $("body").removeClass("preload");
+});
+
+
+$(function () {
     $("body").on("click", "[itemprop~='RemoveUrl']", function () {
         // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled in base.js
         if ($(this).filter("[itemprop~='UnsafeUrl']").length == 1) {
