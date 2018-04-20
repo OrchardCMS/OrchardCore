@@ -63,7 +63,7 @@ namespace OrchardCore.Layers.Drivers
                 isNew = false;
             }
 
-            var shape = Shape<CustomSettingsEditViewModel>("CustomSettings", async ctx =>
+            var shape = Initialize<CustomSettingsEditViewModel>("CustomSettings", async ctx =>
             {
                 ctx.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
             }).Location("Content:3").OnGroup(contentTypeDefinition.Name);

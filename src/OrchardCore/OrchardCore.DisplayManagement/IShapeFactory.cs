@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Castle.DynamicProxy;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.DisplayManagement
 {
@@ -34,29 +34,7 @@ namespace OrchardCore.DisplayManagement
         {
             return factory.CreateAsync(shapeType, Arguments.From(model));
         }
-
-        private class ShapeImplementation : IShape, IPositioned
-        {
-            public ShapeMetadata Metadata { get; set; } = new ShapeMetadata();
-
-            public string Position
-            {
-                get
-                {
-                    return Metadata.Position;
-                }
-
-                set
-                {
-                    Metadata.Position = value;
-                }
-            }
-
-			public string Id { get; set; }
-			public IList<string> Classes { get; } = new List<string>();
-			public IDictionary<string, string> Attributes => new Dictionary<string,string>();
-		}
-
+        
         private static IShape CreateShape(Type baseType)
         {
             // Don't generate a proxy for shape types
@@ -68,7 +46,7 @@ namespace OrchardCore.DisplayManagement
             else
             {
                 var options = new ProxyGenerationOptions();
-                options.AddMixinInstance(new ShapeImplementation());
+                options.AddMixinInstance(new ShapeViewModel());
                 return (IShape)ProxyGenerator.CreateClassProxy(baseType, options);
             }
         }

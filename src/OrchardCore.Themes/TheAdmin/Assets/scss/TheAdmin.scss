@@ -370,6 +370,19 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > label {
 .has-validation-error {
     @extend .is-invalid;
 }
+
+.inline-form {
+    display: inline;
+}
+
+.code, .form-control.code {
+    font-family: $font-family-monospace;
+    font-size: $code-font-size;
+    padding: $kbd-padding-y $kbd-padding-x;
+    color: $pre-color;
+    @include border-radius($border-radius);
+}
+
 // When the validation message in inside the label, add a separator
 label .field-validation-error::before {
     content: "- ";
@@ -382,6 +395,11 @@ label .field-validation-error::before {
 .field-validation-valid {
     display: none;
 }
+
+select[multiple] {
+    min-height: 300px;
+}
+
 // Toolbar
 // ------------------------------
 .admin-toolbar {

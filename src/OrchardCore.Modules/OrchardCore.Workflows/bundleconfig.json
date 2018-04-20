@@ -1,0 +1,20 @@
+[
+  {
+    "outputFileName": "Content/Scripts/orchard-workflows.min.js",
+    "inputFiles": [
+      "Content/Scripts/orchard-workflows.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/Scripts/orchard-workflows-serialize.min.js",
+    "inputFiles": [
+      "Content/Scripts/orchard-workflows-serialize.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/Styles/orchard-workflows-admin.min.css",
+    "inputFiles": [
+      "Content/Styles/orchard-workflows-admin.css"
+    ]
+  }
+]

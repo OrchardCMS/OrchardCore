@@ -9,7 +9,7 @@ $(function () {
 
 $(function () {
     $("body").on("click", "[itemprop~='RemoveUrl']", function () {
-        // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled in base.js
+        // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled below.
         if ($(this).filter("[itemprop~='UnsafeUrl']").length == 1) {
             return false;
         }
@@ -85,7 +85,7 @@ $(function () {
         $(this).on('change', function (e) {
             // During a double-click, ignore state changes while the element is collapsing
             if (target.hasClass('collapsing')) {
-                $(this).prop('checked', !$(this).prop('checked'));                
+                $(this).prop('checked', !$(this).prop('checked'));
             }
             target.collapse($(this).prop('checked') ? 'show' : 'hide');
         });
@@ -116,7 +116,7 @@ $(function () {
 
 });
 
-function getTechnicalName(name){
+function getTechnicalName(name) {
     var result = "", c;
 
     if (!name || name.length == 0) {

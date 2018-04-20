@@ -65,7 +65,7 @@ namespace OrchardCore.Entities
             entity.Properties[name] = JObject.FromObject(property);
             return entity;
         }
-        
+
         /// <summary>
         /// Modifies or create an aspect.
         /// </summary>

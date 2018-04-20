@@ -14,12 +14,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         private ContentTypePartDefinition _typePartDefinition;
         private ContentPartFieldDefinition _partFieldDefinition;
 
-        public override ShapeResult Shape(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
+        public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
             // e.g., BodyPart.Summary, BodyPart-BlogPost, BagPart-LandingPage-Services
             // context.Shape is the ContentItem shape, we need to alter the part shape
 
-            var result = base.Shape(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
+            var result = base.Factory(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
 
             // This should only be set in Display methods
             if (_typePartDefinition != null && _partFieldDefinition != null)

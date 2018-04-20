@@ -18,7 +18,7 @@ namespace OrchardCore.Templates.Settings
 
         public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition)
         {
-            return Shape<ContentSettingsViewModel>("TemplateSettings", model =>
+            return Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
             {
                 model.ContentSettingsEntries.Add(
                     new ContentSettingsEntry

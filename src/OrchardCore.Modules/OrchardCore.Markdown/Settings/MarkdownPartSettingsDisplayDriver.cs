@@ -17,7 +17,7 @@ namespace OrchardCore.Markdown.Settings
                 return null;
             }
 
-            return Shape<MarkdownPartSettingsViewModel>("MarkdownPartSettings_Edit", model =>
+            return Initialize<MarkdownPartSettingsViewModel>("MarkdownPartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<MarkdownPartSettings>();
 
