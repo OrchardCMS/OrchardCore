@@ -88,9 +88,9 @@ namespace OrchardCore.Modules
                         break;
                     }
 
-                    using (var scope = _shellHost.EnterServiceScope(shell.Settings))
+                    using (var scope = _shellHost.EnterServiceScope(shell.Settings, out var context))
                     {
-                        if (scope == null)
+                        if (scope == null || !context.IsActivated)
                         {
                             break;
                         }
@@ -141,9 +141,9 @@ namespace OrchardCore.Modules
                     return;
                 }
 
-                using (var scope = _shellHost.EnterServiceScope(shell.Settings))
+                using (var scope = _shellHost.EnterServiceScope(shell.Settings, out var context))
                 {
-                    if (scope == null)
+                    if (scope == null || !context.IsActivated)
                     {
                         return;
                     }
@@ -276,8 +276,7 @@ namespace OrchardCore.Modules
 
         private IEnumerable<ShellContext> GetRunningShells()
         {
-            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running &&
-                (s.IsActivated || s.ActiveScopes == 0)).ToArray();
+            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running && s.IsActivated).ToArray();
         }
 
         private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)
