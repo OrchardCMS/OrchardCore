@@ -24,16 +24,16 @@ namespace OrchardCore.Liquid.Drivers
         public override IDisplayResult Display(LiquidPart liquidPart)
         {
             return Combine(
-                Shape<LiquidPartViewModel>("LiquidPart", m => BuildViewModel(m, liquidPart))
+                Initialize<LiquidPartViewModel>("LiquidPart", m => BuildViewModel(m, liquidPart))
                     .Location("Detail", "Content:10"),
-                Shape<LiquidPartViewModel>("LiquidPart_Summary", m => BuildViewModel(m, liquidPart))
+                Initialize<LiquidPartViewModel>("LiquidPart_Summary", m => BuildViewModel(m, liquidPart))
                     .Location("Summary", "Content:10")
             );
         }
 
         public override IDisplayResult Edit(LiquidPart liquidPart)
         {
-            return Shape<LiquidPartViewModel>("LiquidPart_Edit", m => BuildViewModel(m, liquidPart));
+            return Initialize<LiquidPartViewModel>("LiquidPart_Edit", m => BuildViewModel(m, liquidPart));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LiquidPart model, IUpdateModel updater)

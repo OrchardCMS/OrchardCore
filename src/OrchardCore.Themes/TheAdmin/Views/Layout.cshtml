@@ -1,4 +1,4 @@
-﻿@inject OrchardCore.Settings.ISiteService SiteService
+@inject OrchardCore.Settings.ISiteService SiteService
 @{
         var site = await SiteService.GetSiteSettingsAsync();
 }
@@ -20,15 +20,15 @@
 
     <resources type="Header" />
 
+    <!-- This script can't wait to the footer -->
+    <script type="text/javascript" src="/TheAdmin/Scripts/userPreferencesLoader.js"></script>
+
     @await RenderSectionAsync("Header", required: false)
 </head>
-<body>
+<body class="preload">
     <div class="ta-wrapper">
         <div class="ta-navbar-top">
-            <a class="navbar-brand" href="@Url.Content("~/")">@site.SiteName</a>
-            <button id="navbar-toggler" type="button" data-toggle="collapse" aria-controls="ta-left-sidebar" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@site.SiteName</span></a>
             <div class="collapse navbar-collapse" id="navbar-links">
                 <div class="mr-auto">
                     @await RenderSectionAsync("NavbarTop", required: false)
@@ -45,7 +45,8 @@
         </div>
 
         <div id="ta-left-sidebar">
-            @await RenderSectionAsync("Navigation", required: false)
+            <button class="leftbar-compactor" type="button"><span> <i class="fas fa-bars" aria-hidden="false"></i> </span></button>
+            @await RenderSectionAsync("Navigation", required: false)            
         </div>
 
         <div class="ta-content">
@@ -60,6 +61,6 @@
 
     <div id="confirmRemoveMessage" data-value="@T["Are you sure you want to remove this element?"]"></div>
 
-    <resources type="Footer" />
+    <resources type="Footer" />    
 </body>
 </html>

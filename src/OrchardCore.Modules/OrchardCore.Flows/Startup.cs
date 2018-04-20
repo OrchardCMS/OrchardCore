@@ -19,6 +19,7 @@ namespace OrchardCore.Flows
             TemplateContext.GlobalMemberAccessStrategy.Register<BagPartViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<FlowPartViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<FlowMetadata>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<FlowPart>();
         }
 
         public override void ConfigureServices(IServiceCollection services)

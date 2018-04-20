@@ -65,7 +65,7 @@ namespace OrchardCore.OpenId.Drivers
             if (context.GroupId == SettingsGroupId && _memoryCache.Get(RestartPendingCacheKey) != null)
                 _notifier.Warning(T["The site needs to be restarted for the settings to take effect"]);
 
-            return Shape<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", model =>
+            return Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", model =>
             {
                 model.Authority = settings.Authority;
                 model.Audience = settings.Audience;

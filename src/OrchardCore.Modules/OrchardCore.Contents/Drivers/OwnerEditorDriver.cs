@@ -43,7 +43,7 @@ namespace OrchardCore.Contents.Drivers
 
             if (settings.DisplayOwnerEditor)
             {
-                return Shape<OwnerEditorViewModel>("CommonPart_Edit__Owner", model =>
+                return Initialize<OwnerEditorViewModel>("CommonPart_Edit__Owner", model =>
                 {
                     model.Owner = part.ContentItem.Owner;
                 });

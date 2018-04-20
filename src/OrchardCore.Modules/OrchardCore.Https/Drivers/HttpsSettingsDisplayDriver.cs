@@ -45,7 +45,7 @@ namespace OrchardCore.Https.Drivers {
             if (!isHttpsRequest)
                 _notifier.Warning(T["For safety, Enabling require HTTPS over HTTP has been prevented."]);
 
-            return Shape<HttpsSettingsViewModel>("HttpsSettings_Edit", model =>
+            return Initialize<HttpsSettingsViewModel>("HttpsSettings_Edit", model =>
             {
                 model.IsHttpsRequest = isHttpsRequest;
                 model.RequireHttps = settings.RequireHttps;

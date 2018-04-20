@@ -72,6 +72,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 },
                 mounted: function () {
                     this.selectRoot();
+                    this.$refs.rootFolder.toggle();
                 },
                 methods: {
                     selectFolder: function (folder) {
@@ -160,6 +161,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     self.mediaItems.splice(index, 1)
                                     bus.$emit('mediaDeleted', media);
                                 }
+                                self.selectedMedia = null;
                             },
                             error: function (error) {
                                 console.error(error.responseText);
