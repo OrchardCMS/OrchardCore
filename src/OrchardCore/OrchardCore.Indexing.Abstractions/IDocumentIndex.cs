@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace OrchardCore.Indexing
@@ -45,7 +45,14 @@ namespace OrchardCore.Indexing
             Text,
             DateTime,
             Boolean,
-            Number
+            Number,
+            GeoPoint
+        }
+
+        public class Point
+        {
+            public double Longitude;
+            public double Latitude;
         }
 
         public class DocumentIndexEntry

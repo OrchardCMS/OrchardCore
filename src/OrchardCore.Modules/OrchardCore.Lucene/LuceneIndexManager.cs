@@ -2,6 +2,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -10,6 +12,8 @@ using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
+using Lucene.Net.Spatial.Prefix;
+using Lucene.Net.Spatial.Prefix.Tree;
 using Lucene.Net.Store;
 using Lucene.Net.Util;
 using Microsoft.Extensions.Logging;
@@ -17,6 +21,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
+using Spatial4n.Core.Context;
 using Directory = System.IO.Directory;
 using LDirectory = Lucene.Net.Store.Directory;
 
@@ -38,6 +43,8 @@ namespace OrchardCore.Lucene
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
 
         private static LuceneVersion LuceneVersion = LuceneVersion.LUCENE_48;
+        private SpatialContext _ctx;
+        private GeohashPrefixTree _grid;
 
         public LuceneIndexManager(
             IClock clock,
@@ -52,6 +59,15 @@ namespace OrchardCore.Lucene
                 shellOptions.Value.ShellsApplicationDataPath,
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name, "Lucene");
+
+            //Typical geospatial context
+            //  These can also be constructed from SpatialContextFactory
+            _ctx = SpatialContext.GEO;
+
+            int maxLevels = 11;//results in sub-meter precision for geohash
+            //TODO demo lookup by detail distance
+            //  This can also be constructed from SpatialPrefixTreeFactory
+            _grid = new GeohashPrefixTree(_ctx, maxLevels);
 
             _rootDirectory = Directory.CreateDirectory(_rootPath);
         }
@@ -99,7 +115,7 @@ namespace OrchardCore.Lucene
                 }
 
                 _timestamps.TryRemove(indexName, out var timestamp);
-                
+
                 var indexFolder = Path.Combine(_rootPath, indexName);
 
                 if (Directory.Exists(indexFolder))
@@ -232,6 +248,21 @@ namespace OrchardCore.Lucene
                         else
                         {
                             doc.Add(new StringField(entry.Key, Convert.ToString(entry.Value.Value), store));
+                        }
+                        break;
+                    case DocumentIndex.Types.GeoPoint:
+                        var strategy = new RecursivePrefixTreeStrategy(_grid, entry.Key);
+                        if (entry.Value.Value is DocumentIndex.Point point)
+                        {
+                            // Longityde -> X, Latitude -> Y
+                            var geoPoint = _ctx.MakePoint(point.Longitude, point.Latitude);
+                            foreach (var field in strategy.CreateIndexableFields(geoPoint))
+                            {
+                                doc.Add(field);
+                            }
+
+                            //store it too
+                            doc.Add(new StoredField(strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
                         }
                         break;
                 }
