@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.DisplayManagement.Implementation
@@ -16,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             _serviceProvider = serviceProvider;
         }
 
-        public dynamic CreateHelper(ViewContext viewContext)
+        public IDisplayHelper CreateHelper(ViewContext viewContext)
         {
             return new DisplayHelper(
                 _displayManager,

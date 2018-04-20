@@ -203,10 +203,11 @@ namespace OrchardCore.Setup.Services
                 {
                     var hasErrors = false;
 
-                    Action<string, string> reportError = (key, message) => {
+                    void reportError(string key, string message)
+                    {
                         hasErrors = true;
                         context.Errors[key] = message;
-                    };
+                    }
 
                     // Invoke modules to react to the setup event
                     var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();

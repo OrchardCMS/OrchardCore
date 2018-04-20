@@ -12,26 +12,22 @@ namespace OrchardCore.DisplayManagement.Shapes
 	[DebuggerTypeProxy(typeof(ShapeDebugView))]
 	public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
 	{
-		private readonly List<string> _classes = new List<string>();
-		private readonly Dictionary<string, string> _attributes = new Dictionary<string, string>();
+		private List<string> _classes;
+		private Dictionary<string, string> _attributes;
 		private readonly List<IPositioned> _items = new List<IPositioned>();
 		private bool _sorted = false;
 
-		public ShapeMetadata Metadata { get; set; }
-		public string Id { get; set; }
-		public IList<string> Classes => _classes;
-		public IDictionary<string, string> Attributes => _attributes;
+        public ShapeMetadata Metadata { get; } = new ShapeMetadata();
+
+        public string Id { get; set; }
+		public IList<string> Classes => _classes = _classes ?? new List<string>();
+		public IDictionary<string, string> Attributes => _attributes = _attributes ?? new Dictionary<string, string>();
 		public IEnumerable<dynamic> Items => _items;
 		public bool HasItems => _items.Count > 0;
 		public string Position
 		{
 			get { return Metadata.Position; }
 			set { Metadata.Position = value; }
-		}
-
-		public Shape()
-		{
-			Metadata = new ShapeMetadata();
 		}
 
 		public virtual Shape Add(object item, string position = null)

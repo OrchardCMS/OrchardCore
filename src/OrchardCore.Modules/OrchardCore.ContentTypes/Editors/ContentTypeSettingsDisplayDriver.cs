@@ -10,7 +10,7 @@ namespace OrchardCore.ContentTypes.Editors
     {
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
         {
-            return Shape<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", model =>
+            return Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", model =>
             {
                 var settings = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>();
 

@@ -24,7 +24,7 @@ namespace OrchardCore.ContentTypes.Editors
 
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
         {
-            return Shape<ContentTypeViewModel>("ContentType_Edit", model =>
+            return Initialize<ContentTypeViewModel>("ContentType_Edit", model =>
             {
                 model.DisplayName = contentTypeDefinition.DisplayName;
             }).Location("Content");

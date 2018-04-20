@@ -72,7 +72,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
             if (input.ToObjectValue() is IShape shape)
             {
-                return new StringValue((await (Task<IHtmlContent>)displayHelper(shape)).ToString());
+                return new HtmlContentValue(await (Task<IHtmlContent>)displayHelper(shape));
             }
 
             return NilValue.Instance;
@@ -87,7 +87,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
             if (input.ToObjectValue() is IShape shape)
             {
-                return new StringValue((await (Task<IHtmlContent>)displayHelper(shape)).ToString(), false);
+                return new HtmlContentValue(await (Task<IHtmlContent>)displayHelper(shape));
             }
 
             return NilValue.Instance;
