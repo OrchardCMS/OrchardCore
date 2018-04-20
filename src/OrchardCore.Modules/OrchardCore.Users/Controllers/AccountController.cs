@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
@@ -8,13 +9,14 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
@@ -33,8 +35,9 @@ namespace OrchardCore.Users.Controllers
         private readonly ILogger _logger;
         private readonly ISiteService _siteService;
         private readonly ISmtpService _smtpService;
-        private readonly ICompositeViewEngine _viewEngine;
-        
+        private readonly IShapeFactory _shapeFactory;
+        private readonly IHtmlDisplay _displayManager;
+
         public AccountController(
             IUserService userService,
             SignInManager<IUser> signInManager,
@@ -42,9 +45,9 @@ namespace OrchardCore.Users.Controllers
             ILogger<AccountController> logger,
             ISiteService siteService,
             ISmtpService smtpService,
-            ICompositeViewEngine viewEngine,
-            IStringLocalizer<AccountController> stringLocalizer,
-            IHtmlLocalizer<AccountController> htmlLocalizer)
+            IShapeFactory shapeFactory,
+            IHtmlDisplay displayManager,
+            IStringLocalizer<AccountController> stringLocalizer)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -52,14 +55,13 @@ namespace OrchardCore.Users.Controllers
             _logger = logger;
             _siteService = siteService;
             _smtpService = smtpService;
-            _viewEngine = viewEngine;
+            _shapeFactory = shapeFactory;
+            _displayManager = displayManager;
 
             T = stringLocalizer;
-            H = htmlLocalizer;
         }
 
         IStringLocalizer T { get; set; }
-        IHtmlLocalizer H { get; set; }
 
         [HttpGet]
         [AllowAnonymous]
@@ -241,14 +243,14 @@ namespace OrchardCore.Users.Controllers
             // returns to confirmation page anyway: we don't want to let scrapers know if a username or an email exist
             return RedirectToLocal(Url.Action("ForgotPasswordConfirmation"));
         }
-        
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ForgotPasswordConfirmation()
         {
             return View();
         }
-        
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(string code = null)
@@ -294,48 +296,28 @@ namespace OrchardCore.Users.Controllers
 
         protected async Task<bool> SendResetTokenAsync(User user)
         {
-            var message = new MailMessage();
-            message.IsBodyHtml = true;
-            message.To.Add(user.Email);
-            message.Subject = T["Reset your password"];
+            var viewName = "TemplateUserLostPassword";
+            var model = Arguments.From(new { User = user, LostPasswordUrl = Url.Action("ResetPassword", "Account", new { code = user.ResetToken }, HttpContext.Request.Scheme) });
 
-            LostPasswordViewModel model = new LostPasswordViewModel()
+            var options = ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<MvcViewOptions>>();
+            ControllerContext.RouteData.Values["action"] = viewName;
+            ControllerContext.RouteData.Values["controller"] = "";
+            var viewEngineResult = options.Value.ViewEngines.Select(x => x.FindView(ControllerContext, viewName, true)).FirstOrDefault(x => x != null);
+            var displayContext = new DisplayContext()
             {
-                User = user,
-                LostPasswordUrl = Url.Action("ResetPassword", "Account", new { code = user.ResetToken }, HttpContext.Request.Scheme)
+                ServiceProvider = ControllerContext.HttpContext.RequestServices,
+                Value = await _shapeFactory.CreateAsync(viewName, model),
+                ViewContext = new ViewContext(ControllerContext, viewEngineResult.View, ViewData, TempData, new StringWriter(), new HtmlHelperOptions())
             };
-            // Todo: Find a way to render a shape
-            string template = await RenderViewAsString("Template.User.LostPassword", model);
-            message.Body = template;
+            var htmlContent = await _displayManager.ExecuteAsync(displayContext);
+
+            var message = new MailMessage() { Body = WebUtility.HtmlDecode(htmlContent.ToString()), IsBodyHtml = true, Subject = T["Reset your password"] };
+            message.To.Add(user.Email);
 
             // send email
             var result = await _smtpService.SendAsync(message);
 
             return result.Succeeded;
-        }
-
-        protected async Task<string> RenderViewAsString(string viewName, object model)
-        {
-            viewName = viewName ?? ControllerContext.ActionDescriptor.ActionName;
-            ViewData.Model = model;
-
-            var viewEngineResult = _viewEngine.FindView(ControllerContext, viewName, false);
-            var view = viewEngineResult.View;
-            var viewDataDictionnary = new ViewDataDictionary(
-                metadataProvider: new EmptyModelMetadataProvider(),
-                modelState: new ModelStateDictionary())
-            {
-                Model = model
-            };
-
-            using (StringWriter sw = new StringWriter())
-            {
-                ViewContext viewContext = new ViewContext(ControllerContext, view, viewDataDictionnary, TempData, sw, new HtmlHelperOptions());
-
-                await view.RenderAsync(viewContext);
-
-                return WebUtility.HtmlDecode(sw.ToString());
-            }
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -10,6 +11,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json.Linq;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Email;
 using OrchardCore.Settings;
 using OrchardCore.Users;
@@ -41,9 +44,9 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<ILogger<AccountController>>(),
                 mockSiteService,
                 Mock.Of<ISmtpService>(),
-                Mock.Of<ICompositeViewEngine>(),
-                Mock.Of<IStringLocalizer<AccountController>>(),
-                Mock.Of<IHtmlLocalizer<AccountController>>());
+                Mock.Of<IShapeFactory>(),
+                Mock.Of<IHtmlDisplay>(),
+                Mock.Of<IStringLocalizer<AccountController>>());
 
             var result = await controller.Register();
             Assert.IsType<NotFoundResult>(result);
@@ -71,9 +74,9 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<ILogger<AccountController>>(),
                 mockSiteService,
                 Mock.Of<ISmtpService>(),
-                Mock.Of<ICompositeViewEngine>(),
-                Mock.Of<IStringLocalizer<AccountController>>(),
-                Mock.Of<IHtmlLocalizer<AccountController>>());
+                Mock.Of<IShapeFactory>(),
+                Mock.Of<IHtmlDisplay>(),
+                Mock.Of<IStringLocalizer<AccountController>>());
 
 
             var result = await controller.Register();
