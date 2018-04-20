@@ -175,9 +175,9 @@ namespace OrchardCore.Recipes.Services
                         {
                             await tenantEvent.ActivatedAsync();
                         }
-
-                        shellContext.IsActivated = true;
                     }
+
+                    shellContext.IsActivated = true;
                 }
 
                 var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
