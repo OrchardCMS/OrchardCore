@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Liquid
@@ -40,8 +41,9 @@ namespace OrchardCore.Contents.Liquid
 
             var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
             var displayManager = ((IServiceProvider)services).GetRequiredService<IContentItemDisplayManager>();
+            var updaterAccessor = ((IServiceProvider)services).GetRequiredService<IUpdateModelAccessor>();
 
-            return FluidValue.Create(await displayManager.BuildDisplayAsync(contentItem, null, displayType));
+            return FluidValue.Create(await displayManager.BuildDisplayAsync(contentItem, updaterAccessor.ModelUpdater, displayType));
         }
     }
 }
