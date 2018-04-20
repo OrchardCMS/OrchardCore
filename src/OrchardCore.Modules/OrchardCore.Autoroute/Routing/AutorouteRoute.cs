@@ -1,9 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Autoroute.Services;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Autoroute.Routing
 {
@@ -21,21 +24,25 @@ namespace OrchardCore.Autoroute.Routing
 
         public VirtualPathData GetVirtualPath(VirtualPathContext context)
         {
-            if (context.Values["area"]?.ToString() == "OrchardCore.Contents" &&
-                context.Values["controller"]?.ToString() == "Item" &&
-                context.Values["action"]?.ToString() == "Display" &&
-                context.Values["contentItemId"] != null)
+            string contentItemId = context.Values["contentItemId"]?.ToString();
+
+            if (string.IsNullOrEmpty(contentItemId))
             {
-                // Matching route value, lookup for the id
+                return null;
+            }
 
-                string contentItemId = context.Values["contentItemId"]?.ToString();
+            var displayRouteData = GetContentItemDisplayRoutes(context.HttpContext, contentItemId).Result;
+            
+            if (string.Equals(context.Values["area"]?.ToString(), displayRouteData["area"].ToString(), StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(context.Values["controller"]?.ToString(), displayRouteData["controller"].ToString(), StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(context.Values["action"]?.ToString(), displayRouteData["action"].ToString(), StringComparison.OrdinalIgnoreCase))
+            {
                 string path;
-
                 if (_entries.TryGetPath(contentItemId, out path))
                 {
                     if (context.Values.Count > 4)
                     {
-                        foreach(var data in context.Values)
+                        foreach (var data in context.Values)
                         {
                             if (!_keys.Contains(data.Key))
                             {
@@ -44,31 +51,50 @@ namespace OrchardCore.Autoroute.Routing
                         }
                     }
 
-                    return new VirtualPathData(_target, path );
+                    return new VirtualPathData(_target, path);
                 }
             }
+            
 
             return null;
         }
 
-        public Task RouteAsync(RouteContext context)
+        public async Task RouteAsync(RouteContext context)
         {
             var requestPath = context.HttpContext.Request.Path.Value;
 
-            string contentItemId;
-
-            if(_entries.TryGetContentItemId(requestPath, out contentItemId))
+            if (_entries.TryGetContentItemId(requestPath, out var contentItemId))
             {
-                context.RouteData.Values["area"] = "OrchardCore.Contents";
-                context.RouteData.Values["controller"] = "Item";
-                context.RouteData.Values["action"] = "Display";
-                context.RouteData.Values["contentItemId"] = contentItemId;
+                await EnsureRouteData(context, contentItemId);
+                await _target.RouteAsync(context);
+            }
+        }
 
-                context.RouteData.Routers.Add(_target);
-                return _target.RouteAsync(context);
+        private async Task<RouteValueDictionary> GetContentItemDisplayRoutes(HttpContext context, string contentItemId)
+        {
+            if (string.IsNullOrEmpty(contentItemId))
+            {
+                return null;
             }
 
-            return Task.CompletedTask;
+            var contentManager = context.RequestServices.GetService<IContentManager>();
+            var contentItem = await contentManager.GetAsync(contentItemId);
+            return contentItem == null ? null : (await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem))?.DisplayRouteValues;
+        }
+
+        private async Task EnsureRouteData(RouteContext context, string contentItemId)
+        {
+            var displayRoutes = await GetContentItemDisplayRoutes(context.HttpContext, contentItemId);
+            if (displayRoutes == null)
+            {
+                return;
+            }
+            foreach (var key in _keys)
+            {
+                if (displayRoutes.ContainsKey(key))
+                    context.RouteData.Values[key] = displayRoutes[key];
+            }
+            context.RouteData.Routers.Add(_target);
         }
     }
 }
