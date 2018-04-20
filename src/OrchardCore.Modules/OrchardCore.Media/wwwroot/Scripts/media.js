@@ -40,7 +40,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 data: {
                     selectedFolder: root,
                     mediaItems: [],
-                    selectedMedia: null
+                    selectedMedia: null,
+                    selectedMedias: []
                 },
                 created: function () {
                     var self = this;
@@ -111,6 +112,35 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     selectMedia: function (media) {
                         this.selectedMedia = media;
                     },
+                    selectAll: function () {
+                        this.selectedMedias = [];
+                        for (var i = 0; i < this.mediaItems.length; i++) {
+                            this.selectedMedias.push(this.mediaItems[i]);
+                        }
+                    },
+                    unSelectAll: function () {
+                        this.selectedMedias = [];
+                    },
+                    invertSelection: function () {
+                        var temp = [];
+                        for (var i = 0; i < this.mediaItems.length; i++) {
+                            if (this.isMediaSelected(this.mediaItems[i]) == false) {
+                                temp.push(this.mediaItems[i]);
+                            }
+                        }
+                        this.selectedMedias = temp;
+                    },
+                    toggleSelectionOfMedia: function (media) {
+                        if (this.isMediaSelected(media) == true) {
+                            this.selectedMedias.splice(this.selectedMedias.indexOf(media), 1);
+                        } else {
+                            this.selectedMedias.push(media);
+                        }
+                    },
+                    isMediaSelected: function (media) {
+                        var result = this.selectedMedias.indexOf(media) > -1;
+                        return result;
+                    },
                     deleteFolder: function () {
                         var folder = this.selectedFolder
                         var self = this;
@@ -142,6 +172,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         $('#createFolderModal').modal('show');
                         $('.modal-body input').val('').focus();
                     },
+                    selectAndDeleteMedia: function (media) {
+                        this.selectedMedia = media;
+                        this.deleteMedia();
+                    },
                     deleteMedia: function () {
                         var media = this.selectedMedia;
                         var self = this;
@@ -172,7 +206,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 console.error(error.responseText);
                             }
                         });
-                    },
+                    }
                 }
             });
 

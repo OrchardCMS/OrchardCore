@@ -111,31 +111,37 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
     ol {
         display: flex;
         flex-direction: row;
+        align-items: stretch;
 
         li {
-            /* Fixed size or the preview side bar would make these shrink to nothing as
-             bootstrap cols are based on the browser size and not the container element. */
-            flex-grow: 4;
-            flex-shrink: 1;
+            @extend .card;
+            margin-bottom: 16px;
+            cursor: pointer;
             max-width: 6cm;
-            margin-left: 0.75em;
-            margin-right: 0.75em;
-            width: 3cm;
+            margin-left: 0.7em;
+            margin-right: 0.7em;
+            width: 240px;
 
-            .media-container-main-item {
-                @extend .card;
-                margin-bottom: 16px;
+            .delete-media-button {
+                opacity: 0;
+                padding-top: 0px;
             }
 
-            .selected {
+            &.selected {
                 @extend .border-primary;
+            }
+
+            &.selected .delete-media-button, &:hover .delete-media-button {
+                opacity: 1;
             }
         }
 
-        img {
-            @extend .card-img-top;
-            max-height: 240px;
+        .thumb-container {
             width: 100%;
+            height: 240px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         list-style: none;
@@ -145,32 +151,44 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
 
 .media-container-main-item-title {
     @extend .card-body;
-    
+    border-top: solid 1px $gray-300;
+
     .media-filename {
         @extend .card-text;
         @extend .small;
     }
 }
 
+// Not necessary anymore. Just keeping it for reference.
 // Specific styles when the media application is in a modal dialog
-.modal-lg {
-    .media-container-main-list-item {
+// .modal-lg {
+    /*.media-container-main-list-item {
         @extend .col-md-4;
-    }
+        padding:0;
+    }*/
     /*.media-container-main-item-title {
         // Hide the filename in modals
         @extend .d-none; 
         @extend .d-xl-block;
     }*/
-}
+// }
 
 /* Toolbar */
-            .breadcrumb {
-                button {
-                    cursor: pointer;
-                }
-            }
+.breadcrumb {
+    button {
+        cursor: pointer;
+    }
+}
 
-            .breadcrumb-item.active {
-                margin-right: 1rem;
-            }
+.breadcrumb-item.active {
+    margin-right: 1rem;
+}
+
+.selected-media-tasks, .selection-group {
+    justify-content: flex-end;
+    flex-grow: 1;
+
+    small {
+        padding: 8px;
+    }
+}
