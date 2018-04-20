@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Builder.Internal;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -84,15 +85,32 @@ namespace OrchardCore.Modules
         // Build the middleware pipeline for the current tenant
         public RequestDelegate BuildTenantPipeline(ShellSettings shellSettings, IServiceProvider serviceProvider)
         {
-            var startups = serviceProvider.GetServices<IStartup>();
+            var appBuilder = new ApplicationBuilder(serviceProvider);
+              
+            // Create a nested pipeline to configure the tenant middleware pipeline
+            var startupFilters = serviceProvider.GetService<IEnumerable<IStartupFilter>>(); 
+            Action<IApplicationBuilder> configure = ConfigureTenantPipeline;
+            foreach (var filter in startupFilters.Reverse())
+            {
+                configure = filter.Configure(configure);
+            }
+
+            configure(appBuilder);
+
+            var pipeline = appBuilder.Build();
+
+            return pipeline;
+        }
+
+        private void ConfigureTenantPipeline(IApplicationBuilder builder)
+        {
+            var startups = builder.ApplicationServices.GetServices<IStartup>();
 
             // IStartup instances are ordered by module dependency with an Order of 0 by default.
             // OrderBy performs a stable sort so order is preserved among equal Order values.
             startups = startups.OrderBy(s => s.Order);
 
-            var tenantRouteBuilder = serviceProvider.GetService<IModularTenantRouteBuilder>();
-            
-            var appBuilder = new ApplicationBuilder(serviceProvider);
+            var tenantRouteBuilder = builder.ApplicationServices.GetService<IModularTenantRouteBuilder>();
             var routeBuilder = tenantRouteBuilder.Build();
 
             // In the case of several tenants, they will all be checked by ShellSettings. To optimize
@@ -101,18 +119,14 @@ namespace OrchardCore.Modules
             // And the ShellSettings test in TenantRoute would also be useless.
             foreach (var startup in startups)
             {
-                startup.Configure(appBuilder, routeBuilder, serviceProvider);
+                startup.Configure(builder, routeBuilder, builder.ApplicationServices);
             }
 
             tenantRouteBuilder.Configure(routeBuilder);
 
             var router = routeBuilder.Build();
 
-            appBuilder.UseRouter(router);
-
-            var pipeline = appBuilder.Build();
-
-            return pipeline;
+            builder.UseRouter(router);
         }
     }
 }
