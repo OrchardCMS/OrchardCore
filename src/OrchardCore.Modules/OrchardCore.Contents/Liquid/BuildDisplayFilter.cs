@@ -41,9 +41,9 @@ namespace OrchardCore.Contents.Liquid
 
             var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
             var displayManager = ((IServiceProvider)services).GetRequiredService<IContentItemDisplayManager>();
-            var updaterAccessor = ((IServiceProvider)services).GetRequiredService<IUpdateModelAccessor>();
+            var updateModelAccessor = ((IServiceProvider)services).GetRequiredService<IUpdateModelAccessor>();
 
-            return FluidValue.Create(await displayManager.BuildDisplayAsync(contentItem, updaterAccessor.ModelUpdater, displayType));
+            return FluidValue.Create(await displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType));
         }
     }
 }
