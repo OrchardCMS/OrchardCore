@@ -1,4 +1,4 @@
-var fs = require("fs"),
+var fs = require("file-system"),
     glob = require("glob"),
     path = require("path-posix"),
     merge = require("merge-stream"),
