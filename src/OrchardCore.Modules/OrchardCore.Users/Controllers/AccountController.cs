@@ -222,6 +222,11 @@ namespace OrchardCore.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
+            if (!(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().EnableLostPassword)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
                 var user = (User)await _userService.GetForgotPasswordUserAsync(model.UserIdentifier);
@@ -264,6 +269,11 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
+            if (!(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().EnableLostPassword)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
                 if (await _userService.ResetPasswordAsync(model.Email, Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)), model.NewPassword, (key, message) => ModelState.AddModelError(key, message)))
