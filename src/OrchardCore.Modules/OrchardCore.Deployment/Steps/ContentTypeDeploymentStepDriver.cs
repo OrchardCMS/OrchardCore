@@ -11,16 +11,16 @@ namespace OrchardCore.Deployment.Steps
     {
         public override IDisplayResult Display(ContentTypeDeploymentStep step)
         {
-            return 
+            return
                 Combine(
-                    Shape("ContentTypeDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    Shape("ContentTypeDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+                    View("ContentTypeDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                    View("ContentTypeDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
         public override IDisplayResult Edit(ContentTypeDeploymentStep step)
         {
-            return Shape<ContentTypeDeploymentStepViewModel>("ContentTypeDeploymentStep_Fields_Edit", model =>
+            return Initialize<ContentTypeDeploymentStepViewModel>("ContentTypeDeploymentStep_Fields_Edit", model =>
             {
                 model.ContentTypes = step.ContentTypes;
             }).Location("Content");

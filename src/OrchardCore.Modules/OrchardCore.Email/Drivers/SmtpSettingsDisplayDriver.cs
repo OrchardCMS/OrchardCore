@@ -28,7 +28,7 @@ namespace OrchardCore.Email.Drivers
         {
             var shapes = new List<IDisplayResult>
             {
-                Shape<SmtpSettings>("SmtpSettings_Edit", model =>
+                Initialize<SmtpSettings>("SmtpSettings_Edit", model =>
                 {
                     model.DefaultSender = section.DefaultSender;
                     model.DeliveryMethod = section.DeliveryMethod;
@@ -45,7 +45,7 @@ namespace OrchardCore.Email.Drivers
 
             if (section?.DefaultSender != null)
             {
-                shapes.Add(Shape("SmtpSettings_TestButton").Location("Actions").OnGroup(GroupId));
+                shapes.Add(Dynamic("SmtpSettings_TestButton").Location("Actions").OnGroup(GroupId));
             }
 
             return Combine(shapes);

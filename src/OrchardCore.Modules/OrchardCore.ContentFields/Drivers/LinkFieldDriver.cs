@@ -22,7 +22,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Display(LinkField field, BuildFieldDisplayContext context)
         {
-            return Shape<DisplayLinkFieldViewModel>("LinkField", model =>
+            return Initialize<DisplayLinkFieldViewModel>("LinkField", model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -34,7 +34,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(LinkField field, BuildFieldEditorContext context)
         {
-            return Shape<EditLinkFieldViewModel>("LinkField_Edit", model =>
+            return Initialize<EditLinkFieldViewModel>("LinkField_Edit", model =>
             {
                 var settings = context.PartFieldDefinition.Settings.ToObject<LinkFieldSettings>();
                 model.Url = context.IsNew ? settings.DefaultUrl : field.Url;

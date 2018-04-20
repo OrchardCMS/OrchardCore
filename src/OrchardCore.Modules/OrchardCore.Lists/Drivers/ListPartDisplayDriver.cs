@@ -41,7 +41,7 @@ namespace OrchardCore.Lists.Drivers
 
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {
-            return Shape<ListPartViewModel>("ListPart", async model =>
+            return Initialize<ListPartViewModel>("ListPart", async model =>
             {
                 var pager = await GetPagerAsync(context.Updater, listPart);
 

@@ -11,7 +11,7 @@ namespace OrchardCore.ContentFields.Fields
     {
         public override IDisplayResult Display(BooleanField field, BuildFieldDisplayContext context)
         {
-            return Shape<DisplayBooleanFieldViewModel>("BooleanField", model =>
+            return Initialize<DisplayBooleanFieldViewModel>("BooleanField", model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -24,7 +24,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(BooleanField field, BuildFieldEditorContext context)
         {
-            return Shape<EditBooleanFieldViewModel>("BooleanField_Edit", model =>
+            return Initialize<EditBooleanFieldViewModel>("BooleanField_Edit", model =>
             {
                 model.Value = field.Value;
                 model.Field = field;

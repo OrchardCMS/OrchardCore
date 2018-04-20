@@ -30,7 +30,7 @@ namespace OrchardCore.Flows.Drivers
         {
             var hasItems = flowPart.Widgets.Any();
 
-            return Shape<FlowPartViewModel>(hasItems ? "FlowPart" : "FlowPart_Empty", m =>
+            return Initialize<FlowPartViewModel>(hasItems ? "FlowPart" : "FlowPart_Empty", m =>
             {
                 m.FlowPart = flowPart;
                 m.BuildPartDisplayContext = context;
@@ -40,7 +40,7 @@ namespace OrchardCore.Flows.Drivers
 
         public override IDisplayResult Edit(FlowPart flowPart, BuildPartEditorContext context)
         {
-            return Shape<FlowPartEditViewModel>("FlowPart_Edit", m =>
+            return Initialize<FlowPartEditViewModel>("FlowPart_Edit", m =>
             {
                 m.FlowPart = flowPart;
                 m.Updater = context.Updater;

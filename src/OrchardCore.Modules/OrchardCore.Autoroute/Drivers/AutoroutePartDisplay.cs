@@ -49,7 +49,7 @@ namespace OrchardCore.Autoroute.Drivers
 
         public override IDisplayResult Edit(AutoroutePart autoroutePart)
         {
-            return Shape<AutoroutePartViewModel>("AutoroutePart_Edit", async model =>
+            return Initialize<AutoroutePartViewModel>("AutoroutePart_Edit", async model =>
             {
 
                 model.Path = autoroutePart.Path;

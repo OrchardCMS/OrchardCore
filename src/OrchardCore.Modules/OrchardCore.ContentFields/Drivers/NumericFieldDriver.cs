@@ -27,7 +27,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Display(NumericField field, BuildFieldDisplayContext context)
         {
-            return Shape<DisplayNumericFieldViewModel>("NumericField", model =>
+            return Initialize<DisplayNumericFieldViewModel>("NumericField", model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -39,7 +39,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(NumericField field, BuildFieldEditorContext context)
         {
-            return Shape<EditNumericFieldViewModel>("NumericField_Edit", model =>
+            return Initialize<EditNumericFieldViewModel>("NumericField_Edit", model =>
             {
                 var settings = context.PartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
                 model.Value = context.IsNew ? settings.DefaultValue : Convert.ToString(field.Value, _cultureInfo);

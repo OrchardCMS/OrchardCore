@@ -20,7 +20,7 @@ namespace OrchardCore.Lucene.Drivers
 
         public override IDisplayResult Edit(LuceneSettings section, BuildEditorContext context)
         {
-            return Shape<LuceneSettingsViewModel>("LuceneSettings_Edit", model =>
+            return Initialize<LuceneSettingsViewModel>("LuceneSettings_Edit", model =>
                 {
                     model.SearchIndex = section.SearchIndex;
                     model.SearchFields = String.Join(", ", section.DefaultSearchFields ?? new string[0]);

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement.Implementation;
 
 namespace OrchardCore.DisplayManagement
 {
@@ -7,6 +8,6 @@ namespace OrchardCore.DisplayManagement
     /// </summary>
     public interface IDisplayHelperFactory
     {
-        dynamic CreateHelper(ViewContext viewContext);
+        IDisplayHelper CreateHelper(ViewContext viewContext);
     }
 }
