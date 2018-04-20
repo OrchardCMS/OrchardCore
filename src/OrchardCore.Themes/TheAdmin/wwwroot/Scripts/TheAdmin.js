@@ -6349,6 +6349,11 @@ function getConfirmRemoveMessage() {
 }
 
 $(function () {
+    $("body").removeClass("preload");
+});
+
+
+$(function () {
     $("body").on("click", "[itemprop~='RemoveUrl']", function () {
         // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled below.
         if ($(this).filter("[itemprop~='UnsafeUrl']").length == 1) {
@@ -6485,29 +6490,58 @@ function isNumber(str) {
 }
 
 
+// When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
+// UserPreferencesLoader has already added the needed class.
 $(function () {
-    $('#navbar-toggler').on('click', function () {
-        var nav = $('#ta-left-sidebar');
-        if (nav.hasClass('in')) {
-            nav.animate({ 'left': '-260px' }, 300);
-            nav.removeClass('in');
-        }
-        else {
-            nav.animate({ 'left': '0px' }, 300);
-            nav.addClass('in');
-        }
-    });
-
-    $(window).on('resize', function(){
-        var win = $(this); //this = window
-        if (win.width() >= 768) { 
-            $('#ta-left-sidebar').removeAttr('style');
-        }
-    });
-});
-$(document).ready(function () {	
     ps = new PerfectScrollbar('#left-nav');
+
+    if ($('body').hasClass('left-sidebar-compact')) {
+        setCompactStatus();
+    }
 });
+
+
+$('.leftbar-compactor').click(function () {
+    $('body').hasClass('left-sidebar-compact') ? unSetCompactStatus() : setCompactStatus();
+
+    persistAdminPreferences();
+});
+
+
+function setCompactStatus() {
+    // This if is to avoid that when sliding from expanded to compact the 
+    // underliyng ul is visible while shrinking. It is ugly.    
+    if (!$('body').hasClass('left-sidebar-compact')) {
+        var labels = $('#left-nav ul.menu-admin > li > label');
+        labels.css('background-color', 'transparent');
+        setTimeout(function () {
+            labels.css('background-color', '');
+        }, 200);
+    }
+
+    $('body').addClass('left-sidebar-compact');
+
+    // When leftbar is expanded  all ul tags are collapsed.
+    // When leftbar is compacted we don't want the first level collapsed. 
+    // We want it expanded so that hovering over the root buttons shows the full submenu
+    $('#left-nav ul.menu-admin > li > ul').removeClass('collapse');
+    // When hovering, don't want toggling when clicking on label
+    $('#left-nav ul.menu-admin > li > label').attr('data-toggle', '');
+    $('#left-nav').removeClass('ps');
+    $('#left-nav').removeClass('ps--active-y'); // need this too because of Edge IE11
+}
+
+
+
+function unSetCompactStatus() {
+    $('body').removeClass('left-sidebar-compact');
+
+    // resetting what we disabled for compact state
+    $('#left-nav ul.menu-admin > li > ul').addClass('collapse');    
+    $('#left-nav ul.menu-admin > li > label').attr('data-toggle', 'collapse');
+    $('#left-nav').addClass('ps');
+}
+
 /*!
  * perfect-scrollbar v1.3.0
  * (c) 2017 Hyunje Jun
@@ -9213,3 +9247,15 @@ function removeDiacritics(str) {
 	Sortable.version = '1.4.2';
 	return Sortable;
 });
+
+// Each time the sidebar status is modified, that is persisted to localStorage.
+// When the page is loaded again, userPreferencesLoader.js will read that info to 
+// restore the sidebar to the previous state.
+function persistAdminPreferences() {
+    setTimeout(function () {
+        var adminPreferences = {};        
+        adminPreferences.leftSidebarCompact = $('body').hasClass('left-sidebar-compact') ? true : false;
+        
+        localStorage.setItem('adminPreferences', JSON.stringify(adminPreferences));
+    }, 200);
+}
