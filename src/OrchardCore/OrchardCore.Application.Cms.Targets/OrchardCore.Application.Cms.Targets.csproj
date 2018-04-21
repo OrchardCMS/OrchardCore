@@ -22,6 +22,7 @@
   -->
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Demo\OrchardCore.Demo.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Antiforgery\OrchardCore.Antiforgery.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Authentication\OrchardCore.Authentication.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.DataProtection\OrchardCore.DataProtection.csproj" PrivateAssets="none" />

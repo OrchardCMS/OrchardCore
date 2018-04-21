@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc
 {
@@ -82,15 +84,54 @@ namespace OrchardCore.Mvc
 
             featureProviders.AddRange(_viewsFeatureProviders);
 
-            var assemblyParts =
-                new AssemblyPart[]
-                {
-                    new AssemblyPart(Assembly.Load(new AssemblyName(_hostingEnvironment.ApplicationName)))
-                };
+            var moduleNames = _hostingEnvironment.GetApplication().ModuleNames;
 
-            foreach (var provider in featureProviders)
+            var featureProvider = featureProviders.OfType<ViewsFeatureProvider>().FirstOrDefault();
+
+            if (featureProvider != null)
             {
-                provider.PopulateFeature(assemblyParts, feature);
+                foreach (var name in moduleNames)
+                {
+                    var module = _hostingEnvironment.GetModule(name);
+
+                    var precompiledAssemblyFileName = name
+                        + ViewsFeatureProvider.PrecompiledViewsAssemblySuffix
+                        + ".dll";
+
+                    var precompiledAssemblyFilePath = Path.Combine(
+                        Path.GetDirectoryName(module.Assembly.Location),
+                        precompiledAssemblyFileName);
+
+                    if (File.Exists(precompiledAssemblyFilePath))
+                    {
+                        try
+                        {
+                            var assembly = Assembly.LoadFile(precompiledAssemblyFilePath);
+
+                            featureProvider.PopulateFeature(new AssemblyPart[] { new AssemblyPart(assembly) }, feature);
+
+                            foreach (var descriptor in feature.ViewDescriptors)
+                            {
+                                descriptor.RelativePath = "/.Modules/" + name + descriptor.RelativePath;
+                            }
+                        }
+                        catch (FileLoadException)
+                        {
+                            // Don't throw if assembly cannot be loaded. This can happen if the file is not a managed assembly.
+                        }
+                    }
+                }
+
+                var assemblyParts =
+                    new AssemblyPart[]
+                    {
+                        new AssemblyPart(Assembly.Load(new AssemblyName(_hostingEnvironment.ApplicationName)))
+                    };
+
+                foreach (var provider in featureProviders)
+                {
+                    provider.PopulateFeature(assemblyParts, feature);
+                }
             }
 
             return new SharedRazorViewCompiler(
