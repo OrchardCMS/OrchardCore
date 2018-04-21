@@ -6054,8 +6054,12 @@ a.text-dark:hover, a.text-dark:focus {
     border: 1px solid #ddd !important; } }
 
 /* navbar */
-.upload-button label {
-  margin-bottom: 0; }
+.upload-button {
+  margin: 0;
+  padding: 0;
+  border: 0; }
+  .upload-button label {
+    margin-bottom: 0; }
 
 /* Navigation */
 #media-container-navigation-menu {

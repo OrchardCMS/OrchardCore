@@ -21,6 +21,10 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
 /* navbar */
 
 .upload-button {
+    margin: 0;
+    padding: 0;
+    border: 0;
+
     label {
         margin-bottom: 0; // there is a margin below the label that makes the navbar fattier
     }
