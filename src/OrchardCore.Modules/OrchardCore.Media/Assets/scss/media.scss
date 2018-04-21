@@ -184,9 +184,14 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
     margin-right: 1rem;
 }
 
-.selected-media-tasks, .selection-group {
+.media-field-toolbar {
+    display:flex;
+}
+
+.selected-media-tasks, .selected-media-label {
     justify-content: flex-end;
     flex-grow: 1;
+    text-align:right;
 
     small {
         padding: 8px;

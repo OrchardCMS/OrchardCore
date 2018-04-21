@@ -6150,8 +6150,12 @@ a.text-dark:hover, a.text-dark:focus {
 .breadcrumb-item.active {
   margin-right: 1rem; }
 
-.selected-media-tasks, .selection-group {
+.media-field-toolbar {
+  display: flex; }
+
+.selected-media-tasks, .selected-media-label {
   justify-content: flex-end;
-  flex-grow: 1; }
-  .selected-media-tasks small, .selection-group small {
+  flex-grow: 1;
+  text-align: right; }
+  .selected-media-tasks small, .selected-media-label small {
     padding: 8px; }
