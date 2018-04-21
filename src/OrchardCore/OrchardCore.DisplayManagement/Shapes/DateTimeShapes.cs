@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.Modules;
@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Settings;
+using NodaTime;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
@@ -13,14 +14,14 @@ namespace OrchardCore.DisplayManagement.Shapes
     {
         private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";
 
-        private readonly IClock _clock;
+        private readonly Modules.IClock _clock;
         private readonly ISiteService _siteService;
 
         //private readonly IDateLocalizationServices _dateLocalizationServices;
         //private readonly IDateTimeFormatProvider _dateTimeLocalization;
 
         public DateTimeShapes(
-            IClock clock,
+            Modules.IClock clock,
             IPluralStringLocalizer<DateTimeShapes> localizer,
             ISiteService siteService
             //IDateLocalizationServices dateLocalizationServices,
@@ -87,20 +88,17 @@ namespace OrchardCore.DisplayManagement.Shapes
         [Shape]
         public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format)
         {
-            if (Utc == null)
-            {
-                Utc = _clock.UtcNow;
-            }
+            Instant instant = Instant.FromDateTimeUtc(Utc ?? _clock.UtcNow);
 
-            var timeZone = TimeZoneInfo.FindSystemTimeZoneById((await _siteService.GetSiteSettingsAsync()).TimeZone);
-            var local = TimeZoneInfo.ConvertTime(Utc.Value.ToUniversalTime(), TimeZoneInfo.Utc, timeZone);
+            DateTimeZone timeZone = DateTimeZoneProviders.Tzdb[(await _siteService.GetSiteSettingsAsync()).TimeZone];
+            ZonedDateTime zonedTime = instant.InZone(timeZone);
 
             if (Format == null)
             {
                 Format = T[LongDateTimeFormat, LongDateTimeFormat, 0].Value;
             }
 
-            return Html.Raw(Html.Encode(local.ToString(Format)));
+            return Html.Raw(Html.Encode(zonedTime.ToString(Format, null)));
         }
     }
 
