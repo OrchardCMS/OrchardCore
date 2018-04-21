@@ -31,7 +31,7 @@
         </div>
         <div class="selected-media-tasks btn-group-sm text-right">
             <button type="button" class="btn btn-secondary" v-on:click="selectAll">@T["Select All"]</button>
-            <button type="button" class="btn btn-secondary" v-on:click="unSelectAll">@T["Unselect"]</button>
+            <button type="button" class="btn btn-secondary" v-on:click="unSelectAll" v-bind:disabled="selectedMedias.length < 1">@T["Unselect"]</button>
             <button type="button" class="btn btn-secondary" v-on:click="invertSelection">@T["Invert Selection"]</button>            
             <button type="button" class="btn btn-secondary" v-on:click="deleteMediaList" v-bind:disabled="selectedMedias.length < 1">@T["Delete Selected"] ({{ selectedMedias.length}}) </button>
         </div>
