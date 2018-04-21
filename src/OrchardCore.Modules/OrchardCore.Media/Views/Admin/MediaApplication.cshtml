@@ -20,7 +20,7 @@
             <button type="button" class="btn btn-secondary" v-on:click="invertSelection">@T["Invert Selection"]</button>            
         </div>
         <div class="btn-group btn-group-sm text-right mr-2">
-            <button type="button" class="btn btn-secondary" v-on:click="deleteMediaList" v-bind:disabled="selectedMedias.length < 1">@T["Delete Selected"] ({{ selectedMedias.length}}) </button>
+            <button type="button" class="btn btn-secondary" v-on:click="deleteMediaList" v-bind:disabled="selectedMedias.length < 1">@T["Delete Selected"] <span style="min-width:25px; display:inline-block;" >({{ selectedMedias.length}})</span></button>
         </div>
         <div class="btn-group btn-group-sm text-right">
             <label for="fileupload" class="btn btn-sm btn-success fileinput-button upload-button">
