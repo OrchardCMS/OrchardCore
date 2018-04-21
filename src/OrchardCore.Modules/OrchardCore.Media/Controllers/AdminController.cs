@@ -196,6 +196,28 @@ namespace OrchardCore.Media.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> DeleteMediaList(string[] paths)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            {
+                return Unauthorized();
+            }
+
+            if (paths == null)
+            {
+                return NotFound();
+            }
+
+            foreach (var p in paths)
+            {
+                if (await _mediaFileStore.TryDeleteFileAsync(p) == false)
+                    return NotFound();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> CreateFolder(
             string path, string name,
             [FromServices] IAuthorizationService authorizationService)

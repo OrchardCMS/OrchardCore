@@ -33,6 +33,7 @@
             <button type="button" class="btn btn-secondary" v-on:click="selectAll">@T["Select All"]</button>
             <button type="button" class="btn btn-secondary" v-on:click="unSelectAll">@T["Unselect"]</button>
             <button type="button" class="btn btn-secondary" v-on:click="invertSelection">@T["Invert Selection"]</button>            
+            <button type="button" class="btn btn-secondary" v-on:click="deleteMediaList" v-bind:disabled="selectedMedias.length < 1">@T["Delete Selected"] ({{ selectedMedias.length}}) </button>
         </div>
     </nav>
 
@@ -70,6 +71,7 @@
 <input type="hidden" id="createFolderUrl" value="@Url.Action("CreateFolder", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="getMediaItemsUrl" value="@Url.Action("GetMediaItems", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="deleteMediaUrl" value="@Url.Action("DeleteMedia", "Admin", new { area = "OrchardCore.Media" })" />
+<input type="hidden" id="deleteMediaListUrl" value="@Url.Action("DeleteMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="deleteFolderMessage" value="@T["Are you sure you want to delete this folder?"]" />
 <input type="hidden" id="deleteMediaMessage" value="@T["Are you sure you want to delete this media?"]" />
