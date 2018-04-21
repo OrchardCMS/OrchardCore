@@ -66,9 +66,14 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                     $("#mediaApp").show();
                     var modal = $(modalBodyElement).modal();
                     $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
-                        if (mediaApp.selectedMedia != null) {
-                            mediaFieldApp.mediaItems.push(mediaApp.selectedMedia);
+                        if ((mediaApp.selectedMedias.length > 1) && (allowMultiple === false)) {
+                            alert($('#onlyOneItemMessage').val());
+                            mediaFieldApp.mediaItems.push(mediaApp.selectedMedias[0]);
+                        } else {
+                            mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(mediaApp.selectedMedias);
                         }
+                        // we don't want the included medias to be still selected the next time we open the modal.
+                        mediaApp.selectedMedias = [];
 
                         modal.modal('hide');
                         return true;
@@ -89,6 +94,15 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                     }
                 }
                 this.selectedMedia = null;
+            },
+            selectAndDeleteMedia: function (media) {
+                var self = this;
+                self.selectedMedia = media;
+                // setTimeout because sometimes 
+                // removeSelected was called even before the media was set.
+                setTimeout(function () {                    
+                    self.removeSelected();    
+                }, 100);
             }
         },
         watch: {
