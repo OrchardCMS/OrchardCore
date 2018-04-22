@@ -97,7 +97,7 @@ namespace OrchardCore.Mvc
 
             var featureProvider = featureProviders.OfType<ViewsFeatureProvider>().FirstOrDefault();
 
-            if (_hostingEnvironment.IsDevelopment() && featureProvider != null)
+            if (!_hostingEnvironment.IsDevelopment() && featureProvider != null)
             {
                 var moduleNames = _hostingEnvironment.GetApplication().ModuleNames;
                 var moduleFeature = new ViewsFeature();
@@ -106,19 +106,14 @@ namespace OrchardCore.Mvc
                 {
                     var module = _hostingEnvironment.GetModule(name);
 
-                    var precompiledAssemblyFileName = name
-                        + ViewsFeatureProvider.PrecompiledViewsAssemblySuffix
-                        + ".dll";
+                    var precompiledAssemblyPath = Path.Combine(Path.GetDirectoryName(module.Assembly.Location),
+                        module.Assembly.GetName().Name + ViewsFeatureProvider.PrecompiledViewsAssemblySuffix + ".dll");
 
-                    var precompiledAssemblyFilePath = Path.Combine(
-                        Path.GetDirectoryName(module.Assembly.Location),
-                        precompiledAssemblyFileName);
-
-                    if (File.Exists(precompiledAssemblyFilePath))
+                    if (File.Exists(precompiledAssemblyPath))
                     {
                         try
                         {
-                            var assembly = Assembly.LoadFile(precompiledAssemblyFilePath);
+                            var assembly = Assembly.LoadFile(precompiledAssemblyPath);
 
                             featureProvider.PopulateFeature(new AssemblyPart[] { new AssemblyPart(assembly) }, moduleFeature);
 
