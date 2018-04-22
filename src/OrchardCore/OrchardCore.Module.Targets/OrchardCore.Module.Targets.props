@@ -16,9 +16,20 @@
     <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ResolvedRazorCompileToolset>RazorSdk</ResolvedRazorCompileToolset>
+    <EnableDefaultRazorGenerateItems>false</EnableDefaultRazorGenerateItems>
+    <RazorCompileOnBuild>true</RazorCompileOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(MicrosoftAspNetCoreMvcPackageVersion)" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Include="$(ModuleNoneIncludes)" Exclude="$(ModuleNoneExcludes)" />
     <EmbeddedResource Include="**\*" Exclude="$(ModuleDefaultAssetExcludes);$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    <RazorGenerate Include="**\*.cshtml" />
   </ItemGroup>
 
   <!-- Adds a custom .props file to the generated module package -->
@@ -26,9 +37,6 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Package.Build.props" Pack="true">
       <PackagePath>build\$(TargetFramework)\$(PackageId).props</PackagePath>
-    </None>
-    <None Include="**\*.cshtml" Pack="true">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
   </ItemGroup>
 

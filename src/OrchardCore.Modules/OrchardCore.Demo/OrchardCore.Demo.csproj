@@ -2,14 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <ResolvedRazorCompileToolset>RazorSdk</ResolvedRazorCompileToolset>
-    <RazorCompileOnBuild>true</RazorCompileOnBuild>
-    <IncludeContentInPack>false</IncludeContentInPack>
   </PropertyGroup>
-
-  <ItemGroup>
-    <MvcRazorFilesToCompile Include="**\*.cshtml" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Entities.DisplayManagement\OrchardCore.Entities.DisplayManagement.csproj" />
@@ -29,10 +22,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsConfigurationJsonPackageVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.0-preview1-final" />
   </ItemGroup>
 
 </Project>

@@ -84,12 +84,24 @@ namespace OrchardCore.Mvc
 
             featureProviders.AddRange(_viewsFeatureProviders);
 
-            var moduleNames = _hostingEnvironment.GetApplication().ModuleNames;
+            var assemblyParts =
+                new AssemblyPart[]
+                {
+                        new AssemblyPart(Assembly.Load(new AssemblyName(_hostingEnvironment.ApplicationName)))
+                };
+
+            foreach (var provider in featureProviders)
+            {
+                provider.PopulateFeature(assemblyParts, feature);
+            }
 
             var featureProvider = featureProviders.OfType<ViewsFeatureProvider>().FirstOrDefault();
 
-            if (featureProvider != null)
+            if (_hostingEnvironment.IsDevelopment() && featureProvider != null)
             {
+                var moduleNames = _hostingEnvironment.GetApplication().ModuleNames;
+                var moduleFeature = new ViewsFeature();
+
                 foreach (var name in moduleNames)
                 {
                     var module = _hostingEnvironment.GetModule(name);
@@ -108,29 +120,21 @@ namespace OrchardCore.Mvc
                         {
                             var assembly = Assembly.LoadFile(precompiledAssemblyFilePath);
 
-                            featureProvider.PopulateFeature(new AssemblyPart[] { new AssemblyPart(assembly) }, feature);
+                            featureProvider.PopulateFeature(new AssemblyPart[] { new AssemblyPart(assembly) }, moduleFeature);
 
-                            foreach (var descriptor in feature.ViewDescriptors)
+                            foreach (var descriptor in moduleFeature.ViewDescriptors)
                             {
-                                descriptor.RelativePath = "/.Modules/" + name + descriptor.RelativePath;
+                                descriptor.RelativePath = '/' + module.SubPath + descriptor.RelativePath;
+                                feature.ViewDescriptors.Add(descriptor);
                             }
+
+                            moduleFeature.ViewDescriptors.Clear();
                         }
                         catch (FileLoadException)
                         {
                             // Don't throw if assembly cannot be loaded. This can happen if the file is not a managed assembly.
                         }
                     }
-                }
-
-                var assemblyParts =
-                    new AssemblyPart[]
-                    {
-                        new AssemblyPart(Assembly.Load(new AssemblyName(_hostingEnvironment.ApplicationName)))
-                    };
-
-                foreach (var provider in featureProviders)
-                {
-                    provider.PopulateFeature(assemblyParts, feature);
                 }
             }
 
