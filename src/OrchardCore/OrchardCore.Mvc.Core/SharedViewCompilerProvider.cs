@@ -87,7 +87,7 @@ namespace OrchardCore.Mvc
             var assemblyParts =
                 new AssemblyPart[]
                 {
-                        new AssemblyPart(Assembly.Load(new AssemblyName(_hostingEnvironment.ApplicationName)))
+                    new AssemblyPart(Assembly.Load(new AssemblyName(_hostingEnvironment.ApplicationName)))
                 };
 
             foreach (var provider in featureProviders)
