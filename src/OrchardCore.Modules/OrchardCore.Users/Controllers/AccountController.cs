@@ -17,6 +17,7 @@ using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
+
 namespace OrchardCore.Users.Controllers
 {
     [Authorize]
@@ -245,7 +246,7 @@ namespace OrchardCore.Users.Controllers
                 ExternalLoginViewModel model = new ExternalLoginViewModel();
                 IUser existingUser = null;
 
-                model.Email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                model.Email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email);
                 if (model.Email != null)
                     existingUser = await _userManager.FindByEmailAsync(model.Email);
 

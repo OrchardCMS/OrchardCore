@@ -69,7 +69,7 @@ namespace OrchardCore.OpenId.Configuration
             options.SignedOutRedirectUri = settings.SignedOutRedirectUri ?? options.SignedOutRedirectUri;
             options.SignedOutCallbackPath = settings.SignedOutCallbackPath ?? options.SignedOutCallbackPath;
             options.RequireHttpsMetadata = settings.Authority.StartsWith(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
-
+            options.GetClaimsFromUserInfoEndpoint = true;
             options.ResponseMode = settings.ResponseMode;
             options.ResponseType = settings.ResponseType;
 
