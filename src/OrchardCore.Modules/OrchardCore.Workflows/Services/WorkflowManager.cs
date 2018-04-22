@@ -384,7 +384,11 @@ namespace OrchardCore.Workflows.Services
 
             foreach (var blockingActivity in blockingActivities)
             {
-                workflowContext.WorkflowInstanceRecord.BlockingActivities.Add(BlockingActivity.FromActivity(blockingActivity));
+                // Workflows containing with event activities could end up being blocked on the same activity.
+                if (!workflowContext.WorkflowInstanceRecord.BlockingActivities.Any(x => x.ActivityId == blockingActivity.ActivityId))
+                {
+                    workflowContext.WorkflowInstanceRecord.BlockingActivities.Add(BlockingActivity.FromActivity(blockingActivity));
+                }
             }
 
             return blockingActivities;
