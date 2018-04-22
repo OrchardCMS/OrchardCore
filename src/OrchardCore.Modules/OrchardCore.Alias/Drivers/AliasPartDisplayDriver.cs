@@ -21,7 +21,7 @@ namespace OrchardCore.Alias.Drivers
 
         public override IDisplayResult Edit(AliasPart aliasPart)
         {
-            return Shape<AliasPartViewModel>("AliasPart_Edit", m => BuildViewModel(m, aliasPart));
+            return Initialize<AliasPartViewModel>("AliasPart_Edit", m => BuildViewModel(m, aliasPart));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AliasPart model, IUpdateModel updater)

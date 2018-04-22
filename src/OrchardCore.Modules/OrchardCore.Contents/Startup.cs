@@ -72,7 +72,7 @@ namespace OrchardCore.Contents
                 name: "DisplayContentItem",
                 areaName: "OrchardCore.Contents",
                 template: "Contents/ContentItems/{contentItemId}",
-                defaults: new {controller = "Item", action = "Display" }
+                defaults: new { controller = "Item", action = "Display" }
             );
 
             routes.MapAreaRoute(
@@ -117,8 +117,6 @@ namespace OrchardCore.Contents
                 template: "Admin/Contents/ContentItems",
                 defaults: new { controller = "Admin", action = "List" }
             );
-
-
         }
     }
 

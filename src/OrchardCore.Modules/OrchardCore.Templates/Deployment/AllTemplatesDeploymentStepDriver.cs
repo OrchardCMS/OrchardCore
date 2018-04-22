@@ -10,14 +10,14 @@ namespace OrchardCore.Templates.Deployment
         {
             return
                 Combine(
-                    Shape("AllTemplatesDeploymentStep_Summary", step).Location("Summary", "Content"),
-                    Shape("AllTemplatesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+                    View("AllTemplatesDeploymentStep_Summary", step).Location("Summary", "Content"),
+                    View("AllTemplatesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
         public override IDisplayResult Edit(AllTemplatesDeploymentStep step)
         {
-            return Shape("AllTemplatesDeploymentStep_Edit", step).Location("Content");
+            return View("AllTemplatesDeploymentStep_Edit", step).Location("Content");
         }
     }
 }

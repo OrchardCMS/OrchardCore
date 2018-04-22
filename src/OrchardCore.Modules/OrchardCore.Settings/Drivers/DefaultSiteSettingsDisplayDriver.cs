@@ -46,7 +46,7 @@ namespace OrchardCore.Settings.Drivers
         {
 
             return Task.FromResult<IDisplayResult>(
-                    Shape<SiteSettingsViewModel>("Settings_Edit", model =>
+                    Initialize<SiteSettingsViewModel>("Settings_Edit", model =>
                     {
                         model.SiteName = site.SiteName;
                         model.BaseUrl = site.BaseUrl;

@@ -37,14 +37,7 @@ namespace OrchardCore.Email.Services
             {
                 message.From = new MailAddress(_options.DefaultSender);
             }
-
-            var mailMessage = new MailMessage
-            {
-                Subject = message.Subject,
-                Body = message.Body,
-                IsBodyHtml = true
-            };
-
+            
             try
             {
                 using (var client = GetClient())
@@ -55,7 +48,7 @@ namespace OrchardCore.Email.Services
             }
             catch (Exception e)
             {
-                return SmtpResult.Failed(S["An error occured while sending an email: '{0}'", e.Message]);
+                return SmtpResult.Failed(S["An error occurred while sending an email: '{0}'", e.Message]);
             }
         }
 
