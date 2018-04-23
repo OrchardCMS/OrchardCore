@@ -104,6 +104,7 @@ namespace OrchardCore.DynamicCache.Liquid
 
             await dynamicCache.SetCachedValueAsync(cacheContext, content);
 
+            //await writer.WriteAsync(await dynamicCache.BuildEdgeSideIncludeTokenAsync(cacheContext));
             await writer.WriteAsync(content);
 
             return Completion.Normal;

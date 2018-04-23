@@ -30,7 +30,7 @@ namespace OrchardCore.DynamicCache.Services
 
         public async Task<string> GetCachedValueAsync(CacheContext context)
         {
-            context = await GetCachedContextAsync(context);
+            context = await GetCachedContextAsync(context.CacheId);
             if (context == null)
             {
                 // We don't know the context, so we must treat this as a cache miss
@@ -41,14 +41,16 @@ namespace OrchardCore.DynamicCache.Services
 
             var content = await GetCachedStringAsync(cacheKey);
 
-            if (content == null)
-            {
-                return null;
-            }
+            return content;
 
-            // ProcessEdgeSideIncludesAsync will return null if one or more of the ESIs was a cache miss.
-            // This allows the parent (and therefore the ESI) to be re-built and then rechached.
-            return await ProcessEdgeSideIncludesAsync(content);
+            //if (content == null)
+            //{
+            //    return null;
+            //}
+
+            //// ProcessEdgeSideIncludesAsync will return null if one or more of the ESIs was a cache miss.
+            //// This allows the parent (and therefore the ESI) to be re-built and then rechached.
+            //return await ReplaceEdgeSideIncludeTokensAsync(content);
         }
         
         public async Task SetCachedValueAsync(CacheContext context, string value)
@@ -60,7 +62,7 @@ namespace OrchardCore.DynamicCache.Services
             
             await Task.WhenAll(
                 SetCachedValueAsync(cacheKey, value, context),
-                SetCachedValueAsync(await GetCacheContextCacheKey(context), esi, context)
+                SetCachedValueAsync(GetCacheContextCacheKey(context.CacheId), esi, context)
             );
         }
 
@@ -92,7 +94,7 @@ namespace OrchardCore.DynamicCache.Services
         /// Substitutes all ESIs with their actual content
         /// </summary>
         /// <returns>The content string with all ESIs substituted out for their actualy content, or null if one or more of the ESIs is a cache miss</returns>
-        public async Task<string> ProcessEdgeSideIncludesAsync(string content)
+        public async Task<string> ReplaceEdgeSideIncludeTokensAsync(string content)
         {
             StringBuilder result = null;
 
@@ -130,7 +132,7 @@ namespace OrchardCore.DynamicCache.Services
                         return null;
                     }
 
-                    htmlContent = await ProcessEdgeSideIncludesAsync(htmlContent);
+                    htmlContent = await ReplaceEdgeSideIncludeTokensAsync(htmlContent);
 
                     if (htmlContent == null)
                     {
@@ -154,6 +156,13 @@ namespace OrchardCore.DynamicCache.Services
             return content;
         }
 
+        public Task<string> BuildEdgeSideIncludeTokenAsync(CacheContext context)
+        {
+            var serializedInclude = JsonConvert.SerializeObject(EdgeSideInclude.FromCacheContext(context));
+
+            return Task.FromResult("[[cache esi='" + serializedInclude + "']]");
+        }
+
         private async Task<string> GetCacheKey(CacheContext context)
         {
             var cacheEntries = context.Contexts.Count > 0
@@ -169,9 +178,9 @@ namespace OrchardCore.DynamicCache.Services
             return key;
         }
 
-        private async Task<string> GetCacheContextCacheKey(CacheContext context)
+        private string GetCacheContextCacheKey(string cacheId)
         {
-            return "cachecontext-" + await GetCacheKey(context);
+            return "cachecontext-" + cacheId;
         }
 
         private async Task<string> GetCachedStringAsync(string cacheKey)
@@ -190,9 +199,9 @@ namespace OrchardCore.DynamicCache.Services
             return Encoding.UTF8.GetString(bytes);
         }
 
-        private async Task<CacheContext> GetCachedContextAsync(CacheContext context)
+        private async Task<CacheContext> GetCachedContextAsync(string cacheId)
         {
-            var cachedValue = await GetCachedStringAsync(await GetCacheContextCacheKey(context));
+            var cachedValue = await GetCachedStringAsync(GetCacheContextCacheKey(cacheId));
 
             if (cachedValue == null)
             {

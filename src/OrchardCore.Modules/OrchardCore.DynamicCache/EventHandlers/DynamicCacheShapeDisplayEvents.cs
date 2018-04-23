@@ -73,7 +73,7 @@ namespace OrchardCore.DynamicCache.EventHandlers
                         content = sw.ToString();
                     }
 
-                    content = await _dynamicCacheService.ProcessEdgeSideIncludesAsync(content);
+                    //content = await _dynamicCacheService.ReplaceEdgeSideIncludeTokensAsync(content);
                     context.ChildContent = new HtmlString(content);
                 }
                 else

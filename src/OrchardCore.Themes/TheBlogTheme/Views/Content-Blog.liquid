@@ -18,7 +18,6 @@
 
 {% shape_remove_item Model.Content "BodyPart" %}
 
-{% comment %}
 {% cache "a" %}
     A {{ "now" | date: "%T" }} (No Duration) <br />
     {% cache "a1", dependencies: "a1", vary_by: "user", expires_after: "0:5:0" %}
@@ -31,14 +30,11 @@
         {% endcache %}
     {% endcache %}
 {% endcache %}
-{% endcomment %}
 
 {% cache "blog" %}
 {{ Model.Content | shape_render }}
 {% endcache %}
 
-{% comment %}
 {% cache "nochildren" %}
 This cache block should have no contexts or tags
 {% endcache %}
-{% endcomment %}
