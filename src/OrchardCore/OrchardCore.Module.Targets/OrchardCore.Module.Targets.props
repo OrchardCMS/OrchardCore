@@ -29,7 +29,7 @@
   <ItemGroup>
     <None Include="$(ModuleNoneIncludes)" Exclude="$(ModuleNoneExcludes)" />
     <EmbeddedResource Include="**\*" Exclude="$(ModuleDefaultAssetExcludes);$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
-    <RazorGenerate Include="**\*.cshtml" />
+    <RazorGenerate Include="@(EmbeddedResource->WithMetadataValue('Extension', '.cshtml'))" />
   </ItemGroup>
 
   <!-- Adds a custom .props file to the generated module package -->
