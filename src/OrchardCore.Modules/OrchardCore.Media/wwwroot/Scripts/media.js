@@ -228,7 +228,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
 
                         var paths = [];
                         for (var i = 0; i < mediaList.length; i++) {
-                            paths.push(encodeURIComponent(mediaList[i].mediaPath));
+                            paths.push(mediaList[i].mediaPath);
                         }
 
                         $.ajax({
