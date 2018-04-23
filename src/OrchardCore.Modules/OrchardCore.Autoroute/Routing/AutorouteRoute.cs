@@ -78,22 +78,25 @@ namespace OrchardCore.Autoroute.Routing
             }
 
             var contentManager = context.RequestServices.GetService<IContentManager>();
-            var contentItem = await contentManager.GetAsync(contentItemId);
+            var contentItem = await contentManager.GetAsync(contentItemId, VersionOptions.Latest);
             return contentItem == null ? null : (await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem))?.DisplayRouteValues;
         }
 
         private async Task EnsureRouteData(RouteContext context, string contentItemId)
         {
             var displayRoutes = await GetContentItemDisplayRoutes(context.HttpContext, contentItemId);
+
             if (displayRoutes == null)
             {
                 return;
             }
+
             foreach (var key in _keys)
             {
                 if (displayRoutes.ContainsKey(key))
                     context.RouteData.Values[key] = displayRoutes[key];
             }
+
             context.RouteData.Routers.Add(_target);
         }
     }
