@@ -12,49 +12,49 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Controllers
 {
-    public class WorkflowController : Controller
+    public class HttpWorkflow : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IWorkflowManager _workflowManager;
-        private readonly IWorkflowTypeStore _workflowDefinitionStore;
-        private readonly IWorkflowStore _workflowInstanceStore;
+        private readonly IWorkflowTypeStore _workflowTypeStore;
+        private readonly IWorkflowStore _workflowStore;
         private readonly ISecurityTokenService _securityTokenService;
-        private readonly ILogger<WorkflowController> _logger;
+        private readonly ILogger<HttpWorkflow> _logger;
 
-        public WorkflowController(
+        public HttpWorkflow(
             IAuthorizationService authorizationService,
             IWorkflowManager workflowManager,
-            IWorkflowTypeStore workflowDefinitionStore,
-            IWorkflowStore workflowInstanceStore,
+            IWorkflowTypeStore workflowTypeStore,
+            IWorkflowStore workflowStore,
             ISecurityTokenService securityTokenService,
-            ILogger<WorkflowController> logger
+            ILogger<HttpWorkflow> logger
         )
         {
             _authorizationService = authorizationService;
             _workflowManager = workflowManager;
-            _workflowDefinitionStore = workflowDefinitionStore;
-            _workflowInstanceStore = workflowInstanceStore;
+            _workflowTypeStore = workflowTypeStore;
+            _workflowStore = workflowStore;
             _securityTokenService = securityTokenService;
             _logger = logger;
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateUrl(int workflowDefinitionId, string activityId)
+        public async Task<IActionResult> GenerateUrl(int workflowTypeId, string activityId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
                 return Unauthorized();
             }
 
-            var workflowDefinition = await _workflowDefinitionStore.GetAsync(workflowDefinitionId);
+            var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
 
-            if (workflowDefinition == null)
+            if (workflowType == null)
             {
                 return NotFound();
             }
 
-            var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowDefinition.WorkflowTypeId, activityId), TimeSpan.FromDays(7));
-            var url = Url.Action("Invoke", "Workflow", new { token = token });
+            var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowType.WorkflowTypeId, activityId), TimeSpan.FromDays(7));
+            var url = Url.Action("Invoke", "HttpWorkflow", new { token = token });
 
             return Ok(url);
         }
@@ -68,30 +68,30 @@ namespace OrchardCore.Workflows.Http.Controllers
                 return NotFound();
             }
 
-            var workflowDefinition = await _workflowDefinitionStore.GetAsync(payload.WorkflowId);
+            var workflowType = await _workflowTypeStore.GetAsync(payload.WorkflowId);
 
-            if (workflowDefinition == null)
+            if (workflowType == null)
             {
                 return NotFound();
             }
 
-            var startActivity = workflowDefinition.Activities.FirstOrDefault(x => x.ActivityId == payload.ActivityId);
+            var startActivity = workflowType.Activities.FirstOrDefault(x => x.ActivityId == payload.ActivityId);
 
             if (startActivity.IsStart)
             {
-                await _workflowManager.StartWorkflowAsync(workflowDefinition, startActivity);
+                await _workflowManager.StartWorkflowAsync(workflowType, startActivity);
             }
             else
             {
-                var workflowInstances = await _workflowInstanceStore.ListAsync(workflowDefinition.WorkflowTypeId, new[] { startActivity.ActivityId });
+                var workflows = await _workflowStore.ListAsync(workflowType.WorkflowTypeId, new[] { startActivity.ActivityId });
 
-                foreach (var workflowInstance in workflowInstances)
+                foreach (var workflow in workflows)
                 {
-                    var blockingActivity = workflowInstance.BlockingActivities.FirstOrDefault(x => x.ActivityId == startActivity.ActivityId);
+                    var blockingActivity = workflow.BlockingActivities.FirstOrDefault(x => x.ActivityId == startActivity.ActivityId);
 
                     if (blockingActivity != null)
                     {
-                        await _workflowManager.ResumeWorkflowAsync(workflowInstance, blockingActivity);
+                        await _workflowManager.ResumeWorkflowAsync(workflow, blockingActivity);
                     }
                 }
             }
@@ -113,10 +113,10 @@ namespace OrchardCore.Workflows.Http.Controllers
             CopyTo(Request.Query, input);
 
             // If a specific workflow instance was provided, then resume that workflow instance.
-            if (!String.IsNullOrWhiteSpace(payload.WorkflowInstanceId))
+            if (!String.IsNullOrWhiteSpace(payload.WorkflowId))
             {
-                var workflowInstance = await _workflowInstanceStore.GetAsync(payload.WorkflowInstanceId);
-                var signalActivity = workflowInstance?.BlockingActivities.FirstOrDefault(x => x.Name == SignalEvent.EventName);
+                var workflow = await _workflowStore.GetAsync(payload.WorkflowId);
+                var signalActivity = workflow?.BlockingActivities.FirstOrDefault(x => x.Name == SignalEvent.EventName);
 
                 if (signalActivity == null)
                 {
@@ -124,7 +124,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                 }
 
                 // Resume the workflow instance.
-                await _workflowManager.ResumeWorkflowAsync(workflowInstance, signalActivity, input);
+                await _workflowManager.ResumeWorkflowAsync(workflow, signalActivity, input);
             }
             else
             {

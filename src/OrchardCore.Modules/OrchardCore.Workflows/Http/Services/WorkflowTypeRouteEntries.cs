@@ -7,16 +7,16 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Services
 {
-    public class WorkflowDefinitionRouteEntries : WorkflowRouteEntriesBase, IWorkflowDefinitionRouteEntries
+    internal class WorkflowTypeRouteEntries : WorkflowRouteEntriesBase, IWorkflowTypeRouteEntries
     {
-        public static IEnumerable<WorkflowRoutesEntry> GetWorkflowDefinitionRoutesEntries(WorkflowType workflowDefinition, IActivityLibrary activityLibrary)
+        public static IEnumerable<WorkflowRoutesEntry> GetWorkflowTypeRoutesEntries(WorkflowType workflowType, IActivityLibrary activityLibrary)
         {
-            return workflowDefinition.Activities.Where(x => x.IsStart && x.Name == HttpRequestFilterEvent.EventName).Select(x =>
+            return workflowType.Activities.Where(x => x.IsStart && x.Name == HttpRequestFilterEvent.EventName).Select(x =>
             {
                 var activity = activityLibrary.InstantiateActivity<HttpRequestFilterEvent>(x);
                 var entry = new WorkflowRoutesEntry
                 {
-                    WorkflowId = workflowDefinition.Id.ToString(),
+                    WorkflowId = workflowType.Id.ToString(),
                     ActivityId = x.ActivityId,
                     HttpMethod = activity.HttpMethod,
                     RouteValues = activity.RouteValues

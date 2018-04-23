@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Workflows.ViewModels
 {
-    public class WorkflowDefinitionPropertiesViewModel
+    public class WorkflowTypePropertiesViewModel
     {
         public int Id { get; set; }
 

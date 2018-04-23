@@ -13,8 +13,8 @@ namespace OrchardCore.Workflows.Models
 
         public WorkflowExecutionContext
         (
-            WorkflowType workflowTypeRecord,
-            Workflow workflowRecord,
+            WorkflowType workflowType,
+            Workflow workflow,
             IDictionary<string, object> input,
             IDictionary<string, object> output,
             IDictionary<string, object> properties,
@@ -33,24 +33,24 @@ namespace OrchardCore.Workflows.Models
             Properties = properties ?? new Dictionary<string, object>();
             ExecutedActivities = new Stack<ExecutedActivity>(executedActivities ?? new List<ExecutedActivity>());
             LastResult = lastResult;
-            WorkflowTypeRecord = workflowTypeRecord;
-            WorkflowRecord = workflowRecord;
+            WorkflowType = workflowType;
+            Workflow = workflow;
             Activities = activities.ToDictionary(x => x.ActivityRecord.ActivityId);
         }
 
-        public Workflow WorkflowRecord { get; }
-        public WorkflowType WorkflowTypeRecord { get; }
+        public Workflow Workflow { get; }
+        public WorkflowType WorkflowType { get; }
         public IDictionary<string, ActivityContext> Activities { get; }
 
-        public string WorkflowInstanceId
+        public string WorkflowId
         {
-            get => WorkflowRecord.WorkflowId;
+            get => Workflow.WorkflowId;
         }
 
         public string CorrelationId
         {
-            get => WorkflowRecord.CorrelationId;
-            set => WorkflowRecord.CorrelationId = value;
+            get => Workflow.CorrelationId;
+            set => Workflow.CorrelationId = value;
         }
 
         /// <summary>
@@ -75,8 +75,8 @@ namespace OrchardCore.Workflows.Models
 
         public WorkflowStatus Status
         {
-            get => WorkflowRecord.Status;
-            set => WorkflowRecord.Status = value;
+            get => Workflow.Status;
+            set => Workflow.Status = value;
         }
 
         /// <summary>
@@ -91,18 +91,18 @@ namespace OrchardCore.Workflows.Models
         
         public void Fault(Exception exception, ActivityContext activityContext)
         {
-            WorkflowRecord.Status = WorkflowStatus.Faulted;
-            WorkflowRecord.FaultMessage = exception.Message;
+            Workflow.Status = WorkflowStatus.Faulted;
+            Workflow.FaultMessage = exception.Message;
         }
 
         public IEnumerable<Transition> GetInboundTransitions(string activityId)
         {
-            return WorkflowTypeRecord.Transitions.Where(x => x.DestinationActivityId == activityId).ToList();
+            return WorkflowType.Transitions.Where(x => x.DestinationActivityId == activityId).ToList();
         }
 
         public IEnumerable<Transition> GetOutboundTransitions(string activityId)
         {
-            return WorkflowTypeRecord.Transitions.Where(x => x.SourceActivityId == activityId).ToList();
+            return WorkflowType.Transitions.Where(x => x.SourceActivityId == activityId).ToList();
         }
 
         /// <summary>

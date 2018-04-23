@@ -72,7 +72,7 @@ namespace OrchardCore.Workflows.Controllers
 
             if (!Url.IsLocalUrl(returnUrl))
             {
-                returnUrl = Url.Action(nameof(Index), "WorkflowDefinition");
+                returnUrl = Url.Action(nameof(Index), "WorkflowType");
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
@@ -104,18 +104,18 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowInstanceRecord = await _workflowStore.GetAsync(id);
+            var workflow = await _workflowStore.GetAsync(id);
 
-            if (workflowInstanceRecord == null)
+            if (workflow == null)
             {
                 return NotFound();
             }
 
-            var workflowDefinitionRecord = await _workflowTypeStore.GetAsync(workflowInstanceRecord.WorkflowTypeId);
-            var blockingActivities = workflowInstanceRecord.BlockingActivities.ToDictionary(x => x.ActivityId);
-            var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowDefinitionRecord, workflowInstanceRecord);
-            var activityContexts = await Task.WhenAll(workflowDefinitionRecord.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x, x.Properties)));
-            var activityDesignShapes = (await Task.WhenAll(activityContexts.Select(async x => await BuildActivityDisplayAsync(x, workflowDefinitionRecord.Id, blockingActivities.ContainsKey(x.ActivityRecord.ActivityId), "Design")))).ToList();
+            var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
+            var blockingActivities = workflow.BlockingActivities.ToDictionary(x => x.ActivityId);
+            var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowType, workflow);
+            var activityContexts = await Task.WhenAll(workflowType.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x, x.Properties)));
+            var activityDesignShapes = (await Task.WhenAll(activityContexts.Select(async x => await BuildActivityDisplayAsync(x, workflowType.Id, blockingActivities.ContainsKey(x.ActivityRecord.ActivityId), "Design")))).ToList();
             var activitiesDataQuery = activityContexts.Select(x => new
             {
                 Id = x.ActivityRecord.ActivityId,
@@ -124,25 +124,25 @@ namespace OrchardCore.Workflows.Controllers
                 Name = x.ActivityRecord.Name,
                 IsStart = x.ActivityRecord.IsStart,
                 IsEvent = x.Activity.IsEvent(),
-                IsBlocking = workflowInstanceRecord.BlockingActivities.Any(a => a.ActivityId == x.ActivityRecord.ActivityId),
+                IsBlocking = workflow.BlockingActivities.Any(a => a.ActivityId == x.ActivityRecord.ActivityId),
                 Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray()
             });
-            var workflowDefinitionData = new
+            var workflowTypeData = new
             {
-                Id = workflowDefinitionRecord.Id,
-                Name = workflowDefinitionRecord.Name,
-                IsEnabled = workflowDefinitionRecord.IsEnabled,
+                Id = workflowType.Id,
+                Name = workflowType.Name,
+                IsEnabled = workflowType.IsEnabled,
                 Activities = activitiesDataQuery.ToArray(),
-                Transitions = workflowDefinitionRecord.Transitions
+                Transitions = workflowType.Transitions
             };
 
             var jsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
-            var viewModel = new WorkflowInstanceViewModel
+            var viewModel = new WorkflowViewModel
             {
-                WorkflowInstance = workflowInstanceRecord,
-                WorkflowDefinition = workflowDefinitionRecord,
-                WorkflowDefinitionJson = JsonConvert.SerializeObject(workflowDefinitionData, Formatting.None, jsonSerializerSettings),
-                WorkflowInstanceJson = JsonConvert.SerializeObject(workflowInstanceRecord, Formatting.Indented, jsonSerializerSettings),
+                Workflow = workflow,
+                WorkflowType = workflowType,
+                WorkflowTypeJson = JsonConvert.SerializeObject(workflowTypeData, Formatting.None, jsonSerializerSettings),
+                WorkflowJson = JsonConvert.SerializeObject(workflow, Formatting.Indented, jsonSerializerSettings),
                 ActivityDesignShapes = activityDesignShapes
             };
             return View(viewModel);
@@ -156,25 +156,25 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowInstanceRecord = await _workflowStore.GetAsync(id);
+            var workflow = await _workflowStore.GetAsync(id);
 
-            if (workflowInstanceRecord == null)
+            if (workflow == null)
             {
                 return NotFound();
             }
             else
             {
-                var workflowDefinitionRecord = await _workflowTypeStore.GetAsync(workflowInstanceRecord.WorkflowTypeId);
-                await _workflowStore.DeleteAsync(workflowInstanceRecord);
-                _notifier.Success(T["Workflow instance {0} has been deleted.", id]);
-                return RedirectToAction("Index", new { workflowDefinitionId = workflowDefinitionRecord.Id });
+                var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
+                await _workflowStore.DeleteAsync(workflow);
+                _notifier.Success(T["Workflow {0} has been deleted.", id]);
+                return RedirectToAction("Index", new { workflowTypeId = workflowType.Id });
             }
         }
 
         [HttpPost]
         [ActionName(nameof(Index))]
         [FormValueRequired("BulkAction")]
-        public async Task<IActionResult> BulkEdit(WorkflowBulkAction bulkAction, PagerParameters pagerParameters, int workflowDefinitionId)
+        public async Task<IActionResult> BulkEdit(WorkflowBulkAction bulkAction, PagerParameters pagerParameters, int workflowTypeId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -196,12 +196,12 @@ namespace OrchardCore.Workflows.Controllers
                 case WorkflowBulkAction.Delete:
                     foreach (var entry in checkedEntries)
                     {
-                        var workflowInstance = await _workflowStore.GetAsync(entry.Id);
+                        var workflow = await _workflowStore.GetAsync(entry.Id);
 
-                        if (workflowInstance != null)
+                        if (workflow != null)
                         {
-                            await _workflowStore.DeleteAsync(workflowInstance);
-                            _notifier.Success(T["Workflow instance {0} has been deleted.", workflowInstance.WorkflowId]);
+                            await _workflowStore.DeleteAsync(workflow);
+                            _notifier.Success(T["Workflow {0} has been deleted.", workflow.WorkflowId]);
                         }
                     }
                     break;
@@ -209,16 +209,16 @@ namespace OrchardCore.Workflows.Controllers
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            return RedirectToAction("Index", new { workflowDefinitionId, page = pagerParameters.Page, pageSize = pagerParameters.PageSize });
+            return RedirectToAction("Index", new { workflowTypeId, page = pagerParameters.Page, pageSize = pagerParameters.PageSize });
         }
 
-        private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, int workflowDefinitionId, bool isBlocking, string displayType)
+        private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, int workflowTypeId, bool isBlocking, string displayType)
         {
             dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, this, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}ReadOnly";
             activityShape.Activity = activityContext.Activity;
             activityShape.ActivityRecord = activityContext.ActivityRecord;
-            activityShape.WorkflowDefinitionId = workflowDefinitionId;
+            activityShape.WorkflowTypeId = workflowTypeId;
             activityShape.IsBlocking = isBlocking;
             return activityShape;
         }

@@ -5,12 +5,12 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Handlers
 {
-    public class WorkflowDefinitionRoutesHandler : WorkflowTypeHandlerBase
+    internal class WorkflowTypeRoutesHandler : WorkflowTypeHandlerBase
     {
-        private readonly IWorkflowDefinitionRouteEntries _workflowRouteEntries;
+        private readonly IWorkflowTypeRouteEntries _workflowRouteEntries;
         private readonly IActivityLibrary _activityLibrary;
 
-        public WorkflowDefinitionRoutesHandler(IWorkflowDefinitionRouteEntries workflowRouteEntries, IActivityLibrary activityLibrary)
+        public WorkflowTypeRoutesHandler(IWorkflowTypeRouteEntries workflowRouteEntries, IActivityLibrary activityLibrary)
         {
             _workflowRouteEntries = workflowRouteEntries;
             _activityLibrary = activityLibrary;
@@ -36,7 +36,7 @@ namespace OrchardCore.Workflows.Http.Handlers
 
         private void UpdateRouteEntries(WorkflowTypeContext context)
         {
-            var entries = WorkflowDefinitionRouteEntries.GetWorkflowDefinitionRoutesEntries(context.WorkflowType, _activityLibrary);
+            var entries = WorkflowTypeRouteEntries.GetWorkflowTypeRoutesEntries(context.WorkflowType, _activityLibrary);
             _workflowRouteEntries.AddEntries(entries);
         }
     }

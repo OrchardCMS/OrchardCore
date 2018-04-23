@@ -5,20 +5,20 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Handlers
 {
-    public class WorkflowInstanceRoutesHandler : WorkflowHandlerBase
+    internal class WorkflowRoutesHandler : WorkflowHandlerBase
     {
         private readonly IWorkflowInstanceRouteEntries _workflowRouteEntries;
-        private readonly IWorkflowTypeStore _workflowDefinitionStore;
+        private readonly IWorkflowTypeStore _workflowTypeStore;
         private readonly IActivityLibrary _activityLibrary;
 
-        public WorkflowInstanceRoutesHandler(
+        public WorkflowRoutesHandler(
             IWorkflowInstanceRouteEntries workflowRouteEntries,
-            IWorkflowTypeStore workflowDefinitionStore,
+            IWorkflowTypeStore workflowTypeStore,
             IActivityLibrary activityLibrary
         )
         {
             _workflowRouteEntries = workflowRouteEntries;
-            _workflowDefinitionStore = workflowDefinitionStore;
+            _workflowTypeStore = workflowTypeStore;
             _activityLibrary = activityLibrary;
         }
 
@@ -40,9 +40,9 @@ namespace OrchardCore.Workflows.Http.Handlers
 
         private async Task UpdateRouteEntriesAsync(WorkflowContext context)
         {
-            var workflowInstanceRecord = context.Workflow;
-            var workflowDefinitionRecord = await _workflowDefinitionStore.GetAsync(workflowInstanceRecord.WorkflowTypeId);
-            var entries = WorkflowInstanceRouteEntries.GetWorkflowInstanceRoutesEntries(workflowDefinitionRecord, context.Workflow, _activityLibrary);
+            var workflow = context.Workflow;
+            var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
+            var entries = WorkflowRouteEntries.GetWorkflowRoutesEntries(workflowType, context.Workflow, _activityLibrary);
 
             _workflowRouteEntries.AddEntries(entries);
         }

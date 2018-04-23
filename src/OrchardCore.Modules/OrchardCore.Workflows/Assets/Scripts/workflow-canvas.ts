@@ -5,7 +5,7 @@
 abstract class WorkflowCanvas {
     private minCanvasHeight: number = 400;
 
-    constructor(protected container: HTMLElement, protected workflowType: Workflows.Workflow) {
+    constructor(protected container: HTMLElement, protected workflowType: Workflows.WorkflowType) {
     }
 
     protected getActivityElements = (): JQuery => {

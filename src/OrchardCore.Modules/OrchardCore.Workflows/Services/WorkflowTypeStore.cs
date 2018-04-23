@@ -9,13 +9,13 @@ using YesSql;
 
 namespace OrchardCore.Workflows.Services
 {
-    public class WorkflowDefinitionStore : IWorkflowTypeStore
+    public class WorkflowTypeStore : IWorkflowTypeStore
     {
         private readonly ISession _session;
         private readonly IEnumerable<IWorkflowTypeEventHandler> _handlers;
-        private readonly ILogger<WorkflowDefinitionStore> _logger;
+        private readonly ILogger<WorkflowTypeStore> _logger;
 
-        public WorkflowDefinitionStore(ISession session, IEnumerable<IWorkflowTypeEventHandler> handlers, ILogger<WorkflowDefinitionStore> logger)
+        public WorkflowTypeStore(ISession session, IEnumerable<IWorkflowTypeEventHandler> handlers, ILogger<WorkflowTypeStore> logger)
         {
             _session = session;
             _handlers = handlers;
@@ -32,20 +32,20 @@ namespace OrchardCore.Workflows.Services
             return await _session.GetAsync<WorkflowType>(ids.ToArray());
         }
 
-        public async Task<WorkflowType> GetAsync(string workflowDefinitionId)
+        public async Task<WorkflowType> GetAsync(string workflowTypeId)
         {
-            return await _session.Query<WorkflowType, WorkflowDefinitionIndex>(x => x.WorkflowDefinitionId == workflowDefinitionId).FirstOrDefaultAsync();
+            return await _session.Query<WorkflowType, WorkflowTypeIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<WorkflowType>> ListAsync()
         {
-            return await _session.Query<WorkflowType, WorkflowDefinitionIndex>().ListAsync();
+            return await _session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync();
         }
 
         public async Task<IList<WorkflowType>> GetByStartActivityAsync(string activityName)
         {
             var query = await _session
-                .Query<WorkflowType, WorkflowDefinitionStartActivitiesIndex>(index =>
+                .Query<WorkflowType, WorkflowTypeStartActivitiesIndex>(index =>
                     index.StartActivityName == activityName &&
                     index.IsEnabled)
                 .ListAsync();
@@ -53,38 +53,38 @@ namespace OrchardCore.Workflows.Services
             return query.ToList();
         }
 
-        public async Task SaveAsync(WorkflowType workflowDefinition)
+        public async Task SaveAsync(WorkflowType workflowType)
         {
-            var isNew = workflowDefinition.Id == 0;
-            _session.Save(workflowDefinition);
+            var isNew = workflowType.Id == 0;
+            _session.Save(workflowType);
 
             if (isNew)
             {
-                var context = new WorkflowTypeCreatedContext(workflowDefinition);
+                var context = new WorkflowTypeCreatedContext(workflowType);
                 await _handlers.InvokeAsync(async x => await x.CreatedAsync(context), _logger);
             }
             else
             {
-                var context = new WorkflowTypeUpdatedContext(workflowDefinition);
+                var context = new WorkflowTypeUpdatedContext(workflowType);
                 await _handlers.InvokeAsync(async x => await x.UpdatedAsync(context), _logger);
             }
         }
 
-        public async Task DeleteAsync(WorkflowType workflowDefinition)
+        public async Task DeleteAsync(WorkflowType workflowType)
         {
             // TODO: Remove this when versioning is implemented.
 
-            // Delete workflow instances first.
-            var workflowInstances = await _session.Query<Workflow, WorkflowInstanceIndex>(x => x.WorkflowDefinitionId == workflowDefinition.WorkflowTypeId).ListAsync();
+            // Delete workflows first.
+            var workflows = await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeId == workflowType.WorkflowTypeId).ListAsync();
 
-            foreach (var workflowInstance in workflowInstances)
+            foreach (var workflow in workflows)
             {
-                _session.Delete(workflowInstance);
+                _session.Delete(workflow);
             }
 
-            // Then delete the workflow definition.
-            _session.Delete(workflowDefinition);
-            var context = new WorkflowTypeDeletedContext(workflowDefinition);
+            // Then delete the workflow type.
+            _session.Delete(workflowType);
+            var context = new WorkflowTypeDeletedContext(workflowType);
             await _handlers.InvokeAsync(async x => await x.DeletedAsync(context), _logger);
         }
     }

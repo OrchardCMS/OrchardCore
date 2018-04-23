@@ -2,9 +2,9 @@
 
 $(() => {
     const generateWorkflowUrl = function () {
-        const workflowDefinitionId: string = $('[data-workflow-type-id]').data('workflow-type-id');
+        const workflowTypeId: string = $('[data-workflow-type-id]').data('workflow-type-id');
         const activityId: string = $('[data-activity-id]').data('activity-id');
-        const generateUrl: string = $('[data-generate-url]').data('generate-url') + `?workflowDefinitionId=${workflowDefinitionId}&activityId=${activityId}`;
+        const generateUrl: string = $('[data-generate-url]').data('generate-url') + `?workflowTypeId=${workflowTypeId}&activityId=${activityId}`;
         const antiforgeryHeaderName: string = $('[data-antiforgery-header-name]').data('antiforgery-header-name');
         const antiforgeryToken: string = $('[data-antiforgery-token]').data('antiforgery-token');
         const headers: any = {};

@@ -3,16 +3,16 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
 {
-    public class WorkflowInstanceIdGenerator : IWorkflowIdGenerator
+    public class WorkflowIdGenerator : IWorkflowIdGenerator
     {
         private readonly IIdGenerator _idGenerator;
 
-        public WorkflowInstanceIdGenerator(IIdGenerator idGenerator)
+        public WorkflowIdGenerator(IIdGenerator idGenerator)
         {
             _idGenerator = idGenerator;
         }
 
-        public string GenerateUniqueId(Workflow workflowInstanceRecord)
+        public string GenerateUniqueId(Workflow workflow)
         {
             return _idGenerator.GenerateUniqueId();
         }

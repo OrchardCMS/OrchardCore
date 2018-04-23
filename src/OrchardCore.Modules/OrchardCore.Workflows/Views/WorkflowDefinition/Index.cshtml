@@ -1,19 +1,19 @@
-@model WorkflowDefinitionIndexViewModel
+@model WorkflowTypeIndexViewModel
 @using OrchardCore.Workflows.ViewModels;
 
-<h1>@RenderTitleSegments(T["Manage Workflow Definitions"])</h1>
+<h1>@RenderTitleSegments(T["Manage Workflow Types"])</h1>
 
 
 <nav class="admin-toolbar">
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-            <a asp-action="EditProperties" asp-route-returnUrl="@Context.Request.Path" asp- class="btn btn-primary" role="button"> @T["Create Workflow Definition"]</a>
+            <a asp-action="EditProperties" asp-route-returnUrl="@Context.Request.Path" asp- class="btn btn-primary" role="button"> @T["Create Workflow Type"]</a>
             <div class="btn-group" role="group">
                 <button id="bulk-actions-button" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     @T["Bulk Actions"]
                 </button>
                 <div class="dropdown-menu" aria-labelledby="bulk-actions-button">
-                    <button type="submit" name="BulkAction" value="@WorkflowDefinitionBulkAction.Delete" form="workflow-types-form" class="dropdown-item"> @T["Delete"]</a>
+                    <button type="submit" name="BulkAction" value="@WorkflowTypeBulkAction.Delete" form="workflow-types-form" class="dropdown-item"> @T["Delete"]</a>
                 </div>
             </div>
         </li>
@@ -24,35 +24,35 @@
     </form>
 </nav>
 
-@if (Model.WorkflowDefinitions.Any())
+@if (Model.WorkflowTypes.Any())
 {
     using (Html.BeginForm(FormMethod.Post, new { id = "workflow-types-form" }))
     {
         <ul class="list-group">
-            @for (var i = 0; i < Model.WorkflowDefinitions.Count; i++)
+            @for (var i = 0; i < Model.WorkflowTypes.Count; i++)
             {
-                var entry = Model.WorkflowDefinitions[i];
+                var entry = Model.WorkflowTypes[i];
                 <li class="list-group-item">
                     <div class="properties">
                         <div class="related">
-                            <a asp-action="Edit" asp-route-id="@entry.WorkflowDefinition.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="EditProperties" asp-route-id="@entry.WorkflowDefinition.Id" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary btn-sm">@T["Properties"]</a>
-                            <a asp-action="Delete" asp-route-id="@entry.WorkflowDefinition.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="EditProperties" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary btn-sm">@T["Properties"]</a>
+                            <a asp-action="Delete" asp-route-id="@entry.WorkflowType.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
 
-                        <input type="checkbox" asp-for="@Model.WorkflowDefinitions[i].IsChecked" />
-                        <input type="hidden" asp-for="@Model.WorkflowDefinitions[i].Id" />
-                        <input type="hidden" asp-for="@Model.WorkflowDefinitions[i].Name" />
-                        <a asp-action="Edit" asp-route-id="@entry.WorkflowDefinition.Id">@entry.Name</a>
+                        <input type="checkbox" asp-for="@Model.WorkflowTypes[i].IsChecked" />
+                        <input type="hidden" asp-for="@Model.WorkflowTypes[i].Id" />
+                        <input type="hidden" asp-for="@Model.WorkflowTypes[i].Name" />
+                        <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id">@entry.Name</a>
 
                         <div class="metadata">
-                            @if (!entry.WorkflowDefinition.IsEnabled)
+                            @if (!entry.WorkflowType.IsEnabled)
                             {
                                 <span class="badge badge-secondary">@T["disabled"]</span>
                             }
-                            @if (entry.WorkflowInstanceCount > 0)
+                            @if (entry.WorkflowCount > 0)
                             {
-                                <a asp-action="Index" asp-controller="WorkflowInstance" asp-route-workflowDefinitionId="@entry.WorkflowDefinition.Id" class="badge badge-info">@T.Plural(entry.WorkflowInstanceCount, "1 instance", "{0} instances", entry.WorkflowInstanceCount)</a>
+                                <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@entry.WorkflowType.Id" class="badge badge-info">@T.Plural(entry.WorkflowCount, "1 instance", "{0} instances", entry.WorkflowCount)</a>
                             }
                         </div>
                     </div>
@@ -66,6 +66,6 @@
 else
 {
     <div class="alert alert-info" role="alert">
-        @T["<strong>Nothing here!</strong> There are no workflow definitions at the moment."]
+        @T["<strong>Nothing here!</strong> There are no workflow types at the moment."]
     </div>
 }

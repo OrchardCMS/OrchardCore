@@ -15,7 +15,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.ActionConstraints;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Activities;
@@ -36,8 +35,8 @@ namespace OrchardCore.Workflows.Controllers
         private readonly ISession _session;
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowManager _workflowManager;
-        private readonly IWorkflowTypeStore _workflowDefinitionStore;
-        private readonly IWorkflowTypeIdGenerator _workflowDefinitionIdGenerator;
+        private readonly IWorkflowTypeStore _workflowTypeStore;
+        private readonly IWorkflowTypeIdGenerator _workflowTypeIdGenerator;
         private readonly IAuthorizationService _authorizationService;
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
@@ -53,8 +52,8 @@ namespace OrchardCore.Workflows.Controllers
             ISession session,
             IActivityLibrary activityLibrary,
             IWorkflowManager workflowManager,
-            IWorkflowTypeStore workflowDefinitionStore,
-            IWorkflowTypeIdGenerator workflowDefinitionIdGenerator,
+            IWorkflowTypeStore workflowTypeStore,
+            IWorkflowTypeIdGenerator workflowTypeIdGenerator,
             IAuthorizationService authorizationService,
             IActivityDisplayManager activityDisplayManager,
             IShapeFactory shapeFactory,
@@ -68,8 +67,8 @@ namespace OrchardCore.Workflows.Controllers
             _session = session;
             _activityLibrary = activityLibrary;
             _workflowManager = workflowManager;
-            _workflowDefinitionStore = workflowDefinitionStore;
-            _workflowDefinitionIdGenerator = workflowDefinitionIdGenerator;
+            _workflowTypeStore = workflowTypeStore;
+            _workflowTypeIdGenerator = workflowTypeIdGenerator;
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
@@ -95,7 +94,7 @@ namespace OrchardCore.Workflows.Controllers
                 options = new WorkflowTypeIndexOptions();
             }
 
-            var query = _session.Query<WorkflowType, WorkflowDefinitionIndex>();
+            var query = _session.Query<WorkflowType, WorkflowTypeIndex>();
 
             switch (options.Filter)
             {
@@ -118,13 +117,13 @@ namespace OrchardCore.Workflows.Controllers
 
             var count = await query.CountAsync();
 
-            var workflowDefinitions = await query
+            var workflowTypes = await query
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            var workflowDefinitionIds = workflowDefinitions.Select(x => x.WorkflowTypeId).ToList();
-            var workflowInstanceGroups = (await _session.QueryIndex<WorkflowInstanceIndex>(x => x.WorkflowDefinitionId.IsIn(workflowDefinitionIds)).ListAsync()).GroupBy(x => x.WorkflowDefinitionId).ToDictionary(x => x.Key);
+            var workflowTypeIds = workflowTypes.Select(x => x.WorkflowTypeId).ToList();
+            var workflowGroups = (await _session.QueryIndex<WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds)).ListAsync()).GroupBy(x => x.WorkflowTypeId).ToDictionary(x => x.Key);
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -135,12 +134,12 @@ namespace OrchardCore.Workflows.Controllers
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
             var model = new WorkflowTypeIndexViewModel
             {
-                WorkflowTypes = workflowDefinitions
+                WorkflowTypes = workflowTypes
                     .Select(x => new WorkflowTypeEntry
                     {
                         WorkflowType = x,
                         Id = x.Id,
-                        WorkflowCount = workflowInstanceGroups.ContainsKey(x.WorkflowTypeId) ? workflowInstanceGroups[x.WorkflowTypeId].Count() : 0,
+                        WorkflowCount = workflowGroups.ContainsKey(x.WorkflowTypeId) ? workflowGroups[x.WorkflowTypeId].Count() : 0,
                         Name = x.Name
                     })
                     .ToList(),
@@ -176,12 +175,12 @@ namespace OrchardCore.Workflows.Controllers
                 case WorkflowTypeBulkAction.Delete:
                     foreach (var entry in checkedEntries)
                     {
-                        var workflowDefinition = await _workflowDefinitionStore.GetAsync(entry.Id);
+                        var workflowType = await _workflowTypeStore.GetAsync(entry.Id);
 
-                        if (workflowDefinition != null)
+                        if (workflowType != null)
                         {
-                            await _workflowDefinitionStore.DeleteAsync(workflowDefinition);
-                            _notifier.Success(H["Workflow {0} has been deleted.", workflowDefinition.Name]);
+                            await _workflowTypeStore.DeleteAsync(workflowType);
+                            _notifier.Success(H["Workflow {0} has been deleted.", workflowType.Name]);
                         }
                     }
                     break;
@@ -202,7 +201,7 @@ namespace OrchardCore.Workflows.Controllers
 
             if (id == null)
             {
-                return View(new WorkflowDefinitionPropertiesViewModel
+                return View(new WorkflowTypePropertiesViewModel
                 {
                     IsEnabled = true,
                     ReturnUrl = returnUrl
@@ -210,15 +209,15 @@ namespace OrchardCore.Workflows.Controllers
             }
             else
             {
-                var workflowDefinition = await _session.GetAsync<WorkflowType>(id.Value);
+                var workflowType = await _session.GetAsync<WorkflowType>(id.Value);
 
-                return View(new WorkflowDefinitionPropertiesViewModel
+                return View(new WorkflowTypePropertiesViewModel
                 {
-                    Id = workflowDefinition.Id,
-                    Name = workflowDefinition.Name,
-                    IsEnabled = workflowDefinition.IsEnabled,
-                    IsSingleton = workflowDefinition.IsSingleton,
-                    DeleteFinishedWorkflows = workflowDefinition.DeleteFinishedWorkflows,
+                    Id = workflowType.Id,
+                    Name = workflowType.Name,
+                    IsEnabled = workflowType.IsEnabled,
+                    IsSingleton = workflowType.IsSingleton,
+                    DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
                     ReturnUrl = returnUrl
                 });
             }
@@ -226,7 +225,7 @@ namespace OrchardCore.Workflows.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> EditProperties(WorkflowDefinitionPropertiesViewModel viewModel, int? id)
+        public async Task<IActionResult> EditProperties(WorkflowTypePropertiesViewModel viewModel, int? id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -239,32 +238,32 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var isNew = id == null;
-            var workflowDefinitionRecord = default(WorkflowType);
+            var workflowType = default(WorkflowType);
 
             if (isNew)
             {
-                workflowDefinitionRecord = new WorkflowType();
-                workflowDefinitionRecord.WorkflowTypeId = _workflowDefinitionIdGenerator.GenerateUniqueId(workflowDefinitionRecord);
+                workflowType = new WorkflowType();
+                workflowType.WorkflowTypeId = _workflowTypeIdGenerator.GenerateUniqueId(workflowType);
             }
             else
             {
-                workflowDefinitionRecord = await _session.GetAsync<WorkflowType>(id.Value);
+                workflowType = await _session.GetAsync<WorkflowType>(id.Value);
 
-                if (workflowDefinitionRecord == null)
+                if (workflowType == null)
                 {
                     return NotFound();
                 }
             }
 
-            workflowDefinitionRecord.Name = viewModel.Name?.Trim();
-            workflowDefinitionRecord.IsEnabled = viewModel.IsEnabled;
-            workflowDefinitionRecord.IsSingleton = viewModel.IsSingleton;
-            workflowDefinitionRecord.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
+            workflowType.Name = viewModel.Name?.Trim();
+            workflowType.IsEnabled = viewModel.IsEnabled;
+            workflowType.IsSingleton = viewModel.IsSingleton;
+            workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
 
-            await _workflowDefinitionStore.SaveAsync(workflowDefinitionRecord);
+            await _workflowTypeStore.SaveAsync(workflowType);
 
             return isNew
-                ? RedirectToAction("Edit", new { workflowDefinitionRecord.Id })
+                ? RedirectToAction("Edit", new { workflowType.Id })
                 : Url.IsLocalUrl(viewModel.ReturnUrl)
                    ? (IActionResult)Redirect(viewModel.ReturnUrl)
                    : RedirectToAction("Index");
@@ -279,13 +278,13 @@ namespace OrchardCore.Workflows.Controllers
 
             var newLocalId = string.IsNullOrWhiteSpace(localId) ? Guid.NewGuid().ToString() : localId;
             var availableActivities = _activityLibrary.ListActivities();
-            var workflowDefinitionRecord = await _session.GetAsync<WorkflowType>(id);
-            var workflowInstance = _workflowManager.NewWorkflowInstance(workflowDefinitionRecord);
-            var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowDefinitionRecord, workflowInstance);
-            var activityContexts = await Task.WhenAll(workflowDefinitionRecord.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x, x.Properties)));
+            var workflowType = await _session.GetAsync<WorkflowType>(id);
+            var workflow = _workflowManager.NewWorkflow(workflowType);
+            var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowType, workflow);
+            var activityContexts = await Task.WhenAll(workflowType.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x, x.Properties)));
             var activityThumbnailDisplayTasks = availableActivities.Select(async (x, i) => await BuildActivityDisplay(x, i, id, newLocalId, "Thumbnail"));
             var activityDesignDisplayTasks = activityContexts.Select(async (x, i) => await BuildActivityDisplay(x, i, id, newLocalId, "Design"));
-            var workflowInstanceCount = await _session.QueryIndex<WorkflowInstanceIndex>(x => x.WorkflowDefinitionId == workflowDefinitionRecord.WorkflowTypeId).CountAsync();
+            var workflowCount = await _session.QueryIndex<WorkflowIndex>(x => x.WorkflowTypeId == workflowType.WorkflowTypeId).CountAsync();
 
             await Task.WhenAll(activityThumbnailDisplayTasks.Concat(activityDesignDisplayTasks));
 
@@ -301,39 +300,39 @@ namespace OrchardCore.Workflows.Controllers
                 IsEvent = x.Activity.IsEvent(),
                 Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray()
             });
-            var workflowDefinitionData = new
+            var workflowTypeData = new
             {
-                Id = workflowDefinitionRecord.Id,
-                Name = workflowDefinitionRecord.Name,
-                IsEnabled = workflowDefinitionRecord.IsEnabled,
+                Id = workflowType.Id,
+                Name = workflowType.Name,
+                IsEnabled = workflowType.IsEnabled,
                 Activities = activitiesDataQuery.ToArray(),
-                Transitions = workflowDefinitionRecord.Transitions
+                Transitions = workflowType.Transitions
             };
-            var viewModel = new WorkflowDefinitionViewModel
+            var viewModel = new WorkflowTypeViewModel
             {
-                WorkflowDefinition = workflowDefinitionRecord,
-                WorkflowDefinitionJson = JsonConvert.SerializeObject(workflowDefinitionData, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }),
+                WorkflowType = workflowType,
+                WorkflowTypeJson = JsonConvert.SerializeObject(workflowTypeData, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }),
                 ActivityThumbnailShapes = activityThumbnailShapes,
                 ActivityDesignShapes = activityDesignShapes,
                 ActivityCategories = _activityLibrary.ListCategories().ToList(),
                 LocalId = newLocalId,
                 LoadLocalState = !string.IsNullOrWhiteSpace(localId),
-                WorkflowInstanceCount = workflowInstanceCount
+                WorkflowCount = workflowCount
             };
             return View(viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(WorkflowDefinitionUpdateModel model)
+        public async Task<IActionResult> Edit(WorkflowTypeUpdateModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
                 return Unauthorized();
             }
 
-            var workflowDefinitionRecord = await _workflowDefinitionStore.GetAsync(model.Id);
+            var workflowType = await _workflowTypeStore.GetAsync(model.Id);
             dynamic state = JObject.Parse(model.State);
-            var currentActivities = workflowDefinitionRecord.Activities.ToDictionary(x => x.ActivityId);
+            var currentActivities = workflowType.Activities.ToDictionary(x => x.ActivityId);
             var postedActivities = ((IEnumerable<dynamic>)state.activities).ToDictionary(x => (string)x.id);
             var removedActivityIdsQuery =
                 from activityId in currentActivities.Keys
@@ -345,7 +344,7 @@ namespace OrchardCore.Workflows.Controllers
             foreach (var activityId in removedActivityIds)
             {
                 var activityToRemove = currentActivities[activityId];
-                workflowDefinitionRecord.Activities.Remove(activityToRemove);
+                workflowType.Activities.Remove(activityToRemove);
                 currentActivities.Remove(activityId);
             }
 
@@ -359,10 +358,10 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             // Update transitions.
-            workflowDefinitionRecord.Transitions.Clear();
+            workflowType.Transitions.Clear();
             foreach (var transitionState in state.transitions)
             {
-                workflowDefinitionRecord.Transitions.Add(new Transition
+                workflowType.Transitions.Add(new Transition
                 {
                     SourceActivityId = transitionState.sourceActivityId,
                     DestinationActivityId = transitionState.destinationActivityId,
@@ -370,9 +369,9 @@ namespace OrchardCore.Workflows.Controllers
                 });
             }
 
-            await _workflowDefinitionStore.SaveAsync(workflowDefinitionRecord);
+            await _workflowTypeStore.SaveAsync(workflowType);
             await _session.CommitAsync();
-            _notifier.Success(H["Workflow Definition has been saved."]);
+            _notifier.Success(H["Workflow type has been saved."]);
             return RedirectToAction(nameof(Edit), new { id = model.Id });
         }
 
@@ -384,39 +383,39 @@ namespace OrchardCore.Workflows.Controllers
                 return Unauthorized();
             }
 
-            var workflowDefinition = await _workflowDefinitionStore.GetAsync(id);
+            var workflowType = await _workflowTypeStore.GetAsync(id);
 
-            if (workflowDefinition == null)
+            if (workflowType == null)
             {
                 return NotFound();
             }
 
-            await _workflowDefinitionStore.DeleteAsync(workflowDefinition);
-            _notifier.Success(H["Workflow definition {0} deleted", workflowDefinition.Name]);
+            await _workflowTypeStore.DeleteAsync(workflowType);
+            _notifier.Success(H["Workflow type {0} deleted", workflowType.Name]);
 
             return RedirectToAction("Index");
         }
 
-        private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, int workflowDefinitionId, string localId, string displayType)
+        private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, int workflowTypeId, string localId, string displayType)
         {
             dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activity, this, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}";
             activityShape.Activity = activity;
-            activityShape.WorkflowDefinitionId = workflowDefinitionId;
+            activityShape.WorkflowTypeId = workflowTypeId;
             activityShape.Index = index;
-            activityShape.ReturnUrl = Url.Action(nameof(Edit), new { id = workflowDefinitionId, localId = localId });
+            activityShape.ReturnUrl = Url.Action(nameof(Edit), new { id = workflowTypeId, localId = localId });
             return activityShape;
         }
 
-        private async Task<dynamic> BuildActivityDisplay(ActivityContext activityContext, int index, int workflowDefinitionId, string localId, string displayType)
+        private async Task<dynamic> BuildActivityDisplay(ActivityContext activityContext, int index, int workflowTypeId, string localId, string displayType)
         {
             dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, this, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}";
             activityShape.Activity = activityContext.Activity;
             activityShape.ActivityRecord = activityContext.ActivityRecord;
-            activityShape.WorkflowDefinitionId = workflowDefinitionId;
+            activityShape.WorkflowTypeId = workflowTypeId;
             activityShape.Index = index;
-            activityShape.ReturnUrl = Url.Action(nameof(Edit), new { id = workflowDefinitionId, localId = localId });
+            activityShape.ReturnUrl = Url.Action(nameof(Edit), new { id = workflowTypeId, localId = localId });
             return activityShape;
         }
     }

@@ -28,23 +28,23 @@ namespace OrchardCore.Workflows
         {
             services.AddDataProtection();
             services.AddIdGeneration();
-            services.AddSingleton<IWorkflowTypeIdGenerator, WorkflowDefinitionIdGenerator>();
-            services.AddSingleton<IWorkflowIdGenerator, WorkflowInstanceIdGenerator>();
+            services.AddSingleton<IWorkflowTypeIdGenerator, WorkflowTypeIdGenerator>();
+            services.AddSingleton<IWorkflowIdGenerator, WorkflowIdGenerator>();
             services.AddSingleton<IActivityIdGenerator, ActivityIdGenerator>();
 
             services.AddScoped(typeof(Resolver<>));
             services.AddScoped<ISecurityTokenService, SecurityTokenService>();
             services.AddScoped<IActivityLibrary, ActivityLibrary>();
-            services.AddScoped<IWorkflowTypeStore, WorkflowDefinitionStore>();
-            services.AddScoped<IWorkflowStore, WorkflowInstanceStore>();
+            services.AddScoped<IWorkflowTypeStore, WorkflowTypeStore>();
+            services.AddScoped<IWorkflowStore, WorkflowStore>();
             services.AddScoped<IWorkflowManager, WorkflowManager>();
             services.AddScoped<IActivityDisplayManager, ActivityDisplayManager>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<IActivity>, MissingActivityDisplay>();
-            services.AddSingleton<IIndexProvider, WorkflowDefinitionIndexProvider>();
-            services.AddSingleton<IIndexProvider, WorkflowInstanceIndexProvider>();
+            services.AddSingleton<IIndexProvider, WorkflowTypeIndexProvider>();
+            services.AddSingleton<IIndexProvider, WorkflowIndexProvider>();
             services.AddScoped<IWorkflowExecutionContextHandler, DefaultWorkflowExecutionContextHandler>();
             services.AddScoped<IWorkflowExpressionEvaluator, LiquidWorkflowExpressionEvaluator>();
             services.AddScoped<IWorkflowScriptEvaluator, JavaScriptWorkflowScriptEvaluator>();
@@ -67,38 +67,31 @@ namespace OrchardCore.Workflows
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaRoute(
-                name: "SignalWorkflow",
-                areaName: "OrchardCore.Workflows",
-                template: "Workflows/Trigger",
-                defaults: new { controller = "Signal", action = "Trigger" }
-            );
-
-            routes.MapAreaRoute(
                 name: "AddActivity",
                 areaName: "OrchardCore.Workflows",
-                template: "Admin/Workflows/Definitions/{workflowDefinitionId}/Activity/{activityName}/Add",
+                template: "Admin/Workflows/Definitions/{workflowTypeId}/Activity/{activityName}/Add",
                 defaults: new { controller = "Activity", action = "Create" }
             );
 
             routes.MapAreaRoute(
                 name: "EditActivity",
                 areaName: "OrchardCore.Workflows",
-                template: "Admin/Workflows/Definitions/{workflowDefinitionId}/Activity/{activityId}/Edit",
+                template: "Admin/Workflows/Definitions/{workflowTypeId}/Activity/{activityId}/Edit",
                 defaults: new { controller = "Activity", action = "Edit" }
             );
 
             routes.MapAreaRoute(
-                name: "WorkflowInstances",
+                name: "Workflows",
                 areaName: "OrchardCore.Workflows",
-                template: "Admin/Workflows/Definitions/{workflowDefinitionId}/Instances/{action}",
-                defaults: new { controller = "WorkflowInstance", action = "Index" }
+                template: "Admin/Workflows/Definitions/{workflowTypeId}/Instances/{action}",
+                defaults: new { controller = "Workflow", action = "Index" }
             );
 
             routes.MapAreaRoute(
-                name: "WorkflowDefinitions",
+                name: "WorkflowTypes",
                 areaName: "OrchardCore.Workflows",
                 template: "Admin/Workflows/Definitions/{action}/{id?}",
-                defaults: new { controller = "WorkflowDefinition", action = "Index" }
+                defaults: new { controller = "WorkflowType", action = "Index" }
             );
         }
     }

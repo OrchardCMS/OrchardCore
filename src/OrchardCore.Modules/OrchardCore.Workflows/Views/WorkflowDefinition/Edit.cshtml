@@ -1,12 +1,12 @@
-@model WorkflowDefinitionViewModel
+@model WorkflowTypeViewModel
 @using OrchardCore.Workflows.ViewModels;
 
-<h1>@RenderTitleSegments(Model.WorkflowDefinition.Name)</h1>
+<h1>@RenderTitleSegments(Model.WorkflowType.Name)</h1>
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a asp-action="Index">@T["Workflow Definitions"]</a></li>
-        <li class="breadcrumb-item active" aria-current="page">@Model.WorkflowDefinition.Name</li>
+        <li class="breadcrumb-item"><a asp-action="Index">@T["Workflow Types"]</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.WorkflowType.Name</li>
     </ol>
 </nav>
 
@@ -23,8 +23,8 @@
     </ul>
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-            <a class="btn btn-secondary btn-sm" asp-action="EditProperties" asp-route-id="@Model.WorkflowDefinition.Id" asp-route-returnUrl="@Context.Request.Path">@T["Properties"]</a>
-            <a class="btn btn-secondary btn-sm" asp-action="Index" asp-controller="WorkflowInstance" asp-route-workflowDefinitionId="@Model.WorkflowDefinition.Id" asp-route-returnUrl="@Context.Request.Path">@T["Instances"] <span class="badge badge-light">@Model.WorkflowInstanceCount</span></a>
+            <a class="btn btn-secondary btn-sm" asp-action="EditProperties" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@Context.Request.Path">@T["Properties"]</a>
+            <a class="btn btn-secondary btn-sm" asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id" asp-route-returnUrl="@Context.Request.Path">@T["Workflows"] <span class="badge badge-light">@Model.WorkflowCount</span></a>
         </li>
     </ul>
 </nav>
@@ -35,7 +35,7 @@
     <fieldset class="form-group">
         <div class="workflow-container">
             <div class="workflow-canvas-container">
-                <div class="workflow-canvas" data-workflow-type="@Model.WorkflowDefinitionJson" data-workflow-delete-activity-prompt="@T["Are you sure you want to delete this activity?"]" data-workflow-local-id="@Model.LocalId" data-workflow-load-local-state="@Model.LoadLocalState.ToString().ToLower()">
+                <div class="workflow-canvas" data-workflow-type="@Model.WorkflowTypeJson" data-workflow-delete-activity-prompt="@T["Are you sure you want to delete this activity?"]" data-workflow-local-id="@Model.LocalId" data-workflow-load-local-state="@Model.LoadLocalState.ToString().ToLower()">
                     @foreach (var activityShape in Model.ActivityDesignShapes)
                     {
                         @await DisplayAsync(activityShape)

@@ -43,7 +43,7 @@ namespace OrchardCore.Tests.Workflows
             var output = new StringWriter(stringBuilder);
             var addTask = new AddTask(scriptEvaluator, localizer.Object);
             var writeLineTask = new WriteLineTask(scriptEvaluator, localizer.Object, output);
-            var workflowDefinition = new WorkflowType
+            var workflowType = new WorkflowType
             {
                 Id = 1,
                 Activities = new List<ActivityRecord>
@@ -61,12 +61,12 @@ namespace OrchardCore.Tests.Workflows
                 }
             };
 
-            var workflowManager = CreateWorkflowManager(serviceProvider, new IActivity[] { addTask, writeLineTask }, scriptEvaluator, expressionEvaluator, workflowDefinition);
+            var workflowManager = CreateWorkflowManager(serviceProvider, new IActivity[] { addTask, writeLineTask }, workflowType);
             var a = 10d;
             var b = 22d;
             var expectedResult = (a + b).ToString() + System.Environment.NewLine;
 
-            var workflowContext = await workflowManager.StartWorkflowAsync(workflowDefinition, input: new RouteValueDictionary(new { A = a, B = b }));
+            var workflowContext = await workflowManager.StartWorkflowAsync(workflowType, input: new RouteValueDictionary(new { A = a, B = b }));
             var actualResult = stringBuilder.ToString();
 
             Assert.Equal(expectedResult, actualResult);
@@ -119,18 +119,16 @@ namespace OrchardCore.Tests.Workflows
 
         private WorkflowManager CreateWorkflowManager(
             IServiceProvider serviceProvider,
-            IEnumerable<IActivity> activities, 
-            IWorkflowScriptEvaluator scriptEvaluator, 
-            IWorkflowExpressionEvaluator expressionEvaluator,
-            WorkflowType workflowDefinition
+            IEnumerable<IActivity> activities,
+            WorkflowType workflowType
         )
         {
             var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
             var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
             var activityLibrary = new Mock<IActivityLibrary>();
-            var workflowDefinitionStore = new Mock<IWorkflowTypeStore>();
-            var workflowInstanceStore = new Mock<IWorkflowStore>();
-            var workflowInstanceIdGenerator = new Mock<IWorkflowIdGenerator>();
+            var workflowTypeStore = new Mock<IWorkflowTypeStore>();
+            var workflowStore = new Mock<IWorkflowStore>();
+            var workflowIdGenerator = new Mock<IWorkflowIdGenerator>();
             var workflowManagerLogger = new Mock<ILogger<WorkflowManager>>();
             var workflowContextLogger = new Mock<ILogger<WorkflowExecutionContext>>();
             var missingActivityLogger = new Mock<ILogger<MissingActivity>>();
@@ -138,11 +136,9 @@ namespace OrchardCore.Tests.Workflows
             var clock = new Mock<IClock>();
             var workflowManager = new WorkflowManager(
                 activityLibrary.Object,
-                workflowDefinitionStore.Object,
-                workflowInstanceStore.Object,
-                workflowInstanceIdGenerator.Object,
-                expressionEvaluator,
-                scriptEvaluator,
+                workflowTypeStore.Object,
+                workflowStore.Object,
+                workflowIdGenerator.Object,
                 workflowContextHandlers,
                 workflowValueSerializers,
                 workflowManagerLogger.Object,
@@ -156,7 +152,7 @@ namespace OrchardCore.Tests.Workflows
                 activityLibrary.Setup(x => x.InstantiateActivity(activity.Name)).Returns(activity);
             }
 
-            workflowDefinitionStore.Setup(x => x.GetAsync(workflowDefinition.Id)).Returns(Task.FromResult(workflowDefinition));
+            workflowTypeStore.Setup(x => x.GetAsync(workflowType.Id)).Returns(Task.FromResult(workflowType));
 
             return workflowManager;
         }
