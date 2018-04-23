@@ -58,6 +58,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     bus.$on('beforeFolderAdded', function (folder) {
                         self.loadFolder(folder);
                     });
+
+                    bus.$on('mediaMoved', function (folder) {                        
+                        self.loadFolder(self.selectedFolder);
+                    });
                 },
                 computed: {
                     isHome: function () {
@@ -103,6 +107,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     item.open = false;
                                 });
                                 self.mediaItems = data;
+                                self.selectedMedias = [];
                             },
                             error: function (error) {
                                 console.error(error.responseText);
@@ -138,7 +143,9 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         }
                     },
                     isMediaSelected: function (media) {
-                        var result = this.selectedMedias.indexOf(media) > -1;
+                        var result = this.selectedMedias.some(function (element, index, array) {
+                            return element.url.toLowerCase() === media.url.toLowerCase();
+                        });
                         return result;
                     },
                     deleteFolder: function () {
@@ -245,6 +252,23 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 console.error(error.responseText);
                             }
                         });
+                    },
+                    handleDragStart: function (media, e) {
+                        // first part of move media to folder:
+                        // prepare the data that will be handled by the folder component on drop event
+                        var mediaNames = [];
+                        this.selectedMedias.forEach(function (item) {
+                            mediaNames.push(item.name);
+                        });
+
+                        // in case the user drags an unselected item, we select it first
+                        if (this.isMediaSelected(media) == false) {
+                            mediaNames.push(media.name);
+                            this.selectedMedias.push(media);
+                        }
+                        e.dataTransfer.setData('mediaNames', JSON.stringify(mediaNames));
+                        e.dataTransfer.setData('sourceFolder', this.selectedFolder.path);
+                        e.dataTransfer.effectAllowed = 'move';
                     }
                 }
             });
@@ -293,7 +317,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
 // <folder> component
 Vue.component('folder', {
     template: '\
-        <li :class="{selected: selected}">\
+        <li :class="{selected: selected}" ondragenter="event.preventDefault();" ondragover="event.preventDefault();" v-on:drop.stop="moveMediaToFolder(model, $event)" >\
             <div>\
                 <a href="javascript:;" v-on:click="toggle" class="expand" v-bind:class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
                 <a href="javascript:;" v-on:click="select">\
@@ -376,6 +400,51 @@ Vue.component('folder', {
         },
         select: function () {
             mediaApp.selectFolder(this.model);
+        },
+        moveMediaToFolder: function (folder, e) {           
+            var self = this;
+            var mediaNames = JSON.parse(e.dataTransfer.getData('mediaNames')); 
+
+            if (mediaNames.length < 1) {
+                return;
+            }
+
+            var sourceFolder = e.dataTransfer.getData('sourceFolder');
+            var targetFolder = folder.path;
+
+            if (sourceFolder === '') {
+                sourceFolder = 'root';
+            }
+
+            if (targetFolder === '') {
+                targetFolder = 'root';
+            }
+
+            if (sourceFolder === targetFolder) {
+                alert($('#sameFolderMessage').val());
+                return;
+            }
+
+            if (!confirm($('#moveMediaMessage').val())) {
+                return;
+            }            
+
+            $.ajax({
+                url: $('#moveMediaListUrl').val(),
+                method: 'POST',
+                data: {
+                    __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                    mediaNames: mediaNames,
+                    sourceFolder: sourceFolder,
+                    targetFolder: targetFolder
+                },
+                success: function (data) {
+                    bus.$emit('mediaMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there
+                },
+                error: function (error) {
+                    console.error(error.responseText);
+                }
+            });
         }
     }
 });

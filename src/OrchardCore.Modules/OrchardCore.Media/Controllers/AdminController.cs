@@ -218,6 +218,35 @@ namespace OrchardCore.Media.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> MoveMediaList(string[] mediaNames, string sourceFolder, string targetFolder)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            {
+                return Unauthorized();
+            }
+
+            if ((mediaNames == null) || (mediaNames.Length < 1) 
+                || string.IsNullOrEmpty(sourceFolder)
+                || string.IsNullOrEmpty(targetFolder))
+            {
+                return NotFound();
+            }
+
+            sourceFolder = sourceFolder == "root" ? string.Empty : sourceFolder;
+            targetFolder = targetFolder == "root" ? string.Empty : targetFolder;
+
+
+            foreach (var name in mediaNames)
+            {
+                var sourcePath = _mediaFileStore.Combine(sourceFolder, name);
+                var targetPath = _mediaFileStore.Combine( targetFolder, name);
+                await _mediaFileStore.MoveFileAsync(sourcePath, targetPath);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> CreateFolder(
             string path, string name,
             [FromServices] IAuthorizationService authorizationService)

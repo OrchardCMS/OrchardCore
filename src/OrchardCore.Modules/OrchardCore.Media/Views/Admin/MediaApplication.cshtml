@@ -46,7 +46,8 @@
                     :key="media.name"
                     class="media-container-main-list-item"
                     v-bind:class="{selected: isMediaSelected(media)}"
-                    v-on:click="toggleSelectionOfMedia(media)">
+                    v-on:click.stop="toggleSelectionOfMedia(media)"
+                    draggable="true" v-on:dragstart="handleDragStart(media, $event)">
                     <div class="thumb-container">
                         <img v-bind:src="media.url + '?width=224&height=240'" />
                     </div>
@@ -66,9 +67,12 @@
 <input type="hidden" id="getMediaItemsUrl" value="@Url.Action("GetMediaItems", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="deleteMediaUrl" value="@Url.Action("DeleteMedia", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="deleteMediaListUrl" value="@Url.Action("DeleteMediaList", "Admin", new { area = "OrchardCore.Media" })" />
+<input type="hidden" id="moveMediaListUrl" value="@Url.Action("MoveMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="deleteFolderMessage" value="@T["Are you sure you want to delete this folder?"]" />
 <input type="hidden" id="deleteMediaMessage" value="@T["Are you sure you want to delete this media?"]" />
+<input type="hidden" id="moveMediaMessage" value="@T["Are you sure you want to move the selected media to this folder?"]" />
+<input type="hidden" id="sameFolderMessage" value="@T["The media is already on this folder"]" />
 
 <div class="modal" id="createFolderModal" tabindex="-1" role="dialog" aria-labelledby="createFolderModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
