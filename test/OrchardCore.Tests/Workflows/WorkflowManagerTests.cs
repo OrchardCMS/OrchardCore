@@ -43,7 +43,7 @@ namespace OrchardCore.Tests.Workflows
             var output = new StringWriter(stringBuilder);
             var addTask = new AddTask(scriptEvaluator, localizer.Object);
             var writeLineTask = new WriteLineTask(scriptEvaluator, localizer.Object, output);
-            var workflowDefinition = new WorkflowDefinition
+            var workflowDefinition = new WorkflowType
             {
                 Id = 1,
                 Activities = new List<ActivityRecord>
@@ -122,15 +122,15 @@ namespace OrchardCore.Tests.Workflows
             IEnumerable<IActivity> activities, 
             IWorkflowScriptEvaluator scriptEvaluator, 
             IWorkflowExpressionEvaluator expressionEvaluator,
-            WorkflowDefinition workflowDefinition
+            WorkflowType workflowDefinition
         )
         {
             var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
             var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
             var activityLibrary = new Mock<IActivityLibrary>();
-            var workflowDefinitionStore = new Mock<IWorkflowDefinitionStore>();
-            var workflowInstanceStore = new Mock<IWorkflowInstanceStore>();
-            var workflowInstanceIdGenerator = new Mock<IWorkflowInstanceIdGenerator>();
+            var workflowDefinitionStore = new Mock<IWorkflowTypeStore>();
+            var workflowInstanceStore = new Mock<IWorkflowStore>();
+            var workflowInstanceIdGenerator = new Mock<IWorkflowIdGenerator>();
             var workflowManagerLogger = new Mock<ILogger<WorkflowManager>>();
             var workflowContextLogger = new Mock<ILogger<WorkflowExecutionContext>>();
             var missingActivityLogger = new Mock<ILogger<MissingActivity>>();

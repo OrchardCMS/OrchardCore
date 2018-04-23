@@ -3,12 +3,12 @@ using System.Collections.Generic;
 namespace OrchardCore.Workflows.Models
 {
     /// <summary>
-    /// Represents a workflow definition.
+    /// Represents a workflow type.
     /// </summary>
-    public class WorkflowDefinition
+    public class WorkflowType
     {
         public int Id { get; set; }
-        public string WorkflowDefinitionId { get; set; }
+        public string WorkflowTypeId { get; set; }
 
         /// <summary>
         /// The name of this workflow.

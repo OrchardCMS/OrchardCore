@@ -3,22 +3,22 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.ViewModels
 {
-    public class WorkflowInstanceIndexViewModel
+    public class WorkflowIndexViewModel
     {
-        public WorkflowDefinition WorkflowDefinition { get; set; }
-        public IList<WorkflowInstanceEntry> WorkflowInstances { get; set; }
+        public WorkflowType WorkflowType { get; set; }
+        public IList<WorkflowEntry> Workflows { get; set; }
         public dynamic Pager { get; set; }
         public string ReturnUrl { get; set; }
     }
 
-    public class WorkflowInstanceEntry
+    public class WorkflowEntry
     {
-        public WorkflowInstance WorkflowInstance { get; set; }
+        public Workflow Workflow { get; set; }
         public int Id { get; set; }
         public bool IsChecked { get; set; }
     }
 
-    public enum WorkflowInstanceBulkAction
+    public enum WorkflowBulkAction
     {
         None,
         Delete

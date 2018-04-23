@@ -35,7 +35,7 @@
     <fieldset class="form-group">
         <div class="workflow-container">
             <div class="workflow-canvas-container">
-                <div class="workflow-canvas" data-workflow-definition="@Model.WorkflowDefinitionJson" data-workflow-delete-activity-prompt="@T["Are you sure you want to delete this activity?"]" data-workflow-local-id="@Model.LocalId" data-workflow-load-local-state="@Model.LoadLocalState.ToString().ToLower()">
+                <div class="workflow-canvas" data-workflow-type="@Model.WorkflowDefinitionJson" data-workflow-delete-activity-prompt="@T["Are you sure you want to delete this activity?"]" data-workflow-local-id="@Model.LocalId" data-workflow-load-local-state="@Model.LoadLocalState.ToString().ToLower()">
                     @foreach (var activityShape in Model.ActivityDesignShapes)
                     {
                         @await DisplayAsync(activityShape)

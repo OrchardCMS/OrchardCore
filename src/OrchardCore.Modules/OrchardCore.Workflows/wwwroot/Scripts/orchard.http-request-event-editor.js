@@ -6,7 +6,7 @@
 ///<reference path="../../../Assets/Lib/jQuery/typings.d.ts" />
 $(function () {
     var generateWorkflowUrl = function () {
-        var workflowDefinitionId = $('[data-workflow-definition-id]').data('workflow-definition-id');
+        var workflowDefinitionId = $('[data-workflow-type-id]').data('workflow-type-id');
         var activityId = $('[data-activity-id]').data('activity-id');
         var generateUrl = $('[data-generate-url]').data('generate-url') + ("?workflowDefinitionId=" + workflowDefinitionId + "&activityId=" + activityId);
         var antiforgeryHeaderName = $('[data-antiforgery-header-name]').data('antiforgery-header-name');

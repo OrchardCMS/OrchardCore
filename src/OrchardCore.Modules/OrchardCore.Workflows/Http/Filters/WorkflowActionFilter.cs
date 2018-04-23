@@ -12,15 +12,15 @@ namespace OrchardCore.Workflows.Http.Filters
         private readonly IWorkflowManager _workflowManager;
         private readonly IWorkflowDefinitionRouteEntries _workflowDefinitionRouteEntries;
         private readonly IWorkflowInstanceRouteEntries _workflowInstanceRouteEntries;
-        private readonly IWorkflowDefinitionStore _workflowDefinitionRepository;
-        private readonly IWorkflowInstanceStore _workflowInstanceRepository;
+        private readonly IWorkflowTypeStore _workflowDefinitionRepository;
+        private readonly IWorkflowStore _workflowInstanceRepository;
 
         public WorkflowActionFilter(
             IWorkflowManager workflowManager,
             IWorkflowDefinitionRouteEntries workflowDefinitionRouteEntries,
             IWorkflowInstanceRouteEntries workflowInstanceRouteEntries,
-            IWorkflowDefinitionStore workflowDefinitionRepository,
-            IWorkflowInstanceStore workflowinstanceRepository
+            IWorkflowTypeStore workflowDefinitionRepository,
+            IWorkflowStore workflowinstanceRepository
         )
         {
             _workflowManager = workflowManager;

@@ -13,8 +13,8 @@ namespace OrchardCore.Workflows.Models
 
         public WorkflowExecutionContext
         (
-            WorkflowDefinition workflowDefinitionRecord,
-            WorkflowInstance workflowInstanceRecord,
+            WorkflowType workflowTypeRecord,
+            Workflow workflowRecord,
             IDictionary<string, object> input,
             IDictionary<string, object> output,
             IDictionary<string, object> properties,
@@ -22,8 +22,6 @@ namespace OrchardCore.Workflows.Models
             object lastResult,
             IEnumerable<ActivityContext> activities,
             IEnumerable<IWorkflowExecutionContextHandler> handlers,
-            IWorkflowExpressionEvaluator expressionEvaluator,
-            IWorkflowScriptEvaluator scriptEvaluator,
             ILogger<WorkflowExecutionContext> logger
         )
         {
@@ -35,24 +33,24 @@ namespace OrchardCore.Workflows.Models
             Properties = properties ?? new Dictionary<string, object>();
             ExecutedActivities = new Stack<ExecutedActivity>(executedActivities ?? new List<ExecutedActivity>());
             LastResult = lastResult;
-            WorkflowDefinitionRecord = workflowDefinitionRecord;
-            WorkflowInstanceRecord = workflowInstanceRecord;
+            WorkflowTypeRecord = workflowTypeRecord;
+            WorkflowRecord = workflowRecord;
             Activities = activities.ToDictionary(x => x.ActivityRecord.ActivityId);
         }
 
-        public WorkflowInstance WorkflowInstanceRecord { get; }
-        public WorkflowDefinition WorkflowDefinitionRecord { get; }
+        public Workflow WorkflowRecord { get; }
+        public WorkflowType WorkflowTypeRecord { get; }
         public IDictionary<string, ActivityContext> Activities { get; }
 
         public string WorkflowInstanceId
         {
-            get => WorkflowInstanceRecord.WorkflowInstanceId;
+            get => WorkflowRecord.WorkflowId;
         }
 
         public string CorrelationId
         {
-            get => WorkflowInstanceRecord.CorrelationId;
-            set => WorkflowInstanceRecord.CorrelationId = value;
+            get => WorkflowRecord.CorrelationId;
+            set => WorkflowRecord.CorrelationId = value;
         }
 
         /// <summary>
@@ -77,8 +75,8 @@ namespace OrchardCore.Workflows.Models
 
         public WorkflowStatus Status
         {
-            get => WorkflowInstanceRecord.Status;
-            set => WorkflowInstanceRecord.Status = value;
+            get => WorkflowRecord.Status;
+            set => WorkflowRecord.Status = value;
         }
 
         /// <summary>
@@ -93,18 +91,18 @@ namespace OrchardCore.Workflows.Models
         
         public void Fault(Exception exception, ActivityContext activityContext)
         {
-            WorkflowInstanceRecord.Status = WorkflowStatus.Faulted;
-            WorkflowInstanceRecord.FaultMessage = exception.Message;
+            WorkflowRecord.Status = WorkflowStatus.Faulted;
+            WorkflowRecord.FaultMessage = exception.Message;
         }
 
         public IEnumerable<Transition> GetInboundTransitions(string activityId)
         {
-            return WorkflowDefinitionRecord.Transitions.Where(x => x.DestinationActivityId == activityId).ToList();
+            return WorkflowTypeRecord.Transitions.Where(x => x.DestinationActivityId == activityId).ToList();
         }
 
         public IEnumerable<Transition> GetOutboundTransitions(string activityId)
         {
-            return WorkflowDefinitionRecord.Transitions.Where(x => x.SourceActivityId == activityId).ToList();
+            return WorkflowTypeRecord.Transitions.Where(x => x.SourceActivityId == activityId).ToList();
         }
 
         /// <summary>

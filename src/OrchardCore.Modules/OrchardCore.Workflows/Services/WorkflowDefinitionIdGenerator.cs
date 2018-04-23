@@ -3,7 +3,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
 {
-    public class WorkflowDefinitionIdGenerator : IWorkflowDefinitionIdGenerator
+    public class WorkflowDefinitionIdGenerator : IWorkflowTypeIdGenerator
     {
         private readonly IIdGenerator _idGenerator;
 
@@ -12,7 +12,7 @@ namespace OrchardCore.Workflows.Services
             _idGenerator = idGenerator;
         }
 
-        public string GenerateUniqueId(WorkflowDefinition workflowDefinitionecord)
+        public string GenerateUniqueId(WorkflowType workflowDefinitionecord)
         {
             return _idGenerator.GenerateUniqueId();
         }

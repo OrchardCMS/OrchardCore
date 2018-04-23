@@ -21,15 +21,15 @@ namespace OrchardCore.Workflows.Indexes
         public string StartActivityName { get; set; }
     }
 
-    public class WorkflowDefinitionIndexProvider : IndexProvider<WorkflowDefinition>
+    public class WorkflowDefinitionIndexProvider : IndexProvider<WorkflowType>
     {
-        public override void Describe(DescribeContext<WorkflowDefinition> context)
+        public override void Describe(DescribeContext<WorkflowType> context)
         {
             context.For<WorkflowDefinitionIndex>()
                 .Map(workflowDefinitionRecord =>
                         new WorkflowDefinitionIndex
                         {
-                            WorkflowDefinitionId = workflowDefinitionRecord.WorkflowDefinitionId,
+                            WorkflowDefinitionId = workflowDefinitionRecord.WorkflowTypeId,
                             Name = workflowDefinitionRecord.Name,
                             IsEnabled = workflowDefinitionRecord.IsEnabled,
                             HasStart = workflowDefinitionRecord.Activities.Any(x => x.IsStart)
@@ -41,7 +41,7 @@ namespace OrchardCore.Workflows.Indexes
                     workflowDefinitionRecord.Activities.Where(x => x.IsStart).Select(x =>
                         new WorkflowDefinitionStartActivitiesIndex
                         {
-                            WorkflowDefinitionId = workflowDefinitionRecord.WorkflowDefinitionId,
+                            WorkflowDefinitionId = workflowDefinitionRecord.WorkflowTypeId,
                             Name = workflowDefinitionRecord.Name,
                             IsEnabled = workflowDefinitionRecord.IsEnabled,
                             StartActivityId = x.ActivityId,

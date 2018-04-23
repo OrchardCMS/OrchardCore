@@ -13,7 +13,7 @@
                     @T["Bulk Actions"]
                 </button>
                 <div class="dropdown-menu" aria-labelledby="bulk-actions-button">
-                    <button type="submit" name="BulkAction" value="@WorkflowDefinitionBulkAction.Delete" form="workflow-definitions-form" class="dropdown-item"> @T["Delete"]</a>
+                    <button type="submit" name="BulkAction" value="@WorkflowDefinitionBulkAction.Delete" form="workflow-types-form" class="dropdown-item"> @T["Delete"]</a>
                 </div>
             </div>
         </li>
@@ -26,7 +26,7 @@
 
 @if (Model.WorkflowDefinitions.Any())
 {
-    using (Html.BeginForm(FormMethod.Post, new { id = "workflow-definitions-form" }))
+    using (Html.BeginForm(FormMethod.Post, new { id = "workflow-types-form" }))
     {
         <ul class="list-group">
             @for (var i = 0; i < Model.WorkflowDefinitions.Count; i++)

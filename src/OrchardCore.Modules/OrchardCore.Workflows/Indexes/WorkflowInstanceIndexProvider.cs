@@ -22,16 +22,16 @@ namespace OrchardCore.Workflows.Indexes
         public string WorkflowInstanceCorrelationId { get; set; }
     }
 
-    public class WorkflowInstanceIndexProvider : IndexProvider<WorkflowInstance>
+    public class WorkflowInstanceIndexProvider : IndexProvider<Workflow>
     {
-        public override void Describe(DescribeContext<WorkflowInstance> context)
+        public override void Describe(DescribeContext<Workflow> context)
         {
             context.For<WorkflowInstanceIndex>()
                 .Map(workflowInstance =>
                     new WorkflowInstanceIndex
                     {
-                        WorkflowDefinitionId = workflowInstance.WorkflowDefinitionId,
-                        WorkflowInstanceId = workflowInstance.WorkflowInstanceId,
+                        WorkflowDefinitionId = workflowInstance.WorkflowTypeId,
+                        WorkflowInstanceId = workflowInstance.WorkflowId,
                         CreatedUtc = workflowInstance.CreatedUtc
                     }
                 );
@@ -44,8 +44,8 @@ namespace OrchardCore.Workflows.Indexes
                         ActivityId = x.ActivityId,
                         ActivityName = x.Name,
                         ActivityIsStart = x.IsStart,
-                        WorkflowDefinitionId = workflowInstance.WorkflowDefinitionId,
-                        WorkflowInstanceId = workflowInstance.WorkflowInstanceId,
+                        WorkflowDefinitionId = workflowInstance.WorkflowTypeId,
+                        WorkflowInstanceId = workflowInstance.WorkflowId,
                         WorkflowInstanceCorrelationId = workflowInstance.CorrelationId ?? ""
                     })
                 );

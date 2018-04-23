@@ -9,7 +9,7 @@ namespace OrchardCore.Workflows.Http.Services
 {
     public class WorkflowDefinitionRouteEntries : WorkflowRouteEntriesBase, IWorkflowDefinitionRouteEntries
     {
-        public static IEnumerable<WorkflowRoutesEntry> GetWorkflowDefinitionRoutesEntries(WorkflowDefinition workflowDefinition, IActivityLibrary activityLibrary)
+        public static IEnumerable<WorkflowRoutesEntry> GetWorkflowDefinitionRoutesEntries(WorkflowType workflowDefinition, IActivityLibrary activityLibrary)
         {
             return workflowDefinition.Activities.Where(x => x.IsStart && x.Name == HttpRequestFilterEvent.EventName).Select(x =>
             {

@@ -5,7 +5,7 @@
 abstract class WorkflowCanvas {
     private minCanvasHeight: number = 400;
 
-    constructor(protected container: HTMLElement, protected workflowDefinition: Workflows.Workflow) {
+    constructor(protected container: HTMLElement, protected workflowType: Workflows.Workflow) {
     }
 
     protected getActivityElements = (): JQuery => {
@@ -91,16 +91,16 @@ abstract class WorkflowCanvas {
 
     protected getActivity = function (id: string, activities: Array<Workflows.Activity> = null): Workflows.Activity {
         if (!activities) {
-            activities = this.workflowDefinition.activities;
+            activities = this.workflowType.activities;
         }
         return $.grep(activities, (x: Workflows.Activity) => x.id === id)[0];
     }
 
     protected updateConnections = (plumber: jsPlumbInstance) => {
-        var workflowId: number = this.workflowDefinition.id;
+        var workflowId: number = this.workflowType.id;
 
         // Connect activities.
-        for (let transitionModel of this.workflowDefinition.transitions) {
+        for (let transitionModel of this.workflowType.transitions) {
             const sourceEndpointUuid: string = `${transitionModel.sourceActivityId}-${transitionModel.sourceOutcomeName}`;
             const sourceEndpoint: Endpoint = plumber.getEndpoint(sourceEndpointUuid);
             const destinationElementId: string = `activity-${workflowId}-${transitionModel.destinationActivityId}`;

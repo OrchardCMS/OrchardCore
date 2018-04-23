@@ -10,22 +10,22 @@ using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Workflows.Controllers
+namespace OrchardCore.Workflows.Http.Controllers
 {
     public class WorkflowController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IWorkflowManager _workflowManager;
-        private readonly IWorkflowDefinitionStore _workflowDefinitionStore;
-        private readonly IWorkflowInstanceStore _workflowInstanceStore;
+        private readonly IWorkflowTypeStore _workflowDefinitionStore;
+        private readonly IWorkflowStore _workflowInstanceStore;
         private readonly ISecurityTokenService _securityTokenService;
         private readonly ILogger<WorkflowController> _logger;
 
         public WorkflowController(
             IAuthorizationService authorizationService,
             IWorkflowManager workflowManager,
-            IWorkflowDefinitionStore workflowDefinitionStore,
-            IWorkflowInstanceStore workflowInstanceStore,
+            IWorkflowTypeStore workflowDefinitionStore,
+            IWorkflowStore workflowInstanceStore,
             ISecurityTokenService securityTokenService,
             ILogger<WorkflowController> logger
         )
@@ -53,7 +53,7 @@ namespace OrchardCore.Workflows.Controllers
                 return NotFound();
             }
 
-            var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowDefinition.WorkflowDefinitionId, activityId), TimeSpan.FromDays(7));
+            var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowDefinition.WorkflowTypeId, activityId), TimeSpan.FromDays(7));
             var url = Url.Action("Invoke", "Workflow", new { token = token });
 
             return Ok(url);
@@ -83,7 +83,7 @@ namespace OrchardCore.Workflows.Controllers
             }
             else
             {
-                var workflowInstances = await _workflowInstanceStore.ListAsync(workflowDefinition.WorkflowDefinitionId, new[] { startActivity.ActivityId });
+                var workflowInstances = await _workflowInstanceStore.ListAsync(workflowDefinition.WorkflowTypeId, new[] { startActivity.ActivityId });
 
                 foreach (var workflowInstance in workflowInstances)
                 {

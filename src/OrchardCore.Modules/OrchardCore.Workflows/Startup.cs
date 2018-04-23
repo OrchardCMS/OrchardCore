@@ -28,15 +28,15 @@ namespace OrchardCore.Workflows
         {
             services.AddDataProtection();
             services.AddIdGeneration();
-            services.AddSingleton<IWorkflowDefinitionIdGenerator, WorkflowDefinitionIdGenerator>();
-            services.AddSingleton<IWorkflowInstanceIdGenerator, WorkflowInstanceIdGenerator>();
+            services.AddSingleton<IWorkflowTypeIdGenerator, WorkflowDefinitionIdGenerator>();
+            services.AddSingleton<IWorkflowIdGenerator, WorkflowInstanceIdGenerator>();
             services.AddSingleton<IActivityIdGenerator, ActivityIdGenerator>();
 
             services.AddScoped(typeof(Resolver<>));
             services.AddScoped<ISecurityTokenService, SecurityTokenService>();
             services.AddScoped<IActivityLibrary, ActivityLibrary>();
-            services.AddScoped<IWorkflowDefinitionStore, WorkflowDefinitionStore>();
-            services.AddScoped<IWorkflowInstanceStore, WorkflowInstanceStore>();
+            services.AddScoped<IWorkflowTypeStore, WorkflowDefinitionStore>();
+            services.AddScoped<IWorkflowStore, WorkflowInstanceStore>();
             services.AddScoped<IWorkflowManager, WorkflowManager>();
             services.AddScoped<IActivityDisplayManager, ActivityDisplayManager>();
             services.AddScoped<IDataMigration, Migrations>();

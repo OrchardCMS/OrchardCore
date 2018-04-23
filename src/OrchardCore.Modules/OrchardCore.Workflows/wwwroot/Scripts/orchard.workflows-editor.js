@@ -440,7 +440,7 @@ var WorkflowEditor = /** @class */ (function (_super) {
 $.fn.workflowEditor = function () {
     this.each(function (index, element) {
         var $element = $(element);
-        var workflowDefinition = $element.data('workflow-definition');
+        var workflowDefinition = $element.data('workflow-type');
         var deleteActivityPrompt = $element.data('workflow-delete-activity-prompt');
         var localId = $element.data('workflow-local-id');
         var loadLocalState = $element.data('workflow-load-local-state');

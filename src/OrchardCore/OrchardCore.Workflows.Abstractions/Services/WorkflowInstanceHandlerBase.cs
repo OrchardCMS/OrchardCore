@@ -3,19 +3,19 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
 {
-    public abstract class WorkflowInstanceHandlerBase : IWorkflowInstanceHandler
+    public abstract class WorkflowHandlerBase : IWorkflowHandler
     {
-        public virtual Task CreatedAsync(WorkflowInstanceCreatedContext context)
+        public virtual Task CreatedAsync(WorkflowCreatedContext context)
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task UpdatedAsync(WorkflowInstanceUpdatedContext context)
+        public virtual Task UpdatedAsync(WorkflowUpdatedContext context)
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task DeletedAsync(WorkflowInstanceDeletedContext context)
+        public virtual Task DeletedAsync(WorkflowDeletedContext context)
         {
             return Task.CompletedTask;
         }

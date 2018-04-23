@@ -222,7 +222,7 @@ var WorkflowViewer = /** @class */ (function (_super) {
 $.fn.workflowViewer = function () {
     this.each(function (index, element) {
         var $element = $(element);
-        var workflowDefinition = $element.data('workflow-definition');
+        var workflowDefinition = $element.data('workflow-type');
         $element.data('workflowViewer', new WorkflowViewer(element, workflowDefinition));
     });
     return this;

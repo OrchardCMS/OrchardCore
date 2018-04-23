@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Handlers
 {
-    public class WorkflowDefinitionRoutesHandler : WorkflowDefinitionHandlerBase
+    public class WorkflowDefinitionRoutesHandler : WorkflowTypeHandlerBase
     {
         private readonly IWorkflowDefinitionRouteEntries _workflowRouteEntries;
         private readonly IActivityLibrary _activityLibrary;
@@ -16,27 +16,27 @@ namespace OrchardCore.Workflows.Http.Handlers
             _activityLibrary = activityLibrary;
         }
 
-        public override Task CreatedAsync(WorkflowDefinitionCreatedContext context)
+        public override Task CreatedAsync(WorkflowTypeCreatedContext context)
         {
             UpdateRouteEntries(context);
             return Task.CompletedTask;
         }
 
-        public override Task UpdatedAsync(WorkflowDefinitionUpdatedContext context)
+        public override Task UpdatedAsync(WorkflowTypeUpdatedContext context)
         {
             UpdateRouteEntries(context);
             return Task.CompletedTask;
         }
 
-        public override Task DeletedAsync(WorkflowDefinitionDeletedContext context)
+        public override Task DeletedAsync(WorkflowTypeDeletedContext context)
         {
-            _workflowRouteEntries.RemoveEntries(context.WorkflowDefinition.Id.ToString());
+            _workflowRouteEntries.RemoveEntries(context.WorkflowType.Id.ToString());
             return Task.CompletedTask;
         }
 
-        private void UpdateRouteEntries(WorkflowDefinitionContext context)
+        private void UpdateRouteEntries(WorkflowTypeContext context)
         {
-            var entries = WorkflowDefinitionRouteEntries.GetWorkflowDefinitionRoutesEntries(context.WorkflowDefinition, _activityLibrary);
+            var entries = WorkflowDefinitionRouteEntries.GetWorkflowDefinitionRoutesEntries(context.WorkflowType, _activityLibrary);
             _workflowRouteEntries.AddEntries(entries);
         }
     }
