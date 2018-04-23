@@ -106,6 +106,9 @@ namespace OrchardCore.Mvc
                 {
                     var module = _hostingEnvironment.GetModule(name);
 
+                    // We found precompiled assemblies in the same way as 'ViewsFeatureProvider.GetFeatureAssembly()' is doing.
+                    // https://github.com/aspnet/Mvc/blob/dev/src/Microsoft.AspNetCore.Mvc.Razor/Compilation/ViewsFeatureProvider.cs#L83
+
                     var precompiledAssemblyPath = Path.Combine(Path.GetDirectoryName(module.Assembly.Location),
                         module.Assembly.GetName().Name + ViewsFeatureProvider.PrecompiledViewsAssemblySuffix + ".dll");
 
