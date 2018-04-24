@@ -12,10 +12,11 @@ namespace OrchardCore.Mvc.RazorPages
     {
         public static IMvcCoreBuilder AddModularRazorPages(this IMvcCoreBuilder builder, IServiceProvider services)
         {
+            var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
+
             builder.AddRazorPages(options =>
             {
                 options.RootDirectory = "/";
-                var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
                 options.Conventions.Add(new DefaultModularPageRouteModelConvention(httpContextAccessor));
             });
 
