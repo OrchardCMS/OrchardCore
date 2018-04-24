@@ -4,6 +4,7 @@
     <MicrosoftApplicationInsightsAspNetCorePackageVersion>2.3.0-beta1</MicrosoftApplicationInsightsAspNetCorePackageVersion>
     <MicrosoftAspNetCorePackageVersion>2.1.0-rc1-30656</MicrosoftAspNetCorePackageVersion>
     <MicrosoftAspNetCoreAllPackageVersion>2.1.0-rc1-30656</MicrosoftAspNetCoreAllPackageVersion>
+    <MicrosoftAspNetCoreAppPackageVersion>2.1.0-rc1-30656</MicrosoftAspNetCoreAppPackageVersion>
     <MicrosoftAspNetCoreAntiforgeryPackageVersion>2.1.0-rc1-30656</MicrosoftAspNetCoreAntiforgeryPackageVersion>
     <MicrosoftAspNetCoreApplicationInsightsHostingStartupPackageVersion>2.1.0-rc1-30656</MicrosoftAspNetCoreApplicationInsightsHostingStartupPackageVersion>
     <MicrosoftAspNetCoreAuthenticationAbstractionsPackageVersion>2.1.0-rc1-30656</MicrosoftAspNetCoreAuthenticationAbstractionsPackageVersion>
