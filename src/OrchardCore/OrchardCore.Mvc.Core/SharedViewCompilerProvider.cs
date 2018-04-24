@@ -95,11 +95,7 @@ namespace OrchardCore.Mvc
                 provider.PopulateFeature(assemblyParts, feature);
             }
 
-            // TODO: This type is obsolete and will be removed in a future version. See IRazorCompiledItemProvider for alternatives.
-            var viewsFeatureProviderType = Type.GetType("Microsoft.AspNetCore.Mvc.Razor.Compilation.ViewsFeatureProvider");
-            var featureProvider = featureProviders.FirstOrDefault(x => x.GetType() == viewsFeatureProviderType);
-
-            if (!_hostingEnvironment.IsDevelopment() && featureProvider != null)
+            if (!_hostingEnvironment.IsDevelopment())
             {
                 var moduleNames = _hostingEnvironment.GetApplication().ModuleNames;
                 var moduleFeature = new ViewsFeature();
@@ -108,11 +104,8 @@ namespace OrchardCore.Mvc
                 {
                     var module = _hostingEnvironment.GetModule(name);
 
-                    // We found precompiled assemblies in the same way as 'ViewsFeatureProvider.GetFeatureAssembly()' is doing.
-                    // https://github.com/aspnet/Mvc/blob/dev/src/Microsoft.AspNetCore.Mvc.Razor/Compilation/ViewsFeatureProvider.cs#L83
-
                     var precompiledAssemblyPath = Path.Combine(Path.GetDirectoryName(module.Assembly.Location),
-                        module.Assembly.GetName().Name + ".PrecompiledViews.dll");
+                        module.Assembly.GetName().Name + ".Views.dll");
 
                     if (File.Exists(precompiledAssemblyPath))
                     {
@@ -120,7 +113,10 @@ namespace OrchardCore.Mvc
                         {
                             var assembly = Assembly.LoadFile(precompiledAssemblyPath);
 
-                            featureProvider.PopulateFeature(new AssemblyPart[] { new AssemblyPart(assembly) }, moduleFeature);
+                            foreach (var provider in featureProviders)
+                            {
+                                provider.PopulateFeature(new ApplicationPart[] { new CompiledRazorAssemblyPart(assembly) }, moduleFeature);
+                            }
 
                             foreach (var descriptor in moduleFeature.ViewDescriptors)
                             {
