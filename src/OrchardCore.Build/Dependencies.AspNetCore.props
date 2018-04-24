@@ -122,7 +122,7 @@
     <MicrosoftCodeAnalysisRazorWorkspacesPackageVersion>2.1.0-rc1-30661</MicrosoftCodeAnalysisRazorWorkspacesPackageVersion>
     <MicrosoftCodeAnalysisRemoteRazorPackageVersion>2.1.0-rc1-30661</MicrosoftCodeAnalysisRemoteRazorPackageVersion>
     <MicrosoftCodeAnalysisWorkspacesCommonPackageVersion>2.7.0</MicrosoftCodeAnalysisWorkspacesCommonPackageVersion>
-    <MicrosoftCSharpPackageVersion>4.5.0-preview2-26406-04</MicrosoftCSharpPackageVersion>
+    <MicrosoftCSharpPackageVersion>4.5.0-rc1-26423-06</MicrosoftCSharpPackageVersion>
     <MicrosoftDataSqliteCorePackageVersion>2.1.0-rc1-30661</MicrosoftDataSqliteCorePackageVersion>
     <MicrosoftDataSqlitePackageVersion>2.1.0-rc1-30661</MicrosoftDataSqlitePackageVersion>
     <MicrosoftDotNetWatcherToolsPackageVersion>2.1.0-rc1-30661</MicrosoftDotNetWatcherToolsPackageVersion>
@@ -195,5 +195,6 @@
     <MicrosoftVisualStudioWebCodeGenerationUtilsPackageVersion>2.1.0-rc1-30661</MicrosoftVisualStudioWebCodeGenerationUtilsPackageVersion>
     <MicrosoftVisualStudioWebCodeGeneratorsMvcPackageVersion>2.1.0-rc1-30661</MicrosoftVisualStudioWebCodeGeneratorsMvcPackageVersion>
     <MicrosoftWebXdtExtensionsPackageVersion>2.1.0-rc1-30661</MicrosoftWebXdtExtensionsPackageVersion>
+    <SystemComponentModelAnnotations>4.5.0-rc1-26423-06</SystemComponentModelAnnotations>
   </PropertyGroup>
 </Project>
