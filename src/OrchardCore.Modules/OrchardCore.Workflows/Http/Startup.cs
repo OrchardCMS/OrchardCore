@@ -53,12 +53,12 @@ namespace OrchardCore.Workflows.Http
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
-                name: "SignalWorkflow",
-                areaName: "OrchardCore.Workflows",
-                template: "Workflows/Trigger",
-                defaults: new { controller = "HttpWorkflow", action = "Trigger" }
-            );
+            //routes.MapAreaRoute(
+            //    name: "SignalWorkflow",
+            //    areaName: "OrchardCore.Workflows",
+            //    template: "Workflows/{action}",
+            //    defaults: new { controller = "HttpWorkflow", action = "Trigger" }
+            //);
 
             routes.MapAreaRoute(
                 name: "InvokeWorkflow",

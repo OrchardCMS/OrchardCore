@@ -6,7 +6,7 @@
 class WorkflowViewer extends WorkflowCanvas {
     private jsPlumbInstance: jsPlumbInstance;
 
-    constructor(protected container: HTMLElement, protected workflowType: Workflows.Workflow) {
+    constructor(protected container: HTMLElement, protected workflowType: Workflows.WorkflowType) {
         super(container, workflowType);
         const self = this;
 

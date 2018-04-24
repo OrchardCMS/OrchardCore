@@ -12,22 +12,22 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Controllers
 {
-    public class HttpWorkflow : Controller
+    public class HttpWorkflowController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IWorkflowManager _workflowManager;
         private readonly IWorkflowTypeStore _workflowTypeStore;
         private readonly IWorkflowStore _workflowStore;
         private readonly ISecurityTokenService _securityTokenService;
-        private readonly ILogger<HttpWorkflow> _logger;
+        private readonly ILogger<HttpWorkflowController> _logger;
 
-        public HttpWorkflow(
+        public HttpWorkflowController(
             IAuthorizationService authorizationService,
             IWorkflowManager workflowManager,
             IWorkflowTypeStore workflowTypeStore,
             IWorkflowStore workflowStore,
             ISecurityTokenService securityTokenService,
-            ILogger<HttpWorkflow> logger
+            ILogger<HttpWorkflowController> logger
         )
         {
             _authorizationService = authorizationService;

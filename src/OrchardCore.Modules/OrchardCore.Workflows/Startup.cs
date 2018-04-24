@@ -69,28 +69,28 @@ namespace OrchardCore.Workflows
             routes.MapAreaRoute(
                 name: "AddActivity",
                 areaName: "OrchardCore.Workflows",
-                template: "Admin/Workflows/Definitions/{workflowTypeId}/Activity/{activityName}/Add",
+                template: "Admin/Workflows/Types/{workflowTypeId}/Activity/{activityName}/Add",
                 defaults: new { controller = "Activity", action = "Create" }
             );
 
             routes.MapAreaRoute(
                 name: "EditActivity",
                 areaName: "OrchardCore.Workflows",
-                template: "Admin/Workflows/Definitions/{workflowTypeId}/Activity/{activityId}/Edit",
+                template: "Admin/Workflows/Types/{workflowTypeId}/Activity/{activityId}/Edit",
                 defaults: new { controller = "Activity", action = "Edit" }
             );
 
             routes.MapAreaRoute(
                 name: "Workflows",
                 areaName: "OrchardCore.Workflows",
-                template: "Admin/Workflows/Definitions/{workflowTypeId}/Instances/{action}",
+                template: "Admin/Workflows/Types/{workflowTypeId}/Instances/{action}",
                 defaults: new { controller = "Workflow", action = "Index" }
             );
 
             routes.MapAreaRoute(
                 name: "WorkflowTypes",
                 areaName: "OrchardCore.Workflows",
-                template: "Admin/Workflows/Definitions/{action}/{id?}",
+                template: "Admin/Workflows/Types/{action}/{id?}",
                 defaults: new { controller = "WorkflowType", action = "Index" }
             );
         }

@@ -20,7 +20,7 @@ namespace OrchardCore.Workflows
                 return;
             }
 
-            builder.Add(T["Workflows"], "5", contentDefinition => contentDefinition
+            builder.Add(T["Workflows"], "5", workflow => workflow
                 .AddClass("workflows").Id("workflows")
                 .LinkToFirstChild(true)
                     .Add(T["Types"], "1", contentItems => contentItems

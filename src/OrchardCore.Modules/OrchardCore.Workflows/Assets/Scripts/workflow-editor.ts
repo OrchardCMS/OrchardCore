@@ -10,7 +10,7 @@ class WorkflowEditor extends WorkflowCanvas {
     private hasDragged: boolean;
     private dragStart: JQuery.Coordinates;
 
-    constructor(protected container: HTMLElement, protected workflowType: Workflows.Workflow, private deleteActivityPrompt: string, private localId: string, loadLocalState: boolean) {
+    constructor(protected container: HTMLElement, protected workflowType: Workflows.WorkflowType, private deleteActivityPrompt: string, private localId: string, loadLocalState: boolean) {
         super(container, workflowType);
         const self = this;
 
@@ -49,11 +49,11 @@ class WorkflowEditor extends WorkflowCanvas {
 
             // Suspend drawing and initialize.
             plumber.batch(() => {
-                var serverworkflowType: Workflows.Workflow = this.workflowType;
+                var serverworkflowType: Workflows.WorkflowType = this.workflowType;
                 var workflowId: number = this.workflowType.id;
 
                 if (loadLocalState) {
-                    const localState: Workflows.Workflow = this.loadLocalState();
+                    const localState: Workflows.WorkflowType = this.loadLocalState();
 
                     if (localState) {
                         this.workflowType = localState;
@@ -233,9 +233,9 @@ class WorkflowEditor extends WorkflowCanvas {
         });
     }
 
-    private getState = (): Workflows.Workflow => {
+    private getState = (): Workflows.WorkflowType => {
         const $allActivityElements = $(this.container).find('.activity');
-        const workflow: Workflows.Workflow = {
+        const workflow: Workflows.WorkflowType = {
             id: this.workflowType.id,
             activities: [],
             transitions: [],
