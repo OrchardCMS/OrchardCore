@@ -36,10 +36,13 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     selectedFolder: root,
                     mediaItems: [],
                     selectedMedia: null,
-                    selectedMedias: []
+                    selectedMedias: [],
+                    dragDropThumbnail : new Image()
                 },
                 created: function () {
                     var self = this;
+
+                    this.dragDropThumbnail.src = '../Images/drag-thumbnail.png';
 
                     bus.$on('folderDeleted', function () {
                         self.selectRoot();
@@ -261,9 +264,11 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             mediaNames.push(media.name);
                             this.selectedMedias.push(media);
                         }
+
                         e.dataTransfer.setData('mediaNames', JSON.stringify(mediaNames));
                         e.dataTransfer.setData('sourceFolder', this.selectedFolder.path);
-                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setDragImage(this.dragDropThumbnail, 10, 10);
+                        e.dataTransfer.effectAllowed = 'move';                        
                     }
                 }
             });
@@ -312,7 +317,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
 // <folder> component
 Vue.component('folder', {
     template: '\
-        <li :class="{selected: selected}" ondragenter="event.preventDefault();" ondragover="event.preventDefault();" v-on:drop.stop="moveMediaToFolder(model, $event)" >\
+        <li :class="{selected: selected}" v-on:dragenter.prevent="handleDragEnter($event);" v-on:dragleave.prevent="handleDragLeave($event);" ondragover="event.preventDefault();" v-on:drop.stop="moveMediaToFolder(model, $event)" >\
             <div>\
                 <a href="javascript:;" v-on:click="toggle" class="expand" v-bind:class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
                 <a href="javascript:;" v-on:click="select">\
@@ -396,7 +401,21 @@ Vue.component('folder', {
         select: function () {
             mediaApp.selectFolder(this.model);
         },
-        moveMediaToFolder: function (folder, e) {           
+        handleDragEnter: function (e) {                     
+            if (e.target.classList.contains('folder-dragover') === false) {                
+                e.target.classList.add('folder-dragover');
+            }
+        },
+        handleDragLeave: function (e) {
+            if (e.target.classList.contains('folder-dragover') === true) {                
+                e.target.classList.remove('folder-dragover');
+            }
+        },
+        moveMediaToFolder: function (folder, e) {
+            if (e.target.classList.contains('folder-dragover') === true) {                
+                e.target.classList.remove('folder-dragover');
+            }
+
             var self = this;
             var mediaNames = JSON.parse(e.dataTransfer.getData('mediaNames')); 
 

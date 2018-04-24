@@ -63,6 +63,10 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
     .folder {
         color: lightgray;
     }
+    
+    .folder-dragover {
+        font-weight:bold;
+    }
 
     li {
         list-style: none;
