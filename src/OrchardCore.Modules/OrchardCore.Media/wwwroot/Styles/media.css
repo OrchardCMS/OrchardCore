@@ -6125,10 +6125,10 @@ a.text-dark:hover, a.text-dark:focus {
     margin-left: 0.7em;
     margin-right: 0.7em;
     width: 240px; }
-    .media-container-main ol li .delete-media-button {
+    .media-container-main ol li .inline-media-button {
       opacity: 0;
       padding-top: 0px; }
-    .media-container-main ol li.selected .delete-media-button, .media-container-main ol li:hover .delete-media-button {
+    .media-container-main ol li.selected .inline-media-button, .media-container-main ol li:hover .inline-media-button {
       opacity: 1; }
   .media-container-main ol .thumb-container {
     width: 100%;

@@ -130,7 +130,7 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
             margin-right: 0.7em;
             width: 240px;
 
-            .delete-media-button {
+            .inline-media-button {
                 opacity: 0;
                 padding-top: 0px;
             }
@@ -139,7 +139,7 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
                 @extend .border-primary;
             }
 
-            &.selected .delete-media-button, &:hover .delete-media-button {
+            &.selected .inline-media-button, &:hover .inline-media-button {
                 opacity: 1;
             }
         }

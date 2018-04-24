@@ -52,7 +52,8 @@
                         <img v-bind:src="media.url + '?width=224&height=240'" />
                     </div>
                     <div class="media-container-main-item-title">
-                        <a href="javascript:;" class="btn btn-light btn-sm float-right delete-media-button" v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>
+                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a>
+                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button" v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>
                         <span class="media-filename">{{ media.name }}</span>
                     </div>
                 </li>
@@ -66,6 +67,7 @@
 <input type="hidden" id="createFolderUrl" value="@Url.Action("CreateFolder", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="getMediaItemsUrl" value="@Url.Action("GetMediaItems", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="deleteMediaUrl" value="@Url.Action("DeleteMedia", "Admin", new { area = "OrchardCore.Media" })" />
+<input type="hidden" id="renameMediaUrl" value="@Url.Action("MoveMedia", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="deleteMediaListUrl" value="@Url.Action("DeleteMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="moveMediaListUrl" value="@Url.Action("MoveMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })" />
@@ -92,6 +94,31 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="modalFooterOk">@T["Ok"]</button>
+                <button type="button" class="btn btn-light" data-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="renameMediaModal" tabindex="-1" role="dialog" aria-labelledby="renameMediaModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modelTitle">@T["Rename Item"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="input" class="form-control-label" id="input-label">@T["New Name"]</label>
+                    <input type="text" id="new-item-name" class="form-control">
+                    <input type="hidden" id="old-item-name" value="kk">
+                </div>
+                <div id="renameMediaModal-errors"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="renameMediaModalFooterOk">@T["Ok"]</button>
                 <button type="button" class="btn btn-light" data-dismiss="modal">@T["Cancel"]</button>
             </div>
         </div>

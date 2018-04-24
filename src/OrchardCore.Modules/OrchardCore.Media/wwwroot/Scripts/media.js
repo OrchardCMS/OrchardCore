@@ -65,6 +65,15 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     bus.$on('mediaMoved', function (folder) {                        
                         self.loadFolder(self.selectedFolder);
                     });
+
+                    bus.$on('mediaRenamed', function (newName, newPath, oldPath) {
+                        var media = self.mediaItems.filter(function (item) {                            
+                            return item.mediaPath === oldPath;
+                        })[0];
+                        
+                        media.mediaPath = newPath;
+                        media.name = newName;
+                    });
                 },
                 computed: {
                     isHome: function () {
@@ -180,7 +189,13 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     createFolder: function () {
                         $('#createFolderModal-errors').empty();
                         $('#createFolderModal').modal('show');
-                        $('.modal-body input').val('').focus();
+                        $('#createFolderModal .modal-body input').val('').focus();
+                    },
+                    renameMedia: function (media) {
+                        $('#renameMediaModal-errors').empty();
+                        $('#renameMediaModal').modal('show');                       
+                        $('#old-item-name').val(media.name);
+                        $('#renameMediaModal .modal-body input').val(media.name).focus();
                     },
                     selectAndDeleteMedia: function (media) {
                         this.selectedMedia = media;
@@ -302,6 +317,35 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     error: function (error) {
                         $('#createFolderModal-errors').empty();
                         $('<div class="alert alert-danger" role="alert"></div>').text(error.responseText).appendTo($('#createFolderModal-errors'));
+                    }
+                });
+            });
+
+            $('#renameMediaModalFooterOk').on('click', function (e) {
+                var newName = $('#new-item-name').val();
+                var oldName = $('#old-item-name').val();
+
+                var currentFolder = mediaApp.selectedFolder.path + "/" ;
+                if (currentFolder === "/") {
+                    currentFolder = "";
+                }
+
+                var newPath = currentFolder + newName;
+                var oldPath = currentFolder + oldName;
+
+                $.ajax({
+                    url: $('#renameMediaUrl').val() + "?oldPath=" + encodeURIComponent(oldPath) + "&newPath=" + encodeURIComponent(newPath),
+                    method: 'POST',
+                    data: {
+                        __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+                    },
+                    success: function (data) {
+                        $('#renameMediaModal').modal('hide');
+                        bus.$emit('mediaRenamed', newName, newPath, oldPath);
+                    },
+                    error: function (error) {
+                        $('#renameMediaModal-errors').empty();
+                        $('<div class="alert alert-danger" role="alert"></div>').text(error.responseText).appendTo($('#renameMediaModal-errors'));
                     }
                 });
             });

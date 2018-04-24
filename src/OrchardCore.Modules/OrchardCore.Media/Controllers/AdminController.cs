@@ -196,6 +196,34 @@ namespace OrchardCore.Media.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> MoveMedia(string oldPath, string newPath)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            {
+                return Unauthorized();
+            }
+
+            if (string.IsNullOrEmpty(oldPath) || string.IsNullOrEmpty(newPath))
+            {
+                return NotFound();
+            }
+
+            if (await _mediaFileStore.GetDirectoryInfoAsync(oldPath) != null)
+            {
+                return NotFound();
+            }
+
+            if (await _mediaFileStore.GetDirectoryInfoAsync(newPath) != null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Cannot move media because a file already exists with the same name");
+            }
+
+            await _mediaFileStore.MoveFileAsync(oldPath, newPath);
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> DeleteMediaList(string[] paths)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
@@ -216,6 +244,8 @@ namespace OrchardCore.Media.Controllers
 
             return Ok();
         }
+
+
 
         [HttpPost]
         public async Task<IActionResult> MoveMediaList(string[] mediaNames, string sourceFolder, string targetFolder)
