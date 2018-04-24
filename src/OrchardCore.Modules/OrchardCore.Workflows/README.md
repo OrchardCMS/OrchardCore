@@ -134,7 +134,7 @@ The following JavaScript functions are available by default to any activity that
 | Function | Description | Signature |
 | -------- | ----------- | --------- |
 | workflow | Returns the `WorkflowExecutionContext` which provides access to all information related to the current workflow execution context. | `workflow(): WorkflowExecutionContext` |
-| workflowInstanceId | Returns the unique workflow instance ID. | `workflowInstanceId(): string` |
+| workflowId | Returns the unique workflow ID. | `workflowId(): string` |
 | input | Returns the input parameter with the specified name. Input to the workflow is provided when the workflow is executed by the workflow manager. | `input(name: string): any` |
 | output | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. | `output(name: string, value: any): void` |
 | property | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. | `property(name: string): any` |
