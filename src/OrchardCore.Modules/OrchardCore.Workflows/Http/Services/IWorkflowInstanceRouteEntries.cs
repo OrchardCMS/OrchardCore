@@ -1,6 +1,6 @@
 namespace OrchardCore.Workflows.Http.Services
 {
-    public interface IWorkflowInstanceRouteEntries : IWorkflowRouteEntries
+    internal interface IWorkflowInstanceRouteEntries : IWorkflowRouteEntries
     {
     }
 }

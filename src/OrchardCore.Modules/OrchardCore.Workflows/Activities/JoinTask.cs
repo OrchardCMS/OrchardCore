@@ -60,11 +60,11 @@ namespace OrchardCore.Workflows.Activities
                     {
                         // Remove any inbound blocking activities.
                         var ancestorActivityIds = workflowContext.GetInboundActivityPath(activityContext.ActivityRecord.ActivityId).ToList();
-                        var blockingActivities = workflowContext.WorkflowInstanceRecord.BlockingActivities.Where(x => ancestorActivityIds.Contains(x.ActivityId)).ToList();
+                        var blockingActivities = workflowContext.Workflow.BlockingActivities.Where(x => ancestorActivityIds.Contains(x.ActivityId)).ToList();
 
                         foreach (var blockingActivity in blockingActivities)
                         {
-                            workflowContext.WorkflowInstanceRecord.BlockingActivities.Remove(blockingActivity);
+                            workflowContext.Workflow.BlockingActivities.Remove(blockingActivity);
                         }
                     }
                     break;

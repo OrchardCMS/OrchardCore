@@ -12,7 +12,7 @@
     var activityType = isEvent ? "Event" : "Task";
     var activityTypeClass = isEvent ? "fa-bolt" : "fa-caret-right";
 }
-<div class="activity @cssClass" style="left:@(activityRecord.X)px; top:@(activityRecord.Y)px;" id="@($"activity-{Model.WorkflowDefinitionId}-{activityRecord.ActivityId}")" data-activity-id="@activityRecord.ActivityId" data-activity-start="@isStart.ToString().ToLower()" data-activity-type="@activityType" data-activity-has-editor="@hasEditor.ToString().ToLower()" data-placement="bottom">
+<div class="activity @cssClass" style="left:@(activityRecord.X)px; top:@(activityRecord.Y)px;" id="@($"activity-{Model.WorkflowTypeId}-{activityRecord.ActivityId}")" data-activity-id="@activityRecord.ActivityId" data-activity-start="@isStart.ToString().ToLower()" data-activity-type="@activityType" data-activity-has-editor="@hasEditor.ToString().ToLower()" data-placement="bottom">
     @await DisplayAsync(Model.Content)
     @if (isEvent)
     {
@@ -29,7 +29,7 @@
         }
         @if (hasEditor)
         {
-            <a class="btn btn-primary activity-edit-action" asp-action="Edit" asp-controller="Activity" asp-route-workflowdefinitionid="@Model.WorkflowDefinitionId" asp-route-activityid="@activityRecord.ActivityId" asp-route-returnurl="@Model.ReturnUrl" data-persist-workflow="true" title="@T["Edit"]"><i class="fa fa-pencil"></i></a>
+            <a class="btn btn-primary activity-edit-action" asp-action="Edit" asp-controller="Activity" asp-route-workflowtypeid="@Model.WorkflowTypeId" asp-route-activityid="@activityRecord.ActivityId" asp-route-returnurl="@Model.ReturnUrl" data-persist-workflow="true" title="@T["Edit"]"><i class="fa fa-pencil"></i></a>
         }
         <a class="btn btn-danger activity-delete-action" href="#" title="@T["Delete"]"><i class="fa fa-trash"></i></a>
     </div>
