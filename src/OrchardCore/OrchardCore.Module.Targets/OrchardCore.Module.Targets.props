@@ -21,6 +21,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Condition="'$(IsRazorCompilerReferenced)' == 'true'" Include="Microsoft.AspNetCore.Mvc" Version="$(MicrosoftAspNetCoreMvcPackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="$(ModuleNoneIncludes)" Exclude="$(ModuleNoneExcludes)" />
     <EmbeddedResource Include="**\*" Exclude="$(ModuleDefaultAssetExcludes);$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
     <RazorGenerate Include="@(EmbeddedResource->WithMetadataValue('Extension', '.cshtml'))" />
