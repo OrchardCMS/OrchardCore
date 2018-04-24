@@ -11,7 +11,7 @@ namespace OrchardCore.Lists.Feeds
     {
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {
-            return Shape("ListPartFeed", shape =>
+            return Dynamic("ListPartFeed", shape =>
             {
                 shape.ContentItem = listPart.ContentItem;
             })
@@ -20,7 +20,7 @@ namespace OrchardCore.Lists.Feeds
 
         public override IDisplayResult Edit(ListPart part)
         {
-            return Shape<ListFeedEditViewModel>("ListPartFeed_Edit", m =>
+            return Initialize<ListFeedEditViewModel>("ListPartFeed_Edit", m =>
             {
                 m.FeedProxyUrl = part.ContentItem.Content.ListPart.FeedProxyUrl;
                 m.FeedItemsCount = part.ContentItem.Content.ListPart.FeedItemsCount ?? 20;

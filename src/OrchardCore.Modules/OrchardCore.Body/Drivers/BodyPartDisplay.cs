@@ -28,14 +28,14 @@ namespace OrchardCore.Body.Drivers
 
         public override IDisplayResult Display(BodyPart bodyPart)
         {
-            return Shape<BodyPartViewModel>("BodyPart", m => BuildViewModelAsync(m, bodyPart))
+            return Initialize<BodyPartViewModel>("BodyPart", m => BuildViewModelAsync(m, bodyPart))
                 .Location("Detail", "Content:5")
                 .Location("Summary", "Content:10");
         }
 
         public override IDisplayResult Edit(BodyPart bodyPart)
         {
-            return Shape<BodyPartViewModel>("BodyPart_Edit", m => BuildViewModelAsync(m, bodyPart));
+            return Initialize<BodyPartViewModel>("BodyPart_Edit", m => BuildViewModelAsync(m, bodyPart));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(BodyPart model, IUpdateModel updater)

@@ -49,7 +49,7 @@ namespace OrchardCore.Lists.Drivers
 
         private IDisplayResult BuildShape(string containerId)
         {
-            return Shape("ListPart_ContainerId", shape =>
+            return Dynamic("ListPart_ContainerId", shape =>
             {
                 shape.ContainerId = containerId;
             })

@@ -14,17 +14,21 @@ namespace OrchardCore.Email.Drivers
     {
         public const string GroupId = "SmtpSettings";
         private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly IShellHost _orchardHost;
+        private readonly ShellSettings _currentShellSettings;
 
-        public SmtpSettingsDisplayDriver(IDataProtectionProvider dataProtectionProvider)
+        public SmtpSettingsDisplayDriver(IDataProtectionProvider dataProtectionProvider, IShellHost orchardHost, ShellSettings currentShellSettings)
         {
             _dataProtectionProvider = dataProtectionProvider;
+            _orchardHost = orchardHost;
+            _currentShellSettings = currentShellSettings;
         }
 
         public override IDisplayResult Edit(SmtpSettings section)
         {
             var shapes = new List<IDisplayResult>
             {
-                Shape<SmtpSettings>("SmtpSettings_Edit", model =>
+                Initialize<SmtpSettings>("SmtpSettings_Edit", model =>
                 {
                     model.DefaultSender = section.DefaultSender;
                     model.DeliveryMethod = section.DeliveryMethod;
@@ -41,7 +45,7 @@ namespace OrchardCore.Email.Drivers
 
             if (section?.DefaultSender != null)
             {
-                shapes.Add(Shape("SmtpSettings_TestButton").Location("Actions").OnGroup(GroupId));
+                shapes.Add(Dynamic("SmtpSettings_TestButton").Location("Actions").OnGroup(GroupId));
             }
 
             return Combine(shapes);
@@ -65,6 +69,9 @@ namespace OrchardCore.Email.Drivers
                     var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
                     section.Password = protector.Protect(section.Password);
                 }
+
+                // Reload the tenant to apply the settings
+                _orchardHost.ReloadShellContext(_currentShellSettings);
             }
 
             return Edit(section);

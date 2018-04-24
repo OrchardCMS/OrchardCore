@@ -19,7 +19,7 @@ namespace OrchardCore.Autoroute.Settings
                 return null;
             }
 
-            return Shape<AutoroutePartSettingsViewModel>("AutoroutePartSettings_Edit", model =>
+            return Initialize<AutoroutePartSettingsViewModel>("AutoroutePartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.Settings.ToObject<AutoroutePartSettings>();
 

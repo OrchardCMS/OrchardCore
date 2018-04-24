@@ -16,7 +16,7 @@ namespace OrchardCore.Layers.Drivers
 
         public override IDisplayResult Edit(LayerSettings settings, BuildEditorContext context)
         {
-            return Shape<LayerSettingsViewModel>("LayerSettings_Edit", model =>
+            return Initialize<LayerSettingsViewModel>("LayerSettings_Edit", model =>
                 {
                     model.Zones = String.Join(", ", settings.Zones);
                 }).Location("Content:3").OnGroup(GroupId);
