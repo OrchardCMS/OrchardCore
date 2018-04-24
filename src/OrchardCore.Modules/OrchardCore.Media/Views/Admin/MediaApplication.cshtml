@@ -52,7 +52,7 @@
                         <img v-bind:src="media.url + '?width=224&height=240'" />
                     </div>
                     <div class="media-container-main-item-title">
-                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a>
+                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button mr-4" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a>
                         <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button" v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>
                         <span class="media-filename">{{ media.name }}</span>
                     </div>

@@ -133,6 +133,10 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
             .inline-media-button {
                 opacity: 0;
                 padding-top: 0px;
+                position:absolute;
+                top:0px;
+                right: 0px;
+                border-radius: 0px;
             }
 
             &.selected {
@@ -160,6 +164,8 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
 .media-container-main-item-title {
     @extend .card-body;
     border-top: solid 1px $gray-300;
+    padding-top: 24px;
+    position:relative;
 
     .media-filename {
         @extend .card-text;

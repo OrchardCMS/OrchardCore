@@ -6127,7 +6127,11 @@ a.text-dark:hover, a.text-dark:focus {
     width: 240px; }
     .media-container-main ol li .inline-media-button {
       opacity: 0;
-      padding-top: 0px; }
+      padding-top: 0px;
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      border-radius: 0px; }
     .media-container-main ol li.selected .inline-media-button, .media-container-main ol li:hover .inline-media-button {
       opacity: 1; }
   .media-container-main ol .thumb-container {
@@ -6138,7 +6142,9 @@ a.text-dark:hover, a.text-dark:focus {
     justify-content: center; }
 
 .media-container-main-item-title {
-  border-top: solid 1px #dee2e6; }
+  border-top: solid 1px #dee2e6;
+  padding-top: 24px;
+  position: relative; }
 
 /*.media-container-main-list-item {
         @extend .col-md-4;
