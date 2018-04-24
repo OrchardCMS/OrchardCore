@@ -95,7 +95,10 @@ namespace OrchardCore.Mvc
                 provider.PopulateFeature(assemblyParts, feature);
             }
 
-            var featureProvider = featureProviders.OfType<ViewsFeatureProvider>().FirstOrDefault();
+            // TODO: This type is obsolete and will be removed in a future version. See IRazorCompiledItemProvider for alternatives.
+            var viewsFeatureProviderType = Type.GetType("Microsoft.AspNetCore.Mvc.Razor.Compilation.ViewsFeatureProvider");
+            var featureProvider = featureProviders.FirstOrDefault(x => x.GetType() == viewsFeatureProviderType);
+            var precompiledViewAssemblySuffix = viewsFeatureProviderType.GetField("PrecompiledViewsAssemblySuffix", BindingFlags.Public | BindingFlags.Static).GetValue(null).ToString();
 
             if (!_hostingEnvironment.IsDevelopment() && featureProvider != null)
             {
@@ -107,7 +110,7 @@ namespace OrchardCore.Mvc
                     var module = _hostingEnvironment.GetModule(name);
 
                     var precompiledAssemblyPath = Path.Combine(Path.GetDirectoryName(module.Assembly.Location),
-                        module.Assembly.GetName().Name + ViewsFeatureProvider.PrecompiledViewsAssemblySuffix + ".dll");
+                        module.Assembly.GetName().Name + precompiledViewAssemblySuffix + ".dll");
 
                     if (File.Exists(precompiledAssemblyPath))
                     {
