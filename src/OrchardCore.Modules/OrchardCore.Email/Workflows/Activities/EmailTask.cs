@@ -92,11 +92,11 @@ namespace OrchardCore.Email.Workflows.Activities
 
             if (!result.Succeeded)
             {
-                return Outcomes("Done");
+                return Outcomes("Failed");
             }
 
             workflowContext.LastResult = result;
-            return Outcomes("Failed");
+            return Outcomes("Done");
         }
     }
 }

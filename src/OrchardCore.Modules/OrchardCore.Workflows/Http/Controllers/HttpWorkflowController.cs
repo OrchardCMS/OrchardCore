@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Services;
@@ -59,7 +58,11 @@ namespace OrchardCore.Workflows.Http.Controllers
             return Ok(url);
         }
 
+        [IgnoreAntiforgeryToken]
         [HttpGet]
+        [HttpPost]
+        [HttpPut]
+        [HttpPatch]
         public async Task<IActionResult> Invoke(string token)
         {
             if (!_securityTokenService.TryDecryptToken<WorkflowPayload>(token, out var payload))
@@ -110,21 +113,24 @@ namespace OrchardCore.Workflows.Http.Controllers
 
             var input = new Dictionary<string, object> { { "Signal", payload.SignalName } };
 
-            CopyTo(Request.Query, input);
-
-            // If a specific workflow instance was provided, then resume that workflow instance.
+            // If a specific workflow was provided, then resume that workflow.
             if (!String.IsNullOrWhiteSpace(payload.WorkflowId))
             {
                 var workflow = await _workflowStore.GetAsync(payload.WorkflowId);
-                var signalActivity = workflow?.BlockingActivities.FirstOrDefault(x => x.Name == SignalEvent.EventName);
+                var signalActivities = workflow?.BlockingActivities.Where(x => x.Name == SignalEvent.EventName).ToList();
 
-                if (signalActivity == null)
+                if (signalActivities == null)
                 {
                     return NotFound();
                 }
 
-                // Resume the workflow instance.
-                await _workflowManager.ResumeWorkflowAsync(workflow, signalActivity, input);
+                // The workflow could be blocking on multiple Signal activities, but only the activity with the provided signal name
+                // will be executed as SignalEvent checks for the provided "Signal" input.
+                foreach (var signalActivity in signalActivities)
+                {
+                    await _workflowManager.ResumeWorkflowAsync(workflow, signalActivity, input);
+                }
+                
             }
             else
             {
@@ -133,14 +139,6 @@ namespace OrchardCore.Workflows.Http.Controllers
             }
 
             return Accepted();
-        }
-
-        private void CopyTo(IEnumerable<KeyValuePair<string, StringValues>> source, IDictionary<string, object> target)
-        {
-            foreach (var item in source)
-            {
-                target[item.Key] = item.Value.ToString();
-            }
         }
     }
 }

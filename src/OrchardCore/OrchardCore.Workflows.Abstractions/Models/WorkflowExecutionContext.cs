@@ -110,19 +110,28 @@ namespace OrchardCore.Workflows.Models
         /// </summary>
         public IEnumerable<string> GetInboundActivityPath(string activityId)
         {
-            return GetInboundActivityPathInternal(activityId).Distinct().ToList();
+            return GetInboundActivityPathInternal(activityId, activityId).Distinct().ToList();
         }
 
-        private IEnumerable<string> GetInboundActivityPathInternal(string activityId)
+        private IEnumerable<string> GetInboundActivityPathInternal(string activityId, string startingPointActivityId)
         {
             foreach (var transition in GetInboundTransitions(activityId))
             {
-                yield return transition.SourceActivityId;
-
-                foreach (var parentActivityId in GetInboundActivityPath(transition.SourceActivityId))
+                // Circuit breaker: Detect workflows that implement repeating flows to prevent an infinite loop here.
+                if (transition.SourceActivityId == startingPointActivityId)
                 {
-                    yield return parentActivityId;
+                    yield break;
                 }
+                else
+                {
+                    yield return transition.SourceActivityId;
+
+                    foreach (var parentActivityId in GetInboundActivityPathInternal(transition.SourceActivityId, startingPointActivityId).Distinct())
+                    {
+                        yield return parentActivityId;
+                    }
+                }
+                
             }
         }
     }

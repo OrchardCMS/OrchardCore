@@ -44,7 +44,6 @@ namespace OrchardCore.Workflows.Activities
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            // Wait for all incoming branches to have executed their activity.
             var branches = Branches;
             var inboundTransitions = workflowContext.GetInboundTransitions(activityContext.ActivityRecord.ActivityId);
             var done = false;
