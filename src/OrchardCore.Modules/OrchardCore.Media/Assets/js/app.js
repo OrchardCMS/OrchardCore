@@ -365,8 +365,9 @@ Vue.component('folder', {
             if (self.model == target) {
 
                 bus.$emit('beforeFolderAdded', self.model);
-
-                self.children.push(folder);
+                if (self.children !== null) {
+                    self.children.push(folder);
+                }                
                 folder.parent = self.model;
                 bus.$emit('folderAdded', folder);
             }
