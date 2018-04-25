@@ -328,6 +328,11 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 var newPath = currentFolder + newName;
                 var oldPath = currentFolder + oldName;
 
+                if (newPath.toLowerCase() === oldPath.toLowerCase()) {
+                    $('#renameMediaModal').modal('hide');
+                    return;
+                }
+
                 $.ajax({
                     url: $('#renameMediaUrl').val() + "?oldPath=" + encodeURIComponent(oldPath) + "&newPath=" + encodeURIComponent(newPath),
                     method: 'POST',
