@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Settings;
-using NodaTime;
+using System.Globalization;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
@@ -14,14 +14,14 @@ namespace OrchardCore.DisplayManagement.Shapes
     {
         private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";
 
-        private readonly Modules.IClock _clock;
+        private readonly IClock _clock;
         private readonly ISiteService _siteService;
 
         //private readonly IDateLocalizationServices _dateLocalizationServices;
         //private readonly IDateTimeFormatProvider _dateTimeLocalization;
 
         public DateTimeShapes(
-            Modules.IClock clock,
+            IClock clock,
             IPluralStringLocalizer<DateTimeShapes> localizer,
             ISiteService siteService
             //IDateLocalizationServices dateLocalizationServices,
@@ -88,17 +88,19 @@ namespace OrchardCore.DisplayManagement.Shapes
         [Shape]
         public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format)
         {
-            Instant instant = Instant.FromDateTimeUtc(Utc ?? _clock.UtcNow);
+            var siteService = await _siteService.GetSiteSettingsAsync();
 
-            DateTimeZone timeZone = DateTimeZoneProviders.Tzdb[(await _siteService.GetSiteSettingsAsync()).TimeZone];
-            ZonedDateTime zonedTime = instant.InZone(timeZone);
+            _clock.TimeZone = _clock.GetDateTimeZone(siteService.TimeZone);
+            var zonedTime = _clock.ToZonedDateTime(Utc);
+
+            CultureInfo culture = CultureInfo.InvariantCulture;  // Todo: Get CurrentCulture from site settings
 
             if (Format == null)
             {
                 Format = T[LongDateTimeFormat, LongDateTimeFormat, 0].Value;
             }
 
-            return Html.Raw(Html.Encode(zonedTime.ToString(Format, null)));
+            return Html.Raw(Html.Encode(zonedTime.ToString(Format, culture)));
         }
     }
 

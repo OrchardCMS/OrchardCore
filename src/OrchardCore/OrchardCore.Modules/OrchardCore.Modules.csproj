@@ -19,6 +19,7 @@
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="$(MicrosoftExtensionsFileProvidersEmbeddedPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Localization" Version="$(MicrosoftExtensionsLocalizationPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsLoggingPackageVersion)" />
+    <PackageReference Include="NodaTime" Version="2.3.0-beta02" />
   </ItemGroup>
 
 </Project>
