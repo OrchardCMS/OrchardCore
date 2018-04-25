@@ -59,6 +59,9 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                             // [ContentType]__[PartName]__[FieldName], , e.g. Blog-BodyPart-Description, LandingPage-Services-Description
                             ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partType}__{fieldName}");
+
+                            // [ContentType]__[FieldType], , e.g. Blog-TextField, LandingPage-TextField
+                            ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{fieldType}");
                         }
                     }
                     else
@@ -73,6 +76,9 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                             // [ContentType]__[PartName]__[FieldName]__[ShapeType], e.g. Blog-BodyPart-Description-TextFieldSummary, LandingPage-Services-Description-TextFieldSummary
                             ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partName}__{fieldName}__{shapeType}");
+
+                            // [ContentType]__[FieldType]__[ShapeType], e.g. Blog-TextField-TextFieldSummary, LandingPage-TextField-TextFieldSummary
+                            ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{fieldType}__{shapeType}");
                         }
                     }
                 });
