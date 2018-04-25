@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
 using OrchardCore.Mvc.ModelBinding;
@@ -99,17 +100,12 @@ namespace OrchardCore.Mvc
 
         internal static IMvcCoreBuilder AddModularRazorViewEngine(this IMvcCoreBuilder builder, IServiceProvider services)
         {
-            var env = services.GetRequiredService<IHostingEnvironment>();
+            builder.AddRazorViewEngine();
 
-            return builder.AddRazorViewEngine(options =>
-            {
-                options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
+            builder.Services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
 
-                if (env.IsDevelopment())
-                {
-                    options.FileProviders.Insert(0, new ModuleProjectRazorFileProvider(env));
-                }
-            });
+            return builder;
         }
 
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
