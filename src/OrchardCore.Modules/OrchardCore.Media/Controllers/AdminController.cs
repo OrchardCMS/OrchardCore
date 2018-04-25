@@ -208,7 +208,7 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            if (await _mediaFileStore.GetDirectoryInfoAsync(oldPath) != null)
+            if (await _mediaFileStore.GetFileInfoAsync(oldPath) == null)
             {
                 return NotFound();
             }
