@@ -16,7 +16,7 @@
       }
     },
     "web": {
-      "commandName": "Project",
+      "commandName": "web",
       "launchBrowser": true,
       "launchUrl": "http://localhost:7000",
       "environmentVariables": {
