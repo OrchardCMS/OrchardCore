@@ -3,7 +3,12 @@
 $(function () {
     ps = new PerfectScrollbar('#left-nav');
 
-    if ($('body').hasClass('left-sidebar-compact')) {
+    // We set leftbar to compact if :
+    // 1. That preference was stored by the user the last time he was on the page
+    // 2. Is the first time on page and page is small.
+    //
+    if ($('body').hasClass('left-sidebar-compact')
+        || (($('body').hasClass('no-admin-preferences') && $(window).width() < 768))){
         setCompactStatus();
     }
 });
@@ -11,8 +16,6 @@ $(function () {
 
 $('.leftbar-compactor').click(function () {
     $('body').hasClass('left-sidebar-compact') ? unSetCompactStatus() : setCompactStatus();
-
-    persistAdminPreferences();
 });
 
 
@@ -37,6 +40,8 @@ function setCompactStatus() {
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', '');
     $('#left-nav').removeClass('ps');
     $('#left-nav').removeClass('ps--active-y'); // need this too because of Edge IE11
+
+    persistAdminPreferences();
 }
 
 
@@ -48,4 +53,6 @@ function unSetCompactStatus() {
     $('#left-nav ul.menu-admin > li > ul').addClass('collapse');    
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', 'collapse');
     $('#left-nav').addClass('ps');
+
+    persistAdminPreferences();
 }
