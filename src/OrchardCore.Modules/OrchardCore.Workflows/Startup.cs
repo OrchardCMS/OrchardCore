@@ -56,6 +56,7 @@ namespace OrchardCore.Workflows
             services.AddActivity<ForkTask, ForkTaskDisplay>();
             services.AddActivity<JoinTask, JoinTaskDisplay>();
             services.AddActivity<ForLoopTask, ForLoopTaskDisplay>();
+            services.AddActivity<ForEachTask, ForEachTaskDisplay>();
             services.AddActivity<WhileLoopTask, WhileLoopTaskDisplay>();
             services.AddActivity<IfElseTask, IfElseTaskDisplay>();
             services.AddActivity<ScriptTask, ScriptTaskDisplay>();

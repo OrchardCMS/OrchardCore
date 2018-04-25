@@ -23,18 +23,36 @@ namespace OrchardCore.Workflows.Activities
         public override LocalizedString Category => T["Control Flow"];
 
         /// <summary>
-        /// An expression evaluating to the number of times to loop.
+        /// An expression evaluating to the start value.
         /// </summary>
-        public WorkflowExpression<int> Count
+        public WorkflowExpression<double> From
         {
-            get => GetProperty(() => new WorkflowExpression<int>());
+            get => GetProperty(() => new WorkflowExpression<double>("0"));
             set => SetProperty(value);
         }
 
         /// <summary>
-        /// The current number of iterations executed.
+        /// An expression evaluating to the end value.
         /// </summary>
-        public int Index
+        public WorkflowExpression<double> To
+        {
+            get => GetProperty(() => new WorkflowExpression<double>("10"));
+            set => SetProperty(value);
+        }
+
+        /// <summary>
+        /// The property name to store the current iteration number in.
+        /// </summary>
+        public string LoopVariableName
+        {
+            get => GetProperty(() => "x");
+            set => SetProperty(value);
+        }
+
+        /// <summary>
+        /// The current index of the iteration.
+        /// </summary>
+        public double Index
         {
             get => GetProperty(() => 0);
             set => SetProperty(value);
@@ -47,11 +65,18 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var count = await _scriptEvaluator.EvaluateAsync(Count, workflowContext);
+            var from = await _scriptEvaluator.EvaluateAsync(From, workflowContext);
+            var to = await _scriptEvaluator.EvaluateAsync(To, workflowContext);
 
-            if (Index < count)
+            if(Index < from)
+            {
+                Index = from;
+            }
+
+            if (Index < to)
             {
                 workflowContext.LastResult = Index;
+                workflowContext.Properties[LoopVariableName] = Index;
                 Index++;
                 return Outcomes("Iterate");
             }
