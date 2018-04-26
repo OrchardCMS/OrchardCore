@@ -1,0 +1,8 @@
+@using OrchardCore.Workflows.UserTasks.ViewModels;
+@model UserTaskEventViewModel
+
+<fieldset class="form-group" asp-validation-class-for="Actions">
+    <label asp-for="Actions">@T["Actions"] <span asp-validation-for="Actions"></span></label>
+    <input asp-for="Actions" class="form-control" />
+    <span class="hint">@T["Enter one or more comma-separated action names."]</span>
+</fieldset>
