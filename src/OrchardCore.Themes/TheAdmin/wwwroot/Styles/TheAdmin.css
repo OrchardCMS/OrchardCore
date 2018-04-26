@@ -6796,6 +6796,11 @@ span.CodeMirror-selectedtext {
 .left-sidebar-compact .ta-content {
   margin-left: 60px; }
 
+@media (max-width: 767.98px) {
+  .ta-content {
+    margin-left: 60px;
+    transition: margin-left 0.5s ease-in-out; } }
+
 #ta-left-sidebar {
   height: 100%;
   z-index: 7;

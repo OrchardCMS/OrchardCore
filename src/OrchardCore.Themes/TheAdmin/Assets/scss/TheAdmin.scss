@@ -90,7 +90,12 @@ $link-padding-left: 16px !default;
     margin-left: $left-navigation-width-when-compact;
 }
 
-
+@include media-breakpoint-down(sm) {
+    .ta-content {
+        margin-left: $left-navigation-width-when-compact;
+        transition: margin-left 0.5s ease-in-out;
+    }
+}
 
 // Layout 3 : ta-left-sidebar when expanded
 // ----------------------------------------
