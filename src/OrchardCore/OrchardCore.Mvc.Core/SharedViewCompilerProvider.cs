@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc
 {
@@ -91,6 +93,47 @@ namespace OrchardCore.Mvc
             foreach (var provider in featureProviders)
             {
                 provider.PopulateFeature(assemblyParts, feature);
+            }
+
+            var featureProvider = featureProviders.OfType<ViewsFeatureProvider>().FirstOrDefault();
+
+            if (!_hostingEnvironment.IsDevelopment() && featureProvider != null)
+            {
+                var moduleNames = _hostingEnvironment.GetApplication().ModuleNames;
+                var moduleFeature = new ViewsFeature();
+
+                foreach (var name in moduleNames)
+                {
+                    var module = _hostingEnvironment.GetModule(name);
+
+                    // We found precompiled assemblies in the same way as 'ViewsFeatureProvider.GetFeatureAssembly()' is doing.
+                    // https://github.com/aspnet/Mvc/blob/dev/src/Microsoft.AspNetCore.Mvc.Razor/Compilation/ViewsFeatureProvider.cs#L83
+
+                    var precompiledAssemblyPath = Path.Combine(Path.GetDirectoryName(module.Assembly.Location),
+                        module.Assembly.GetName().Name + ViewsFeatureProvider.PrecompiledViewsAssemblySuffix + ".dll");
+
+                    if (File.Exists(precompiledAssemblyPath))
+                    {
+                        try
+                        {
+                            var assembly = Assembly.LoadFile(precompiledAssemblyPath);
+
+                            featureProvider.PopulateFeature(new AssemblyPart[] { new AssemblyPart(assembly) }, moduleFeature);
+
+                            foreach (var descriptor in moduleFeature.ViewDescriptors)
+                            {
+                                descriptor.RelativePath = '/' + module.SubPath + descriptor.RelativePath;
+                                feature.ViewDescriptors.Add(descriptor);
+                            }
+
+                            moduleFeature.ViewDescriptors.Clear();
+                        }
+                        catch (FileLoadException)
+                        {
+                            // Don't throw if assembly cannot be loaded. This can happen if the file is not a managed assembly.
+                        }
+                    }
+                }
             }
 
             return new SharedRazorViewCompiler(

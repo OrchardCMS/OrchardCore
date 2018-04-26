@@ -5,8 +5,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>
-    <MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
     <TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
   </PropertyGroup>
 
@@ -22,9 +20,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="$(MicrosoftAspNetCorePackageVersion)" />
-
-    <!-- This reference is necessary for view precompilation to work on publish -->
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.ViewCompilation" Version="$(MicrosoftAspNetCoreMvcRazorViewCompilationPackageVersion)" PrivateAssets="All" />
   </ItemGroup>
 
   <!-- Necessary as we reference the Project and not the Package -->
