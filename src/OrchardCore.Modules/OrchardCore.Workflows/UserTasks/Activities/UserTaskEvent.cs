@@ -25,6 +25,12 @@ namespace OrchardCore.Workflows.UserTasks.Activities
             set => SetProperty(value);
         }
 
+        public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            var action = GetProvidedAction(workflowContext);
+            return Actions.Contains(action);
+        }
+
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Actions.Select(x => Outcome(T[x]));
@@ -32,9 +38,13 @@ namespace OrchardCore.Workflows.UserTasks.Activities
 
         public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var action = (string)workflowContext.Input["UserAction"];
-
+            var action = GetProvidedAction(workflowContext);
             return Outcomes(action);
+        }
+
+        private string GetProvidedAction(WorkflowExecutionContext workflowContext)
+        {
+            return (string)workflowContext.Input["UserAction"];
         }
     }
 }

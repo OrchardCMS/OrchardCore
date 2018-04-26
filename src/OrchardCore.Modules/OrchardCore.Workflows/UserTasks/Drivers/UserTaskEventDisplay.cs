@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.UserTasks.Activities;
 using OrchardCore.Workflows.UserTasks.ViewModels;
@@ -14,7 +15,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
 
         protected override void UpdateActivity(UserTaskEventViewModel model, UserTaskEvent activity)
         {
-            activity.Actions = model.Actions.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            activity.Actions = model.Actions.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
         }
     }
 }

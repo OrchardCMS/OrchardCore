@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.UserTasks.Activities;
@@ -11,6 +12,7 @@ namespace OrchardCore.Workflows.UserTasks
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IContentDisplayDriver, ContentsDriver>();
             services.AddActivity<UserTaskEvent, UserTaskEventDisplay>();
         }
     }
