@@ -5,7 +5,7 @@ $(function () {
 
     // We set leftbar to compact if :
     // 1. That preference was stored by the user the last time he was on the page
-    // 2. Is the first time on page and page is small.
+    // 2. Or it's the first time on page and page is small.
     //
     if ($('body').hasClass('left-sidebar-compact')
         || (($('body').hasClass('no-admin-preferences') && $(window).width() < 768))){
