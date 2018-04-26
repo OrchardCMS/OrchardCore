@@ -111,7 +111,7 @@ namespace OrchardCore.Mvc
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
         {
             services.Replace(
-                ServiceDescriptor.Singleton<IModularTenantRouteBuilder, ModularTenantRouteBuilder>());
+                ServiceDescriptor.Transient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>());
 
             services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, ModularViewLocationExpanderProvider>();
