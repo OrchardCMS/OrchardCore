@@ -1442,26 +1442,20 @@ select.form-control:focus::-ms-value {
   .form-control-plaintext.form-control-sm, .input-group-sm > .form-control-plaintext.form-control,
   .input-group-sm > .input-group-prepend > .form-control-plaintext.input-group-text,
   .input-group-sm > .input-group-append > .form-control-plaintext.input-group-text,
-  .input-group-sm > .input-group-prepend > .form-control-plaintext.btn,
-  .input-group-sm > .input-group-prepend > .form-control-plaintext.button,
-  .input-group-sm > .input-group-append > .form-control-plaintext.btn,
-  .input-group-sm > .input-group-append > .form-control-plaintext.button, .form-control-plaintext.form-control-lg, .input-group-lg > .form-control-plaintext.form-control,
+  .input-group-sm > .input-group-prepend > .form-control-plaintext.btn, .input-group-sm > .input-group-prepend > .form-control-plaintext.button,
+  .input-group-sm > .input-group-append > .form-control-plaintext.btn, .input-group-sm > .input-group-append > .form-control-plaintext.button, .form-control-plaintext.form-control-lg, .input-group-lg > .form-control-plaintext.form-control,
   .input-group-lg > .input-group-prepend > .form-control-plaintext.input-group-text,
   .input-group-lg > .input-group-append > .form-control-plaintext.input-group-text,
-  .input-group-lg > .input-group-prepend > .form-control-plaintext.btn,
-  .input-group-lg > .input-group-prepend > .form-control-plaintext.button,
-  .input-group-lg > .input-group-append > .form-control-plaintext.btn,
-  .input-group-lg > .input-group-append > .form-control-plaintext.button {
+  .input-group-lg > .input-group-prepend > .form-control-plaintext.btn, .input-group-lg > .input-group-prepend > .form-control-plaintext.button,
+  .input-group-lg > .input-group-append > .form-control-plaintext.btn, .input-group-lg > .input-group-append > .form-control-plaintext.button {
     padding-right: 0;
     padding-left: 0; }
 
 .form-control-sm, .input-group-sm > .form-control,
 .input-group-sm > .input-group-prepend > .input-group-text,
 .input-group-sm > .input-group-append > .input-group-text,
-.input-group-sm > .input-group-prepend > .btn,
-.input-group-sm > .input-group-prepend > .button,
-.input-group-sm > .input-group-append > .btn,
-.input-group-sm > .input-group-append > .button {
+.input-group-sm > .input-group-prepend > .btn, .input-group-sm > .input-group-prepend > .button,
+.input-group-sm > .input-group-append > .btn, .input-group-sm > .input-group-append > .button {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
   line-height: 1.5;
@@ -1470,19 +1464,15 @@ select.form-control:focus::-ms-value {
 select.form-control-sm:not([size]):not([multiple]), .input-group-sm > select.form-control:not([size]):not([multiple]),
 .input-group-sm > .input-group-prepend > select.input-group-text:not([size]):not([multiple]),
 .input-group-sm > .input-group-append > select.input-group-text:not([size]):not([multiple]),
-.input-group-sm > .input-group-prepend > select.btn:not([size]):not([multiple]),
-.input-group-sm > .input-group-prepend > select.button:not([size]):not([multiple]),
-.input-group-sm > .input-group-append > select.btn:not([size]):not([multiple]),
-.input-group-sm > .input-group-append > select.button:not([size]):not([multiple]) {
+.input-group-sm > .input-group-prepend > select.btn:not([size]):not([multiple]), .input-group-sm > .input-group-prepend > select.button:not([size]):not([multiple]),
+.input-group-sm > .input-group-append > select.btn:not([size]):not([multiple]), .input-group-sm > .input-group-append > select.button:not([size]):not([multiple]) {
   height: calc(1.8125rem + 2px); }
 
 .form-control-lg, .input-group-lg > .form-control,
 .input-group-lg > .input-group-prepend > .input-group-text,
 .input-group-lg > .input-group-append > .input-group-text,
-.input-group-lg > .input-group-prepend > .btn,
-.input-group-lg > .input-group-prepend > .button,
-.input-group-lg > .input-group-append > .btn,
-.input-group-lg > .input-group-append > .button {
+.input-group-lg > .input-group-prepend > .btn, .input-group-lg > .input-group-prepend > .button,
+.input-group-lg > .input-group-append > .btn, .input-group-lg > .input-group-append > .button {
   padding: 0.5rem 1rem;
   font-size: 1.25rem;
   line-height: 1.5;
@@ -1491,10 +1481,8 @@ select.form-control-sm:not([size]):not([multiple]), .input-group-sm > select.for
 select.form-control-lg:not([size]):not([multiple]), .input-group-lg > select.form-control:not([size]):not([multiple]),
 .input-group-lg > .input-group-prepend > select.input-group-text:not([size]):not([multiple]),
 .input-group-lg > .input-group-append > select.input-group-text:not([size]):not([multiple]),
-.input-group-lg > .input-group-prepend > select.btn:not([size]):not([multiple]),
-.input-group-lg > .input-group-prepend > select.button:not([size]):not([multiple]),
-.input-group-lg > .input-group-append > select.btn:not([size]):not([multiple]),
-.input-group-lg > .input-group-append > select.button:not([size]):not([multiple]) {
+.input-group-lg > .input-group-prepend > select.btn:not([size]):not([multiple]), .input-group-lg > .input-group-prepend > select.button:not([size]):not([multiple]),
+.input-group-lg > .input-group-append > select.btn:not([size]):not([multiple]), .input-group-lg > .input-group-append > select.button:not([size]):not([multiple]) {
   height: calc(2.875rem + 2px); }
 
 .form-group {
@@ -1653,14 +1641,20 @@ select.form-control-lg:not([size]):not([multiple]), .input-group-lg > select.for
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25); }
   .was-validated .form-control:invalid ~ .invalid-feedback, .was-validated .form-control:invalid ~ .field-validation-error,
   .was-validated .form-control:invalid ~ .invalid-tooltip, .form-control.is-invalid ~ .invalid-feedback, .form-control.input-validation-error ~ .invalid-feedback, .form-control.has-validation-error ~ .invalid-feedback, .form-control.is-invalid ~ .field-validation-error, .form-control.input-validation-error ~ .field-validation-error, .form-control.has-validation-error ~ .field-validation-error,
-  .form-control.is-invalid ~ .invalid-tooltip, .form-control.input-validation-error ~ .invalid-tooltip, .form-control.has-validation-error ~ .invalid-tooltip, .was-validated
-  .custom-select:invalid ~ .invalid-feedback, .was-validated
-  .custom-select:invalid ~ .field-validation-error,
+  .form-control.is-invalid ~ .invalid-tooltip,
+  .form-control.input-validation-error ~ .invalid-tooltip,
+  .form-control.has-validation-error ~ .invalid-tooltip, .was-validated .custom-select:invalid ~ .invalid-feedback, .was-validated .custom-select:invalid ~ .field-validation-error,
   .was-validated
   .custom-select:invalid ~ .invalid-tooltip,
-  .custom-select.is-invalid ~ .invalid-feedback, .custom-select.input-validation-error ~ .invalid-feedback, .custom-select.has-validation-error ~ .invalid-feedback,
-  .custom-select.is-invalid ~ .field-validation-error, .custom-select.input-validation-error ~ .field-validation-error, .custom-select.has-validation-error ~ .field-validation-error,
-  .custom-select.is-invalid ~ .invalid-tooltip, .custom-select.input-validation-error ~ .invalid-tooltip, .custom-select.has-validation-error ~ .invalid-tooltip {
+  .custom-select.is-invalid ~ .invalid-feedback,
+  .custom-select.input-validation-error ~ .invalid-feedback,
+  .custom-select.has-validation-error ~ .invalid-feedback,
+  .custom-select.is-invalid ~ .field-validation-error,
+  .custom-select.input-validation-error ~ .field-validation-error,
+  .custom-select.has-validation-error ~ .field-validation-error,
+  .custom-select.is-invalid ~ .invalid-tooltip,
+  .custom-select.input-validation-error ~ .invalid-tooltip,
+  .custom-select.has-validation-error ~ .invalid-tooltip {
     display: block; }
 
 .was-validated .form-check-input:invalid ~ .form-check-label, .form-check-input.is-invalid ~ .form-check-label, .form-check-input.input-validation-error ~ .form-check-label, .form-check-input.has-validation-error ~ .form-check-label {
@@ -1668,7 +1662,9 @@ select.form-control-lg:not([size]):not([multiple]), .input-group-lg > select.for
 
 .was-validated .form-check-input:invalid ~ .invalid-feedback, .was-validated .form-check-input:invalid ~ .field-validation-error,
 .was-validated .form-check-input:invalid ~ .invalid-tooltip, .form-check-input.is-invalid ~ .invalid-feedback, .form-check-input.input-validation-error ~ .invalid-feedback, .form-check-input.has-validation-error ~ .invalid-feedback, .form-check-input.is-invalid ~ .field-validation-error, .form-check-input.input-validation-error ~ .field-validation-error, .form-check-input.has-validation-error ~ .field-validation-error,
-.form-check-input.is-invalid ~ .invalid-tooltip, .form-check-input.input-validation-error ~ .invalid-tooltip, .form-check-input.has-validation-error ~ .invalid-tooltip {
+.form-check-input.is-invalid ~ .invalid-tooltip,
+.form-check-input.input-validation-error ~ .invalid-tooltip,
+.form-check-input.has-validation-error ~ .invalid-tooltip {
   display: block; }
 
 .was-validated .custom-control-input:invalid ~ .custom-control-label, .custom-control-input.is-invalid ~ .custom-control-label, .custom-control-input.input-validation-error ~ .custom-control-label, .custom-control-input.has-validation-error ~ .custom-control-label {
@@ -1678,7 +1674,9 @@ select.form-control-lg:not([size]):not([multiple]), .input-group-lg > select.for
 
 .was-validated .custom-control-input:invalid ~ .invalid-feedback, .was-validated .custom-control-input:invalid ~ .field-validation-error,
 .was-validated .custom-control-input:invalid ~ .invalid-tooltip, .custom-control-input.is-invalid ~ .invalid-feedback, .custom-control-input.input-validation-error ~ .invalid-feedback, .custom-control-input.has-validation-error ~ .invalid-feedback, .custom-control-input.is-invalid ~ .field-validation-error, .custom-control-input.input-validation-error ~ .field-validation-error, .custom-control-input.has-validation-error ~ .field-validation-error,
-.custom-control-input.is-invalid ~ .invalid-tooltip, .custom-control-input.input-validation-error ~ .invalid-tooltip, .custom-control-input.has-validation-error ~ .invalid-tooltip {
+.custom-control-input.is-invalid ~ .invalid-tooltip,
+.custom-control-input.input-validation-error ~ .invalid-tooltip,
+.custom-control-input.has-validation-error ~ .invalid-tooltip {
   display: block; }
 
 .was-validated .custom-control-input:invalid:checked ~ .custom-control-label::before, .custom-control-input.is-invalid:checked ~ .custom-control-label::before, .custom-control-input.input-validation-error:checked ~ .custom-control-label::before, .custom-control-input.has-validation-error:checked ~ .custom-control-label::before {
@@ -1694,7 +1692,9 @@ select.form-control-lg:not([size]):not([multiple]), .input-group-lg > select.for
 
 .was-validated .custom-file-input:invalid ~ .invalid-feedback, .was-validated .custom-file-input:invalid ~ .field-validation-error,
 .was-validated .custom-file-input:invalid ~ .invalid-tooltip, .custom-file-input.is-invalid ~ .invalid-feedback, .custom-file-input.input-validation-error ~ .invalid-feedback, .custom-file-input.has-validation-error ~ .invalid-feedback, .custom-file-input.is-invalid ~ .field-validation-error, .custom-file-input.input-validation-error ~ .field-validation-error, .custom-file-input.has-validation-error ~ .field-validation-error,
-.custom-file-input.is-invalid ~ .invalid-tooltip, .custom-file-input.input-validation-error ~ .invalid-tooltip, .custom-file-input.has-validation-error ~ .invalid-tooltip {
+.custom-file-input.is-invalid ~ .invalid-tooltip,
+.custom-file-input.input-validation-error ~ .invalid-tooltip,
+.custom-file-input.has-validation-error ~ .invalid-tooltip {
   display: block; }
 
 .was-validated .custom-file-input:invalid:focus ~ .custom-file-label, .custom-file-input.is-invalid:focus ~ .custom-file-label, .custom-file-input.input-validation-error:focus ~ .custom-file-label, .custom-file-input.has-validation-error:focus ~ .custom-file-label {
@@ -2837,7 +2837,9 @@ tbody.collapse.show {
   justify-content: space-between;
   padding: 0.5rem 1rem; }
   .navbar > .container, .ta-navbar-top > .container, .admin-toolbar > .container,
-  .navbar > .container-fluid, .ta-navbar-top > .container-fluid, .admin-toolbar > .container-fluid {
+  .navbar > .container-fluid,
+  .ta-navbar-top > .container-fluid,
+  .admin-toolbar > .container-fluid {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -2932,7 +2934,9 @@ tbody.collapse.show {
 
 @media (max-width: 767.98px) {
   .navbar-expand-md > .container, .ta-navbar-top > .container, .admin-toolbar > .container,
-  .navbar-expand-md > .container-fluid, .ta-navbar-top > .container-fluid, .admin-toolbar > .container-fluid {
+  .navbar-expand-md > .container-fluid,
+  .ta-navbar-top > .container-fluid,
+  .admin-toolbar > .container-fluid {
     padding-right: 0;
     padding-left: 0; } }
 
@@ -2951,7 +2955,9 @@ tbody.collapse.show {
         padding-right: 0.5rem;
         padding-left: 0.5rem; }
     .navbar-expand-md > .container, .ta-navbar-top > .container, .admin-toolbar > .container,
-    .navbar-expand-md > .container-fluid, .ta-navbar-top > .container-fluid, .admin-toolbar > .container-fluid {
+    .navbar-expand-md > .container-fluid,
+    .ta-navbar-top > .container-fluid,
+    .admin-toolbar > .container-fluid {
       flex-wrap: nowrap; }
     .navbar-expand-md .navbar-collapse, .ta-navbar-top .navbar-collapse, .admin-toolbar .navbar-collapse {
       display: flex !important;
@@ -3068,9 +3074,15 @@ tbody.collapse.show {
     color: rgba(0, 0, 0, 0.3); }
 
 .navbar-light .navbar-nav .show > .nav-link, .ta-navbar-top .navbar-nav .show > .nav-link, .admin-toolbar .navbar-nav .show > .nav-link,
-.navbar-light .navbar-nav .active > .nav-link, .ta-navbar-top .navbar-nav .active > .nav-link, .admin-toolbar .navbar-nav .active > .nav-link,
-.navbar-light .navbar-nav .nav-link.show, .ta-navbar-top .navbar-nav .nav-link.show, .admin-toolbar .navbar-nav .nav-link.show,
-.navbar-light .navbar-nav .nav-link.active, .ta-navbar-top .navbar-nav .nav-link.active, .admin-toolbar .navbar-nav .nav-link.active {
+.navbar-light .navbar-nav .active > .nav-link,
+.ta-navbar-top .navbar-nav .active > .nav-link,
+.admin-toolbar .navbar-nav .active > .nav-link,
+.navbar-light .navbar-nav .nav-link.show,
+.ta-navbar-top .navbar-nav .nav-link.show,
+.admin-toolbar .navbar-nav .nav-link.show,
+.navbar-light .navbar-nav .nav-link.active,
+.ta-navbar-top .navbar-nav .nav-link.active,
+.admin-toolbar .navbar-nav .nav-link.active {
   color: rgba(0, 0, 0, 0.9); }
 
 .navbar-light .navbar-toggler, .ta-navbar-top .navbar-toggler, .admin-toolbar .navbar-toggler {
@@ -4020,12 +4032,15 @@ button.close {
   .bs-popover-top .arrow, .bs-popover-auto[x-placement^="top"] .arrow {
     bottom: calc((0.5rem + 1px) * -1); }
   .bs-popover-top .arrow::before, .bs-popover-auto[x-placement^="top"] .arrow::before,
-  .bs-popover-top .arrow::after, .bs-popover-auto[x-placement^="top"] .arrow::after {
+  .bs-popover-top .arrow::after,
+  .bs-popover-auto[x-placement^="top"] .arrow::after {
     border-width: 0.5rem 0.5rem 0; }
   .bs-popover-top .arrow::before, .bs-popover-auto[x-placement^="top"] .arrow::before {
     bottom: 0;
     border-top-color: rgba(0, 0, 0, 0.25); }
-  .bs-popover-top .arrow::after, .bs-popover-auto[x-placement^="top"] .arrow::after {
+  
+  .bs-popover-top .arrow::after,
+  .bs-popover-auto[x-placement^="top"] .arrow::after {
     bottom: 1px;
     border-top-color: #fff; }
 
@@ -4037,12 +4052,15 @@ button.close {
     height: 1rem;
     margin: 0.3rem 0; }
   .bs-popover-right .arrow::before, .bs-popover-auto[x-placement^="right"] .arrow::before,
-  .bs-popover-right .arrow::after, .bs-popover-auto[x-placement^="right"] .arrow::after {
+  .bs-popover-right .arrow::after,
+  .bs-popover-auto[x-placement^="right"] .arrow::after {
     border-width: 0.5rem 0.5rem 0.5rem 0; }
   .bs-popover-right .arrow::before, .bs-popover-auto[x-placement^="right"] .arrow::before {
     left: 0;
     border-right-color: rgba(0, 0, 0, 0.25); }
-  .bs-popover-right .arrow::after, .bs-popover-auto[x-placement^="right"] .arrow::after {
+  
+  .bs-popover-right .arrow::after,
+  .bs-popover-auto[x-placement^="right"] .arrow::after {
     left: 1px;
     border-right-color: #fff; }
 
@@ -4051,12 +4069,15 @@ button.close {
   .bs-popover-bottom .arrow, .bs-popover-auto[x-placement^="bottom"] .arrow {
     top: calc((0.5rem + 1px) * -1); }
   .bs-popover-bottom .arrow::before, .bs-popover-auto[x-placement^="bottom"] .arrow::before,
-  .bs-popover-bottom .arrow::after, .bs-popover-auto[x-placement^="bottom"] .arrow::after {
+  .bs-popover-bottom .arrow::after,
+  .bs-popover-auto[x-placement^="bottom"] .arrow::after {
     border-width: 0 0.5rem 0.5rem 0.5rem; }
   .bs-popover-bottom .arrow::before, .bs-popover-auto[x-placement^="bottom"] .arrow::before {
     top: 0;
     border-bottom-color: rgba(0, 0, 0, 0.25); }
-  .bs-popover-bottom .arrow::after, .bs-popover-auto[x-placement^="bottom"] .arrow::after {
+  
+  .bs-popover-bottom .arrow::after,
+  .bs-popover-auto[x-placement^="bottom"] .arrow::after {
     top: 1px;
     border-bottom-color: #fff; }
   .bs-popover-bottom .popover-header::before, .bs-popover-auto[x-placement^="bottom"] .popover-header::before {
@@ -4077,12 +4098,15 @@ button.close {
     height: 1rem;
     margin: 0.3rem 0; }
   .bs-popover-left .arrow::before, .bs-popover-auto[x-placement^="left"] .arrow::before,
-  .bs-popover-left .arrow::after, .bs-popover-auto[x-placement^="left"] .arrow::after {
+  .bs-popover-left .arrow::after,
+  .bs-popover-auto[x-placement^="left"] .arrow::after {
     border-width: 0.5rem 0 0.5rem 0.5rem; }
   .bs-popover-left .arrow::before, .bs-popover-auto[x-placement^="left"] .arrow::before {
     right: 0;
     border-left-color: rgba(0, 0, 0, 0.25); }
-  .bs-popover-left .arrow::after, .bs-popover-auto[x-placement^="left"] .arrow::after {
+  
+  .bs-popover-left .arrow::after,
+  .bs-popover-auto[x-placement^="left"] .arrow::after {
     right: 1px;
     border-left-color: #fff; }
 
@@ -6659,6 +6683,11 @@ span.CodeMirror-selectedtext {
 
 .left-sidebar-compact .ta-content {
   margin-left: 60px; }
+
+@media (max-width: 767.98px) {
+  .ta-content {
+    margin-left: 60px;
+    transition: margin-left 0.5s ease-in-out; } }
 
 #ta-left-sidebar {
   height: 100%;
