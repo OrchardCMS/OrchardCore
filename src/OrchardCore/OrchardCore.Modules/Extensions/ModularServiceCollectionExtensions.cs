@@ -111,7 +111,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IClock, Clock>();
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
-            services.AddScoped<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
+            services.AddSingleton<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
 
             return services;
         }
