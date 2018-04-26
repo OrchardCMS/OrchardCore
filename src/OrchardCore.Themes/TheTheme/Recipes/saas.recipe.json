@@ -32,6 +32,7 @@
         "OrchardCore.Settings",
         "OrchardCore.Tenants",
         "OrchardCore.Themes",
+        "OrchardCore.Email",
         "OrchardCore.Users",
 
         // Themes
