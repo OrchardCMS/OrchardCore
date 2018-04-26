@@ -4,7 +4,6 @@
 @using OrchardCore.Users
 @using OrchardCore.Users.Models
 @model OrchardCore.Users.ViewModels.LoginViewModel
-@inject ISiteService _settings
 @inject SignInManager<IUser> _signInManager
 @inject ISiteService _site
 
@@ -12,7 +11,6 @@
     var settings = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>();
     var userCanRegister = settings.UsersCanRegister;
     var enableLostPassword = settings.EnableLostPassword;
-    var userCanRegister = (await _settings.GetSiteSettingsAsync()).As<RegistrationSettings>()?.UsersCanRegister ?? false;
     var loginProviders = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 }
 
