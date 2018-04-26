@@ -14,6 +14,13 @@
                             {% assign dateTime = "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc, format: format | shape_stringify %}
                             {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
                         </span>
+                        <span class="meta">
+                            {% assign dateTime = "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc | shape_stringify %}
+                            {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
+                        </span>
+                        <span class="meta">
+                        Now : {{ "now" | local | date: "%c" }}
+                        </span>
                     </div>
                 </div>
             </div>

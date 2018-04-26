@@ -12,7 +12,6 @@ namespace OrchardCore.Liquid.Filters
     {
         private readonly ISiteService _siteService;
         private readonly IClock _clock;
-        private TimeZoneInfo _localTimeZone;
 
         public TimeZoneFilter(ISiteService siteService, IClock clock)
         {
@@ -56,12 +55,11 @@ namespace OrchardCore.Liquid.Filters
                         return NilValue.Instance;
                 }
             }
-            
-            _localTimeZone = _localTimeZone ?? TimeZoneInfo.FindSystemTimeZoneById((await _siteService.GetSiteSettingsAsync()).TimeZone);
 
-            var local = TimeZoneInfo.ConvertTime(value, _localTimeZone);
-            
-            return new ObjectValue(local);
+            _clock.SetDateTimeZone((await _siteService.GetSiteSettingsAsync()).TimeZone);
+            _clock.SetCulture(CultureInfo.CurrentCulture);
+            //TODO : set culture of the clock from website settings
+            return new ObjectValue(_clock.ToZonedDateTime(value).ToDateTimeOffset());
         }
     }
 }

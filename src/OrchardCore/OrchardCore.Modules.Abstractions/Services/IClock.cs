@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using NodaTime;
 
 namespace OrchardCore.Modules
@@ -14,12 +15,31 @@ namespace OrchardCore.Modules
 		/// Gets the current <see cref="DateTime"/> of the system, expressed in Utc
 		/// </summary>
 		DateTime UtcNow { get; }
-        DateTimeZone TimeZone { get; set; }
-        DateTimeZone GetDateTimeZone(string timeZone);
+
+        Instant InstantNow { get; }
+
+        /// <summary>
+        /// Gets the current <see cref="DateTimeZone"/> of the system
+        /// </summary>
+        DateTimeZone TimeZone { get; }
+
+        /// <summary>
+        /// Gets the current clock culture
+        /// </summary>
+        CultureInfo Culture { get; }
+
+        /// <summary>
+        /// Gets the current <see cref="LocalDateTime"/> of the system
+        /// </summary>
         LocalDateTime LocalNow { get; }
+
+        void SetDateTimeZone(string timeZone);
+        DateTimeZone GetDateTimeZone(string timeZone);
+        void SetCulture(CultureInfo culture);
+
         Instant ToInstant(LocalDateTime local);
         LocalDateTime ToLocal(Instant instant);
         ZonedDateTime ToZonedDateTime(DateTime? dateTime);
-        
+        ZonedDateTime ToZonedDateTime(DateTimeOffset? dateTimeOffSet);
     }
 }
