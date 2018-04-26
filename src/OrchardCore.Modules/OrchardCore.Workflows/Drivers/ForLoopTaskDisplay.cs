@@ -9,12 +9,16 @@ namespace OrchardCore.Workflows.Drivers
     {
         protected override void EditActivity(ForLoopTask activity, ForLoopTaskViewModel model)
         {
-            model.CountExpression = activity.Count.Expression;
+            model.FromExpression = activity.From.Expression;
+            model.ToExpression = activity.To.Expression;
+            model.LoopVariableName = activity.LoopVariableName;
         }
 
         protected override void UpdateActivity(ForLoopTaskViewModel model, ForLoopTask activity)
         {
-            activity.Count = new WorkflowExpression<int>(model.CountExpression);
+            activity.From = new WorkflowExpression<double>(model.FromExpression);
+            activity.To = new WorkflowExpression<double>(model.ToExpression);
+            activity.LoopVariableName = model.LoopVariableName;
         }
     }
 }
