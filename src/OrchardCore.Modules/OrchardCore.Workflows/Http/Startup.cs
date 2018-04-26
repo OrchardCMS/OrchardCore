@@ -33,11 +33,11 @@ namespace OrchardCore.Workflows.Http
                 options.Filters.Add(typeof(WorkflowActionFilter));
             });
 
-            services.AddScoped<IWorkflowDefinitionEventHandler, WorkflowDefinitionRoutesHandler>();
-            services.AddScoped<IWorkflowInstanceHandler, WorkflowInstanceRoutesHandler>();
+            services.AddScoped<IWorkflowTypeEventHandler, WorkflowTypeRoutesHandler>();
+            services.AddScoped<IWorkflowHandler, WorkflowRoutesHandler>();
 
-            services.AddSingleton<IWorkflowDefinitionRouteEntries, WorkflowDefinitionRouteEntries>();
-            services.AddSingleton<IWorkflowInstanceRouteEntries, WorkflowInstanceRouteEntries>();
+            services.AddSingleton<IWorkflowTypeRouteEntries, WorkflowTypeRouteEntries>();
+            services.AddSingleton<IWorkflowInstanceRouteEntries, WorkflowRouteEntries>();
             services.AddSingleton<IGlobalMethodProvider, HttpMethodsProvider>();
             services.AddScoped<IWorkflowExecutionContextHandler, SignalWorkflowExecutionContextHandler>();
 
@@ -53,39 +53,46 @@ namespace OrchardCore.Workflows.Http
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            //routes.MapAreaRoute(
+            //    name: "SignalWorkflow",
+            //    areaName: "OrchardCore.Workflows",
+            //    template: "Workflows/{action}",
+            //    defaults: new { controller = "HttpWorkflow", action = "Trigger" }
+            //);
+
             routes.MapAreaRoute(
                 name: "InvokeWorkflow",
                 areaName: "OrchardCore.Workflows",
                 template: "Workflows/{action}",
-                defaults: new { controller = "Workflow" }
+                defaults: new { controller = "HttpWorkflow" }
             );
 
-            var workflowDefinitionStore = serviceProvider.GetRequiredService<IWorkflowDefinitionStore>();
-            var workflowInstanceStore = serviceProvider.GetRequiredService<IWorkflowInstanceStore>();
-            var workflowDefinitionDictionary = workflowDefinitionStore.ListAsync().GetAwaiter().GetResult().ToDictionary(x => x.WorkflowDefinitionId);
-            var workflowInstanceDictionary = workflowInstanceStore.ListAsync().GetAwaiter().GetResult().ToDictionary(x => x.Id);
+            var workflowTypeStore = serviceProvider.GetRequiredService<IWorkflowTypeStore>();
+            var workflowStore = serviceProvider.GetRequiredService<IWorkflowStore>();
+            var workflowTypeDictionary = workflowTypeStore.ListAsync().GetAwaiter().GetResult().ToDictionary(x => x.WorkflowTypeId);
+            var workflowDictionary = workflowStore.ListAsync().GetAwaiter().GetResult().ToDictionary(x => x.Id);
 
-            ConfigureWorkflowRouteEntries(serviceProvider, workflowDefinitionDictionary, workflowInstanceDictionary);
+            ConfigureWorkflowRouteEntries(serviceProvider, workflowTypeDictionary, workflowDictionary);
         }
 
-        private void ConfigureWorkflowRouteEntries(IServiceProvider serviceProvider, IDictionary<string, WorkflowDefinition> workflowDefinitionDictionary, IDictionary<int, WorkflowInstance> workflowInstanceDictionary)
+        private void ConfigureWorkflowRouteEntries(IServiceProvider serviceProvider, IDictionary<string, WorkflowType> workflowTypeDictionary, IDictionary<int, Workflow> workflowDictionary)
         {
             var activityLibrary = serviceProvider.GetRequiredService<IActivityLibrary>();
-            var workflowDefinitionRouteEntries = serviceProvider.GetRequiredService<IWorkflowDefinitionRouteEntries>();
-            var workflowInstanceRouteEntries = serviceProvider.GetRequiredService<IWorkflowInstanceRouteEntries>();
+            var workflowTypeRouteEntries = serviceProvider.GetRequiredService<IWorkflowTypeRouteEntries>();
+            var workflowEntries = serviceProvider.GetRequiredService<IWorkflowInstanceRouteEntries>();
 
-            var workflowDefinitionRouteEntryQuery =
-                from workflowDefinition in workflowDefinitionDictionary.Values
-                from entry in WorkflowDefinitionRouteEntries.GetWorkflowDefinitionRoutesEntries(workflowDefinition, activityLibrary)
+            var workflowTypeRouteEntryQuery =
+                from workflowType in workflowTypeDictionary.Values
+                from entry in WorkflowTypeRouteEntries.GetWorkflowTypeRoutesEntries(workflowType, activityLibrary)
                 select entry;
 
-            var workflowInstanceRouteEntryQuery =
-                from workflowInstance in workflowInstanceDictionary.Values
-                from entry in WorkflowInstanceRouteEntries.GetWorkflowInstanceRoutesEntries(workflowDefinitionDictionary[workflowInstance.WorkflowDefinitionId], workflowInstance, activityLibrary)
+            var workflowRouteEntryQuery =
+                from workflow in workflowDictionary.Values
+                from entry in WorkflowRouteEntries.GetWorkflowRoutesEntries(workflowTypeDictionary[workflow.WorkflowTypeId], workflow, activityLibrary)
                 select entry;
 
-            workflowDefinitionRouteEntries.AddEntries(workflowDefinitionRouteEntryQuery);
-            workflowInstanceRouteEntries.AddEntries(workflowInstanceRouteEntryQuery);
+            workflowTypeRouteEntries.AddEntries(workflowTypeRouteEntryQuery);
+            workflowEntries.AddEntries(workflowRouteEntryQuery);
         }
     }
 }

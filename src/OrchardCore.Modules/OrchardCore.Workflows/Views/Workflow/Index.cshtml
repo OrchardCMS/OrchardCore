@@ -1,0 +1,96 @@
+@model WorkflowIndexViewModel
+@using OrchardCore.Workflows.Models;
+@using OrchardCore.Workflows.ViewModels;
+
+<h1>@RenderTitleSegments(T["{0} Workflows", Model.WorkflowType.Name])</h1>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowType">@T["Workflow Types"]</a></li>
+        <li class="breadcrumb-item"><a asp-action="Edit" asp-controller="WorkflowType" asp-route-id="@Model.WorkflowType.Id">@Model.WorkflowType.Name</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@T["Workflows"]</li>
+    </ol>
+</nav>
+
+<nav class="admin-toolbar">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <div class="btn-group" role="group">
+                <button id="bulk-actions-button" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    @T["Bulk Actions"]
+                </button>
+                <div class="dropdown-menu" aria-labelledby="bulk-actions-button">
+                    <button type="submit" name="BulkAction" value="@WorkflowBulkAction.Delete" form="workflows-form" class="dropdown-item"> @T["Delete"]</a>
+                </div>
+            </div>
+        </li>
+    </ul>
+</nav>
+
+<div class="form-group">
+    @if (Model.Workflows.Any())
+    {
+        using (Html.BeginForm(FormMethod.Post, new { id = "workflows-form" }))
+        {
+            <ul class="list-group">
+                @for (var i = 0; i < Model.Workflows.Count; i++)
+                {
+                    var entry = Model.Workflows[i];
+                    var statusCss = "";
+
+                    switch (entry.Workflow.Status)
+                    {
+                        case WorkflowStatus.Aborted:
+                            statusCss = "warning";
+                            break;
+                        case WorkflowStatus.Idle:
+                        default:
+                            statusCss = "secondary";
+                            break;
+                        case WorkflowStatus.Finished:
+                            statusCss = "success";
+                            break;
+                        case WorkflowStatus.Executing:
+                        case WorkflowStatus.Halted:
+                        case WorkflowStatus.Resuming:
+                        case WorkflowStatus.Starting:
+                            statusCss = "info";
+                            break;
+                        case WorkflowStatus.Faulted:
+                            statusCss = "danger";
+                            break;
+                    }
+
+                    <li class="list-group-item">
+                        <div class="properties">
+                            <div class="related">
+                                <a asp-action="Delete" asp-route-id="@entry.Workflow.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            </div>
+
+                            <input type="checkbox" asp-for="@Model.Workflows[i].IsChecked" />
+                            <input type="hidden" asp-for="@Model.Workflows[i].Id" />
+                            <a asp-action="Details" asp-route-id="@entry.Workflow.Id">@entry.Workflow.WorkflowId</a>
+                            <div>
+                                <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.Workflow.CreatedUtc)))]</span>
+                                <div class="info">
+                                    <span class="badge badge-@statusCss">@entry.Workflow.Status</span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+        @await DisplayAsync(Model.Pager)
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            @T["<strong>Nothing here!</strong> There are no halted workflows at the moment."]
+        </div>
+    }
+</div>
+
+<div class="form-group">
+    <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Back"]</a>
+</div>

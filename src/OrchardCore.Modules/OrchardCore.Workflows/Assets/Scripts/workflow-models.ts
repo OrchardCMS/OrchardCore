@@ -1,6 +1,6 @@
 namespace Workflows {
 
-    export interface Workflow {
+    export interface WorkflowType {
         id: number;
         activities: Array<Activity>;
         transitions: Array<Transition>;
