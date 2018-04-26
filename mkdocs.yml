@@ -56,3 +56,4 @@ pages:
         - Roles: OrchardCore.Modules/OrchardCore.Roles/README.md
         - Scripting: OrchardCore.Modules/OrchardCore.Scripting/README.md
         - Setup: OrchardCore.Modules/OrchardCore.Setup/README.md
+        - Workflows: OrchardCore.Modules/OrchardCore.Workflows/README.md

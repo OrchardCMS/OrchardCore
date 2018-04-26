@@ -57,6 +57,7 @@ namespace OrchardCore.Workflows.Timers
         {
             if (IsExpired())
             {
+                workflowContext.LastResult = "TimerEvent";
                 return Outcomes("Done");
             }
 
