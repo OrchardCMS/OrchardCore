@@ -2,9 +2,9 @@ namespace OrchardCore.Workflows.Http.Models
 {
     public class SignalPayload
     {
-        public static SignalPayload ForWorkflowInstance(string signalName, string workflowInstanceId)
+        public static SignalPayload ForWorkflow(string signalName, string workflowId)
         {
-            return new SignalPayload(signalName, workflowInstanceId, null);
+            return new SignalPayload(signalName, workflowId, null);
         }
 
         public static SignalPayload ForCorrelation(string signalName, string correlationId)
@@ -12,14 +12,14 @@ namespace OrchardCore.Workflows.Http.Models
             return new SignalPayload(signalName, null, correlationId);
         }
 
-        public SignalPayload(string signalName, string workflowInstanceId, string correlationId)
+        public SignalPayload(string signalName, string workflowId, string correlationId)
         {
-            WorkflowInstanceId = workflowInstanceId;
+            WorkflowId = workflowId;
             CorrelationId = correlationId;
             SignalName = signalName;
         }
 
-        public string WorkflowInstanceId { get; private set; }
+        public string WorkflowId { get; private set; }
         public string CorrelationId { get; private set; }
         public string SignalName { get; private set; }
     }

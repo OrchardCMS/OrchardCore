@@ -7,46 +7,46 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Filters
 {
-    public class WorkflowActionFilter : IAsyncActionFilter
+    internal class WorkflowActionFilter : IAsyncActionFilter
     {
         private readonly IWorkflowManager _workflowManager;
-        private readonly IWorkflowDefinitionRouteEntries _workflowDefinitionRouteEntries;
-        private readonly IWorkflowInstanceRouteEntries _workflowInstanceRouteEntries;
-        private readonly IWorkflowDefinitionStore _workflowDefinitionRepository;
-        private readonly IWorkflowInstanceStore _workflowInstanceRepository;
+        private readonly IWorkflowTypeRouteEntries _workflowTypeRouteEntries;
+        private readonly IWorkflowInstanceRouteEntries _workflowRouteEntries;
+        private readonly IWorkflowTypeStore _workflowTypeStore;
+        private readonly IWorkflowStore _workflowStore;
 
         public WorkflowActionFilter(
             IWorkflowManager workflowManager,
-            IWorkflowDefinitionRouteEntries workflowDefinitionRouteEntries,
-            IWorkflowInstanceRouteEntries workflowInstanceRouteEntries,
-            IWorkflowDefinitionStore workflowDefinitionRepository,
-            IWorkflowInstanceStore workflowinstanceRepository
+            IWorkflowTypeRouteEntries workflowTypeRouteEntries,
+            IWorkflowInstanceRouteEntries workflowRouteEntries,
+            IWorkflowTypeStore workflowTypeStore,
+            IWorkflowStore workflowStore
         )
         {
             _workflowManager = workflowManager;
-            _workflowDefinitionRouteEntries = workflowDefinitionRouteEntries;
-            _workflowInstanceRouteEntries = workflowInstanceRouteEntries;
-            _workflowDefinitionRepository = workflowDefinitionRepository;
-            _workflowInstanceRepository = workflowinstanceRepository;
+            _workflowTypeRouteEntries = workflowTypeRouteEntries;
+            _workflowRouteEntries = workflowRouteEntries;
+            _workflowTypeStore = workflowTypeStore;
+            _workflowStore = workflowStore;
         }
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var httpMethod = context.HttpContext.Request.Method;
             var routeValues = context.RouteData.Values;
-            var workflowDefinitionEntries = _workflowDefinitionRouteEntries.GetWorkflowRouteEntries(httpMethod, routeValues);
-            var workflowInstanceEntries = _workflowInstanceRouteEntries.GetWorkflowRouteEntries(httpMethod, routeValues);
+            var workflowTypeEntries = _workflowTypeRouteEntries.GetWorkflowRouteEntries(httpMethod, routeValues);
+            var workflowEntries = _workflowRouteEntries.GetWorkflowRouteEntries(httpMethod, routeValues);
 
-            if (workflowDefinitionEntries.Any())
+            if (workflowTypeEntries.Any())
             {
-                var workflowDefinitionIds = workflowDefinitionEntries.Select(x => Int32.Parse(x.WorkflowId)).ToList();
-                var workflowDefinitions = (await _workflowDefinitionRepository.GetAsync(workflowDefinitionIds)).ToDictionary(x => x.Id);
+                var workflowTypeIds = workflowTypeEntries.Select(x => Int32.Parse(x.WorkflowId)).ToList();
+                var workflowTypes = (await _workflowTypeStore.GetAsync(workflowTypeIds)).ToDictionary(x => x.Id);
 
-                foreach (var entry in workflowDefinitionEntries)
+                foreach (var entry in workflowTypeEntries)
                 {
-                    var workflowDefinition = workflowDefinitions[Int32.Parse(entry.WorkflowId)];
-                    var activity = workflowDefinition.Activities.Single(x => x.ActivityId == entry.ActivityId);
-                    await _workflowManager.StartWorkflowAsync(workflowDefinition, activity);
+                    var workflowType = workflowTypes[Int32.Parse(entry.WorkflowId)];
+                    var activity = workflowType.Activities.Single(x => x.ActivityId == entry.ActivityId);
+                    await _workflowManager.StartWorkflowAsync(workflowType, activity);
                 }
             }
 

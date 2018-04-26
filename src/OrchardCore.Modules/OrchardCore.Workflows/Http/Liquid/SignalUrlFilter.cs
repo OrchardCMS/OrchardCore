@@ -34,13 +34,13 @@ namespace OrchardCore.Workflows.Http.Liquid
             var workflowContext = (WorkflowExecutionContext)workflowContextValue.ToObjectValue();
             var signalName = input.ToStringValue();
             var payload = String.IsNullOrWhiteSpace(workflowContext.CorrelationId)
-                ? SignalPayload.ForWorkflowInstance(signalName, workflowContext.WorkflowInstanceId)
+                ? SignalPayload.ForWorkflow(signalName, workflowContext.WorkflowId)
                 : SignalPayload.ForCorrelation(signalName, workflowContext.CorrelationId);
 
             var urlHelper = (IUrlHelper)urlHelperObj;
             var signalService = (ISecurityTokenService)signalServiceObj;
             var token = signalService.CreateToken(payload, TimeSpan.FromDays(7));
-            var urlValue = new StringValue(urlHelper.Action("Trigger", "Workflow", new { area = "OrchardCore.Workflows", token }));
+            var urlValue = new StringValue(urlHelper.Action("Trigger", "HttpWorkflow", new { area = "OrchardCore.Workflows", token }));
             return Task.FromResult<FluidValue>(urlValue);
         }
     }

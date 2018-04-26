@@ -13,9 +13,12 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class CreateContentTask : ContentTask
     {
-        public CreateContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<CreateContentTask> localizer) 
+        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+
+        public CreateContentTask(IContentManager contentManager, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<CreateContentTask> localizer) 
             : base(contentManager, scriptEvaluator, localizer)
         {
+            _expressionEvaluator = expressionEvaluator;
         }
 
         public override string Name => nameof(CreateContentTask);
@@ -55,7 +58,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (!string.IsNullOrWhiteSpace(ContentProperties.Expression))
             {
-                var contentProperties = await ScriptEvaluator.EvaluateAsync(ContentProperties, workflowContext);
+                var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext);
                 var propertyObject = JObject.Parse(contentProperties);
 
                 ((JObject)contentItem.Content).Merge(propertyObject);

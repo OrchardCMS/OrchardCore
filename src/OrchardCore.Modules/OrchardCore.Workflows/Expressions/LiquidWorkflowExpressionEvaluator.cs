@@ -78,6 +78,9 @@ namespace OrchardCore.Workflows.Expressions
                 context.SetValue(item.Key, item.Value);
             }
 
+            // Add LastResult.
+            context.SetValue("LastResult", workflowContext.LastResult);
+
             // Add services.
             context.AmbientValues.Add("Services", services);
 
