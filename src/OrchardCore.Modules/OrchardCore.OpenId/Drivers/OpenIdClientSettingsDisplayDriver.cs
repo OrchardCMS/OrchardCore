@@ -66,7 +66,7 @@ namespace OrchardCore.OpenId.Drivers
             return Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit", model =>
             {
                 model.DisplayName = settings.DisplayName;
-                model.AllowedScopes = settings.AllowedScopes != null ? string.Join(",", settings.AllowedScopes) : null;
+                model.Scopes = settings.Scopes != null ? string.Join(" ", settings.Scopes) : null;
                 model.Authority = settings.Authority;
                 model.CallbackPath = settings.CallbackPath;
                 model.ClientId = settings.ClientId;
@@ -118,10 +118,10 @@ namespace OrchardCore.OpenId.Drivers
                 var model = new OpenIdClientSettingsViewModel();
                 await updater.TryUpdateModelAsync(model, Prefix);
 
-                model.AllowedScopes = model.AllowedScopes ?? string.Empty;
+                model.Scopes = model.Scopes ?? string.Empty;
 
                 settings.DisplayName = model.DisplayName;
-                settings.AllowedScopes = model.AllowedScopes.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                settings.Scopes = model.Scopes.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
                 settings.Authority = model.Authority;
                 settings.CallbackPath = model.CallbackPath;
                 settings.ClientId = model.ClientId;

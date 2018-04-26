@@ -12,7 +12,7 @@ namespace OrchardCore.OpenId.Settings
         public string CallbackPath { get; set; }
         public string SignedOutRedirectUri { get; set; }
         public string SignedOutCallbackPath { get; set; }
-        public IEnumerable<string> AllowedScopes { get; set; }
+        public IEnumerable<string> Scopes { get; set; }
         public string ResponseType { get; set; }
         public string ResponseMode { get; set; }
     }

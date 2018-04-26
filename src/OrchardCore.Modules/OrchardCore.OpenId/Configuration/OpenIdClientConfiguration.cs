@@ -75,9 +75,9 @@ namespace OrchardCore.OpenId.Configuration
 
             options.CallbackPath = settings.CallbackPath ?? options.CallbackPath;
 
-            if (settings.AllowedScopes != null)
+            if (settings.Scopes != null)
             {
-                foreach (var scope in settings.AllowedScopes)
+                foreach (var scope in settings.Scopes)
                 {
                     options.Scope.Add(scope);
                 }
