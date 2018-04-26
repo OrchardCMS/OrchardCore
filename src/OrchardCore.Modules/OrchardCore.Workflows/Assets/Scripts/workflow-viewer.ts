@@ -6,8 +6,8 @@
 class WorkflowViewer extends WorkflowCanvas {
     private jsPlumbInstance: jsPlumbInstance;
 
-    constructor(protected container: HTMLElement, protected workflowDefinition: Workflows.Workflow) {
-        super(container, workflowDefinition);
+    constructor(protected container: HTMLElement, protected workflowType: Workflows.WorkflowType) {
+        super(container, workflowType);
         const self = this;
 
         jsPlumb.ready(() => {
@@ -45,8 +45,7 @@ class WorkflowViewer extends WorkflowCanvas {
 
             // Suspend drawing and initialize.
             plumber.batch(() => {
-                var serverWorkflowDefinition: Workflows.Workflow = this.workflowDefinition;
-                var workflowId: number = this.workflowDefinition.id;
+                var workflowId: number = this.workflowType.id;
 
                 activityElements.each((index, activityElement) => {
                     const $activityElement = $(activityElement);
@@ -91,9 +90,9 @@ class WorkflowViewer extends WorkflowCanvas {
 $.fn.workflowViewer = function (this: JQuery): JQuery {
     this.each((index, element) => {
         var $element = $(element);
-        var workflowDefinition: Workflows.Workflow = $element.data('workflow-definition');
+        var workflowType: Workflows.WorkflowType = $element.data('workflow-type');
 
-        $element.data('workflowViewer', new WorkflowViewer(element, workflowDefinition));
+        $element.data('workflowViewer', new WorkflowViewer(element, workflowType));
     });
 
     return this;

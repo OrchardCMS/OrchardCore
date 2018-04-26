@@ -1,0 +1,99 @@
+@model WorkflowViewModel
+@using OrchardCore.Workflows.Models;
+@using OrchardCore.Workflows.ViewModels;
+
+<h1>@RenderTitleSegments(Model.WorkflowType.Name)</h1>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowType">@T["Workflow Types"]</a></li>
+        <li class="breadcrumb-item"><a asp-action="Edit" asp-controller="WorkflowType" asp-route-id="@Model.WorkflowType.Id">@Model.WorkflowType.Name</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id">@T["Workflows"]</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.Workflow.WorkflowId</li>
+    </ol>
+</nav>
+
+<nav class="form-group">
+    <ul class="nav nav-pills" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="workflow-tab" data-toggle="pill" href="#workflow" role="tab" aria-controls="workflow" aria-selected="true">Workflow</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="state-tab" data-toggle="pill" href="#state" role="tab" aria-controls="state">State</a>
+        </li>
+        @*TODO: Enable this when workflow logging is implemented.*@
+        @*<li class="nav-item">
+                <a class="nav-link" id="log-tab" data-toggle="pill" href="#log" role="tab" aria-controls="log">Log</a>
+            </li>*@
+    </ul>
+</nav>
+<div class="tab-content">
+    <div id="workflow" class="tab-pane active" role="tabpanel" aria-labelledby="workflow-tab">
+        <div class="card form-group workflow-details">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <label>@T["Workflow ID"]</label>
+                        <span>@Model.Workflow.WorkflowId</span>
+                    </div>
+                    <div class="col">
+                        <label>@T["Created"]</label>
+                        <span>@Model.Workflow.CreatedUtc</span>
+                    </div>
+                    <div class="col">
+                        <label>@T["Status"]</label>
+                        <span>@Model.Workflow.Status</span>
+                    </div>
+                    @if (Model.Workflow.Status == WorkflowStatus.Faulted)
+                    {
+                        <div class="col">
+                            <label>@T["Fault Message"]</label>
+                            <span>@Model.Workflow.FaultMessage</span>
+                        </div>
+                    }
+                    <div class="col">
+                        <label>@T["Correlation ID"]</label>
+                        <span>@(Model.Workflow.CorrelationId ?? "None")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <fieldset class="form-group">
+            <div class="workflow-container">
+                <div class="workflow-canvas-container">
+                    <div class="workflow-canvas" data-workflow-type="@Model.WorkflowTypeJson">
+                        @foreach (var activityShape in Model.ActivityDesignShapes)
+                        {
+                            @await DisplayAsync(activityShape)
+                        }
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div id="state" class="tab-pane" role="tabpanel" aria-labelledby="state-tab">
+        <div class="card form-group">
+            <div class="card-body">
+                <pre>@Model.WorkflowJson</pre>
+            </div>
+        </div>
+    </div>
+    @*TODO: Enable this when workflow logging is implemented.*@
+    @*<div id="log" class="tab-pane" role="tabpanel" aria-labelledby="log-tab">
+            <div class="card form-group">
+                <div class="card-body">
+                    Pretty LOG goes here...
+                </div>
+            </div>
+        </div>*@
+</div>
+<fieldset class="form-group">
+    <a class="btn btn-secondary" asp-route-action="Index" asp-route-workflowTypeId="@Model.WorkflowType.Id">@T["Back"]</a>
+    <a class="btn btn-danger" data-unsafe-url="@T["Are you sure you want to delete this workflow?"]" asp-action="Delete" asp-route-id="@Model.Workflow.Id">@T["Delete"]</a>
+</fieldset>
+
+<style asp-src="~/OrchardCore.Workflows/Styles/jsplumbtoolkit-defaults.min.css" debug-src="~/OrchardCore.Workflows/Styles/jsplumbtoolkit-defaults.css" cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.5.5/css/jsplumbtoolkit-defaults.min.css" debug-cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.5.5/css/jsplumbtoolkit-defaults.css" version="2.5.5"></style>
+<style asp-src="~/OrchardCore.Workflows/Styles/orchard.workflows-viewer.min.css" debug-src="~/OrchardCore.Workflows/Styles/orchard.workflows-viewer.css"></style>
+<script asp-name="bootstrap" version="4" at="Foot"></script>
+<script asp-name="jsplumb" depends-on="jQuery" asp-src="~/OrchardCore.Workflows/Scripts/jsplumb.min.js" debug-src="~/OrchardCore.Workflows/Scripts/jsplumb.js" cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.5.5/js/jsplumb.min.js" debug-cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.5.5/js/jsplumb.js" type="text/javascript" version="2.5.5" at="Foot"></script>
+<script depends-on="jsplumb" asp-src="~/OrchardCore.Workflows/Scripts/orchard.workflows-viewer.min.js" debug-src="~/OrchardCore.Workflows/Scripts/orchard.workflows-viewer.js" type="text/javascript" at="Foot"></script>

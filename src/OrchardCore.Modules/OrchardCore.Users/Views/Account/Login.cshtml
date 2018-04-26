@@ -6,8 +6,12 @@
 @model OrchardCore.Users.ViewModels.LoginViewModel
 @inject ISiteService _settings
 @inject SignInManager<IUser> _signInManager
+@inject ISiteService _site
 
 @{
+    var settings = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>();
+    var userCanRegister = settings.UsersCanRegister;
+    var enableLostPassword = settings.EnableLostPassword;
     var userCanRegister = (await _settings.GetSiteSettingsAsync()).As<RegistrationSettings>()?.UsersCanRegister ?? false;
     var loginProviders = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 }
@@ -54,9 +58,11 @@
                         <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">@T["Register as a new user?"]</a>
                     </p>
                 }
-                @*<p>
-                        <a asp-action="ForgotPassword">@T["Forgot your password?"]</a>
-                    </p>*@
+                @if (enableLostPassword) {
+                <p>
+                    <a asp-action="ForgotPassword">@T["Forgot your password?"]</a>
+                </p>
+                }
             </form>
         </section>
     </div>

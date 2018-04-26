@@ -10,8 +10,8 @@ class WorkflowEditor extends WorkflowCanvas {
     private hasDragged: boolean;
     private dragStart: JQuery.Coordinates;
 
-    constructor(protected container: HTMLElement, protected workflowDefinition: Workflows.Workflow, private deleteActivityPrompt: string, private localId: string, loadLocalState: boolean) {
-        super(container, workflowDefinition);
+    constructor(protected container: HTMLElement, protected workflowType: Workflows.WorkflowType, private deleteActivityPrompt: string, private localId: string, loadLocalState: boolean) {
+        super(container, workflowType);
         const self = this;
 
         jsPlumb.ready(() => {
@@ -49,21 +49,21 @@ class WorkflowEditor extends WorkflowCanvas {
 
             // Suspend drawing and initialize.
             plumber.batch(() => {
-                var serverWorkflowDefinition: Workflows.Workflow = this.workflowDefinition;
-                var workflowId: number = this.workflowDefinition.id;
+                var serverworkflowType: Workflows.WorkflowType = this.workflowType;
+                var workflowId: number = this.workflowType.id;
 
                 if (loadLocalState) {
-                    const localState: Workflows.Workflow = this.loadLocalState();
+                    const localState: Workflows.WorkflowType = this.loadLocalState();
 
                     if (localState) {
-                        this.workflowDefinition = localState;
+                        this.workflowType = localState;
                     }
                 }
 
                 activityElements.each((index, activityElement) => {
                     const $activityElement = $(activityElement);
                     const activityId = $activityElement.data('activity-id');
-                    const isDeleted = this.workflowDefinition.removedActivities.indexOf(activityId) > -1;
+                    const isDeleted = this.workflowType.removedActivities.indexOf(activityId) > -1;
 
                     if (isDeleted) {
                         $activityElement.remove();
@@ -71,14 +71,14 @@ class WorkflowEditor extends WorkflowCanvas {
                     }
 
                     let activity = this.getActivity(activityId);
-                    const serverActivity = this.getActivity(activityId, serverWorkflowDefinition.activities);
+                    const serverActivity = this.getActivity(activityId, serverworkflowType.activities);
 
                     // Update the activity's visual state.
                     if (loadLocalState) {
                         if (activity == null) {
                             // This is a newly added activity not yet added to local state.
                             activity = serverActivity;
-                            this.workflowDefinition.activities.push(activity);
+                            this.workflowType.activities.push(activity);
 
                             activity.x = 50;
                             activity.y = 50;
@@ -171,7 +171,7 @@ class WorkflowEditor extends WorkflowCanvas {
                         //    return;
                         //}
 
-                        self.workflowDefinition.removedActivities.push(activityId);
+                        self.workflowType.removedActivities.push(activityId);
                         plumber.remove(activityElement);
                         activityElement.popover('dispose');
                     });
@@ -233,13 +233,13 @@ class WorkflowEditor extends WorkflowCanvas {
         });
     }
 
-    private getState = (): Workflows.Workflow => {
+    private getState = (): Workflows.WorkflowType => {
         const $allActivityElements = $(this.container).find('.activity');
-        const workflow: Workflows.Workflow = {
-            id: this.workflowDefinition.id,
+        const workflow: Workflows.WorkflowType = {
+            id: this.workflowType.id,
             activities: [],
             transitions: [],
-            removedActivities: this.workflowDefinition.removedActivities
+            removedActivities: this.workflowType.removedActivities
         };
 
         // Collect activities.
@@ -282,7 +282,7 @@ class WorkflowEditor extends WorkflowCanvas {
     }
 
     public serialize = (): string => {
-        const workflow: Workflows.Workflow = this.getState();
+        const workflow: Workflows.WorkflowType = this.getState();
         return JSON.stringify(workflow);
     }
 
@@ -290,7 +290,7 @@ class WorkflowEditor extends WorkflowCanvas {
         sessionStorage[this.localId] = this.serialize();
     }
 
-    private loadLocalState = (): Workflows.Workflow => {
+    private loadLocalState = (): Workflows.WorkflowType => {
         return JSON.parse(sessionStorage[this.localId]);
     }
 }
@@ -298,13 +298,13 @@ class WorkflowEditor extends WorkflowCanvas {
 $.fn.workflowEditor = function (this: JQuery): JQuery {
     this.each((index, element) => {
         var $element = $(element);
-        var workflowDefinition: Workflows.Workflow = $element.data('workflow-definition');
+        var workflowType: Workflows.WorkflowType = $element.data('workflow-type');
         var deleteActivityPrompt: string = $element.data('workflow-delete-activity-prompt');
         var localId: string = $element.data('workflow-local-id');
         var loadLocalState: boolean = $element.data('workflow-load-local-state');
 
-        workflowDefinition.removedActivities = workflowDefinition.removedActivities || [];
-        $element.data('workflowEditor', new WorkflowEditor(element, workflowDefinition, deleteActivityPrompt, localId, loadLocalState));
+        workflowType.removedActivities = workflowType.removedActivities || [];
+        $element.data('workflowEditor', new WorkflowEditor(element, workflowType, deleteActivityPrompt, localId, loadLocalState));
     });
 
     return this;

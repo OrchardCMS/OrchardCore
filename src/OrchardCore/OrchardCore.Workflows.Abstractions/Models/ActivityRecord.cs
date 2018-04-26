@@ -22,7 +22,7 @@ namespace OrchardCore.Workflows.Models
         public int Y { get; set; }
 
         /// <summary>
-        /// Whether the activity is a start state for a WorkflowDefinition.
+        /// Whether the activity is a start state for a <see cref="WorkflowType"/>.
         /// </summary>
         public bool IsStart { get; set; }
     }
