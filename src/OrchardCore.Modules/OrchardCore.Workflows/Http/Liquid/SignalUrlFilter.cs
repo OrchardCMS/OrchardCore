@@ -40,7 +40,7 @@ namespace OrchardCore.Workflows.Http.Liquid
             var urlHelper = (IUrlHelper)urlHelperObj;
             var signalService = (ISecurityTokenService)signalServiceObj;
             var token = signalService.CreateToken(payload, TimeSpan.FromDays(7));
-            var urlValue = new StringValue(urlHelper.Action("Trigger", "Workflow", new { area = "OrchardCore.Workflows", token }));
+            var urlValue = new StringValue(urlHelper.Action("Trigger", "HttpWorkflow", new { area = "OrchardCore.Workflows", token }));
             return Task.FromResult<FluidValue>(urlValue);
         }
     }
