@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using NodaTime;
+using NodaTime.TimeZones;
 
 namespace OrchardCore.Modules
 {
@@ -17,6 +19,10 @@ namespace OrchardCore.Modules
 		DateTime UtcNow { get; }
 
         Instant InstantNow { get; }
+
+        IDateTimeZoneProvider Tzdb { get; }
+
+        IEnumerable<TzdbZoneLocation> TimeZones { get; }
 
         /// <summary>
         /// Gets the current <see cref="DateTimeZone"/> of the system

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using NodaTime;
 using NodaTime.TimeZones;
@@ -10,14 +11,26 @@ namespace OrchardCore.Modules
         public DateTimeZone TimeZone { get; protected set; }
         public CultureInfo Culture { get; protected set; }
 
-        public Clock() {
+        public Clock()
+        {
             TimeZone = DateTimeZoneProviders.Tzdb.GetSystemDefault();
             Culture = CultureInfo.InvariantCulture;
         }
 
-        public Instant GetCurrentInstant()
+        public IDateTimeZoneProvider Tzdb
         {
-            return SystemClock.Instance.GetCurrentInstant();
+            get
+            {
+                return DateTimeZoneProviders.Tzdb;
+            }
+        }
+
+        public IEnumerable<TzdbZoneLocation> TimeZones
+        {
+            get
+            {
+                return TzdbDateTimeZoneSource.Default.ZoneLocations;
+            }
         }
 
         public DateTime UtcNow
@@ -28,6 +41,11 @@ namespace OrchardCore.Modules
         public Instant InstantNow
         {
             get { return GetCurrentInstant(); }
+        }
+
+        public Instant GetCurrentInstant()
+        {
+            return SystemClock.Instance.GetCurrentInstant();
         }
 
         public DateTimeOffset ToDateTimeOffset(OffsetDateTime offsetDateTime)
@@ -59,7 +77,8 @@ namespace OrchardCore.Modules
             return instant.InZone(TimeZone);
         }
 
-        public ZonedDateTime ToZonedDateTime(DateTimeOffset? dateTimeOffSet) {
+        public ZonedDateTime ToZonedDateTime(DateTimeOffset? dateTimeOffSet)
+        {
             OffsetDateTime offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet ?? InstantNow.ToDateTimeOffset());
             return offsetDateTime.InZone(TimeZone);
         }
@@ -69,13 +88,15 @@ namespace OrchardCore.Modules
             TimeZone = GetDateTimeZone(timeZone);
         }
 
-        public DateTimeZone GetDateTimeZone(string timeZone) {
+        public DateTimeZone GetDateTimeZone(string timeZone)
+        {
             //TODO : For backward compatibility find also timezones that are not in Nodatime.
             // see https://github.com/mj1856/TimeZoneConverter
             return DateTimeZoneProviders.Tzdb[timeZone];
         }
 
-        public void SetCulture(CultureInfo culture) {
+        public void SetCulture(CultureInfo culture)
+        {
             Culture = culture;
         }
 
