@@ -25,6 +25,12 @@ namespace OrchardCore.Workflows.UserTasks.Activities
             set => SetProperty(value);
         }
 
+        public IList<string> Roles
+        {
+            get => GetProperty(() => new List<string>());
+            set => SetProperty(value);
+        }
+
         public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var action = GetProvidedAction(workflowContext);
