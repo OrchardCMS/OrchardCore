@@ -37,7 +37,6 @@
         "OrchardCore.Roles",
         "OrchardCore.Settings",
         "OrchardCore.Themes",
-        "OrchardCore.Email",
         "OrchardCore.Users",
 
         // Content Management
