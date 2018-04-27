@@ -3,6 +3,7 @@
 
   <PropertyGroup>
     <DebugType>embedded</DebugType>
+    <EmbedAllSources>true</EmbedAllSources>
   </PropertyGroup>
 
 </Project>
