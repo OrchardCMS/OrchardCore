@@ -16,7 +16,7 @@ namespace OrchardCore.Modules
 
         ITimeZone[] GetTimeZones(string countryCode);
         ITimeZone GetLocalTimeZone(string timeZone);
-        DateTimeOffset ConvertToTimeZone(DateTime? dateTimeUtc, ITimeZone timeZone);
+        DateTimeOffset ConvertToTimeZone(DateTime dateTime, ITimeZone timeZone);
         DateTimeOffset ConvertToTimeZone(DateTimeOffset? dateTimeOffset, ITimeZone timeZone);
 
     }

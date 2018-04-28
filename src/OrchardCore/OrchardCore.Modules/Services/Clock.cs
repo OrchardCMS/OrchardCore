@@ -53,10 +53,24 @@ namespace OrchardCore.Modules
             return result;
         }
 
-        public DateTimeOffset ConvertToTimeZone(DateTime? dateTimeUtc, ITimeZone timeZone)
+        public DateTimeOffset ConvertToTimeZone(DateTime dateTime, ITimeZone timeZone)
         {
+            DateTime dateTimeUtc;
+            switch (dateTime.Kind)
+            {
+                case DateTimeKind.Utc:
+                    dateTimeUtc = dateTime;
+                    break;
+                case DateTimeKind.Local:
+                    dateTimeUtc = dateTime.ToUniversalTime();
+                    break;
+                default: //DateTimeKind.Unspecified
+                    dateTimeUtc = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+                    break;
+            }
+
             var dateTimeZone = GetDateTimeZone(timeZone.Id);
-            var instant = Instant.FromDateTimeUtc(dateTimeUtc ?? UtcNow);
+            var instant = Instant.FromDateTimeUtc(dateTimeUtc);
             return instant.InZone(dateTimeZone).ToDateTimeOffset();
         }
 
