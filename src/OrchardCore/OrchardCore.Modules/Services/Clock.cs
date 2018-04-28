@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using NodaTime;
 using NodaTime.TimeZones;
 
@@ -8,13 +7,6 @@ namespace OrchardCore.Modules
 {
     public class Clock : IClock
     {
-        //private readonly ISiteService _siteService;
-
-        //public Clock(ISiteService siteService)
-        //{
-        //    _siteService = siteService;
-        //}
-
         /// <summary>
         /// Returns a Datetime Kind.Utc that is "Now"
         /// </summary>
@@ -46,27 +38,14 @@ namespace OrchardCore.Modules
         }
 
         /// <summary>
-        /// Returns the current website ITimeZone
+        /// Returns a ITimeZone from a timeZone ID string.
+        /// If the timeZone string is null or empty then we return the default system ITimeZone
         /// </summary>
         /// <returns></returns>
-        public ITimeZone GetLocalTimeZone(string timeZone) {
-
-            DateTimeZone dateTimeZone = GetDateTimeZone(timeZone);
-            ITimeZone result = GetTimeZones("").Where(x => x.Id == dateTimeZone.Id).FirstOrDefault();
-
-            return result;
-        }
-
-        /// <summary>
-        /// Returns the current user ITimeZone
-        /// </summary>
-        /// <returns></returns>
-        public ITimeZone GetUserTimeZone(string timeZone)
+        public ITimeZone GetLocalTimeZone(string timeZone)
         {
-
-            //ISite siteSettings = await _siteService.GetSiteSettingsAsync();
             DateTimeZone dateTimeZone = GetDateTimeZone(timeZone);
-            ITimeZone result = GetTimeZones("").Where(x => x.Id == dateTimeZone.Id).FirstOrDefault();
+            ITimeZone result = GetTimeZones(string.Empty).Where(x => x.Id == dateTimeZone.Id).FirstOrDefault();
 
             return result;
         }
@@ -98,27 +77,10 @@ namespace OrchardCore.Modules
             {
                 return DateTimeZoneProviders.Tzdb[timeZone];
             }
-            else {
+            else
+            {
                 return DateTimeZoneProviders.Tzdb.GetSystemDefault();
             }
         }
-
-
-
-        //private DateTimeOffset ToDateTimeOffset(OffsetDateTime offsetDateTime)
-        //{
-        //    return offsetDateTime.ToDateTimeOffset();
-        //}
-
-        //private Instant ToInstant(LocalDateTime local)
-        //{
-        //    return local.InZone(TimeZone, Resolvers.LenientResolver).ToInstant();
-        //}
-
-        //private LocalDateTime ToLocal(Instant instant)
-        //{
-        //    return instant.InZone(TimeZone).LocalDateTime;
-        //}
-
     }
 }

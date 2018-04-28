@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Modules
 {
@@ -17,15 +16,8 @@ namespace OrchardCore.Modules
 
         ITimeZone[] GetTimeZones(string countryCode);
         ITimeZone GetLocalTimeZone(string timeZone);
-        ITimeZone GetUserTimeZone(string timeZone);
         DateTimeOffset ConvertToTimeZone(DateTime? dateTimeUtc, ITimeZone timeZone);
         DateTimeOffset ConvertToTimeZone(DateTimeOffset? dateTimeOffset, ITimeZone timeZone);
-        //DateTime ConvertToLocalTimeZone(DateTime dateTimeUtc);
-
-
-
-        //Instant ToInstant(LocalDateTime local);
-        //LocalDateTime ToLocal(Instant instant);
 
     }
 }
