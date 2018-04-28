@@ -1,5 +1,4 @@
 @model SiteSettingsViewModel
-@using NodaTime
 
 <fieldset class="form-group" asp-validation-class-for="SiteName">
     <label asp-for="SiteName">@T["Site name"] <span asp-validation-for="SiteName"></span></label>
@@ -24,14 +23,4 @@
         }
     </select>
     <span class="hint">@T["Determines the default time zone used when displaying and editing dates and times."]</span>
-</fieldset>
-<fieldset>
-    <div>Current moment in time: @SystemClock.Instance.GetCurrentInstant()</div>
-    <div>Current system time zone: @DateTimeZoneProviders.Tzdb.GetSystemDefault()</div>
-    <div>Current system time : @SystemClock.Instance.GetCurrentInstant().InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault())</div>
-    @if (!String.IsNullOrWhiteSpace(Model.TimeZone) && DateTimeZoneProviders.Tzdb.GetZoneOrNull(Model.TimeZone) != null)
-    {
-        <div>Selected time zone time (@Model.TimeZone) : @SystemClock.Instance.GetCurrentInstant().InZone(DateTimeZoneProviders.Tzdb.GetZoneOrNull(Model.TimeZone))</div>
-    }
-    <div>Daylight Saving Time : @SystemClock.Instance.GetCurrentInstant().InZone(DateTimeZoneProviders.Tzdb.GetSystemDefault()).IsDaylightSavingTime()</div>
 </fieldset>
