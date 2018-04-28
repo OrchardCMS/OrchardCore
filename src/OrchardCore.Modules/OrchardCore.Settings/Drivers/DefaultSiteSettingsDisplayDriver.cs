@@ -16,36 +16,19 @@ namespace OrchardCore.Settings.Drivers
             _clock = clock;
         }
 
-        /// <summary>
-        /// Returns a list of valid timezones as a ITimeZone[], where the key is
-        /// the timezone id(string), and the value can be used for display. The list is filtered to contain only
-        /// choices that are reasonably valid for the present and near future for real places. The list is
-        /// also sorted first by UTC Offset and then by timezone name.
-        /// </summary>
-        /// <param name="countryCode">
-        /// The two-letter country code to get timezones for.
-        /// Returns all timezones if null or empty.
-        /// </param>
-        public ITimeZone[] GetTimeZones(string countryCode)
-        {
-            var list = _clock.GetTimeZones(countryCode);
-
-            return list;
-        }
-
         public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
-
             return Task.FromResult<IDisplayResult>(
                     Initialize<SiteSettingsViewModel>("Settings_Edit", model =>
                     {
                         model.SiteName = site.SiteName;
                         model.BaseUrl = site.BaseUrl;
                         model.TimeZone = site.TimeZone;
-                        model.TimeZones = GetTimeZones("");
+                        model.TimeZones = _clock.GetTimeZones(string.Empty);
                     }).Location("Content:1").OnGroup(GroupId)
             );
         }
+
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
         {
             if (context.GroupId == GroupId)

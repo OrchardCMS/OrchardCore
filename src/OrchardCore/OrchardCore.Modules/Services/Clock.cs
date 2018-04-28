@@ -16,10 +16,15 @@ namespace OrchardCore.Modules
         }
 
         /// <summary>
-        /// Returns all relevant TimeZones that are usable "Now"
+        /// Returns a list of valid timezones as a ITimeZone[], where the key is
+        /// the timezone id(string), and the value can be used for display. The list is filtered to contain only
+        /// choices that are reasonably valid for the present and near future for real places. The list is
+        /// also sorted first by UTC Offset and then by timezone name.
         /// </summary>
-        /// <param name="countryCode"></param>
-        /// <returns></returns>
+        /// <param name="countryCode">
+        /// The two-letter country code to get timezones for.
+        /// Returns all timezones if null or empty.
+        /// </param>
         public ITimeZone[] GetTimeZones(string countryCode)
         {
             var list =
