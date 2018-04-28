@@ -47,6 +47,7 @@
   <Import Project="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Email\OrchardCore.Email.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Modules\OrchardCore.Modules.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\BaseThemeSample\BaseThemeSample.csproj" />
