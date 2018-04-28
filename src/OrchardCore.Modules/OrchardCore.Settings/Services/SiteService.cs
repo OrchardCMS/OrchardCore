@@ -56,7 +56,7 @@ namespace OrchardCore.Settings.Services
                             { 
                                 SiteSalt = Guid.NewGuid().ToString("N"),
                                 SiteName = "My Orchard Project Application",
-                                TimeZone = _clock.TimeZone.Id,
+                                TimeZone = _clock.GetLocalTimeZone(string.Empty).Id,
                                 PageSize = 10,
                                 MaxPageSize = 100,
                                 MaxPagedCount = 0

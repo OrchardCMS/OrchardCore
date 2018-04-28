@@ -56,10 +56,9 @@ namespace OrchardCore.Liquid.Filters
                 }
             }
 
-            _clock.SetDateTimeZone((await _siteService.GetSiteSettingsAsync()).TimeZone);
-            _clock.SetCulture(CultureInfo.CurrentCulture);
-            //TODO : set culture of the clock from website settings
-            return new ObjectValue(_clock.ToZonedDateTime(value).ToDateTimeOffset());
+            ISite siteSettings = await _siteService.GetSiteSettingsAsync();
+            ITimeZone timeZone = _clock.GetLocalTimeZone(siteSettings.TimeZone);
+            return new ObjectValue(_clock.ConvertToTimeZone(value, timeZone));
         }
     }
 }

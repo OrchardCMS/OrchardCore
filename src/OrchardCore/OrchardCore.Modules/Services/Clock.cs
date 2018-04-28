@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 using NodaTime;
 using NodaTime.TimeZones;
 
@@ -8,97 +8,117 @@ namespace OrchardCore.Modules
 {
     public class Clock : IClock
     {
-        public DateTimeZone TimeZone { get; protected set; }
-        public CultureInfo Culture { get; protected set; }
+        //private readonly ISiteService _siteService;
 
-        public Clock()
-        {
-            TimeZone = DateTimeZoneProviders.Tzdb.GetSystemDefault();
-            Culture = CultureInfo.InvariantCulture;
-        }
+        //public Clock(ISiteService siteService)
+        //{
+        //    _siteService = siteService;
+        //}
 
-        public IDateTimeZoneProvider Tzdb
-        {
-            get
-            {
-                return DateTimeZoneProviders.Tzdb;
-            }
-        }
-
-        public IEnumerable<TzdbZoneLocation> TimeZones
-        {
-            get
-            {
-                return TzdbDateTimeZoneSource.Default.ZoneLocations;
-            }
-        }
-
+        /// <summary>
+        /// Returns a Datetime Kind.Utc that is "Now"
+        /// </summary>
         public DateTime UtcNow
         {
             get { return GetCurrentInstant().ToDateTimeUtc(); }
         }
 
-        public Instant InstantNow
+        /// <summary>
+        /// Returns all relevant TimeZones that are usable "Now"
+        /// </summary>
+        /// <param name="countryCode"></param>
+        /// <returns></returns>
+        public ITimeZone[] GetTimeZones(string countryCode)
         {
-            get { return GetCurrentInstant(); }
+            var list =
+                from location in TzdbDateTimeZoneSource.Default.ZoneLocations
+                where string.IsNullOrEmpty(countryCode) ||
+                      location.CountryCode.Equals(countryCode,
+                                                  StringComparison.OrdinalIgnoreCase)
+                let zoneId = location.ZoneId
+                let comment = location.Comment
+                let tz = DateTimeZoneProviders.Tzdb[zoneId]
+                let offset = tz.GetZoneInterval(GetCurrentInstant()).StandardOffset
+                orderby offset, zoneId
+                select new TimeZone(zoneId, string.Format("({0:+HH:mm}) {1}", offset, zoneId), comment);
+
+            return list.ToArray();
         }
 
-        public Instant GetCurrentInstant()
+        /// <summary>
+        /// Returns the current website ITimeZone
+        /// </summary>
+        /// <returns></returns>
+        public ITimeZone GetLocalTimeZone(string timeZone) {
+
+            DateTimeZone dateTimeZone = GetDateTimeZone(timeZone);
+            ITimeZone result = GetTimeZones("").Where(x => x.Id == dateTimeZone.Id).FirstOrDefault();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the current user ITimeZone
+        /// </summary>
+        /// <returns></returns>
+        public ITimeZone GetUserTimeZone(string timeZone)
+        {
+
+            //ISite siteSettings = await _siteService.GetSiteSettingsAsync();
+            DateTimeZone dateTimeZone = GetDateTimeZone(timeZone);
+            ITimeZone result = GetTimeZones("").Where(x => x.Id == dateTimeZone.Id).FirstOrDefault();
+
+            return result;
+        }
+
+        public DateTimeOffset ConvertToTimeZone(DateTime? dateTimeUtc, ITimeZone timeZone)
+        {
+            DateTimeZone dateTimeZone = GetDateTimeZone(timeZone.Id);
+            Instant instant = Instant.FromDateTimeUtc(dateTimeUtc ?? UtcNow);
+            return instant.InZone(dateTimeZone).ToDateTimeOffset();
+        }
+
+        public DateTimeOffset ConvertToTimeZone(DateTimeOffset? dateTimeOffSet, ITimeZone timeZone)
+        {
+            DateTimeZone dateTimeZone = GetDateTimeZone(timeZone.Id);
+            OffsetDateTime offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet ?? GetCurrentInstant().ToDateTimeOffset());
+            return offsetDateTime.InZone(dateTimeZone).ToDateTimeOffset();
+        }
+
+        private Instant GetCurrentInstant()
         {
             return SystemClock.Instance.GetCurrentInstant();
         }
 
-        public DateTimeOffset ToDateTimeOffset(OffsetDateTime offsetDateTime)
-        {
-            return offsetDateTime.ToDateTimeOffset();
-        }
-
-        public LocalDateTime LocalNow
-        {
-            get
-            {
-                return GetCurrentInstant().InZone(TimeZone).LocalDateTime;
-            }
-        }
-
-        public Instant ToInstant(LocalDateTime local)
-        {
-            return local.InZone(TimeZone, Resolvers.LenientResolver).ToInstant();
-        }
-
-        public LocalDateTime ToLocal(Instant instant)
-        {
-            return instant.InZone(TimeZone).LocalDateTime;
-        }
-
-        public ZonedDateTime ToZonedDateTime(DateTime? dateTime)
-        {
-            Instant instant = Instant.FromDateTimeUtc(dateTime ?? UtcNow);
-            return instant.InZone(TimeZone);
-        }
-
-        public ZonedDateTime ToZonedDateTime(DateTimeOffset? dateTimeOffSet)
-        {
-            OffsetDateTime offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet ?? InstantNow.ToDateTimeOffset());
-            return offsetDateTime.InZone(TimeZone);
-        }
-
-        public void SetDateTimeZone(string timeZone)
-        {
-            TimeZone = GetDateTimeZone(timeZone);
-        }
-
-        public DateTimeZone GetDateTimeZone(string timeZone)
+        private DateTimeZone GetDateTimeZone(string timeZone)
         {
             //TODO : For backward compatibility find also timezones that are not in Nodatime.
             // see https://github.com/mj1856/TimeZoneConverter
-            return DateTimeZoneProviders.Tzdb[timeZone];
+            if (!string.IsNullOrEmpty(timeZone))
+            {
+                return DateTimeZoneProviders.Tzdb[timeZone];
+            }
+            else {
+                return DateTimeZoneProviders.Tzdb.GetSystemDefault();
+            }
         }
 
-        public void SetCulture(CultureInfo culture)
-        {
-            Culture = culture;
-        }
+
+
+        //private DateTimeOffset ToDateTimeOffset(OffsetDateTime offsetDateTime)
+        //{
+        //    return offsetDateTime.ToDateTimeOffset();
+        //}
+
+        //private Instant ToInstant(LocalDateTime local)
+        //{
+        //    return local.InZone(TimeZone, Resolvers.LenientResolver).ToInstant();
+        //}
+
+        //private LocalDateTime ToLocal(Instant instant)
+        //{
+        //    return instant.InZone(TimeZone).LocalDateTime;
+        //}
 
     }
 }

@@ -3,23 +3,21 @@ using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings.ViewModels;
-using System.Linq;
-using System.Collections.Generic;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Settings.Drivers
 {
     public class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
     {
+        private readonly IClock _clock;
         public const string GroupId = "general";
-        public IClock _clock;
 
         public DefaultSiteSettingsDisplayDriver(IClock clock) {
             _clock = clock;
         }
 
         /// <summary>
-        /// Returns a list of valid timezones as a IEnumerable<TimeZoneViewModel>, where the key is
+        /// Returns a list of valid timezones as a ITimeZone[], where the key is
         /// the timezone id(string), and the value can be used for display. The list is filtered to contain only
         /// choices that are reasonably valid for the present and near future for real places. The list is
         /// also sorted first by UTC Offset and then by timezone name.
@@ -28,22 +26,9 @@ namespace OrchardCore.Settings.Drivers
         /// The two-letter country code to get timezones for.
         /// Returns all timezones if null or empty.
         /// </param>
-        public IEnumerable<TimeZoneViewModel> GetTimeZones(string countryCode)
+        public ITimeZone[] GetTimeZones(string countryCode)
         {
-            var now = _clock.InstantNow;
-            var tzdb = _clock.Tzdb;
-
-            var list =
-                from location in _clock.TimeZones
-                where string.IsNullOrEmpty(countryCode) ||
-                      location.CountryCode.Equals(countryCode,
-                                                  StringComparison.OrdinalIgnoreCase)
-                let zoneId = location.ZoneId
-                let comment = location.Comment
-                let tz = tzdb[zoneId]
-                let offset = tz.GetZoneInterval(now).StandardOffset
-                orderby offset, zoneId
-                select new TimeZoneViewModel(zoneId, string.Format("({0:+HH:mm}) {1}", offset, zoneId), comment);
+            var list = _clock.GetTimeZones(countryCode);
 
             return list;
         }

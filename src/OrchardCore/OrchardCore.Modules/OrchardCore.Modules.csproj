@@ -8,6 +8,7 @@
     <ProjectReference Include="..\OrchardCore.Modules.Abstractions\OrchardCore.Modules.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Environment.Extensions\OrchardCore.Environment.Extensions.csproj" />
     <ProjectReference Include="..\OrchardCore.Environment.Shell\OrchardCore.Environment.Shell.csproj" />
+    <ProjectReference Include="..\OrchardCore.Mvc.Abstractions\OrchardCore.Mvc.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

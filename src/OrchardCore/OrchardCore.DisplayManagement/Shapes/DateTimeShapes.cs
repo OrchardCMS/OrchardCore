@@ -88,19 +88,16 @@ namespace OrchardCore.DisplayManagement.Shapes
         [Shape]
         public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format)
         {
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-            _clock.SetDateTimeZone(siteSettings.TimeZone);
-            //TODO : set culture of the clock from website settings
-            _clock.SetCulture(CultureInfo.CurrentCulture);
-            var zonedTime = _clock.ToZonedDateTime(Utc);
+            ISite siteSettings = await _siteService.GetSiteSettingsAsync();
+            ITimeZone timeZone = _clock.GetLocalTimeZone(siteSettings.TimeZone);
+            var zonedTime = _clock.ConvertToTimeZone(Utc, timeZone);
 
             if (Format == null)
             {
                 Format = T[LongDateTimeFormat, LongDateTimeFormat, 0].Value;
             }
 
-            return Html.Raw(Html.Encode(zonedTime.ToString(Format, _clock.Culture)));
+            return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.InvariantCulture)));
         }
     }
 
