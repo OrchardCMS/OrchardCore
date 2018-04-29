@@ -48,7 +48,7 @@ namespace OrchardCore.Modules
             var dateTimeZone = GetDateTimeZone(timeZone);
             var result = GetTimeZones(String.Empty).FirstOrDefault(x => x.Id == dateTimeZone.Id);
 
-            //If TimeZone is not found in GetTimeZones list then retrieve it from the Tzdb
+            //If TimeZone is not found in default ZoneLocations list then retrieve it from the Tzdb
             if(result == null){            
                 var offset = DateTimeZoneProviders.Tzdb[dateTimeZone.Id].GetZoneInterval(GetCurrentInstant()).StandardOffset;
                 result = new TimeZone(dateTimeZone.Id, $"({offset:+HH:mm}) {dateTimeZone.Id}", String.Empty);
