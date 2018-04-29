@@ -1,4 +1,4 @@
-using OpenIddict.Core;
+using OpenIddict.Abstractions;
 
 namespace OrchardCore.OpenId.Abstractions.Descriptors
 {
