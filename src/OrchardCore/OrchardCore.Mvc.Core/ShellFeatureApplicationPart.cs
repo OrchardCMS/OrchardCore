@@ -45,7 +45,7 @@ namespace OrchardCore.Mvc
             get
             {
                 var shellBluePrint = _httpContextAccessor.HttpContext.RequestServices?.GetRequiredService<ShellBlueprint>();
-                return shellBluePrint?.Dependencies.Keys.Select(type => IntrospectionExtensions.GetTypeInfo(type)) ?? Enumerable.Empty<TypeInfo>();
+                return shellBluePrint?.Dependencies.Keys.Select(type => type.GetTypeInfo()) ?? Enumerable.Empty<TypeInfo>();
             }
         }
 
