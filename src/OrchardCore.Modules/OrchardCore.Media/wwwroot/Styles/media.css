@@ -6121,7 +6121,6 @@ a.text-dark:hover, a.text-dark:focus {
   .media-container-main ol li {
     margin-bottom: 16px;
     cursor: pointer;
-    max-width: 6cm;
     margin-left: 0.7em;
     margin-right: 0.7em;
     width: 240px; }
@@ -6136,7 +6135,6 @@ a.text-dark:hover, a.text-dark:focus {
       opacity: 1; }
   .media-container-main ol .thumb-container {
     width: 100%;
-    height: 240px;
     display: flex;
     align-items: center;
     justify-content: center; }

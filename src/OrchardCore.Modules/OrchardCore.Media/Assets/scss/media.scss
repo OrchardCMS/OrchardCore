@@ -125,7 +125,6 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
             @extend .card;
             margin-bottom: 16px;
             cursor: pointer;
-            max-width: 6cm;
             margin-left: 0.7em;
             margin-right: 0.7em;
             width: 240px;
@@ -150,7 +149,6 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
 
         .thumb-container {
             width: 100%;
-            height: 240px;
             display: flex;
             align-items: center;
             justify-content: center;
