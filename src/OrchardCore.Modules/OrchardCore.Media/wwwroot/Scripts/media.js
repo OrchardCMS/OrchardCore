@@ -374,7 +374,7 @@ Vue.component('folder', {
         <li :class="{selected: selected}" v-on:dragenter.prevent="handleDragEnter($event);" v-on:dragleave.prevent="handleDragLeave($event);" ondragover="event.preventDefault();" v-on:drop.stop="moveMediaToFolder(model, $event)" >\
             <div>\
                 <a href="javascript:;" v-on:click="toggle" class="expand" v-bind:class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
-                <a href="javascript:;" v-on:click="select">\
+                <a href="javascript:;" v-on:click="select" draggable="false" >\
                     <i class="folder fa fa-folder"></i>\
                     {{model.name}}\
                 </a>\
