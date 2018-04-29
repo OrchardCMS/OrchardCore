@@ -8,8 +8,10 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Display\OrchardCore.ContentManagement.Display.csproj" />
-    <ProjectReference Include="..\OrchardCore.Settings\OrchardCore.Settings.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Security\OrchardCore.Security.csproj" />
+
+    <ProjectReference Include="..\OrchardCore.Settings\OrchardCore.Settings.csproj" />
   </ItemGroup>
 
   <ItemGroup>
