@@ -1,6 +1,6 @@
 @model EditUserViewModel
-    
-<input asp-for="Id" type="hidden"/>
+
+<input asp-for="Id" type="hidden" />
 
 <div class="form-group" asp-validation-class-for="UserName">
     <label asp-for="UserName">@T["User name"]</label>
@@ -43,3 +43,15 @@
         </div>
     }
 </div>
+<fieldset class="form-group" asp-validation-class-for="TimeZone">
+    <label asp-for="TimeZone">@T["Default Time Zone"] <span asp-validation-for="TimeZone"></span></label>
+    <select asp-for="TimeZone" class="form-control">
+        <option value="">@T["Local to server"]</option>
+        @foreach (var timezone in Model.TimeZones)
+        {
+            <option value="@timezone.Id" selected="@(Model.TimeZone == timezone.Id)">@timezone.DisplayName @if (timezone.Comment != "")
+            {<text> - </text> @timezone.Comment}</option>
+        }
+    </select>
+    <span class="hint">@T["Determines the default time zone used when displaying and editing dates and times."]</span>
+</fieldset>

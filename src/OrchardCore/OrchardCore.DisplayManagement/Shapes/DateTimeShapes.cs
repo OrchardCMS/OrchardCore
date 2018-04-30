@@ -7,6 +7,9 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Settings;
 using System.Globalization;
+using Microsoft.AspNetCore.Http;
+using OrchardCore.Users.Models;
+using OrchardCore.Users.Services;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
@@ -16,6 +19,8 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         private readonly IClock _clock;
         private readonly ISiteService _siteService;
+        private readonly IUserService _userService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         //private readonly IDateLocalizationServices _dateLocalizationServices;
         //private readonly IDateTimeFormatProvider _dateTimeLocalization;
@@ -23,13 +28,17 @@ namespace OrchardCore.DisplayManagement.Shapes
         public DateTimeShapes(
             IClock clock,
             IPluralStringLocalizer<DateTimeShapes> localizer,
-            ISiteService siteService
+            ISiteService siteService,
+            IUserService userService,
+            IHttpContextAccessor httpContextAccessor
             //IDateLocalizationServices dateLocalizationServices,
             //IDateTimeFormatProvider dateTimeLocalization
             )
         {
             _clock = clock;
             _siteService = siteService;
+            _userService = userService;
+            _httpContextAccessor = httpContextAccessor;
             //_dateLocalizationServices = dateLocalizationServices;
             //_dateTimeLocalization = dateTimeLocalization;
             T = localizer;
@@ -88,9 +97,20 @@ namespace OrchardCore.DisplayManagement.Shapes
         [Shape]
         public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format)
         {
-            ISite siteSettings = await _siteService.GetSiteSettingsAsync();
-            ITimeZone timeZone = _clock.GetLocalTimeZone(siteSettings.TimeZone);
-            var zonedTime = _clock.ConvertToTimeZone(Utc, timeZone);
+            DateTimeOffset zonedTime;
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var user = await _userService.GetAuthenticatedUserAsync(_httpContextAccessor.HttpContext.User) as User;
+
+            if (user != null)
+            {
+                var userTimeZone = _clock.GetLocalTimeZone(user.TimeZone);
+                zonedTime = _clock.ConvertToTimeZone(Utc, userTimeZone);
+            }
+            else
+            {
+                var siteTimeZone = _clock.GetLocalTimeZone(siteSettings.TimeZone);
+                zonedTime = _clock.ConvertToTimeZone(Utc, siteTimeZone);
+            }
 
             if (Format == null)
             {
