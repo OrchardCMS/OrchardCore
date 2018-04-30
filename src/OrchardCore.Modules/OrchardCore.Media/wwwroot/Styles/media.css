@@ -6122,8 +6122,7 @@ a.text-dark:hover, a.text-dark:focus {
     margin-bottom: 16px;
     cursor: pointer;
     margin-left: 0.7em;
-    margin-right: 0.7em;
-    width: 240px; }
+    margin-right: 0.7em; }
     .media-container-main ol li .inline-media-button {
       opacity: 0;
       padding-top: 0px;

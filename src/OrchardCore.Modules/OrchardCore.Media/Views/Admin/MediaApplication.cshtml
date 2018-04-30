@@ -45,10 +45,11 @@
                 <li v-for="media in mediaItems"
                     :key="media.name"
                     class="media-container-main-list-item"
+                    style="width:240px"
                     v-bind:class="{selected: isMediaSelected(media)}"
                     v-on:click.stop="toggleSelectionOfMedia(media)"
                     draggable="true" v-on:dragstart="handleDragStart(media, $event)">
-                    <div class="thumb-container">
+                    <div class="thumb-container" style="height:240px">
                         <img v-bind:src="media.url + '?width=240&height=240'" />
                     </div>
                     <div class="media-container-main-item-title">
