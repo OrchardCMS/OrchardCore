@@ -101,7 +101,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var user = await _userService.GetAuthenticatedUserAsync(_httpContextAccessor.HttpContext.User) as User;
 
-            if (user != null)
+            if (user?.TimeZone != null)
             {
                 var userTimeZone = _clock.GetLocalTimeZone(user.TimeZone);
                 zonedTime = _clock.ConvertToTimeZone(Utc, userTimeZone);

@@ -65,8 +65,8 @@ namespace OrchardCore.Liquid.Filters
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var user = await _userService.GetAuthenticatedUserAsync(_httpContextAccessor.HttpContext.User) as User;
-            
-            if (user != null)
+
+            if (user?.TimeZone != null)
             {
                 var userTimeZone = _clock.GetLocalTimeZone(user.TimeZone);
                 return new ObjectValue(_clock.ConvertToTimeZone(value, userTimeZone));
