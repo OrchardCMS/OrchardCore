@@ -25,6 +25,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         public string Tag { get; set; }
         public string Dependency { get; set; }
 
+        [HtmlAttributeNotBound]
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 

@@ -3,16 +3,20 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
 using Fluid.Values;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Liquid.Ast;
 using OrchardCore.DisplayManagement.Liquid.Filters;
@@ -76,9 +80,28 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 {
                     if (tagHelperSharedState.TagHelperDescriptors == null)
                     {
-                        var razorEngine = services.GetRequiredService<RazorEngine>();
-                        var tagHelperFeature = razorEngine.Features.OfType<ITagHelperFeature>().FirstOrDefault();
-                        tagHelperSharedState.TagHelperDescriptors = tagHelperFeature.GetDescriptors().ToList();
+                        var manager = services.GetRequiredService<ApplicationPartManager>();
+
+                        var providers = manager.FeatureProviders
+                            .OfType<IApplicationFeatureProvider<TagHelperFeature>>()
+                            .ToList();
+
+                        var feature = new TagHelperFeature();
+                        manager.PopulateFeature(feature);
+
+                        tagHelperSharedState.TagHelperDescriptors = new List<TagHelperDescriptor>();
+
+                        foreach (var type in feature.TagHelpers)
+                        {
+                            var descriptorBuilder = TagHelperDescriptorBuilder.Create(
+                                type.FullName, type.Assembly.GetName().Name);
+
+                            descriptorBuilder.SetTypeName(type.FullName);
+                            AddTagMatchingRules(type.AsType(), descriptorBuilder);
+
+                            var descriptor = descriptorBuilder.Build();
+                            tagHelperSharedState.TagHelperDescriptors.Add(descriptor);
+                        }
                     }
                 }
             }
@@ -97,7 +120,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                                     return true;
                                 }
 
-                                name = name.Replace("_", "-");
+                                name = name.Replace('_', '-');
 
                                 if (attr.Name.StartsWith(AspPrefix) && String.Equals(name,
                                     attr.Name.Substring(AspPrefix.Length), StringComparison.OrdinalIgnoreCase))
@@ -124,12 +147,58 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var tagHelperType = Type.GetType(_descriptor.Name + ", " + _descriptor.AssemblyName);
 
+            if (!_tagHelperSetters.ContainsKey(tagHelperType.FullName))
+            {
+                var properties = tagHelperType.GetProperties()
+                    .Where(p => p.GetCustomAttribute<HtmlAttributeNotBoundAttribute>() == null);
+
+                foreach (var property in properties)
+                {
+                    var setter = property.GetSetMethod();
+
+                    if (setter != null)
+                    {
+                        var invokeType = typeof(Action<,>).MakeGenericType(tagHelperType, property.PropertyType);
+                        var setterDelegate = Delegate.CreateDelegate(invokeType, setter);
+
+                        Action<ITagHelper, FluidValue> result = (h, v) =>
+                        {
+                            object value = null;
+
+                            if (property.PropertyType.IsEnum)
+                            {
+                                value = Enum.Parse(property.PropertyType, v.ToStringValue());
+                            }
+                            else if (property.PropertyType == typeof(String))
+                            {
+                                value = v.ToStringValue();
+                            }
+                            else if (property.PropertyType == typeof(Boolean))
+                            {
+                                value = Convert.ToBoolean(v.ToStringValue());
+                            }
+                            else
+                            {
+                                value = v.ToObjectValue();
+                            }
+
+                            setterDelegate.DynamicInvoke(new[] { h, value });
+                        };
+
+                        _tagHelperSetters[tagHelperType.FullName + '.' + property.Name] = result;
+                    }
+                }
+
+                _tagHelperSetters[tagHelperType.FullName] = null;
+            }
+
             var _tagHelperActivator = _tagHelperActivators.GetOrAdd(tagHelperType, key =>
             {
                 var genericFactory = typeof(ReusableTagHelperFactory<>).MakeGenericType(key);
                 var factoryMethod = genericFactory.GetMethod("CreateTagHelper");
 
-                return Delegate.CreateDelegate(typeof(Func<ITagHelperFactory, ViewContext, ITagHelper>), factoryMethod) as Func<ITagHelperFactory, ViewContext, ITagHelper>;
+                return Delegate.CreateDelegate(typeof(Func<ITagHelperFactory, ViewContext, ITagHelper>),
+                    factoryMethod) as Func<ITagHelperFactory, ViewContext, ITagHelper>;
             });
 
             var tagHelperFactory = services.GetRequiredService<ITagHelperFactory>();
@@ -143,57 +212,18 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 var propertyName = LiquidViewFilters.LowerKebabToPascalCase(name);
 
                 var found = false;
-                foreach (var attribute in _descriptor.BoundAttributes)
+
+                if (_tagHelperSetters.TryGetValue(tagHelperType.FullName + '.' + propertyName, out var setter))
                 {
-                    if (propertyName == attribute.GetPropertyName())
+                    found = true;
+
+                    try
                     {
-                        found = true;
-
-                        var setter = _tagHelperSetters.GetOrAdd(attribute.DisplayName, key =>
-                        {
-                            var propertyInfo = tagHelperType.GetProperty(propertyName);
-                            var propertySetter = propertyInfo.GetSetMethod();
-
-                            var invokeType = typeof(Action<,>).MakeGenericType(tagHelperType, propertyInfo.PropertyType);
-                            var setterDelegate = Delegate.CreateDelegate(invokeType, propertySetter);
-
-                            Action<ITagHelper, FluidValue> result = (h, v) =>
-                            {
-                                object value = null;
-
-                                if (attribute.IsEnum)
-                                {
-                                    value = Enum.Parse(propertyInfo.PropertyType, v.ToStringValue());
-                                }
-                                else if (attribute.IsStringProperty)
-                                {
-                                    value = v.ToStringValue();
-                                }
-                                else if (propertyInfo.PropertyType == typeof(Boolean))
-                                {
-                                    value = Convert.ToBoolean(v.ToStringValue());
-                                }
-                                else
-                                {
-                                    value = v.ToObjectValue();
-                                }
-
-                                setterDelegate.DynamicInvoke(new[] { h, value });
-                            };
-
-                            return result;
-                        });
-
-                        try
-                        {
-                            setter(tagHelper, arguments[name]);
-                        }
-                        catch (ArgumentException e)
-                        {
-                            throw new ArgumentException("Incorrect value type assigned to a tag.", name, e);
-                        }
-
-                        break;
+                        setter(tagHelper, arguments[name]);
+                    }
+                    catch (ArgumentException e)
+                    {
+                        throw new ArgumentException("Incorrect value type assigned to a tag.", name, e);
                     }
                 }
 
@@ -241,6 +271,48 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             public static ITagHelper CreateTagHelper(ITagHelperFactory tagHelperFactory, ViewContext viewContext)
             {
                 return tagHelperFactory.CreateTagHelper<T>(viewContext);
+            }
+        }
+
+        private void AddTagMatchingRules(Type type, TagHelperDescriptorBuilder descriptorBuilder)
+        {
+            var targetElementAttributes = type.GetCustomAttributes<HtmlTargetElementAttribute>();
+
+            // If there isn't an attribute specifying the tag name derive it from the name
+            if (!targetElementAttributes.Any())
+            {
+                var name = type.Name;
+
+                if (name.EndsWith("TagHelper", StringComparison.OrdinalIgnoreCase))
+                {
+                    name = name.Substring(0, name.Length - "TagHelper".Length);
+                }
+
+                descriptorBuilder.TagMatchingRule(ruleBuilder =>
+                {
+                    var htmlCasedName = HtmlConventions.ToHtmlCase(name);
+                    ruleBuilder.TagName = htmlCasedName;
+                });
+
+                return;
+            }
+
+            foreach (var targetElementAttribute in targetElementAttributes)
+            {
+                descriptorBuilder.TagMatchingRule(ruleBuilder =>
+                {
+                    var tagName = targetElementAttribute.Tag;
+                    ruleBuilder.TagName = tagName;
+
+                    var parentTag = targetElementAttribute.ParentTag;
+                    ruleBuilder.ParentTag = parentTag;
+
+                    var tagStructure = targetElementAttribute.TagStructure;
+                    ruleBuilder.TagStructure = (Microsoft.AspNetCore.Razor.Language.TagStructure)tagStructure;
+
+                    var requiredAttributeString = targetElementAttribute.Attributes;
+                    RequiredAttributeParser.AddRequiredAttributes(requiredAttributeString, ruleBuilder);
+                });
             }
         }
     }
