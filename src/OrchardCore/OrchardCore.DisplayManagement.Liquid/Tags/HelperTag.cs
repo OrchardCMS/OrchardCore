@@ -144,19 +144,18 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             if (!_tagHelperSetters.ContainsKey(tagHelperType.FullName))
             {
-                var properties = tagHelperType.GetProperties()
-                    .Where(p => p.GetCustomAttribute<HtmlAttributeNotBoundAttribute>() == null);
+                var accessibleProperties = tagHelperType.GetProperties().Where(p =>
+                    p.GetCustomAttribute<HtmlAttributeNotBoundAttribute>() == null &&
+                    p.GetSetMethod() != null);
 
-                foreach (var property in properties)
+                foreach (var property in accessibleProperties)
                 {
-                    var setter = property.GetSetMethod();
-
-                    if (setter != null)
+                    _tagHelperSetters.GetOrAdd(tagHelperType.FullName + '.' + property.Name, key =>
                     {
                         var invokeType = typeof(Action<,>).MakeGenericType(tagHelperType, property.PropertyType);
-                        var setterDelegate = Delegate.CreateDelegate(invokeType, setter);
+                        var setterDelegate = Delegate.CreateDelegate(invokeType, property.GetSetMethod());
 
-                        Action<ITagHelper, FluidValue> result = (h, v) =>
+                        return (h, v) =>
                         {
                             object value = null;
 
@@ -179,9 +178,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                             setterDelegate.DynamicInvoke(new[] { h, value });
                         };
-
-                        _tagHelperSetters[tagHelperType.FullName + '.' + property.Name] = result;
-                    }
+                    });
                 }
 
                 _tagHelperSetters[tagHelperType.FullName] = null;
