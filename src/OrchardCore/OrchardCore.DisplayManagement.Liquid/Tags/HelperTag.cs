@@ -81,11 +81,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     if (tagHelperSharedState.TagHelperDescriptors == null)
                     {
                         var manager = services.GetRequiredService<ApplicationPartManager>();
-
-                        var providers = manager.FeatureProviders
-                            .OfType<IApplicationFeatureProvider<TagHelperFeature>>()
-                            .ToList();
-
                         var feature = new TagHelperFeature();
                         manager.PopulateFeature(feature);
 
