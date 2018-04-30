@@ -6,5 +6,6 @@ namespace OrchardCore.Users
     public interface IUser
     {
         string UserName { get; }
+        string TimeZone { get; }
     }
 }
