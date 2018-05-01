@@ -25,7 +25,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             services.TryAddSingleton<ILiquidViewFileProviderAccessor, LiquidViewFileProviderAccessor>();
             services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, LiquidViewsFeatureProvider>();
             services.AddScoped<IRazorViewExtensionProvider, LiquidViewExtensionProvider>();
-            services.AddSingleton<Tags.TagHelpers.TagHelperSharedState>();
+            services.AddSingleton<TagHelpers.TagHelperSharedState>();
 
             services.AddScoped<ILiquidTemplateEventHandler, RequestLiquidTemplateEventHandler>();
             return services;

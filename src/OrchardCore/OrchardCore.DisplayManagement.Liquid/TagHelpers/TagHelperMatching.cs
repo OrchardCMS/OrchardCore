@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Razor.Language;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags.TagHelpers
+namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 {
     public class TagHelperMatching
     {
         private const string AspPrefix = "asp-";
         public readonly static TagHelperMatching None = new TagHelperMatching();
-        public readonly IEnumerable<TagMatchingRuleDescriptor> _rules;
+        public readonly IEnumerable<TagMatchingRuleDescriptor> _rules = Enumerable.Empty<TagMatchingRuleDescriptor>();
 
         public TagHelperMatching() { }
 

@@ -8,20 +8,21 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags.TagHelpers
+namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 {
     public class TagHelperActivator
     {
+        public readonly static TagHelperActivator None = new TagHelperActivator();
         private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activator;
-        private readonly Dictionary<string, Action<ITagHelper, FluidValue>> _setters;
+        private readonly Dictionary<string, Action<ITagHelper, FluidValue>> _setters = new Dictionary<string, Action<ITagHelper, FluidValue>>();
+
+        public TagHelperActivator() { }
 
         public TagHelperActivator(Type type)
         {
             var accessibleProperties = type.GetProperties().Where(p =>
                 p.GetCustomAttribute<HtmlAttributeNotBoundAttribute>() == null &&
                 p.GetSetMethod() != null);
-
-            _setters = new Dictionary<string, Action<ITagHelper, FluidValue>>();
 
             foreach (var property in accessibleProperties)
             {

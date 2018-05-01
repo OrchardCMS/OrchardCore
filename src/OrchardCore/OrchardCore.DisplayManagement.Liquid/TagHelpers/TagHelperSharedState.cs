@@ -3,13 +3,16 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Fluid;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.CodeAnalysis;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags.TagHelpers
+namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 {
     /// <summary>
     /// Singleton containing shared state for tag helper tags.
@@ -21,10 +24,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags.TagHelpers
 
         private List<TagHelperMatching> _matchings;
         private readonly ApplicationPartManager _applicationPartManager;
+        private readonly ITagHelperFactory _tagHelperFactory;
 
-        public TagHelperSharedState(ApplicationPartManager applicationPartManager)
+        public TagHelperSharedState(ApplicationPartManager applicationPartManager, ITagHelperFactory tagHelperFactory)
         {
             _applicationPartManager = applicationPartManager;
+            _tagHelperFactory = tagHelperFactory;
         }
 
         private void EnsureMatchings()
@@ -69,16 +74,24 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags.TagHelpers
             }
         }
 
-        public TagHelperMatching GetMatching(string helper, IEnumerable<string> arguments)
+        public TagHelperActivator GetActivator(string helper, IEnumerable<string> arguments)
         {
             EnsureMatchings();
-            return _matchings.Where(d => d.Match(helper, arguments)).FirstOrDefault() ?? TagHelperMatching.None;
+            var matching = _matchings.Where(d => d.Match(helper, arguments)).FirstOrDefault() ?? TagHelperMatching.None;
+
+            if (matching != TagHelperMatching.None)
+            {
+                var tagHelperType = Type.GetType(matching.Name + ", " + matching.AssemblyName);
+                return _activators.GetOrAdd(tagHelperType, type => new TagHelperActivator(type));
+            }
+
+            return TagHelperActivator.None;
         }
 
-        public static TagHelperActivator GetActivator(TagHelperMatching matching)
+        public ITagHelper CreateTagHelper(TagHelperActivator activator, ViewContext context, FilterArguments arguments,
+            out TagHelperAttributeList contextAttributes, out TagHelperAttributeList outputAttributes)
         {
-            var tagHelperType = Type.GetType(matching.Name + ", " + matching.AssemblyName);
-            return _activators.GetOrAdd(tagHelperType, type => new TagHelperActivator(type));
+            return activator.CreateTagHelper(_tagHelperFactory, context, arguments, out contextAttributes, out outputAttributes);
         }
 
         private static void AddTagMatchingRules(Type type, TagHelperDescriptorBuilder descriptorBuilder)

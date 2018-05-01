@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Razor.Language;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags.TagHelpers
+namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 {
     // Internal for testing
     internal static class RequiredAttributeParser

@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Liquid.Ast;
-using OrchardCore.DisplayManagement.Liquid.Tags.TagHelpers;
+using OrchardCore.DisplayManagement.Liquid.TagHelpers;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
@@ -37,7 +36,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         private const string AspPrefix = "asp-";
 
-        private TagHelperMatching _matching;
+        private TagHelperActivator _activator;
         private readonly ArgumentsExpression _arguments;
         private readonly string _helper;
 
@@ -66,26 +65,23 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var helper = _helper ?? arguments["helper_name"].Or(arguments.At(0)).ToStringValue();
             var tagHelperSharedState = services.GetRequiredService<TagHelperSharedState>();
 
-            if (_matching == null)
+            if (_activator == null)
             {
                 lock (this)
                 {
-                    if (_matching == null)
+                    if (_activator == null)
                     {
-                        _matching = tagHelperSharedState.GetMatching(helper, arguments.Names);
+                        _activator = tagHelperSharedState.GetActivator(helper, arguments.Names);
                     }
                 }
             }
 
-            if (_matching == TagHelperMatching.None)
+            if (_activator == TagHelperActivator.None)
             {
                 return Completion.Normal;
             }
 
-            var factory = services.GetRequiredService<ITagHelperFactory>();
-            var activator = TagHelperSharedState.GetActivator(_matching);
-
-            var tagHelper = activator.CreateTagHelper(factory, (ViewContext)viewContext,
+            var tagHelper = tagHelperSharedState.CreateTagHelper(_activator, (ViewContext)viewContext,
                 arguments, out var contextAttributes, out var outputAttributes);
 
             var content = new StringWriter();
