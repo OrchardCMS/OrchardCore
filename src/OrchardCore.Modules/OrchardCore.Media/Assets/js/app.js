@@ -304,6 +304,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
             $('#modalFooterOk').on('click', function (e) {
                 var name = $('#create-folder-name').val();
 
+                if (name === "") {
+                    return;
+                }
+
                 $.ajax({
                     url: $('#createFolderUrl').val() + "?path=" + encodeURIComponent(mediaApp.selectedFolder.path) + "&name=" + encodeURIComponent(name),
                     method: 'POST',
@@ -324,6 +328,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
             $('#renameMediaModalFooterOk').on('click', function (e) {
                 var newName = $('#new-item-name').val();
                 var oldName = $('#old-item-name').val();
+
+                if (newName === "") {
+                    return;
+                }
 
                 var currentFolder = mediaApp.selectedFolder.path + "/" ;
                 if (currentFolder === "/") {
