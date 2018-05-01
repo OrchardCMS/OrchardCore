@@ -208,3 +208,8 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
         padding: 8px;
     }
 }
+
+.message-warning {
+    padding:20px;
+    margin-bottom:8px;
+}

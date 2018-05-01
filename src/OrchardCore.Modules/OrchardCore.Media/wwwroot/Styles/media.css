@@ -6168,3 +6168,7 @@ a.text-dark:hover, a.text-dark:focus {
   text-align: right; }
   .selected-media-tasks small, .selected-media-label small {
     padding: 8px; }
+
+.message-warning {
+  padding: 20px;
+  margin-bottom: 8px; }

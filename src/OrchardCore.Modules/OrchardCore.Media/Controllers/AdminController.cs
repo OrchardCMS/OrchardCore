@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.FileStorage;
 
@@ -17,17 +18,21 @@ namespace OrchardCore.Media.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly ILogger _logger;
+        private readonly IStringLocalizer<AdminController> T;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
             IAuthorizationService authorizationService,
             IContentTypeProvider contentTypeProvider,
-            ILogger<AdminController> logger)
+            ILogger<AdminController> logger,
+            IStringLocalizer<AdminController> stringLocalizer)
         {
             _mediaFileStore = mediaFileStore;
             _authorizationService = authorizationService;
             _contentTypeProvider = contentTypeProvider;
             _logger = logger;
+            T = stringLocalizer;
+            
         }
 
         public async Task<IActionResult> Index()
@@ -213,7 +218,7 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            if (await _mediaFileStore.GetDirectoryInfoAsync(newPath) != null)
+            if (await _mediaFileStore.GetFileInfoAsync(newPath) != null)
             {
                 return StatusCode(StatusCodes.Status403Forbidden, "Cannot move media because a file already exists with the same name");
             }
@@ -265,15 +270,30 @@ namespace OrchardCore.Media.Controllers
             sourceFolder = sourceFolder == "root" ? string.Empty : sourceFolder;
             targetFolder = targetFolder == "root" ? string.Empty : targetFolder;
 
+            var  filesOnError = new List<string>();
 
             foreach (var name in mediaNames)
             {
                 var sourcePath = _mediaFileStore.Combine(sourceFolder, name);
                 var targetPath = _mediaFileStore.Combine( targetFolder, name);
-                await _mediaFileStore.MoveFileAsync(sourcePath, targetPath);
+                try
+                {
+                    await _mediaFileStore.MoveFileAsync(sourcePath, targetPath);
+                }
+                catch (FileStoreException)
+                {
+                    filesOnError.Add(sourcePath);                    
+                }                
             }
 
-            return Ok();
+            if (filesOnError.Count > 0)
+            {
+                return BadRequest(T["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", string.Join(",", filesOnError)].ToString());
+            }
+            else
+            {
+                return Ok();
+            }
         }
 
         [HttpPost]

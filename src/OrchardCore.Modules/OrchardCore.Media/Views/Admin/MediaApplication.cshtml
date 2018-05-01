@@ -3,6 +3,13 @@
 }
 
 <div id="mediaApp" style="display:none">
+    <div class="message-warning" v-if="errors.length > 0">
+        <ul>
+            <li v-for="e in errors">
+                <p>{{e}}</p>                
+            </li>
+        </ul>
+    </div>
     <nav class="media-application-toolbar breadcrumb">
         <span class="breadcrumb-item" v-bind:class="{ active: isHome}"><a :href="isHome ? null : '#'" v-on:click="selectRoot">@T["Media Library"]</a></span>
         <span v-for="(folder, i) in parents" v-cloak

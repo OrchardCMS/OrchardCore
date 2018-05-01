@@ -37,6 +37,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     mediaItems: [],
                     selectedMedia: null,
                     selectedMedias: [],
+                    errors: [],
                     dragDropThumbnail : new Image()
                 },
                 created: function () {
@@ -57,8 +58,11 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         self.loadFolder(folder);
                     });
 
-                    bus.$on('mediaMoved', function (folder) {                        
+                    bus.$on('mediaListMoved', function (errorInfo) {                        
                         self.loadFolder(self.selectedFolder);
+                        if (errorInfo) {
+                            self.errors.push(errorInfo);                          
+                        }
                     });
 
                     bus.$on('mediaRenamed', function (newName, newPath, oldPath) {
@@ -104,6 +108,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         this.selectFolder(this.root);
                     },
                     loadFolder: function (folder) {
+                        this.errors = [];
                         this.selectedMedia = null;
                         var self = this;
                         $.ajax({
@@ -502,11 +507,12 @@ Vue.component('folder', {
                     sourceFolder: sourceFolder,
                     targetFolder: targetFolder
                 },
-                success: function (data) {
-                    bus.$emit('mediaMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there
+                success: function () {
+                    bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
                 },
                 error: function (error) {
                     console.error(error.responseText);
+                    bus.$emit('mediaListMoved', error.responseText);
                 }
             });
         }
