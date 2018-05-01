@@ -5,15 +5,15 @@ using Microsoft.AspNetCore.Razor.Language;
 
 namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 {
-    public class TagHelperMatching
+    public class LiquidTagHelperMatching
     {
         private const string AspPrefix = "asp-";
-        public readonly static TagHelperMatching None = new TagHelperMatching();
+        public readonly static LiquidTagHelperMatching None = new LiquidTagHelperMatching();
         public readonly IEnumerable<TagMatchingRuleDescriptor> _rules = Enumerable.Empty<TagMatchingRuleDescriptor>();
 
-        public TagHelperMatching() { }
+        public LiquidTagHelperMatching() { }
 
-        public TagHelperMatching(string name, string assemblyName, IEnumerable<TagMatchingRuleDescriptor> tagMatchingRules)
+        public LiquidTagHelperMatching(string name, string assemblyName, IEnumerable<TagMatchingRuleDescriptor> tagMatchingRules)
         {
             Name = name;
             AssemblyName = assemblyName;

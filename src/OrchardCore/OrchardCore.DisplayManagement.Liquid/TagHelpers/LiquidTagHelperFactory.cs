@@ -17,19 +17,19 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
     /// <summary>
     /// Singleton containing shared state for tag helper tags.
     /// </summary>
-    public class TagHelperSharedState
+    public class LiquidTagHelperFactory
     {
-        private static ConcurrentDictionary<Type, TagHelperMatching> _sharedMatchings = new ConcurrentDictionary<Type, TagHelperMatching>();
-        private static ConcurrentDictionary<Type, TagHelperActivator> _activators = new ConcurrentDictionary<Type, TagHelperActivator>();
+        private static ConcurrentDictionary<Type, LiquidTagHelperMatching> _allMatchings = new ConcurrentDictionary<Type, LiquidTagHelperMatching>();
+        private static ConcurrentDictionary<Type, LiquidTagHelperActivator> _allActivators = new ConcurrentDictionary<Type, LiquidTagHelperActivator>();
 
-        private List<TagHelperMatching> _matchings;
-        private readonly ApplicationPartManager _applicationPartManager;
-        private readonly ITagHelperFactory _tagHelperFactory;
+        private List<LiquidTagHelperMatching> _matchings;
+        private readonly ApplicationPartManager _partManager;
+        private readonly ITagHelperFactory _factory;
 
-        public TagHelperSharedState(ApplicationPartManager applicationPartManager, ITagHelperFactory tagHelperFactory)
+        public LiquidTagHelperFactory(ApplicationPartManager partManager, ITagHelperFactory factory)
         {
-            _applicationPartManager = applicationPartManager;
-            _tagHelperFactory = tagHelperFactory;
+            _partManager = partManager;
+            _factory = factory;
         }
 
         private void EnsureMatchings()
@@ -44,13 +44,13 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 if (_matchings == null)
                 {
                     var feature = new TagHelperFeature();
-                    _applicationPartManager.PopulateFeature(feature);
+                    _partManager.PopulateFeature(feature);
 
-                    var matchings = new List<TagHelperMatching>();
+                    var matchings = new List<LiquidTagHelperMatching>();
 
                     foreach (var tagHelper in feature.TagHelpers)
                     {
-                        var matching = _sharedMatchings.GetOrAdd(tagHelper.AsType(), type =>
+                        var matching = _allMatchings.GetOrAdd(tagHelper.AsType(), type =>
                         {
                             var descriptorBuilder = TagHelperDescriptorBuilder.Create(
                                 type.FullName, type.Assembly.GetName().Name);
@@ -59,7 +59,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                             AddTagMatchingRules(type, descriptorBuilder);
                             var descriptor = descriptorBuilder.Build();
 
-                            return new TagHelperMatching(
+                            return new LiquidTagHelperMatching(
                                 descriptor.Name,
                                 descriptor.AssemblyName,
                                 descriptor.TagMatchingRules
@@ -74,24 +74,24 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             }
         }
 
-        public TagHelperActivator GetActivator(string helper, IEnumerable<string> arguments)
+        public LiquidTagHelperActivator GetActivator(string helper, IEnumerable<string> arguments)
         {
             EnsureMatchings();
-            var matching = _matchings.Where(d => d.Match(helper, arguments)).FirstOrDefault() ?? TagHelperMatching.None;
+            var matching = _matchings.Where(d => d.Match(helper, arguments)).FirstOrDefault() ?? LiquidTagHelperMatching.None;
 
-            if (matching != TagHelperMatching.None)
+            if (matching != LiquidTagHelperMatching.None)
             {
                 var tagHelperType = Type.GetType(matching.Name + ", " + matching.AssemblyName);
-                return _activators.GetOrAdd(tagHelperType, type => new TagHelperActivator(type));
+                return _allActivators.GetOrAdd(tagHelperType, type => new LiquidTagHelperActivator(type));
             }
 
-            return TagHelperActivator.None;
+            return LiquidTagHelperActivator.None;
         }
 
-        public ITagHelper CreateTagHelper(TagHelperActivator activator, ViewContext context, FilterArguments arguments,
+        public ITagHelper CreateTagHelper(LiquidTagHelperActivator activator, ViewContext context, FilterArguments arguments,
             out TagHelperAttributeList contextAttributes, out TagHelperAttributeList outputAttributes)
         {
-            return activator.CreateTagHelper(_tagHelperFactory, context, arguments, out contextAttributes, out outputAttributes);
+            return activator.Create(_factory, context, arguments, out contextAttributes, out outputAttributes);
         }
 
         private static void AddTagMatchingRules(Type type, TagHelperDescriptorBuilder descriptorBuilder)

@@ -36,7 +36,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         private const string AspPrefix = "asp-";
 
-        private TagHelperActivator _activator;
+        private LiquidTagHelperActivator _activator;
         private readonly ArgumentsExpression _arguments;
         private readonly string _helper;
 
@@ -61,9 +61,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             }
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
-
             var helper = _helper ?? arguments["helper_name"].Or(arguments.At(0)).ToStringValue();
-            var tagHelperSharedState = services.GetRequiredService<TagHelperSharedState>();
+
+            var factory = services.GetRequiredService<LiquidTagHelperFactory>();
 
             if (_activator == null)
             {
@@ -71,17 +71,17 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 {
                     if (_activator == null)
                     {
-                        _activator = tagHelperSharedState.GetActivator(helper, arguments.Names);
+                        _activator = factory.GetActivator(helper, arguments.Names);
                     }
                 }
             }
 
-            if (_activator == TagHelperActivator.None)
+            if (_activator == LiquidTagHelperActivator.None)
             {
                 return Completion.Normal;
             }
 
-            var tagHelper = tagHelperSharedState.CreateTagHelper(_activator, (ViewContext)viewContext,
+            var tagHelper = factory.CreateTagHelper(_activator, (ViewContext)viewContext,
                 arguments, out var contextAttributes, out var outputAttributes);
 
             var content = new StringWriter();

@@ -10,15 +10,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 {
-    public class TagHelperActivator
+    public class LiquidTagHelperActivator
     {
-        public readonly static TagHelperActivator None = new TagHelperActivator();
+        public readonly static LiquidTagHelperActivator None = new LiquidTagHelperActivator();
         private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activator;
         private readonly Dictionary<string, Action<ITagHelper, FluidValue>> _setters = new Dictionary<string, Action<ITagHelper, FluidValue>>();
 
-        public TagHelperActivator() { }
+        public LiquidTagHelperActivator() { }
 
-        public TagHelperActivator(Type type)
+        public LiquidTagHelperActivator(Type type)
         {
             var accessibleProperties = type.GetProperties().Where(p =>
                 p.GetCustomAttribute<HtmlAttributeNotBoundAttribute>() == null &&
@@ -61,7 +61,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 factoryMethod) as Func<ITagHelperFactory, ViewContext, ITagHelper>;
         }
 
-        public ITagHelper CreateTagHelper(ITagHelperFactory factory, ViewContext context, FilterArguments arguments,
+        public ITagHelper Create(ITagHelperFactory factory, ViewContext context, FilterArguments arguments,
             out TagHelperAttributeList contextAttributes, out TagHelperAttributeList outputAttributes)
         {
             contextAttributes = new TagHelperAttributeList();
