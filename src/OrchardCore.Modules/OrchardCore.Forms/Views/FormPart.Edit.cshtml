@@ -1,0 +1,17 @@
+@using OrchardCore.Forms.ViewModels;
+@model FormPartEditViewModel
+
+<fieldset class="form-group">
+    <label asp-for="Action">@T["Action"]</label>
+    <input type="text" asp-for="Action" class="form-control"></input>
+    <span class="hint">@T["The URL to submit the form to."]</span>
+</fieldset>
+
+<fieldset class="form-group">
+    <label asp-for="Method">@T["Method"]</label>
+    <select asp-for="Method">
+        <option value="POST">POST</option>
+        <option value="GET">GET</option>
+    </select>
+    <span class="hint">@T["The HTTP method to use when submitting the form."]</span>
+</fieldset>
