@@ -10,8 +10,8 @@ using Microsoft.Extensions.Primitives;
 namespace OrchardCore.Modules
 {
     /// <summary>
-    /// This custom <see cref="IFileProvider"/> implementation provides the file contents
-    /// of Module files under a Project 'wwwroot' folder while in a development environment.
+    /// This custom <see cref="IFileProvider"/> implementation provides the file contents of files
+    /// whose path is under a Module Project 'wwwroot' folder, and while in a development environment.
     /// </summary>
     public class ModuleProjectStaticFileProvider : IFileProvider
     {
