@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -47,33 +46,24 @@ namespace Microsoft.AspNetCore.Builder
                 var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
 
                 // TODO: configure the location and parameters (max-age) per module.
-                var availableExtensions = extensionManager.GetExtensions();
-                foreach (var extension in availableExtensions)
+                IFileProvider fileProvider;
+                if (env.IsDevelopment())
                 {
-                    var contentSubPath = Path.Combine(extension.SubPath, "wwwroot");
-
-                    if (env.ContentRootFileProvider.GetDirectoryContents(contentSubPath).Exists)
-                    {
-                        IFileProvider fileProvider;
-                        if (env.IsDevelopment())
-                        {
-                            var fileProviders = new List<IFileProvider>();
-                            fileProviders.Add(new ModuleProjectContentFileProvider(env, contentSubPath));
-                            fileProviders.Add(new ModuleEmbeddedFileProvider(env, contentSubPath));
-                            fileProvider = new CompositeFileProvider(fileProviders);
-                        }
-                        else
-                        {
-                            fileProvider = new ModuleEmbeddedFileProvider(env, contentSubPath);
-                        }
-
-                        app.UseStaticFiles(new StaticFileOptions
-                        {
-                            RequestPath = "/" + extension.Id,
-                            FileProvider = fileProvider
-                        });
-                    }
+                    var fileProviders = new List<IFileProvider>();
+                    fileProviders.Add(new ModuleProjectStaticFileProvider(env));
+                    fileProviders.Add(new ModuleEmbeddedStaticFileProvider(env));
+                    fileProvider = new CompositeFileProvider(fileProviders);
                 }
+                else
+                {
+                    fileProvider = new ModuleEmbeddedStaticFileProvider(env);
+                }
+
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    RequestPath = "",
+                    FileProvider = fileProvider
+                });
             });
 
             return modularApp;

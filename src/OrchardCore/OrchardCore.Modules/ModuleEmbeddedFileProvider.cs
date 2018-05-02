@@ -14,13 +14,11 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleEmbeddedFileProvider : IFileProvider
     {
-        private IHostingEnvironment _environment;
-        private string _contentRoot;
+        private readonly IHostingEnvironment _environment;
 
-        public ModuleEmbeddedFileProvider(IHostingEnvironment hostingEnvironment, string contentPath = null)
+        public ModuleEmbeddedFileProvider(IHostingEnvironment hostingEnvironment)
         {
             _environment = hostingEnvironment;
-            _contentRoot = contentPath != null ? NormalizePath(contentPath) + '/' : "";
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
@@ -30,7 +28,7 @@ namespace OrchardCore.Modules
                 return NotFoundDirectoryContents.Singleton;
             }
 
-            var folder = _contentRoot + NormalizePath(subpath);
+            var folder = NormalizePath(subpath);
 
             var entries = new List<IFileInfo>();
 
@@ -81,7 +79,7 @@ namespace OrchardCore.Modules
                 return new NotFoundFileInfo(subpath);
             }
 
-            var path = _contentRoot + NormalizePath(subpath);
+            var path = NormalizePath(subpath);
 
             if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
