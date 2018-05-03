@@ -44,7 +44,7 @@ namespace OrchardCore.Modules
             configureAction = configure;
         }
 
-        public override int Order => 10000;
+        public override int Order => -10000;
         public Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configureAction { get; }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
