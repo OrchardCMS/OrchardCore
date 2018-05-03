@@ -21,22 +21,31 @@ namespace OrchardCore.Modules
         }
     }
 
-    public class TenantStartup : StartupBase
+    public class ConfigureTenantServices : StartupBase
     {
-        public TenantStartup(Action<IServiceCollection> configureServices,
-            Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure)
+        public ConfigureTenantServices(Action<IServiceCollection> configureServices)
         {
             configureServicesAction = configureServices;
-            configureAction = configure;
         }
 
+        public override int Order => 10000;
         public Action<IServiceCollection> configureServicesAction { get; }
-        public Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configureAction { get; }
 
         public override void ConfigureServices(IServiceCollection services)
         {
             configureServicesAction?.Invoke(services);
         }
+    }
+
+    public class ConfigureTenant : StartupBase
+    {
+        public ConfigureTenant(Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure)
+        {
+            configureAction = configure;
+        }
+
+        public override int Order => 10000;
+        public Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configureAction { get; }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
@@ -44,18 +53,16 @@ namespace OrchardCore.Modules
         }
     }
 
-    public class TenantStartup<TDep> : StartupBase where TDep : class
+    public class ConfigureTenantServices<TDep> : StartupBase where TDep : class
     {
-        public TenantStartup(TDep dependency, Action<IServiceCollection, TDep> configureServices,
-            Action<IApplicationBuilder, IRouteBuilder, IServiceProvider, TDep> configure)
+        public ConfigureTenantServices(TDep dependency, Action<IServiceCollection, TDep> configureServices)
         {
             configureServicesAction = configureServices;
-            configureAction = configure;
             Dependency = dependency;
         }
 
+        public override int Order => 10000;
         public Action<IServiceCollection, TDep> configureServicesAction { get; }
-        public Action<IApplicationBuilder, IRouteBuilder, IServiceProvider, TDep> configureAction { get; }
 
         public TDep Dependency { get; }
 
@@ -63,34 +70,58 @@ namespace OrchardCore.Modules
         {
             configureServicesAction?.Invoke(services, Dependency);
         }
+    }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+    public class ConfigureTenantServices<TDep1, TDep2> : StartupBase where TDep1 : class where TDep2: class
+    {
+        public ConfigureTenantServices(TDep1 dependency1, TDep2 dependency2, Action<IServiceCollection, TDep1, TDep2> configureServices)
         {
-            configureAction?.Invoke(app, routes, serviceProvider, Dependency);
+            configureServicesAction = configureServices;
+            Dependency1 = dependency1;
+            Dependency2 = dependency2;
+        }
+
+        public override int Order => 10000;
+        public Action<IServiceCollection, TDep1, TDep2> configureServicesAction { get; }
+
+        public TDep1 Dependency1 { get; }
+        public TDep2 Dependency2 { get; }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            configureServicesAction?.Invoke(services, Dependency1, Dependency2);
         }
     }
 
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection ConfigureTenantServices(this IServiceCollection services,
-            Action<IServiceCollection> configureServices,
-            Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure)
+            Action<IServiceCollection> configureServices)
         {
-            services.AddTransient<IStartup>(sp => new TenantStartup(configureServices, configure));
+            services.AddTransient<IStartup>(sp => new ConfigureTenantServices(configureServices));
             return services;
         }
 
         public static IServiceCollection ConfigureTenant(this IServiceCollection services,
             Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure)
         {
-            services.AddTransient<IStartup>(sp => new TenantStartup(null, configure));
+            services.AddTransient<IStartup>(sp => new ConfigureTenant(configure));
             return services;
         }
 
         public static IServiceCollection ConfigureTenantServices<TDep>(this IServiceCollection services,
             Action<IServiceCollection, TDep> configureServices) where TDep : class
         {
-            services.AddTransient<IStartup>(sp => new TenantStartup<TDep>(sp.GetRequiredService<TDep>(), configureServices, null));
+            services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep>(
+                sp.GetRequiredService<TDep>(), configureServices));
+            return services;
+        }
+
+        public static IServiceCollection ConfigureTenantServices<TDep1, TDep2>(this IServiceCollection services,
+            Action<IServiceCollection, TDep1, TDep2> configureServices) where TDep1 : class where TDep2 : class
+        {
+            services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2>(
+                sp.GetRequiredService<TDep1>(), sp.GetRequiredService<TDep2>(), configureServices));
             return services;
         }
     }

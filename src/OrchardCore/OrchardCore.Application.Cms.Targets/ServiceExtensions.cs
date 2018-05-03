@@ -1,17 +1,15 @@
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Extensions.Manifests;
-using OrchardCore.Environment.Shell.Data;
-using Microsoft.AspNetCore.DataProtection;
-
 using OrchardCore.Environment.Shell;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
-using System;
-
+using OrchardCore.Environment.Shell.Data;
 using OrchardCore.Modules;
-using OrchardCore.DisplayManagement.Liquid;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -29,12 +27,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 modules.WithDefaultFeatures(
                     "OrchardCore.Antiforgery", "OrchardCore.Mvc", "OrchardCore.Settings",
                     "OrchardCore.Setup", "OrchardCore.Recipes", "OrchardCore.Commons");
-
-                modules.Configure(collection =>
-                {
-                    //collection.AddTransient<IStartup, ServiceTest1>();
-                    //collection.AddTransient<IStartup, ServiceTest2>();
-                });
             });
 
             services.AddTransient<IStartup, ServiceTest1>();
@@ -42,17 +34,16 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.ConfigureTenantServices<ShellSettings>((collection, settings) =>
             {
-                // Here we retrieve the tenant name.
                 var test = settings.Name;
 
-                // It works by calling the following here.
-                // In place of calling it in 'OC.Commons'
+                // Called here in place of 'OC.Commons'
                 collection.AddLiquidViews();
             });
 
-            services.ConfigureTenant((builder, routes, sp) =>
+            services.ConfigureTenant((builder, routes, serviceProvider) =>
             {
-                ;
+                var test = serviceProvider.GetRequiredService<ShellSettings>().Name;
+                builder.UseMiddleware<NonBlockingMiddleware>();
             });
 
             return services;
@@ -97,6 +88,22 @@ namespace Microsoft.Extensions.DependencyInjection
         public override void ConfigureServices(IServiceCollection services)
         {
             var test = _shellSettings.Name;
+        }
+    }
+
+    public class NonBlockingMiddleware
+    {
+        private readonly RequestDelegate _next;
+
+        public NonBlockingMiddleware(RequestDelegate next)
+        {
+            _next = next;
+        }
+
+        public async Task Invoke(HttpContext httpContext)
+        {
+            httpContext.Response.Headers.Add("OrchardCore", "2.0");
+            await _next.Invoke(httpContext);
         }
     }
 }
