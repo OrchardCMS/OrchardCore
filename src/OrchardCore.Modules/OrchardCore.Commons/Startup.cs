@@ -34,7 +34,7 @@ namespace OrchardCore.Commons
             services.AddShellDescriptorStorage();
             services.AddExtensionManager();
             services.AddTheming();
-            services.AddLiquidViews();
+            //services.AddLiquidViews();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

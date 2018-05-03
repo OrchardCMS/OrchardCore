@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Builders.Models;
 
 namespace OrchardCore.Environment.Shell.Builders
@@ -79,8 +80,8 @@ namespace OrchardCore.Environment.Shell.Builders
             // Let any module add custom service descriptors to the tenant
             foreach (var startup in startups)
             {
-                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value.FeatureInfo;
-                featureAwareServiceCollection.SetCurrentFeature(feature);
+                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FeatureInfo;
+                featureAwareServiceCollection.SetCurrentFeature(feature ?? new InternalFeatureInfo("Core", new InternalExtensionInfo("Core")));
 
                 startup.ConfigureServices(featureAwareServiceCollection);
             }
