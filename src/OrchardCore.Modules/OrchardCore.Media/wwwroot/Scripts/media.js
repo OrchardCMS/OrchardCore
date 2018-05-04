@@ -43,7 +43,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     selectedMedia: null,
                     selectedMedias: [],
                     errors: [],
-                    dragDropThumbnail : new Image()
+                    dragDropThumbnail: new Image(),
+                    smallThumbs: false
                 },
                 created: function () {
                     var self = this;
@@ -94,6 +95,9 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     root: function () {
                         return root;
+                    },
+                    thumbSize: function () {
+                        return this.smallThumbs ? 120 : 240 ;
                     }
                 },
                 mounted: function () {

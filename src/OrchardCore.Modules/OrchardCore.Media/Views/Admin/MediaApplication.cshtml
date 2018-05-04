@@ -29,6 +29,13 @@
         <div class="btn-group btn-group-sm text-right mr-2">
             <button type="button" class="btn btn-secondary" v-on:click="deleteMediaList" v-bind:disabled="selectedMedias.length < 1">@T["Delete Selected"] <span style="min-width:25px; display:inline-block;" >({{ selectedMedias.length}})</span></button>
         </div>
+        
+        <div class="btn-group-toggle mr-2" data-toggle="smallThumbsCheck">
+            <label class="btn btn-secondary btn-sm" v-bind:class="{ active : smallThumbs }">
+                <input type="checkbox" value="" id="smallThumbsCheck" v-model="smallThumbs"> @T["Small Thumbs"]
+            </label>
+        </div>
+
         <div class="btn-group btn-group-sm text-right">
             <label for="fileupload" class="btn btn-sm btn-success fileinput-button upload-button">
                 <input id="fileupload" type="file" name="files" multiple="multiple">
@@ -52,12 +59,12 @@
                 <li v-for="media in mediaItems"
                     :key="media.name"
                     class="media-container-main-list-item"
-                    style="width:240px"
+                    v-bind:style="{width: thumbSize + 2 + 'px'}"
                     v-bind:class="{selected: isMediaSelected(media)}"
                     v-on:click.stop="toggleSelectionOfMedia(media)"
                     draggable="true" v-on:dragstart="handleDragStart(media, $event)">
-                    <div class="thumb-container" style="height:240px">
-                        <img v-bind:src="media.url + '?width=240&height=240'" />
+                    <div class="thumb-container" v-bind:style="{height: thumbSize + 'px'}">
+                        <img v-bind:src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" />
                     </div>
                     <div class="media-container-main-item-title">
                         <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button mr-4" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a>
