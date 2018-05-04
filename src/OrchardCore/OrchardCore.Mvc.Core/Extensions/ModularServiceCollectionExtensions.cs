@@ -21,17 +21,6 @@ namespace OrchardCore.Mvc
 {
     public static class ModularServiceCollectionExtensions
     {
-        public static ModularServiceCollection AddMvcModules(this ModularServiceCollection moduleServices,
-            IServiceProvider applicationServices)
-        {
-            moduleServices.Configure(services =>
-            {
-                services.AddMvcModules(applicationServices);
-            });
-
-            return moduleServices;
-        }
-
         public static IServiceCollection AddMvcModules(this IServiceCollection services,
             IServiceProvider applicationServices)
         {

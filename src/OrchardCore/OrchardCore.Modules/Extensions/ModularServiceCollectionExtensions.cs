@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds modules services to the specified <see cref="Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
         /// </summary>
-        public static IServiceCollection AddModules(this IServiceCollection services, Action<ModularServiceCollection> configure = null)
+        public static IServiceCollection AddModules(this IServiceCollection services, Action<IServiceCollection> configure = null)
         {
             services.AddWebHost();
             services.AddManifestDefinition("module");
@@ -25,15 +25,8 @@ namespace Microsoft.Extensions.DependencyInjection
             // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
             services.AddRouting();
 
-            var modularServiceCollection = new ModularServiceCollection(services);
-
             // Use a single tenant and all features by default
-            modularServiceCollection.Configure(internalServices =>
-                internalServices.AddAllFeaturesDescriptor()
-            );
-
-            // Let the app change the default tenant behavior and set of features
-            configure?.Invoke(modularServiceCollection);
+            services.AddAllFeaturesDescriptor();
 
             // Register the list of services to be resolved later on
             services.AddSingleton(_ => services);
@@ -45,56 +38,46 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Registers a default tenant with a set of features that are used to setup and configure the actual tenants.
         /// For instance you can use this to add a custom Setup module.
         /// </summary>
-        public static ModularServiceCollection WithDefaultFeatures(
-            this ModularServiceCollection modules, params string[] featureIds)
+        public static IServiceCollection WithDefaultFeatures(
+            this IServiceCollection services, params string[] featureIds)
         {
-            modules.Configure(services =>
+            foreach (var featureId in featureIds)
             {
-                foreach (var featureId in featureIds)
-                {
-                    services.AddTransient(sp => new ShellFeature(featureId));
-                };
-            });
+                services.AddTransient(sp => new ShellFeature(featureId));
+            }
 
-            return modules;
+            return services;
         }
 
         /// <summary>
         /// Registers tenants defined in configuration.
         /// </summary>
-        public static ModularServiceCollection WithTenants(this ModularServiceCollection modules)
+        public static IServiceCollection WithTenants(this IServiceCollection services)
         {
-            modules.Configure(services =>
-            {
-                services.AddSingleton<IShellSettingsConfigurationProvider, FileShellSettingsConfigurationProvider>();
-                services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
-                services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
-                services.AddScoped<ShellSettingsWithTenants>();
-            });
+            services.AddSingleton<IShellSettingsConfigurationProvider, FileShellSettingsConfigurationProvider>();
+            services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
+            services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
+            services.AddScoped<ShellSettingsWithTenants>();
 
-            return modules;
+            return services;
         }
 
         /// <summary>
         /// Registers a single tenant with the specified set of features.
         /// </summary>
-        public static ModularServiceCollection WithFeatures(
-            this ModularServiceCollection modules,
-            params string[] featureIds)
+        public static IServiceCollection WithFeatures(
+            this IServiceCollection services, params string[] featureIds)
         {
             var featuresList = featureIds.Select(featureId => new ShellFeature(featureId)).ToList();
 
-            modules.Configure(services =>
+            foreach (var feature in featuresList)
             {
-                foreach (var feature in featuresList)
-                {
-                    services.AddTransient(sp => feature);
-                };
+                services.AddTransient(sp => feature);
+            };
 
-                services.AddSetFeaturesDescriptor(featuresList);
-            });
+            services.AddSetFeaturesDescriptor(featuresList);
 
-            return modules;
+            return services;
         }
 
         public static IServiceCollection AddWebHost(
