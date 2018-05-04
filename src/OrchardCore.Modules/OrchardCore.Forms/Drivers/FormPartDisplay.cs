@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
+using OrchardCore.Forms.ViewModels;
 
 namespace OrchardCore.Forms.Drivers
 {
@@ -11,12 +12,23 @@ namespace OrchardCore.Forms.Drivers
     {
         public override IDisplayResult Edit(FormPart part, BuildPartEditorContext context)
         {
-            return View("FormPart_Edit", part);
+            return Initialize<FormPartEditViewModel>("FormPart_Edit", m =>
+            {
+                m.Action = part.Action;
+                m.Method = part.Method;
+            });
         }
 
         public async override Task<IDisplayResult> UpdateAsync(FormPart part, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(part, Prefix);
+            var viewModel = new FormPartEditViewModel();
+
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+            {
+                part.Action = viewModel.Action?.Trim();
+                part.Method = viewModel.Method;
+            }
+
             return Edit(part);
         }
     }
