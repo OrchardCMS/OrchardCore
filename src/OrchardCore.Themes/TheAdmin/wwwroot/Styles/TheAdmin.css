@@ -7016,8 +7016,6 @@ span.CodeMirror-selectedtext {
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li:hover {
     overflow: visible;
     width: 320px; }
-  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > div.extended-hover-zone {
-    border: solid 1px orange; }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin li, .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin label, .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin a {
     min-height: 40px; }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > div {
@@ -7055,7 +7053,6 @@ span.CodeMirror-selectedtext {
     color: rgba(255, 0, 0, 0); }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin .hover-free-zone {
     position: absolute;
-    border: solid 1px orange;
     padding: 0;
     width: 20px;
     height: 20px;

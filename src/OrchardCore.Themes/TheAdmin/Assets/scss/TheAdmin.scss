@@ -271,11 +271,6 @@ $extended-hover-length: 30px;
             width: $left-navigation-width-when-compact + $left-navigation-width;
         }
 
-        > li > div.extended-hover-zone {
-            border: solid 1px orange;
-        }
-
-
         li, label, a {
             min-height: 40px;
         }
@@ -329,7 +324,6 @@ $extended-hover-length: 30px;
 
         .hover-free-zone {
             position: absolute;
-            border: solid 1px orange;
             padding: 0;
             width: $mini-hover-free-zone-length;
             height: $mini-hover-free-zone-length;
