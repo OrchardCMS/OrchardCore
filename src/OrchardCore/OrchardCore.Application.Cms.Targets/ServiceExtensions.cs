@@ -1,14 +1,7 @@
-using System.IO;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Extensions.Manifests;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Data;
-using OrchardCore.Modules;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -22,9 +15,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddCommands();
             services.AddAuthentication();
 
-            services.AddModules()
-                .WithDefaultFeatures("OrchardCore.Antiforgery", "OrchardCore.Mvc", "OrchardCore.Settings",
-                    "OrchardCore.Setup", "OrchardCore.Recipes", "OrchardCore.Commons");
+            services.AddModules();
+
+            services.WithDefaultFeatures(
+                "OrchardCore.Antiforgery", "OrchardCore.Mvc", "OrchardCore.Settings",
+                "OrchardCore.Setup", "OrchardCore.Recipes", "OrchardCore.Commons");
 
             return services;
         }

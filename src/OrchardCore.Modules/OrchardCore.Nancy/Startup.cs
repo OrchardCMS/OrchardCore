@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
-using OrchardCore.Nancy;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Nancy
 {
@@ -16,11 +15,8 @@ namespace OrchardCore.Nancy
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            app.ConfigureModules(apb =>
-            {
-                apb.UseNancyModules();
-                apb.UseStaticFilesModules();
-            });
+            app.UseNancyModules();
+            app.UseStaticFilesModules();
         }
     }
 }

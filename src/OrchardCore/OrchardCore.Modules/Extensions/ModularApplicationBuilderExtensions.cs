@@ -11,7 +11,7 @@ namespace Microsoft.AspNetCore.Builder
 {
     public static class ModularApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseModules(this IApplicationBuilder app, Action<ModularApplicationBuilder> modules = null)
+        public static IApplicationBuilder UseModules(this IApplicationBuilder app, Action<IApplicationBuilder> modules = null)
         {
             var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
 
@@ -31,52 +31,47 @@ namespace Microsoft.AspNetCore.Builder
             return app;
         }
 
-        public static IApplicationBuilder ConfigureModules(this IApplicationBuilder app, Action<ModularApplicationBuilder> modules)
+        public static IApplicationBuilder ConfigureModules(this IApplicationBuilder app, Action<IApplicationBuilder> modules)
         {
-            var modularApplicationBuilder = new ModularApplicationBuilder(app);
-            modules?.Invoke(modularApplicationBuilder);
-
+            modules?.Invoke(app);
             return app;
         }
 
-        public static ModularApplicationBuilder UseStaticFilesModules(this ModularApplicationBuilder modularApp)
+        public static IApplicationBuilder UseStaticFilesModules(this IApplicationBuilder app)
         {
-            modularApp.Configure(app =>
-            {
-                var extensionManager = app.ApplicationServices.GetRequiredService<IExtensionManager>();
-                var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
+            var extensionManager = app.ApplicationServices.GetRequiredService<IExtensionManager>();
+            var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
 
                 // TODO: configure the location and parameters (max-age) per module.
                 var availableExtensions = extensionManager.GetExtensions();
-                foreach (var extension in availableExtensions)
+            foreach (var extension in availableExtensions)
+            {
+                var contentSubPath = Path.Combine(extension.SubPath, "wwwroot");
+
+                if (env.ContentRootFileProvider.GetDirectoryContents(contentSubPath).Exists)
                 {
-                    var contentSubPath = Path.Combine(extension.SubPath, "wwwroot");
-
-                    if (env.ContentRootFileProvider.GetDirectoryContents(contentSubPath).Exists)
+                    IFileProvider fileProvider;
+                    if (env.IsDevelopment())
                     {
-                        IFileProvider fileProvider;
-                        if (env.IsDevelopment())
-                        {
-                            var fileProviders = new List<IFileProvider>();
-                            fileProviders.Add(new ModuleProjectContentFileProvider(env, contentSubPath));
-                            fileProviders.Add(new ModuleEmbeddedFileProvider(env, contentSubPath));
-                            fileProvider = new CompositeFileProvider(fileProviders);
-                        }
-                        else
-                        {
-                            fileProvider = new ModuleEmbeddedFileProvider(env, contentSubPath);
-                        }
-
-                        app.UseStaticFiles(new StaticFileOptions
-                        {
-                            RequestPath = "/" + extension.Id,
-                            FileProvider = fileProvider
-                        });
+                        var fileProviders = new List<IFileProvider>();
+                        fileProviders.Add(new ModuleProjectContentFileProvider(env, contentSubPath));
+                        fileProviders.Add(new ModuleEmbeddedFileProvider(env, contentSubPath));
+                        fileProvider = new CompositeFileProvider(fileProviders);
                     }
-                }
-            });
+                    else
+                    {
+                        fileProvider = new ModuleEmbeddedFileProvider(env, contentSubPath);
+                    }
 
-            return modularApp;
+                    app.UseStaticFiles(new StaticFileOptions
+                    {
+                        RequestPath = "/" + extension.Id,
+                        FileProvider = fileProvider
+                    });
+                }
+            }
+
+            return app;
         }
     }
 }
