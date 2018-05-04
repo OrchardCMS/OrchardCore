@@ -12,7 +12,7 @@ namespace OrchardCore.Modules
             configureAction = configure;
         }
 
-        public override int Order { get; internal set; } = -10000;
+        public override int Order { get; internal set; } = int.MinValue;
 
         public Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configureAction { get; }
 
@@ -29,7 +29,7 @@ namespace OrchardCore.Modules
             configureServicesAction = configureServices;
         }
 
-        public override int Order { get; internal set; } = -10000;
+        public override int Order { get; internal set; } = int.MinValue;
 
         public Action<IServiceCollection> configureServicesAction { get; }
 
@@ -48,7 +48,7 @@ namespace OrchardCore.Modules
             Dependency = dependency;
         }
 
-        public override int Order { get; internal set; } = -10000;
+        public override int Order { get; internal set; } = int.MinValue;
 
         public Action<IServiceCollection, TDep> configureServicesAction { get; }
 
@@ -72,7 +72,7 @@ namespace OrchardCore.Modules
             Dependency2 = dependency2;
         }
 
-        public override int Order { get; internal set; } = -10000;
+        public override int Order { get; internal set; } = int.MinValue;
 
         public Action<IServiceCollection, TDep1, TDep2> configureServicesAction { get; }
 
@@ -99,7 +99,7 @@ namespace OrchardCore.Modules
             Dependency3 = dependency3;
         }
 
-        public override int Order { get; internal set; } = -10000;
+        public override int Order { get; internal set; } = int.MinValue;
 
         public Action<IServiceCollection, TDep1, TDep2, TDep3> configureServicesAction { get; }
 
@@ -129,7 +129,7 @@ namespace OrchardCore.Modules
             Dependency4 = dependency4;
         }
 
-        public override int Order { get; internal set; } = -10000;
+        public override int Order { get; internal set; } = int.MinValue;
 
         public Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4> configureServicesAction { get; }
 
@@ -162,7 +162,7 @@ namespace OrchardCore.Modules
             Dependency5 = dependency5;
         }
 
-        public override int Order { get; internal set; } = -10000;
+        public override int Order { get; internal set; } = int.MinValue;
 
         public Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4, TDep5> configureServicesAction { get; }
 
@@ -190,7 +190,7 @@ namespace OrchardCore.Modules
         public static IServiceCollection PostConfigureTenant(this IServiceCollection services,
             Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure)
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenant(configure) { Order = 10000 });
+            services.AddTransient<IStartup>(sp => new ConfigureTenant(configure) { Order = int.MaxValue });
             return services;
         }
 
@@ -204,7 +204,7 @@ namespace OrchardCore.Modules
         public static IServiceCollection PostConfigureTenantServices(this IServiceCollection services,
             Action<IServiceCollection> configureServices)
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenantServices(configureServices) { Order = 10000 });
+            services.AddTransient<IStartup>(sp => new ConfigureTenantServices(configureServices) { Order = int.MaxValue });
             return services;
         }
 
@@ -226,7 +226,7 @@ namespace OrchardCore.Modules
             services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep>(
                 sp.GetRequiredService<TDep>(),
                 configureServices)
-                { Order = 10000 });
+                { Order = int.MaxValue });
 
             return services;
         }
@@ -253,7 +253,7 @@ namespace OrchardCore.Modules
                 sp.GetRequiredService<TDep1>(),
                 sp.GetRequiredService<TDep2>(),
                 configureServices)
-                { Order = 10000 });
+                { Order = int.MaxValue });
 
             return services;
         }
@@ -284,7 +284,7 @@ namespace OrchardCore.Modules
                 sp.GetRequiredService<TDep2>(),
                 sp.GetRequiredService<TDep3>(),
                 configureServices)
-                { Order = 10000 });
+                { Order = int.MaxValue });
 
             return services;
         }
@@ -319,7 +319,7 @@ namespace OrchardCore.Modules
                 sp.GetRequiredService<TDep3>(),
                 sp.GetRequiredService<TDep4>(),
                 configureServices)
-                { Order = 10000 });
+                { Order = int.MaxValue });
 
             return services;
         }
@@ -358,7 +358,7 @@ namespace OrchardCore.Modules
                 sp.GetRequiredService<TDep4>(),
                 sp.GetRequiredService<TDep5>(),
                 configureServices)
-                { Order = 10000 });
+                { Order = int.MaxValue });
 
             return services;
         }
