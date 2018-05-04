@@ -8,7 +8,7 @@ namespace OrchardCore.Modules
     public abstract class StartupBase : IStartup
     {
         /// <inheritdoc />
-        public virtual int Order => 0;
+        public virtual int Order { get; internal set; } = 0;
 
         /// <inheritdoc />
         public virtual void ConfigureServices(IServiceCollection services)

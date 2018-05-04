@@ -28,6 +28,9 @@ namespace Microsoft.Extensions.DependencyInjection
             // Use a single tenant and all features by default
             services.AddAllFeaturesDescriptor();
 
+            // Let the app change the default tenant behavior and set of features
+            configure?.Invoke(services);
+
             // Register the list of services to be resolved later on
             services.AddSingleton(_ => services);
 

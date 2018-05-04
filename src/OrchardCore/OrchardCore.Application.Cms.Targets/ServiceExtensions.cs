@@ -23,24 +23,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddAuthentication();
 
             services.AddModules()
-
                 .WithDefaultFeatures("OrchardCore.Antiforgery", "OrchardCore.Mvc", "OrchardCore.Settings",
-                    "OrchardCore.Setup", "OrchardCore.Recipes", "OrchardCore.Commons")
-
-                .ConfigureTenantServices<IOptions<ShellOptions>, ShellSettings>(
-                    (collection, options, settings) =>
-                {
-                    var directory = Directory.CreateDirectory(Path.Combine(
-                        options.Value.ShellsApplicationDataPath,
-                        options.Value.ShellsContainerName,
-                        settings.Name, "DataProtection-Keys"));
-
-                    collection.Add(new ServiceCollection()
-                        .AddDataProtection()
-                        .PersistKeysToFileSystem(directory)
-                        .SetApplicationName(settings.Name)
-                        .Services);
-                });
+                    "OrchardCore.Setup", "OrchardCore.Recipes", "OrchardCore.Commons");
 
             return services;
         }

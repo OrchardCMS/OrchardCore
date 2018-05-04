@@ -26,7 +26,7 @@ namespace OrchardCore.DataProtection
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            /*var directory = Directory.CreateDirectory(Path.Combine(
+            var directory = Directory.CreateDirectory(Path.Combine(
                 _shellOptions.Value.ShellsApplicationDataPath,
                 _shellOptions.Value.ShellsContainerName,
                 _shellSettings.Name, "DataProtection-Keys"));
@@ -39,7 +39,7 @@ namespace OrchardCore.DataProtection
                 .AddDataProtection()
                 .PersistKeysToFileSystem(directory)
                 .SetApplicationName(_shellSettings.Name)
-                .Services);*/
+                .Services);
         }
     }
 }
