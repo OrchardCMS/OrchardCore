@@ -33,6 +33,7 @@
         "OrchardCore.Tenants",
         "OrchardCore.Themes",
         "OrchardCore.Users",
+        "OrchardCore.UserProfile",
 
         // Themes
         "TheTheme",
