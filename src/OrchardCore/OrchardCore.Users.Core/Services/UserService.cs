@@ -22,7 +22,7 @@ namespace OrchardCore.Users.Services
             T = stringLocalizer;
         }
 
-        public async Task<IUser> CreateUserAsync(string userName, string email, string[] roleNames, string password, Action<string, string> reportError)
+        public async Task<IUser> CreateUserAsync(string userName, string email, string[] roleNames, string password, string timeZone, Action<string, string> reportError)
         {
             var result = true;
 
@@ -59,7 +59,8 @@ namespace OrchardCore.Users.Services
             {
                 UserName = userName,
                 Email = email,
-                RoleNames = new List<string>(roleNames)
+                RoleNames = new List<string>(roleNames),
+                TimeZone = timeZone
             };
 
             var identityResult = await _userManager.CreateAsync(user, password);

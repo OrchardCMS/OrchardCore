@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Setup.Events
@@ -13,9 +13,11 @@ namespace OrchardCore.Setup.Events
             string userName,
             string email,
             string password,
+            string adminTimeZone,
             string dbProvider,
             string dbConnectionString,
             string dbTablePrefix,
+            string siteTimeZone,
             Action<string, string> reportError
             );
     }

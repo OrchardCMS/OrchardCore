@@ -218,9 +218,11 @@ namespace OrchardCore.Setup.Services
                         context.AdminUsername,
                         context.AdminEmail,
                         context.AdminPassword,
+                        context.AdminTimeZone,
                         context.DatabaseProvider,
                         context.DatabaseConnectionString,
                         context.DatabaseTablePrefix,
+                        context.SiteTimeZone,
                         reportError
                     ), logger);
 

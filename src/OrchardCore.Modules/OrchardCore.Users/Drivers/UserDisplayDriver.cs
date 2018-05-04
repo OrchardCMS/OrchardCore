@@ -91,7 +91,7 @@ namespace OrchardCore.Users.Drivers
                 }
 
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
-                await _userService.CreateUserAsync(model.UserName, model.Email, roleNames, model.Password, (key, message) => context.Updater.ModelState.AddModelError(key, message));
+                await _userService.CreateUserAsync(model.UserName, model.Email, roleNames, model.Password, model.TimeZone, (key, message) => context.Updater.ModelState.AddModelError(key, message));
             }
             else
             {
