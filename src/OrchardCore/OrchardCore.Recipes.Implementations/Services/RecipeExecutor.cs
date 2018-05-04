@@ -164,7 +164,7 @@ namespace OrchardCore.Recipes.Services
                 {
                     using (var activatingScope = shellContext.EnterServiceScope())
                     {
-                        var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+                        var tenantEvents = activatingScope.ServiceProvider.GetServices<IModularTenantEvents>();
 
                         foreach (var tenantEvent in tenantEvents)
                         {
