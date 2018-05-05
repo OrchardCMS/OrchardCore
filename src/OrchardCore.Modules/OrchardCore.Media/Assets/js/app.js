@@ -10,6 +10,8 @@ var root = {
 
 var bus = new Vue();
 
+
+
 function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl) {
 
     if (initialized) {
@@ -74,6 +76,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         media.mediaPath = newPath;
                         media.name = newName;
                     });
+
+                    this.currentPrefs = JSON.parse(localStorage.getItem('mediaPreferences'));
                 },
                 computed: {
                     isHome: function () {
@@ -93,11 +97,27 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     thumbSize: function () {
                         return this.smallThumbs ? 120 : 240 ;
+                    },
+                    currentPrefs: {
+                        get: function () {
+                            return {
+                                smallThumbs: this.smallThumbs
+                            }
+                        },
+                        set: function (newPrefs) {
+                            this.smallThumbs = newPrefs.smallThumbs
+                        }
+                    }
+                },
+                watch: {
+                    currentPrefs: function (newPrefs) {
+                        localStorage.setItem('mediaPreferences', JSON.stringify(newPrefs));
                     }
                 },
                 mounted: function () {
                     this.selectRoot();
                     this.$refs.rootFolder.toggle();
+
                 },
                 methods: {
                     selectFolder: function (folder) {
