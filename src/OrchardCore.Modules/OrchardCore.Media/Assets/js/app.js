@@ -53,7 +53,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     });
 
                     bus.$on('folderAdded', function (folder) {
-                        self.selectFolder(folder);
+                        self.selectedFolder = folder;
                         folder.selected = true;
                     });
 
@@ -114,28 +114,23 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 watch: {
                     currentPrefs: function (newPrefs) {
                         localStorage.setItem('mediaPreferences', JSON.stringify(newPrefs));
+                    },
+                    selectedFolder: function (newFolder) {
+                        this.selectedFolder = newFolder;
+                        this.loadFolder(newFolder);
+                        bus.$emit('folderSelected', newFolder);
                     }
+               
                 },
                 mounted: function () {
-                    this.$refs.rootFolder.toggle();
-
-                    try {
-                        this.selectFolder(this.selectedFolder);
-                    } catch (e) {
-                        this.selectRoot();
-                    }
+                    this.$refs.rootFolder.toggle(); //todo: see if this is still required 
                 },
                 methods: {
-                    selectFolder: function (folder) {
-                        this.selectedFolder = folder;
-                        this.loadFolder(folder);
-                        bus.$emit('folderSelected', folder);
-                    },
                     uploadUrl: function () {
                         return this.selectedFolder ? $('#uploadFiles').val() + "?path=" + encodeURIComponent(this.selectedFolder.path) : null;
                     },
                     selectRoot: function () {
-                        this.selectFolder(this.root);
+                        this.selectedFolder = this.root;
                     },
                     loadFolder: function (folder) {
                         this.errors = [];
@@ -492,7 +487,7 @@ Vue.component('folder', {
             }
         },
         select: function () {
-            mediaApp.selectFolder(this.model);
+            mediaApp.selectedFolder = this.model;
         },
         handleDragEnter: function (e) {                     
             if (e.target.classList.contains('folder-dragover') === false) {                

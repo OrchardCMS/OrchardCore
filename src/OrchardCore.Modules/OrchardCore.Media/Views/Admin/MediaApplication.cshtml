@@ -15,7 +15,7 @@
         <span v-for="(folder, i) in parents" v-cloak
               class="breadcrumb-item"
               v-bind:class="{active: parents.length - i == 1}">
-            <a :href="parents.length - i == 1 ? null : '#'" v-on:click="selectFolder(folder)">{{ folder.name }}</a>
+            <a :href="parents.length - i == 1 ? null : '#'" v-on:click="selectedFolder = folder;">{{ folder.name }}</a>
         </span>
         <div class="btn-group">
             <a v-cloak href="javascript:;" class="btn btn-light btn-sm" v-on:click="createFolder"><i class="fa fa-plus"></i></a>
