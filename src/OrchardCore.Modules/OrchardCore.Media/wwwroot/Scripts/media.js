@@ -106,11 +106,13 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     currentPrefs: {
                         get: function () {
                             return {
-                                smallThumbs: this.smallThumbs
+                                smallThumbs: this.smallThumbs,
+                                selectedFolder: this.selectedFolder
                             }
                         },
                         set: function (newPrefs) {
-                            this.smallThumbs = newPrefs.smallThumbs
+                            this.smallThumbs = newPrefs.smallThumbs;
+                            this.selectedFolder = newPrefs.selectedFolder;
                         }
                     }
                 },
@@ -120,9 +122,13 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     }
                 },
                 mounted: function () {
-                    this.selectRoot();
                     this.$refs.rootFolder.toggle();
 
+                    try {
+                        this.selectFolder(this.selectedFolder);
+                    } catch (e) {
+                        this.selectRoot();
+                    }
                 },
                 methods: {
                     selectFolder: function (folder) {
