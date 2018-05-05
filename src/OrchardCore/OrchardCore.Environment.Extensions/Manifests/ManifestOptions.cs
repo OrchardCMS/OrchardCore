@@ -1,4 +1,3 @@
-﻿using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 
 namespace OrchardCore.Environment.Extensions

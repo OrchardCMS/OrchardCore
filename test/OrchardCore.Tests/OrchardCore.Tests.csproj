@@ -43,10 +43,24 @@
     <EmbeddedResource Include="Localization\PoFiles\SimpleEntry.po" />
   </ItemGroup>
 
+  <!-- Necessary as we reference the Project and not the Package -->
+  <Import Project="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Modules\OrchardCore.Modules.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests.Modules\BaseThemeSample\BaseThemeSample.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests.Modules\BaseThemeSample2\BaseThemeSample2.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests.Modules\DerivedThemeSample\DerivedThemeSample.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests.Modules\DerivedThemeSample2\DerivedThemeSample2.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests.Modules\ModuleSample\ModuleSample.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Liquid\OrchardCore.Liquid.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Queries\OrchardCore.Queries.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Users\OrchardCore.Users.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Workflows\OrchardCore.Workflows.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Data\OrchardCore.Data.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
@@ -58,6 +72,9 @@
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Localization.Core\OrchardCore.Localization.Core.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Parser.Yaml\OrchardCore.Parser.Yaml.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Recipes.Implementations\OrchardCore.Recipes.Implementations.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Scripting.Core\OrchardCore.Scripting.Core.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Scripting.JavaScript\OrchardCore.Scripting.JavaScript.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

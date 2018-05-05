@@ -13,15 +13,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OpenIddict.Core;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.ActionConstraints;
 using OrchardCore.OpenId.Abstractions.Models;
+using OrchardCore.OpenId.Filters;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Services.Managers;
 using OrchardCore.OpenId.ViewModels;
@@ -30,14 +30,15 @@ using OrchardCore.Users;
 
 namespace OrchardCore.OpenId.Controllers
 {
-    [Authorize]
+    [Authorize, Feature(OpenIdConstants.Features.Server), OpenIdController]
     public class AccessController : Controller
     {
         private readonly OpenIdApplicationManager _applicationManager;
         private readonly OpenIdAuthorizationManager _authorizationManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
+        private readonly OpenIdScopeManager _scopeManager;
+        private readonly ShellSettings _shellSettings;
         private readonly SignInManager<IUser> _signInManager;
-        private readonly IOpenIdService _openIdService;
         private readonly RoleManager<IRole> _roleManager;
         private readonly UserManager<IUser> _userManager;
         private readonly IStringLocalizer<AccessController> T;
@@ -47,7 +48,9 @@ namespace OrchardCore.OpenId.Controllers
             OpenIdAuthorizationManager authorizationManager,
             IOptions<IdentityOptions> identityOptions,
             IStringLocalizer<AccessController> localizer,
-            IOpenIdService openIdService,
+            OpenIdScopeManager scopeManager,
+            ShellSettings shellSettings,
+            IOpenIdServerService serverService,
             RoleManager<IRole> roleManager,
             SignInManager<IUser> signInManager,
             UserManager<IUser> userManager)
@@ -55,8 +58,9 @@ namespace OrchardCore.OpenId.Controllers
             T = localizer;
             _applicationManager = applicationManager;
             _authorizationManager = authorizationManager;
+            _scopeManager = scopeManager;
+            _shellSettings = shellSettings;
             _identityOptions = identityOptions;
-            _openIdService = openIdService;
             _signInManager = signInManager;
             _userManager = userManager;
             _roleManager = roleManager;
@@ -93,41 +97,43 @@ namespace OrchardCore.OpenId.Controllers
                 });
             }
 
-            // Unless prompt=consent was specified, skip the consent form
-            // if the client application doesn't require explicit approval
-            // or if an authorization matching the criteria already exists.
-            if (!request.HasPrompt(OpenIdConnectConstants.Prompts.Consent))
-            {
-                if (!await _applicationManager.IsConsentRequiredAsync(application))
-                {
-                    return await IssueTokensAsync(request, application, result.Principal);
-                }
+            var authorizations = await _authorizationManager.FindAsync(
+                subject: _userManager.GetUserId(result.Principal),
+                client : await _applicationManager.GetIdAsync(application),
+                status : OpenIddictConstants.Statuses.Valid,
+                type   : OpenIddictConstants.AuthorizationTypes.Permanent,
+                scopes : ImmutableArray.CreateRange(request.GetScopes()));
 
-                if (!await _authorizationManager.IsConsentRequired(result.Principal,
-                     await _applicationManager.GetIdAsync(application),
-                     ImmutableArray.CreateRange(request.GetScopes())))
-                {
-                    return await IssueTokensAsync(request, application, result.Principal);
-                }
+            switch (await _applicationManager.GetConsentTypeAsync(application))
+            {
+                case OpenIddictConstants.ConsentTypes.External when authorizations.IsEmpty:
+                    return RedirectToClient(new OpenIdConnectResponse
+                    {
+                        Error = OpenIdConnectConstants.Errors.ConsentRequired,
+                        ErrorDescription = T["The logged in user is not allowed to access this client application."]
+                    });
+
+                case OpenIddictConstants.ConsentTypes.Implicit:
+                case OpenIddictConstants.ConsentTypes.External when authorizations.Any():
+                case OpenIddictConstants.ConsentTypes.Explicit when authorizations.Any() &&
+                    !request.HasPrompt(OpenIdConnectConstants.Prompts.Consent):
+                    return await IssueTokensAsync(result.Principal, request, application, authorizations.LastOrDefault());
+
+                case OpenIddictConstants.ConsentTypes.Explicit when request.HasPrompt(OpenIdConnectConstants.Prompts.None):
+                    return RedirectToClient(new OpenIdConnectResponse
+                    {
+                        Error = OpenIdConnectConstants.Errors.ConsentRequired,
+                        ErrorDescription = T["Interactive user consent is required."]
+                    });
+
+                default:
+                    return View(new AuthorizeViewModel
+                    {
+                        ApplicationName = await _applicationManager.GetDisplayNameAsync(application),
+                        RequestId = request.RequestId,
+                        Scope = request.Scope
+                    });
             }
-
-            // At this stage, return an error if prompt=none was specified since
-            // the request cannot succeed without requiring explicit user consent.
-            if (request.HasPrompt(OpenIdConnectConstants.Prompts.None))
-            {
-                return RedirectToClient(new OpenIdConnectResponse
-                {
-                    Error = OpenIdConnectConstants.Errors.ConsentRequired,
-                    ErrorDescription = T["Interactive user consent is required."]
-                });
-            }
-
-            return View(new AuthorizeViewModel
-            {
-                ApplicationName = await _applicationManager.GetDisplayNameAsync(application),
-                RequestId = request.RequestId,
-                Scope = request.Scope
-            });
         }
 
         [ActionName(nameof(Authorize))]
@@ -146,7 +152,28 @@ namespace OrchardCore.OpenId.Controllers
                 });
             }
 
-            return await IssueTokensAsync(request, application, User);
+            var authorizations = await _authorizationManager.FindAsync(
+                subject: _userManager.GetUserId(User),
+                client : await _applicationManager.GetIdAsync(application),
+                status : OpenIddictConstants.Statuses.Valid,
+                type   : OpenIddictConstants.AuthorizationTypes.Permanent,
+                scopes : ImmutableArray.CreateRange(request.GetScopes()));
+
+            // Note: the same check is already made in the GET action but is repeated
+            // here to ensure a malicious user can't abuse this POST endpoint and
+            // force it to return a valid response without the external authorization.
+            switch (await _applicationManager.GetConsentTypeAsync(application))
+            {
+                case OpenIddictConstants.ConsentTypes.External when authorizations.IsEmpty:
+                    return RedirectToClient(new OpenIdConnectResponse
+                    {
+                        Error = OpenIdConnectConstants.Errors.ConsentRequired,
+                        ErrorDescription = T["The logged in user is not allowed to access this client application."]
+                    });
+
+                default:
+                    return await IssueTokensAsync(User, request, application, authorizations.LastOrDefault());
+            }
         }
 
         [ActionName(nameof(Authorize))]
@@ -194,39 +221,6 @@ namespace OrchardCore.OpenId.Controllers
             throw new NotSupportedException("The specified grant type is not supported.");
         }
 
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            var response = context.HttpContext.GetOpenIdConnectResponse();
-            if (response != null)
-            {
-                var provider = context.HttpContext.RequestServices.GetRequiredService<IModelMetadataProvider>();
-
-                context.Result = new ViewResult
-                {
-                    ViewName = "Error",
-                    ViewData = new ViewDataDictionary(provider, context.ModelState)
-                    {
-                        Model = new ErrorViewModel
-                        {
-                            Error = response.Error,
-                            ErrorDescription = response.ErrorDescription
-                        }
-                    }
-                };
-
-                return;
-            }
-
-            // If the request is missing, this likely means that
-            // this endpoint was not enabled in the settings.
-            // In this case, simply return a 404 response.
-            var request = context.HttpContext.GetOpenIdConnectRequest();
-            if (request == null)
-            {
-                context.Result = new NotFoundResult();
-            }
-        }
-
         private async Task<IActionResult> ExchangeClientCredentialsGrantType(OpenIdConnectRequest request)
         {
             // Note: client authentication is always enforced by OpenIddict before this action is invoked.
@@ -270,13 +264,23 @@ namespace OrchardCore.OpenId.Controllers
                 new AuthenticationProperties(),
                 OpenIdConnectServerDefaults.AuthenticationScheme);
 
-            ticket.SetResources(await GetResourcesAsync(request));
+            ticket.SetResources(await GetResourcesAsync(request.GetScopes()));
 
             return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
         }
 
         private async Task<IActionResult> ExchangePasswordGrantType(OpenIdConnectRequest request)
         {
+            var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
+            if (application == null)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = T["The specified 'client_id' parameter is invalid."]
+                });
+            }
+
             var user = await _userManager.FindByNameAsync(request.Username);
             if (user == null)
             {
@@ -285,6 +289,25 @@ namespace OrchardCore.OpenId.Controllers
                     Error = OpenIdConnectConstants.Errors.InvalidGrant,
                     ErrorDescription = T["The username/password couple is invalid."]
                 });
+            }
+
+            var authorizations = await _authorizationManager.FindAsync(
+                subject: await _userManager.GetUserIdAsync(user),
+                client : await _applicationManager.GetIdAsync(application),
+                status : OpenIddictConstants.Statuses.Valid,
+                type   : OpenIddictConstants.AuthorizationTypes.Permanent,
+                scopes : ImmutableArray.CreateRange(request.GetScopes()));
+
+            // If the application is configured to use external consent,
+            // reject the request if no existing authorization can be found.
+            switch (await _applicationManager.GetConsentTypeAsync(application))
+            {
+                case OpenIddictConstants.ConsentTypes.External when authorizations.IsEmpty:
+                    return BadRequest(new OpenIdConnectResponse
+                    {
+                        Error = OpenIdConnectConstants.Errors.ConsentRequired,
+                        ErrorDescription = T["The logged in user is not allowed to access this client application."]
+                    });
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
@@ -313,13 +336,23 @@ namespace OrchardCore.OpenId.Controllers
                 });
             }
 
-            var ticket = await CreateTicketAsync(request, user);
+            var ticket = await CreateTicketAsync(user, application, authorizations.LastOrDefault(), request);
 
             return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
         }
 
         private async Task<IActionResult> ExchangeAuthorizationCodeOrRefreshTokenGrantType(OpenIdConnectRequest request)
         {
+            var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
+            if (application == null)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = T["The specified 'client_id' parameter is invalid."]
+                });
+            }
+
             // Retrieve the claims principal stored in the authorization code/refresh token.
             var info = await HttpContext.AuthenticateAsync(OpenIdConnectServerDefaults.AuthenticationScheme);
             Debug.Assert(info.Principal != null, "The user principal shouldn't be null.");
@@ -347,13 +380,14 @@ namespace OrchardCore.OpenId.Controllers
 
             // Create a new authentication ticket, but reuse the properties stored in the
             // authorization code/refresh token, including the scopes originally granted.
-            var ticket = await CreateTicketAsync(request, user, info.Properties);
+            var ticket = await CreateTicketAsync(user, application, null, request, info.Properties);
 
             return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
         }
 
-        private async Task<IActionResult> IssueTokensAsync(OpenIdConnectRequest request,
-            IOpenIdApplication application, ClaimsPrincipal principal)
+        private async Task<IActionResult> IssueTokensAsync(
+            ClaimsPrincipal principal, OpenIdConnectRequest request,
+            IOpenIdApplication application, IOpenIdAuthorization authorization = null)
         {
             // Retrieve the profile of the logged in user.
             var user = await _userManager.GetUserAsync(principal);
@@ -366,25 +400,19 @@ namespace OrchardCore.OpenId.Controllers
                 });
             }
 
-            var ticket = await CreateTicketAsync(request, user);
-
-            var authorization = await _authorizationManager.ReplaceAsync(principal,
-                await _applicationManager.GetIdAsync(application),
-                ImmutableArray.CreateRange(ticket.GetScopes()),
-                ImmutableDictionary.CreateRange(ticket.Properties.Items));
-
-            // Attach the authorization identifier to the authentication ticket.
-            ticket.SetProperty(OpenIddictConstants.Properties.AuthorizationId,
-                await _authorizationManager.GetIdAsync(authorization));
+            var ticket = await CreateTicketAsync(user, application, authorization, request);
 
             // Returning a SignInResult will ask OpenIddict to issue the appropriate access/identity tokens.
             return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
         }
 
         private async Task<AuthenticationTicket> CreateTicketAsync(
-            OpenIdConnectRequest request, IUser user,
-            AuthenticationProperties properties = null)
+            IUser user, IOpenIdApplication application, IOpenIdAuthorization authorization,
+            OpenIdConnectRequest request, AuthenticationProperties properties = null)
         {
+            Debug.Assert(request.IsAuthorizationRequest() || request.IsTokenRequest(),
+                "The request should be an authorization or token request.");
+
             // Create a new ClaimsPrincipal containing the claims that
             // will be used to create an id_token, a token or a code.
             var principal = await _signInManager.CreateUserPrincipalAsync(user);
@@ -402,21 +430,35 @@ namespace OrchardCore.OpenId.Controllers
             var ticket = new AuthenticationTicket(principal, properties,
                 OpenIdConnectServerDefaults.AuthenticationScheme);
 
-            if (!request.IsAuthorizationCodeGrantType() && !request.IsRefreshTokenGrantType())
+            if (request.IsAuthorizationRequest() || (!request.IsAuthorizationCodeGrantType() &&
+                                                     !request.IsRefreshTokenGrantType()))
             {
                 // Set the list of scopes granted to the client application.
                 // Note: the offline_access scope must be granted
                 // to allow OpenIddict to return a refresh token.
-                ticket.SetScopes(new[]
-                {
-                    OpenIdConnectConstants.Scopes.OpenId,
-                    OpenIdConnectConstants.Scopes.Email,
-                    OpenIdConnectConstants.Scopes.Profile,
-                    OpenIdConnectConstants.Scopes.OfflineAccess,
-                    OpenIddictConstants.Scopes.Roles
-                }.Intersect(request.GetScopes()));
+                ticket.SetScopes(request.GetScopes());
+                ticket.SetResources(await GetResourcesAsync(request.GetScopes()));
 
-                ticket.SetResources(await GetResourcesAsync(request));
+                // If the request is an authorization request, automatically create
+                // a permanent authorization to avoid requiring explicit consent for
+                // future authorization or token requests containing the same scopes.
+                if (authorization == null && request.IsAuthorizationRequest())
+                {
+                    authorization = await _authorizationManager.CreateAsync(
+                        principal : ticket.Principal,
+                        subject   : await _userManager.GetUserIdAsync(user),
+                        client    : await _applicationManager.GetIdAsync(application),
+                        type      : OpenIddictConstants.AuthorizationTypes.Permanent,
+                        scopes    : ImmutableArray.CreateRange(ticket.GetScopes()),
+                        properties: ImmutableDictionary.CreateRange(ticket.Properties.Items));
+                }
+
+                if (authorization != null)
+                {
+                    // Attach the authorization identifier to the authentication ticket.
+                    ticket.SetProperty(OpenIddictConstants.Properties.AuthorizationId,
+                        await _authorizationManager.GetIdAsync(authorization));
+                }
             }
 
             // Note: by default, claims are NOT automatically included in the access and identity tokens.
@@ -451,19 +493,16 @@ namespace OrchardCore.OpenId.Controllers
             return ticket;
         }
 
-        private async Task<IEnumerable<string>> GetResourcesAsync(OpenIdConnectRequest request)
+        private async Task<IEnumerable<string>> GetResourcesAsync(IEnumerable<string> scopes)
         {
-            var settings = await _openIdService.GetOpenIdSettingsAsync();
+            // Note: the current tenant name is always added as a valid resource/audience,
+            // which allows the end user to use the corresponding tokens with the APIs
+            // located in the current tenant without having to explicitly register a scope.
+            var resources = new List<string>(1);
+            resources.Add(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name);
+            resources.AddRange(await _scopeManager.ListResourcesAsync(scopes.ToImmutableArray()));
 
-            // If at least one resource was specified, use Intersect() to exclude values that are not
-            // listed as valid audiences in the OpenID Connect settings associated with the tenant.
-            var resources = request.GetResources();
-            if (resources.Any())
-            {
-                return resources.Intersect(settings.Audiences);
-            }
-
-            return settings.Audiences;
+            return resources;
         }
 
         private IActionResult RedirectToClient(OpenIdConnectResponse response)

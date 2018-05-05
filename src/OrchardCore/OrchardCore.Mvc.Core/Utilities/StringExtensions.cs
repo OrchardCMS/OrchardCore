@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -155,19 +155,6 @@ namespace OrchardCore.Mvc.Utilities
                              .Replace("\r\n", "\r\r")
                              .Replace("\n", String.Format(replacement, "\r\n"))
                              .Replace("\r\r", String.Format(replacement, "\r\n"));
-        }
-
-        public static string ToHexString(this byte[] bytes)
-        {
-            return BitConverter.ToString(bytes).Replace("-", "");
-        }
-
-        public static byte[] ToByteArray(this string hex)
-        {
-            return Enumerable.Range(0, hex.Length).
-                Where(x => 0 == x % 2).
-                Select(x => Convert.ToByte(hex.Substring(x, 2), 16)).
-                ToArray();
         }
 
         private static readonly char[] validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();

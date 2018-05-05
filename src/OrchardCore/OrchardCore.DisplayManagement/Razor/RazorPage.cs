@@ -1,19 +1,41 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
 
 namespace OrchardCore.DisplayManagement.Razor
 {
-    public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>
+    public interface IRazorPage
     {
-        private dynamic _displayHelper;
+        dynamic New { get; }
+        IShapeFactory Factory { get; }
+        Task<IHtmlContent> DisplayAsync(dynamic shape);
+        OrchardRazorHelper OrchardCore { get; }
+        dynamic ThemeLayout { get; set; }
+        string ViewLayout { get; set; }
+        IPageTitleBuilder Title { get; }
+        IViewLocalizer T { get; }
+        IHtmlContent RenderTitleSegments(IHtmlContent segment, string position = "0", IHtmlContent separator = null);
+        IHtmlContent RenderTitleSegments(string segment, string position = "0", IHtmlContent separator = null);
+        IHtmlContent RenderLayoutBody();
+        TagBuilder Tag(dynamic shape);
+        Task<IHtmlContent> RenderBodyAsync();
+        Task<IHtmlContent> RenderSectionAsync(string name, bool required);
+        object OrDefault(object text, object other);
+        string FullRequestPath { get; }
+    }
+
+    public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>, IRazorPage
+    {
+        private IDisplayHelper _displayHelper;
         private IShapeFactory _shapeFactory;
         private OrchardRazorHelper _orchardHelper;
 
@@ -81,7 +103,7 @@ namespace OrchardCore.DisplayManagement.Razor
         public Task<IHtmlContent> DisplayAsync(dynamic shape)
         {
             EnsureDisplayHelper();
-            return (Task<IHtmlContent>)_displayHelper(shape);
+            return _displayHelper.ShapeExecuteAsync(shape);
         }
 
         public OrchardRazorHelper OrchardCore
@@ -116,6 +138,42 @@ namespace OrchardCore.DisplayManagement.Razor
             set
             {
                 _themeLayout = value;
+            }
+        }
+
+        public string ViewLayout
+        {
+            get
+            {
+                if (ThemeLayout is IShape layout)
+                {
+                    if (layout.Metadata.Alternates.Count > 0)
+                    {
+                        return layout.Metadata.Alternates.Last();
+                    }
+
+                    return layout.Metadata.Type;
+                }
+
+                return String.Empty;
+            }
+
+            set
+            {
+                if (ThemeLayout is IShape layout)
+                {
+                    if (layout.Metadata.Alternates.Contains(value))
+                    {
+                        if (layout.Metadata.Alternates.Last() == value)
+                        {
+                            return;
+                        }
+
+                        layout.Metadata.Alternates.Remove(value);
+                    }
+
+                    layout.Metadata.Alternates.Add(value);
+                }
             }
         }
 

@@ -1,9 +1,0 @@
-Name: Users (Entity Framework Core stores)
-AntiForgery: enabled
-Author: The Orchard Team
-Website: http://orchardproject.net
-Version: 2.0.x
-OrchardVersion: 2.0.x
-Description: The Users Entity Framework Core module allows to store user data via Entity Framework Core ORM
-Category: Security
-Dependencies: OrchardCore.Roles, OrchardCore.Users

@@ -9,8 +9,6 @@ namespace OrchardCore.Security
         /// <summary>
         /// Adds tenant level services.
         /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
         public static IServiceCollection AddSecurity(this IServiceCollection services)
         {
             services.AddAuthorization();

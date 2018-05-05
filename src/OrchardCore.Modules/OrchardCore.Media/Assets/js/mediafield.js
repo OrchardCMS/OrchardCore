@@ -66,7 +66,9 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                     $("#mediaApp").show();
                     var modal = $(modalBodyElement).modal();
                     $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
-                        mediaFieldApp.mediaItems.push(mediaApp.selectedMedia);
+                        if (mediaApp.selectedMedia != null) {
+                            mediaFieldApp.mediaItems.push(mediaApp.selectedMedia);
+                        }
 
                         modal.modal('hide');
                         return true;
@@ -86,6 +88,7 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                         this.mediaItems.splice(0, 1);
                     }
                 }
+                this.selectedMedia = null;
             }
         },
         watch: {

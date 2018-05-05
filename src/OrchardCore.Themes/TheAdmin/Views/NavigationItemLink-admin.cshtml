@@ -10,11 +10,23 @@
     {
         // Label
         tag = new TagBuilder("label");
-        tag.Attributes["for"] = "id" + Model.GetHashCode();
+        tag.Attributes["data-toggle"] = "collapse";
+        tag.Attributes["data-target"] = "#" + Model.GetHashCode().ToString();
+        tag.Attributes["aria-expanded"] = "false";
+        tag.Attributes["aria-controls"] = Model.GetHashCode().ToString();
+
+        if ((bool)Model.Selected)
+        {
+            tag.Attributes["aria-expanded"] = "true";
+        }
+        else {
+            tag.Attributes["aria-expanded"] = "false";
+        }
+
         tag.TagRenderMode = TagRenderMode.Normal;
         tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
 
-        tag.InnerHtml.AppendHtml(Html.Raw("<span class=\"chevron\"><i class=\"fa fa-angle-right\"></i></span>"));
+        tag.InnerHtml.AppendHtml(Html.Raw("<span><i class=\"fas fa-chevron-right fa-xs chevron\"></i></span>"));
     }
     else
     {

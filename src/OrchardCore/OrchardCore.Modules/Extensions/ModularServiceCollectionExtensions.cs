@@ -19,8 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddModules(this IServiceCollection services, Action<ModularServiceCollection> configure = null)
         {
             services.AddWebHost();
-            services.AddManifestDefinition("Module.txt", "module");
-            services.AddExtensionLocation(Application.ModulesPath);
+            services.AddManifestDefinition("module");
 
             // ModularTenantRouterMiddleware which is configured with UseModules() calls UserRouter() which requires the routing services to be
             // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
@@ -111,6 +110,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IClock, Clock>();
 
+            services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
             services.AddScoped<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
 
             return services;

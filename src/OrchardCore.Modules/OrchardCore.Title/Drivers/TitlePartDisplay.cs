@@ -11,7 +11,7 @@ namespace OrchardCore.Title.Drivers
     {
         public override IDisplayResult Display(TitlePart titlePart)
         {
-            return Shape<TitlePartViewModel>("TitlePart", model =>
+            return Initialize<TitlePartViewModel>("TitlePart", model =>
             {
                 model.Title = titlePart.Title;
                 model.TitlePart = titlePart;
@@ -22,7 +22,7 @@ namespace OrchardCore.Title.Drivers
 
         public override IDisplayResult Edit(TitlePart titlePart)
         {
-            return Shape<TitlePartViewModel>("TitlePart_Edit", model =>
+            return Initialize<TitlePartViewModel>("TitlePart_Edit", model =>
             {
                 model.Title = titlePart.Title;
                 model.TitlePart = titlePart;

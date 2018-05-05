@@ -41,7 +41,7 @@ A sample of OpenID Connect Settings recipe step:
       "Audiences": ["https://www.orchardproject.net","https://orchardharvest.org/"],
       "CertificateStoreLocation": "LocalMachine", //More info: https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storelocation(v=vs.110).aspx
       "CertificateStoreName": "My", //More info: https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storename(v=vs.110).aspx
-      "CertificateThumbPrint": "27CCA66EF38EF46CD9022431FB1FF0F2DF5CA1D7"
+      "CertificateThumbprint": "27CCA66EF38EF46CD9022431FB1FF0F2DF5CA1D7"
       "EnableTokenEndpoint": true,
       "EnableAuthorizationEndpoint": false,
       "EnableLogoutEndpoint": true,

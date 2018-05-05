@@ -128,10 +128,10 @@ namespace OrchardCore.Modules
         {
             if (IsLogged(ex))
             {
-                logger.LogError(string.Format("{2} thrown from {0} by {1}",
+                logger.LogError(ex, "{2} thrown from {0} by {1}",
                     sourceType,
                     method,
-                    ex.GetType().Name), ex);
+                    ex.GetType().Name);
             }
 
             if (ex.IsFatal())

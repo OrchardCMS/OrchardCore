@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
@@ -16,3 +16,5 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("19617686-b3ae-4810-9c32-7faf42f56744")]
+
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("OrchardCore.Tests")]

@@ -35,7 +35,7 @@ namespace OrchardCore.DeferredTasks
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError("An error occured while processing a deferred task: {0}", e);
+                    _logger.LogError(e, "An error occured while processing a deferred task");
                 }
             }
 

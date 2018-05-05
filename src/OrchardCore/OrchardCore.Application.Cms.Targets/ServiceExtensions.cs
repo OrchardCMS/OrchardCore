@@ -10,15 +10,15 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddOrchardCms(this IServiceCollection services)
         {
             services.AddThemingHost();
-            services.AddManifestDefinition("Theme.txt", "theme");
+            services.AddManifestDefinition("theme");
             services.AddSitesFolder();
             services.AddCommands();
             services.AddAuthentication();
             services.AddModules(modules => 
             {
                 modules.WithDefaultFeatures(
-                    "OrchardCore.Mvc", "OrchardCore.Settings", "OrchardCore.Setup",
-                    "OrchardCore.Recipes", "OrchardCore.Commons");
+                    "OrchardCore.Antiforgery", "OrchardCore.Mvc", "OrchardCore.Settings",
+                    "OrchardCore.Setup", "OrchardCore.Recipes", "OrchardCore.Commons");
             });
 
             return services;

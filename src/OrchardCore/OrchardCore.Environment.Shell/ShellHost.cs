@@ -72,13 +72,21 @@ namespace OrchardCore.Environment.Shell
 
         public ShellContext GetOrCreateShellContext(ShellSettings settings)
         {
-            return _shellContexts.GetOrAdd(settings.Name, tenant =>
+            var shell = _shellContexts.GetOrAdd(settings.Name, tenant =>
             {
                 var shellContext = CreateShellContextAsync(settings).Result;
                 RegisterShell(shellContext);
 
                 return shellContext;
             });
+
+            if (shell.Released)
+            {
+                _shellContexts.TryRemove(settings.Name, out var context);
+                return GetOrCreateShellContext(settings);
+            }
+
+            return shell;
         }
 
         public void UpdateShellSettings(ShellSettings settings)
@@ -236,6 +244,11 @@ namespace OrchardCore.Environment.Shell
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Marks the specific tenant as released, such that a new shell is created for subsequent requests,
+        /// while existing requests get flushed.
+        /// </summary>
+        /// <param name="settings"></param>
         public void ReloadShellContext(ShellSettings settings)
         {
             ShellContext context;

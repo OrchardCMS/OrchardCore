@@ -1,0 +1,46 @@
+@model OrchardCore.Workflows.ViewModels.WorkflowTypePropertiesViewModel
+
+<h1>@RenderTitleSegments(T["Edit Workflow Type"])</h1>
+
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="EditProperties" method="post">
+    <input type="hidden" asp-for="ReturnUrl" />
+
+    <fieldset class="form-group" asp-validation-class-for="Name">
+        <label asp-for="Name">@T["Name"]</label>
+        <span asp-validation-for="Name" class="text-danger"></span>
+        <input asp-for="Name" class="form-control" autofocus />
+        <div class="hint">@T["The name of the workflow type."]</div>
+    </fieldset>
+
+    <fieldset class="form-group form-check">
+        <label class="form-check-label" asp-for="IsEnabled">
+            <input class="form-check-input" type="checkbox" asp-for="IsEnabled">
+            @T["Enabled"]
+        </label>
+        <div class="hint">@T["Uncheck to prevent workflows of this type from being executed."]</div>
+    </fieldset>
+
+    <fieldset class="form-group form-check">
+        <label class="form-check-label" asp-for="IsSingleton">
+            <input class="form-check-input" type="checkbox" asp-for="IsSingleton">
+            @T["Single instance"]
+        </label>
+        <div class="hint">@T["Check to ensure only one workflow of this type can execute at a time. Leave unchecked to allow any number of workflows to execute at the same time."]</div>
+    </fieldset>
+
+    <fieldset class="form-group form-check">
+        <label class="form-check-label" asp-for="DeleteFinishedWorkflows">
+            <input class="form-check-input" type="checkbox" asp-for="DeleteFinishedWorkflows">
+            @T["Delete successfully completed workflows"]
+        </label>
+        <div class="hint">@T["Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."]</div>
+    </fieldset>
+
+    <fieldset>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Cancel"]</a>
+        </div>
+    </fieldset>
+</form>
