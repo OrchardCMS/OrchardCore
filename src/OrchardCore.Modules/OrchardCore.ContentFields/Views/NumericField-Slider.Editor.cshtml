@@ -18,13 +18,19 @@
     <div class="row col-sm-2">
         <label asp-for="Value">@name</label>
         <div class="input-group mb-2">
+            @if (settings.Minimum.HasValue)
+            {
             <div class="input-group-prepend">
                 <div class="input-group-text">@min</div>
             </div>
+            }
             <input asp-for="Value" class="form-control content-preview-select" />
+            @if (settings.Maximum.HasValue)
+            {
             <div class="input-group-append">
                 <div class="input-group-text">@max</div>
             </div>
+            }
         </div>
         <div class="input-group mb-2 ml-2">
             <input id="@(id)-slider" type="text" data-slider-min="@min" data-slider-max="@max" data-slider-step="@step" data-slider-value="@Model.Value" />

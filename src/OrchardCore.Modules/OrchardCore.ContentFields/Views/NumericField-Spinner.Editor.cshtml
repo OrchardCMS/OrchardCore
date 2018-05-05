@@ -15,13 +15,19 @@
     <div class="row col-sm">
         <label asp-for="Value">@name</label>
         <div class="input-group mb-2">
+            @if (settings.Minimum.HasValue)
+            {
             <div class="input-group-prepend">
                 <div class="input-group-text">@min</div>
             </div>
+            }
             <input asp-for="Value" typeof="text" class="form-control content-preview-select" type="number" required="@settings.Required" />
+            @if (settings.Maximum.HasValue)
+            {
             <div class="input-group-append">
                 <div class="input-group-text">@max</div>
             </div>
+            }
         </div>
         <span class="hint">@settings.Hint</span>
     </div>
