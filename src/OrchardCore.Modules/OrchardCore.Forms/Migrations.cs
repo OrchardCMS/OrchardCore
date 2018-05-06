@@ -23,6 +23,7 @@ namespace OrchardCore.Forms
 
             _contentDefinitionManager.AlterTypeDefinition("Form", type => type
                 .WithPart("FormPart")
+                .WithPart("FlowPart")
                 .Stereotype("Widget"));
 
             // Input

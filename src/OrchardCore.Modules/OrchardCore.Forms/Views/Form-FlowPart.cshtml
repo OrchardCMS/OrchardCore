@@ -11,7 +11,7 @@
     var formPart = Model.FlowPart.ContentItem.As<FormPart>();
 }
 
-<form class="flow" action="@formPart.Action" method="@formPart.Method">
+<form class="flow flow-form" action="@formPart.Action" method="@formPart.Method">
     @foreach (var widget in Model.FlowPart.Widgets)
     {
         var widgetContent = await ContentItemDisplayManager.BuildDisplayAsync(widget, Model.BuildPartDisplayContext.Updater, Model.BuildPartDisplayContext.DisplayType, Model.BuildPartDisplayContext.GroupId);
@@ -19,6 +19,7 @@
 
         if (flowMetadata != null)
         {
+            widgetContent.Classes.Add("form-group");
             widgetContent.Classes.Add("widget");
             widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
             widgetContent.Classes.Add("widget-align-" + flowMetadata.Alignment.ToString().ToLowerInvariant());
