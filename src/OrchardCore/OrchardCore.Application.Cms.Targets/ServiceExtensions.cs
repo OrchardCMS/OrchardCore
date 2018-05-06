@@ -43,7 +43,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // Replace "OrchardCore.Commons" but not completely because
                 // this module also defines a filter, a controller and a view.
-                // Could be replaced by 'AddTenantCommons()'.
+                // Could be wrapped in 'AddTenantCommons()'.
                 .ConfigureTenantServices(collection =>
                 {
                     collection.AddDeferredTasks();
@@ -64,7 +64,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 })
 
                 // Replace "OrchardCore.Mvc"
-                // Could be replaced by 'AddTenantMvc()'.
+                // Could be wrapped in 'AddTenantMvcModules()'.
                 .ConfigureTenantServices<IServiceProvider>((collection, sp) =>
                 {
                     collection.AddMvcModules(sp);
@@ -76,7 +76,7 @@ namespace Microsoft.Extensions.DependencyInjection
                  })
 
                 // Replace "OrchardCore.DataProtection".
-                // Could be replaced by 'AddTenantAddDataProtection()'.
+                // Could be wrapped in 'AddTenantDataProtection()'.
                 .ConfigureTenantServices<IOptions<ShellOptions> ,ShellSettings >((collection, options, settings) =>
                 {
                     var directory = Directory.CreateDirectory(Path.Combine(
@@ -96,7 +96,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 })
 
                 // Replace "OrchardCore.Antiforgery".
-                // Could be replaced by 'AddTenantAntiForgery()'.
+                // Could be wrapped in 'AddTenantAntiForgery()'.
                 .ConfigureTenantServices<ShellSettings>((collection, settings) =>
                  {
                      var tenantName = settings.Name;
