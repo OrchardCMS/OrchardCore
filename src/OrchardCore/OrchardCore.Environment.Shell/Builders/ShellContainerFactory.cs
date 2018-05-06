@@ -42,7 +42,11 @@ namespace OrchardCore.Environment.Shell.Builders
             services.TryAddScoped<IShellStateUpdater, ShellStateUpdater>();
             services.TryAddScoped<IShellStateManager, NullShellStateManager>();
             services.AddScoped<IShellDescriptorManagerEventHandler, ShellStateCoordinator>();
-            services.AddTransient(sp => new ShellFeature(_applicationFeature.Id));
+
+            if (_applicationFeature != null)
+            {
+                services.AddTransient(sp => new ShellFeature(_applicationFeature.Id));
+            }
         }
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)

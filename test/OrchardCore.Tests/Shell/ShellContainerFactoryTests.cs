@@ -10,6 +10,7 @@ using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Tests.Stubs;
 
 namespace OrchardCore.Tests.Shell
 {
@@ -24,6 +25,8 @@ namespace OrchardCore.Tests.Shell
             applicationServices.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 
             _shellContainerFactory = new ShellContainerFactory(
+                new StubHostingEnvironment(),
+                new StubExtensionManager(),
                 _applicationServiceProvider = applicationServices.BuildServiceProvider(),
                 new StubLoggerFactory(),
                 new NullLogger<ShellContainerFactory>(),
