@@ -17,11 +17,11 @@ namespace OrchardCore.Antiforgery
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddAntiforgery(options =>
-            {
-                options.Cookie.Name = "orchantiforgery_" + _tenantName;
-                options.Cookie.Path = _tenantPrefix;
-            });
+            //services.AddAntiforgery(options =>
+            //{
+            //    options.Cookie.Name = "orchantiforgery_" + _tenantName;
+            //    options.Cookie.Path = _tenantPrefix;
+            //});
         }
     }
 }

@@ -17,12 +17,12 @@ namespace OrchardCore.Mvc
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvcModules(_applicationServices);
+            //services.AddMvcModules(_applicationServices);
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            app.UseStaticFilesModules();
+            //app.UseStaticFilesModules();
         }
     }
 }

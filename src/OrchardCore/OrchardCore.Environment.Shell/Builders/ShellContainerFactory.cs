@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -7,22 +8,29 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
     public class ShellContainerFactory : IShellContainerFactory
     {
+        private readonly IFeatureInfo _applicationFeature;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IServiceCollection _applicationServices;
 
         public ShellContainerFactory(
+            IHostingEnvironment hostingEnvironment,
+            IExtensionManager extensionManager,
             IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory,
             ILogger<ShellContainerFactory> logger,
             IServiceCollection applicationServices)
         {
+            _applicationFeature = extensionManager.GetFeatures().FirstOrDefault(
+                f => f.Id == hostingEnvironment.ApplicationName);
+
             _applicationServices = applicationServices;
             _serviceProvider = serviceProvider;
             _loggerFactory = loggerFactory;
@@ -34,6 +42,7 @@ namespace OrchardCore.Environment.Shell.Builders
             services.TryAddScoped<IShellStateUpdater, ShellStateUpdater>();
             services.TryAddScoped<IShellStateManager, NullShellStateManager>();
             services.AddScoped<IShellDescriptorManagerEventHandler, ShellStateCoordinator>();
+            services.AddTransient(sp => new ShellFeature(_applicationFeature.Id));
         }
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
@@ -52,10 +61,10 @@ namespace OrchardCore.Environment.Shell.Builders
 
             IServiceCollection moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
-            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(OrchardCore.Modules.IStartup).IsAssignableFrom(t.Key)))
+            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(Modules.IStartup).IsAssignableFrom(t.Key)))
             {
-                moduleServiceCollection.AddSingleton(typeof(OrchardCore.Modules.IStartup), dependency.Key);
-                tenantServiceCollection.AddSingleton(typeof(OrchardCore.Modules.IStartup), dependency.Key);
+                moduleServiceCollection.AddSingleton(typeof(Modules.IStartup), dependency.Key);
+                tenantServiceCollection.AddSingleton(typeof(Modules.IStartup), dependency.Key);
             }
 
             // Add a default configuration if none has been provided
@@ -71,19 +80,22 @@ namespace OrchardCore.Environment.Shell.Builders
             // Index all service descriptors by their feature id
             var featureAwareServiceCollection = new FeatureAwareServiceCollection(tenantServiceCollection);
 
-            var startups = moduleServiceProvider.GetServices<OrchardCore.Modules.IStartup>();
+            var startups = moduleServiceProvider.GetServices<Modules.IStartup>();
 
             // IStartup instances are ordered by module dependency with an Order of 0 by default.
             // OrderBy performs a stable sort so order is preserved among equal Order values.
             startups = startups.OrderBy(s => s.Order);
-            
+
             // Let any module add custom service descriptors to the tenant
             foreach (var startup in startups)
             {
                 var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FeatureInfo;
-                featureAwareServiceCollection.SetCurrentFeature(feature ?? new InternalFeatureInfo("Core", new InternalExtensionInfo("Core")));
 
-                startup.ConfigureServices(featureAwareServiceCollection);
+                if (feature != null || _applicationFeature != null)
+                {
+                    featureAwareServiceCollection.SetCurrentFeature(feature ?? _applicationFeature);
+                    startup.ConfigureServices(featureAwareServiceCollection);
+                }
             }
 
             (moduleServiceProvider as IDisposable).Dispose();

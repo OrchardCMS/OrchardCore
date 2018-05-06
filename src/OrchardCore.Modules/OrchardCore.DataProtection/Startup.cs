@@ -26,20 +26,20 @@ namespace OrchardCore.DataProtection
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var directory = Directory.CreateDirectory(Path.Combine(
-                _shellOptions.Value.ShellsApplicationDataPath,
-                _shellOptions.Value.ShellsContainerName,
-                _shellSettings.Name, "DataProtection-Keys"));
+            //var directory = Directory.CreateDirectory(Path.Combine(
+            //    _shellOptions.Value.ShellsApplicationDataPath,
+            //    _shellOptions.Value.ShellsContainerName,
+            //    _shellSettings.Name, "DataProtection-Keys"));
 
             // Re-register the data protection services to be tenant-aware so that modules that internally
             // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that
             // manages its own key ring and doesn't allow decrypting payloads encrypted by another tenant.
             // By default, the key ring is stored in the tenant directory of the configured App_Data path.
-            services.Add(new ServiceCollection()
-                .AddDataProtection()
-                .PersistKeysToFileSystem(directory)
-                .SetApplicationName(_shellSettings.Name)
-                .Services);
+            //services.Add(new ServiceCollection()
+            //    .AddDataProtection()
+            //    .PersistKeysToFileSystem(directory)
+            //    .SetApplicationName(_shellSettings.Name)
+            //    .Services);
         }
     }
 }

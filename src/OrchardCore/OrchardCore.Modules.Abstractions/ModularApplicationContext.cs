@@ -45,7 +45,7 @@ namespace OrchardCore.Modules
                 {
                     if (!_modules.TryGetValue(name, out module))
                     {
-                        _modules[name] = module = new Module(name);
+                        _modules[name] = module = new Module(name, name == environment.ApplicationName);
                     }
                 }
             }
@@ -64,8 +64,11 @@ namespace OrchardCore.Modules
             Name = application;
             Assembly = Assembly.Load(new AssemblyName(application));
 
-            ModuleNames = Assembly.GetCustomAttributes<ModuleNameAttribute>()
-                .Select(m => m.Name).ToArray();
+            var moduleNames = Assembly.GetCustomAttributes<ModuleNameAttribute>()
+                .Select(m => m.Name).ToList();
+
+            moduleNames.Add(application);
+            ModuleNames = moduleNames;
         }
 
         public string Name { get; }
@@ -82,7 +85,7 @@ namespace OrchardCore.Modules
         private readonly DateTimeOffset _lastModified;
         private readonly IDictionary<string, IFileInfo> _fileInfos = new Dictionary<string, IFileInfo>();
 
-        public Module(string name)
+        public Module(string name, bool isApplicationModule = false)
         {
             if (!string.IsNullOrWhiteSpace(name))
             {
@@ -103,6 +106,14 @@ namespace OrchardCore.Modules
                     moduleInfos.Where(f => !(f is ModuleMarkerAttribute)).FirstOrDefault() ??
                     moduleInfos.Where(f => f is ModuleMarkerAttribute).FirstOrDefault() ??
                     new ModuleAttribute { Name = Name };
+
+                if (isApplicationModule)
+                {
+                    ModuleInfo.Name = "Application Module";
+                    ModuleInfo.Description = "Provides core features defined at the host level";
+                    ModuleInfo.Priority = int.MinValue.ToString();
+                    ModuleInfo.Category = "Infrastructure";
+                }
 
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
                     .Where(f => !(f is ModuleAttribute));
