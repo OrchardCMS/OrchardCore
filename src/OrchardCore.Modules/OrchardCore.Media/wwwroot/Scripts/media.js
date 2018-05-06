@@ -441,6 +441,11 @@ Vue.component('folder', {
             return this.children && this.children.length == 0;
         }
     },
+    mounted: function () {
+        if ((this.isRoot() == false) && (this.isAncestorOfSelectedFolder())){
+            this.toggle();
+        }
+    },
     created: function () {
         var self = this;
         bus.$on('deleteFolder', function (folder) {
@@ -470,10 +475,15 @@ Vue.component('folder', {
         });
     },
     methods: {
+        isRoot: function () {
+            return this.model.path === '';
+        },
+        isAncestorOfSelectedFolder: function () {
+            return mediaApp.selectedFolder.path.indexOf(this.model.path) > -1;
+        },
         toggle: function () {
             this.open = !this.open
             var self = this;
-
             if (this.open && !this.children) {
                 $.ajax({
                     url: $('#getFoldersUrl').val() + "?path=" + encodeURIComponent(self.model.path),
