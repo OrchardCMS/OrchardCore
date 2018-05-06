@@ -17,23 +17,23 @@
 </fieldset>
 
 <script at="Foot">
-    $(function () {
-        var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
+$(function () {
+    var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
 
-        if (textArea == null) {
-            return;
-        }
+    if (textArea == null) {
+        return;
+    }
 
-        var editor = CodeMirror.fromTextArea(textArea, {
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "liquid" },
-          });
-
-        editor.on('change', function (cm) {
-            document.getElementById('@Html.IdFor(x => x.Liquid)').value = cm.getValue();
-            $(document).trigger('contentpreview:render');
+    var editor = CodeMirror.fromTextArea(textArea, {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
         });
+
+    editor.on('change', function (cm) {
+        document.getElementById('@Html.IdFor(x => x.Liquid)').value = cm.getValue();
+        $(document).trigger('contentpreview:render');
+    });
 });
 </script>
