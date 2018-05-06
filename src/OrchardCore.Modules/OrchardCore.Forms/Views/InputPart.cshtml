@@ -1,0 +1,12 @@
+@using OrchardCore.Forms.Models
+@model ShapeViewModel<InputPart>
+@{
+
+    var fieldName = Model.Value.Name;
+    var fieldId = !string.IsNullOrWhiteSpace(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
+}
+@if(!string.IsNullOrWhiteSpace(Model.Value.Label))
+{
+<label for="@fieldId">@Model.Value.Label</label>
+}
+<input id="@fieldId" name="@fieldName" type="@Model.Value.Type" class="form-control" value="@Model.Value.DefaultValue" placeholder="@Model.Value.Placeholder" />

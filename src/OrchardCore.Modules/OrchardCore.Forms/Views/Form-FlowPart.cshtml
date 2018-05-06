@@ -1,12 +1,17 @@
 @using OrchardCore.ContentManagement
 @using OrchardCore.Flows.Models
 @using OrchardCore.Flows.ViewModels
+@using OrchardCore.Forms.Models;
 @using OrchardCore.Mvc.Utilities
 
 @model FlowPartViewModel
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
-<form class="flow" action="#" method="post">
+@{
+    var formPart = Model.FlowPart.ContentItem.As<FormPart>();
+}
+
+<form class="flow" action="@formPart.Action" method="@formPart.Method">
     @foreach (var widget in Model.FlowPart.Widgets)
     {
         var widgetContent = await ContentItemDisplayManager.BuildDisplayAsync(widget, Model.BuildPartDisplayContext.Updater, Model.BuildPartDisplayContext.DisplayType, Model.BuildPartDisplayContext.GroupId);

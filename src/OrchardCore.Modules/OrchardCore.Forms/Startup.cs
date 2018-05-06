@@ -13,7 +13,13 @@ namespace OrchardCore.Forms
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IContentPartDisplayDriver, FormPartDisplay>();
+            services.AddScoped<IContentPartDisplayDriver, ButtonPartDisplay>();
+            services.AddScoped<IContentPartDisplayDriver, InputPartDisplay>();
+
             services.AddSingleton<ContentPart, FormPart>();
+            services.AddSingleton<ContentPart, ButtonPart>();
+            services.AddSingleton<ContentPart, InputPart>();
+
             services.AddScoped<IDataMigration, Migrations>();
         }
     }

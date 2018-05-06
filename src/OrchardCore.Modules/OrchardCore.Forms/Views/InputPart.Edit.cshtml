@@ -1,0 +1,54 @@
+@using OrchardCore.Forms.ViewModels;
+@model InputPartEditViewModel
+
+<fieldset class="form-group">
+    <label asp-for="Name">@T["Name"]</label>
+    <input type="text" asp-for="Name" class="form-control"></input>
+    <span class="hint">@T["Optionally provide the name of the button."]</span>
+</fieldset>
+
+<fieldset class="form-group">
+    <label asp-for="Type">@T["Type"]</label>
+    <select asp-for="Type" class="form-control">
+        <option value="text">Text</option>
+        <option value="number">Number</option>
+        <option value="email">Email</option>
+        <option value="tel">Phone</option>
+        <option value="date">Date</option>
+        <option value="time">Time</option>
+        <option value="datetime">DateTime</option>
+        <option value="datetime-local">Local DateTime</option>
+        <option value="month">Month</option>
+        <option value="week">Week</option>
+        <option value="hidden">Hidden</option>
+        <option value="password">Password</option>
+        <option value="radio">Radio</option>
+        <option value="checkbox">Checkbox</option>
+        <option value="color">Color</option>
+        <option value="range">Range</option>
+        <option value="file">File</option>
+        <option value="image">Image</option>
+        <option value="reset">Reset</option>
+        <option value="search">Search</option>
+        <option value="submit">Submit</option>
+    </select>
+    <span class="hint">@T["The button type."]</span>
+</fieldset>
+
+<fieldset class="form-group">
+    <label asp-for="Placeholder">@T["Placeholder Text"]</label>
+    <input type="text" asp-for="Placeholder" class="form-control"></input>
+    <span class="hint">@T["The text to display when the field has no value."]</span>
+</fieldset>
+
+<fieldset class="form-group">
+    <label asp-for="DefaultValue">@T["Default Value"]</label>
+    <input type="text" asp-for="DefaultValue" class="form-control"></input>
+    <span class="hint">@T["The default value for this field."]</span>
+</fieldset>
+
+<fieldset class="form-group">
+    <label asp-for="Label">@T["Label"]</label>
+    <input type="text" asp-for="Label" class="form-control"></input>
+    <span class="hint">@T["The label text to display. Leave blank to not render a label."]</span>
+</fieldset>
