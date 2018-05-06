@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -44,18 +43,9 @@ namespace OrchardCore.DisplayManagement.Liquid
                 }
             });
 
-            TemplateContext.GlobalMemberAccessStrategy.Register<FormCollection, FluidValue>((forms, name) =>
-            {
-                if(name == "Keys")
-                {
-                    return new ArrayValue(forms.Keys.Select(x => new StringValue(x)));
-                }
-
-                return new ArrayValue(forms[name].Select(x => new StringValue(x)).ToArray());
-            });
-
             TemplateContext.GlobalMemberAccessStrategy.Register<RequestCookieCollection, string>((cookies, name) => cookies[name]);
             TemplateContext.GlobalMemberAccessStrategy.Register<QueryCollection, string[]>((queries, name) => queries[name].ToArray());
+            TemplateContext.GlobalMemberAccessStrategy.Register<FormCollection, string[]>((forms, name) => forms[name].ToArray());
             TemplateContext.GlobalMemberAccessStrategy.Register<HeaderDictionaryWrapper, string[]>((headers, name) => headers.HeaderDictionary[name].ToArray());
         }
 
