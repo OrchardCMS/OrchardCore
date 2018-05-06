@@ -90,7 +90,7 @@ namespace OrchardCore.Modules
             if (!string.IsNullOrWhiteSpace(name))
             {
                 Name = name;
-                SubPath = Application.ModulesRoot + Name;
+                SubPath = !isApplicationModule ? Application.ModulesRoot + Name : String.Empty;
                 Root = SubPath + '/';
 
                 Assembly = Assembly.Load(new AssemblyName(name));

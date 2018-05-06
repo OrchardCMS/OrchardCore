@@ -100,7 +100,7 @@ namespace OrchardCore.Mvc.LocationExpander
 
             var result = new List<string>();
 
-            var extensionViewsPath = '/' + extension.SubPath + "/Views";
+            var extensionViewsPath = ('/' + extension.SubPath + "/Views").Replace("//", "/");
             result.Add(extensionViewsPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
 
             if (!context.ViewName.StartsWith("Components/", StringComparison.Ordinal))
@@ -121,7 +121,7 @@ namespace OrchardCore.Mvc.LocationExpander
 
                     moduleComponentViewLocations = _modulesWithComponentViews
                         .Where(m => enabledExtensions.Any(e => e.Id == m.Id))
-                        .Select(m => '/' + m.SubPath + sharedViewsPath);
+                        .Select(m => ('/' + m.SubPath + sharedViewsPath).Replace("//", "/"));
 
                     _memoryCache.Set(CacheKey, moduleComponentViewLocations);
                 }
