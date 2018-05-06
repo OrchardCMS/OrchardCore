@@ -91,7 +91,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     parents: function () {
                         var p = [];
                         parent = this.selectedFolder;
-                        while (parent && parent != root) {
+                        while (parent && parent.path != '') {
                             p.unshift(parent);
                             parent = parent.parent;
                         }
