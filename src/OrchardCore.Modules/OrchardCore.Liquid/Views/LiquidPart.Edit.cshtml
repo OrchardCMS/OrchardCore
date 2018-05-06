@@ -29,7 +29,7 @@ $(function () {
         styleActiveLine: true,
         matchBrackets: true,
         mode: { name: "liquid" },
-        });
+    });
 
     editor.on('change', function (cm) {
         document.getElementById('@Html.IdFor(x => x.Liquid)').value = cm.getValue();
