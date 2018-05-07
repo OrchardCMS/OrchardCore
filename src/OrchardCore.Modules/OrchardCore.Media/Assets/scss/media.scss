@@ -167,6 +167,10 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
     .media-filename {
         @extend .card-text;
         @extend .small;
+        white-space: nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        display:block;
     }
 }
 
