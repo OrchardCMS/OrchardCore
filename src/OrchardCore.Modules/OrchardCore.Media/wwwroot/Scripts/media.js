@@ -53,6 +53,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
 
                     this.dragDropThumbnail.src = '../Images/drag-thumbnail.png';
 
+                    bus.$on('folderSelected', function (folder) {
+                        self.selectedFolder = folder;
+                    });
+
                     bus.$on('folderDeleted', function () {
                         self.selectRoot();
                     });
@@ -123,7 +127,6 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     selectedFolder: function (newFolder) {
                         this.selectedFolder = newFolder;
                         this.loadFolder(newFolder);
-                        bus.$emit('folderSelected', newFolder);
                     }
                
                 },
@@ -409,7 +412,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
 // <folder> component
 Vue.component('folder', {
     template: '\
-        <li :class="{selected: selected}" v-on:dragenter.prevent="handleDragEnter($event);" v-on:dragleave.prevent="handleDragLeave($event);" ondragover="event.preventDefault();" v-on:drop.stop="moveMediaToFolder(model, $event)" >\
+        <li :class="{selected: isSelected}" v-on:dragenter.prevent="handleDragEnter($event);" v-on:dragleave.prevent="handleDragLeave($event);" ondragover="event.preventDefault();" v-on:drop.stop="moveMediaToFolder(model, $event)" >\
             <div>\
                 <a href="javascript:;" v-on:click="toggle" class="expand" v-bind:class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
                 <a href="javascript:;" v-on:click="select" draggable="false" >\
@@ -420,25 +423,29 @@ Vue.component('folder', {
             <ol v-show="open">\
                 <folder v-for="folder in children"\
                         :key="folder.path"\
-                        :model="folder">\
+                        :model="folder" \
+                        :selected-in-media-app="selectedInMediaApp">\
                 </folder>\
             </ol>\
         </li>\
         ',
     props: {
-        model: Object
+        model: Object,
+        selectedInMediaApp: Object
     },
     data: function () {
         return {
             open: false,
             children: null, // not initialized state (for lazy-loading)
-            parent: null,
-            selected: false
+            parent: null
         }
     },
     computed: {
         empty: function () {
             return this.children && this.children.length == 0;
+        },
+        isSelected: function () {
+            return (this.selectedInMediaApp.name == this.model.name) && (this.selectedInMediaApp.path == this.model.path);
         }
     },
     mounted: function () {
@@ -469,10 +476,6 @@ Vue.component('folder', {
                 bus.$emit('folderAdded', folder);
             }
         });
-
-        bus.$on('folderSelected', function (folder) {
-            self.selected = self.model == folder;
-        });
     },
     methods: {
         isRoot: function () {
@@ -502,7 +505,7 @@ Vue.component('folder', {
             }
         },
         select: function () {
-            mediaApp.selectedFolder = this.model;
+            bus.$emit('folderSelected', this.model);
         },
         handleDragEnter: function (e) {                     
             if (e.target.classList.contains('folder-dragover') === false) {                
