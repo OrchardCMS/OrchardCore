@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace OrchardCore.Demo.Controllers
+namespace OrchardCore.Cms.Web.Controllers
 {
     public class ApplicationController : Controller
     {
@@ -8,17 +8,6 @@ namespace OrchardCore.Demo.Controllers
         public IActionResult Index()
         {
             return View();
-        }
-
-        [Route("About")]
-        public IActionResult About()
-        {
-            return Content("Application About content");
-        }
-        [Route("Contact")]
-        public IActionResult Contact()
-        {
-            return Content("Application Contact content");
         }
     }
 }

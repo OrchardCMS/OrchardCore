@@ -85,12 +85,12 @@ namespace OrchardCore.Modules
         private readonly DateTimeOffset _lastModified;
         private readonly IDictionary<string, IFileInfo> _fileInfos = new Dictionary<string, IFileInfo>();
 
-        public Module(string name, bool isApplicationModule = false)
+        public Module(string name, bool isApplication = false)
         {
             if (!string.IsNullOrWhiteSpace(name))
             {
                 Name = name;
-                SubPath = !isApplicationModule ? Application.ModulesRoot + Name : String.Empty;
+                SubPath = Application.ModulesRoot + Name;
                 Root = SubPath + '/';
 
                 Assembly = Assembly.Load(new AssemblyName(name));
@@ -107,7 +107,7 @@ namespace OrchardCore.Modules
                     moduleInfos.Where(f => f is ModuleMarkerAttribute).FirstOrDefault() ??
                     new ModuleAttribute { Name = Name };
 
-                if (isApplicationModule)
+                if (isApplication)
                 {
                     ModuleInfo.Name = "Application Module";
                     ModuleInfo.Description = "Provides core features defined at the host level";

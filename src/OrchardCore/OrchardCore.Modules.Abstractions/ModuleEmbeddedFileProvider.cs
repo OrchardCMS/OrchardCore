@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
@@ -14,13 +15,17 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleEmbeddedFileProvider : IFileProvider
     {
+        private readonly string _appModuleRoot;
+        private readonly IFileProvider _appModuleFileProvider;
         private IHostingEnvironment _environment;
-        private string _contentRoot;
+        private readonly string _contentRoot;
 
         public ModuleEmbeddedFileProvider(IHostingEnvironment hostingEnvironment, string contentPath = null)
         {
             _environment = hostingEnvironment;
             _contentRoot = contentPath != null ? NormalizePath(contentPath) + '/' : "";
+            _appModuleFileProvider = new PhysicalFileProvider(_environment.ContentRootPath);
+            _appModuleRoot = _environment.GetModule(_environment.ApplicationName).Root;
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
@@ -42,6 +47,15 @@ namespace OrchardCore.Modules
             {
                 entries.AddRange(_environment.GetApplication().ModuleNames
                     .Select(n => new EmbeddedDirectoryInfo(n)));
+            }
+            else if (folder.StartsWith(_appModuleRoot, StringComparison.Ordinal))
+            {
+                var tokenizer = new StringTokenizer(folder, new char[] { '/' });
+                if (tokenizer.Any(s => s == "Pages" || s == "Views"))
+                {
+                    var folderSubPath = folder.Substring(_appModuleRoot.Length);
+                    return _appModuleFileProvider.GetDirectoryContents(folderSubPath);
+                }
             }
             else if (folder.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
@@ -83,7 +97,16 @@ namespace OrchardCore.Modules
 
             var path = _contentRoot + NormalizePath(subpath);
 
-            if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
+            if (path.StartsWith(_appModuleRoot, StringComparison.Ordinal))
+            {
+                var fileSubPath = path.Substring(_appModuleRoot.Length);
+
+                if (File.Exists(fileSubPath))
+                {
+                    return _appModuleFileProvider.GetFileInfo(fileSubPath);
+                }
+            }
+            else if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
                 path = path.Substring(Application.ModulesRoot.Length);
                 var index = path.IndexOf('/');
@@ -92,7 +115,6 @@ namespace OrchardCore.Modules
                 {
                     var moduleName = path.Substring(0, index);
                     var fileSubPath = path.Substring(index + 1);
-
                     return _environment.GetModule(moduleName).GetFileInfo(fileSubPath);
                 }
             }
@@ -102,6 +124,24 @@ namespace OrchardCore.Modules
 
         public IChangeToken Watch(string filter)
         {
+
+            if (filter == null)
+            {
+                return NullChangeToken.Singleton;
+            }
+
+            var path = _contentRoot + NormalizePath(filter);
+
+            if (path.StartsWith(_appModuleRoot, StringComparison.Ordinal))
+            {
+                var fileSubPath = path.Substring(_appModuleRoot.Length);
+
+                if (File.Exists(fileSubPath))
+                {
+                    return _appModuleFileProvider.Watch(fileSubPath);
+                }
+            }
+
             return NullChangeToken.Singleton;
         }
 
