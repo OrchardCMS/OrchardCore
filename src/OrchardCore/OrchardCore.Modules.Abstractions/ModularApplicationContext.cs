@@ -79,8 +79,8 @@ namespace OrchardCore.Modules
 
     public class Module
     {
-        public const string StaticFilePath = "wwwroot";
-        public static string StaticFileRoot = StaticFilePath + "/";
+        public const string WebRootPath = "wwwroot";
+        public static string WebRoot = WebRootPath + "/";
 
         private readonly string _baseNamespace;
         private readonly DateTimeOffset _lastModified;

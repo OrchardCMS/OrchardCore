@@ -20,7 +20,7 @@ namespace OrchardCore.Mvc
         {
             options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
 
-            ModuleEmbeddedFileProvider embeddedProvider = null;
+            ModuleEmbeddedFileProvider embeddedFileProvider = null;
 
             if (_hostingEnvironment.ContentRootFileProvider is CompositeFileProvider composite)
             {
@@ -28,7 +28,7 @@ namespace OrchardCore.Mvc
                 {
                     if (provider is ModuleEmbeddedFileProvider embedded)
                     {
-                        embeddedProvider = embedded;
+                        embeddedFileProvider = embedded;
                         break;
                     }
                 }
@@ -38,7 +38,7 @@ namespace OrchardCore.Mvc
             {
                 if (options.FileProviders[i] == _hostingEnvironment.ContentRootFileProvider)
                 {
-                    options.FileProviders[i] = embeddedProvider ?? new ModuleEmbeddedFileProvider(_hostingEnvironment);
+                    options.FileProviders[i] = embeddedFileProvider ?? new ModuleEmbeddedFileProvider(_hostingEnvironment);
                 }
             }
 

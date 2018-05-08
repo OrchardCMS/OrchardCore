@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders.Internal;
+using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Modules.FileProviders;
 
@@ -17,32 +19,24 @@ namespace OrchardCore.Modules
     {
         private readonly string _appModulePath;
         private readonly string _appModuleRoot;
-        private readonly IFileProvider _appModuleFileProvider;
         private IHostingEnvironment _environment;
-        private readonly string _contentRoot;
 
-        public ModuleEmbeddedFileProvider(IHostingEnvironment hostingEnvironment, string contentPath = null)
+        public ModuleEmbeddedFileProvider(IHostingEnvironment hostingEnvironment)
         {
             _environment = hostingEnvironment;
-            _contentRoot = contentPath != null ? NormalizePath(contentPath) + '/' : "";
-            _appModuleFileProvider = new PhysicalFileProvider(_environment.ContentRootPath);
-            _appModulePath = _environment.GetModule(_environment.ApplicationName).SubPath;
-            _appModuleRoot = _environment.GetModule(_environment.ApplicationName).Root;
+            var appModule = _environment.GetModule(_environment.ApplicationName);
+            _appModulePath = appModule.SubPath;
+            _appModuleRoot = appModule.Root;
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
-            if (subpath.Contains("Pages"))
-            {
-                ;
-            }
-
             if (subpath == null)
             {
                 return NotFoundDirectoryContents.Singleton;
             }
 
-            var folder = _contentRoot + NormalizePath(subpath);
+            var folder = NormalizePath(subpath);
 
             var entries = new List<IFileInfo>();
 
@@ -57,15 +51,15 @@ namespace OrchardCore.Modules
             }
             else if (folder == _appModulePath)
             {
-                return _appModuleFileProvider.GetDirectoryContents("");
+                return new PhysicalDirectoryContents(_environment.ContentRootPath);
             }
             else if (folder.StartsWith(_appModuleRoot, StringComparison.Ordinal))
             {
                 var tokenizer = new StringTokenizer(folder, new char[] { '/' });
-                if (tokenizer.Any(s => s == "Pages" || s == "Views" || s == Module.StaticFilePath))
+                if (tokenizer.Any(s => s == "Pages" || s == "Views"))
                 {
-                    var folderSubPath = folder.Substring(_appModuleRoot.Length);
-                    return _appModuleFileProvider.GetDirectoryContents(folderSubPath);
+                    var folderSubPath = folder.Substring(_appModuleRoot.Length - 1);
+                    return new PhysicalDirectoryContents(_environment.ContentRootPath + folderSubPath);
                 }
             }
             else if (folder.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
@@ -106,16 +100,12 @@ namespace OrchardCore.Modules
                 return new NotFoundFileInfo(subpath);
             }
 
-            var path = _contentRoot + NormalizePath(subpath);
+            var path = NormalizePath(subpath);
 
             if (path.StartsWith(_appModuleRoot, StringComparison.Ordinal))
             {
-                var fileSubPath = path.Substring(_appModuleRoot.Length);
-
-                if (File.Exists(fileSubPath))
-                {
-                    return _appModuleFileProvider.GetFileInfo(fileSubPath);
-                }
+                var fileSubPath = path.Substring(_appModuleRoot.Length - 1);
+                return new PhysicalFileInfo(new FileInfo(_environment.ContentRootPath + fileSubPath));
             }
             else if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
@@ -124,9 +114,9 @@ namespace OrchardCore.Modules
 
                 if (index != -1)
                 {
-                    var moduleName = path.Substring(0, index);
+                    var module = path.Substring(0, index);
                     var fileSubPath = path.Substring(index + 1);
-                    return _environment.GetModule(moduleName).GetFileInfo(fileSubPath);
+                    return _environment.GetModule(module).GetFileInfo(fileSubPath);
                 }
             }
 
@@ -141,16 +131,12 @@ namespace OrchardCore.Modules
                 return NullChangeToken.Singleton;
             }
 
-            var path = _contentRoot + NormalizePath(filter);
+            var path = NormalizePath(filter);
 
             if (path.StartsWith(_appModuleRoot, StringComparison.Ordinal))
             {
-                var fileSubPath = path.Substring(_appModuleRoot.Length);
-
-                if (File.Exists(fileSubPath))
-                {
-                    return _appModuleFileProvider.Watch(fileSubPath);
-                }
+                var fileSubPath = path.Substring(_appModuleRoot.Length - 1);
+                return new PollingFileChangeToken(new FileInfo(_environment.ContentRootPath + fileSubPath));
             }
 
             return NullChangeToken.Singleton;
