@@ -1,0 +1,26 @@
+@page
+@model AppDemoModel
+@using Microsoft.AspNetCore.Mvc.RazorPages
+
+@functions
+{
+    public class AppDemoModel : PageModel
+    {
+        public string Title { get; set; }
+        public string Message { get; private set; }
+
+        public void OnGet()
+        {
+            Title = "This is a RazorPage defined by the Application!";
+            Message = $"Date and time on the server: { DateTime.Now.ToString() }";
+        }
+    }
+}
+
+<h1>@T[Model.Title]</h1>
+
+<p>
+    @T[Model.Message]
+</p>
+
+<h4>Hello from @ViewContext.RouteData.Values["page"]</h4>

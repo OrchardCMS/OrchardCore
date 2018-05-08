@@ -1,10 +1,11 @@
 using System;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
-using OrchardCore.Environment.Extensions;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc.RazorPages
 {
@@ -52,15 +53,23 @@ namespace OrchardCore.Mvc.RazorPages
                         }
                     });
 
-                    var extensionManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IExtensionManager>();
-                    var name = extensionManager.GetExtension(module).Manifest.Name;
+                    var _hostingEnvironment = _httpContextAccessor.HttpContext.RequestServices.GetService<IHostingEnvironment>();
+                    var name = _hostingEnvironment.GetModule(module).ModuleInfo.Name;
 
                     if (!String.IsNullOrWhiteSpace(name))
                     {
                         module = name;
                     }
 
-                    template = module + pageName.Substring(pathIndex + "Pages".Length);
+                    if (module != Application.ModuleName)
+                    {
+                        template = module + pageName.Substring(pathIndex + "Pages".Length);
+                    }
+                    else
+                    {
+                        template = pageName.Substring(pathIndex + "Pages".Length + 1);
+                    }
+
 
                     model.Selectors.Add(new SelectorModel
                     {

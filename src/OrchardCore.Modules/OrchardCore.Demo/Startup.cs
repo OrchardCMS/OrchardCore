@@ -25,7 +25,6 @@ namespace OrchardCore.Demo
     {
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-
             routes.MapAreaRoute(
                 name: "Home",
                 areaName: "OrchardCore.Demo",

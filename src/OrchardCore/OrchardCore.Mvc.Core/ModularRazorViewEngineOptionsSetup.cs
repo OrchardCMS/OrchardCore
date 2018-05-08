@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
@@ -19,14 +20,25 @@ namespace OrchardCore.Mvc
         {
             options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
 
-            if (_hostingEnvironment.ContentRootFileProvider != null)
+            ModuleEmbeddedFileProvider embeddedProvider = null;
+
+            if (_hostingEnvironment.ContentRootFileProvider is CompositeFileProvider composite)
             {
-                for (var i = 0; i < options.FileProviders.Count; i++)
+                foreach (var provider in composite.FileProviders)
                 {
-                    if (options.FileProviders[i] == _hostingEnvironment.ContentRootFileProvider)
+                    if (provider is ModuleEmbeddedFileProvider embedded)
                     {
-                        options.FileProviders[i] = new ModuleEmbeddedFileProvider(_hostingEnvironment);
+                        embeddedProvider = embedded;
+                        break;
                     }
+                }
+            }
+
+            for (var i = 0; i < options.FileProviders.Count; i++)
+            {
+                if (options.FileProviders[i] == _hostingEnvironment.ContentRootFileProvider)
+                {
+                    options.FileProviders[i] = embeddedProvider ?? new ModuleEmbeddedFileProvider(_hostingEnvironment);
                 }
             }
 

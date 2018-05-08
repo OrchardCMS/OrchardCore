@@ -57,6 +57,7 @@ namespace OrchardCore.Modules
     public class Application
     {
         public const string ModulesPath = ".Modules";
+        public const string ModuleName = "Application";
         public static string ModulesRoot = ModulesPath + "/";
 
         public Application(string application)
@@ -78,8 +79,8 @@ namespace OrchardCore.Modules
 
     public class Module
     {
-        public const string ContentPath = "wwwroot";
-        public static string ContentRoot = ContentPath + "/";
+        public const string StaticFilePath = "wwwroot";
+        public static string StaticFileRoot = StaticFilePath + "/";
 
         private readonly string _baseNamespace;
         private readonly DateTimeOffset _lastModified;
@@ -109,7 +110,7 @@ namespace OrchardCore.Modules
 
                 if (isApplication)
                 {
-                    ModuleInfo.Name = "Application Module";
+                    ModuleInfo.Name = Application.ModuleName;
                     ModuleInfo.Description = "Provides core features defined at the host level";
                     ModuleInfo.Priority = int.MinValue.ToString();
                     ModuleInfo.Category = "Infrastructure";

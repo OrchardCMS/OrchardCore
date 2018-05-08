@@ -42,11 +42,11 @@ namespace Microsoft.AspNetCore.Builder
             var extensionManager = app.ApplicationServices.GetRequiredService<IExtensionManager>();
             var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
 
-                // TODO: configure the location and parameters (max-age) per module.
-                var availableExtensions = extensionManager.GetExtensions();
+            // TODO: configure the location and parameters (max-age) per module.
+            var availableExtensions = extensionManager.GetExtensions();
             foreach (var extension in availableExtensions)
             {
-                var contentSubPath = Path.Combine(extension.SubPath, "wwwroot");
+                var contentSubPath = Path.Combine(extension.SubPath, Module.StaticFilePath);
 
                 if (env.ContentRootFileProvider.GetDirectoryContents(contentSubPath).Exists)
                 {
@@ -54,7 +54,7 @@ namespace Microsoft.AspNetCore.Builder
                     if (env.IsDevelopment())
                     {
                         var fileProviders = new List<IFileProvider>();
-                        fileProviders.Add(new ModuleProjectContentFileProvider(env, contentSubPath));
+                        fileProviders.Add(new ModuleProjectStaticFileProvider(env, contentSubPath));
                         fileProviders.Add(new ModuleEmbeddedFileProvider(env, contentSubPath));
                         fileProvider = new CompositeFileProvider(fileProviders);
                     }

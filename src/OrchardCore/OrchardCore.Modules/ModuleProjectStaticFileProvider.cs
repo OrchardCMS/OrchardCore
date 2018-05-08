@@ -13,14 +13,14 @@ namespace OrchardCore.Modules
     /// This custom <see cref="IFileProvider"/> implementation provides the file contents
     /// of Module Project Content files while in a development environment.
     /// </summary>
-    public class ModuleProjectContentFileProvider : IFileProvider
+    public class ModuleProjectStaticFileProvider : IFileProvider
     {
         private static Dictionary<string, string> _paths;
         private static object _synLock = new object();
 
         private string _contentRoot;
 
-        public ModuleProjectContentFileProvider(IHostingEnvironment environment, string contentPath)
+        public ModuleProjectStaticFileProvider(IHostingEnvironment environment, string contentPath)
         {
             _contentRoot = NormalizePath(contentPath) + "/";
 
@@ -46,7 +46,7 @@ namespace OrchardCore.Modules
                             continue;
                         }
 
-                        var contentRoot = Application.ModulesRoot + name + '/' + Module.ContentRoot;
+                        var contentRoot = Application.ModulesRoot + name + '/' + Module.StaticFileRoot;
 
                         assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath
                             .StartsWith(contentRoot, StringComparison.Ordinal)));
