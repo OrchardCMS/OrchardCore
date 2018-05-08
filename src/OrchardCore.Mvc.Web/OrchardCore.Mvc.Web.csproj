@@ -34,4 +34,6 @@
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="$(MicrosoftExtensionsLocalizationAbstractionsPackageVersion)" />
   </ItemGroup>
 
+  <Import Project="..\OrchardCore.Build\OrchardCore.Commons.targets" />
+
 </Project>

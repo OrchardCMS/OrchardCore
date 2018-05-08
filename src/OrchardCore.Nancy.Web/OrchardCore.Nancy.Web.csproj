@@ -31,4 +31,6 @@
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
   </ItemGroup>
 
+  <Import Project="..\OrchardCore.Build\OrchardCore.Commons.targets" />
+
 </Project>
