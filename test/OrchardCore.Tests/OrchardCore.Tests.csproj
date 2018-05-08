@@ -84,7 +84,7 @@
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitRunnerVisualStudioVersion)" />
     <PackageReference Include="xunit.analyzers" Version="$(XunitAnalyzers)" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="$(XunitVersion)" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="$(DotNetXunitVersion)" />
   </ItemGroup>
 
   <ItemGroup>
