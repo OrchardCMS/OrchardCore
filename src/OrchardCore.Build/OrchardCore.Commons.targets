@@ -1,0 +1,14 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Target Name="VerifyIncludeBuildOutputProperty" AfterTargets="BeforeCompile" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <_HasCompileItems Condition=" '@(Compile)' == '' ">false</_HasCompileItems>
+      <_HasCompileItems Condition=" '@(Compile)' != '' ">true</_HasCompileItems>
+    </PropertyGroup>
+    
+    <Error Condition=" '$(_HasCompileItems)' == 'false' and '$(IncludeBuildOutput)' != 'false' " 
+           Text="Project contains no 'Compile' items. Set &lt;IncludeBuildOutput&gt;false&lt;/IncludeBuildOutput&gt; in $(MSBuildProjectFile)." 
+           File="$(MSBuildProjectFullPath)" />
+  </Target>
+
+</Project>
