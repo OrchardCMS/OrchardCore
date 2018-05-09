@@ -40,8 +40,8 @@ namespace OrchardCore.Mvc
 
             AddModularFrameworkParts(applicationServices, builder.PartManager);
 
-            builder.AddModularRazorViewEngine(applicationServices);
-            builder.AddModularRazorPages(applicationServices);
+            builder.AddModularRazorViewEngine();
+            builder.AddModularRazorPages();
 
             // Use a custom IViewCompilerProvider so that all tenants reuse the same ICompilerCache instance
             builder.Services.Replace(new ServiceDescriptor(typeof(IViewCompilerProvider), typeof(SharedViewCompilerProvider), ServiceLifetime.Singleton));
@@ -87,7 +87,7 @@ namespace OrchardCore.Mvc
             }
         }
 
-        internal static IMvcCoreBuilder AddModularRazorViewEngine(this IMvcCoreBuilder builder, IServiceProvider services)
+        internal static IMvcCoreBuilder AddModularRazorViewEngine(this IMvcCoreBuilder builder)
         {
             builder.Services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
@@ -98,7 +98,7 @@ namespace OrchardCore.Mvc
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
         {
             services.Replace(
-                ServiceDescriptor.Scoped<IModularTenantRouteBuilder, ModularTenantRouteBuilder>());
+                ServiceDescriptor.Transient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>());
 
             services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, ModularViewLocationExpanderProvider>();

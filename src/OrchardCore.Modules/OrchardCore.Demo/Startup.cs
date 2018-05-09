@@ -10,11 +10,13 @@ using OrchardCore.Demo.Commands;
 using OrchardCore.Demo.ContentElementDisplays;
 using OrchardCore.Demo.Drivers;
 using OrchardCore.Demo.Services;
+using OrchardCore.Demo.TagHelpers;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Modules;
+using OrchardCore.Mvc;
 using OrchardCore.Mvc.RazorPages;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users.Models;
@@ -25,6 +27,8 @@ namespace OrchardCore.Demo
     {
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            serviceProvider.AddTagHelpers(typeof(BazTagHelper).Assembly);
+
             routes.MapAreaRoute(
                 name: "Home",
                 areaName: "OrchardCore.Demo",
