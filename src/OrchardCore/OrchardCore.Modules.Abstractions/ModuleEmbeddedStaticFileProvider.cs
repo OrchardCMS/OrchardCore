@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
@@ -14,27 +13,11 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleEmbeddedStaticFileProvider : IFileProvider
     {
-        private static IEnumerable<string> _modules;
-        private static object _synLock = new object();
-
         private readonly IHostingEnvironment _environment;
 
         public ModuleEmbeddedStaticFileProvider(IHostingEnvironment environment)
         {
             _environment = environment;
-
-            if (_modules != null)
-            {
-                return;
-            }
-
-            lock (_synLock)
-            {
-                if (_modules == null)
-                {
-                    _modules = _environment.GetApplication().ModuleNames;
-                }
-            }
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
@@ -57,16 +40,16 @@ namespace OrchardCore.Modules
             {
                 var module = path.Substring(0, index);
 
-                if (_modules.Contains(module))
+                if (_environment.GetApplication().ModuleNames.Contains(module))
                 {
                     var fileSubPath = Module.WebRoot + path.Substring(index + 1);
 
-                    if (module != _environment.ApplicationName)
+                    if (module != _environment.GetApplication().Name)
                     {
                         return _environment.GetModule(module).GetFileInfo(fileSubPath);
                     }
 
-                    fileSubPath = _environment.ContentRootPath + '/' + fileSubPath;
+                    fileSubPath = _environment.GetApplication().Root + fileSubPath;
                     return new PhysicalFileInfo(new FileInfo(fileSubPath));
                 }
             }
