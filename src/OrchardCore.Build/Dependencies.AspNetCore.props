@@ -92,7 +92,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.Rewrite" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Routing.Abstractions" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Routing" Version="2.0.2" />
-    <PackageManagement Include="Microsoft.AspNetCore.Server.HttpSys" Version="2.0.2" />
+    <PackageManagement Include="Microsoft.AspNetCore.Server.HttpSys" Version="2.0.3" />
     <PackageManagement Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Core" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="2.0.2" />
