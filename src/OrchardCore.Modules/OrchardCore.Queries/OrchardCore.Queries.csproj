@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="Irony.Core" Version="1.0.7" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftExtensionsDependencyInjectionPackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 
 </Project>

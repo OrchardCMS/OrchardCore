@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Markdig" Version="0.13.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftExtensionsDependencyInjectionPackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 
 </Project>
