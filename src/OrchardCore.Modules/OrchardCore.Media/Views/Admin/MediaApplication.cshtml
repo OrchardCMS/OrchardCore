@@ -10,44 +10,11 @@
             </li>
         </ul>
     </div>
-    <nav class="media-application-toolbar breadcrumb">
-        <span class="breadcrumb-item" v-bind:class="{ active: isHome}"><a :href="isHome ? null : '#'" v-on:click="selectRoot">@T["Media Library"]</a></span>
-        <span v-for="(folder, i) in parents" v-cloak
-              class="breadcrumb-item"
-              v-bind:class="{active: parents.length - i == 1}">
-            <a :href="parents.length - i == 1 ? null : '#'" v-on:click="selectedFolder = folder;">{{ folder.name }}</a>
-        </span>
-        <div class="btn-group">
-            <a v-cloak href="javascript:;" class="btn btn-light btn-sm" v-on:click="createFolder"><i class="fa fa-plus"></i></a>
-            <a v-cloak v-show="!isHome" href="javascript:;" v-on:click="deleteFolder" class="btn btn-light btn-sm"><i class="fa fa-trash"></i></a>
-        </div>
-        <div class="selected-media-tasks text-right mr-2">
-            <button type="button" class="btn btn-secondary btn-sm" v-on:click="selectAll">@T["Select All"]</button>
-            <button type="button" class="btn btn-secondary btn-sm" v-on:click="unSelectAll" v-bind:disabled="selectedMedias.length < 1">@T["Unselect"]</button>
-            <button type="button" class="btn btn-secondary btn-sm" v-on:click="invertSelection">@T["Invert Selection"]</button>
-        </div>
-        <div class="btn-group btn-group-sm text-right mr-2">
-            <button type="button" class="btn btn-secondary" v-on:click="deleteMediaList" v-bind:disabled="selectedMedias.length < 1">@T["Delete Selected"] <span style="min-width:25px; display:inline-block;">({{ selectedMedias.length}})</span></button>
-        </div>
-        
-        <div class="btn-group-toggle mr-2" data-toggle="smallThumbsCheck">
-            <label class="btn btn-secondary btn-sm" >
-                <input type="checkbox" value="" id="smallThumbsCheck" v-model="smallThumbs"> <span v-if="smallThumbs"> @T["Large Thumbs"] </span> <span v-else> @T["Small Thumbs"] </span>
-            </label>
-        </div>
-
-        <div class="btn-group btn-group-sm text-right">
-            <label for="fileupload" class="btn btn-sm btn-success fileinput-button upload-button">
-                <input id="fileupload" type="file" name="files" multiple="multiple">
-                <i class="fa fa-upload" aria-hidden="true"></i>
-                @T["Upload files..."]
-            </label>
-        </div>
-    </nav>
 
     <div class="media-container row">
 
-        <div id="navigationApp" class="media-container-navigation" v-cloak>            
+        <div id="navigationApp" class="media-container-navigation" v-cloak>
+            <h5>Media Explorer</h5>
             <ol id="media-container-navigation-menu">
                 <folder :model="root" ref="rootFolder"  :selected-in-media-app="selectedFolder">
                 </folder>
@@ -55,6 +22,39 @@
         </div>
 
         <div class="media-container-main" v-cloak>
+            <nav class="navbar action-bar">
+                <div>
+                    <button type="button" class="btn btn-secondary btn-sm" v-on:click="selectAll">@T["Select All"]</button>
+                    <button type="button" class="btn btn-secondary btn-sm" v-on:click="unSelectAll" v-bind:disabled="selectedMedias.length < 1">@T["Unselect"]</button>
+                    <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="invertSelection">@T["Invert Selection"]</button>
+                    <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="deleteMediaList" v-bind:disabled="selectedMedias.length < 1">@T["Delete Selected"] <span style="min-width:25px; display:inline-block;">({{ selectedMedias.length}})</span></button>
+                    <button type="button" class="btn btn-secondary btn-sm" v-on:click="smallThumbs = !smallThumbs"> <span v-if="smallThumbs"> @T["Large Thumbs"] </span> <span v-else> @T["Small Thumbs"] </span> </button>
+                </div>
+
+                <div class="btn-group btn-group-sm text-right" style="justify-content:flex-end; flex-grow:1;">
+                    <label for="fileupload" class="btn btn-sm btn-success fileinput-button upload-button">
+                        <input id="fileupload" type="file" name="files" multiple="multiple">
+                        <i class="fa fa-upload" aria-hidden="true"></i>
+                        @T["Upload files..."]
+                    </label>
+                </div>
+            </nav>
+
+
+            <nav class="breadcrumb">
+                <span class="breadcrumb-item" v-bind:class="{ active: isHome}"><a :href="isHome ? null : '#'" v-on:click="selectRoot">@T["Media Library"]</a></span>
+                <span v-for="(folder, i) in parents" v-cloak
+                      class="breadcrumb-item"
+                      v-bind:class="{active: parents.length - i == 1}">
+                    <a :href="parents.length - i == 1 ? null : '#'" v-on:click="selectedFolder = folder;">{{ folder.name }}</a>
+                </span>
+                <div class="btn-group breadcrumb-buttons">
+                    <a v-cloak href="javascript:;" class="btn btn-light btn-sm" v-on:click="createFolder"><i class="fa fa-plus"></i></a>
+                    <a v-cloak v-show="!isHome" href="javascript:;" v-on:click="deleteFolder" class="btn btn-light btn-sm"><i class="fa fa-trash"></i></a>
+                </div>
+            </nav>
+
+
             <ol class="row">
                 <li v-for="media in mediaItems"
                     :key="media.name"

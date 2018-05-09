@@ -5,10 +5,18 @@ $gray-nr: lighten($gray-base, 13.5%) !default; // #222
 $gray-dark: lighten($gray-base, 20%) !default; // #333
 $gray: lighten($gray-base, 33.5%) !default; // #555
 
+$media-border-content: 1px solid rgba(0, 0, 0, 0.1);
+
 .media-container {
 
     .media-container-navigation {
-        @extend .col-md-3
+        @extend .col-md-3;
+
+        h5 {
+            padding-top: 10px;
+            margin-bottom: 38px;
+            color: $gray-700;
+        }
     }
 
     .media-container-main {
@@ -31,6 +39,7 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
 }
 
 /* Navigation */
+
 #media-container-navigation-menu {
     list-style: none;
     padding-left: 0;
@@ -131,8 +140,8 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
             .inline-media-button {
                 opacity: 0;
                 padding-top: 0px;
-                position:absolute;
-                top:0px;
+                position: absolute;
+                top: 0px;
                 right: 0px;
                 border-radius: 0px;
             }
@@ -156,6 +165,26 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
         list-style: none;
         padding-left: 0;
     }
+
+    .action-bar {
+        background-color: $gray-200;
+        justify-content: flex-start;
+        flex-grow: 1;
+        text-align: left;
+        margin-bottom: 16px;
+    }
+
+    .breadcrumb {
+        background-color: transparent;
+        border-bottom: $media-border-content;
+        border-radius: 0px;
+        
+        .breadcrumb-buttons {
+            justify-content: flex-end;
+            flex-grow: 1;
+            margin-top: -5px;
+        }
+    }
 }
 
 .media-container-main-item-title {
@@ -174,27 +203,6 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
     }
 }
 
-// Not necessary anymore. Just keeping it for reference.
-// Specific styles when the media application is in a modal dialog
-// .modal-lg {
-    /*.media-container-main-list-item {
-        @extend .col-md-4;
-        padding:0;
-    }*/
-    /*.media-container-main-item-title {
-        // Hide the filename in modals
-        @extend .d-none; 
-        @extend .d-xl-block;
-    }*/
-// }
-
-/* Toolbar */
-.breadcrumb {
-    button {
-        cursor: pointer;
-    }
-}
-
 .breadcrumb-item.active {
     margin-right: 1rem;
 }
@@ -203,10 +211,10 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
     display:flex;
 }
 
-.selected-media-tasks, .selected-media-label {
-    justify-content: flex-end;
+.selected-media-label {
+    justify-content: flex-start;
     flex-grow: 1;
-    text-align:right;
+    text-align:left;
 
     small {
         padding: 8px;
