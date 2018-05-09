@@ -2,12 +2,6 @@
 @model InputPartEditViewModel
 
 <fieldset class="form-group">
-    <label asp-for="Name">@T["Name"]</label>
-    <input type="text" asp-for="Name" class="form-control"></input>
-    <span class="hint">@T["Optionally provide the name of the input field."]</span>
-</fieldset>
-
-<fieldset class="form-group">
     <label asp-for="Type">@T["Type"]</label>
     <select asp-for="Type" class="form-control">
         <option value="text">Text</option>
@@ -45,10 +39,4 @@
     <label asp-for="DefaultValue">@T["Default Value"]</label>
     <input type="text" asp-for="DefaultValue" class="form-control"></input>
     <span class="hint">@T["The default value for this field."]</span>
-</fieldset>
-
-<fieldset class="form-group">
-    <label asp-for="Label">@T["Label"]</label>
-    <input type="text" asp-for="Label" class="form-control"></input>
-    <span class="hint">@T["The label text to display. Leave blank to not render a label."]</span>
 </fieldset>

@@ -8,30 +8,30 @@ using OrchardCore.Forms.ViewModels;
 
 namespace OrchardCore.Forms.Drivers
 {
-    public class ButtonPartDisplay : ContentPartDisplayDriver<ButtonPart>
+    public class LabelPartDisplay : ContentPartDisplayDriver<LabelPart>
     {
-        public override IDisplayResult Display(ButtonPart part)
+        public override IDisplayResult Display(LabelPart part)
         {
-            return View("ButtonPart", part).Location("Detail", "Content");
+            return View("LabelPart", part).Location("Detail", "Content");
         }
 
-        public override IDisplayResult Edit(ButtonPart part, BuildPartEditorContext context)
+        public override IDisplayResult Edit(LabelPart part, BuildPartEditorContext context)
         {
-            return Initialize<ButtonPartEditViewModel>("ButtonPart_Edit", m =>
+            return Initialize<LabelPartEditViewModel>("LabelPart_Edit", m =>
             {
                 m.Text = part.Text;
-                m.Type = part.Type;
+                m.For = part.For;
             });
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(ButtonPart part, IUpdateModel updater)
+        public async override Task<IDisplayResult> UpdateAsync(LabelPart part, IUpdateModel updater)
         {
-            var viewModel = new ButtonPartEditViewModel();
+            var viewModel = new LabelPartEditViewModel();
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
             {
                 part.Text = viewModel.Text?.Trim();
-                part.Type = viewModel.Type?.Trim();
+                part.For = viewModel.For?.Trim();
             }
 
             return Edit(part);

@@ -1,0 +1,6 @@
+@using OrchardCore.Forms.Models
+@model ShapeViewModel<LabelPart>
+@{
+    var formElementPart = Model.Value.ContentItem.As<FormElementPart>();
+}
+<label id="@formElementPart.Id" name="@formElementPart.Name" for="@Model.Value.For">@Model.Value.Text</label>

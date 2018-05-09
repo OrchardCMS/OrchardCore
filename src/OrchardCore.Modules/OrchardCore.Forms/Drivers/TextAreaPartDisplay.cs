@@ -19,8 +19,6 @@ namespace OrchardCore.Forms.Drivers
         {
             return Initialize<TextAreaPartEditViewModel>("TextAreaPart_Edit", m =>
             {
-                m.Name = part.Name;
-                m.Label = part.Label;
                 m.Placeholder = part.Placeholder;
                 m.DefaultValue = part.DefaultValue;
             });
@@ -32,8 +30,6 @@ namespace OrchardCore.Forms.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
             {
-                part.Name = viewModel.Name?.Trim();
-                part.Label = viewModel.Label?.Trim();
                 part.Placeholder = viewModel.Placeholder?.Trim();
                 part.DefaultValue = viewModel.DefaultValue?.Trim();
             }

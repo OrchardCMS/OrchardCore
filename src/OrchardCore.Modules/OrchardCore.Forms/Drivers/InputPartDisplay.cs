@@ -19,9 +19,7 @@ namespace OrchardCore.Forms.Drivers
         {
             return Initialize<InputPartEditViewModel>("InputPart_Edit", m =>
             {
-                m.Name = part.Name;
                 m.Placeholder = part.Placeholder;
-                m.Label = part.Label;
                 m.DefaultValue = part.DefaultValue;
                 m.Type = part.Type;
             });
@@ -33,9 +31,7 @@ namespace OrchardCore.Forms.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
             {
-                part.Name = viewModel.Name?.Trim();
                 part.Placeholder = viewModel.Placeholder?.Trim();
-                part.Label = viewModel.Label?.Trim();
                 part.DefaultValue = viewModel.DefaultValue?.Trim();
                 part.Type = viewModel.Type?.Trim();
             }
