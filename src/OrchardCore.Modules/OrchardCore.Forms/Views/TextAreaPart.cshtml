@@ -1,0 +1,12 @@
+@using OrchardCore.Forms.Models
+@model ShapeViewModel<TextAreaPart>
+@{
+
+    var fieldName = Model.Value.Name;
+    var fieldId = !string.IsNullOrWhiteSpace(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
+}
+@if (!string.IsNullOrWhiteSpace(Model.Value.Label))
+{
+    <label for="@fieldId">@Model.Value.Label</label>
+}
+<textarea id="@fieldId" name="@fieldName" class="form-control" placeholder="@Model.Value.Placeholder">@Model.Value.DefaultValue?.Trim()</textarea>

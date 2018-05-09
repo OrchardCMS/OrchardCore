@@ -15,10 +15,12 @@ namespace OrchardCore.Forms
             services.AddScoped<IContentPartDisplayDriver, FormPartDisplay>();
             services.AddScoped<IContentPartDisplayDriver, ButtonPartDisplay>();
             services.AddScoped<IContentPartDisplayDriver, InputPartDisplay>();
+            services.AddScoped<IContentPartDisplayDriver, TextAreaPartDisplay>();
 
             services.AddSingleton<ContentPart, FormPart>();
             services.AddSingleton<ContentPart, ButtonPart>();
             services.AddSingleton<ContentPart, InputPart>();
+            services.AddSingleton<ContentPart, TextAreaPart>();
 
             services.AddScoped<IDataMigration, Migrations>();
         }
