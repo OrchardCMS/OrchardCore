@@ -115,6 +115,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             }
                         },
                         set: function (newPrefs) {
+                            if (!newPrefs) {
+                                return;
+                            }
+
                             this.smallThumbs = newPrefs.smallThumbs;
                             this.selectedFolder = newPrefs.selectedFolder;
                         }
