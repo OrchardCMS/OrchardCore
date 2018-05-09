@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Antiforgery" Version="$(MicrosoftAspNetCoreAntiforgeryPackageVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Antiforgery" />
   </ItemGroup>
 
 </Project>

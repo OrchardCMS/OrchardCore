@@ -64,10 +64,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     parents: function () {
                         var p = [];
-                        parent = this.selectedFolder;
-                        while (parent && parent != root) {
-                            p.unshift(parent);
-                            parent = parent.parent;
+                        parentFolder = self.selectedFolder;
+                        while (parentFolder && parentFolder != root) {
+                            p.unshift(parentFolder);
+                            parentFolder = parentFolder.parent;                            
                         }
                         return p;
                     },
@@ -2058,7 +2058,12 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
             paths: {
                 get: function () {
                     var mediaPaths = [];
-                    this.mediaItems.forEach(function (x) { mediaPaths.push(x.mediaPath); });
+                    this.mediaItems.forEach(function (x) {
+                        if (x.mediaPath === 'not-found') {
+                            return;
+                        }
+                        mediaPaths.push(x.mediaPath);
+                    });
                     return JSON.stringify(mediaPaths);
                 },
                 set: function (values) {
@@ -2066,15 +2071,18 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                     var mediaPaths = values || [];
                     var signal = $.Deferred();
                     mediaPaths.forEach(function (x, i) {
+                        self.mediaItems.push({ name: ' ' + x, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
+
                         promise = $.when(signal).done(function () {
                             $.ajax({
                                 url: mediaItemUrl + "?path=" + encodeURIComponent(x),
                                 method: 'GET',
                                 success: function (data) {
-                                    self.mediaItems.push(data);
+                                    self.mediaItems.splice( i, 1, data);
                                 },
                                 error: function (error) {
                                     console.log(JSON.stringify(error));
+                                    self.mediaItems.splice(i, 1, { name: x, mime: '', mediaPath: 'not-found' });
                                 }
                             });
                         });
