@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -87,7 +87,7 @@ namespace OrchardCore.Modules
         public RequestDelegate BuildTenantPipeline(IServiceProvider rootServiceProvider, IServiceProvider scopeServiceProvider)
         {
             var appBuilder = new ApplicationBuilder(rootServiceProvider);
-              
+
             // Create a nested pipeline to configure the tenant middleware pipeline
             var startupFilters = appBuilder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
 

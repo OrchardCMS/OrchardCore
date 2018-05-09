@@ -80,12 +80,12 @@ namespace OrchardCore.Modules
                             }
                         }
                         finally
-                        {                            
+                        {
                             semaphore.Release();
                             _semaphores.TryRemove(shellSettings.Name, out semaphore);
                         }
                     }
-                    
+
                     await _next.Invoke(httpContext);
                     var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
                     hasPendingTasks = deferredTaskEngine?.HasPendingTasks ?? false;
