@@ -142,7 +142,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         }
 
         /// <summary>
-        /// Returns the appropriate action result depending on whether the status coe has already been set by a workflow.
+        /// Returns the appropriate action result depending on whether the status code has already been set by a workflow.
         /// </summary>
         private IActionResult GetWorkflowActionResult()
         {
