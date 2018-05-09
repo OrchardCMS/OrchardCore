@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -99,7 +100,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                 }
             }
 
-            return Accepted();
+            return GetWorkflowActionResult();
         }
 
         [HttpGet]
@@ -130,12 +131,24 @@ namespace OrchardCore.Workflows.Http.Controllers
                 {
                     await _workflowManager.ResumeWorkflowAsync(workflow, signalActivity, input);
                 }
-                
             }
             else
             {
                 // Resume all workflows with the specified correlation ID and start workflows with SignalEvent as their start activity.
                 await _workflowManager.TriggerEventAsync(SignalEvent.EventName, input, payload.CorrelationId);
+            }
+
+            return GetWorkflowActionResult();
+        }
+
+        /// <summary>
+        /// Returns the appropriate action result depending on whether the status code has already been set by a workflow.
+        /// </summary>
+        private IActionResult GetWorkflowActionResult()
+        {
+            if (Response.StatusCode != 0 && Response.StatusCode != (int)HttpStatusCode.OK)
+            {
+                return new EmptyResult();
             }
 
             return Accepted();

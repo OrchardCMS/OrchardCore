@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="$(OpenIddictVersion)" />
+    <PackageReference Include="OpenIddict.EntityFrameworkCore" />
   </ItemGroup>
 
 </Project>

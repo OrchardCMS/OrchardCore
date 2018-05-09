@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="$(MicrosoftAspNetCoreMvcViewFeaturesPackageVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Runtime" Version="$(MicrosoftAspNetCoreRazorRuntimePackageVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Runtime" />
   </ItemGroup>
 
 </Project>

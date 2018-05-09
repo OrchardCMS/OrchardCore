@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="WindowsAzure.Storage" Version="8.5.0" />
+    <PackageReference Include="WindowsAzure.Storage" />
   </ItemGroup>
 
   <ItemGroup>

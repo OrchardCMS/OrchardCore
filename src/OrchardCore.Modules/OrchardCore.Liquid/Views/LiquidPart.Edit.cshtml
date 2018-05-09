@@ -18,12 +18,18 @@
 
 <script at="Foot">
 $(function () {
-    var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Liquid)'), {
+    var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
+
+    if (textArea == null) {
+        return;
+    }
+
+    var editor = CodeMirror.fromTextArea(textArea, {
         lineNumbers: true,
         styleActiveLine: true,
         matchBrackets: true,
         mode: { name: "liquid" },
-      });
+    });
 
     editor.on('change', function (cm) {
         document.getElementById('@Html.IdFor(x => x.Liquid)').value = cm.getValue();
