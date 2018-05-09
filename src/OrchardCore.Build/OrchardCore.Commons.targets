@@ -11,16 +11,18 @@
            File="$(MSBuildProjectFullPath)" />
   </Target>
 
-  <Target Name="ApplyPackageManagement" BeforeTargets="CollectPackageReferences;_GenerateDotnetCliToolReferenceSpecs" DependsOnTargets="ApplyPackageManagementItems" />
+  <Target Name="ApplyPackageManagement" BeforeTargets="CollectPackageReferences" DependsOnTargets="ApplyPackageManagementItems" />
 
   <Target Name="ApplyPackageManagementItems" Inputs="@(PackageManagement)" Outputs="%(PackageManagement.Identity)">
     <PropertyGroup>
       <_PackageManagementIdentity>%(PackageManagement.Identity)</_PackageManagementIdentity>
       <_PackageManagementVersion>%(PackageManagement.Version)</_PackageManagementVersion>
     </PropertyGroup>
+    <Warning Condition=" '%(PackageReference.Identity)' == '$(_PackageManagementIdentity)' and '%(PackageReference.Version)' == '$(_PackageManagementVersion)' "
+             Text="PackageReference %(PackageReference.Identity)@%(PackageReference.Version) Version attribute is not needed" 
+             File="$(MSBuildProjectFullPath)" />
     <ItemGroup>
       <PackageReference Condition=" '%(Identity)' == '$(_PackageManagementIdentity)' " Version="$(_PackageManagementVersion)" ManagedVersion="true" />
-      <DotNetCliToolReference Condition=" '%(Identity)' == '$(_PackageManagementIdentity)' " Version="$(_PackageManagementVersion)" ManagedVersion="true" />
     </ItemGroup>
   </Target>
 
