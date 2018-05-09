@@ -80,7 +80,7 @@ namespace OrchardCore.Demo
                 options.Conventions.AddModularPageRoute("/OrchardCore.Demo/Pages/Hello", "Hello");
 
                 // This declaration would define an home page
-                options.Conventions.AddModularPageRoute("/OrchardCore.Demo/Pages/Hello", "");
+                //options.Conventions.AddModularPageRoute("/OrchardCore.Demo/Pages/Hello", "");
             });
         }
     }

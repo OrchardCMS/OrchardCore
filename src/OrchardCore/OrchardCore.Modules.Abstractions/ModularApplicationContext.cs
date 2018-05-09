@@ -113,7 +113,7 @@ namespace OrchardCore.Modules
 
                 var moduleInfos = Assembly.GetCustomAttributes<ModuleAttribute>();
 
-                ModuleInfo = 
+                ModuleInfo =
                     moduleInfos.Where(f => !(f is ModuleMarkerAttribute)).FirstOrDefault() ??
                     moduleInfos.Where(f => f is ModuleMarkerAttribute).FirstOrDefault() ??
                     new ModuleAttribute { Name = Name };
@@ -202,7 +202,7 @@ namespace OrchardCore.Modules
             }
         }
 
-        public string ModuleAssetPath { get;  }
+        public string ModuleAssetPath { get; }
         public string ProjectAssetPath { get; }
     }
 }
