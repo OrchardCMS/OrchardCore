@@ -14,12 +14,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSitesFolder();
             services.AddCommands();
             services.AddAuthentication();
-            services.AddModules(modules => 
-            {
-                modules.WithDefaultFeatures(
+
+            services.AddModules()
+                .WithDefaultFeatures(
                     "OrchardCore.Antiforgery", "OrchardCore.Mvc", "OrchardCore.Settings",
                     "OrchardCore.Setup", "OrchardCore.Recipes", "OrchardCore.Commons");
-            });
 
             return services;
         }

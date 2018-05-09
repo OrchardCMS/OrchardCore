@@ -29,7 +29,6 @@ namespace OrchardCore.Modules
             {
                 if (_paths == null)
                 {
-                    //var assets = new List<Asset>();
                     var application = environment.GetApplication();
 
                     var paths = new Dictionary<string, string>();
@@ -44,7 +43,7 @@ namespace OrchardCore.Modules
                             continue;
                         }
 
-                        var contentRoot = Application.ModulesRoot + name + '/' + Module.ContentRoot;
+                        var contentRoot = Application.ModulesRoot + name + '/' + Module.WebRoot;
 
                         var assets = module.Assets.Where(a => a.ModuleAssetPath
                             .StartsWith(contentRoot, StringComparison.Ordinal)).ToArray();

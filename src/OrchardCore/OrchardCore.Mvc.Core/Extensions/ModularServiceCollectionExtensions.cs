@@ -22,17 +22,6 @@ namespace OrchardCore.Mvc
 {
     public static class ModularServiceCollectionExtensions
     {
-        public static ModularServiceCollection AddMvcModules(this ModularServiceCollection moduleServices,
-            IServiceProvider applicationServices)
-        {
-            moduleServices.Configure(services =>
-            {
-                services.AddMvcModules(applicationServices);
-            });
-
-            return moduleServices;
-        }
-
         public static IServiceCollection AddMvcModules(this IServiceCollection services,
             IServiceProvider applicationServices)
         {
@@ -100,8 +89,6 @@ namespace OrchardCore.Mvc
 
         internal static IMvcCoreBuilder AddModularRazorViewEngine(this IMvcCoreBuilder builder)
         {
-            builder.AddRazorViewEngine();
-
             builder.Services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
 

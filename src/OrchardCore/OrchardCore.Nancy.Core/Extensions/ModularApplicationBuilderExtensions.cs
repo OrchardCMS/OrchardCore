@@ -1,33 +1,29 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.Modules;
-using OrchardCore.Nancy.AssemblyCatalogs;
 using Microsoft.Extensions.DependencyInjection;
 using Nancy;
 using Nancy.Owin;
+using OrchardCore.Nancy.AssemblyCatalogs;
 
 namespace OrchardCore.Nancy
 {
     public static class ModularApplicationBuilderExtensions
     {
-        public static ModularApplicationBuilder UseNancyModules(this ModularApplicationBuilder modularApp)
+        public static IApplicationBuilder UseNancyModules(this IApplicationBuilder app)
         {
-            modularApp.Configure(app =>
+            var contextAccessor =
+                app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
+
+            app.UseOwin(x => x.UseNancy(no =>
             {
-                var contextAccessor =
-                    app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
+                no.Bootstrapper = new ModularNancyBootstrapper(
+                    new[] {
+                        (IAssemblyCatalog)new DependencyContextAssemblyCatalog(),
+                        (IAssemblyCatalog)new AmbientAssemblyCatalog(contextAccessor)
+                    });
+            }));
 
-                app.UseOwin(x => x.UseNancy(no =>
-                {
-                    no.Bootstrapper = new ModularNancyBootstrapper(
-                        new[] {
-                            (IAssemblyCatalog)new DependencyContextAssemblyCatalog(),
-                            (IAssemblyCatalog)new AmbientAssemblyCatalog(contextAccessor)
-                        });
-                }));
-            });
-
-            return modularApp;
+            return app;
         }
     }
 }

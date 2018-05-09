@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using OrchardCore.Environment.Extensions;
 using OrchardCore.Modules;
 
 namespace Microsoft.AspNetCore.Builder
 {
     public static class ModularApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseModules(this IApplicationBuilder app, Action<ModularApplicationBuilder> modules = null)
+        public static IApplicationBuilder UseModules(this IApplicationBuilder app, Action<IApplicationBuilder> modules = null)
         {
             var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
 
             env.ContentRootFileProvider = new CompositeFileProvider(
                 new ModuleEmbeddedFileProvider(env),
                 env.ContentRootFileProvider);
-            
+
             // Ensure the shell tenants are loaded when a request comes in
             // and replaces the current service provider for the tenant's one.
             app.UseMiddleware<PoweredByMiddleware>();
@@ -30,43 +29,36 @@ namespace Microsoft.AspNetCore.Builder
             return app;
         }
 
-        public static IApplicationBuilder ConfigureModules(this IApplicationBuilder app, Action<ModularApplicationBuilder> modules)
+        public static IApplicationBuilder ConfigureModules(this IApplicationBuilder app, Action<IApplicationBuilder> modules)
         {
-            var modularApplicationBuilder = new ModularApplicationBuilder(app);
-            modules?.Invoke(modularApplicationBuilder);
-
+            modules?.Invoke(app);
             return app;
         }
 
-        public static ModularApplicationBuilder UseStaticFilesModules(this ModularApplicationBuilder modularApp)
+        public static IApplicationBuilder UseStaticFilesModules(this IApplicationBuilder app)
         {
-            modularApp.Configure(app =>
+            var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
+
+            IFileProvider fileProvider;
+            if (env.IsDevelopment())
             {
-                var extensionManager = app.ApplicationServices.GetRequiredService<IExtensionManager>();
-                var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
+                var fileProviders = new List<IFileProvider>();
+                fileProviders.Add(new ModuleProjectStaticFileProvider(env));
+                fileProviders.Add(new ModuleEmbeddedStaticFileProvider(env));
+                fileProvider = new CompositeFileProvider(fileProviders);
+            }
+            else
+            {
+                fileProvider = new ModuleEmbeddedStaticFileProvider(env);
+            }
 
-                // TODO: configure the location and parameters (max-age) per module.
-                IFileProvider fileProvider;
-                if (env.IsDevelopment())
-                {
-                    var fileProviders = new List<IFileProvider>();
-                    fileProviders.Add(new ModuleProjectStaticFileProvider(env));
-                    fileProviders.Add(new ModuleEmbeddedStaticFileProvider(env));
-                    fileProvider = new CompositeFileProvider(fileProviders);
-                }
-                else
-                {
-                    fileProvider = new ModuleEmbeddedStaticFileProvider(env);
-                }
-
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    RequestPath = "",
-                    FileProvider = fileProvider
-                });
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                RequestPath = "",
+                FileProvider = fileProvider
             });
 
-            return modularApp;
+            return app;
         }
     }
 }
