@@ -36,7 +36,6 @@
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Abstractions" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.2.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="2.0.2" />
-    <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Identity.Service" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Hosting" Version="2.0.2" />
@@ -50,16 +49,8 @@
     <PackageManagement Include="Microsoft.AspNetCore.Http" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Identity" Version="2.0.2" />
-    <PackageManagement Include="Microsoft.AspNetCore.Identity.Service.Abstractions" Version="2.0.1" />
-    <PackageManagement Include="Microsoft.AspNetCore.Identity.Service.AzureKeyVault" Version="2.0.1" />
-    <PackageManagement Include="Microsoft.AspNetCore.Identity.Service.Core" Version="2.0.1" />
-    <PackageManagement Include="Microsoft.AspNetCore.Identity.Service.EntityFrameworkCore" Version="2.0.1" />
-    <PackageManagement Include="Microsoft.AspNetCore.Identity.Service.IntegratedWebClient" Version="2.0.1" />
-    <PackageManagement Include="Microsoft.AspNetCore.Identity.Service.Mvc" Version="2.0.1" />
-    <PackageManagement Include="Microsoft.AspNetCore.Identity.Service" Version="2.0.1" />
-    <PackageManagement Include="Microsoft.AspNetCore.Identity.Service.Specification.Tests" Version="2.0.1" />
     <PackageManagement Include="Microsoft.AspNetCore.Identity.Specification.Tests" Version="2.0.1" />
-    <PackageManagement Include="Microsoft.AspNetCore.JsonPatch" Version="2.0.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.JsonPatch" Version="2.0.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Localization" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Localization.Routing" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.MiddlewareAnalysis" Version="2.0.2" />
@@ -80,9 +71,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.0.3" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="2.0.3" />
     <PackageManagement Include="Microsoft.AspNetCore.NodeServices" Version="2.0.3" />
-    <PackageManagement Include="Microsoft.AspNetCore.NodeServices.Sockets" Version="2.0.1" />
     <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="2.0.2" />
-    <PackageManagement Include="Microsoft.AspNetCore.Proxy" Version="0.3.1" />
     <PackageManagement Include="Microsoft.AspNetCore.Razor.Language" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Razor" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Razor.Runtime" Version="2.0.2" />
@@ -99,7 +88,6 @@
     <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="2.0.2" />
-    <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Session" Version="2.0.2" />
     <PackageManagement Include="Microsoft.AspNetCore.SpaServices" Version="2.0.3" />
     <PackageManagement Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.2" />
@@ -118,8 +106,6 @@
     <PackageManagement Include="Microsoft.CodeAnalysis.CSharp" Version="2.7.0" />
     <PackageManagement Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.7.0" />
     <PackageManagement Include="Microsoft.CodeAnalysis.Razor" Version="2.0.2" />
-    <PackageManagement Include="Microsoft.CodeAnalysis.Razor.Workspaces" Version="2.0.1" />
-    <PackageManagement Include="Microsoft.CodeAnalysis.Remote.Razor" Version="2.0.1" />
     <PackageManagement Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.7.0" />
     <PackageManagement Include="Microsoft.CSharp" Version="4.4.1" />
     <PackageManagement Include="Microsoft.Data.Sqlite.Core" Version="2.0.1" />
@@ -193,6 +179,5 @@
     <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
     <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="2.0.3" />
     <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="2.0.3" />
-    <PackageManagement Include="Microsoft.Web.XdtExtensions" Version="2.0.1" />
   </ItemGroup>
 </Project>
