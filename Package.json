@@ -25,10 +25,5 @@
     "path-posix": "1.0.0",
     "typescript": "2.5.3"
   },
-  "dependencies": {
-    "typings": "^1.3.2"
-  },
-  "scripts": {
-    "postinstall": "typings install"
-  }
+  "dependencies": {}
 }
