@@ -9,7 +9,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-    <PackageReference Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0003" />
+    <PackageReference Include="SixLabors.ImageSharp.Web" />
   </ItemGroup>
 
   <ItemGroup>

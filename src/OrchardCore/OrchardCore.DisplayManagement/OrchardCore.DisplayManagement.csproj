@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Castle.Core" Version="4.1.1" />
+    <PackageReference Include="Castle.Core" />
     <PackageReference Include="Microsoft.AspNetCore.Html.Abstractions" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Localization" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />

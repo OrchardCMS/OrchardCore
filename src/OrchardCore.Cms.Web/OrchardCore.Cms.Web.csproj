@@ -24,7 +24,7 @@
     <PackageReference Include="Microsoft.AspNetCore" />
 
     <!-- This reference is necessary for view precompilation to work on publish -->
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.ViewCompilation" Version="$(MicrosoftAspNetCoreMvcRazorViewCompilationPackageVersion)" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.ViewCompilation" PrivateAssets="All" />
   </ItemGroup>
 
   <!-- Necessary as we reference the Project and not the Package -->

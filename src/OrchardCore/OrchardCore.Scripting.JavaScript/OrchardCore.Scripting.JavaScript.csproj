@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jint" Version="3.0.0-beta-1138" />
+    <PackageReference Include="Jint" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" />
   </ItemGroup>

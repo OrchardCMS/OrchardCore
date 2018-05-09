@@ -27,7 +27,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
-    <PackageReference Include="ncrontab" Version="3.3.0" />
+    <PackageReference Include="ncrontab" />
   </ItemGroup>
 
   <ItemGroup>
