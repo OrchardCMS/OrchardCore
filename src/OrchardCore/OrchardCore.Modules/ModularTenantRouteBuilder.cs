@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
@@ -8,7 +7,7 @@ namespace OrchardCore.Modules
     {
         // Register one top level TenantRoute per tenant. Each instance contains all the routes
         // for this tenant.
-        public ModularTenantRouteBuilder(IServiceProvider serviceProvider)
+        public ModularTenantRouteBuilder()
         {
         }
 
@@ -23,7 +22,6 @@ namespace OrchardCore.Modules
 
         public void Configure(IRouteBuilder builder)
         {
-            
         }
     }
 }
