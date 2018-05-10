@@ -214,6 +214,10 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
 
 .media-field-toolbar {
     display:flex;
+    
+    code {
+        flex-grow:1;
+    }
 }
 
 .selected-media-label {

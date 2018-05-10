@@ -6179,6 +6179,8 @@ a.text-dark:hover, a.text-dark:focus {
 
 .media-field-toolbar {
   display: flex; }
+  .media-field-toolbar code {
+    flex-grow: 1; }
 
 .selected-media-label {
   justify-content: flex-start;
