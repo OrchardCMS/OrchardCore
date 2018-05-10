@@ -144,6 +144,7 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
                 top: 0px;
                 right: 0px;
                 border-radius: 0px;
+                margin-top: -32px;
             }
 
             &.selected {
@@ -152,6 +153,8 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
 
             &.selected .inline-media-button, &:hover .inline-media-button {
                 opacity: 1;
+                margin-top: 0px;
+                transition: all 0.2s;
             }
         }
 
@@ -192,6 +195,7 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
     border-top: solid 1px $gray-300;
     padding-top: 24px;
     position:relative;
+    overflow:hidden;
 
     .media-filename {
         @extend .card-text;
