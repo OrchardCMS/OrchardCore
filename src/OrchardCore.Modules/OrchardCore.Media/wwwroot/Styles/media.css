@@ -6069,7 +6069,8 @@ a.text-dark:hover, a.text-dark:focus {
 /* Navigation */
 #media-container-navigation-menu {
   list-style: none;
-  padding-left: 0; }
+  padding-left: 0;
+  overflow: hidden; }
   #media-container-navigation-menu li.selected > div {
     font-weight: bold; }
   #media-container-navigation-menu li.selected > div > a > i.folder:before {

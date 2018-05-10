@@ -43,6 +43,7 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
 #media-container-navigation-menu {
     list-style: none;
     padding-left: 0;
+    overflow:hidden;
 
     li.selected > div {
         font-weight: bold;
