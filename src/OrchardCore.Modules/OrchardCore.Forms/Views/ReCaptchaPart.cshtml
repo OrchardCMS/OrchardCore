@@ -1,0 +1,5 @@
+@using OrchardCore.Forms.ViewModels
+@model ShapeViewModel<CaptchaPartViewModel>
+
+<div class="g-recaptcha" data-sitekey="@Model.Value.SiteKey"></div>
+<script at="Head" src="https://www.google.com/recaptcha/api.js"></script>

@@ -66,7 +66,6 @@ namespace OrchardCore.Forms
 
             // Select
             _contentDefinitionManager.AlterPartDefinition("SelectPart", part => part
-
                 .WithDescription("Provides select field properties."));
 
             _contentDefinitionManager.AlterTypeDefinition("Select", type => type
@@ -83,6 +82,14 @@ namespace OrchardCore.Forms
                 .WithPart("FormInputElementPart")
                 .WithPart("FormElementPart")
                 .WithPart("ButtonPart")
+                .Stereotype("Widget"));
+
+            // Captcha
+            _contentDefinitionManager.AlterPartDefinition("CaptchaPart", part => part
+                .WithDescription("Provides captcha properties."));
+
+            _contentDefinitionManager.AlterTypeDefinition("Captcha", type => type
+                .WithPart("CaptchaPart")
                 .Stereotype("Widget"));
 
             return 1;
