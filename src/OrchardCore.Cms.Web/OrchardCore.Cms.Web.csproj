@@ -24,5 +24,6 @@
   <!-- Necessary as we reference the Project and not the Package -->
   <Import Project="..\OrchardCore\OrchardCore.Application.Cms.Targets\OrchardCore.Application.Cms.Targets.targets" />
   <Import Project="..\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
+  <Import Project="..\OrchardCore.Build\OrchardCore.Commons.targets" />
 
 </Project>
