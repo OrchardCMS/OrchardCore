@@ -71,7 +71,7 @@ namespace OrchardCore.Modules
             var moduleNames = Assembly.GetCustomAttributes<ModuleNameAttribute>()
                 .Select(m => m.Name).ToList();
 
-            //moduleNames.Add(Name);
+            moduleNames.Add(Name);
             ModuleNames = moduleNames;
 
             ModulePath = ModulesRoot + Name;
