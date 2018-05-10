@@ -57,6 +57,10 @@ build_script:
 
 test_script:
   - dotnet test -c Release .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
+  - cd .\test\Functional
+  - test-setup.cmd
+  - test-build.cmd
+  - test-run.cmd
 clone_depth: 1
 test: on
 
