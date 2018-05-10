@@ -20,38 +20,41 @@ namespace OrchardCore.Mvc
 {
     public class SharedViewCompilerProvider : IViewCompilerProvider
     {
-        private object _initializeLock = new object();
-        private bool _initialized;
+        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IEnumerable<IApplicationFeatureProvider<ViewsFeature>> _viewsFeatureProviders;
 
+        private readonly RazorProjectEngine _razorProjectEngine;
         private readonly ApplicationPartManager _applicationPartManager;
         private readonly IRazorViewEngineFileProviderAccessor _fileProviderAccessor;
-        private readonly IEnumerable<IApplicationFeatureProvider<ViewsFeature>> _viewsFeatureProviders;
-        private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly RazorTemplateEngine _razorTemplateEngine;
         private readonly CSharpCompiler _csharpCompiler;
         private readonly RazorViewEngineOptions _viewEngineOptions;
-        private readonly ILogger<SharedViewCompilerProvider> _logger;
+        private readonly ILogger<RazorViewCompiler> _logger;
+        private readonly Func<IViewCompiler> _createCompiler;
+
+        private object _initializeLock = new object();
+        private bool _initialized;
         private IViewCompiler _compiler;
 
-
         public SharedViewCompilerProvider(
-            ApplicationPartManager applicationPartManager,
-            IRazorViewEngineFileProviderAccessor fileProviderAccessor,
-            IEnumerable<IApplicationFeatureProvider<ViewsFeature>> viewsFeatureProviders,
             IHostingEnvironment hostingEnvironment,
-            RazorTemplateEngine razorTemplateEngine,
+            IEnumerable<IApplicationFeatureProvider<ViewsFeature>> viewsFeatureProviders,
+            ApplicationPartManager applicationPartManager,
+            RazorProjectEngine razorProjectEngine,
+            IRazorViewEngineFileProviderAccessor fileProviderAccessor,
             CSharpCompiler csharpCompiler,
             IOptions<RazorViewEngineOptions> viewEngineOptionsAccessor,
             ILoggerFactory loggerFactory)
         {
-            _applicationPartManager = applicationPartManager;
-            _fileProviderAccessor = fileProviderAccessor;
-            _viewsFeatureProviders = viewsFeatureProviders;
             _hostingEnvironment = hostingEnvironment;
-            _razorTemplateEngine = razorTemplateEngine;
+            _viewsFeatureProviders = viewsFeatureProviders;
+            _applicationPartManager = applicationPartManager;
+            _razorProjectEngine = razorProjectEngine;
+            _fileProviderAccessor = fileProviderAccessor;
             _csharpCompiler = csharpCompiler;
             _viewEngineOptions = viewEngineOptionsAccessor.Value;
-            _logger = loggerFactory.CreateLogger<SharedViewCompilerProvider>();
+
+            _logger = loggerFactory.CreateLogger<RazorViewCompiler>();
+            _createCompiler = CreateCompiler;
         }
 
         public IViewCompiler GetCompiler()
@@ -71,11 +74,13 @@ namespace OrchardCore.Mvc
                 ref _compiler,
                 ref _initialized,
                 ref _initializeLock,
-                CreateCompiler);
+                _createCompiler);
         }
 
         private IViewCompiler CreateCompiler()
         {
+            //var feature = new ViewsFeature();
+            //_applicationPartManager.PopulateFeature(feature);
             var feature = new ViewsFeature();
 
             var featureProviders = _applicationPartManager.FeatureProviders
@@ -136,7 +141,7 @@ namespace OrchardCore.Mvc
 
             return new SharedRazorViewCompiler(
                 _fileProviderAccessor.FileProvider,
-                _razorTemplateEngine,
+                _razorProjectEngine,
                 _csharpCompiler,
                 _viewEngineOptions.CompilationCallback,
                 feature.ViewDescriptors,

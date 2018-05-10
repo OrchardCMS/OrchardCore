@@ -43,7 +43,7 @@ namespace OrchardCore.Mvc
             builder.AddModularRazorViewEngine();
             builder.AddModularRazorPages();
 
-            // Use a custom IViewCompilerProvider so that all tenants reuse the same ICompilerCache instance
+            // Use a custom IViewCompilerProvider so that all tenants reuse the same IMemoryCache instance
             builder.Services.Replace(new ServiceDescriptor(typeof(IViewCompilerProvider), typeof(SharedViewCompilerProvider), ServiceLifetime.Singleton));
 
             AddMvcModuleCoreServices(services);
