@@ -6102,7 +6102,7 @@ a.text-dark:hover, a.text-dark:focus {
     visibility: hidden; }
 
 [v-cloak] {
-  display: none; }
+  display: none !important; }
 
 /* Upload button */
 .fileinput-button {
