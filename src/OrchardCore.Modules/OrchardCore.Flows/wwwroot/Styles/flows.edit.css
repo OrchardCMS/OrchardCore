@@ -10,7 +10,6 @@
     display: inline-block;
 }
 
-.widget-editor:not(.collapsed) .widget-editor-btn-expand, .collapsed .widget-editor-btn-collapse {
+.widget-editor:not(.collapsed) > .widget-editor-header .widget-editor-btn-expand, .collapsed > .widget-editor-header .widget-editor-btn-collapse {
     display: none;
 }
-

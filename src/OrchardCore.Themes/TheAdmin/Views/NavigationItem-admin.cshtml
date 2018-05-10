@@ -15,6 +15,13 @@
     if (Model.HasItems)
     {
         tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
+        if (Model.Level == 1)
+        {
+            // technique to avoid too easily loosing submenus when hover off.
+            // http://www.positioniseverything.net/css-dropdowns-red.html
+            tag.InnerHtml.AppendHtml("<div class=\"hover-free-zone\" ></div>");
+            tag.InnerHtml.AppendHtml("<div class=\"extended-hover-zone\" >");
+        }
 
         if ((bool)Model.Selected)
         {
@@ -30,6 +37,11 @@
             tag.InnerHtml.AppendHtml(await DisplayAsync(item));
         }
         tag.InnerHtml.AppendHtml("</ul>");
+
+        if (Model.Level == 1)
+        {
+            tag.InnerHtml.AppendHtml("</div>");
+        }
     }
     else
     {
