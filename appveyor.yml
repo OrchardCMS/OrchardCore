@@ -1,6 +1,6 @@
 image: Visual Studio 2017
 environment:
-  nodejs_version: "6.9.1"
+  nodejs_version: "8"
   global:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -56,6 +56,9 @@ build_script:
       }
 
 test_script:
+  - dotnet --version
+  - node --version
+  - npm --version
   - dotnet test -c Release .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
   - cd .\test\Functional
   - test-setup.cmd

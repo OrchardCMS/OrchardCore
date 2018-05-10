@@ -47,5 +47,5 @@ describe('Setup', () => {
         
         await page.waitForNavigation();
         await expect(await page.title()).toMatch('My Agency')
-    });
+    }, 15000);
 })
