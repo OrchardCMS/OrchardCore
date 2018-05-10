@@ -4,7 +4,7 @@
     <PackageManagement Include="Microsoft.Application.Insights.AspNetCore" Version="2.3.0-beta1" />
     <PackageManagement Include="Microsoft.AspNetCore" Version="2.1.0-rc1-final" />
     <PackageManagement Include="Microsoft.AspNetCore.All" Version="2.1.0-rc1-final" />
-    <PackageManagement Include="Microsoft.AspNetCore.App" Version="2.1.0-rc1-final" />
+    <PackageManagement Include="Microsoft.AspNetCore.App" Version="2.1.0-rtm-30762" />
     <PackageManagement Include="Microsoft.AspNetCore.Antiforgery" Version="2.1.0-rc1-final" />
     <PackageManagement Include="Microsoft.AspNetCore.Application.Insights.Hosting.Startup" Version="2.1.0-rc1-final" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.1.0-rc1-final" />
