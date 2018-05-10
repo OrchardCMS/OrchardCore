@@ -2,8 +2,9 @@
 @model ShapeViewModel<InputPart>
 @{
     var formElementPart = Model.Value.ContentItem.As<FormElementPart>();
+    var formInputElementPart = Model.Value.ContentItem.As<FormInputElementPart>();
     var elementId = formElementPart.Id;
-    var elementName = formElementPart.Name;
+    var elementName = formInputElementPart.Name;
     var id = !string.IsNullOrWhiteSpace(elementId) ? elementId : !string.IsNullOrWhiteSpace(elementName) ? Html.GenerateIdFromName(elementName) : default(string);
 }
-<input id="@elementId" name="@elementName" type="@Model.Value.Type" class="form-control" value="@Model.Value.DefaultValue" placeholder="@Model.Value.Placeholder" />
+<input id="@id" name="@elementName" type="@Model.Value.Type" class="form-control" value="@Model.Value.DefaultValue" placeholder="@Model.Value.Placeholder" />

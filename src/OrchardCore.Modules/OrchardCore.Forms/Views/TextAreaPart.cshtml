@@ -2,8 +2,9 @@
 @model ShapeViewModel<TextAreaPart>
 @{
     var formElementPart = Model.Value.ContentItem.As<FormElementPart>();
+    var formInputElementPart = Model.Value.ContentItem.As<FormInputElementPart>();
     var elementId = formElementPart.Id;
-    var elementName = formElementPart.Name;
+    var elementName = formInputElementPart.Name;
     var id = !string.IsNullOrWhiteSpace(elementId) ? elementId : !string.IsNullOrWhiteSpace(elementName) ? Html.GenerateIdFromName(elementName) : default(string);
 }
-<textarea id="@elementId" name="@elementName" class="form-control" placeholder="@Model.Value.Placeholder">@Model.Value.DefaultValue?.Trim()</textarea>
+<textarea id="@id" name="@elementName" class="form-control" placeholder="@Model.Value.Placeholder">@Model.Value.DefaultValue?.Trim()</textarea>

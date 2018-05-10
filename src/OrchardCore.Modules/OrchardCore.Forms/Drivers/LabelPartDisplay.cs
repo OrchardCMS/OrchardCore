@@ -19,7 +19,6 @@ namespace OrchardCore.Forms.Drivers
         {
             return Initialize<LabelPartEditViewModel>("LabelPart_Edit", m =>
             {
-                m.Text = part.Text;
                 m.For = part.For;
             });
         }
@@ -30,7 +29,6 @@ namespace OrchardCore.Forms.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
             {
-                part.Text = viewModel.Text?.Trim();
                 part.For = viewModel.For?.Trim();
             }
 

@@ -14,7 +14,6 @@ namespace OrchardCore.Forms.Drivers
         {
             return Initialize<FormElementPartEditViewModel>("FormElementPart_Edit", m =>
             {
-                m.Name = part.Name;
                 m.Id = part.Id;
             });
         }
@@ -25,7 +24,6 @@ namespace OrchardCore.Forms.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
             {
-                part.Name = viewModel.Name?.Trim();
                 part.Id = viewModel.Id?.Trim();
             }
 

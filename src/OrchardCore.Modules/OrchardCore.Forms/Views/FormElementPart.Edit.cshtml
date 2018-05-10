@@ -2,13 +2,7 @@
 @model FormElementPartEditViewModel
 
 <fieldset class="form-group">
-    <label asp-for="Name">@T["Name"]</label>
-    <input type="text" asp-for="Name" class="form-control"></input>
-    <span class="hint">@T["The name to render on this form element."]</span>
-</fieldset>
-
-<fieldset class="form-group">
     <label asp-for="Id">@T["ID"]</label>
-    <input type="text" asp-for="Id" class="form-control"></input>
+    <input asp-for="Id" type="text" class="form-control content-preview-text"></input>
     <span class="hint">@T["The ID to render on this form element."]</span>
 </fieldset>

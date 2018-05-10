@@ -3,7 +3,7 @@
 
 <fieldset class="form-group">
     <label asp-for="Type">@T["Type"]</label>
-    <select asp-for="Type" class="form-control">
+    <select asp-for="Type" class="form-control content-preview-select">
         <option value="text">Text</option>
         <option value="number">Number</option>
         <option value="email">Email</option>
@@ -31,12 +31,12 @@
 
 <fieldset class="form-group">
     <label asp-for="Placeholder">@T["Placeholder Text"]</label>
-    <input type="text" asp-for="Placeholder" class="form-control"></input>
+    <input asp-for="Placeholder" type="text" class="form-control content-preview-text"></input>
     <span class="hint">@T["The text to display when the field has no value."]</span>
 </fieldset>
 
 <fieldset class="form-group">
     <label asp-for="DefaultValue">@T["Default Value"]</label>
-    <input type="text" asp-for="DefaultValue" class="form-control"></input>
+    <input asp-for="DefaultValue" type="text" class="form-control content-preview-text"></input>
     <span class="hint">@T["The default value for this field."]</span>
 </fieldset>

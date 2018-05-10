@@ -21,6 +21,7 @@ namespace OrchardCore.Forms
                 .WithDescription("Turns your content item into a form."));
 
             _contentDefinitionManager.AlterTypeDefinition("Form", type => type
+                .WithPart("TitlePart")
                 .WithPart("FormPart")
                 .WithPart("FlowPart")
                 .Stereotype("Widget"));
@@ -29,11 +30,16 @@ namespace OrchardCore.Forms
             _contentDefinitionManager.AlterPartDefinition("FormElementPart", part => part
                 .WithDescription("Provides attributes common to all form elements."));
 
+            // FormInputElement
+            _contentDefinitionManager.AlterPartDefinition("FormInputElementPart", part => part
+                .WithDescription("Provides attributes common to all input form elements."));
+
             // Label
             _contentDefinitionManager.AlterPartDefinition("LabelPart", part => part
                 .WithDescription("Provides label properties."));
 
             _contentDefinitionManager.AlterTypeDefinition("Label", type => type
+                .WithPart("TitlePart")
                 .WithPart("FormElementPart")
                 .WithPart("LabelPart")
                 .Stereotype("Widget"));
@@ -43,6 +49,7 @@ namespace OrchardCore.Forms
                 .WithDescription("Provides input field properties."));
 
             _contentDefinitionManager.AlterTypeDefinition("Input", type => type
+                .WithPart("FormInputElementPart")
                 .WithPart("FormElementPart")
                 .WithPart("InputPart")
                 .Stereotype("Widget"));
@@ -52,6 +59,7 @@ namespace OrchardCore.Forms
                 .WithDescription("Provides text area properties."));
 
             _contentDefinitionManager.AlterTypeDefinition("TextArea", type => type
+                .WithPart("FormInputElementPart")
                 .WithPart("FormElementPart")
                 .WithPart("TextAreaPart")
                 .Stereotype("Widget"));
@@ -62,6 +70,7 @@ namespace OrchardCore.Forms
                 .WithDescription("Provides select field properties."));
 
             _contentDefinitionManager.AlterTypeDefinition("Select", type => type
+                .WithPart("FormInputElementPart")
                 .WithPart("FormElementPart")
                 .WithPart("SelectPart")
                 .Stereotype("Widget"));
@@ -71,6 +80,7 @@ namespace OrchardCore.Forms
                 .WithDescription("Provides button properties."));
 
             _contentDefinitionManager.AlterTypeDefinition("Button", type => type
+                .WithPart("FormInputElementPart")
                 .WithPart("FormElementPart")
                 .WithPart("ButtonPart")
                 .Stereotype("Widget"));
