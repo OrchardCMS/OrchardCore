@@ -48,7 +48,10 @@ namespace OrchardCore.Environment.Shell
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation("Enabling features {0}", string.Join(",", featuresToEnable.Select(x => x.Id)));
+                    foreach(var feature in featuresToEnable)
+                    {
+                        _logger.LogInformation("Enabling feature '{FeatureName}'", feature.Id);
+                    }
                 }
 
                 var enabledFeatures = await _extensionManager
@@ -104,7 +107,7 @@ namespace OrchardCore.Environment.Shell
 
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        _logger.LogInformation("{0} was disabled", feature.Id);
+                        _logger.LogInformation("Feature '{FeatureName}' was disabled", feature.Id);
                     }
                 }
 

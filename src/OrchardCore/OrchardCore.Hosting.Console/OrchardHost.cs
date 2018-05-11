@@ -40,10 +40,9 @@ namespace OrchardCore.Hosting
             }
             catch (Exception e)
             {
-                _logger.LogError("Error:");
                 for (; e != null; e = e.InnerException)
                 {
-                    _logger.LogError("  {0}", e.Message);
+                    _logger.LogError(e, "Unexpected exception while running commands");
                 }
                 return Task.FromResult(CommandReturnCodes.Fail);
             }

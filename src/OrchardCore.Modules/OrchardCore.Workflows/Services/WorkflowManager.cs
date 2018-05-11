@@ -95,7 +95,11 @@ namespace OrchardCore.Workflows.Services
 
             if (activity == null)
             {
-                _logger.LogWarning($"Requested activity '{activityRecord.Name}' does not exist in the library. This could indicate a changed name or a missing feature. Replacing it with MissingActivity.");
+                if (Logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogWarning("Requested activity '{ActivityName}' does not exist in the library. This could indicate a changed name or a missing feature. Replacing it with MissingActivity.", activityRecord.Name);
+                }
+
                 activity = new MissingActivity(_missingActivityLocalizer, _missingActivityLogger, activityRecord);
             }
 
@@ -114,7 +118,7 @@ namespace OrchardCore.Workflows.Services
 
             if (activity == null)
             {
-                _logger.LogError("Activity {0} was not found", name);
+                _logger.LogError("Activity '{ActivityName}' was not found", name);
                 return;
             }
 
@@ -348,7 +352,7 @@ namespace OrchardCore.Workflows.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"An unhandled error occurred while executing an activity. Workflow ID: {workflowType.Id}. Activity: {activityContext.ActivityRecord.ActivityId}, {activityContext.ActivityRecord.Name}. Putting the workflow in the faulted state.");
+                    _logger.LogError(ex, "An unhandled error occurred while executing an activity. Workflow ID: '{WorkflowTypeId}'. Activity: '{ActivityId}', '{ActivityName}'. Putting the workflow in the faulted state.", workflowType.Id, activityContext.ActivityRecord.ActivityId, activityContext.ActivityRecord.Name);
                     workflowContext.Fault(ex, activityContext);
                     return blocking.Distinct();
                 }
