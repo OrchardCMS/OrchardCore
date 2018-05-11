@@ -14,6 +14,11 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
             selectedMedia: null,
             smallThumbs: false
         },
+        created: function () {
+            var self = this;
+
+            self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
+        },
         computed: {
             paths: {
                 get: function () {
@@ -62,6 +67,19 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
             },
             thumbSize: function () {
                 return this.smallThumbs ? 120 : 240;
+            },
+            currentPrefs: {
+                get: function () {
+                    return {
+                        smallThumbs: this.smallThumbs                        
+                    }
+                },
+                set: function (newPrefs) {
+                    if (!newPrefs) {
+                        return;
+                    }
+                    this.smallThumbs = newPrefs.smallThumbs;
+                }
             }
 
         },
@@ -121,6 +139,9 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
             mediaItems: function () {
                 // Trigger preview rendering
                 setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100);
+            },
+            currentPrefs: function (newPrefs) {
+                localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
             }
         }
     }));
