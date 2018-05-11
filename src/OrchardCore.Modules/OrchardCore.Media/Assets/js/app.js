@@ -47,7 +47,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 created: function () {
                     var self = this;
 
-                    this.dragDropThumbnail.src = '../Images/drag-thumbnail.png';
+                    self.dragDropThumbnail.src = '../Images/drag-thumbnail.png';
 
                     bus.$on('folderSelected', function (folder) {
                         self.selectedFolder = folder;
@@ -82,7 +82,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         media.name = newName;
                     });
 
-                    this.currentPrefs = JSON.parse(localStorage.getItem('mediaPreferences'));
+                    self.currentPrefs = JSON.parse(localStorage.getItem('mediaApplicationPrefs'));
                 },
                 computed: {
                     isHome: function () {
@@ -136,7 +136,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 },
                 watch: {
                     currentPrefs: function (newPrefs) {
-                        localStorage.setItem('mediaPreferences', JSON.stringify(newPrefs));
+                        localStorage.setItem('mediaApplicationPrefs', JSON.stringify(newPrefs));
                     },
                     selectedFolder: function (newFolder) {
                         this.mediaFilter = '';
