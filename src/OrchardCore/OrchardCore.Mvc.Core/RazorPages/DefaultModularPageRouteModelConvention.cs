@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Modules;
 
@@ -11,11 +9,11 @@ namespace OrchardCore.Mvc.RazorPages
 {
     public class DefaultModularPageRouteModelConvention : IPageRouteModelConvention
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public DefaultModularPageRouteModelConvention(IHttpContextAccessor httpContextAccessor)
+        public DefaultModularPageRouteModelConvention(IHostingEnvironment hostingEnvironment)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public void Apply(PageRouteModel model)
@@ -53,7 +51,6 @@ namespace OrchardCore.Mvc.RazorPages
                         }
                     });
 
-                    var _hostingEnvironment = _httpContextAccessor.HttpContext.RequestServices.GetService<IHostingEnvironment>();
                     var name = _hostingEnvironment.GetModule(module).ModuleInfo.Name;
 
                     if (!String.IsNullOrWhiteSpace(name))

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
 
@@ -6,17 +6,17 @@ namespace OrchardCore.Mvc.RazorPages
 {
     public class ModularPageRazorPagesOptionsSetup : IConfigureOptions<RazorPagesOptions>
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public ModularPageRazorPagesOptionsSetup(IHttpContextAccessor httpContextAccessor)
+        public ModularPageRazorPagesOptionsSetup(IHostingEnvironment hostingEnvironment)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public void Configure(RazorPagesOptions options)
         {
             options.RootDirectory = "/";
-            options.Conventions.Add(new DefaultModularPageRouteModelConvention(_httpContextAccessor));
+            options.Conventions.Add(new DefaultModularPageRouteModelConvention(_hostingEnvironment));
         }
     }
 }
