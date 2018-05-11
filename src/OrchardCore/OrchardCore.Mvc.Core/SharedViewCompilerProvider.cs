@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.Razor.Internal;
+using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
 using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
@@ -79,8 +80,6 @@ namespace OrchardCore.Mvc
 
         private IViewCompiler CreateCompiler()
         {
-            //var feature = new ViewsFeature();
-            //_applicationPartManager.PopulateFeature(feature);
             var feature = new ViewsFeature();
 
             var featureProviders = _applicationPartManager.FeatureProviders
@@ -100,6 +99,18 @@ namespace OrchardCore.Mvc
                 provider.PopulateFeature(assemblyParts, feature);
             }
 
+            var application = _hostingEnvironment.GetApplication();
+            foreach (var descriptor in feature.ViewDescriptors)
+            {
+                if (descriptor.RelativePath.StartsWith(Application.ModulesRoot) ||
+                    !(descriptor.ViewAttribute?.ViewType.Name.StartsWith("Pages_") ?? false))
+                {
+                    continue;
+                }
+
+                descriptor.RelativePath = '/' + application.ModulePath + descriptor.RelativePath;
+            }
+
             if (!_hostingEnvironment.IsDevelopment())
             {
                 var moduleNames = _hostingEnvironment.GetApplication().ModuleNames;
@@ -108,6 +119,11 @@ namespace OrchardCore.Mvc
                 foreach (var name in moduleNames)
                 {
                     var module = _hostingEnvironment.GetModule(name);
+
+                    if (module.Name == application.Name)
+                    {
+                        continue;
+                    }
 
                     var precompiledAssemblyPath = Path.Combine(Path.GetDirectoryName(module.Assembly.Location),
                         module.Assembly.GetName().Name + ".Views.dll");
