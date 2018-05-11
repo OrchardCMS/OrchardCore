@@ -314,7 +314,13 @@ namespace OrchardCore.Media.Controllers
             var newPath = _mediaFileStore.Combine(path, name);
 
             var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(newPath);
-            if (mediaFolder != null && !mediaFolder.IsDirectory)
+            if (mediaFolder != null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Cannot create folder because a folder already exists with the same name");
+            }
+
+            var existingFile = await _mediaFileStore.GetFileInfoAsync(newPath);
+            if (existingFile != null)
             {
                 return StatusCode(StatusCodes.Status403Forbidden, "Cannot create folder because a file already exists with the same name");
             }
