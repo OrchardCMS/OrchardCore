@@ -59,16 +59,20 @@
                                     <i v-else class="fa fa-file-o" v-bind:data-mime="media.mime"></i>
                                 </div>
                                 <div class="media-container-main-item-title">
-                                    <span class="media-filename" v-bind:title="media.name">{{media.name}}</span>                                    
+                                    <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button" 
+                                       v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>
+                                    <span class="media-filename" v-bind:title="media.name">{{media.name}}</span>
                                 </div>
                             </div>
                             <div v-else>
                                 <div class="thumb-container flex-column" style="height:240px;">
-                                        <i class="fa fa-ban text-danger" style="display:block;"></i>
-                                        <span class="text-danger small">(@T["Not Found"])</span>                                    
+                                    <i class="fa fa-ban text-danger d-block"></i>
+                                    <span class="text-danger small">(@T["Not Found"])</span>                                    
                                 </div>
-                                <div class="media-container-main-item-title">                                    
-                                    <span class="media-filename text-danger" v-bind:title="media.name">{{media.name}} </span>                                    
+                                <div class="media-container-main-item-title">
+                                    <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button"
+                                       v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>
+                                    <span class="media-filename text-danger" v-bind:title="media.name">{{media.name}}</span>
                                 </div>
                                 
                             </div>
