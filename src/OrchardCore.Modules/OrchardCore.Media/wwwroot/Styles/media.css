@@ -6182,7 +6182,9 @@ a.text-dark:hover, a.text-dark:focus {
 .media-field-toolbar {
   display: flex; }
   .media-field-toolbar code {
-    flex-grow: 1; }
+    flex-grow: 1;
+    padding: 4px;
+    white-space: nowrap; }
 
 .selected-media-label {
   justify-content: flex-start;

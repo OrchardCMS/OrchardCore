@@ -2335,7 +2335,8 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
         el: mediaFieldEditor.get(0),
         data: {
             mediaItems: [],
-            selectedMedia: null
+            selectedMedia: null,
+            smallThumbs: false
         },
         computed: {
             paths: {
@@ -2382,6 +2383,9 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
             },
             canRemoveMedia: function () {
                 return this.selectedMedia || this.mediaItems.length === 1;
+            },
+            thumbSize: function () {
+                return this.smallThumbs ? 120 : 240;
             }
 
         },

@@ -35,12 +35,19 @@
 
             <input asp-for="Paths" type="hidden" class="paths" :value="paths" data-init="@Model.Paths" />
 
-            <nav class="media-field-toolbar" v-cloak >
+            <nav class="media-field-toolbar" v-cloak>
                 <div class="btn-group">
                     <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></a>
                     <a v-show="canRemoveMedia" href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm"><i class="fa fa-trash"></i></a>
                 </div>
-                <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+                <div style="display:flex; justify-content:flex-end; align-items:flex-end; flex-grow:1;">
+                    <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+                    <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="smallThumbs = !smallThumbs">
+                        <span v-if="smallThumbs">@T["Large Thumbs"]</span>
+                        <span v-else> @T["Small Thumbs"] </span>
+                    </button>
+                </div>
+
             </nav>
 
         </fieldset>
@@ -50,12 +57,12 @@
                         <li v-for="media in mediaItems"
                             :key="media.name"
                             class="media-container-main-list-item"
-                            style="width: 242px;"
+                            v-bind:style="{width: thumbSize + 2 + 'px'}"
                             v-bind:class="{selected: selectedMedia == media}"
                             v-on:click="selectMedia(media)">
                             <div v-if="media.mediaPath!== 'not-found'">
-                                <div class="thumb-container" style="height:240px;">
-                                    <img v-if="media.mime.startsWith('image')" v-bind:src="media.url + '?width=240&height=240'" v-bind:data-mime="media.mime" />
+                                <div class="thumb-container" v-bind:style="{height: thumbSize + 'px'}">
+                                    <img v-if="media.mime.startsWith('image')" v-bind:src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" v-bind:data-mime="media.mime" />
                                     <i v-else class="fa fa-file-o" v-bind:data-mime="media.mime"></i>
                                 </div>
                                 <div class="media-container-main-item-title">
@@ -65,10 +72,10 @@
                                 </div>
                             </div>
                             <div v-else>
-                                <div class="thumb-container flex-column" style="height:240px;">
+                                <div class="thumb-container flex-column" v-bind:style="{height: thumbSize + 'px'}">
                                     <i class="fa fa-ban text-danger d-block"></i>
                                     <span class="text-danger small d-block">@T["Not Found"]</span>
-                                    <span class="text-danger small d-block">@T["It will be discarded on saving"]</span>
+                                    <span class="text-danger small d-block text-center">@T["It will be discarded on saving"]</span>
                                 </div>
                                 <div class="media-container-main-item-title">
                                     <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button"
