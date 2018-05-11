@@ -37,7 +37,6 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 data: {
                     selectedFolder: root,
                     mediaItems: [],
-                    selectedMedia: null,
                     selectedMedias: [],
                     errors: [],
                     dragDropThumbnail: new Image(),
@@ -147,7 +146,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                
                 },
                 mounted: function () {
-                    this.$refs.rootFolder.toggle(); //todo: see if this is still required 
+                    this.$refs.rootFolder.toggle();
                 },
                 methods: {
                     uploadUrl: function () {
@@ -158,7 +157,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     loadFolder: function (folder) {
                         this.errors = [];
-                        this.selectedMedia = null;
+                        this.selectedMedias = [];
                         var self = this;
                         $.ajax({
                             url: $('#getMediaItemsUrl').val() + "?path=" + encodeURIComponent(folder.path),
@@ -174,9 +173,6 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 console.error(error.responseText);
                             }
                         });
-                    },
-                    selectMedia: function (media) {
-                        this.selectedMedia = media;
                     },
                     selectAll: function () {
                         this.selectedMedias = [];
@@ -247,39 +243,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         $('#renameMediaModal .modal-body input').val(media.name).focus();
                     },
                     selectAndDeleteMedia: function (media) {
-                        this.selectedMedia = media;
                         this.deleteMedia();
-                    },
-                    deleteMedia: function () {
-                        var media = this.selectedMedia;
-                        var self = this;
-
-                        if (!media) {
-                            return;
-                        }
-
-                        if (!confirm($('#deleteMediaMessage').val())) {
-                            return;
-                        }
-
-                        $.ajax({
-                            url: $('#deleteMediaUrl').val() + "?path=" + encodeURIComponent(self.selectedMedia.mediaPath),
-                            method: 'POST',
-                            data: {
-                                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
-                            },
-                            success: function (data) {
-                                var index = self.mediaItems && self.mediaItems.indexOf(media)
-                                if (index > -1) {
-                                    self.mediaItems.splice(index, 1)
-                                    bus.$emit('mediaDeleted', media);
-                                }
-                                self.selectedMedia = null;
-                            },
-                            error: function (error) {
-                                console.error(error.responseText);
-                            }
-                        });
                     },
                     deleteMediaList: function () {
                         var mediaList = this.selectedMedias;
