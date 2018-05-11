@@ -443,8 +443,13 @@ $(document).on('mediaApp:ready', function () {
         },
         done: function (e, data) {
             $.each(data.result.files, function (index, file) {
-                mediaApp.mediaItems.push(file)
+                if (!file.error) {
+                    mediaApp.mediaItems.push(file)
+                } else {
+                    mediaApp.errors.push(file.error);
+                }
             });
+
             $('#progress .progress-bar').css(
                 'width',
                 0 + '%'
