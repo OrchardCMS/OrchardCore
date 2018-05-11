@@ -176,13 +176,17 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
         flex-grow: 1;
         text-align: left;
         margin-bottom: 16px;
+        
+        .input-filter {
+            width: 100px;
+        }
     }
 
     .breadcrumb {
         background-color: transparent;
         border-bottom: $media-border-content;
         border-radius: 0px;
-        
+
         .breadcrumb-buttons {
             justify-content: flex-end;
             flex-grow: 1;
@@ -233,4 +237,24 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
 .message-warning {
     padding:20px;
     margin-bottom:8px;
+}
+
+
+.modal-body .media-container {
+    // on modal the available space is smaller. So the buttons overlap.
+    // Breakpoints that switches visibility of buttons on full screen are not valid on modal.
+    // So we use these classes to enforce the layout we have on small screen.
+    .visible-on-modal {
+        display: flex !important;
+    }
+
+    .hidden-on-modal {
+        display: none !important;
+    }
+
+    #media-container-navigation-menu a, .breadcrumb-item a {
+        font-size: 0.9rem;
+    }
+
+
 }

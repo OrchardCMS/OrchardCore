@@ -6,7 +6,7 @@
     <div class="message-warning" v-if="errors.length > 0">
         <ul>
             <li v-for="e in errors">
-                <p>{{e}}</p>                
+                <p>{{e}}</p>
             </li>
         </ul>
     </div>
@@ -16,14 +16,14 @@
         <div id="navigationApp" class="media-container-navigation" v-cloak>
             <h5>Media Explorer</h5>
             <ol id="media-container-navigation-menu">
-                <folder :model="root" ref="rootFolder"  :selected-in-media-app="selectedFolder">
+                <folder :model="root" ref="rootFolder" :selected-in-media-app="selectedFolder">
                 </folder>
             </ol>
         </div>
 
         <div class="media-container-main" v-cloak>
             <nav class="navbar action-bar">
-                <div class="dropdown d-lg-none">
+                <div class="dropdown d-lg-none visible-on-modal">
                     <button class="btn btn-secondary dropdown-toggle btn-sm mr-2" type="button" id="selectionButtonsDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         @T["Actions"]
                     </button>
@@ -32,16 +32,46 @@
                         <a href="javascript:;" class="dropdown-item" v-on:click="unSelectAll" v-bind:disabled="selectedMedias.length < 1">@T["None"]</a>
                         <a href="javascript:;" class="dropdown-item" v-on:click="invertSelection">@T["Invert"]</a>
                         <div class="dropdown-divider"></div>
-                        <a href="javascript:;" class="dropdown-item" v-on:click="deleteMediaList" v-bind:disabled="selectedMedias.length < 1">@T["Delete Selected"] <span style="min-width:25px; display:inline-block;">({{ selectedMedias.length}})</span></a>
-                        <a href="javascript:;" class="dropdown-item" v-on:click="smallThumbs = !smallThumbs"> <span v-if="smallThumbs"> @T["Large"] </span> <span v-else> @T["Small"] </span> </a>
+                        <a href="javascript:;" class="dropdown-item"
+                           v-bind:class="{ disabled : selectedMedias.length < 1 }" v-on:click="deleteMediaList">
+                            @T["Delete Selected"] <span>({{ selectedMedias.length }})</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="javascript:;" class="dropdown-item"
+                           v-on:click="smallThumbs = !smallThumbs">
+                            <span v-if="smallThumbs"> @T["Large"] </span>
+                            <span v-else> @T["Small"] </span>
+                        </a>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <button type="button" class="btn btn-outline-secondary" v-bind:disabled="mediaFilter == '' " v-on:click="mediaFilter = '' ">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+                            <input type="text" class="form-control" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]"
+                                   v-model="mediaFilter">
+                        </div>
                     </div>
                 </div>
-                <div class="d-lg-inline-block d-none">
-                    <button type="button" class="btn btn-secondary btn-sm" v-on:click="selectAll">@T["All"]</button>
-                    <button type="button" class="btn btn-secondary btn-sm" v-on:click="unSelectAll" v-bind:disabled="selectedMedias.length < 1">@T["None"]</button>
+                <div class="d-lg-inline-flex d-none hidden-on-modal">
+                    <button type="button" class="btn btn-secondary btn-sm mr-1" v-on:click="selectAll">@T["All"]</button>
+                    <button type="button" class="btn btn-secondary btn-sm mr-1" v-on:click="unSelectAll" v-bind:disabled="selectedMedias.length < 1">@T["None"]</button>
                     <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="invertSelection">@T["Invert"]</button>
-                    <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="deleteMediaList" v-bind:disabled="selectedMedias.length < 1">@T["Delete Selected"] <span style="min-width:25px; display:inline-block;">({{ selectedMedias.length}})</span></button>
-                    <button type="button" class="btn btn-secondary btn-sm" v-on:click="smallThumbs = !smallThumbs"> <span v-if="smallThumbs"> @T["Large"] </span> <span v-else> @T["Small"] </span> </button>
+                    <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="deleteMediaList"
+                            v-bind:disabled="selectedMedias.length < 1">
+                        @T["Delete Selected"] <span style="min-width:25px; display:inline-block;">({{ selectedMedias.length}})</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="smallThumbs = !smallThumbs">
+                        <span v-if="smallThumbs">
+                            @T["Large"]
+                        </span> <span v-else> @T["Small"] </span>
+                    </button>
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-outline-secondary" type="button" v-bind:disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa fa-times"></i></button>
+                        </div>
+                        <input type="text" v-model="mediaFilter" class="form-control input-filter" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]">
+                    </div>
                 </div>
 
                 <div class="btn-group btn-group-sm text-right" style="justify-content:flex-end; flex-grow:1;">
@@ -55,7 +85,7 @@
 
 
             <nav class="breadcrumb">
-                <span class="breadcrumb-item" v-bind:class="{ active: isHome}"><a :href="isHome ? null : '#'" v-on:click="selectRoot">@T["Media Library"]</a></span>
+                <span class="breadcrumb-item" v-bind:class="{ active: isHome }"><a :href="isHome ? null : '#'" v-on:click="selectRoot">@T["Media Library"]</a></span>
                 <span v-for="(folder, i) in parents" v-cloak
                       class="breadcrumb-item"
                       v-bind:class="{active: parents.length - i == 1}">
@@ -69,7 +99,7 @@
 
 
             <ol class="row">
-                <li v-for="media in mediaItems"
+                <li v-for="media in filteredMediaItems"
                     :key="media.name"
                     class="media-container-main-list-item"
                     v-bind:style="{width: thumbSize + 2 + 'px'}"
@@ -116,7 +146,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label for="input" class="form-control-label" id="input-label">@T["Folder name"]</label>
-                    <input type="text" id="create-folder-name" class="form-control" >
+                    <input type="text" id="create-folder-name" class="form-control">
                 </div>
                 <div id="createFolderModal-errors"></div>
             </div>

@@ -6153,6 +6153,8 @@ a.text-dark:hover, a.text-dark:focus {
   flex-grow: 1;
   text-align: left;
   margin-bottom: 16px; }
+  .media-container-main .action-bar .input-filter {
+    width: 100px; }
 
 .media-container-main .breadcrumb {
   background-color: transparent;
@@ -6192,3 +6194,12 @@ a.text-dark:hover, a.text-dark:focus {
 .message-warning {
   padding: 20px;
   margin-bottom: 8px; }
+
+.modal-body .media-container .visible-on-modal {
+  display: flex !important; }
+
+.modal-body .media-container .hidden-on-modal {
+  display: none !important; }
+
+.modal-body .media-container #media-container-navigation-menu a, .modal-body .media-container .breadcrumb-item a {
+  font-size: 0.9rem; }
