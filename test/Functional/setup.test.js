@@ -78,111 +78,111 @@ describe('Setup', () => {
             page.click('#SubmitButton')
         ]);
         
-        await expect(await page.content()).toMatch('Welcome to the Orchard Framework, your site has been successfully set up 1')
+        await expect(await page.content()).toMatch('Welcome to the Orchard Framework, your site has been successfully set up')
     });
 })
 
-// describe('Create Tenants', () => {
+describe('Create Tenants', () => {
 
-//     it('should display login form', async () => {
-//         await page.goto(`${basePath}/Login`);
-//         await expect(await page.content()).toMatch('Use a local account to log in')
-//     });
+    it('should display login form', async () => {
+        await page.goto(`${basePath}/Login`);
+        await expect(await page.content()).toMatch('Use a local account to log in')
+    });
 
-//     it('should login with setup credentials', async () => {
-//         await page.type('#UserName', 'admin');
-//         await page.type('#Password', 'Demo123!');
-//         await Promise.all([
-//             page.waitForNavigation(),
-//             page.keyboard.press('Enter')
-//         ]);
+    it('should login with setup credentials', async () => {
+        await page.type('#UserName', 'admin');
+        await page.type('#Password', 'Demo123!');
+        await Promise.all([
+            page.waitForNavigation(),
+            page.keyboard.press('Enter')
+        ]);
         
-//         await expect(await page.url()).toBe(`${basePath}/`);
-//         await expect(await page.content()).toMatch('admin');
-//     });
+        await expect(await page.url()).toBe(`${basePath}/`);
+        await expect(await page.content()).toMatch('admin');
+    });
 
-//     it('should display a single tenant', async () => {
-//         await page.goto(`${basePath}/OrchardCore.Tenants/Admin/Index`);
-//         await expect(await page.content()).toMatch('Default')
+    it('should display a single tenant', async () => {
+        await page.goto(`${basePath}/OrchardCore.Tenants/Admin/Index`);
+        await expect(await page.content()).toMatch('Default')
 
-//         var tenantsCount = expect((await page.$$("div.properties")).length).toBe(1);
-//     });
+        var tenantsCount = expect((await page.$$("div.properties")).length).toBe(1);
+    });
 
-//     it('should create a tenant based on Agency', async () => {
+    it('should create a tenant based on Agency', async () => {
 
-//         // Create tenant
-//         await page.goto(`${basePath}/OrchardCore.Tenants/Admin/Create`);
+        // Create tenant
+        await page.goto(`${basePath}/OrchardCore.Tenants/Admin/Create`);
         
-//         await page.type('#Name', 'Agency');
-//         await page.type('#RequestUrlPrefix', 'agency');
+        await page.type('#Name', 'Agency');
+        await page.type('#RequestUrlPrefix', 'agency');
 
-//         await Promise.all([
-//             page.waitForNavigation(),
-//             (await page.$x("//button[contains(text(), 'Create')]"))[0].click()
-//         ]);
+        await Promise.all([
+            page.waitForNavigation(),
+            (await page.$x("//button[contains(text(), 'Create')]"))[0].click()
+        ]);
 
-//         await expect(await page.url()).toBe(`${basePath}/OrchardCore.Tenants/Admin/Index`);
-//         await expect(await page.content()).toMatch('Agency')
+        await expect(await page.url()).toBe(`${basePath}/OrchardCore.Tenants/Admin/Index`);
+        await expect(await page.content()).toMatch('Agency')
 
-//         // Go to Setup page
-//         await page.goto(`${basePath}/agency/`);
-//         await expect(await page.content()).toMatch('Orchard Setup')
+        // Go to Setup page
+        await page.goto(`${basePath}/agency/`);
+        await expect(await page.content()).toMatch('Orchard Setup')
 
-//         // Setup site
-//         await page.type('#SiteName', 'Agency');
-//         await page.click('#recipeButton');
-//         await (await page.$x("//a[contains(text(), 'Agency')]"))[0].click();
-//         await page.select('#DatabaseProvider', 'Sqlite');
-//         await page.type('#TablePrefix', '');
-//         await page.type('#UserName', 'admin');
-//         await page.type('#Email', 'admin@orchard.com');
-//         await page.type('#Password', 'Demo123!');
-//         await page.type('#PasswordConfirmation', 'Demo123!');
+        // Setup site
+        await page.type('#SiteName', 'Agency');
+        await page.click('#recipeButton');
+        await (await page.$x("//a[contains(text(), 'Agency')]"))[0].click();
+        await page.select('#DatabaseProvider', 'Sqlite');
+        await page.type('#TablePrefix', '');
+        await page.type('#UserName', 'admin');
+        await page.type('#Email', 'admin@orchard.com');
+        await page.type('#Password', 'Demo123!');
+        await page.type('#PasswordConfirmation', 'Demo123!');
 
-//         await Promise.all([
-//             page.waitForNavigation(),
-//             page.click('#SubmitButton')
-//         ]);
+        await Promise.all([
+            page.waitForNavigation(),
+            page.click('#SubmitButton')
+        ]);
         
-//         await expect(await page.content()).toMatch('Lorem ipsum dolor sit amet consectetur')
-//     });
+        await expect(await page.content()).toMatch('Lorem ipsum dolor sit amet consectetur')
+    });
 
-//     it('should create a tenant based on Blog', async () => {
+    it('should create a tenant based on Blog', async () => {
 
-//         // Create tenant
-//         await page.goto(`${basePath}/OrchardCore.Tenants/Admin/Create`);
+        // Create tenant
+        await page.goto(`${basePath}/OrchardCore.Tenants/Admin/Create`);
         
-//         await page.type('#Name', 'Blog');
-//         await page.type('#RequestUrlPrefix', 'blog');
+        await page.type('#Name', 'Blog');
+        await page.type('#RequestUrlPrefix', 'blog');
 
-//         await Promise.all([
-//             page.waitForNavigation(),
-//             (await page.$x("//button[contains(text(), 'Create')]"))[0].click()
-//         ]);
+        await Promise.all([
+            page.waitForNavigation(),
+            (await page.$x("//button[contains(text(), 'Create')]"))[0].click()
+        ]);
 
-//         await expect(await page.url()).toBe(`${basePath}/OrchardCore.Tenants/Admin/Index`);
-//         await expect(await page.content()).toMatch('Blog')
+        await expect(await page.url()).toBe(`${basePath}/OrchardCore.Tenants/Admin/Index`);
+        await expect(await page.content()).toMatch('Blog')
 
-//         // Go to Setup page
-//         await page.goto(`${basePath}/blog/`);
-//         await expect(await page.content()).toMatch('Orchard Setup')
+        // Go to Setup page
+        await page.goto(`${basePath}/blog/`);
+        await expect(await page.content()).toMatch('Orchard Setup')
 
-//         // Setup site
-//         await page.type('#SiteName', 'Blog');
-//         await page.click('#recipeButton');
-//         await (await page.$x("//a[contains(text(), 'Blog')]"))[0].click();
-//         await page.select('#DatabaseProvider', 'Sqlite');
-//         await page.type('#TablePrefix', '');
-//         await page.type('#UserName', 'admin');
-//         await page.type('#Email', 'admin@orchard.com');
-//         await page.type('#Password', 'Demo123!');
-//         await page.type('#PasswordConfirmation', 'Demo123!');
+        // Setup site
+        await page.type('#SiteName', 'Blog');
+        await page.click('#recipeButton');
+        await (await page.$x("//a[contains(text(), 'Blog')]"))[0].click();
+        await page.select('#DatabaseProvider', 'Sqlite');
+        await page.type('#TablePrefix', '');
+        await page.type('#UserName', 'admin');
+        await page.type('#Email', 'admin@orchard.com');
+        await page.type('#Password', 'Demo123!');
+        await page.type('#PasswordConfirmation', 'Demo123!');
 
-//         await Promise.all([
-//             page.waitForNavigation(),
-//             page.click('#SubmitButton')
-//         ]);
+        await Promise.all([
+            page.waitForNavigation(),
+            page.click('#SubmitButton')
+        ]);
         
-//         await expect(await page.content()).toMatch('This is the description of your blog')
-//     });
-// })
+        await expect(await page.content()).toMatch('This is the description of your blog')
+    });
+})
