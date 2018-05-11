@@ -95,11 +95,7 @@ namespace OrchardCore.Workflows.Services
 
             if (activity == null)
             {
-                if (Logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogWarning("Requested activity '{ActivityName}' does not exist in the library. This could indicate a changed name or a missing feature. Replacing it with MissingActivity.", activityRecord.Name);
-                }
-
+                _logger.LogWarning("Requested activity '{ActivityName}' does not exist in the library. This could indicate a changed name or a missing feature. Replacing it with MissingActivity.", activityRecord.Name);
                 activity = new MissingActivity(_missingActivityLocalizer, _missingActivityLogger, activityRecord);
             }
 

@@ -19,7 +19,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
         public void Add(NotifyType type, LocalizedHtmlString message)
         {
-            if (_logger.IsEnabled(LogLevel.Information))
+            if (Logger.IsEnabled(LogLevel.Information))
             {
                 Logger.LogInformation("Notification '{NotificationType}' with message '{NotificationMessage}'", type, message);
             }
