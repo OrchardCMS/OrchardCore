@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "child_process": "^1.0.2",
     "jest": "^22.4.3",
     "jest-cli": "^22.4.3",
     "puppeteer": "^1.4.0"
