@@ -9,8 +9,8 @@
     <ItemGroup>
       <RazorPagesFiles Include="Pages\**\*.cshtml" />
       <LinkedRazorFiles Include="@(Content)" Condition="'%(Content.Link)' != '' and '%(Extension)' == '.cshtml'" />
-      <ResolvedFileToPublish Include="@(RazorPagesFiles)" RelativePath="'%(RazorPagesFiles.Identity)'" />
-      <ResolvedFileToPublish Include="@(LinkedRazorFiles)" RelativePath="'%(LinkedRazorFiles.Link)'" />
+      <ResolvedFileToPublish Include="@(RazorPagesFiles)" RelativePath="%(RazorPagesFiles.Identity)" />
+      <ResolvedFileToPublish Include="@(LinkedRazorFiles)" RelativePath="%(LinkedRazorFiles.Link)" />
     </ItemGroup>
   </Target>
 
