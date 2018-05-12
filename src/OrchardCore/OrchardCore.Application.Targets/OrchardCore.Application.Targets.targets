@@ -5,7 +5,7 @@
     Application that references it will embedd in its assembly a list of the referenced modules.
   -->
 
-  <Target Name="PublishApplicationRazorPages" BeforeTargets="BeforePublish">
+  <Target Name="PublishRazorPagesAndLinkedRazorFiles" BeforeTargets="BeforePublish">
     <ItemGroup>
       <RazorPagesFiles Include="Pages\**\*.cshtml" />
       <LinkedRazorFiles Include="@(Content)" Condition="'%(Content.Link)' != '' and '%(Extension)' == '.cshtml'" />
