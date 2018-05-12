@@ -18,8 +18,6 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         private readonly IClock _clock;
         private readonly ISiteService _siteService;
-        private readonly IUserService _userService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         //private readonly IDateLocalizationServices _dateLocalizationServices;
         //private readonly IDateTimeFormatProvider _dateTimeLocalization;
@@ -27,17 +25,13 @@ namespace OrchardCore.DisplayManagement.Shapes
         public DateTimeShapes(
             IClock clock,
             IPluralStringLocalizer<DateTimeShapes> localizer,
-            ISiteService siteService,
-            IUserService userService,
-            IHttpContextAccessor httpContextAccessor
+            ISiteService siteService
             //IDateLocalizationServices dateLocalizationServices,
             //IDateTimeFormatProvider dateTimeLocalization
             )
         {
             _clock = clock;
             _siteService = siteService;
-            _userService = userService;
-            _httpContextAccessor = httpContextAccessor;
             //_dateLocalizationServices = dateLocalizationServices;
             //_dateTimeLocalization = dateTimeLocalization;
             T = localizer;
@@ -98,18 +92,8 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             DateTimeOffset zonedTime;
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var user = await _userService.GetAuthenticatedUserAsync(_httpContextAccessor.HttpContext.User);
-
-            if (user?.TimeZone != null)
-            {
-                var userTimeZone = _clock.GetLocalTimeZone(user.TimeZone);
-                zonedTime = _clock.ConvertToTimeZone(Utc, userTimeZone);
-            }
-            else
-            {
-                var siteTimeZone = _clock.GetLocalTimeZone(siteSettings.TimeZone);
-                zonedTime = _clock.ConvertToTimeZone(Utc, siteTimeZone);
-            }
+            var siteTimeZone = _clock.GetLocalTimeZone(siteSettings.TimeZone);
+            zonedTime = _clock.ConvertToTimeZone(Utc, siteTimeZone);
 
             if (Format == null)
             {

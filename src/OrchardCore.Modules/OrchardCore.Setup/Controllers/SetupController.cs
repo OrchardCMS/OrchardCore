@@ -133,7 +133,6 @@ namespace OrchardCore.Setup.Controllers
                 AdminUsername = model.UserName,
                 AdminEmail = model.Email,
                 AdminPassword = model.Password,
-                AdminTimeZone = model.AdminTimeZone,
                 Errors = new Dictionary<string, string>(),
                 Recipe = selectedRecipe,
                 SiteTimeZone = model.SiteTimeZone

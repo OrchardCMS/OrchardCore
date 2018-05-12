@@ -45,8 +45,6 @@ namespace OrchardCore.Setup.ViewModels
 
         public string SiteTimeZone { get; set; }
 
-        public string AdminTimeZone { get; set; }
-
         public ITimeZone[] TimeZones { get; set; }
     }
 }

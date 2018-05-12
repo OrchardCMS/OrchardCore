@@ -22,7 +22,6 @@ namespace OrchardCore.Settings.Services
             string userName,
             string email,
             string password,
-            string adminTimeZone,
             string dbProvider,
             string dbConnectionString,
             string dbTablePrefix,

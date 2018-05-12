@@ -15,14 +15,12 @@ namespace OrchardCore.Liquid.Filters
     {
         private readonly IClock _clock;
         private readonly ISiteService _siteService;
-        private readonly IUserService _userService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public TimeZoneFilter(ISiteService siteService, IClock clock, IUserService userService, IHttpContextAccessor httpContextAccessor)
+        public TimeZoneFilter(ISiteService siteService, IClock clock, IHttpContextAccessor httpContextAccessor)
         {
             _siteService = siteService;
             _clock = clock;
-            _userService = userService;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -64,18 +62,8 @@ namespace OrchardCore.Liquid.Filters
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var user = await _userService.GetAuthenticatedUserAsync(_httpContextAccessor.HttpContext.User) as User;
-
-            if (user?.TimeZone != null)
-            {
-                var userTimeZone = _clock.GetLocalTimeZone(user.TimeZone);
-                return new ObjectValue(_clock.ConvertToTimeZone(value, userTimeZone));
-            }
-            else
-            {
-                var siteTimeZone = _clock.GetLocalTimeZone(siteSettings.TimeZone);
-                return new ObjectValue(_clock.ConvertToTimeZone(value, siteTimeZone));
-            }
+            var siteTimeZone = _clock.GetLocalTimeZone(siteSettings.TimeZone);
+            return new ObjectValue(_clock.ConvertToTimeZone(value, siteTimeZone));
         }
     }
 }

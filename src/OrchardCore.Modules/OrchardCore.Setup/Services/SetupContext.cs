@@ -9,7 +9,6 @@ namespace OrchardCore.Setup.Services
         public string AdminUsername { get; set; }
         public string AdminEmail { get; set; }
         public string AdminPassword { get; set; }
-        public string AdminTimeZone { get; set; }
         public string DatabaseProvider { get; set; }
         public string DatabaseConnectionString { get; set; }
         public string DatabaseTablePrefix { get; set; }

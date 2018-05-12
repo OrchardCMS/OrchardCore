@@ -21,7 +21,6 @@ namespace OrchardCore.Users.Services
             string userName,
             string email,
             string password,
-            string adminTimeZone,
             string dbProvider,
             string dbConnectionString,
             string dbTablePrefix,
@@ -29,7 +28,7 @@ namespace OrchardCore.Users.Services
             Action<string, string> reportError
             )
         {
-            return _userService.CreateUserAsync(userName, email, new string[] { "Administrator" }, password, adminTimeZone, reportError);
+            return _userService.CreateUserAsync(userName, email, new string[] { "Administrator" }, password, reportError);
         }
     }
 }
