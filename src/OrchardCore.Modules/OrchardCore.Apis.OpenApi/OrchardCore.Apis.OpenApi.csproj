@@ -5,10 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.OpenApi" Version="1.0.0-beta016" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="$(MicrosoftAspNetCoreMvcCorePackageVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.ApiExplorer" Version="$(MicrosoftAspNetCoreMvcApiExplorerPackageVersion)" />
-    <PackageReference Include="NSwag.Annotations" Version="11.17.0" />
+    <PackageReference Include="Microsoft.OpenApi" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ApiExplorer" />
+    <PackageReference Include="NSwag.Annotations" />
   </ItemGroup>
 
   <ItemGroup>

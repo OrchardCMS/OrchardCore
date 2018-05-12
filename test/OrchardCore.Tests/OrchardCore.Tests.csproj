@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
 
@@ -83,8 +83,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Assent" Version="1.3.0" />
-    <PackageReference Include="Castle.Core" Version="4.2.1" />
+    <PackageReference Include="Assent" />
+    <PackageReference Include="Castle.Core" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
