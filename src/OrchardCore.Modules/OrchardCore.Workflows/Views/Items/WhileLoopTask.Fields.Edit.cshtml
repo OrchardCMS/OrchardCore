@@ -1,0 +1,8 @@
+@using OrchardCore.Workflows.ViewModels;
+@model WhileLoopTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="ConditionExpression">
+    <label asp-for="ConditionExpression">@T["Condition Expression"] <span asp-validation-for="ConditionExpression"></span></label>
+    <input type="text" asp-for="ConditionExpression" class="form-control code" autofocus />
+    <span class="hint">@T["A JavaScript script expression that evaluates to true or false."]</span>
+</fieldset>

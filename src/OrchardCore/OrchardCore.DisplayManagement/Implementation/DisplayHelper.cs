@@ -8,7 +8,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.DisplayManagement.Implementation
 {
-    public class DisplayHelper : DynamicObject
+    public interface IDisplayHelper
+    {
+        Task<IHtmlContent> ShapeExecuteAsync(object shape);
+    }
+
+    public class DisplayHelper : DynamicObject, IDisplayHelper
     {
         private readonly IHtmlDisplay _htmlDisplay;
         private readonly IShapeFactory _shapeFactory;

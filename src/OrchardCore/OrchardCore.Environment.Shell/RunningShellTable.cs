@@ -168,7 +168,7 @@ namespace OrchardCore.Environment.Shell
             }
 
             // appRelativePath starts with /
-            var firstSegmentIndex = appRelativePath.IndexOf('/', 1);
+            var firstSegmentIndex = appRelativePath.Length > 0 ? appRelativePath.IndexOf('/', 1) : -1;
             if (firstSegmentIndex > -1)
             {
                 return host + appRelativePath.Substring(0, firstSegmentIndex);

@@ -163,7 +163,7 @@ $slow-transition-duration: 300ms !default;
             color: transparent;
         }
 
-        & + .trumbowyg-button-group::before {
+        &::after {
             content: " ";
             display: inline-block;
             width: 1px;
@@ -171,6 +171,10 @@ $slow-transition-duration: 300ms !default;
             margin: 0 5px;
             height: 35px;
             vertical-align: top;
+        }
+
+        &:last-child::after {
+            content: none;
         }
     }
 
@@ -196,6 +200,7 @@ $slow-transition-duration: 300ms !default;
     }
 
     &.trumbowyg-disable button:not(.trumbowyg-not-disable):not(.trumbowyg-active),
+    button.trumbowyg-disable,
     .trumbowyg-disabled & button:not(.trumbowyg-not-disable):not(.trumbowyg-viewHTML-button) {
         opacity: 0.2;
         cursor: default;
@@ -240,10 +245,6 @@ $slow-transition-duration: 300ms !default;
 
     .trumbowyg-right {
         float: right;
-
-        &::before {
-            display: none !important;
-        }
     }
 }
 
@@ -293,7 +294,7 @@ $slow-transition-duration: 300ms !default;
     max-width: 520px;
     width: 100%;
     height: 350px;
-    z-index: 11;
+    z-index: 12;
     overflow: hidden;
     backface-visibility: hidden;
 }
@@ -398,6 +399,17 @@ $slow-transition-duration: 300ms !default;
             }
             &:focus {
                 background: lighten($light-color, 5%);
+            }
+        }
+
+        input[type="checkbox"]{
+            left: 5px;
+            top: 5px;
+            right: auto;
+
+            + .trumbowyg-input-infos span{
+                width: auto;
+                padding-left: 25px;
             }
         }
     }
@@ -556,6 +568,9 @@ body.trumbowyg-body-fullscreen {
             font-style: italic !important;
             color: #555;
         }
+        ul {
+            list-style: disc;
+        }
         ul,
         ol {
             padding-left: 20px !important;
@@ -653,7 +668,7 @@ body.trumbowyg-body-fullscreen {
         }
 
         .trumbowyg-button-group:not(:empty) {
-            &::before {
+            &::after {
                 background-color: lighten($dark-color, 7%);
             }
             .trumbowyg-fullscreen-button svg {
@@ -662,7 +677,7 @@ body.trumbowyg-body-fullscreen {
         }
 
         &.trumbowyg-disable {
-            .trumbowyg-button-group::before {
+            .trumbowyg-button-group::after {
                 background-color: lighten($dark-color, 3%);
             }
         }

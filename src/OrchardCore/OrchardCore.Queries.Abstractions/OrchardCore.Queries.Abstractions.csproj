@@ -5,4 +5,8 @@
     <RootNamespace>OrchardCore.Queries</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+
 </Project>

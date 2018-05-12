@@ -20,11 +20,11 @@ namespace OrchardCore.Queries.Sql.Drivers
         public override IDisplayResult Display(SqlQuery query, IUpdateModel updater)
         {
             return Combine(
-                Shape("SqlQuery_SummaryAdmin", model =>
+                Dynamic("SqlQuery_SummaryAdmin", model =>
                 {
                     model.Query = query;
                 }).Location("Content:5"),
-                Shape("SqlQuery_Buttons_SummaryAdmin", model =>
+                Dynamic("SqlQuery_Buttons_SummaryAdmin", model =>
                 {
                     model.Query = query;
                 }).Location("Actions:2")
@@ -33,7 +33,7 @@ namespace OrchardCore.Queries.Sql.Drivers
 
         public override IDisplayResult Edit(SqlQuery query, IUpdateModel updater)
         {
-            return Shape<SqlQueryViewModel>("SqlQuery_Edit", model =>
+            return Initialize<SqlQueryViewModel>("SqlQuery_Edit", model =>
             {
                 model.Query = query.Template;
                 model.ReturnDocuments = query.ReturnDocuments;

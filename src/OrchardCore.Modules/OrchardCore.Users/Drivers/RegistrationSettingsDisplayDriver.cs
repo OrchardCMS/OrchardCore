@@ -13,8 +13,9 @@ namespace OrchardCore.Users.Drivers
 
         public override IDisplayResult Edit(RegistrationSettings section)
         {
-            return Shape<RegistrationSettings>("RegistrationSettings_Edit", model => {
+            return Initialize<RegistrationSettings>("RegistrationSettings_Edit", model => {
                 model.UsersCanRegister = section.UsersCanRegister;
+                model.EnableLostPassword = section.EnableLostPassword;
 
             }).Location("Content:5").OnGroup(GroupId);
         }

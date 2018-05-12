@@ -13,9 +13,10 @@ namespace OrchardCore.Settings.Drivers
         public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
             return Task.FromResult<IDisplayResult>(
-                    Shape<SiteSettingsViewModel>("Settings_Edit", model =>
+                    Initialize<SiteSettingsViewModel>("Settings_Edit", model =>
                     {
                         model.SiteName = site.SiteName;
+                        model.BaseUrl = site.BaseUrl;
                         model.TimeZone = site.TimeZone;
                         model.TimeZones = TimeZoneInfo.GetSystemTimeZones();
                     }).Location("Content:1").OnGroup(GroupId)
@@ -27,9 +28,10 @@ namespace OrchardCore.Settings.Drivers
             {
                 var model = new SiteSettingsViewModel();
 
-                if (await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.SiteName, t => t.TimeZone))
+                if (await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.SiteName, t => t.BaseUrl, t => t.TimeZone))
                 {
                     site.SiteName = model.SiteName;
+                    site.BaseUrl = model.BaseUrl;
                     site.TimeZone = model.TimeZone;
                 }
             }

@@ -25,7 +25,7 @@ namespace OrchardCore.Contents.Drivers
 
             if (settings.DisplayDateEditor)
             {
-                return Shape<DateEditorViewModel>("CommonPart_Edit__Date", model =>
+                return Initialize<DateEditorViewModel>("CommonPart_Edit__Date", model =>
                 {
                     model.CreatedUtc = part.ContentItem.CreatedUtc;
                 });

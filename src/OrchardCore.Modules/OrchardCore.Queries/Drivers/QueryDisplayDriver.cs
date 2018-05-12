@@ -23,14 +23,14 @@ namespace OrchardCore.Queries.Drivers
         public override IDisplayResult Display(Query query, IUpdateModel updater)
         {
             return Combine(
-                Shape("Query_Fields_SummaryAdmin", model =>
+                Dynamic("Query_Fields_SummaryAdmin", model =>
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
                     model.Schema = query.Schema;
                     model.Query = query;
                 }).Location("Content:1"),
-                Shape("Query_Buttons_SummaryAdmin", model =>
+                Dynamic("Query_Buttons_SummaryAdmin", model =>
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
@@ -43,14 +43,14 @@ namespace OrchardCore.Queries.Drivers
         public override IDisplayResult Edit(Query query, IUpdateModel updater)
         {
             return Combine(
-                Shape<EditQueryViewModel>("Query_Fields_Edit", model =>
+                Initialize<EditQueryViewModel>("Query_Fields_Edit", model =>
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
                     model.Schema = query.Schema;
                     model.Query = query;
                 }).Location("Content:1"),
-                Shape<EditQueryViewModel>("Query_Fields_Buttons", model =>
+                Initialize<EditQueryViewModel>("Query_Fields_Buttons", model =>
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
