@@ -7,14 +7,14 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
 {
     public class RecentBlogPostsQueryTests : IClassFixture<BlogContext>
     {
-        private BlogContext _context;
+        private readonly BlogContext _context;
 
         public RecentBlogPostsQueryTests(BlogContext context)
         {
             _context = context;
         }
 
-        [Fact]
+        [Fact(Skip = "Lucene Require rewriting")]
         public async Task ShouldListBlogPostWhenCallingAQuery()
         {
             var blogPostContentItemId = await _context
