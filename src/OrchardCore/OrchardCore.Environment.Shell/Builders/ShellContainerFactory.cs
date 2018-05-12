@@ -1,27 +1,36 @@
 using System;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
     public class ShellContainerFactory : IShellContainerFactory
     {
+        private readonly IFeatureInfo _applicationFeature;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IServiceCollection _applicationServices;
 
         public ShellContainerFactory(
+            IHostingEnvironment hostingEnvironment,
+            IExtensionManager extensionManager,
             IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory,
             ILogger<ShellContainerFactory> logger,
             IServiceCollection applicationServices)
         {
+            _applicationFeature = extensionManager.GetFeatures().FirstOrDefault(
+                f => f.Id == hostingEnvironment.ApplicationName);
+
             _applicationServices = applicationServices;
             _serviceProvider = serviceProvider;
             _loggerFactory = loggerFactory;
@@ -33,6 +42,11 @@ namespace OrchardCore.Environment.Shell.Builders
             services.TryAddScoped<IShellStateUpdater, ShellStateUpdater>();
             services.TryAddScoped<IShellStateManager, NullShellStateManager>();
             services.AddScoped<IShellDescriptorManagerEventHandler, ShellStateCoordinator>();
+
+            if (_applicationFeature != null)
+            {
+                services.AddTransient(sp => new ShellFeature(_applicationFeature.Id));
+            }
         }
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
@@ -44,7 +58,7 @@ namespace OrchardCore.Environment.Shell.Builders
             tenantServiceCollection.AddSingleton(blueprint);
 
             AddCoreServices(tenantServiceCollection);
-            
+
             // Execute IStartup registrations
 
             // TODO: Use StartupLoader in RTM and then don't need to register the classes anymore then
@@ -79,17 +93,20 @@ namespace OrchardCore.Environment.Shell.Builders
             // Let any module add custom service descriptors to the tenant
             foreach (var startup in startups)
             {
-                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value.FeatureInfo;
-                featureAwareServiceCollection.SetCurrentFeature(feature);
+                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FeatureInfo;
 
-                startup.ConfigureServices(featureAwareServiceCollection);
+                if (feature != null || _applicationFeature != null)
+                {
+                    featureAwareServiceCollection.SetCurrentFeature(feature ?? _applicationFeature);
+                    startup.ConfigureServices(featureAwareServiceCollection);
+                }
             }
 
             (moduleServiceProvider as IDisposable).Dispose();
 
             // add already instanciated services like DefaultOrchardHost
             var applicationServiceDescriptors = _applicationServices.Where(x => x.Lifetime == ServiceLifetime.Singleton);
-            
+
             var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
 
             // Register all DIed types in ITypeFeatureProvider
@@ -113,7 +130,7 @@ namespace OrchardCore.Environment.Shell.Builders
                     }
                 }
             }
-            
+
             return shellServiceProvider;
         }
     }
