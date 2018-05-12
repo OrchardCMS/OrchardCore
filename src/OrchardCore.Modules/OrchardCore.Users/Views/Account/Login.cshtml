@@ -5,9 +5,8 @@
 @inject ISiteService _site
 
 @{
-    var settings = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>();
-    var userCanRegister = settings.UsersCanRegister;
-    var enableLostPassword = settings.EnableLostPassword;
+    var userCanRegister = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister;
+    var enableLostPassword = (await _site.GetSiteSettingsAsync()).As<PasswordSettings>().EnableLostPassword;
 }
 
 <div class="row">

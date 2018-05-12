@@ -30,9 +30,15 @@ namespace OrchardCore.Users
                             .LocalNav()
                          ))
                     .Add(T["Settings"], settings => settings
-                        .Add(T["Users"], users => users
+                        .Add(T["Users"], T["Users"], users => users
                             .Permission(Permissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RegistrationSettingsDisplayDriver.GroupId })
+                            .LocalNav()
+                        ))
+                    .Add(T["Settings"], settings => settings
+                        .Add(T["Password"], T["Password"], password => password
+                            .Permission(Permissions.ManageUsers)
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = PasswordSettingsDisplayDriver.GroupId })
                             .LocalNav()
                         )));
         }

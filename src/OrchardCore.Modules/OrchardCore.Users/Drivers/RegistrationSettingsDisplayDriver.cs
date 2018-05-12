@@ -9,14 +9,12 @@ namespace OrchardCore.Users.Drivers
 {
     public class RegistrationSettingsDisplayDriver : SectionDisplayDriver<ISite, RegistrationSettings>
     {
-        public const string GroupId = "registrationSettings";
+        public const string GroupId = "RegistrationSettings";
 
         public override IDisplayResult Edit(RegistrationSettings section)
         {
             return Initialize<RegistrationSettings>("RegistrationSettings_Edit", model => {
                 model.UsersCanRegister = section.UsersCanRegister;
-                model.EnableLostPassword = section.EnableLostPassword;
-
             }).Location("Content:5").OnGroup(GroupId);
         }
 

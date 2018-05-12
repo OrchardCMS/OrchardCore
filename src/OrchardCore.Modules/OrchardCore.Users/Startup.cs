@@ -31,7 +31,6 @@ namespace OrchardCore.Users
     {
         private const string LoginPath = "Login";
         private const string ChangePasswordPath = "ChangePassword";
-        private const string ForgotPasswordPath = "ForgotPassword";
 
         private readonly string _tenantName;
         private readonly string _tenantPrefix;
@@ -55,12 +54,6 @@ namespace OrchardCore.Users
                 areaName: "OrchardCore.Users",
                 template: ChangePasswordPath,
                 defaults: new { controller = "Account", action = "ChangePassword" }
-            );
-            routes.MapAreaRoute(
-                name: "ForgotPassword",
-                areaName: "OrchardCore.Users",
-                template: ForgotPasswordPath,
-                defaults: new { controller = "Account", action = "ForgotPassword" }
             );
         }
 
@@ -146,8 +139,29 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
-            
+
             services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
+        }
+
+        [Feature("OrchardCore.Users.Password")]
+        public class PasswordStartup : StartupBase
+        {
+            private const string ForgotPasswordPath = "ForgotPassword";
+
+            public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+            {
+                routes.MapAreaRoute(
+                    name: "ForgotPassword",
+                    areaName: "OrchardCore.Users",
+                    template: ForgotPasswordPath,
+                    defaults: new { controller = "Password", action = "ForgotPassword" }
+                );
+            }
+
+            public override void ConfigureServices(IServiceCollection services)
+            {
+                services.AddScoped<IDisplayDriver<ISite>, PasswordSettingsDisplayDriver>();
+            }
         }
     }
 }

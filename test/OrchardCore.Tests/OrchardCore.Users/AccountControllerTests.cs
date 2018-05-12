@@ -42,11 +42,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 MockSignInManager(mockUserManager).Object,
                 mockUserManager,
                 Mock.Of<ILogger<AccountController>>(),
-                mockSiteService,
-                Mock.Of<ISmtpService>(),
-                Mock.Of<IShapeFactory>(),
-                Mock.Of<IHtmlDisplay>(),
-                Mock.Of<IStringLocalizer<AccountController>>());
+                mockSiteService);
 
             var result = await controller.Register();
             Assert.IsType<NotFoundResult>(result);
@@ -72,11 +68,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 MockSignInManager(mockUserManager).Object,
                 mockUserManager,
                 Mock.Of<ILogger<AccountController>>(),
-                mockSiteService,
-                Mock.Of<ISmtpService>(),
-                Mock.Of<IShapeFactory>(),
-                Mock.Of<IHtmlDisplay>(),
-                Mock.Of<IStringLocalizer<AccountController>>());
+                mockSiteService);
 
 
             var result = await controller.Register();
