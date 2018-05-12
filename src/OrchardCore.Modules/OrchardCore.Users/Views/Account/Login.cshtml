@@ -52,7 +52,7 @@
                 }
                 @if (enableLostPassword) {
                 <p>
-                    <a asp-action="ForgotPassword">@T["Forgot your password?"]</a>
+                    <a asp-controller="Password" asp-action="ForgotPassword">@T["Forgot your password?"]</a>
                 </p>
                 }
             </form>

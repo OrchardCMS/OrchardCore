@@ -97,7 +97,7 @@ namespace OrchardCore.Users.Controllers
             }
 
             // returns to confirmation page anyway: we don't want to let scrapers know if a username or an email exist
-            return RedirectToLocal(Url.Action("ForgotPasswordConfirmation"));
+            return RedirectToLocal(Url.Action("ForgotPasswordConfirmation", "Password"));
         }
 
         [HttpGet]
@@ -136,7 +136,7 @@ namespace OrchardCore.Users.Controllers
             {
                 if (await _userService.ResetPasswordAsync(model.Email, Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)), model.NewPassword, (key, message) => ModelState.AddModelError(key, message)))
                 {
-                    return RedirectToLocal(Url.Action("ResetPasswordConfirmation"));
+                    return RedirectToLocal(Url.Action("ResetPasswordConfirmation", "Password"));
                 }
             }
 

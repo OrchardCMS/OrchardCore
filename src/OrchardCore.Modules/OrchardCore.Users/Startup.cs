@@ -142,26 +142,48 @@ namespace OrchardCore.Users
 
             services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
         }
+    }
+    
+    [Feature("OrchardCore.Users.Password")]
+    public class PasswordStartup : StartupBase
+    {
+        private const string ForgotPasswordPath = "ForgotPassword";
+        private const string ForgotPasswordConfirmationPath = "ForgotPasswordConfirmation";
+        private const string ResetPasswordPath = "ResetPassword";
+        private const string ResetPasswordConfirmationPath = "ForgotPasswordConfirmation";
 
-        [Feature("OrchardCore.Users.Password")]
-        public class PasswordStartup : StartupBase
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            private const string ForgotPasswordPath = "ForgotPassword";
+            routes.MapAreaRoute(
+                name: "ForgotPassword",
+                areaName: "OrchardCore.Users",
+                template: ForgotPasswordPath,
+                defaults: new { controller = "Password", action = "ForgotPassword" }
+            );
+            routes.MapAreaRoute(
+                name: "ForgotPasswordConfirmation",
+                areaName: "OrchardCore.Users",
+                template: ForgotPasswordConfirmationPath,
+                defaults: new { controller = "Password", action = "ForgotPasswordConfirmation" }
+            );
+            routes.MapAreaRoute(
+                name: "ResetPassword",
+                areaName: "OrchardCore.Users",
+                template: ResetPasswordPath,
+                defaults: new { controller = "Password", action = "ResetPassword" }
+            );
+            routes.MapAreaRoute(
+                name: "ResetPasswordConfirmation",
+                areaName: "OrchardCore.Users",
+                template: ResetPasswordConfirmationPath,
+                defaults: new { controller = "Password", action = "ResetPasswordConfirmation" }
+            );
+        }
 
-            public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
-            {
-                routes.MapAreaRoute(
-                    name: "ForgotPassword",
-                    areaName: "OrchardCore.Users",
-                    template: ForgotPasswordPath,
-                    defaults: new { controller = "Password", action = "ForgotPassword" }
-                );
-            }
-
-            public override void ConfigureServices(IServiceCollection services)
-            {
-                services.AddScoped<IDisplayDriver<ISite>, PasswordSettingsDisplayDriver>();
-            }
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<INavigationProvider, PasswordAdminMenu>();
+            services.AddScoped<IDisplayDriver<ISite>, PasswordSettingsDisplayDriver>();
         }
     }
 }
