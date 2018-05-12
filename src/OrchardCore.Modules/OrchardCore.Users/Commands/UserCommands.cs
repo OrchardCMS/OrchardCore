@@ -28,12 +28,9 @@ namespace OrchardCore.Users.Commands
         [OrchardSwitch]
         public string Roles { get; set; }
 
-        [OrchardSwitch]
-        public string TimeZone { get; set; }
-
         [CommandName("createUser")]
-        [CommandHelp("createUser /UserName:<username> /Password:<password> /Email:<email> /Roles:{rolename,rolename,...} /TimeZone:<timezone>\r\n\t" + "Creates a new User")]
-        [OrchardSwitches("UserName,Password,Email,Roles,TimeZone")]
+        [CommandHelp("createUser /UserName:<username> /Password:<password> /Email:<email> /Roles:{rolename,rolename,...}" + "Creates a new User")]
+        [OrchardSwitches("UserName,Password,Email,Roles")]
         public void CreateUser()
         {
             var user = _userService.CreateUserAsync(
@@ -41,7 +38,6 @@ namespace OrchardCore.Users.Commands
                     Email,
                     (Roles ?? "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToArray(),
                     Password,
-                    TimeZone,
                     (key, message) => Context.Output.WriteLine(message)).GetAwaiter().GetResult();
 
             if (user != null)

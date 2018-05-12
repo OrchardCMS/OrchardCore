@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Users.ViewModels
 {
@@ -22,10 +21,6 @@ namespace OrchardCore.Users.ViewModels
 
         public bool DisplayPasswordFields { get; set; }
 
-        public string TimeZone { get; set; }
-
         public RoleViewModel[] Roles { get; set; }
-
-        public ITimeZone[] TimeZones { get; set; }
     }
 }

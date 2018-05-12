@@ -23,7 +23,5 @@ namespace OrchardCore.Users.ViewModels
         [DataType(DataType.Password)]
         [Compare("Password")]
         public string ConfirmPassword { get; set; }
-
-        public string TimeZone { get; set; }
     }
 }

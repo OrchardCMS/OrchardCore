@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Modules;
 using OrchardCore.Security.Services;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -19,7 +18,6 @@ namespace OrchardCore.Users.Drivers
         private readonly UserManager<IUser> _userManager;
         private readonly IUserService _userService;
         private readonly IRoleProvider _roleProvider;
-        private readonly IClock _clock;
 
         private readonly IStringLocalizer T;
 
@@ -27,13 +25,11 @@ namespace OrchardCore.Users.Drivers
             UserManager<IUser> userManager,
             IUserService userService,
             IRoleProvider roleProvider,
-            IClock clock,
             IStringLocalizer<UserDisplayDriver> stringLocalizer)
         {
             _userManager = userManager;
             _userService = userService;
             _roleProvider = roleProvider;
-            _clock = clock;
 
             T = stringLocalizer;
         }
@@ -53,15 +49,12 @@ namespace OrchardCore.Users.Drivers
                 var roleNames = await GetRoleNamesAsync();
                 var userRoleNames = await _userManager.GetRolesAsync(user);
                 var roles = roleNames.Select(x => new RoleViewModel { Role = x, IsSelected = userRoleNames.Contains(x, StringComparer.OrdinalIgnoreCase) }).ToArray();
-                var timeZones = _clock.GetTimeZones(String.Empty);
 
                 model.Id = await _userManager.GetUserIdAsync(user);
                 model.UserName = await _userManager.GetUserNameAsync(user);
                 model.Email = await _userManager.GetEmailAsync(user);
                 model.Roles = roles;
                 model.DisplayPasswordFields = await IsNewUser(model.Id);
-                model.TimeZone = user.TimeZone;
-                model.TimeZones = timeZones;
             }).Location("Content:1");
         }
 
@@ -76,7 +69,6 @@ namespace OrchardCore.Users.Drivers
 
             model.UserName = model.UserName?.Trim();
             model.Email = model.Email?.Trim();
-            user.TimeZone = model.TimeZone;
 
             if (await IsNewUser(model.Id))
             {
@@ -91,7 +83,7 @@ namespace OrchardCore.Users.Drivers
                 }
 
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
-                await _userService.CreateUserAsync(model.UserName, model.Email, roleNames, model.Password, model.TimeZone, (key, message) => context.Updater.ModelState.AddModelError(key, message));
+                await _userService.CreateUserAsync(model.UserName, model.Email, roleNames, model.Password, (key, message) => context.Updater.ModelState.AddModelError(key, message));
             }
             else
             {
