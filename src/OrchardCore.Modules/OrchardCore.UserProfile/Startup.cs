@@ -29,7 +29,6 @@ namespace OrchardCore.UserProfile
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IContentDefinitionManager, ContentDefinitionManager>();
-            services.AddScoped<IDataMigration, Migrations>();
         }
     }
 }
