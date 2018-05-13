@@ -10,9 +10,16 @@
                         <h1>{{ Model.ContentItem.Content.TitlePart.Title }}</h1>
                         <h2 class="subheading">{{ Model.ContentItem.Content.BlogPost.Subtitle.Text }}</h2>
                         <span class="meta">
-                            {% assign format = "MMMM dd, yyyy" | t %}
+                            {% assign format = "MMMM dd, yyyy H:mm:ss" | t %}
                             {% assign dateTime = "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc, format: format | shape_stringify %}
                             {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
+                        </span>
+                        <span class="meta">
+                            {% assign dateTime = "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc | shape_stringify %}
+                            {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
+                        </span>
+                        <span class="meta">
+                        Now : {{ "now" | local | date: "%c" }}
                         </span>
                     </div>
                 </div>

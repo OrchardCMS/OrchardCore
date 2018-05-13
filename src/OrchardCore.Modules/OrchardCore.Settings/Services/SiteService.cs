@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.Settings.Services
@@ -17,15 +18,17 @@ namespace OrchardCore.Settings.Services
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IClock _clock;
         private const string SiteCacheKey = "SiteService";
-        
+
         public SiteService(
             ISignal signal,
             IServiceProvider serviceProvider,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache, IClock clock)
         {
             _signal = signal;
             _serviceProvider = serviceProvider;
+            _clock = clock;
             _memoryCache = memoryCache;
         }
 
@@ -53,7 +56,7 @@ namespace OrchardCore.Settings.Services
                             { 
                                 SiteSalt = Guid.NewGuid().ToString("N"),
                                 SiteName = "My Orchard Project Application",
-                                TimeZone = TimeZoneInfo.Local.Id,
+                                TimeZone = _clock.GetLocalTimeZone(string.Empty).Id,
                                 PageSize = 10,
                                 MaxPageSize = 100,
                                 MaxPagedCount = 0

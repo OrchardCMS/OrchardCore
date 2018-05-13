@@ -221,6 +221,7 @@ namespace OrchardCore.Setup.Services
                         context.DatabaseProvider,
                         context.DatabaseConnectionString,
                         context.DatabaseTablePrefix,
+                        context.SiteTimeZone,
                         reportError
                     ), logger);
 

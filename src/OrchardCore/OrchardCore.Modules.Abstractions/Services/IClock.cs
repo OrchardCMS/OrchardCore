@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace OrchardCore.Modules
 {
@@ -13,5 +13,11 @@ namespace OrchardCore.Modules
 		/// Gets the current <see cref="DateTime"/> of the system, expressed in Utc
 		/// </summary>
 		DateTime UtcNow { get; }
+
+        ITimeZone[] GetTimeZones(string countryCode);
+        ITimeZone GetLocalTimeZone(string timeZone);
+        DateTimeOffset ConvertToTimeZone(DateTime dateTime, ITimeZone timeZone);
+        DateTimeOffset ConvertToTimeZone(DateTimeOffset? dateTimeOffset, ITimeZone timeZone);
+
     }
 }

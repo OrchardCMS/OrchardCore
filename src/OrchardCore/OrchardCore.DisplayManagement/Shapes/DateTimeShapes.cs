@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.Modules;
@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Settings;
+using System.Globalization;
+using Microsoft.AspNetCore.Http;
+using OrchardCore.Users.Services;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
@@ -87,20 +90,17 @@ namespace OrchardCore.DisplayManagement.Shapes
         [Shape]
         public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format)
         {
-            if (Utc == null)
-            {
-                Utc = _clock.UtcNow;
-            }
-
-            var timeZone = TimeZoneInfo.FindSystemTimeZoneById((await _siteService.GetSiteSettingsAsync()).TimeZone);
-            var local = TimeZoneInfo.ConvertTime(Utc.Value.ToUniversalTime(), TimeZoneInfo.Utc, timeZone);
+            DateTimeOffset zonedTime;
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var siteTimeZone = _clock.GetLocalTimeZone(siteSettings.TimeZone);
+            zonedTime = _clock.ConvertToTimeZone(Utc, siteTimeZone);
 
             if (Format == null)
             {
                 Format = T[LongDateTimeFormat, LongDateTimeFormat, 0].Value;
             }
 
-            return Html.Raw(Html.Encode(local.ToString(Format)));
+            return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.InvariantCulture)));
         }
     }
 

@@ -29,7 +29,7 @@ namespace OrchardCore.Users.Commands
         public string Roles { get; set; }
 
         [CommandName("createUser")]
-        [CommandHelp("createUser /UserName:<username> /Password:<password> /Email:<email> /Roles:{rolename,rolename,...}\r\n\t" + "Creates a new User")]
+        [CommandHelp("createUser /UserName:<username> /Password:<password> /Email:<email> /Roles:{rolename,rolename,...}" + "Creates a new User")]
         [OrchardSwitches("UserName,Password,Email,Roles")]
         public void CreateUser()
         {

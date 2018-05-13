@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Setup.Events;
@@ -25,6 +25,7 @@ namespace OrchardCore.Settings.Services
             string dbProvider,
             string dbConnectionString,
             string dbTablePrefix,
+            string siteTimeZone,
             Action<string, string> reportError
             )
         {
@@ -32,6 +33,7 @@ namespace OrchardCore.Settings.Services
             var siteSettings = await _setupService.GetSiteSettingsAsync();
             siteSettings.SiteName = siteName;
             siteSettings.SuperUser = userName;
+            siteSettings.TimeZone = siteTimeZone;
             await _setupService.UpdateSiteSettingsAsync(siteSettings);
 
             // TODO: Add Encryption Settings in
