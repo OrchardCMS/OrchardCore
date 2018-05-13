@@ -7018,9 +7018,15 @@ span.CodeMirror-selectedtext {
     width: 320px; }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin li, .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin label, .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin a {
     min-height: 40px; }
-  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > ul {
+  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > div {
     position: absolute;
     left: 60px;
+    width: 290px;
+    padding-bottom: 30px;
+    padding-right: 30px;
+    padding-top: 70px;
+    top: -30px; }
+  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > div > ul {
     width: 260px;
     top: 40px; }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > label {
@@ -7045,6 +7051,19 @@ span.CodeMirror-selectedtext {
     background-color: #495057; }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > label span:last-child {
     color: rgba(255, 0, 0, 0); }
+  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin .hover-free-zone {
+    position: absolute;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    font-size: 1px;
+    margin-left: -999px;
+    bottom: -20px;
+    top: auto;
+    z-index: 1000; }
+  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li:hover > div.hover-free-zone {
+    margin-left: -20px;
+    top: auto; }
 
 html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > label {
   background-color: #f8f9fa !important; }

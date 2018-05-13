@@ -6641,7 +6641,7 @@ function setCompactStatus() {
     // When leftbar is expanded  all ul tags are collapsed.
     // When leftbar is compacted we don't want the first level collapsed. 
     // We want it expanded so that hovering over the root buttons shows the full submenu
-    $('#left-nav ul.menu-admin > li > ul').removeClass('collapse');
+    $('#left-nav ul.menu-admin > li > div > ul').removeClass('collapse');
     // When hovering, don't want toggling when clicking on label
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', '');
     $('#left-nav').removeClass('ps');
@@ -6656,7 +6656,7 @@ function unSetCompactStatus() {
     $('body').removeClass('left-sidebar-compact');
 
     // resetting what we disabled for compact state
-    $('#left-nav ul.menu-admin > li > ul').addClass('collapse');    
+    $('#left-nav ul.menu-admin > li > div > ul').addClass('collapse');    
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', 'collapse');
     $('#left-nav').addClass('ps');
 

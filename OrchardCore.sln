@@ -301,6 +301,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{184139CF
 		src\OrchardCore.Build\Dependencies.props = src\OrchardCore.Build\Dependencies.props
 		NuGet.config = NuGet.config
 		src\OrchardCore.Build\OrchardCore.Commons.props = src\OrchardCore.Build\OrchardCore.Commons.props
+		src\OrchardCore.Build\OrchardCore.Commons.targets = src\OrchardCore.Build\OrchardCore.Commons.targets
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Email", "src\OrchardCore.Modules\OrchardCore.Email\OrchardCore.Email.csproj", "{B3E9EC5B-171E-43FB-8620-7FC24D0A985A}"

@@ -26,6 +26,10 @@
                 foreColor: 'Couleur du texte',
                 backColor: 'Couleur de fond'
             },
+            nl: {
+                foreColor: 'Tekstkleur',
+                backColor: 'Achtergrondkleur'
+            },
             sk: {
                 foreColor: 'Farba textu',
                 backColor: 'Farba pozadia'
@@ -41,9 +45,14 @@
             ja: {
                 foreColor: '文字色',
                 backColor: '背景色'
+            },
+            tr: {
+                foreColor: 'Yazı rengi',
+                backColor: 'Arkaplan rengi'
             }
         }
     });
+
     // jshint camelcase:true
 
 
@@ -65,7 +74,7 @@
     function colorTagHandler(element, trumbowyg) {
         var tags = [];
 
-        if(!element.style){
+        if (!element.style) {
             return tags;
         }
 
