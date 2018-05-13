@@ -84,12 +84,12 @@ namespace OrchardCore.Forms
                 .WithPart("ButtonPart")
                 .Stereotype("Widget"));
 
-            // Captcha
-            _contentDefinitionManager.AlterPartDefinition("CaptchaPart", part => part
+            // ReCaptcha
+            _contentDefinitionManager.AlterPartDefinition("ReCaptchaPart", part => part
                 .WithDescription("Provides captcha properties."));
 
-            _contentDefinitionManager.AlterTypeDefinition("Captcha", type => type
-                .WithPart("CaptchaPart")
+            _contentDefinitionManager.AlterTypeDefinition("ReCaptcha", type => type
+                .WithPart("ReCaptchaPart")
                 .Stereotype("Widget"));
 
             return 1;

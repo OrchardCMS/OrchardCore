@@ -12,6 +12,7 @@
 }
 
 <form class="flow flow-form" action="@formPart.Action" method="@formPart.Method">
+    @Html.AntiForgeryToken()
     @foreach (var widget in Model.FlowPart.Widgets)
     {
         var widgetContent = await ContentItemDisplayManager.BuildDisplayAsync(widget, Model.BuildPartDisplayContext.Updater, Model.BuildPartDisplayContext.DisplayType, Model.BuildPartDisplayContext.GroupId);

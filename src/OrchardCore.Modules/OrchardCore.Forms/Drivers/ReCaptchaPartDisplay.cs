@@ -21,11 +21,25 @@ namespace OrchardCore.Forms.Drivers
         public override async Task<IDisplayResult> DisplayAsync(ReCaptchaPart part, BuildPartDisplayContext context)
         {
             // TODO: We need an InitializeAsync so we can do this sort of initialization from within the shape factory..
-            var settings = await _siteService.GetSiteSettingsAsync();
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-            return Initialize<CaptchaPartViewModel>(m =>
+            return Initialize<ReCaptchaPartViewModel>("ReCaptchaPart", m =>
             {
-                m.SiteKey = settings.As<ReCaptchaSettings>().SiteKey;
+                var settings = siteSettings.As<ReCaptchaSettings>();
+                m.SettingsAreConfigured = settings.IsValid();
+                m.SiteKey = settings.SiteKey;
+            }).Location("Detail", "Content");
+        }
+
+        public override async Task<IDisplayResult> EditAsync(ReCaptchaPart part, BuildPartEditorContext context)
+        {
+            // TODO: We need an InitializeAsync so we can do this sort of initialization from within the shape factory..
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+
+            return Initialize<ReCaptchaPartEditViewModel>("ReCaptchaPart_Edit", m =>
+            {
+                var settings = siteSettings.As<ReCaptchaSettings>();
+                m.SettingsAreConfigured = settings.IsValid();
             });
         }
     }

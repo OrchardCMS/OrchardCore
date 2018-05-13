@@ -23,7 +23,7 @@ namespace OrchardCore.Forms.Drivers
             });
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(LabelPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(LabelPart part, IUpdateModel updater, UpdatePartEditorContext context)
         {
             var viewModel = new LabelPartEditViewModel();
 
@@ -32,7 +32,7 @@ namespace OrchardCore.Forms.Drivers
                 part.For = viewModel.For?.Trim();
             }
 
-            return Edit(part);
+            return Edit(part, context);
         }
     }
 }

@@ -1,5 +1,11 @@
 @using OrchardCore.Forms.ViewModels
-@model ShapeViewModel<CaptchaPartViewModel>
-
-<div class="g-recaptcha" data-sitekey="@Model.Value.SiteKey"></div>
-<script at="Head" src="https://www.google.com/recaptcha/api.js"></script>
+@model ReCaptchaPartViewModel
+@if (Model.SettingsAreConfigured)
+{
+    <div class="g-recaptcha" data-sitekey="@Model.SiteKey"></div>
+    <script at="Head" src="https://www.google.com/recaptcha/api.js"></script>
+}
+else
+{
+    <div class="alert alert-warning">@T["reCaptcha settings are not configured."]</div>
+}

@@ -8,11 +8,12 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Entities.DisplayManagement\OrchardCore.Entities.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Navigation\OrchardCore.Environment.Navigation.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Flows\OrchardCore.Flows.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Workflows\" />
+    <Folder Include="Workflows\ViewModels\" />
   </ItemGroup>
 
 </Project>

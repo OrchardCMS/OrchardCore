@@ -1,0 +1,13 @@
+@using OrchardCore.Forms.Drivers
+@using OrchardCore.Forms.ViewModels
+@model ReCaptchaPartEditViewModel
+@{
+    if (Model.SettingsAreConfigured)
+    {
+        <div class="alert alert-success"><a class="alert-link" target="_blank" asp-controller="Admin" asp-action="Index" asp-area="OrchardCore.Settings" asp-route-groupId="@ReCaptchaSettingsDisplay.GroupId">reCaptcha settings</a> are configured.</div>
+    }
+    else
+    {
+        <div class="alert alert-warning"><a class="alert-link" target="_blank" asp-controller="Admin" asp-action="Index" asp-area="OrchardCore.Settings" asp-route-groupId="@ReCaptchaSettingsDisplay.GroupId">reCaptcha settings</a> are not configured. The captcha will not be displayed.</div>
+    }
+}

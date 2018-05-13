@@ -1,7 +1,8 @@
 namespace OrchardCore.Forms.ViewModels
 {
-    public class CaptchaPartViewModel
+    public class ReCaptchaPartViewModel
     {
         public string SiteKey { get; set; }
+        public bool SettingsAreConfigured { get; set; }
     }
 }
