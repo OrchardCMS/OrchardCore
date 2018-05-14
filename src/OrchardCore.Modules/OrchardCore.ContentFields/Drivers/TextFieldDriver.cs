@@ -11,7 +11,7 @@ namespace OrchardCore.ContentFields.Fields
     {
         public override IDisplayResult Display(TextField field, BuildFieldDisplayContext context)
         {
-            return Shape<DisplayTextFieldViewModel>("TextField", model =>
+            return Initialize<DisplayTextFieldViewModel>("TextField", model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -23,7 +23,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(TextField field, BuildFieldEditorContext context)
         {
-            return Shape<EditTextFieldViewModel>("TextField_Edit", model =>
+            return Initialize<EditTextFieldViewModel>("TextField_Edit", model =>
             {
                 model.Text = field.Text;
 

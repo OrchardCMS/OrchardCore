@@ -22,7 +22,7 @@ namespace OrchardCore.Markdown.Drivers
 
         public override IDisplayResult Display(MarkdownField field, BuildFieldDisplayContext context)
         {
-            return Shape<MarkdownFieldViewModel>("MarkdownField", async model =>
+            return Initialize<MarkdownFieldViewModel>("MarkdownField", async model =>
             {
                 var templateContext = new TemplateContext();
                 templateContext.SetValue("ContentItem", field.ContentItem);
@@ -45,7 +45,7 @@ namespace OrchardCore.Markdown.Drivers
 
         public override IDisplayResult Edit(MarkdownField field, BuildFieldEditorContext context)
         {
-            return Shape<EditMarkdownFieldViewModel>("MarkdownField_Edit", model =>
+            return Initialize<EditMarkdownFieldViewModel>("MarkdownField_Edit", model =>
             {
                 model.Markdown = field.Markdown;
                 model.Field = field;

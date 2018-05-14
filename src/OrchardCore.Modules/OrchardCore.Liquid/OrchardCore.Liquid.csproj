@@ -16,8 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fluid.Core" Version="$(FluidCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(MicrosoftExtensionsDependencyInjectionAbstractionsPackageVersion)" />
+    <PackageReference Include="Fluid.Core" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers\" />
   </ItemGroup>
 
 </Project>

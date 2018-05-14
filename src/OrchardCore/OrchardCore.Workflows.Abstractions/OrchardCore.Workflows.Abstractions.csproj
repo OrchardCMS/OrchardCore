@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>OrchardCore.Workflows</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+    <ProjectReference Include="..\OrchardCore.Entities\OrchardCore.Entities.csproj" />
+    <ProjectReference Include="..\OrchardCore.Liquid.Abstractions\OrchardCore.Liquid.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Scripting.Abstractions\OrchardCore.Scripting.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

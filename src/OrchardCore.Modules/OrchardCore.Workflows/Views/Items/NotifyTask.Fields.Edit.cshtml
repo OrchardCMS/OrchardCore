@@ -1,0 +1,15 @@
+@using OrchardCore.DisplayManagement.Notify
+@using OrchardCore.Workflows.ViewModels;
+@model NotifyTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="NotificationType">
+    <label asp-for="NotificationType">@T["Notification Type"] <span asp-validation-for="NotificationType"></span></label>
+    <select asp-for="NotificationType" class="form-control" asp-items="Html.GetEnumSelectList<NotifyType>()"></select>
+    <span class="hint">@T["The notification type."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Message">
+    <label asp-for="Message">@T["Message"] <span asp-validation-for="Message"></span></label>
+    <input type="text" asp-for="Message" class="form-control code" />
+    <span class="hint">@T["The message to show. With Liquid support."]</span>
+</fieldset>

@@ -24,11 +24,11 @@ namespace OrchardCore.Demo.ContentElementDisplays
 
             return Combine(
                 // A new shape is created and the properties of the object are bound to it when rendered
-                Shape("TestContentPartA", testContentPart).Location("Detail", "Content"),
+                Copy("TestContentPartA", testContentPart).Location("Detail", "Content"),
                 // New shape, no initialization, custom location
-                Shape("LowerDoll").Location("Detail", "Footer"),
+                Dynamic("LowerDoll").Location("Detail", "Footer"),
                 // New shape
-                Shape("TestContentPartA",
+                Factory("TestContentPartA",
                     async ctx => (await ctx.New.TestContentPartA()).Creating(_creating++),
                     shape =>
                     {
@@ -38,10 +38,10 @@ namespace OrchardCore.Demo.ContentElementDisplays
                     .Location("Detail", "Content")
                     .Cache("lowerdoll2", cache => cache.WithExpiryAfter(TimeSpan.FromSeconds(5))),
                 // A strongly typed shape model is used and initialized when rendered
-                Shape<TestContentPartAShape>(shape => { shape.Line = "Strongly typed shape"; return Task.CompletedTask; })
+                Initialize<TestContentPartAShape>(shape => { shape.Line = "Strongly typed shape"; })
                     .Location("Detail", "Content:2"),
                 // Cached shape
-                Shape("LowerDoll")
+                Dynamic("LowerDoll")
                     .Location("Detail", "/Footer")
                     .Cache("lowerdoll", cache => cache.WithExpiryAfter(TimeSpan.FromSeconds(5)))
                 );
@@ -56,7 +56,7 @@ namespace OrchardCore.Demo.ContentElementDisplays
                 return null;
             }
 
-            return Shape("TestContentPartA_Edit", testContentPart).Location("Content");
+            return Copy("TestContentPartA_Edit", testContentPart).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, IUpdateModel updater)
@@ -80,7 +80,7 @@ namespace OrchardCore.Demo.ContentElementDisplays
                 }
             }
 
-            return Shape("TestContentPartA_Edit", testContentPart).Location("Content");
+            return Copy("TestContentPartA_Edit", testContentPart).Location("Content");
         }
     }
 }

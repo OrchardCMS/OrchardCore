@@ -59,10 +59,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     parents: function () {
                         var p = [];
-                        parent = this.selectedFolder;
-                        while (parent && parent != root) {
-                            p.unshift(parent);
-                            parent = parent.parent;
+                        parentFolder = self.selectedFolder;
+                        while (parentFolder && parentFolder != root) {
+                            p.unshift(parentFolder);
+                            parentFolder = parentFolder.parent;                            
                         }
                         return p;
                     },
@@ -72,6 +72,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 },
                 mounted: function () {
                     this.selectRoot();
+                    this.$refs.rootFolder.toggle();
                 },
                 methods: {
                     selectFolder: function (folder) {
@@ -160,6 +161,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     self.mediaItems.splice(index, 1)
                                     bus.$emit('mediaDeleted', media);
                                 }
+                                self.selectedMedia = null;
                             },
                             error: function (error) {
                                 console.error(error.responseText);
