@@ -127,7 +127,7 @@
                         </td>
                         <td class=" text-center" style="width:200px;">
                             <a href="javascript:;" class="btn btn-light btn-sm mr-0" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i> @T["Edit"]</a>
-                            <a href="javascript:;" class="btn btn-light btn-sm" v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i>@T["Delete"]</a>
+                            <a href="javascript:;" class="btn btn-light btn-sm" v-on:click.stop="deleteMediaItem(media)"><i class="fa fa-trash"></i>@T["Delete"]</a>
                         </td>
                     </tr>
                 </tbody>
@@ -147,7 +147,7 @@
                     </div>
                     <div class="media-container-main-item-title">
                         <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button mr-4" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a>
-                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button" v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>
+                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button" v-on:click.stop="deleteMediaItem(media)"><i class="fa fa-trash"></i></a>
                         <span class="media-filename" v-bind:title="media.name">{{ media.name }}</span>
                     </div>
                 </li>

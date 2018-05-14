@@ -285,6 +285,39 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             }
                         });
                     },
+                    deleteMediaItem: function (media) {
+
+                        var self = this;
+                        console.log('media is : ');
+                        console.log(media);
+
+                        if (!media) {
+                            return;
+                        }
+
+                        if (!confirm($('#deleteMediaMessage').val())) {
+                            return;
+                        }
+
+                        $.ajax({
+                            url: $('#deleteMediaUrl').val() + "?path=" + encodeURIComponent(media.mediaPath),
+                            method: 'POST',
+                            data: {
+                                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+                            },
+                            success: function (data) {
+                                var index = self.mediaItems && self.mediaItems.indexOf(media)
+                                if (index > -1) {
+                                    self.mediaItems.splice(index, 1)
+                                    bus.$emit('mediaDeleted', media);
+                                }
+                                //self.selectedMedia = null;
+                            },
+                            error: function (error) {
+                                console.error(error.responseText);
+                            }
+                        });
+                    },
                     handleDragStart: function (media, e) {
                         // first part of move media to folder:
                         // prepare the data that will be handled by the folder component on drop event
