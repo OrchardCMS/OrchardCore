@@ -36,6 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 .WithTheming()
                 .WithLiquidViews()
+
                 .WithTagHelpers("OrchardCore.DisplayManagement")
                 .WithTagHelpers("OrchardCore.ResourceManagement");
 

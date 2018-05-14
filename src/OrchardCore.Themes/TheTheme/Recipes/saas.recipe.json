@@ -14,10 +14,6 @@
       "disable": [],
       "enable": [
         // SaaS
-        "OrchardCore.Antiforgery",
-        "OrchardCore.Authentication",
-        "OrchardCore.DataProtection",
-        "OrchardCore.Mvc",
         "OrchardCore.Admin",
         "OrchardCore.Commons",
         "OrchardCore.Diagnostics",
