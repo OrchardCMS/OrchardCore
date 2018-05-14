@@ -120,6 +120,7 @@
                     <tr v-for="media in filteredMediaItems"
                         v-bind:class="{selected: isMediaSelected(media)}"
                         v-on:click.stop="toggleSelectionOfMedia(media)"
+                        draggable="true" v-on:dragstart="handleDragStart(media, $event)"
                         :key="media.name" v-bind:style="{height: thumbSize + 4 + 'px'}">
                         <td class="thumbnail-column" v-bind:style="{width: thumbSize + 'px'}"><img v-bind:src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" /></td>
                         <td>
