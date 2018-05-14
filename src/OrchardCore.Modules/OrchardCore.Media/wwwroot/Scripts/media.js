@@ -46,6 +46,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     errors: [],
                     dragDropThumbnail: new Image(),
                     smallThumbs: false,
+                    gridView: false,
                     mediaFilter: ''
                 },
                 created: function () {

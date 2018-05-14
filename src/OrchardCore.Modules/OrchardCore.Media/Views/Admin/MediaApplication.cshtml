@@ -34,7 +34,7 @@
                         <div class="dropdown-divider"></div>
                         <a href="javascript:;" class="dropdown-item"
                            v-bind:class="{ disabled : selectedMedias.length < 1 }" v-on:click="deleteMediaList">
-                            @T["Delete Selected"] <span>({{ selectedMedias.length }})</span>
+                            @T["Delete"] <span>({{ selectedMedias.length }})</span>
                         </a>
                         <div class="dropdown-divider"></div>
                         <a href="javascript:;" class="dropdown-item"
@@ -42,6 +42,12 @@
                             <span v-if="smallThumbs"> @T["Large"] </span>
                             <span v-else> @T["Small"] </span>
                         </a>
+                        <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="gridView = !gridView">
+                            <span v-if="gridView">
+                                @T["Table"]
+                            </span> <span v-else> @T["Grid"] </span>
+                        </button>
+                        <div class="dropdown-divider"></div>
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <button type="button" class="btn btn-outline-secondary" v-bind:disabled="mediaFilter == '' " v-on:click="mediaFilter = '' ">
@@ -59,12 +65,17 @@
                     <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="invertSelection">@T["Invert"]</button>
                     <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="deleteMediaList"
                             v-bind:disabled="selectedMedias.length < 1">
-                        @T["Delete Selected"] <span style="min-width:25px; display:inline-block;">({{ selectedMedias.length}})</span>
+                        @T["Delete"] <span style="min-width:25px; display:inline-block;">({{ selectedMedias.length}})</span>
                     </button>
                     <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="smallThumbs = !smallThumbs">
                         <span v-if="smallThumbs">
                             @T["Large"]
                         </span> <span v-else> @T["Small"] </span>
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="gridView = !gridView">
+                        <span v-if="gridView">
+                            @T["Table"]
+                        </span> <span v-else> @T["Grid"] </span>
                     </button>
                     <div class="input-group input-group-sm">
                         <div class="input-group-prepend">
@@ -97,8 +108,33 @@
                 </div>
             </nav>
 
+            <table class="table table-bordered media-items-table" v-show="filteredMediaItems.length > 0 && !gridView">
+                <thead>
+                    <tr class="header-row">
+                        <th scope="col">Image</th>
+                        <th scope="col">Name</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="media in filteredMediaItems"
+                        v-bind:class="{selected: isMediaSelected(media)}"
+                        v-on:click.stop="toggleSelectionOfMedia(media)"
+                        :key="media.name" v-bind:style="{height: thumbSize + 4 + 'px'}">
+                        <td class="thumbnail-column" v-bind:style="{width: thumbSize + 'px'}"><img v-bind:src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" /></td>
+                        <td>
+                            <p class="media-filename" v-bind:title="media.name">{{ media.name }}</p>
+                        </td>
+                        <td class=" text-center" style="width:200px;">
+                            <a href="javascript:;" class="btn btn-light btn-sm mr-0" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i> @T["Edit"]</a>
+                            <a href="javascript:;" class="btn btn-light btn-sm" v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i>@T["Delete"]</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-            <ol class="row">
+
+            <ol class="row" v-show="gridView">
                 <li v-for="media in filteredMediaItems"
                     :key="media.name"
                     class="media-container-main-list-item"

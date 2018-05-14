@@ -170,6 +170,24 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
         padding-left: 0;
     }
 
+    .media-items-table {
+        td.thumbnail-column {
+            text-align: center;
+            padding: 4px;
+        }
+
+        td {
+            vertical-align: middle;
+        }
+
+        tr:not(.header-row):hover {
+            cursor: pointer;
+        }
+        tr.selected {
+            background-color: #e0f7fa;
+        }
+    }
+
     .action-bar {
         background-color: $gray-200;
         justify-content: flex-start;

@@ -6147,6 +6147,19 @@ a.text-dark:hover, a.text-dark:focus {
     align-items: center;
     justify-content: center; }
 
+.media-container-main .media-items-table td.thumbnail-column {
+  text-align: center;
+  padding: 4px; }
+
+.media-container-main .media-items-table td {
+  vertical-align: middle; }
+
+.media-container-main .media-items-table tr:not(.header-row):hover {
+  cursor: pointer; }
+
+.media-container-main .media-items-table tr.selected {
+  background-color: #e0f7fa; }
+
 .media-container-main .action-bar {
   background-color: #e9ecef;
   justify-content: flex-start;
