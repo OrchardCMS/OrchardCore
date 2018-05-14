@@ -33,18 +33,18 @@ namespace OrchardCore.Forms.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Valid"], T["Invalid"]);
+            return Outcomes(T["Done"], T["Valid"], T["Invalid"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             if (await _antiforgery.IsRequestValidAsync(_httpContextAccessor.HttpContext))
             {
-                return Outcomes("Valid");
+                return Outcomes("Done", "Valid");
             }
             else
             {
-                return Outcomes("Invalid");
+                return Outcomes("Done", "Invalid");
             }
         }
     }

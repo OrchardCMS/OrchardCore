@@ -92,6 +92,22 @@ namespace OrchardCore.Forms
                 .WithPart("ReCaptchaPart")
                 .Stereotype("Widget"));
 
+            // Validation Summary
+            _contentDefinitionManager.AlterPartDefinition("ValidationSummaryPart", part => part
+                .WithDescription("Displays a validation summary."));
+
+            _contentDefinitionManager.AlterTypeDefinition("ValidationSummary", type => type
+                .WithPart("ValidationSummaryPart")
+                .Stereotype("Widget"));
+
+            // Validation
+            _contentDefinitionManager.AlterPartDefinition("ValidationPart", part => part
+                .WithDescription("Displays a field validation error."));
+
+            _contentDefinitionManager.AlterTypeDefinition("Validation", type => type
+                .WithPart("ValidationPart")
+                .Stereotype("Widget"));
+
             return 1;
         }
     }

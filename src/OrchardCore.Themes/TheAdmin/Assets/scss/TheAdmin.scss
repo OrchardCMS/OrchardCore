@@ -13,7 +13,7 @@ $border-content: 1px solid rgba(0, 0, 0, 0.05);
 $link-padding-left: 16px !default;
 // technique to avoid loosing submenus when hovering. http://www.positioniseverything.net/css-dropdowns-red.html
 $mini-hover-free-zone-length: 20px;
-$extended-hover-length: 30px; 
+$extended-hover-length: 30px;
 
 @mixin word-wrap() {
     overflow-wrap: break-word;
@@ -202,8 +202,6 @@ $extended-hover-length: 30px;
         }
     }
 
-
-
     li label,
     li a,
     li a:hover,
@@ -211,6 +209,14 @@ $extended-hover-length: 30px;
     li a:visited {
         color: $gray-700;
         text-decoration: none;
+        padding-left: $link-padding-left;
+    }
+
+    li.has-items label,
+    li.has-items a,
+    li.has-items a:hover,
+    li.has-items a:active,
+    li.has-items a:visited {
         padding-left: $link-padding-left - 4px;
     }
     // Hovering the navigation items
@@ -223,6 +229,10 @@ $extended-hover-length: 30px;
         background-color: $gray-600;
         border-left: 4px solid $gray-800;
         color: $gray-100 !important;
+        padding-left: $link-padding-left !important;
+    }
+
+    li.has-items.active > a {
         padding-left: (2 * $link-padding-left) + 2 !important;
     }
 

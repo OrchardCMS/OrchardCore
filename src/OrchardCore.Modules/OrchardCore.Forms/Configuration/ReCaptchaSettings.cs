@@ -1,6 +1,4 @@
-using System;
-
-namespace OrchardCore.Forms.Models
+namespace OrchardCore.Forms.Configuration
 {
     public class ReCaptchaSettings
     {

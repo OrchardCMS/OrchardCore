@@ -1,14 +1,18 @@
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
+using OrchardCore.Forms.Configuration;
 using OrchardCore.Forms.Drivers;
+using OrchardCore.Forms.Filters;
 using OrchardCore.Forms.Handlers;
 using OrchardCore.Forms.Models;
+using OrchardCore.Forms.Services;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -31,8 +35,13 @@ namespace OrchardCore.Forms
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayDriver<ISite>, ReCaptchaSettingsDisplay>();
+            services.AddMvc(config =>
+            {
+                config.Filters.Add<ExportModelStateAttribute>();
+                config.Filters.Add<ImportModelStateAttribute>();
+            });
 
+            services.AddScoped<IDisplayDriver<ISite>, ReCaptchaSettingsDisplay>();
             services.AddScoped<IContentPartDisplayDriver, FormPartDisplay>();
             services.AddScoped<IContentPartDisplayDriver, FormElementPartDisplay>();
             services.AddScoped<IContentPartDisplayDriver, FormInputElementPartDisplay>();
@@ -41,6 +50,8 @@ namespace OrchardCore.Forms
             services.AddScoped<IContentPartDisplayDriver, InputPartDisplay>();
             services.AddScoped<IContentPartDisplayDriver, TextAreaPartDisplay>();
             services.AddScoped<IContentPartDisplayDriver, ReCaptchaPartDisplay>();
+            services.AddScoped<IContentPartDisplayDriver, ValidationSummaryPartDisplay>();
+            services.AddScoped<IContentPartDisplayDriver, ValidationPartDisplay>();
 
             services.AddSingleton<ContentPart, FormPart>();
             services.AddSingleton<ContentPart, FormElementPart>();
@@ -50,11 +61,16 @@ namespace OrchardCore.Forms
             services.AddSingleton<ContentPart, InputPart>();
             services.AddSingleton<ContentPart, TextAreaPart>();
             services.AddSingleton<ContentPart, ReCaptchaPart>();
+            services.AddSingleton<ContentPart, ValidationSummaryPart>();
+            services.AddSingleton<ContentPart, ValidationPart>();
 
             services.AddScoped<IContentPartHandler, FormInputElementPartHandler>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
+
+            services.AddTransient<IConfigureOptions<ReCaptchaSettings>, ReCaptchaSettingsConfiguration>();
+            services.AddScoped<IReCaptchaClient, ReCaptchaClient>();
         }
     }
 }

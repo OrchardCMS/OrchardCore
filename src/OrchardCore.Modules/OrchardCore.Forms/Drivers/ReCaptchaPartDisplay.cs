@@ -3,6 +3,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
+using OrchardCore.Forms.Configuration;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
 using OrchardCore.Settings;
@@ -36,7 +37,7 @@ namespace OrchardCore.Forms.Drivers
             // TODO: We need an InitializeAsync so we can do this sort of initialization from within the shape factory..
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-            return Initialize<ReCaptchaPartEditViewModel>("ReCaptchaPart_Edit", m =>
+            return Initialize<ReCaptchaPartEditViewModel>("ReCaptchaPart_Fields_Edit", m =>
             {
                 var settings = siteSettings.As<ReCaptchaSettings>();
                 m.SettingsAreConfigured = settings.IsValid();

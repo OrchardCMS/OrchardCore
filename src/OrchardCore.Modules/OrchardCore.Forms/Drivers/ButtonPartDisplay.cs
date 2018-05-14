@@ -17,7 +17,7 @@ namespace OrchardCore.Forms.Drivers
 
         public override IDisplayResult Edit(ButtonPart part, BuildPartEditorContext context)
         {
-            return Initialize<ButtonPartEditViewModel>("ButtonPart_Edit", m =>
+            return Initialize<ButtonPartEditViewModel>("ButtonPart_Fields_Edit", m =>
             {
                 m.Text = part.Text;
                 m.Type = part.Type;

@@ -1,5 +1,7 @@
 @model OrchardCore.Forms.ViewModels.ReCaptchaSettingsViewModel
 
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+
 <fieldset class="form-group" asp-validation-class-for="SiteKey">
     <label asp-for="SiteKey">@T["Site Key"] <span asp-validation-for="SiteKey"></span></label>
     <input asp-for="SiteKey" class="form-control" type="text" />

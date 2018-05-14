@@ -12,7 +12,7 @@ namespace OrchardCore.Forms.Drivers
     {
         public override IDisplayResult Edit(FormPart part, BuildPartEditorContext context)
         {
-            return Initialize<FormPartEditViewModel>("FormPart_Edit", m =>
+            return Initialize<FormPartEditViewModel>("FormPart_Fields_Edit", m =>
             {
                 m.Action = part.Action;
                 m.Method = part.Method;

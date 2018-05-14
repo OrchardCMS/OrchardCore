@@ -17,7 +17,7 @@ namespace OrchardCore.Forms.Drivers
 
         public override IDisplayResult Edit(TextAreaPart part, BuildPartEditorContext context)
         {
-            return Initialize<TextAreaPartEditViewModel>("TextAreaPart_Edit", m =>
+            return Initialize<TextAreaPartEditViewModel>("TextAreaPart_Fields_Edit", m =>
             {
                 m.Placeholder = part.Placeholder;
                 m.DefaultValue = part.DefaultValue;

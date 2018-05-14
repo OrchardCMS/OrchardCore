@@ -17,7 +17,7 @@ namespace OrchardCore.Forms.Drivers
 
         public override IDisplayResult Edit(LabelPart part, BuildPartEditorContext context)
         {
-            return Initialize<LabelPartEditViewModel>("LabelPart_Edit", m =>
+            return Initialize<LabelPartEditViewModel>("LabelPart_Fields_Edit", m =>
             {
                 m.For = part.For;
             });

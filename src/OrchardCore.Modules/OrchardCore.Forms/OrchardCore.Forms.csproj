@@ -12,8 +12,4 @@
     <ProjectReference Include="..\OrchardCore.Flows\OrchardCore.Flows.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Workflows\ViewModels\" />
-  </ItemGroup>
-
 </Project>
