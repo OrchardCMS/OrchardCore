@@ -42,11 +42,11 @@
                             <span v-if="smallThumbs"> @T["Large"] </span>
                             <span v-else> @T["Small"] </span>
                         </a>
-                        <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="gridView = !gridView">
-                            <span v-if="gridView">
-                                @T["Table"]
-                            </span> <span v-else> @T["Grid"] </span>
-                        </button>
+                        <a  href="javascript:;" class="dropdown-item"
+                           v-on:click="gridView = !gridView">
+                            <span v-if="gridView"> @T["Table"]</span>
+                            <span v-else> @T["Grid"] </span>
+                        </a>
                         <div class="dropdown-divider"></div>
                         <div class="input-group">
                             <div class="input-group-prepend">
