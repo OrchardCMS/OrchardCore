@@ -121,7 +121,7 @@ namespace OrchardCore.Modules
                 if (isApplication)
                 {
                     ModuleInfo.Name = Application.ModuleName;
-                    ModuleInfo.Description = "Provides core features defined at the host level";
+                    ModuleInfo.Description = "Provides features defined at the host level";
                     ModuleInfo.Priority = int.MinValue.ToString();
                     ModuleInfo.Category = "Infrastructure";
                 }
