@@ -26,7 +26,6 @@ namespace OrchardCore.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddDataProtection();
             services.AddIdGeneration();
             services.AddSingleton<IWorkflowTypeIdGenerator, WorkflowTypeIdGenerator>();
             services.AddSingleton<IWorkflowIdGenerator, WorkflowIdGenerator>();

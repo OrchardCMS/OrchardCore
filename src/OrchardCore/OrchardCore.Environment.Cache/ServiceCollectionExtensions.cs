@@ -1,11 +1,20 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Cache
 {
     public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection WithCaching(this IServiceCollection services)
+        {
+            return services.ConfigureTenantServices((collection) =>
+            {
+                collection.AddCaching();
+            });
+        }
+
         public static IServiceCollection AddCaching(this IServiceCollection services)
         {
             services.AddTransient<ITagCache, DefaultTagCache>();

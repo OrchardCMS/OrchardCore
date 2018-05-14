@@ -1,10 +1,19 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.Modules;
 
 namespace OrchardCore.ResourceManagement
 {
     public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection WithResourceManagement(this IServiceCollection services)
+        {
+            return services.ConfigureTenantServices((collection) =>
+            {
+                collection.AddResourceManagement();
+            });
+        }
+
         public static IServiceCollection AddResourceManagement(this IServiceCollection services)
         {
             services.TryAddScoped<IResourceManager, ResourceManager>();

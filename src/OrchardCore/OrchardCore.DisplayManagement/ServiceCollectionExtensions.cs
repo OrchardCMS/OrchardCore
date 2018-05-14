@@ -24,12 +24,29 @@ using OrchardCore.DisplayManagement.Title;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Manifests;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
 
 namespace OrchardCore.DisplayManagement
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds host and tenant level services.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection WithTheming(this IServiceCollection services)
+        {
+            return services.AddThemingHost()
+                .AddManifestDefinition("theme")
+                .ConfigureTenantServices(collection =>
+                {
+                    collection.AddTheming();
+                });
+        }
+
         /// <summary>
         /// Adds host level services.
         /// </summary>

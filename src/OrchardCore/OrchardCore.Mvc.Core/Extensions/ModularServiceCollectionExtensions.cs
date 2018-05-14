@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -22,6 +23,18 @@ namespace OrchardCore.Mvc
 {
     public static class ModularServiceCollectionExtensions
     {
+        public static IServiceCollection WithMvc(this IServiceCollection services)
+        {
+            return services.ConfigureTenantServices<IServiceProvider>((collection, sp) =>
+            {
+                collection.AddMvcModules(sp);
+            })
+            .ConfigureTenant((app, routes, sp) =>
+            {
+                app.UseStaticFilesModules();
+            });
+        }
+
         public static IServiceCollection AddMvcModules(this IServiceCollection services,
             IServiceProvider applicationServices)
         {
@@ -53,6 +66,14 @@ namespace OrchardCore.Mvc
             builder.AddJsonFormatters();
 
             return services;
+        }
+
+        public static IServiceCollection WithTagHelpers(this IServiceCollection services, string assemblyName)
+        {
+            return services.ConfigureTenant((app, routes, sp) =>
+            {
+                sp.AddTagHelpers(assemblyName);
+            });
         }
 
         public static void AddTagHelpers(this IServiceProvider serviceProvider, string assemblyName)

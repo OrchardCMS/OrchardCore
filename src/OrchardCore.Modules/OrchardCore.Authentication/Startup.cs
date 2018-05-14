@@ -11,16 +11,16 @@ namespace OrchardCore.Authentication
     {
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            app.UseAuthentication();
+            //app.UseAuthentication();
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication();
+            //services.AddAuthentication();
 
             // Note: IAuthenticationSchemeProvider is already registered at the host level.
             // We need to register it again so it is taken into account at the tenant level.
-            services.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
+            //services.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
         }
     }
 }

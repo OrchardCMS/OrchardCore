@@ -90,7 +90,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddOptions();
             services.AddLocalization();
             services.AddHostingShellServices();
-            services.AddExtensionManagerHost();
+            services.WithExtensionManager();
             services.AddWebEncoders();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

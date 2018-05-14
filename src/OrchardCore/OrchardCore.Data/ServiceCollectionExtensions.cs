@@ -18,6 +18,14 @@ namespace OrchardCore.Data
 {
     public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection WithDataAccess(this IServiceCollection services)
+        {
+            return services.ConfigureTenantServices((collection) =>
+            {
+                collection.AddDataAccess();
+            });
+        }
+
         public static IServiceCollection AddDataAccess(this IServiceCollection services)
         {
             services.AddScoped<IDataMigrationManager, DataMigrationManager>();

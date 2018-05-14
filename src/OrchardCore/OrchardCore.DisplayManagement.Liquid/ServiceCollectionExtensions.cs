@@ -8,11 +8,20 @@ using OrchardCore.DisplayManagement.Liquid.Internal;
 using OrchardCore.DisplayManagement.Liquid.TagHelpers;
 using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.Liquid;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
     public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection WithLiquidViews(this IServiceCollection services)
+        {
+            return services.ConfigureTenantServices((collection) =>
+            {
+                collection.AddLiquidViews();
+            });
+        }
+
         public static IServiceCollection AddLiquidViews(this IServiceCollection services)
         {
             services.TryAddEnumerable(
