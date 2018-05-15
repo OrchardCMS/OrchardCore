@@ -18,12 +18,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
 
         public FileShellDescriptorManager(ShellSettingsWithTenants shellSettings, IHostingEnvironment hostingEnvironment)
         {
-            if (shellSettings == null)
-            {
-                throw new ArgumentException(nameof(shellSettings));
-            }
-
-            _shellSettings = shellSettings;
+            _shellSettings = shellSettings ?? throw new ArgumentException(nameof(shellSettings));
             _applicationFeatureId = hostingEnvironment.ApplicationName;
         }
 
