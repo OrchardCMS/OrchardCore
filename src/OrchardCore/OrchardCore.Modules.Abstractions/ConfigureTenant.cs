@@ -5,7 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Modules
 {
-    public class ConfigureTenant : StartupBase
+    public interface IConfigureTenant { }
+
+    public class ConfigureTenant : StartupBase, IConfigureTenant
     {
         public ConfigureTenant(Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure)
         {
@@ -22,7 +24,7 @@ namespace OrchardCore.Modules
         }
     }
 
-    public class ConfigureTenantServices : StartupBase
+    public class ConfigureTenantServices : StartupBase, IConfigureTenant
     {
         public ConfigureTenantServices(Action<IServiceCollection> configureServices)
         {
@@ -39,7 +41,7 @@ namespace OrchardCore.Modules
         }
     }
 
-    public class ConfigureTenantServices<TDep> : StartupBase
+    public class ConfigureTenantServices<TDep> : StartupBase, IConfigureTenant
         where TDep : class
     {
         public ConfigureTenantServices(TDep dependency, Action<IServiceCollection, TDep> configureServices)
@@ -60,7 +62,7 @@ namespace OrchardCore.Modules
         }
     }
 
-    public class ConfigureTenantServices<TDep1, TDep2> : StartupBase
+    public class ConfigureTenantServices<TDep1, TDep2> : StartupBase, IConfigureTenant
         where TDep1 : class
         where TDep2: class
     {
@@ -85,7 +87,7 @@ namespace OrchardCore.Modules
         }
     }
 
-    public class ConfigureTenantServices<TDep1, TDep2, TDep3> : StartupBase
+    public class ConfigureTenantServices<TDep1, TDep2, TDep3> : StartupBase, IConfigureTenant
         where TDep1 : class
         where TDep2 : class
         where TDep3 : class
@@ -113,7 +115,7 @@ namespace OrchardCore.Modules
         }
     }
 
-    public class ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4> : StartupBase
+    public class ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4> : StartupBase, IConfigureTenant
         where TDep1 : class
         where TDep2 : class
         where TDep3 : class
@@ -144,7 +146,7 @@ namespace OrchardCore.Modules
         }
     }
 
-    public class ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4, TDep5> : StartupBase
+    public class ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4, TDep5> : StartupBase, IConfigureTenant
         where TDep1 : class
         where TDep2 : class
         where TDep3 : class
