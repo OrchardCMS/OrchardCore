@@ -30,6 +30,7 @@
     <PackageManagement Include="Nancy" Version="2.0.0-clinteastwood" />
     <PackageManagement Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageManagement Include="AspNet.Security.OAuth.Validation" Version="2.0.0-rc2-final" />
+    <PackageManagement Include="AspNet.Security.OpenIdConnect.Primitives" Version="2.0.0-rc2-final" />
     <PackageManagement Include="OpenIddict" Version="2.0.0-rc2-final" />
     <PackageManagement Include="OpenIddict.Core" Version="2.0.0-rc2-final" />
     <PackageManagement Include="OpenIddict.EntityFrameworkCore" Version="2.0.0-rc2-final" />
