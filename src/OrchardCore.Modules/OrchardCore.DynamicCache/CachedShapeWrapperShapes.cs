@@ -14,25 +14,32 @@ namespace OrchardCore.DynamicCache
         [Shape]
         public IHtmlContent CachedShapeWrapper(dynamic Shape)
         {
+            var debugMode = Configuration.IsDebugModeEnabled;
             var sb = new StringBuilder();
             var metadata = (ShapeMetadata) Shape.Metadata;
             var cache = metadata.Cache();
 
-            sb.AppendLine($"<!-- CACHED SHAPE: {cache.CacheId} ({Guid.NewGuid()})");
-            sb.AppendLine($"          VARY BY: {String.Join(", ", cache.Contexts)}");
-            sb.AppendLine($"     DEPENDENCIES: {String.Join(", ", cache.Tags)}");
-            sb.AppendLine($"       EXPIRES ON: {cache.ExpiresOn}");
-            sb.AppendLine($"    EXPIRES AFTER: {cache.ExpiresAfter}");
-            sb.AppendLine($"  EXPIRES SLIDING: {cache.ExpiresSliding}");
-            sb.AppendLine("-->");
+            if (debugMode)
+            {
+                sb.AppendLine($"<!-- CACHED SHAPE: {cache.CacheId} ({Guid.NewGuid()})");
+                sb.AppendLine($"          VARY BY: {String.Join(", ", cache.Contexts)}");
+                sb.AppendLine($"     DEPENDENCIES: {String.Join(", ", cache.Tags)}");
+                sb.AppendLine($"       EXPIRES ON: {cache.ExpiresOn}");
+                sb.AppendLine($"    EXPIRES AFTER: {cache.ExpiresAfter}");
+                sb.AppendLine($"  EXPIRES SLIDING: {cache.ExpiresSliding}");
+                sb.AppendLine("-->");
+            }
             
             using (var sw = new StringWriter())
             {
                 metadata.ChildContent.WriteTo(sw, HtmlEncoder.Default);
                 sb.AppendLine(sw.ToString());
             }
-            
-            sb.AppendLine($"<!-- END CACHED SHAPE: {cache.CacheId} -->");
+
+            if (debugMode)
+            {
+                sb.AppendLine($"<!-- END CACHED SHAPE: {cache.CacheId} -->");
+            }
 
             return new HtmlString(sb.ToString());
         }

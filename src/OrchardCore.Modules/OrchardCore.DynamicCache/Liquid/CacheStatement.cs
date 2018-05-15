@@ -46,9 +46,8 @@ namespace OrchardCore.DynamicCache.Liquid
 
                 return Completion.Normal;
             }
-
-            // TODO: make this configurable
-            var debugMode = true;
+            
+            var debugMode = Configuration.IsDebugModeEnabled;
             var splitChars = new[] { ',', ' ' };
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
@@ -103,8 +102,7 @@ namespace OrchardCore.DynamicCache.Liquid
             }
 
             await dynamicCache.SetCachedValueAsync(cacheContext, content);
-
-            //await writer.WriteAsync(await dynamicCache.BuildEdgeSideIncludeTokenAsync(cacheContext));
+            
             await writer.WriteAsync(content);
 
             return Completion.Normal;

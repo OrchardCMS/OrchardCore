@@ -7,7 +7,5 @@ namespace OrchardCore.DynamicCache.Services
     {
         Task<string> GetCachedValueAsync(CacheContext context);
         Task SetCachedValueAsync(CacheContext context, string value);
-        Task<string> ReplaceEdgeSideIncludeTokensAsync(string value);
-        Task<string> BuildEdgeSideIncludeTokenAsync(CacheContext context);
     }
 }

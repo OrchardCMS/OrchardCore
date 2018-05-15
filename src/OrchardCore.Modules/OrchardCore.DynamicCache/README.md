@@ -23,8 +23,6 @@ Layout (not cached)
 
 ## Rendering cached sections
 When this page is rendered for the first time, all shapes will be evaluated. Any blocks of markup that have been identified as cachable will be stored in the `IDynamicCache` service.
-The content of the cached parent sections will replace their child ones by placeholders similar to ESI 
-(<https://en.wikipedia.org/wiki/Edge_Side_Includes>). 
 
 On subsequent requests, if a cacheable section has already been cached (and the cache entry is still valid) then it won't be processed (`Processing` event in
 the `ShapeMetadata`). The markup will be retrieved from the cache and returned as part of the response.

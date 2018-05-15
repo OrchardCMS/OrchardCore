@@ -5,7 +5,10 @@ using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DynamicCache.Models
 {
-    public class EdgeSideInclude
+    /// <summary>
+    /// A serialiazable and deserializable model to represent a <see cref="CacheContext"/>
+    /// </summary>
+    public class CacheContextModel
     {
         public string CacheId { get; set; }
         public ICollection<string> Contexts { get; set; }
@@ -14,9 +17,9 @@ namespace OrchardCore.DynamicCache.Models
         public TimeSpan? ExpiresAfter { get; set; }
         public TimeSpan? ExpiresSliding { get; set; }
 
-        internal static EdgeSideInclude FromCacheContext(CacheContext cacheContext)
+        internal static CacheContextModel FromCacheContext(CacheContext cacheContext)
         {
-            return new EdgeSideInclude
+            return new CacheContextModel
             {
                 CacheId = cacheContext.CacheId,
                 Contexts = cacheContext.Contexts,

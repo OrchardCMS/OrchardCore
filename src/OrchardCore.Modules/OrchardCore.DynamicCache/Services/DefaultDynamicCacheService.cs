@@ -11,18 +11,16 @@ using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DynamicCache.Services
 {
-    public class DefaultDynamicCacheService : IDynamicCacheService
+    public class DefaultDynamicCacheService : IDynamicCacheService, ITagRemovedEventHandler
     {
-        private readonly ICacheScopeManager _cacheScopeManager;
         private readonly ICacheContextManager _cacheContextManager;
         private readonly IDynamicCache _dynamicCache;
         private readonly IServiceProvider _serviceProvider;
         
         private readonly Dictionary<string, string> _localCache = new Dictionary<string, string>();
 
-        public DefaultDynamicCacheService(ICacheScopeManager cacheScopeManager, ICacheContextManager cacheContextManager, IDynamicCache dynamicCache, IServiceProvider serviceProvider)
+        public DefaultDynamicCacheService(ICacheContextManager cacheContextManager, IDynamicCache dynamicCache, IServiceProvider serviceProvider)
         {
-            _cacheScopeManager = cacheScopeManager;
             _cacheContextManager = cacheContextManager;
             _dynamicCache = dynamicCache;
             _serviceProvider = serviceProvider;
@@ -42,15 +40,6 @@ namespace OrchardCore.DynamicCache.Services
             var content = await GetCachedStringAsync(cacheKey);
 
             return content;
-
-            //if (content == null)
-            //{
-            //    return null;
-            //}
-
-            //// ProcessEdgeSideIncludesAsync will return null if one or more of the ESIs was a cache miss.
-            //// This allows the parent (and therefore the ESI) to be re-built and then rechached.
-            //return await ReplaceEdgeSideIncludeTokensAsync(content);
         }
         
         public async Task SetCachedValueAsync(CacheContext context, string value)
@@ -58,12 +47,17 @@ namespace OrchardCore.DynamicCache.Services
             var cacheKey = await GetCacheKey(context);
             
             _localCache[cacheKey] = value;
-            var esi = JsonConvert.SerializeObject(EdgeSideInclude.FromCacheContext(context));
+            var esi = JsonConvert.SerializeObject(CacheContextModel.FromCacheContext(context));
             
             await Task.WhenAll(
                 SetCachedValueAsync(cacheKey, value, context),
                 SetCachedValueAsync(GetCacheContextCacheKey(context.CacheId), esi, context)
             );
+        }
+        
+        public Task TagRemovedAsync(string tag, IEnumerable<string> keys)
+        {
+            return Task.WhenAll(keys.Select(key => _dynamicCache.RemoveAsync(key)));
         }
 
         private async Task SetCachedValueAsync(string cacheKey, string value, CacheContext context)
@@ -89,80 +83,7 @@ namespace OrchardCore.DynamicCache.Services
             var tagCache = _serviceProvider.GetRequiredService<ITagCache>();
             tagCache.Tag(cacheKey, context.Tags.ToArray());
         }
-
-        /// <summary>
-        /// Substitutes all ESIs with their actual content
-        /// </summary>
-        /// <returns>The content string with all ESIs substituted out for their actualy content, or null if one or more of the ESIs is a cache miss</returns>
-        public async Task<string> ReplaceEdgeSideIncludeTokensAsync(string content)
-        {
-            StringBuilder result = null;
-
-            int lastIndex = 0, end = 0;
-            var processed = false;
-
-            while ((lastIndex = content.IndexOf("[[cache ", lastIndex)) > 0)
-            {
-                if (result == null)
-                {
-                    result = new StringBuilder(content.Length);
-                }
-
-                result.Append(content.Substring(end, lastIndex - end));
-
-                processed = true;
-
-                int startIndex;
-                var esi = content.Substring(startIndex = content.IndexOf("esi='", lastIndex) + 5, (lastIndex = content.IndexOf("']]", startIndex)) - startIndex);
-
-                end = content.IndexOf("]]", lastIndex) + 2;
-                
-                var esiModel = JsonConvert.DeserializeObject<EdgeSideInclude>(esi);
-                var cacheContext = esiModel.ToCacheContext();
-
-                _cacheScopeManager.EnterScope(cacheContext);
-
-                try
-                {
-                    var htmlContent = await GetCachedValueAsync(cacheContext);
-
-                    // Expired child cache entry? This and all parent cache items are invalid.
-                    if (htmlContent == null)
-                    {
-                        return null;
-                    }
-
-                    htmlContent = await ReplaceEdgeSideIncludeTokensAsync(htmlContent);
-
-                    if (htmlContent == null)
-                    {
-                        return null;
-                    }
-
-                    result.Append(htmlContent);
-                }
-                finally
-                {
-                    _cacheScopeManager.ExitScope();
-                }
-            }
-
-            if (processed)
-            {
-                result.Append(content.Substring(end, content.Length - end));
-                content = result.ToString();
-            }
-
-            return content;
-        }
-
-        public Task<string> BuildEdgeSideIncludeTokenAsync(CacheContext context)
-        {
-            var serializedInclude = JsonConvert.SerializeObject(EdgeSideInclude.FromCacheContext(context));
-
-            return Task.FromResult("[[cache esi='" + serializedInclude + "']]");
-        }
-
+        
         private async Task<string> GetCacheKey(CacheContext context)
         {
             var cacheEntries = context.Contexts.Count > 0
@@ -208,7 +129,7 @@ namespace OrchardCore.DynamicCache.Services
                 return null;
             }
 
-            var esiModel = JsonConvert.DeserializeObject<EdgeSideInclude>(cachedValue);
+            var esiModel = JsonConvert.DeserializeObject<CacheContextModel>(cachedValue);
             return esiModel.ToCacheContext();
         }
     }
