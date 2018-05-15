@@ -1,10 +1,10 @@
-using OrchardCore.Environment.Extensions;
 using System;
-using System.Linq;
-using OrchardCore.Environment.Extensions.Loaders;
-using OrchardCore.Environment.Extensions.Features;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Loaders;
 
 namespace OrchardCore.Tests.Stubs
 {

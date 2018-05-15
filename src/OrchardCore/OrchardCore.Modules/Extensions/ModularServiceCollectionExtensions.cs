@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Manifests;
@@ -8,7 +9,6 @@ using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Descriptor.Settings;
 using OrchardCore.Modules;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
