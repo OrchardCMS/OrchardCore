@@ -1,15 +1,16 @@
 using System;
-using OrchardCore.Environment.Shell;
 using System.Collections.Generic;
-using Xunit;
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Environment.Extensions;
+using OrchardCore.Modules;
+using OrchardCore.Tests.Stubs;
+using Xunit;
 
 namespace OrchardCore.Tests.Shell
 {
@@ -24,6 +25,8 @@ namespace OrchardCore.Tests.Shell
             applicationServices.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 
             _shellContainerFactory = new ShellContainerFactory(
+                new StubHostingEnvironment(),
+                new StubExtensionManager(),
                 _applicationServiceProvider = applicationServices.BuildServiceProvider(),
                 new StubLoggerFactory(),
                 new NullLogger<ShellContainerFactory>(),
