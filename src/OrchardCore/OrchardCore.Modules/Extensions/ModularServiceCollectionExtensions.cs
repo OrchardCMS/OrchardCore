@@ -8,6 +8,7 @@ using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Descriptor.Settings;
 using OrchardCore.Modules;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -44,6 +45,13 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection WithDefaultFeatures(
             this IServiceCollection services, params string[] featureIds)
         {
+            var applicationFeatureId = GetServiceFromCollection<IHostingEnvironment>(services)?.ApplicationName;
+
+            if (applicationFeatureId != null)
+            {
+                services.AddTransient(sp => new ShellFeature(applicationFeatureId));
+            }
+
             foreach (var featureId in featureIds)
             {
                 services.AddTransient(sp => new ShellFeature(featureId));
@@ -71,13 +79,9 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection WithFeatures(
             this IServiceCollection services, params string[] featureIds)
         {
+            services.WithDefaultFeatures(featureIds);
+
             var featuresList = featureIds.Select(featureId => new ShellFeature(featureId)).ToList();
-
-            foreach (var feature in featuresList)
-            {
-                services.AddTransient(sp => feature);
-            };
-
             services.AddSetFeaturesDescriptor(featuresList);
 
             return services;
@@ -100,6 +104,13 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
 
             return services;
+        }
+
+        private static T GetServiceFromCollection<T>(IServiceCollection services)
+        {
+            return (T)services
+                .LastOrDefault(d => d.ServiceType == typeof(T))
+                ?.ImplementationInstance;
         }
     }
 }

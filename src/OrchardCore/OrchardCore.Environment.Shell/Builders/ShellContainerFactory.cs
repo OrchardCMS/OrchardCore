@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Builders.Models;
-using OrchardCore.Environment.Shell.Descriptor.Models;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -42,11 +41,6 @@ namespace OrchardCore.Environment.Shell.Builders
             services.TryAddScoped<IShellStateUpdater, ShellStateUpdater>();
             services.TryAddScoped<IShellStateManager, NullShellStateManager>();
             services.AddScoped<IShellDescriptorManagerEventHandler, ShellStateCoordinator>();
-
-            if (_applicationFeature != null)
-            {
-                services.AddTransient(sp => new ShellFeature(_applicationFeature.Id));
-            }
         }
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
