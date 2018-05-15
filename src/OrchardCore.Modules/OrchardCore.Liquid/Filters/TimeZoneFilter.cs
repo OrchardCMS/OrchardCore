@@ -13,13 +13,11 @@ namespace OrchardCore.Liquid.Filters
     {
         private readonly IClock _clock;
         private readonly ISiteService _siteService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public TimeZoneFilter(ISiteService siteService, IClock clock, IHttpContextAccessor httpContextAccessor)
+        public TimeZoneFilter(ISiteService siteService, IClock clock)
         {
             _siteService = siteService;
             _clock = clock;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
