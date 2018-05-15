@@ -7,8 +7,6 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Settings;
 using System.Globalization;
-using Microsoft.AspNetCore.Http;
-using OrchardCore.Users.Services;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
