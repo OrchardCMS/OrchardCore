@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Environment.Extensions;
@@ -32,6 +31,12 @@ namespace Microsoft.Extensions.DependencyInjection
             // Let the app change the default tenant behavior and set of features
             configure?.Invoke(services);
 
+            // Registers the application feature
+            services.AddTransient(sp =>
+            {
+                return new ShellFeature(sp.GetRequiredService<IHostingEnvironment>().ApplicationName);
+            });
+
             // Register the list of services to be resolved later on
             services.AddSingleton(_ => services);
 
@@ -45,13 +50,6 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection WithDefaultFeatures(
             this IServiceCollection services, params string[] featureIds)
         {
-            var applicationFeatureId = GetServiceFromCollection<IHostingEnvironment>(services)?.ApplicationName;
-
-            if (applicationFeatureId != null)
-            {
-                services.AddTransient(sp => new ShellFeature(applicationFeatureId));
-            }
-
             foreach (var featureId in featureIds)
             {
                 services.AddTransient(sp => new ShellFeature(featureId));
@@ -80,9 +78,7 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services, params string[] featureIds)
         {
             services.WithDefaultFeatures(featureIds);
-
-            var featuresList = featureIds.Select(featureId => new ShellFeature(featureId)).ToList();
-            services.AddSetFeaturesDescriptor(featuresList);
+            services.AddSetFeaturesDescriptor();
 
             return services;
         }
@@ -104,13 +100,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
 
             return services;
-        }
-
-        private static T GetServiceFromCollection<T>(IServiceCollection services)
-        {
-            return (T)services
-                .LastOrDefault(d => d.ServiceType == typeof(T))
-                ?.ImplementationInstance;
         }
     }
 }

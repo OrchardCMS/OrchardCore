@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -15,9 +14,13 @@ namespace OrchardCore.Environment.Shell
             return services;
         }
 
-        public static IServiceCollection AddSetFeaturesDescriptor(this IServiceCollection services, IEnumerable<ShellFeature> shellFeatures)
+        public static IServiceCollection AddSetFeaturesDescriptor(this IServiceCollection services)
         {
-            services.AddSingleton<IShellDescriptorManager>(new SetFeaturesShellDescriptorManager(shellFeatures));
+            services.AddSingleton<IShellDescriptorManager>(sp =>
+            {
+                var shellFeatures = sp.GetServices<ShellFeature>();
+                return new SetFeaturesShellDescriptorManager(shellFeatures);
+            });
 
             return services;
         }
