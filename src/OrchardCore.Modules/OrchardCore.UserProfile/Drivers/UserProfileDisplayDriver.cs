@@ -1,25 +1,32 @@
 using System.Threading.Tasks;
-using OrchardCore.UserProfile.Models;
 using OrchardCore.UserProfile.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Users.Models;
+using OrchardCore.Modules;
 
 namespace OrchardCore.UserProfile.Drivers
 {
-    public class UserProfileDisplayDriver : SectionDisplayDriver<User, UserProfile>
+    public class UserProfileDisplayDriver : SectionDisplayDriver<User, Models.UserProfile>
     {
-        public override IDisplayResult Edit(UserProfile profile, BuildEditorContext context)
+        private readonly IClock _clock;
+
+        public UserProfileDisplayDriver(IClock clock) {
+            _clock = clock;
+        }
+
+        public override IDisplayResult Edit(Models.UserProfile profile, BuildEditorContext context)
         {
             return Initialize<EditUserProfileViewModel>("UserProfile_Edit", model =>
             {
                 model.TimeZone = profile.TimeZone;
+                model.TimeZones = _clock.GetTimeZones(string.Empty);
             }).Location("Content:2");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(UserProfile profile, IUpdateModel updater, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(Models.UserProfile profile, IUpdateModel updater, BuildEditorContext context)
         {
             var model = new EditUserProfileViewModel();
 

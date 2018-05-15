@@ -17,6 +17,7 @@ namespace OrchardCore.Users.Models
         public string ResetToken { get; set; }
         public IList<string> RoleNames { get; set; } = new List<string>();
         public IList<UserLoginInfo> LoginInfos { get; set; } = new List<UserLoginInfo>();
+        public string TimeZone;
 
         public override string ToString()
         {            
