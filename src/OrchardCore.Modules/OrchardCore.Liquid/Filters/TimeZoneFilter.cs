@@ -6,8 +6,6 @@ using Fluid.Values;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
-using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 
 namespace OrchardCore.Liquid.Filters
 {
