@@ -45,20 +45,20 @@ namespace OrchardCore.Settings.Services
             var site = await session.Query<SiteSettings>().FirstOrDefaultAsync() as ISite;
 
             site.TimeZone = timeZoneId;
-            _memoryCache.Set(CacheKey, timeZoneId);
+            _memoryCache.Set(CacheKey, site.TimeZone);
             session.Save(site);
         }
 
         public async Task<string> GetCurrentTimeZoneIdAsync()
         {
-            string timeZoneId;
-            if (!_memoryCache.TryGetValue(CacheKey, out timeZoneId))
+            if (!_memoryCache.TryGetValue(CacheKey, out string timeZoneId))
             {
                 var session = GetSession();
 
                 var site = await session.Query<SiteSettings>().FirstOrDefaultAsync() as ISite;
-                timeZoneId = site.TimeZone;
-                _memoryCache.Set(CacheKey, site);
+                timeZoneId = site.TimeZone ?? _clock.GetLocalTimeZone(String.Empty).Id;
+
+                _memoryCache.Set(CacheKey, site.TimeZone);
             }
 
             return timeZoneId;

@@ -13,19 +13,16 @@ namespace OrchardCore.Settings.Services
     public class DefaultTimeZoneSelector : ITimeZoneSelector
     {
         private readonly IDefaultTimeZoneService _siteTimeZoneService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public DefaultTimeZoneSelector(
-            IDefaultTimeZoneService siteTimeZoneService,
-            IHttpContextAccessor httpContextAccessor)
+            IDefaultTimeZoneService siteTimeZoneService)
         {
             _siteTimeZoneService = siteTimeZoneService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<TimeZoneSelectorResult> GetTimeZoneAsync()
         {
-            string currentTimeZoneId = await _siteTimeZoneService.GetCurrentTimeZoneIdAsync();
+            var currentTimeZoneId = await _siteTimeZoneService.GetCurrentTimeZoneIdAsync();
             if (String.IsNullOrEmpty(currentTimeZoneId))
             {
                 return null;

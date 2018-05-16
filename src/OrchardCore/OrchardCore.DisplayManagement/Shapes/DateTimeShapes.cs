@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Settings;
 using System.Globalization;
+using OrchardCore.DisplayManagement.TimeZone;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
@@ -15,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";
 
         private readonly IClock _clock;
-        private readonly ISiteService _siteService;
+        private readonly ITimeZoneManager _timeZoneManager;
 
         //private readonly IDateLocalizationServices _dateLocalizationServices;
         //private readonly IDateTimeFormatProvider _dateTimeLocalization;
@@ -23,13 +24,13 @@ namespace OrchardCore.DisplayManagement.Shapes
         public DateTimeShapes(
             IClock clock,
             IPluralStringLocalizer<DateTimeShapes> localizer,
-            ISiteService siteService
+            ITimeZoneManager timeZoneManager
             //IDateLocalizationServices dateLocalizationServices,
             //IDateTimeFormatProvider dateTimeLocalization
             )
         {
             _clock = clock;
-            _siteService = siteService;
+            _timeZoneManager = timeZoneManager;
             //_dateLocalizationServices = dateLocalizationServices;
             //_dateTimeLocalization = dateTimeLocalization;
             T = localizer;
@@ -89,9 +90,8 @@ namespace OrchardCore.DisplayManagement.Shapes
         public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format)
         {
             DateTimeOffset zonedTime;
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var siteTimeZone = _clock.GetLocalTimeZone(siteSettings.TimeZone);
-            zonedTime = _clock.ConvertToTimeZone(Utc, siteTimeZone);
+            var timeZone = await _timeZoneManager.GetTimeZoneAsync();
+            zonedTime = _clock.ConvertToTimeZone(Utc, timeZone);
 
             if (Format == null)
             {

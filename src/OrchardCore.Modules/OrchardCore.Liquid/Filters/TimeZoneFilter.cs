@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Http;
+using OrchardCore.DisplayManagement.TimeZone;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 
@@ -11,12 +12,12 @@ namespace OrchardCore.Liquid.Filters
 {
     public class TimeZoneFilter : ILiquidFilter
     {
+        private readonly ITimeZoneManager _timeZoneManager;
         private readonly IClock _clock;
-        private readonly ISiteService _siteService;
 
-        public TimeZoneFilter(ISiteService siteService, IClock clock)
+        public TimeZoneFilter(ITimeZoneManager timeZoneManager, IClock clock)
         {
-            _siteService = siteService;
+            _timeZoneManager = timeZoneManager;
             _clock = clock;
         }
 
@@ -57,9 +58,8 @@ namespace OrchardCore.Liquid.Filters
                 }
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var siteTimeZone = _clock.GetLocalTimeZone(siteSettings.TimeZone);
-            return new ObjectValue(_clock.ConvertToTimeZone(value, siteTimeZone));
+            var timeZone = await _timeZoneManager.GetTimeZoneAsync();
+            return new ObjectValue(_clock.ConvertToTimeZone(value, timeZone));
         }
     }
 }
