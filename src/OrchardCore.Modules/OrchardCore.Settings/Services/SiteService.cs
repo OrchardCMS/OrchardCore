@@ -19,17 +19,19 @@ namespace OrchardCore.Settings.Services
         private readonly ISignal _signal;
         private readonly IServiceProvider _serviceProvider;
         private readonly IClock _clock;
+        private readonly IDefaultTimeZoneService _siteTimeZoneService;
         private const string SiteCacheKey = "SiteService";
 
         public SiteService(
             ISignal signal,
             IServiceProvider serviceProvider,
-            IMemoryCache memoryCache, IClock clock)
+            IMemoryCache memoryCache, IClock clock, IDefaultTimeZoneService siteTimeZoneService)
         {
             _signal = signal;
             _serviceProvider = serviceProvider;
             _clock = clock;
             _memoryCache = memoryCache;
+            _siteTimeZoneService = siteTimeZoneService;
         }
 
         /// <inheritdoc/>
@@ -56,11 +58,12 @@ namespace OrchardCore.Settings.Services
                             { 
                                 SiteSalt = Guid.NewGuid().ToString("N"),
                                 SiteName = "My Orchard Project Application",
-                                TimeZone = _clock.GetLocalTimeZone(string.Empty).Id,
                                 PageSize = 10,
                                 MaxPageSize = 100,
                                 MaxPagedCount = 0
                             };
+
+                            site.TimeZone = _clock.GetLocalTimeZone(string.Empty).Id;
 
                             session.Save(site);
                             _memoryCache.Set(SiteCacheKey, site);
@@ -97,13 +100,14 @@ namespace OrchardCore.Settings.Services
             existing.SiteName = site.SiteName;
             existing.SiteSalt = site.SiteSalt;
             existing.SuperUser = site.SuperUser;
-            existing.TimeZone = site.TimeZone;
             existing.UseCdn = site.UseCdn;
 
             session.Save(existing);
 
             _memoryCache.Set(SiteCacheKey, site);
             _signal.SignalToken(SiteCacheKey);
+
+            await _siteTimeZoneService.SetSiteTimeZoneAsync(site.TimeZone);
 
             return;
         }

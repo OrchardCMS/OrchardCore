@@ -49,12 +49,15 @@ namespace OrchardCore.Modules
             var result = GetTimeZones(String.Empty).FirstOrDefault(x => x.Id == dateTimeZone.Id);
 
             //If TimeZone is not found in default ZoneLocations list then retrieve it from the Tzdb
-            if(result == null){            
+            if (result == null)
+            {
                 var offset = DateTimeZoneProviders.Tzdb[dateTimeZone.Id].GetZoneInterval(GetCurrentInstant()).StandardOffset;
-                result = new TimeZone(dateTimeZone.Id, $"({offset:+HH:mm}) {dateTimeZone.Id}", String.Empty);
+                return new TimeZone(dateTimeZone.Id, $"({offset:+HH:mm}) {dateTimeZone.Id}", String.Empty);
             }
-
-            return result;
+            else
+            {
+                return result;
+            }
         }
 
         public DateTimeOffset ConvertToTimeZone(DateTime dateTime, ITimeZone timeZone)
@@ -92,10 +95,14 @@ namespace OrchardCore.Modules
 
         private static DateTimeZone GetDateTimeZone(string timeZone)
         {
-            //TODO : For backward compatibility find also timezones that are not in Nodatime.
-            // see https://github.com/mj1856/TimeZoneConverter
-
-            return IsValidTimeZone(DateTimeZoneProviders.Tzdb, timeZone) ? DateTimeZoneProviders.Tzdb[timeZone] : DateTimeZoneProviders.Tzdb.GetSystemDefault();
+            if (timeZone != null)
+            {
+                return IsValidTimeZone(DateTimeZoneProviders.Tzdb, timeZone) ? DateTimeZoneProviders.Tzdb[timeZone] : DateTimeZoneProviders.Tzdb.GetSystemDefault();
+            }
+            else
+            {
+                return DateTimeZoneProviders.Tzdb.GetSystemDefault();
+            }
         }
 
         private static bool IsValidTimeZone(IDateTimeZoneProvider provider, string timeZoneId)

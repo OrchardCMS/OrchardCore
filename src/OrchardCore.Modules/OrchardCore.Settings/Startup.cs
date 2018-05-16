@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.TimeZone;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -36,6 +37,9 @@ namespace OrchardCore.Settings
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<ILiquidTemplateEventHandler, SiteLiquidTemplateEventHandler>();
+
+            services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
+            services.AddSingleton<IDefaultTimeZoneService, DefaultTimeZoneService>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
