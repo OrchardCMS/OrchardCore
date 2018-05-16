@@ -1,4 +1,4 @@
-namespace OrchardCore.UserProfile.Models
+namespace OrchardCore.Users.TimeZone.Models
 {
     public class UserProfile
     {

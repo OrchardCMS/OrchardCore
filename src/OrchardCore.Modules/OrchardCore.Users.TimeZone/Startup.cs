@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
-using OrchardCore.UserProfile.Drivers;
+using OrchardCore.Users.TimeZone.Drivers;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.UserProfile

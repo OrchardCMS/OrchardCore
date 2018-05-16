@@ -1,6 +1,6 @@
 using OrchardCore.Modules;
 
-namespace OrchardCore.UserProfile.ViewModels
+namespace OrchardCore.Users.TimeZone.ViewModels
 {
     public class EditUserProfileViewModel
     {

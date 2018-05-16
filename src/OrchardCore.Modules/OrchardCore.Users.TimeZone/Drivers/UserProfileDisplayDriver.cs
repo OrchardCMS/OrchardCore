@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using OrchardCore.UserProfile.ViewModels;
+using OrchardCore.Users.TimeZone.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -7,7 +7,7 @@ using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Users.Models;
 using OrchardCore.Modules;
 
-namespace OrchardCore.UserProfile.Drivers
+namespace OrchardCore.Users.TimeZone.Drivers
 {
     public class UserProfileDisplayDriver : SectionDisplayDriver<User, Models.UserProfile>
     {

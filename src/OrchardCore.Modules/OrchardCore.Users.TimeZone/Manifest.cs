@@ -1,11 +1,10 @@
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
-    Name = "Users Profile",
+    Name = "Users TimeZone",
     Author = "The Orchard Team",
     Website = "http://orchardproject.net",
     Version = "2.0.0",
-    Description = "Users profile (settings)",
-    Dependencies = new[] { "OrchardCore.Admin" },
+    Description = "Users TimeZone",
     Category = "Settings"
 )]
