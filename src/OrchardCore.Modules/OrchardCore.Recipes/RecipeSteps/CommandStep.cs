@@ -44,13 +44,13 @@ namespace OrchardCore.Recipes.RecipeSteps
             {
                 using (var output = new StringWriter())
                 {
-                    Logger.LogInformation("Executing command: {0}", command);
+                    Logger.LogInformation("Executing command: {Command}", command);
                     var commandParameters = _commandParameterParser.Parse(_commandParser.Parse(command));
                     commandParameters.Output = output;
                     await _commandManager.ExecuteAsync(commandParameters);
-                    Logger.LogInformation("{0}", output);
+                    Logger.LogInformation("Command executed with output: {CommandOutput}", output);
                 }
-                Logger.LogInformation("Executed command: {0}", command);
+                Logger.LogInformation("Executed command: {Command}", command);
             }
         }
 
