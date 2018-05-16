@@ -63,7 +63,7 @@ namespace OrchardCore.Settings.Services
                                 MaxPagedCount = 0
                             };
 
-                            site.Properties["TimeZone"] = _clock.GetLocalTimeZone(string.Empty).Id;
+                            site.TimeZone = _clock.GetLocalTimeZone(string.Empty).Id;
 
                             session.Save(site);
                             _memoryCache.Set(SiteCacheKey, site);
@@ -107,7 +107,7 @@ namespace OrchardCore.Settings.Services
             _memoryCache.Set(SiteCacheKey, site);
             _signal.SignalToken(SiteCacheKey);
 
-            await _siteTimeZoneService.SetSiteTimeZoneAsync((string)site.Properties["TimeZone"]);
+            await _siteTimeZoneService.SetSiteTimeZoneAsync(site.TimeZone);
 
             return;
         }

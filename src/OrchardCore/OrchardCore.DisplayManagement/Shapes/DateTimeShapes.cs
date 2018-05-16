@@ -90,7 +90,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             DateTimeOffset zonedTime;
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var siteTimeZone = _clock.GetLocalTimeZone(siteSettings.Properties["TimeZone"].ToString());
+            var siteTimeZone = _clock.GetLocalTimeZone(siteSettings.TimeZone);
             zonedTime = _clock.ConvertToTimeZone(Utc, siteTimeZone);
 
             if (Format == null)

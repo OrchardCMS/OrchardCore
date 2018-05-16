@@ -23,7 +23,7 @@ namespace OrchardCore.Settings.Drivers
                     {
                         model.SiteName = site.SiteName;
                         model.BaseUrl = site.BaseUrl;
-                        model.TimeZone = (string)site.Properties["TimeZone"];
+                        model.TimeZone = site.TimeZone;
                         model.TimeZones = _clock.GetTimeZones(string.Empty);
                     }).Location("Content:1").OnGroup(GroupId)
             );
@@ -39,7 +39,7 @@ namespace OrchardCore.Settings.Drivers
                 {
                     site.SiteName = model.SiteName;
                     site.BaseUrl = model.BaseUrl;
-                    site.Properties["TimeZone"] = model.TimeZone;
+                    site.TimeZone = model.TimeZone;
                 }
             }
 

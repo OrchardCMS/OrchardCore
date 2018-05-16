@@ -74,7 +74,7 @@ namespace OrchardCore.Settings.Recipes
                         break;
 
                     case "TimeZone":
-                        site.Properties["TimeZone"] = property.ToString();
+                        site.TimeZone = property.ToString();
                         break;
 
                     case "UseCdn":

@@ -44,7 +44,7 @@ namespace OrchardCore.Settings.Services
 
             var site = await session.Query<SiteSettings>().FirstOrDefaultAsync() as ISite;
 
-            site.Properties["TimeZone"] = timeZoneId;
+            site.TimeZone = timeZoneId;
             _memoryCache.Set(CacheKey, timeZoneId);
             session.Save(site);
         }
@@ -57,7 +57,7 @@ namespace OrchardCore.Settings.Services
                 var session = GetSession();
 
                 var site = await session.Query<SiteSettings>().FirstOrDefaultAsync() as ISite;
-                timeZoneId = (string)site.Properties["TimeZone"];
+                timeZoneId = site.TimeZone;
                 _memoryCache.Set(CacheKey, site);
             }
 

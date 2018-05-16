@@ -33,7 +33,7 @@ namespace OrchardCore.Settings.Services
             var siteSettings = await _setupService.GetSiteSettingsAsync();
             siteSettings.SiteName = siteName;
             siteSettings.SuperUser = userName;
-            siteSettings.Properties["TimeZone"] = siteTimeZone;
+            siteSettings.TimeZone = siteTimeZone;
             await _setupService.UpdateSiteSettingsAsync(siteSettings);
 
             // TODO: Add Encryption Settings in

@@ -10,6 +10,7 @@ namespace OrchardCore.Settings
         string SuperUser { get; set; }
         string Culture { get; set; }
         string Calendar { get; set; }
+        string TimeZone { get; set; }
         ResourceDebugMode ResourceDebugMode { get; set; }
         bool UseCdn { get; set; }
         int PageSize { get; set; }
