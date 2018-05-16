@@ -121,7 +121,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         get: function () {
                             return {
                                 smallThumbs: this.smallThumbs,
-                                selectedFolder: this.selectedFolder
+                                selectedFolder: this.selectedFolder,
+                                gridView: this.gridView
                             }
                         },
                         set: function (newPrefs) {
@@ -131,6 +132,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
 
                             this.smallThumbs = newPrefs.smallThumbs;
                             this.selectedFolder = newPrefs.selectedFolder;
+                            this.gridView = newPrefs.gridView;
                         }
                     }
                 },
