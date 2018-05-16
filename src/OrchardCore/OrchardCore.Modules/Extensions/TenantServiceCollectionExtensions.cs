@@ -11,6 +11,10 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class TenantServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds host and tenant level authentication services.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection WithAuthentication(this IServiceCollection services)
         {
             services.AddAuthentication();
@@ -30,6 +34,10 @@ namespace Microsoft.Extensions.DependencyInjection
             });
         }
 
+        /// <summary>
+        /// Adds tenant level antiforgery services.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection WithAntiForgery(this IServiceCollection services)
         {
             return services.ConfigureTenantServices<ShellSettings>((collection, settings) =>
@@ -45,6 +53,10 @@ namespace Microsoft.Extensions.DependencyInjection
             });
         }
 
+        /// <summary>
+        /// Adds tenant level data protection services.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection WithDataProtection(this IServiceCollection services)
         {
             return services.PostConfigureTenantServices<IOptions<ShellOptions>, ShellSettings>((collection, options, settings) =>

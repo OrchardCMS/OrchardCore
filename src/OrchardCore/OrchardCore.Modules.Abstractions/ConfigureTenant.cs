@@ -182,6 +182,10 @@ namespace OrchardCore.Modules
 
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Configure the tenant pipeline before all modules.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection ConfigureTenant(this IServiceCollection services,
             Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure)
         {
@@ -189,6 +193,10 @@ namespace OrchardCore.Modules
             return services;
         }
 
+        /// <summary>
+        /// Configure the tenant pipeline after all modules.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection PostConfigureTenant(this IServiceCollection services,
             Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure)
         {
@@ -196,6 +204,10 @@ namespace OrchardCore.Modules
             return services;
         }
 
+        /// <summary>
+        /// Adds tenant level services before all modules.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection ConfigureTenantServices(this IServiceCollection services,
             Action<IServiceCollection> configureServices)
         {
@@ -203,6 +215,10 @@ namespace OrchardCore.Modules
             return services;
         }
 
+        /// <summary>
+        /// Adds tenant level services after all modules.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection PostConfigureTenantServices(this IServiceCollection services,
             Action<IServiceCollection> configureServices)
         {
@@ -210,6 +226,10 @@ namespace OrchardCore.Modules
             return services;
         }
 
+        /// <summary>
+        /// Adds tenant level services before all modules.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection ConfigureTenantServices<TDep>(this IServiceCollection services,
             Action<IServiceCollection, TDep> configureServices)
             where TDep : class
@@ -221,6 +241,10 @@ namespace OrchardCore.Modules
             return services;
         }
 
+        /// <summary>
+        /// Adds tenant level services after all modules.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection PostConfigureTenantServices<TDep>(this IServiceCollection services,
             Action<IServiceCollection, TDep> configureServices)
             where TDep : class
@@ -233,6 +257,10 @@ namespace OrchardCore.Modules
             return services;
         }
 
+        /// <summary>
+        /// Adds tenant level services before all modules.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection ConfigureTenantServices<TDep1, TDep2>(this IServiceCollection services,
             Action<IServiceCollection, TDep1, TDep2> configureServices)
             where TDep1 : class
@@ -246,6 +274,10 @@ namespace OrchardCore.Modules
             return services;
         }
 
+        /// <summary>
+        /// Adds tenant level services after all modules.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection PostConfigureTenantServices<TDep1, TDep2>(this IServiceCollection services,
             Action<IServiceCollection, TDep1, TDep2> configureServices)
             where TDep1 : class
@@ -260,6 +292,10 @@ namespace OrchardCore.Modules
             return services;
         }
 
+        /// <summary>
+        /// Adds tenant level services before all modules.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection ConfigureTenantServices<TDep1, TDep2, TDep3>(this IServiceCollection services,
             Action<IServiceCollection, TDep1, TDep2, TDep3> configureServices)
             where TDep1 : class
@@ -275,6 +311,10 @@ namespace OrchardCore.Modules
             return services;
         }
 
+        /// <summary>
+        /// Adds tenant level services after all modules.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection PostConfigureTenantServices<TDep1, TDep2, TDep3>(this IServiceCollection services,
             Action<IServiceCollection, TDep1, TDep2, TDep3> configureServices)
             where TDep1 : class
@@ -291,6 +331,10 @@ namespace OrchardCore.Modules
             return services;
         }
 
+        /// <summary>
+        /// Adds tenant level services before all modules.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4>(this IServiceCollection services,
             Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4> configureServices)
             where TDep1 : class
@@ -308,6 +352,10 @@ namespace OrchardCore.Modules
             return services;
         }
 
+        /// <summary>
+        /// Adds tenant level services after all modules.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection PostConfigureTenantServices<TDep1, TDep2, TDep3, TDep4>(this IServiceCollection services,
             Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4> configureServices)
             where TDep1 : class
@@ -326,6 +374,10 @@ namespace OrchardCore.Modules
             return services;
         }
 
+        /// <summary>
+        /// Adds tenant level services before all modules.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4, TDep5>(this IServiceCollection services,
             Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4, TDep5> configureServices)
             where TDep1 : class
@@ -345,6 +397,10 @@ namespace OrchardCore.Modules
             return services;
         }
 
+        /// <summary>
+        /// Adds tenant level services after all modules.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection PostConfigureTenantServices<TDep1, TDep2, TDep3, TDep4, TDep5>(this IServiceCollection services,
             Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4, TDep5> configureServices)
             where TDep1 : class

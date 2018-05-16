@@ -6,6 +6,10 @@ namespace OrchardCore.BackgroundTasks
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds tenant level background tasks services.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection WithBackgroundTasks(this IServiceCollection services)
         {
             return services.ConfigureTenantServices((collection) =>

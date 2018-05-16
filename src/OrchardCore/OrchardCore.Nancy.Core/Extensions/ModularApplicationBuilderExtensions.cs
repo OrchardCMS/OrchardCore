@@ -10,6 +10,10 @@ namespace OrchardCore.Nancy
 {
     public static class ModularApplicationBuilderExtensions
     {
+        /// <summary>
+        /// Adds tenant level Nancy services.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection WithNancy(this IServiceCollection services)
         {
             return services.ConfigureTenantServices(collection =>

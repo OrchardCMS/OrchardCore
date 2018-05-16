@@ -14,6 +14,10 @@ namespace OrchardCore.DisplayManagement.Liquid
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds tenant level services for managing liquid view template files.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection WithLiquidViews(this IServiceCollection services)
         {
             return services.ConfigureTenantServices((collection) =>

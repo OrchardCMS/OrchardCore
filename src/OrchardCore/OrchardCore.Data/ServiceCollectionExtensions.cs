@@ -18,6 +18,10 @@ namespace OrchardCore.Data
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds tenant level data access services.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection WithDataAccess(this IServiceCollection services)
         {
             return services.ConfigureTenantServices((collection) =>

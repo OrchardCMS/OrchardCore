@@ -33,10 +33,9 @@ namespace OrchardCore.DisplayManagement
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds host and tenant level services.
+        /// Adds host and tenant level services for managing themes.
         /// </summary>
         /// <param name="services"></param>
-        /// <returns></returns>
         public static IServiceCollection WithTheming(this IServiceCollection services)
         {
             return services.AddThemingHost()

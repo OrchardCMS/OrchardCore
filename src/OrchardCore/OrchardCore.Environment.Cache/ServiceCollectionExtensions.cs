@@ -7,6 +7,10 @@ namespace OrchardCore.Environment.Cache
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds tenant level caching services.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection WithCaching(this IServiceCollection services)
         {
             return services.ConfigureTenantServices((collection) =>

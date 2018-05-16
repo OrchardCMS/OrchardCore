@@ -15,10 +15,10 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddOrchardCms(this IServiceCollection services)
         {
-            services
+            return services
                 .AddCommands()
-
                 .AddModules()
+
                 .WithDefaultFeatures("OrchardCore.Settings", "OrchardCore.Setup",
                     "OrchardCore.Recipes", "OrchardCore.Commons")
 
@@ -28,19 +28,14 @@ namespace Microsoft.Extensions.DependencyInjection
                 .WithDataProtection()
 
                 .WithDataAccess()
-                .WithTenantDataStorage()
-                .WithResourceManagement()
+                .WithDataStorage()
                 .WithBackgroundTasks()
                 .WithDeferredTasks()
-                .WithCaching()
 
                 .WithTheming()
                 .WithLiquidViews()
-
-                .WithTagHelpers("OrchardCore.DisplayManagement")
-                .WithTagHelpers("OrchardCore.ResourceManagement");
-
-            return services;
+                .WithResourceManagement()
+                .WithCaching();
         }
     }
 }

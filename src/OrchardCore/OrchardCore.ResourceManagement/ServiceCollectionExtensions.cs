@@ -6,6 +6,10 @@ namespace OrchardCore.ResourceManagement
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds tenant level services for managing resources.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection WithResourceManagement(this IServiceCollection services)
         {
             return services.ConfigureTenantServices((collection) =>

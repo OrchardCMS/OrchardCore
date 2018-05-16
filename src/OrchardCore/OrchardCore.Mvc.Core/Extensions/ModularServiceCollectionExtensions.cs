@@ -23,6 +23,10 @@ namespace OrchardCore.Mvc
 {
     public static class ModularServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds tenant level MVC services.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection WithMvc(this IServiceCollection services)
         {
             return services.ConfigureTenantServices<IServiceProvider>((collection, sp) =>

@@ -9,11 +9,12 @@ namespace OrchardCore.Environment.Shell.Data
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds host and tenant level services for tenant shell data.
+        ///  Adds host services to load site settings from the file system, and
+        ///  per-tenant services to store shell state and shell descriptors in the database.
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection WithTenantDataStorage(this IServiceCollection services)
+        public static IServiceCollection WithDataStorage(this IServiceCollection services)
         {
             services.AddSitesFolder();
 

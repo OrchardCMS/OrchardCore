@@ -6,6 +6,10 @@ namespace OrchardCore.DeferredTasks
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds tenant level deferred tasks services.
+        /// </summary>
+        /// <param name="services"></param>
         public static IServiceCollection WithDeferredTasks(this IServiceCollection services)
         {
             return services.ConfigureTenantServices((collection) =>
