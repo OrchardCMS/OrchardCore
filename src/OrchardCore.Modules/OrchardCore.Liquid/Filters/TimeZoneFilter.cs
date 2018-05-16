@@ -3,10 +3,8 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.TimeZone;
 using OrchardCore.Modules;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Liquid.Filters
 {

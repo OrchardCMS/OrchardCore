@@ -5,7 +5,6 @@ using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.Settings;
 using System.Globalization;
 using OrchardCore.DisplayManagement.TimeZone;
 
