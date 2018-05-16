@@ -1,8 +1,8 @@
 @model dynamic
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
-@{ 
-    var contentTypes = (string[])Model.ContentTypes;
+@{
+    var contentTypes = (string[])Model.Value.ContentTypes;
 }
 
 <h5>@T["Content Types"]</h5>

@@ -7,22 +7,20 @@ using YesSql.Services;
 
 namespace OrchardCore.Deployment.Steps
 {
-    public class ContentTypeDeploymentSource : IDeploymentSource
+    public class ContentDeploymentSource : IDeploymentSource
     {
-        private readonly IContentManager _contentManager;
         private readonly ISession _session;
 
-        public ContentTypeDeploymentSource(IContentManager contentManager, ISession session)
+        public ContentDeploymentSource(ISession session)
         {
-            _contentManager = contentManager;
             _session = session;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            // TODO: Batch and create separate content files in the result
+            // TODO: Batch and create separate content files in the result.
 
-            var contentState = step as ContentTypeDeploymentStep;
+            var contentState = step as ContentDeploymentStep;
 
             if (contentState == null)
             {
@@ -35,21 +33,21 @@ namespace OrchardCore.Deployment.Steps
             {
                 var objectData = JObject.FromObject(contentItem);
 
-                // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
+                // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql.
                 objectData.Remove(nameof(ContentItem.Id));
                 data.Add(objectData);
             }
 
             if (data.HasValues)
             {
-                var jobj = new JObject();
-                jobj["name"] = "content";
-                jobj["data"] = data;
+                var jobj = new JObject
+                {
+                    ["name"] = "content",
+                    ["data"] = data
+                };
 
                 result.Steps.Add(jobj);
             }
-
-            return;
         }
     }
 }
