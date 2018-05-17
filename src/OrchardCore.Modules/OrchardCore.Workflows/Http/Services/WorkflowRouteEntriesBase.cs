@@ -6,7 +6,7 @@ using OrchardCore.Workflows.Http.Models;
 
 namespace OrchardCore.Workflows.Http.Services
 {
-    public abstract class WorkflowRouteEntriesBase : IWorkflowRouteEntries
+    internal abstract class WorkflowRouteEntriesBase : IWorkflowRouteEntries
     {
         private readonly object _syncLock = new object();
         private IDictionary<string, IList<WorkflowRoutesEntry>> _entries = new Dictionary<string, IList<WorkflowRoutesEntry>>();

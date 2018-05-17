@@ -3,7 +3,12 @@
 $(function () {
     ps = new PerfectScrollbar('#left-nav');
 
-    if ($('body').hasClass('left-sidebar-compact')) {
+    // We set leftbar to compact if :
+    // 1. That preference was stored by the user the last time he was on the page
+    // 2. Or it's the first time on page and page is small.
+    //
+    if ($('body').hasClass('left-sidebar-compact')
+        || (($('body').hasClass('no-admin-preferences') && $(window).width() < 768))){
         setCompactStatus();
     }
 });
@@ -11,8 +16,6 @@ $(function () {
 
 $('.leftbar-compactor').click(function () {
     $('body').hasClass('left-sidebar-compact') ? unSetCompactStatus() : setCompactStatus();
-
-    persistAdminPreferences();
 });
 
 
@@ -32,11 +35,13 @@ function setCompactStatus() {
     // When leftbar is expanded  all ul tags are collapsed.
     // When leftbar is compacted we don't want the first level collapsed. 
     // We want it expanded so that hovering over the root buttons shows the full submenu
-    $('#left-nav ul.menu-admin > li > ul').removeClass('collapse');
+    $('#left-nav ul.menu-admin > li > div > ul').removeClass('collapse');
     // When hovering, don't want toggling when clicking on label
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', '');
     $('#left-nav').removeClass('ps');
     $('#left-nav').removeClass('ps--active-y'); // need this too because of Edge IE11
+
+    persistAdminPreferences();
 }
 
 
@@ -45,7 +50,9 @@ function unSetCompactStatus() {
     $('body').removeClass('left-sidebar-compact');
 
     // resetting what we disabled for compact state
-    $('#left-nav ul.menu-admin > li > ul').addClass('collapse');    
+    $('#left-nav ul.menu-admin > li > div > ul').addClass('collapse');    
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', 'collapse');
     $('#left-nav').addClass('ps');
+
+    persistAdminPreferences();
 }

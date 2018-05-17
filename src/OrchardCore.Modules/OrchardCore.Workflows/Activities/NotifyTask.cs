@@ -12,12 +12,12 @@ namespace OrchardCore.Workflows.Activities
     public class NotifyTask : TaskActivity
     {
         private readonly INotifier _notifier;
-        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
-        public NotifyTask(INotifier notifier, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<NotifyTask> t)
+        public NotifyTask(INotifier notifier, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<NotifyTask> t)
         {
             _notifier = notifier;
-            _scriptEvaluator = scriptEvaluator;
+            _expressionEvaluator = expressionvaluator;
             T = t;
         }
         
@@ -44,7 +44,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var message = await _scriptEvaluator.EvaluateAsync(Message, workflowContext);
+            var message = await _expressionEvaluator.EvaluateAsync(Message, workflowContext);
             _notifier.Add(NotificationType, new LocalizedHtmlString(nameof(NotifyTask), message));
 
             return Outcomes("Done");

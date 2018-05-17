@@ -8,34 +8,34 @@ namespace OrchardCore.Workflows
     {
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionIndex), table => table
-                .Column<string>("WorkflowDefinitionId")
+            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowTypeIndex), table => table
+                .Column<string>("WorkflowTypeId")
                 .Column<string>("Name")
                 .Column<bool>("IsEnabled")
                 .Column<bool>("HasStart")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionStartActivitiesIndex), table => table
-                .Column<string>("WorkflowDefinitionId")
+            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowTypeStartActivitiesIndex), table => table
+                .Column<string>("WorkflowTypeId")
                 .Column<string>("Name")
                 .Column<bool>("IsEnabled")
                 .Column<string>("StartActivityId")
                 .Column<string>("StartActivityName")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowInstanceIndex), table => table
-                .Column<string>("WorkflowDefinitionId")
-                .Column<string>("WorkflowInstanceId")
+            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowIndex), table => table
+                .Column<string>("WorkflowTypeId")
+                .Column<string>("WorkflowId")
                 .Column<DateTime>("CreatedUtc")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowInstanceBlockingActivitiesIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowBlockingActivitiesIndex), table => table
                 .Column<string>("ActivityId")
                 .Column<string>("ActivityName")
                 .Column<bool>("ActivityIsStart")
-                .Column<string>("WorkflowDefinitionId")
-                .Column<string>("WorkflowInstanceId")
-                .Column<string>("WorkflowInstanceCorrelationId")
+                .Column<string>("WorkflowTypeId")
+                .Column<string>("WorkflowId")
+                .Column<string>("WorkflowCorrelationId")
             );
 
             return 1;

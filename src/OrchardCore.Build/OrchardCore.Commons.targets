@@ -1,0 +1,49 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Target Name="VerifyIncludeBuildOutputProperty" AfterTargets="BeforeCompile" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <_IsEmptyAssembly Condition=" '@(Compile)' == '' and  '@(EmbeddedResource)' == '' ">true</_IsEmptyAssembly>
+    </PropertyGroup>
+    
+    <Warning Condition=" '$(_IsEmptyAssembly)' == 'true' and '$(IncludeBuildOutput)' != 'false' " 
+             Code="OC2001"
+             Text="Project contains no 'Compile' or 'EmbeddedResource' items. Set &lt;IncludeBuildOutput&gt;false&lt;/IncludeBuildOutput&gt; in $(MSBuildProjectFile)." 
+             File="$(MSBuildProjectFullPath)" />
+  </Target>
+
+  <Target Name="ApplyPackageManagement" BeforeTargets="CollectPackageReferences" DependsOnTargets="ApplyPackageManagementItems" />
+
+  <Target Name="ApplyPackageManagementItems" Inputs="@(PackageManagement)" Outputs="%(PackageManagement.Identity)">
+    <PropertyGroup>
+      <_PackageManagementIdentity>%(PackageManagement.Identity)</_PackageManagementIdentity>
+      <_PackageManagementVersion>%(PackageManagement.Version)</_PackageManagementVersion>
+    </PropertyGroup>
+    <Warning Condition=" '%(PackageReference.Identity)' == '$(_PackageManagementIdentity)' and '%(PackageReference.Version)' == '$(_PackageManagementVersion)' "
+             Code="OC2002"
+             Text="PackageReference %(PackageReference.Identity)@%(PackageReference.Version) Version attribute is not needed" 
+             File="$(MSBuildProjectFullPath)" />
+    <ItemGroup>
+      <PackageReference Condition=" '%(Identity)' == '$(_PackageManagementIdentity)' " Version="$(_PackageManagementVersion)" ManagedVersion="true" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="BeforePackageManagement" BeforeTargets="ApplyPackageManagement">
+    <Message Text="BeforePackageManagement: %(PackageReference.Identity)@%(PackageReference.Version)" Importance="low" />
+  </Target>
+
+  <Target Name="AfterPackageManagement" AfterTargets="ApplyPackageManagement">
+    <Message Text="AfterPackageManagement: %(PackageReference.Identity)@%(PackageReference.Version)" Importance="low" />
+
+    <ItemGroup>
+      <UnmanagedPackageReference Include="@(PackageReference)" />
+      <UnmanagedPackageReference Remove="@(UnmanagedPackageReference)" Condition=" '%(UnmanagedPackageReference.ManagedVersion)' == 'true' " />
+      <UnmanagedPackageReference Remove="@(UnmanagedPackageReference)" Condition=" '%(UnmanagedPackageReference.IsImplicitlyDefined)' == 'true' " />
+      <UnmanagedPackageReference Remove="@(UnmanagedPackageReference)" Condition=" $([System.String]::Copy('%(Identity)').StartsWith('System.')) " />
+    </ItemGroup>
+    <Warning Condition=" '@(UnmanagedPackageReference)' != '' "
+             Code="OC2003"
+             Text="%(UnmanagedPackageReference.Identity)@%(UnmanagedPackageReference.Version) is an unmanaged PackageReference" 
+             File="$(MSBuildProjectFullPath)" />
+  </Target>
+
+</Project>

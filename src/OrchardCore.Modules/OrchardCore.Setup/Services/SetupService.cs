@@ -92,7 +92,7 @@ namespace OrchardCore.Setup.Services
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Running setup for tenant '{0}'.", _shellSettings.Name);
+                _logger.LogInformation("Running setup for tenant '{TenantName}'.", _shellSettings.Name);
             }
 
             // Features to enable for Setup
