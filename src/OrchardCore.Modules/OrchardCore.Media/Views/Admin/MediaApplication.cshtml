@@ -2,7 +2,7 @@
     Layout = null;
 }
 
-<div id="mediaApp" style="display:none">
+<div id="mediaApp" style="display:none" v-on:dragover="handleScrollWhileDrag($event)">
     <div class="message-warning" v-if="errors.length > 0">
         <ul>
             <li v-for="e in errors">

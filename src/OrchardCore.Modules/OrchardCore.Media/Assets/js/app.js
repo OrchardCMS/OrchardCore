@@ -338,6 +338,15 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         e.dataTransfer.setData('sourceFolder', this.selectedFolder.path);
                         e.dataTransfer.setDragImage(this.dragDropThumbnail, 10, 10);
                         e.dataTransfer.effectAllowed = 'move';                        
+                    },
+                    handleScrollWhileDrag: function (e) {
+                        if (e.clientY < 150) {                            
+                            window.scrollBy(0, -10);
+                        }
+
+                        if (e.clientY > window.innerHeight - 100) {                            
+                            window.scrollBy(0, 10);
+                        }
                     }
                 }
             });
