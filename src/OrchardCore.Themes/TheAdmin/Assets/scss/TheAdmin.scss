@@ -7,6 +7,7 @@
 @import "codemirror.scss";
 
 $top-nav-height: 59px;
+$footer-height: 60px;
 $left-navigation-width: 260px;
 $left-navigation-width-when-compact: 60px;
 $border-content: 1px solid rgba(0, 0, 0, 0.05);
@@ -27,8 +28,20 @@ $extended-hover-length: 30px;
     hyphens: auto;
 }
 
+body {
+    margin-bottom: $footer-height;
+}
 
 
+.ta-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: $footer-height;
+    line-height: $footer-height;
+    background-color: $gray-100;
+    z-index: 8;
+}
 
 // Layout
 // -----------------------------
@@ -119,7 +132,7 @@ $extended-hover-length: 30px;
     #left-nav {
         position: relative;
         height: calc(100% - #{$top-nav-height * 2});
-        border-top: 1px solid $gray-300;
+        //border-top: 1px solid $gray-300;
     }
     // Remove padding/margin from all uls
     ul {
