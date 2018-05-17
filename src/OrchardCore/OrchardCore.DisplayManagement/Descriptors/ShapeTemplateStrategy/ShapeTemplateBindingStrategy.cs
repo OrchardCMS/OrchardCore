@@ -139,7 +139,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 {
                     if (_logger.IsEnabled(LogLevel.Debug))
                     {
-                        _logger.LogDebug("Binding {0} as shape [{1}] for feature {2}",
+                        _logger.LogDebug("Binding '{TemplatePath}' as shape '{ShapeType}' for feature '{FeatureName}'",
                             hit.shapeContext.harvestShapeInfo.RelativePath,
                             iter.shapeContext.harvestShapeHit.ShapeType,
                             feature.Id);
