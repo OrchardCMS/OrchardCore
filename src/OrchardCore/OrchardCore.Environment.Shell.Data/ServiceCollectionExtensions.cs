@@ -2,28 +2,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Data.Descriptors;
 using OrchardCore.Environment.Shell.Descriptor;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Data
 {
     public static class ServiceCollectionExtensions
     {
-        /// <summary>
-        ///  Adds services at the host level to load site settings from the file system
-        ///  and tenant level services to store states and descriptors in the database.
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection WithDataStorage(this IServiceCollection services)
-        {
-            services.AddSitesFolder();
-
-            return services.ConfigureTenantServices(collection =>
-            {
-                collection.AddShellDescriptorStorage();
-            });
-        }
-
         /// <summary>
         ///  Host services to load site settings from the file system
         /// </summary>

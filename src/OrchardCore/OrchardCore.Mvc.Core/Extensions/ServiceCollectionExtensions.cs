@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -21,24 +20,8 @@ using OrchardCore.Mvc.RazorPages;
 
 namespace OrchardCore.Mvc
 {
-    public static class ModularServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
-        /// <summary>
-        /// Adds tenant level MVC services.
-        /// </summary>
-        /// <param name="services"></param>
-        public static IServiceCollection WithMvc(this IServiceCollection services)
-        {
-            return services.ConfigureTenantServices<IServiceProvider>((collection, sp) =>
-            {
-                collection.AddMvcModules(sp);
-            })
-            .ConfigureTenant((app, routes, sp) =>
-            {
-                app.UseStaticFilesModules();
-            });
-        }
-
         public static IServiceCollection AddMvcModules(this IServiceCollection services,
             IServiceProvider applicationServices)
         {

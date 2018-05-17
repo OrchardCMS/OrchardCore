@@ -19,23 +19,26 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddCommands()
                 .AddModules()
 
-                .WithDefaultFeatures("OrchardCore.Settings", "OrchardCore.Setup",
+                .WithDefaultFeatures(
+                    "OrchardCore.Settings", "OrchardCore.Setup",
                     "OrchardCore.Recipes", "OrchardCore.Commons")
 
-                .WithMvc()
-                .WithAntiForgery()
-                .WithAuthentication()
-                .WithDataProtection()
+                .AddMvc()
+                .AddAntiForgery()
+                .AddAuthentication()
+                .AddDataProtection()
 
-                .WithDataAccess()
-                .WithDataStorage()
-                .WithBackgroundTasks()
-                .WithDeferredTasks()
+                .AddDataAccess()
+                .AddDataStorage()
+                .AddBackgroundTasks()
+                .AddDeferredTasks()
 
-                .WithTheming()
-                .WithLiquidViews()
-                .WithResourceManagement()
-                .WithCaching();
+                .AddTheming()
+                .AddLiquidViews()
+                .AddResourceManagement()
+                .AddCaching()
+
+                .Services;
         }
     }
 }

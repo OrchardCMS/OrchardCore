@@ -14,9 +14,9 @@ namespace OrchardCore.Nancy
         /// Adds tenant level Nancy services.
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection WithNancy(this IServiceCollection services)
+        public static ModularServicesBuilder AddNancy(this ModularServicesBuilder builder)
         {
-            return services.ConfigureTenantServices(collection =>
+            builder.Services.ConfigureTenantServices(collection =>
             {
                 collection.AddRouting();
             })
@@ -25,6 +25,8 @@ namespace OrchardCore.Nancy
                 app.UseNancyModules();
                 app.UseStaticFilesModules();
             });
+
+            return builder;
         }
 
         public static IApplicationBuilder UseNancyModules(this IApplicationBuilder app)

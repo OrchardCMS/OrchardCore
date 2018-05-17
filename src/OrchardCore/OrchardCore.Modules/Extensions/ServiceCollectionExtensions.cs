@@ -4,19 +4,17 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Descriptor.Settings;
 using OrchardCore.Modules;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ModularServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
         /// <summary>
         /// Adds modules services to the specified <see cref="Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
         /// </summary>
-        public static IServiceCollection AddModules(this IServiceCollection services, Action<IServiceCollection> configure = null)
+        public static IServiceCollection AddModules(this IServiceCollection services, Action<ModularServicesBuilder> configure)
         {
             services.AddWebHost();
             services.AddManifestDefinition("module");
@@ -29,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddAllFeaturesDescriptor();
 
             // Let the app change the default tenant behavior and set of features
-            configure?.Invoke(services);
+            configure?.Invoke(new ModularServicesBuilder(services));
 
             // Registers the application feature
             services.AddTransient(sp =>
@@ -43,46 +41,6 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        /// <summary>
-        /// Registers a default tenant with a set of features that are used to setup and configure the actual tenants.
-        /// For instance you can use this to add a custom Setup module.
-        /// </summary>
-        public static IServiceCollection WithDefaultFeatures(
-            this IServiceCollection services, params string[] featureIds)
-        {
-            foreach (var featureId in featureIds)
-            {
-                services.AddTransient(sp => new ShellFeature(featureId));
-            }
-
-            return services;
-        }
-
-        /// <summary>
-        /// Registers tenants defined in configuration.
-        /// </summary>
-        public static IServiceCollection WithTenants(this IServiceCollection services)
-        {
-            services.AddSingleton<IShellSettingsConfigurationProvider, FileShellSettingsConfigurationProvider>();
-            services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
-            services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
-            services.AddScoped<ShellSettingsWithTenants>();
-
-            return services;
-        }
-
-        /// <summary>
-        /// Registers a single tenant with the specified set of features.
-        /// </summary>
-        public static IServiceCollection WithFeatures(
-            this IServiceCollection services, params string[] featureIds)
-        {
-            services.WithDefaultFeatures(featureIds);
-            services.AddSetFeaturesDescriptor();
-
-            return services;
-        }
-
         public static IServiceCollection AddWebHost(
             this IServiceCollection services)
         {
@@ -90,7 +48,12 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddOptions();
             services.AddLocalization();
             services.AddHostingShellServices();
-            services.WithExtensionManager();
+
+            services.AddExtensionManagerHost().ConfigureTenantServices(collection =>
+            {
+                collection.AddExtensionManager();
+            });
+
             services.AddWebEncoders();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
