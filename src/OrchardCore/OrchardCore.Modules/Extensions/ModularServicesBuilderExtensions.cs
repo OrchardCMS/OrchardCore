@@ -15,14 +15,6 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ModularServicesBuilderExtensions
     {
         /// <summary>
-        /// Adds modules services to the specified <see cref="Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
-        /// </summary>
-        public static ModularServicesBuilder AddModules(this IServiceCollection services)
-        {
-            return new ModularServicesBuilder(services.AddModules(null));
-        }
-
-        /// <summary>
         /// Registers a default tenant with a set of features that are used to setup and configure the actual tenants.
         /// For instance you can use this to add a custom Setup module.
         /// </summary>

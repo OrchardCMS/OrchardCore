@@ -12,7 +12,16 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ServiceCollectionExtensions
     {
         /// <summary>
+        /// Adds modules services.
+        /// </summary>
+        public static ModularServicesBuilder AddModules(this IServiceCollection services)
+        {
+            return new ModularServicesBuilder(services.AddModules(null));
+        }
+
+        /// <summary>
         /// Adds modules services to the specified <see cref="Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+        /// Kept for backward compatibility to still allow to pass a configure action and return a regular service collection.
         /// </summary>
         public static IServiceCollection AddModules(this IServiceCollection services, Action<ModularServicesBuilder> configure)
         {
