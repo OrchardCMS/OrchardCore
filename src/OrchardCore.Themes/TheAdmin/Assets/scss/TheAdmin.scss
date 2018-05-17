@@ -7,6 +7,7 @@
 @import "codemirror.scss";
 
 $top-nav-height: 59px;
+$footer-height: 60px;
 $left-navigation-width: 260px;
 $left-navigation-width-when-compact: 60px;
 $border-content: 1px solid rgba(0, 0, 0, 0.05);
@@ -25,6 +26,20 @@ $link-padding-left: 16px !default;
 }
 
 
+body {
+    margin-bottom: $footer-height;
+}
+
+
+.ta-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: $footer-height;
+    line-height: $footer-height;
+    background-color: $gray-100;
+    z-index: 8;
+}
 
 
 // Layout

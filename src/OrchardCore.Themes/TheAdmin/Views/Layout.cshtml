@@ -46,7 +46,7 @@
 
         <div id="ta-left-sidebar">
             <button class="leftbar-compactor" type="button"><span> <i class="fas fa-bars" aria-hidden="false"></i> </span></button>
-            @await RenderSectionAsync("Navigation", required: false)            
+            @await RenderSectionAsync("Navigation", required: false)
         </div>
 
         <div class="ta-content">
@@ -54,6 +54,16 @@
 
             @await RenderBodyAsync()
         </div>
+
+        <footer class="ta-footer">
+            <div class="container-fluid">
+                <span class="text-muted float-right">
+                    Orchard Core vhardcoded
+
+                </span>
+            </div>
+        </footer>
+
 
     </div><!-- /.ta-wrapper -->
 
