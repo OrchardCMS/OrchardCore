@@ -80,11 +80,13 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds tenant level antiforgery services.
+        /// Adds host and tenant level antiforgery services.
         /// </summary>
         /// <param name="services"></param>
         public static ModularServicesBuilder AddAntiForgery(this ModularServicesBuilder builder)
         {
+            builder.Services.AddAntiforgery();
+
             builder.Services.ConfigureTenantServices<ShellSettings>((collection, settings) =>
             {
                 var tenantName = settings.Name;
@@ -101,11 +103,13 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds tenant level data protection services.
+        /// Adds host and tenant level data protection services.
         /// </summary>
         /// <param name="services"></param>
         public static ModularServicesBuilder AddDataProtection(this ModularServicesBuilder builder)
         {
+            builder.Services.AddDataProtection();
+
             builder.Services.PostConfigureTenantServices<IOptions<ShellOptions>, ShellSettings>((collection, options, settings) =>
             {
                 var directory = Directory.CreateDirectory(Path.Combine(
