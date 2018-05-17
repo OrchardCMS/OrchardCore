@@ -103,13 +103,11 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds host and tenant level data protection services.
+        /// Adds tenant level data protection services.
         /// </summary>
         /// <param name="services"></param>
         public static ModularServicesBuilder AddDataProtection(this ModularServicesBuilder builder)
         {
-            builder.Services.AddDataProtection();
-
             builder.Services.PostConfigureTenantServices<IOptions<ShellOptions>, ShellSettings>((collection, options, settings) =>
             {
                 var directory = Directory.CreateDirectory(Path.Combine(
