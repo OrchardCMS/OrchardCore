@@ -470,8 +470,11 @@ $(document).on('mediaApp:ready', function () {
 // <folder> component
 Vue.component('folder', {
     template: '\
-        <li :class="{selected: isSelected}" v-on:dragenter.prevent="handleDragEnter($event);" v-on:dragleave.prevent="handleDragLeave($event);" ondragover="event.preventDefault();" v-on:drop.stop="moveMediaToFolder(model, $event)" >\
-            <div>\
+        <li :class="{selected: isSelected}" \
+                v-on:dragleave.prevent = "handleDragLeave($event);" \
+                v-on:dragover.prevent.stop="handleDragOver($event);" \
+                v-on:drop.prevent.stop = "moveMediaToFolder(model, $event)" >\
+            <div v-bind:class="{folderhovered: isHovered}" >\
                 <a href="javascript:;" v-on:click="toggle" class="expand" v-bind:class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
                 <a href="javascript:;" v-on:click="select" draggable="false" >\
                     <i class="folder fa fa-folder"></i>\
@@ -495,7 +498,8 @@ Vue.component('folder', {
         return {
             open: false,
             children: null, // not initialized state (for lazy-loading)
-            parent: null
+            parent: null,
+            isHovered : false
         }
     },
     computed: {
@@ -565,22 +569,17 @@ Vue.component('folder', {
         select: function () {
             bus.$emit('folderSelected', this.model);
         },
-        handleDragEnter: function (e) {                     
-            if (e.target.classList.contains('folder-dragover') === false) {                
-                e.target.classList.add('folder-dragover');
-            }
+        handleDragOver: function (e) {
+            this.isHovered = true;
         },
         handleDragLeave: function (e) {
-            if (e.target.classList.contains('folder-dragover') === true) {                
-                e.target.classList.remove('folder-dragover');
-            }
+            this.isHovered = false;            
         },
         moveMediaToFolder: function (folder, e) {
-            if (e.target.classList.contains('folder-dragover') === true) {                
-                e.target.classList.remove('folder-dragover');
-            }
 
             var self = this;
+            self.isHovered = false;
+
             var mediaNames = JSON.parse(e.dataTransfer.getData('mediaNames')); 
 
             if (mediaNames.length < 1) {

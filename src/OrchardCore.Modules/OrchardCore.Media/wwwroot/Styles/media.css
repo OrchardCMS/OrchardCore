@@ -6086,7 +6086,7 @@ a.text-dark:hover, a.text-dark:focus {
     margin-left: 0px; }
   #media-container-navigation-menu .folder {
     color: lightgray; }
-  #media-container-navigation-menu .folder-dragover {
+  #media-container-navigation-menu .folderhovered {
     font-weight: bold; }
   #media-container-navigation-menu li {
     list-style: none; }
