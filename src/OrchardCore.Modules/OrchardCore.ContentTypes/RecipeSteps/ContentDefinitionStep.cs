@@ -84,8 +84,8 @@ namespace OrchardCore.ContentTypes.RecipeSteps
 
         private class ContentDefinitionStepModel
         {
-            public ContentTypeDefinitionRecord[] ContentTypes { get; } = Array.Empty<ContentTypeDefinitionRecord>();
-            public ContentPartDefinitionRecord[] ContentParts { get; } = Array.Empty<ContentPartDefinitionRecord>();
+            public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = Array.Empty<ContentTypeDefinitionRecord>();
+            public ContentPartDefinitionRecord[] ContentParts { get; set; } = Array.Empty<ContentPartDefinitionRecord>();
         }
     }
 }
