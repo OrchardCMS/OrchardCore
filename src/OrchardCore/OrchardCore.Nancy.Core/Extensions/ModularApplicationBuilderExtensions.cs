@@ -18,7 +18,7 @@ namespace OrchardCore.Nancy
         {
             return services.ConfigureTenantServices(collection =>
             {
-                services.AddRouting();
+                collection.AddRouting();
             })
             .ConfigureTenant((app, routes, sp) =>
             {
