@@ -6,6 +6,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Users.Models;
 using OrchardCore.Modules;
+using OrchardCore.Users.Services;
 
 namespace OrchardCore.Users.TimeZone.Drivers
 {
@@ -34,6 +35,13 @@ namespace OrchardCore.Users.TimeZone.Drivers
             {
                 profile.TimeZone = model.TimeZone;
             }
+
+            //var result = await _userService.UpdateAsync(profile);
+
+            //foreach (var error in result.Errors)
+            //{
+            //    context.Updater.ModelState.AddModelError(string.Empty, error.Description);
+            //}
 
             return Edit(profile);
         }
