@@ -55,7 +55,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Updating shell descriptor for shell '{0}'...", _shellSettings.Name);
+                _logger.LogInformation("Updating shell descriptor for tenant '{TenantName}' ...", _shellSettings.Name);
             }
 
             if (shellDescriptorRecord == null)
@@ -72,7 +72,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Shell descriptor updated for shell '{0}'.", _shellSettings.Name);
+                _logger.LogInformation("Shell descriptor updated for tenant '{TenantName}'.", _shellSettings.Name);
             }
 
             _session.Save(shellDescriptorRecord);

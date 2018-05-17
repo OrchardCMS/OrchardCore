@@ -403,10 +403,21 @@ Sets the type of a shape.
 
 Input
 ```liquid
-{% shape_type my_shape "Summary" %}
+{% shape_type my_shape "MyType" %}
 ```
 
 Whenever the type is changed, it is recommended to clear the shape alternates before using the `shape_clear_alternates` tag.
+
+### shape_display_type
+
+Sets the display type of a shape.
+
+Input
+```liquid
+{% shape_display_type my_shape "Summary" %}
+```
+
+Whenever the display type is changed, it is recommended to clear the shape alternates before.
 
 ### shape_position
 
@@ -468,6 +479,11 @@ Input
 ```liquid
 {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_duration: "00:05:00", cache_tag: "alias:main-menu" %}
 ```
+When using the shape tag a specific wrapper and / or alternate can be specified.
+
+```liquid
+{% shape "menu", alias: "alias:main-menu", alternate: "Menu_Footer" %}
+```
 
 ### zone
 
@@ -508,7 +524,7 @@ Invokes the `style` tag helper from the **Orchard.ResourceManagement** package.
 
 ### a
 
-Invokes the `a` tag helper from the MVC package.
+Invokes the `a` content link tag helper from the **OrchardCore.Contents** package.
 
 ### antiforgerytoken
 
