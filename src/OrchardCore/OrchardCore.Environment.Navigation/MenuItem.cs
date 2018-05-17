@@ -68,7 +68,6 @@ namespace OrchardCore.Environment.Navigation
         /// <summary>
         /// The child menu items.
         /// </summary>
-        ///
         public List<MenuItem> Items { get; set; }
 
         /// <summary>
