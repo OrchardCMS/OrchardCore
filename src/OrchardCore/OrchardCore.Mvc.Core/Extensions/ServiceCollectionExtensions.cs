@@ -55,14 +55,6 @@ namespace OrchardCore.Mvc
             return services;
         }
 
-        public static IServiceCollection WithTagHelpers(this IServiceCollection services, string assemblyName)
-        {
-            return services.ConfigureTenant((app, routes, sp) =>
-            {
-                sp.AddTagHelpers(assemblyName);
-            });
-        }
-
         public static void AddTagHelpers(this IServiceProvider serviceProvider, string assemblyName)
         {
             serviceProvider.AddTagHelpers(Assembly.Load(new AssemblyName(assemblyName)));

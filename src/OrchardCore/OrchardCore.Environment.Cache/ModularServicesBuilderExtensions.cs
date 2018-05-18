@@ -7,7 +7,6 @@ namespace OrchardCore.Environment.Cache
         /// <summary>
         /// Adds tenant level caching services.
         /// </summary>
-        /// <param name="services"></param>
         public static ModularServicesBuilder AddCaching(this ModularServicesBuilder builder)
         {
             builder.Services.ConfigureTenantServices((collection) =>

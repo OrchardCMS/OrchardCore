@@ -57,7 +57,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds host and tenant level authentication services.
         /// </summary>
-        /// <param name="services"></param>
         public static ModularServicesBuilder AddAuthentication(this ModularServicesBuilder builder)
         {
             builder.Services.AddAuthentication();
@@ -82,7 +81,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds host and tenant level antiforgery services.
         /// </summary>
-        /// <param name="services"></param>
         public static ModularServicesBuilder AddAntiForgery(this ModularServicesBuilder builder)
         {
             builder.Services.AddAntiforgery();
@@ -105,7 +103,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds tenant level data protection services.
         /// </summary>
-        /// <param name="services"></param>
         public static ModularServicesBuilder AddDataProtection(this ModularServicesBuilder builder)
         {
             builder.Services.PostConfigureTenantServices<IOptions<ShellOptions>, ShellSettings>((collection, options, settings) =>

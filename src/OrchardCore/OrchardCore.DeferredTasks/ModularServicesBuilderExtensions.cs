@@ -7,7 +7,6 @@ namespace OrchardCore.DeferredTasks
         /// <summary>
         /// Adds tenant level deferred tasks services.
         /// </summary>
-        /// <param name="services"></param>
         public static ModularServicesBuilder AddDeferredTasks(this ModularServicesBuilder builder)
         {
             builder.Services.ConfigureTenantServices((collection) =>

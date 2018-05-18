@@ -7,7 +7,6 @@ namespace OrchardCore.Data
         /// <summary>
         /// Adds tenant level data access services.
         /// </summary>
-        /// <param name="services"></param>
         public static ModularServicesBuilder AddDataAccess(this ModularServicesBuilder builder)
         {
             builder.Services.ConfigureTenantServices((collection) =>

@@ -7,7 +7,6 @@ namespace OrchardCore.BackgroundTasks
         /// <summary>
         /// Adds tenant level background tasks services.
         /// </summary>
-        /// <param name="services"></param>
         public static ModularServicesBuilder AddBackgroundTasks(this ModularServicesBuilder builder)
         {
             builder.Services.ConfigureTenantServices((collection) =>

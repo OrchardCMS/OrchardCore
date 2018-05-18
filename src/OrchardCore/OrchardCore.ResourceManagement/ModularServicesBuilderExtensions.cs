@@ -7,7 +7,6 @@ namespace OrchardCore.ResourceManagement
         /// <summary>
         /// Adds tenant level services for managing resources.
         /// </summary>
-        /// <param name="services"></param>
         public static ModularServicesBuilder AddResourceManagement(this ModularServicesBuilder builder)
         {
             builder.Services.ConfigureTenantServices((collection) =>

@@ -8,7 +8,6 @@ namespace OrchardCore.DisplayManagement
         /// <summary>
         /// Adds host and tenant level services for managing themes.
         /// </summary>
-        /// <param name="services"></param>
         public static ModularServicesBuilder AddTheming(this ModularServicesBuilder builder)
         {
             builder.Services.AddThemingHost()
