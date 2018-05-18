@@ -6147,6 +6147,10 @@ a.text-dark:hover, a.text-dark:focus {
     align-items: center;
     justify-content: center; }
 
+.media-container-main .media-items-table .header-row th {
+  color: #495057;
+  font-weight: 500 !important; }
+
 .media-container-main .media-items-table td.thumbnail-column {
   text-align: center;
   padding: 4px; }
@@ -6159,6 +6163,26 @@ a.text-dark:hover, a.text-dark:focus {
 
 .media-container-main .media-items-table tr.selected {
   background-color: #e0f7fa; }
+
+.media-container-main .media-items-table .media-name-cell {
+  display: flex;
+  flex-direction: row; }
+  .media-container-main .media-items-table .media-name-cell .media-filename {
+    flex-grow: 1; }
+  .media-container-main .media-items-table .media-name-cell .buttons-container {
+    opacity: 0;
+    text-align: right;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s; }
+
+.media-container-main .media-items-table tr:hover .buttons-container, .media-container-main .media-items-table tr.selected .buttons-container {
+  opacity: 1;
+  transition: all 0.2s; }
+
+.media-container-main .media-items-table .btn {
+  border: solid 1px #ddd; }
 
 .media-container-main .action-bar {
   background-color: #e9ecef;
@@ -6216,5 +6240,7 @@ a.text-dark:hover, a.text-dark:focus {
 .modal-body .media-container .hidden-on-modal {
   display: none !important; }
 
-.modal-body .media-container #media-container-navigation-menu a, .modal-body .media-container .breadcrumb-item a {
+.modal-body .media-container #media-container-navigation-menu a,
+.modal-body .media-container .breadcrumb-item a,
+.modal-body .media-container .media-items-table .media-filename {
   font-size: 0.9rem; }

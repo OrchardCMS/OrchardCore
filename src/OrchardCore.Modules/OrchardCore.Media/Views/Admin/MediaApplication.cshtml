@@ -113,7 +113,6 @@
                     <tr class="header-row">
                         <th scope="col">@T["Image"]</th>
                         <th scope="col">@T["Name"]</th>
-                        <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -121,15 +120,18 @@
                         v-bind:class="{selected: isMediaSelected(media)}"
                         v-on:click.stop="toggleSelectionOfMedia(media)"
                         draggable="true" v-on:dragstart="handleDragStart(media, $event)"
-                        :key="media.name" v-bind:style="{height: thumbSize + 4 + 'px'}">
-                        <td class="thumbnail-column" v-bind:style="{width: thumbSize + 'px'}"><img v-bind:src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" /></td>
+                        :key="media.name" style="height: 80px;">
+                        <td class="thumbnail-column" style="width: 80px;"><img style="max-width:80px; max-height:80px;" v-bind:src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" /></td>
                         <td>
-                            <p class="media-filename" v-bind:title="media.name">{{ media.name }}</p>
+                            <div class="media-name-cell">
+                                <p class="media-filename" v-bind:title="media.name">{{ media.name }}</p>
+                                <div class="buttons-container">
+                                    <a href="javascript:;" class="btn btn-light btn-sm mr-2" v-on:click.stop="renameMedia(media)"><i style="" class="fa fa-edit mr-1"></i> @T["Edit"]</a>
+                                    <a href="javascript:;" class="btn btn-light btn-sm" v-on:click.stop="deleteMediaItem(media)"><i class="fa fa-trash  mr-1"></i>@T["Delete"]</a>
+                                </div>
+                            </div>                            
                         </td>
-                        <td class=" text-center" style="width:200px;">
-                            <a href="javascript:;" class="btn btn-light btn-sm mr-0" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i> @T["Edit"]</a>
-                            <a href="javascript:;" class="btn btn-light btn-sm" v-on:click.stop="deleteMediaItem(media)"><i class="fa fa-trash"></i>@T["Delete"]</a>
-                        </td>
+
                     </tr>
                 </tbody>
             </table>
