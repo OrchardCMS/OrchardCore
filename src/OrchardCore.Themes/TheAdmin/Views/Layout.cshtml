@@ -58,8 +58,7 @@
 
         <footer class="ta-footer">
           <div class="container-fluid">
-            <span class="text-muted float-right">Orchard Core v@(Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-    .InformationalVersion)</span>
+            <span class="text-muted float-right">Orchard Core v@(Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>().Version)</span>
           </div>
         </footer>
     </div><!-- /.ta-wrapper -->
