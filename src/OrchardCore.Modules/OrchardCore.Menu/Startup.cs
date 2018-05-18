@@ -1,6 +1,3 @@
-using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -33,11 +30,8 @@ namespace OrchardCore.Menu
             // LinkMenuItemPart
             services.AddScoped<IContentPartDisplayDriver, LinkMenuItemPartDisplayDriver>();
             services.AddSingleton<ContentPart, LinkMenuItemPart>();
-        }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            serviceProvider.AddTagHelpers(typeof(MenuTagHelper).Assembly);
+            services.AddTagHelpers(typeof(MenuTagHelper).Assembly);
         }
     }
 }

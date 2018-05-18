@@ -22,18 +22,5 @@ namespace OrchardCore.Mvc
 
             return builder;
         }
-
-        /// <summary>
-        /// Adds tenant level tag helper services.
-        /// </summary>
-        public static ModularServicesBuilder AddTagHelpers(this ModularServicesBuilder builder, string assemblyName)
-        {
-            builder.Services.ConfigureTenant((app, routes, sp) =>
-            {
-                sp.AddTagHelpers(assemblyName);
-            });
-
-            return builder;
-        }
     }
 }

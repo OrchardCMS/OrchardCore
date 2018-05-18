@@ -6,6 +6,7 @@ using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Shell.Data;
+using OrchardCore.Modules;
 using OrchardCore.Mvc;
 using OrchardCore.ResourceManagement;
 

@@ -180,7 +180,7 @@ namespace OrchardCore.Modules
         }
     }
 
-    public static class ServiceCollectionExtensions
+    public static class ConfigureTenantServiceCollectionExtensions
     {
         /// <summary>
         /// Configure the tenant pipeline before all modules.

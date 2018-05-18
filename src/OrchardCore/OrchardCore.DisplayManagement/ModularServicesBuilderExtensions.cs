@@ -1,3 +1,4 @@
+using OrchardCore.DisplayManagement.TagHelpers;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Modules;
 
@@ -12,6 +13,7 @@ namespace OrchardCore.DisplayManagement
         {
             builder.Services.AddThemingHost()
                 .AddManifestDefinition("theme")
+                .AddTagHelpers(typeof(BaseShapeTagHelper).Assembly)
                 .ConfigureTenantServices(collection =>
                 {
                     collection.AddTheming();

@@ -1,4 +1,5 @@
 using OrchardCore.Modules;
+using OrchardCore.ResourceManagement.TagHelpers;
 
 namespace OrchardCore.ResourceManagement
 {
@@ -9,10 +10,12 @@ namespace OrchardCore.ResourceManagement
         /// </summary>
         public static ModularServicesBuilder AddResourceManagement(this ModularServicesBuilder builder)
         {
-            builder.Services.ConfigureTenantServices((collection) =>
-            {
-                collection.AddResourceManagement();
-            });
+            builder.Services
+                .AddTagHelpers(typeof(ResourcesTagHelper).Assembly)
+                .ConfigureTenantServices((collection) =>
+                {
+                    collection.AddResourceManagement();
+                });
 
             return builder;
         }

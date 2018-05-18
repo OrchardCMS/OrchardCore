@@ -163,12 +163,12 @@ namespace OrchardCore.Media
 
             // MIME types
             services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
+
+            services.AddTagHelpers(typeof(ImageTagHelper).Assembly);
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            serviceProvider.AddTagHelpers(typeof(ImageTagHelper).Assembly);
-
             var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
 

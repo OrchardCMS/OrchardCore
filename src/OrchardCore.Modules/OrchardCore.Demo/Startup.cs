@@ -27,8 +27,6 @@ namespace OrchardCore.Demo
     {
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            serviceProvider.AddTagHelpers(typeof(BazTagHelper).Assembly);
-
             routes.MapAreaRoute(
                 name: "Home",
                 areaName: "OrchardCore.Demo",
@@ -82,6 +80,8 @@ namespace OrchardCore.Demo
                 // This declaration would define an home page
                 //options.Conventions.AddModularPageRoute("/OrchardCore.Demo/Pages/Hello", "");
             });
+
+            services.AddTagHelpers(typeof(BazTagHelper).Assembly);
         }
     }
 }

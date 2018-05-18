@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -53,17 +52,6 @@ namespace OrchardCore.Mvc
             builder.AddJsonFormatters();
 
             return services;
-        }
-
-        public static void AddTagHelpers(this IServiceProvider serviceProvider, string assemblyName)
-        {
-            serviceProvider.AddTagHelpers(Assembly.Load(new AssemblyName(assemblyName)));
-        }
-
-        public static void AddTagHelpers(this IServiceProvider serviceProvider, Assembly assembly)
-        {
-            serviceProvider.GetRequiredService<ApplicationPartManager>()
-                .ApplicationParts.Add(new TagHelperApplicationPart(assembly));
         }
 
         internal static void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
