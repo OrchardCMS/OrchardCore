@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Modules
 {
@@ -39,8 +35,7 @@ namespace OrchardCore.Modules
         string HeaderValue { get; set; }
     }
 
-    class PoweredByMiddlewareOptions
-        : IPoweredByMiddlewareOptions
+    class PoweredByMiddlewareOptions : IPoweredByMiddlewareOptions
     {
         const string PoweredByHeaderName = "X-Powered-By";
         const string PoweredByHeaderValue = "OrchardCore";

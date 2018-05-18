@@ -15,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";
 
         private readonly IClock _clock;
-        private readonly ITimeZoneManager _timeZoneManager;
+        private readonly ILocalClock _timeZoneManager;
 
         //private readonly IDateLocalizationServices _dateLocalizationServices;
         //private readonly IDateTimeFormatProvider _dateTimeLocalization;
@@ -23,7 +23,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         public DateTimeShapes(
             IClock clock,
             IPluralStringLocalizer<DateTimeShapes> localizer,
-            ITimeZoneManager timeZoneManager
+            ILocalClock timeZoneManager
             //IDateLocalizationServices dateLocalizationServices,
             //IDateTimeFormatProvider dateTimeLocalization
             )

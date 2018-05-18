@@ -10,10 +10,10 @@ namespace OrchardCore.Liquid.Filters
 {
     public class TimeZoneFilter : ILiquidFilter
     {
-        private readonly ITimeZoneManager _timeZoneManager;
+        private readonly ILocalClock _timeZoneManager;
         private readonly IClock _clock;
 
-        public TimeZoneFilter(ITimeZoneManager timeZoneManager, IClock clock)
+        public TimeZoneFilter(ILocalClock timeZoneManager, IClock clock)
         {
             _timeZoneManager = timeZoneManager;
             _clock = clock;

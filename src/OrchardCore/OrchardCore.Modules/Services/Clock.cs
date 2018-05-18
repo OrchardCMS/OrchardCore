@@ -38,13 +38,13 @@ namespace OrchardCore.Modules
             return list.ToArray();
         }
 
-        /// <summary>
-        /// Returns a ITimeZone from a timeZone ID string.
-        /// If the timeZone string is null or empty then we return the default system ITimeZone
-        /// </summary>
-        /// <returns></returns>
         public ITimeZone GetTimeZone(string timeZoneId)
         {
+            if (String.IsNullOrEmpty(timeZoneId))
+            {
+                return GetSystemTimeZone();
+            }
+
             var dateTimeZone = GetDateTimeZone(timeZoneId);
             var result = GetTimeZones().FirstOrDefault(x => x.TimeZoneId == dateTimeZone.Id);
 
@@ -60,10 +60,16 @@ namespace OrchardCore.Modules
             }
         }
 
-        public DateTimeOffset ConvertToTimeZone(DateTimeOffset? dateTimeOffSet, ITimeZone timeZone)
+        public ITimeZone GetSystemTimeZone()
+        {
+            var timezone = DateTimeZoneProviders.Tzdb.GetSystemDefault();
+            return GetTimeZone(timezone.Id);
+        }
+
+        public DateTimeOffset ConvertToTimeZone(DateTimeOffset dateTimeOffSet, ITimeZone timeZone)
         {
             var dateTimeZone = GetDateTimeZone(timeZone.TimeZoneId);
-            var offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet ?? CurrentInstant.ToDateTimeOffset());
+            var offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet);
             return offsetDateTime.InZone(dateTimeZone).ToDateTimeOffset();
         }
 

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace OrchardCore.DisplayManagement.TimeZone
+namespace OrchardCore.Modules
 {
     /// <summary>
     /// Provides the timezone for the current request.
