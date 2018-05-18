@@ -6136,7 +6136,8 @@ a.text-dark:hover, a.text-dark:focus {
       top: 0px;
       right: 0px;
       border-radius: 0px;
-      margin-top: -32px; }
+      margin-top: -32px;
+      transition: all 0.2s; }
     .media-container-main ol li.selected .inline-media-button, .media-container-main ol li:hover .inline-media-button {
       opacity: 1;
       margin-top: 0px;
