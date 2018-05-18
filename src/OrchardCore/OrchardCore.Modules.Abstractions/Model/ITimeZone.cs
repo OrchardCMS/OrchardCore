@@ -1,9 +1,10 @@
 namespace OrchardCore.Modules
 {
+    /// <summary>
+    /// Represents a time zone.
+    /// </summary>
     public interface ITimeZone
     {
-        string Id { get; set; }
-        string DisplayName { get; set; }
-        string Comment { get; set; }
+        string TimeZoneId { get; set; }
     }
 }

@@ -1,16 +1,21 @@
+using NodaTime;
+
 namespace OrchardCore.Modules
 {
     public class TimeZone : ITimeZone
     {
-        public string Id { get; set; }
-        public string DisplayName { get; set; }
-        public string Comment { get; set; }
-
-        public TimeZone(string id, string displayName, string comment)
+        public string TimeZoneId { get; set; }
+        public Offset Offset { get; set; }
+        
+        public TimeZone(string timeZoneId, Offset offset)
         {
-            Id = id;
-            DisplayName = displayName;
-            Comment = comment;
+            TimeZoneId = timeZoneId;
+            Offset = offset;
+        }
+
+        public override string ToString()
+        {
+            return $"({Offset:+HH:mm}) {TimeZoneId}";
         }
     }
 }

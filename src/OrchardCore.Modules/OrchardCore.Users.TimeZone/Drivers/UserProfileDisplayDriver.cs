@@ -7,15 +7,21 @@ using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Users.Models;
 using OrchardCore.Modules;
 using OrchardCore.Users.Services;
+using OrchardCore.Users.TimeZone.Services;
 
 namespace OrchardCore.Users.TimeZone.Drivers
 {
     public class UserProfileDisplayDriver : SectionDisplayDriver<User, Models.UserProfile>
     {
+        public const string GroupId = "UserProfile";
         private readonly IClock _clock;
+        private readonly IUserTimeZoneService _userTimeZoneService;
 
-        public UserProfileDisplayDriver(IClock clock) {
+        public UserProfileDisplayDriver(
+            IClock clock,
+            IUserTimeZoneService userTimeZoneService) {
             _clock = clock;
+            _userTimeZoneService = userTimeZoneService;
         }
 
         public override IDisplayResult Edit(Models.UserProfile profile, BuildEditorContext context)
@@ -23,7 +29,7 @@ namespace OrchardCore.Users.TimeZone.Drivers
             return Initialize<EditUserProfileViewModel>("UserProfile_Edit", model =>
             {
                 model.TimeZone = profile.TimeZone;
-                model.TimeZones = _clock.GetTimeZones(string.Empty);
+                model.TimeZones = _clock.GetTimeZones();
             }).Location("Content:2");
         }
 
@@ -36,13 +42,8 @@ namespace OrchardCore.Users.TimeZone.Drivers
                 profile.TimeZone = model.TimeZone;
             }
 
-            //var result = await _userService.UpdateAsync(profile);
-
-            //foreach (var error in result.Errors)
-            //{
-            //    context.Updater.ModelState.AddModelError(string.Empty, error.Description);
-            //}
-
+            await _userTimeZoneService.SetSiteTimeZoneAsync(profile.TimeZone);
+            
             return Edit(profile);
         }
     }

@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Http;
-using OrchardCore.DisplayManagement.TimeZone;
 using System;
 using System.Threading.Tasks;
+using OrchardCore.DisplayManagement.TimeZone;
 
 namespace OrchardCore.Settings.Services
 {
@@ -12,18 +11,29 @@ namespace OrchardCore.Settings.Services
     /// </summary>
     public class DefaultTimeZoneSelector : ITimeZoneSelector
     {
-        private readonly IDefaultTimeZoneService _siteTimeZoneService;
+        private readonly ISiteService _siteService;
+        private Task<TimeZoneSelectorResult> _result;
 
-        public DefaultTimeZoneSelector(
-            IDefaultTimeZoneService siteTimeZoneService)
+        public DefaultTimeZoneSelector(ISiteService siteService)
         {
-            _siteTimeZoneService = siteTimeZoneService;
+            this._siteService = siteService;
         }
 
-        public async Task<TimeZoneSelectorResult> GetTimeZoneAsync()
+        public Task<TimeZoneSelectorResult> GetTimeZoneAsync()
         {
-            var currentTimeZoneId = await _siteTimeZoneService.GetCurrentTimeZoneIdAsync();
-            if (String.IsNullOrEmpty(currentTimeZoneId))
+            if (_result != null)
+            {
+                return _result;
+            }
+
+            return _result = GetTimeZoneFromSettingsAsync();
+        }
+
+        private async Task<TimeZoneSelectorResult> GetTimeZoneFromSettingsAsync()
+        {
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+
+            if (String.IsNullOrEmpty(siteSettings.TimeZoneId))
             {
                 return null;
             }
@@ -31,7 +41,7 @@ namespace OrchardCore.Settings.Services
             return new TimeZoneSelectorResult
             {
                 Priority = 0,
-                Id = currentTimeZoneId
+                Id = siteSettings.TimeZoneId
             };
         }
     }

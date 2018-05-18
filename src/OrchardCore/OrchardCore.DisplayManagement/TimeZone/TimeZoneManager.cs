@@ -44,7 +44,7 @@ namespace OrchardCore.DisplayManagement.TimeZone
                 // load the TimeZone
                 foreach (var timeZone in timeZoneResults)
                 {
-                    return _timeZone = _clock.GetLocalTimeZone(timeZone.Id);
+                    return _timeZone = _clock.GetTimeZone(timeZone.Id);
                 }
 
                 // No valid TimeZone. Don't save the result right now.
