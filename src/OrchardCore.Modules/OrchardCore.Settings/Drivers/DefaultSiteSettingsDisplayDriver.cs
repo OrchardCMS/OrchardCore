@@ -12,7 +12,8 @@ namespace OrchardCore.Settings.Drivers
         private readonly IClock _clock;
         public const string GroupId = "general";
 
-        public DefaultSiteSettingsDisplayDriver(IClock clock) {
+        public DefaultSiteSettingsDisplayDriver(IClock clock)
+        {
             _clock = clock;
         }
 
@@ -23,8 +24,8 @@ namespace OrchardCore.Settings.Drivers
                     {
                         model.SiteName = site.SiteName;
                         model.BaseUrl = site.BaseUrl;
-                        model.TimeZone = site.TimeZone;
-                        model.TimeZones = _clock.GetTimeZones(string.Empty);
+                        model.TimeZone = site.TimeZoneId;
+                        model.TimeZones = _clock.GetTimeZones();
                     }).Location("Content:1").OnGroup(GroupId)
             );
         }
@@ -39,7 +40,7 @@ namespace OrchardCore.Settings.Drivers
                 {
                     site.SiteName = model.SiteName;
                     site.BaseUrl = model.BaseUrl;
-                    site.TimeZone = model.TimeZone;
+                    site.TimeZoneId = model.TimeZone;
                 }
             }
 
