@@ -330,7 +330,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.OpenId.Core", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.OpenId.Core.EntityFrameworkCore", "src\OrchardCore\OrchardCore.OpenId.Core.EntityFrameworkCore\OrchardCore.OpenId.Core.EntityFrameworkCore.csproj", "{910A3A3A-81DF-4DC5-B07A-CED2DAB4E906}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Spatial", "src\OrchardCore.Modules\OrchardCore.Spatial\OrchardCore.Spatial.csproj", "{82FA0DC3-8049-4C34-B1BA-0D5370CB3C16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Spatial", "src\OrchardCore.Modules\OrchardCore.Spatial\OrchardCore.Spatial.csproj", "{82FA0DC3-8049-4C34-B1BA-0D5370CB3C16}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Workflows", "src\OrchardCore.Modules\OrchardCore.Workflows\OrchardCore.Workflows.csproj", "{9973E641-B464-47F2-AA86-6A234B2A9604}"
 EndProject

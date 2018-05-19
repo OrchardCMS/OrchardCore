@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Lucene.QueryProviders;
+using OrchardCore.Lucene.QueryProviders.Filters;
 
 namespace OrchardCore.Lucene
 {
@@ -25,6 +26,9 @@ namespace OrchardCore.Lucene
             services.AddSingleton<ILuceneQueryProvider, TermQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, TermsQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, WildcardQueryProvider>();
+
+            services.AddSingleton<ILuceneBooleanFilterProvider, GeoBoundingBoxFilterProvider>();
+
             return services;
         }
     }

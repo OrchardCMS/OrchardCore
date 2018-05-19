@@ -1,11 +1,21 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Lucene.QueryProviders.Filters;
 
 namespace OrchardCore.Lucene.QueryProviders
 {
     public class BooleanQueryProvider : ILuceneQueryProvider
     {
+        private readonly IEnumerable<ILuceneBooleanFilterProvider> _filters;
+
+        public BooleanQueryProvider(IEnumerable<ILuceneBooleanFilterProvider> filters)
+        {
+            _filters = filters;
+        }
+
         public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject query)
         {
             if (type != "bool")
@@ -37,13 +47,19 @@ namespace OrchardCore.Lucene.QueryProviders
                     case "minimum_should_match":
                         boolQuery.MinimumNumberShouldMatch = query.Value<int>();
                         break;
+                    case "filter":
+                        return CreateFilteredQuery(builder, context, boolQuery, property.Value as JObject);
                     default: throw new ArgumentException($"Invalid property '{property.Name}' in boolean query");
                 }
 
                 switch (property.Value.Type)
                 {
                     case JTokenType.Object:
-
+                        var obj = (JObject) property.Value;
+                        if (obj["match_all"] != null)
+                        {
+                            boolQuery.Add(new MatchAllDocsQuery(), occur);
+                        }
                         break;
                     case JTokenType.Array:
                         foreach (var item in ((JArray)property.Value))
@@ -61,6 +77,26 @@ namespace OrchardCore.Lucene.QueryProviders
             }
 
             return boolQuery;
+        }
+
+        private Query CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, Query query,
+            JObject queryObj)
+        {
+            var first = queryObj.Properties().First();
+
+            Query filteredQuery = null;
+
+            foreach (var queryProvider in _filters)
+            {
+                filteredQuery = queryProvider.CreateFilteredQuery(builder, context, first.Name, (JObject)first.Value, query);
+
+                if (filteredQuery != null)
+                {
+                    break;
+                }
+            }
+
+            return filteredQuery;
         }
     }
 }

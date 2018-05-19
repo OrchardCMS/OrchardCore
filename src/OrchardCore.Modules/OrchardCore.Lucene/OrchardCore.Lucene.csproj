@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -25,8 +25,8 @@
   <ItemGroup>
     <PackageReference Include="Lucene.Net.Analysis.Common" />
     <PackageReference Include="Lucene.Net.QueryParser" />
+    <PackageReference Include="Lucene.Net.Spatial" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-    <PackageReference Include="Lucene.Net.Spatial" Version="$(LuceneNetVersion)" />
   </ItemGroup>
 
 </Project>
