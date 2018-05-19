@@ -12,11 +12,19 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ServiceCollectionExtensions
     {
         /// <summary>
+        /// Create a new <see cref="OrchardCore.Modules.ModularServicesBuilder"/>.
+        /// </summary>
+        public static ModularServicesBuilder ToModules(this IServiceCollection services)
+        {
+            return new ModularServicesBuilder(services);
+        }
+
+        /// <summary>
         /// Adds modules services.
         /// </summary>
         public static ModularServicesBuilder AddModules(this IServiceCollection services)
         {
-            return new ModularServicesBuilder(services.AddModules(null));
+            return services.AddModules(null).ToModules();
         }
 
         /// <summary>
@@ -36,7 +44,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddAllFeaturesDescriptor();
 
             // Let the app change the default tenant behavior and set of features
-            configure?.Invoke(new ModularServicesBuilder(services));
+            configure?.Invoke(services.ToModules());
 
             // Registers the application feature
             services.AddTransient(sp =>
