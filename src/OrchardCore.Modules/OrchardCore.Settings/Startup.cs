@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.TimeZone;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;

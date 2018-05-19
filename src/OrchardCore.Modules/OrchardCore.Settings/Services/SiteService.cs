@@ -24,7 +24,7 @@ namespace OrchardCore.Settings.Services
         public SiteService(
             ISignal signal,
             IServiceProvider serviceProvider,
-            IMemoryCache memoryCache, 
+            IMemoryCache memoryCache,
             IClock clock)
         {
             _signal = signal;
@@ -54,13 +54,13 @@ namespace OrchardCore.Settings.Services
                         if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
                         {
                             site = new SiteSettings
-                            { 
+                            {
                                 SiteSalt = Guid.NewGuid().ToString("N"),
                                 SiteName = "My Orchard Project Application",
                                 PageSize = 10,
                                 MaxPageSize = 100,
                                 MaxPagedCount = 0,
-                                TimeZoneId = _clock.GetTimeZone(string.Empty).TimeZoneId
+                                TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId
                             };
 
                             session.Save(site);
@@ -85,7 +85,7 @@ namespace OrchardCore.Settings.Services
             var session = GetSession();
 
             var existing = await session.Query<SiteSettings>().FirstOrDefaultAsync();
-            
+
             existing.BaseUrl = site.BaseUrl;
             existing.Calendar = site.Calendar;
             existing.Culture = site.Culture;

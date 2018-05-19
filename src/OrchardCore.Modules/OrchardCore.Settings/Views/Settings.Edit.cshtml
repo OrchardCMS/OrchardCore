@@ -19,7 +19,7 @@
         @foreach (var timezone in Model.TimeZones)
         {
             <option value="@timezone.TimeZoneId" selected="@(Model.TimeZone == timezone.TimeZoneId)">
-                @timezone 
+                @timezone
             </option>
         }
     </select>

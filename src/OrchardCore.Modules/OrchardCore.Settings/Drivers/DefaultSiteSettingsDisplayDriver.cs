@@ -12,7 +12,8 @@ namespace OrchardCore.Settings.Drivers
         private readonly IClock _clock;
         public const string GroupId = "general";
 
-        public DefaultSiteSettingsDisplayDriver(IClock clock) {
+        public DefaultSiteSettingsDisplayDriver(IClock clock)
+        {
             _clock = clock;
         }
 

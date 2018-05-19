@@ -20,7 +20,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
-using OrchardCore.DisplayManagement.TimeZone;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Extensions;
@@ -82,7 +81,6 @@ namespace OrchardCore.DisplayManagement
             services.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
             services.AddScoped<ILayoutAccessor, LayoutAccessor>();
             services.AddScoped<IThemeManager, ThemeManager>();
-            services.AddScoped<ITimeZoneManager, TimeZoneManager>();
             services.AddScoped<IPageTitleBuilder, PageTitleBuilder>();
 
             services.AddScoped<IShapeFactory, DefaultShapeFactory>();

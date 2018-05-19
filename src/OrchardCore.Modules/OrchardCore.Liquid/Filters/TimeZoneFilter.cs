@@ -3,20 +3,17 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using OrchardCore.DisplayManagement.TimeZone;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Liquid.Filters
 {
     public class TimeZoneFilter : ILiquidFilter
     {
-        private readonly ITimeZoneManager _timeZoneManager;
-        private readonly IClock _clock;
+        private readonly ILocalClock _localClock;
 
-        public TimeZoneFilter(ITimeZoneManager timeZoneManager, IClock clock)
+        public TimeZoneFilter(ILocalClock localClock)
         {
-            _timeZoneManager = timeZoneManager;
-            _clock = clock;
+            _localClock = localClock;
         }
 
         public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
@@ -29,7 +26,7 @@ namespace OrchardCore.Liquid.Filters
 
                 if (stringValue == "now" || stringValue == "today")
                 {
-                    value = _clock.UtcNow;
+                    value = await _localClock.LocalNowAsync;
                 }
                 else
                 {
@@ -56,8 +53,7 @@ namespace OrchardCore.Liquid.Filters
                 }
             }
 
-            var timeZone = await _timeZoneManager.GetTimeZoneAsync();
-            return new ObjectValue(_clock.ConvertToTimeZone(value, timeZone));
+            return new ObjectValue(await _localClock.LocalNowAsync);
         }
     }
 }
