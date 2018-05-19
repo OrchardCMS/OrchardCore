@@ -29,13 +29,7 @@ namespace OrchardCore.Users
                             .Action("Index", "Admin", "OrchardCore.Users")
                             .Permission(Permissions.ManageUsers)
                             .LocalNav()
-                         ))
-                    .Add(T["Settings"], settings => settings
-                        .Add(T["Users"], T["Users"], users => users
-                            .Permission(Permissions.ManageUsers)
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RegistrationSettingsDisplayDriver.GroupId })
-                            .LocalNav()
-                        )));
+                         )));
         }
     }
     
@@ -62,6 +56,34 @@ namespace OrchardCore.Users
                         .Add(T["Password"], T["Password"], password => password
                             .Permission(Permissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = PasswordSettingsDisplayDriver.GroupId })
+                            .LocalNav()
+                        )));
+        }
+    }
+
+    [Feature("OrchardCore.Users.Registration")]
+    public class RegistrationAdminMenu : INavigationProvider
+    {
+        public RegistrationAdminMenu(IStringLocalizer<AdminMenu> localizer)
+        {
+            T = localizer;
+        }
+
+        public IStringLocalizer T { get; set; }
+
+        public void BuildNavigation(string name, NavigationBuilder builder)
+        {
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            builder
+                .Add(T["Configuration"], configuration => configuration
+                    .Add(T["Settings"], settings => settings
+                        .Add(T["Registration"], T["Registration"], registration => registration
+                            .Permission(Permissions.ManageUsers)
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RegistrationSettingsDisplayDriver.GroupId })
                             .LocalNav()
                         )));
         }

@@ -47,7 +47,7 @@
                 </div>
                 @if (userCanRegister) {
                     <p>
-                        <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">@T["Register as a new user?"]</a>
+                        <a asp-controller="Registration" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">@T["Register as a new user"]</a>
                     </p>
                 }
                 @if (enableLostPassword) {

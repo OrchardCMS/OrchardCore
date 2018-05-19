@@ -17,8 +17,16 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Feature(
     Id = "OrchardCore.Users.Password",
-    Name = "Password",
+    Name = "Users Password",
     Description = "The password feature allows to enable an option to send an email to a user to reset a forgotten password.",
+    Dependencies = new[] { "OrchardCore.Users", "OrchardCore.Email" },
+    Category = "Security"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Users.Registration",
+    Name = "Users Registration",
+    Description = "The registration feature allows to enable an option to authorize external users to sign up to the site.",
     Dependencies = new[] { "OrchardCore.Users", "OrchardCore.Email" },
     Category = "Security"
 )]

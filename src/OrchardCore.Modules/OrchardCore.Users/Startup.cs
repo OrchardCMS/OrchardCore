@@ -139,8 +139,6 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
-
-            services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
         }
     }
     
@@ -184,6 +182,28 @@ namespace OrchardCore.Users
         {
             services.AddScoped<INavigationProvider, PasswordAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, PasswordSettingsDisplayDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Users.Registration")]
+    public class RegistrationStartup : StartupBase
+    {
+        private const string RegisterPath = "Register";
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaRoute(
+                name: "Register",
+                areaName: "OrchardCore.Users",
+                template: RegisterPath,
+                defaults: new { controller = "Registration", action = "Register" }
+            );
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
+            services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿@model OrchardCore.Users.ViewModels.RegisterViewModel
+@model OrchardCore.Users.ViewModels.RegisterViewModel
 
-<form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+<form asp-controller="Registration" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
     <h4>@T["Create a new account."]</h4>
     <hr />
     <div asp-validation-summary="All" class="text-danger"></div>

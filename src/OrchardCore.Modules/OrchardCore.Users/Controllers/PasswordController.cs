@@ -39,7 +39,7 @@ namespace OrchardCore.Users.Controllers
             ISmtpService smtpService,
             IShapeFactory shapeFactory,
             IHtmlDisplay displayManager,
-            IStringLocalizer<AccountController> stringLocalizer)
+            IStringLocalizer<PasswordController> stringLocalizer)
         {
             _userService = userService;
             _siteService = siteService;
@@ -51,19 +51,7 @@ namespace OrchardCore.Users.Controllers
         }
 
         IStringLocalizer T { get; set; }
-
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return Redirect("~/");
-            }
-        }
-
+        
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword()
@@ -174,6 +162,18 @@ namespace OrchardCore.Users.Controllers
             var result = await _smtpService.SendAsync(message);
 
             return result.Succeeded;
+        }
+
+        private IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return Redirect("~/");
+            }
         }
     }
 }
