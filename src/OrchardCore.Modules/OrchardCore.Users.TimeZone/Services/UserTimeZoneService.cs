@@ -60,17 +60,21 @@ namespace OrchardCore.Users.TimeZone.Services
 
         public async Task<string> GetCurrentUserTimeZoneIdAsync()
         {
-            if (!_memoryCache.TryGetValue(CacheKey, out string timeZoneId))
+            if (!String.IsNullOrEmpty(_httpContextAccessor.HttpContext.User.Identity.Name))
             {
-                var session = GetSession();
+                if (!_memoryCache.TryGetValue(CacheKey, out string timeZoneId))
+                {
+                    var session = GetSession();
 
-                var user = await session.Query<User, UserIndex>().Where(x => x.NormalizedUserName == _httpContextAccessor.HttpContext.User.Identity.Name.ToUpper()).FirstOrDefaultAsync();
-                timeZoneId = (string)user.Properties["TimeZone"] ?? _clock.GetTimeZone(String.Empty).TimeZoneId;
+                    var user = await session.Query<User, UserIndex>().Where(x => x.NormalizedUserName == _httpContextAccessor.HttpContext.User.Identity.Name.ToUpper()).FirstOrDefaultAsync();
+                    timeZoneId = (string)user.Properties["UserProfile"]["TimeZone"] ?? _clock.GetSystemTimeZone().TimeZoneId;
 
-                _memoryCache.Set(CacheKey, (string)user.Properties["TimeZone"]);
+                    _memoryCache.Set(CacheKey, (string)user.Properties["UserProfile"]["TimeZone"]);
+                }
+
+                return timeZoneId;
             }
-
-            return timeZoneId;
+            else return null;
         }
 
         private YesSql.ISession GetSession()
