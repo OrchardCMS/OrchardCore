@@ -5,6 +5,6 @@ using OrchardCore.Modules.Manifest;
     Author = "The Orchard Team",
     Website = "http://orchardproject.net",
     Version = "2.0.0",
-    Description = "Adds the functionnality of setting a TimeZone per user account",
+    Description = "Set the time zone per user account",
     Category = "Settings"
 )]

@@ -12,11 +12,7 @@ namespace OrchardCore.Users.TimeZone
 {
     public class Startup : StartupBase
     {
-
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-
-        }
+        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider) { }
 
         public override void ConfigureServices(IServiceCollection services)
         {
