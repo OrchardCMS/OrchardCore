@@ -1,37 +1,28 @@
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
-using System.Globalization;
-using OrchardCore.DisplayManagement.TimeZone;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
     public class DateTimeShapes : IShapeAttributeProvider
     {
         private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";
-
         private readonly IClock _clock;
-        private readonly ITimeZoneManager _timeZoneManager;
-
-        //private readonly IDateLocalizationServices _dateLocalizationServices;
-        //private readonly IDateTimeFormatProvider _dateTimeLocalization;
+        private readonly ILocalClock _localClock;
 
         public DateTimeShapes(
             IClock clock,
             IPluralStringLocalizer<DateTimeShapes> localizer,
-            ITimeZoneManager timeZoneManager
-            //IDateLocalizationServices dateLocalizationServices,
-            //IDateTimeFormatProvider dateTimeLocalization
+            ILocalClock localClock
             )
         {
+            _localClock = localClock;
             _clock = clock;
-            _timeZoneManager = timeZoneManager;
-            //_dateLocalizationServices = dateLocalizationServices;
-            //_dateTimeLocalization = dateTimeLocalization;
             T = localizer;
         }
 
@@ -88,9 +79,8 @@ namespace OrchardCore.DisplayManagement.Shapes
         [Shape]
         public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format)
         {
-            DateTimeOffset zonedTime;
-            var timeZone = await _timeZoneManager.GetTimeZoneAsync();
-            zonedTime = _clock.ConvertToTimeZone(Utc, timeZone);
+            Utc = Utc ?? _clock.UtcNow;
+            var zonedTime = await _localClock.ConvertToLocalAsync(Utc.Value);
 
             if (Format == null)
             {

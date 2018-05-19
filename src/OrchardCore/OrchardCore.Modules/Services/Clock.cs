@@ -33,52 +33,57 @@ namespace OrchardCore.Modules
                 let tz = DateTimeZoneProviders.Tzdb[zoneId]
                 let offset = tz.GetZoneInterval(CurrentInstant).StandardOffset
                 orderby offset, zoneId
-                select new TimeZone(zoneId, offset);
+                select new TimeZone(zoneId, offset, tz);
 
             return list.ToArray();
         }
 
-        /// <summary>
-        /// Returns a ITimeZone from a timeZone ID string.
-        /// If the timeZone string is null or empty then we return the default system ITimeZone
-        /// </summary>
-        /// <returns></returns>
         public ITimeZone GetTimeZone(string timeZoneId)
         {
+            if (String.IsNullOrEmpty(timeZoneId))
+            {
+                return GetSystemTimeZone();
+            }
+
             var dateTimeZone = GetDateTimeZone(timeZoneId);
-            var result = GetTimeZones().FirstOrDefault(x => x.TimeZoneId == dateTimeZone.Id);
 
-            //If TimeZone is not found in default ZoneLocations list then retrieve it from the Tzdb
-            if (result == null)
-            {
-                var offset = DateTimeZoneProviders.Tzdb[dateTimeZone.Id].GetZoneInterval(CurrentInstant).StandardOffset;
-                return new TimeZone(dateTimeZone.Id, offset);
-            }
-            else
-            {
-                return result;
-            }
+            return CreateTimeZone(dateTimeZone);
         }
 
-        public DateTimeOffset ConvertToTimeZone(DateTimeOffset? dateTimeOffSet, ITimeZone timeZone)
+        public ITimeZone GetSystemTimeZone()
         {
-            var dateTimeZone = GetDateTimeZone(timeZone.TimeZoneId);
-            var offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet ?? CurrentInstant.ToDateTimeOffset());
-            return offsetDateTime.InZone(dateTimeZone).ToDateTimeOffset();
+            var timezone = DateTimeZoneProviders.Tzdb.GetSystemDefault();
+            return CreateTimeZone(timezone);
         }
 
-        private static DateTimeZone GetDateTimeZone(string timeZone)
+        public DateTimeOffset ConvertToTimeZone(DateTimeOffset dateTimeOffSet, ITimeZone timeZone)
         {
-            if (String.IsNullOrEmpty(timeZone))
+            var offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet);
+            return offsetDateTime.InZone(((TimeZone)timeZone).DateTimeZone).ToDateTimeOffset();
+        }
+
+        internal static DateTimeZone GetDateTimeZone(string timeZone)
+        {
+            if (!String.IsNullOrEmpty(timeZone) && IsValidTimeZone(DateTimeZoneProviders.Tzdb, timeZone))
             {
-                return IsValidTimeZone(DateTimeZoneProviders.Tzdb, timeZone)
-                    ? DateTimeZoneProviders.Tzdb[timeZone]
-                    : DateTimeZoneProviders.Tzdb.GetSystemDefault();
+                return DateTimeZoneProviders.Tzdb[timeZone];
             }
             else
             {
                 return DateTimeZoneProviders.Tzdb.GetSystemDefault();
             }
+        }
+
+        private ITimeZone CreateTimeZone(DateTimeZone dateTimeZone)
+        {
+            if (dateTimeZone == null)
+            {
+                throw new ArgumentException(nameof(DateTimeZone));
+            }
+
+            var offset = dateTimeZone.GetZoneInterval(CurrentInstant).StandardOffset;
+
+            return new TimeZone(dateTimeZone.Id, offset, dateTimeZone);
         }
 
         private static bool IsValidTimeZone(IDateTimeZoneProvider provider, string timeZoneId)
