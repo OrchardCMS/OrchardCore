@@ -27,8 +27,7 @@ namespace OrchardCore.Users.Controllers
             SignInManager<IUser> signInManager,
             ISiteService siteService,
             ISmtpService smtpService,
-            ILogger<RegistrationController> logger,
-            IStringLocalizer<RegistrationController> stringLocalizer)
+            ILogger<RegistrationController> logger)
         {
             _userService = userService;
             _signInManager = signInManager;
@@ -36,11 +35,9 @@ namespace OrchardCore.Users.Controllers
             _smtpService = smtpService;
 
             _logger = logger;
-            T = stringLocalizer;
         }
 
         ILogger _logger;
-        IStringLocalizer T { get; set; }
 
         [HttpGet]
         [AllowAnonymous]
