@@ -6,9 +6,8 @@
         <option value="">@T["Local to server"]</option>
         @foreach (var timezone in Model.TimeZones)
         {
-            <option value="@timezone.Id" selected="@(Model.TimeZone == timezone.Id)">
-                @timezone.DisplayName @if (timezone.Comment != "")
-                {<text> - </text> @timezone.Comment}
+            <option value="@timezone.TimeZoneId" selected="@(Model.TimeZone == timezone.TimeZoneId)">
+                @timezone
             </option>
         }
     </select>
