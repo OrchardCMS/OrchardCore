@@ -33,6 +33,7 @@
         "OrchardCore.Tenants",
         "OrchardCore.Themes",
         "OrchardCore.Users",
+        "OrchardCore.Users.TimeZone",
 
         // Themes
         "TheTheme",
