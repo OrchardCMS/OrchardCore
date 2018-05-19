@@ -38,6 +38,7 @@ namespace OrchardCore.Users.Commands
                     Email,
                     (Roles ?? "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToArray(),
                     Password,
+                    true,
                     (key, message) => Context.Output.WriteLine(message)).GetAwaiter().GetResult();
 
             if (user != null)

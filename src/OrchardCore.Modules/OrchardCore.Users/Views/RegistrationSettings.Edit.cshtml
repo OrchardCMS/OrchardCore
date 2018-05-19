@@ -1,6 +1,10 @@
 @model OrchardCore.Users.Models.RegistrationSettings
 
-<fieldset class="form-group" asp-validation-class-for="UsersCanRegister">
-    <input asp-for="UsersCanRegister" type="checkbox" />
-    <label asp-for="UsersCanRegister">@T["Users can create new accounts on the site"] <span asp-validation-for="UsersCanRegister"></span></label>
+<fieldset class="form-check" asp-validation-class-for="UsersCanRegister">
+    <input asp-for="UsersCanRegister" type="checkbox" class="form-check-input"/>
+    <label asp-for="UsersCanRegister" class="form-check-label">@T["Users can create new accounts on the site"] <span asp-validation-for="UsersCanRegister"></span></label>
+</fieldset>
+<fieldset class="form-check" asp-validation-class-for="UsersMustValidateEmail">
+    <input asp-for="UsersMustValidateEmail" type="checkbox" class="form-check-input"/>
+    <label asp-for="UsersMustValidateEmail" class="form-check-label">@T["Users must verify their email address"] <span asp-validation-for="UsersMustValidateEmail"></span></label>
 </fieldset>

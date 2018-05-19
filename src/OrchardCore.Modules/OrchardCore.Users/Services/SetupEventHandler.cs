@@ -27,7 +27,7 @@ namespace OrchardCore.Users.Services
             Action<string, string> reportError
             )
         {
-            return _userService.CreateUserAsync(userName, email, new string[] { "Administrator" }, password, reportError);
+            return _userService.CreateUserAsync(userName, email, new string[] { "Administrator" }, password, true, reportError);
         }
     }
 }

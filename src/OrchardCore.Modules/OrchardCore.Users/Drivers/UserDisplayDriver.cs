@@ -54,6 +54,7 @@ namespace OrchardCore.Users.Drivers
                 model.UserName = await _userManager.GetUserNameAsync(user);
                 model.Email = await _userManager.GetEmailAsync(user);
                 model.Roles = roles;
+                model.EmailConfirmed = user.EmailConfirmed;
                 model.DisplayPasswordFields = await IsNewUser(model.Id);
             }).Location("Content:1");
         }
@@ -69,6 +70,7 @@ namespace OrchardCore.Users.Drivers
 
             model.UserName = model.UserName?.Trim();
             model.Email = model.Email?.Trim();
+            user.EmailConfirmed = model.EmailConfirmed;
 
             if (await IsNewUser(model.Id))
             {
@@ -83,7 +85,7 @@ namespace OrchardCore.Users.Drivers
                 }
 
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
-                await _userService.CreateUserAsync(model.UserName, model.Email, roleNames, model.Password, (key, message) => context.Updater.ModelState.AddModelError(key, message));
+                await _userService.CreateUserAsync(model.UserName, model.Email, roleNames, model.Password, model.EmailConfirmed, (key, message) => context.Updater.ModelState.AddModelError(key, message));
             }
             else
             {

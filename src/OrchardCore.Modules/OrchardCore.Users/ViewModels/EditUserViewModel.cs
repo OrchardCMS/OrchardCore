@@ -21,6 +21,8 @@ namespace OrchardCore.Users.ViewModels
 
         public bool DisplayPasswordFields { get; set; }
 
+        public bool EmailConfirmed { get; set; }
+
         public RoleViewModel[] Roles { get; set; }
     }
 }

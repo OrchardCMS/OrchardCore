@@ -3,9 +3,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json.Linq;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Email;
 using OrchardCore.Settings;
 using OrchardCore.Users;
@@ -32,11 +35,15 @@ namespace OrchardCore.Tests.OrchardCore.Users
             var mockSmtpService = Mock.Of<ISmtpService>();
 
             var controller = new RegistrationController(
-                Mock.Of<IUserService>(),
+                Mock.Of<IUserService>(), 
+                mockUserManager,
                 MockSignInManager(mockUserManager).Object,
                 mockSiteService,
-                mockSmtpService,
-                Mock.Of<ILogger<RegistrationController>>());
+                mockSmtpService, 
+                Mock.Of<IShapeFactory>(),
+                Mock.Of<IHtmlDisplay>(),
+                Mock.Of<ILogger<RegistrationController>>(),
+                Mock.Of<IStringLocalizer<RegistrationController>>());
 
             var result = await controller.Register();
             Assert.IsType<NotFoundResult>(result);
@@ -60,10 +67,14 @@ namespace OrchardCore.Tests.OrchardCore.Users
 
             var controller = new RegistrationController(
                 Mock.Of<IUserService>(),
+                mockUserManager,
                 MockSignInManager(mockUserManager).Object,
                 mockSiteService,
                 mockSmtpService,
-                Mock.Of<ILogger<RegistrationController>>());
+                Mock.Of<IShapeFactory>(),
+                Mock.Of<IHtmlDisplay>(),
+                Mock.Of<ILogger<RegistrationController>>(),
+                Mock.Of<IStringLocalizer<RegistrationController>>());
 
             var result = await controller.Register();
             Assert.IsType<ViewResult>(result);

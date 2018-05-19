@@ -3,15 +3,21 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.Email;
+using OrchardCore.Entities;
 using OrchardCore.Settings;
+using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController : BaseEmailController
     {
         private readonly IUserService _userService;
         private readonly SignInManager<IUser> _signInManager;
@@ -24,14 +30,22 @@ namespace OrchardCore.Users.Controllers
             SignInManager<IUser> signInManager,
             UserManager<IUser> userManager,
             ILogger<AccountController> logger,
-            ISiteService siteService)
+            ISiteService siteService,
+            ISmtpService smtpService,
+            IShapeFactory shapeFactory,
+            IHtmlDisplay displayManager,
+            IStringLocalizer<AccountController> stringLocalizer) : base(smtpService, shapeFactory, displayManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _userService = userService;
             _logger = logger;
             _siteService = siteService;
+
+            T = stringLocalizer;
         }
+
+        IStringLocalizer T { get; set; }
 
         [HttpGet]
         [AllowAnonymous]
@@ -50,6 +64,22 @@ namespace OrchardCore.Users.Controllers
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+
+            if (!(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail)
+            {
+                // Require the user to have a confirmed email before they can log on.
+                var user = (User)await _userManager.FindByNameAsync(model.UserName);
+                if (user != null)
+                {
+                    if (!await _userManager.IsEmailConfirmedAsync(user))
+                    {
+                        ModelState.AddModelError(string.Empty, T["You must have a confirmed email to log on. The confirmation token has been resent to your email account."]);
+
+                        var callbackUrl = await SendEmailConfirmationTokenAsync(user, T["Confirm your account-Resend"]);
+                    }
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 // This doesn't count login failures towards account lockout
@@ -71,7 +101,7 @@ namespace OrchardCore.Users.Controllers
                 //}
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
                     return View(model);
                 }
             }
@@ -117,17 +147,14 @@ namespace OrchardCore.Users.Controllers
         {
             return View();
         }
-
-        private IActionResult RedirectToLocal(string returnUrl)
+        
+        private async Task<string> SendEmailConfirmationTokenAsync(User user, string subject)
         {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return Redirect("~/");
-            }
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = Url.Action("ConfirmEmail", "Registration", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+            await SendEmailAsync(user.Email, subject, new ConfirmEmailViewModel() { User = user, ConfirmEmailUrl = callbackUrl }, "TemplateUserConfirmEmail");
+
+            return callbackUrl;
         }
     }
 }
