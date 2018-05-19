@@ -202,6 +202,17 @@ This template is called when a content field name is rendered for a given conten
 | `Blog_Summary__BodyPart__Description` | `Blog-BodyPart-Description.Summary.cshtml` |
 | `LandingPage_Summary__Services__Image` | `LandingPage-Services-Image.Summary.cshtml` |
 
+### `[ContentType]__[FieldType]`
+
+This template is called when a content field type is rendered for a given content type when the shape type matches the field type, with or without a given display type.
+
+#### Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Blog__TextField` | `Blog-TextField.cshtml` |
+| `LandingPage__TextField` | `LandingPage-TextField.cshtml` |
+
 ### `[FieldType]__[ShapeType]`
 
 This template is called when a content field shape type is rendered for a given content field type, with or without a given display type.
@@ -236,6 +247,17 @@ This template is called when a content field shape type is rendered for a given 
 | `LandingPage__Services__Description__CustomFieldSummary` | `LandingPage-Services-Description-CustomFieldSummary.cshtml` |
 | `Blog_Summary__BodyPart__Description__CustomFieldSummary` | `Blog-BodyPart-Description-CustomFieldSummary.Summary.cshtml` |
 | `LandingPage_Summary__Services__Description__CustomFieldSummary` | `LandingPage-Services-Description-CustomFieldSummary.Summary.cshtml` |
+
+### `[ContentType]__[FieldType]__[ShapeType]`
+
+This template is called when a content field shape type is rendered for a given content field type in a given content type, with or without a given display type.
+
+#### Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Blog__TextField__TextFieldSummary` | `Blog-TextField-TextFieldSummary.cshtml` |
+| `LandingPage__TextField__TextFieldSummary` | `LandingPage-TextField-TextFieldSummary.cshtml` |
 
 ## Shape differentiators
 

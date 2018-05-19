@@ -125,7 +125,7 @@
     display: inline-block; }
     .trumbowyg-button-pane .trumbowyg-button-group .trumbowyg-fullscreen-button svg {
       color: transparent; }
-    .trumbowyg-button-pane .trumbowyg-button-group + .trumbowyg-button-group::before {
+    .trumbowyg-button-pane .trumbowyg-button-group::after {
       content: " ";
       display: inline-block;
       width: 1px;
@@ -133,6 +133,8 @@
       margin: 0 5px;
       height: 35px;
       vertical-align: top; }
+    .trumbowyg-button-pane .trumbowyg-button-group:last-child::after {
+      content: none; }
   .trumbowyg-button-pane button {
     display: inline-block;
     position: relative;
@@ -151,6 +153,7 @@
       line-height: 35px;
       user-select: none; }
   .trumbowyg-button-pane.trumbowyg-disable button:not(.trumbowyg-not-disable):not(.trumbowyg-active),
+  .trumbowyg-button-pane button.trumbowyg-disable,
   .trumbowyg-disabled .trumbowyg-button-pane button:not(.trumbowyg-not-disable):not(.trumbowyg-viewHTML-button) {
     opacity: 0.2;
     cursor: default; }
@@ -180,8 +183,6 @@
       right: 7px; }
   .trumbowyg-button-pane .trumbowyg-right {
     float: right; }
-    .trumbowyg-button-pane .trumbowyg-right::before {
-      display: none !important; }
 
 .trumbowyg-dropdown {
   width: 200px;
@@ -221,7 +222,7 @@
   max-width: 520px;
   width: 100%;
   height: 350px;
-  z-index: 11;
+  z-index: 12;
   overflow: hidden;
   backface-visibility: hidden; }
 
@@ -303,6 +304,13 @@
         border: 1px solid #95a5a6; }
       .trumbowyg-modal-box label input:focus {
         background: #fbfcfc; }
+    .trumbowyg-modal-box label input[type="checkbox"] {
+      left: 5px;
+      top: 5px;
+      right: auto; }
+      .trumbowyg-modal-box label input[type="checkbox"] + .trumbowyg-input-infos span {
+        width: auto;
+        padding-left: 25px; }
   .trumbowyg-modal-box .error {
     margin-top: 25px;
     display: block;
@@ -423,6 +431,8 @@ body.trumbowyg-body-fullscreen {
       margin-left: 32px !important;
       font-style: italic !important;
       color: #555; }
+    .trumbowyg-editor.trumbowyg-reset-css ul {
+      list-style: disc; }
     .trumbowyg-editor.trumbowyg-reset-css ul,
     .trumbowyg-editor.trumbowyg-reset-css ol {
       padding-left: 20px !important; }
@@ -478,7 +488,7 @@ body.trumbowyg-body-fullscreen {
     background: #111; }
   .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor *, .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor::before {
     text-shadow: 0 0 7px #ccc; }
-    @media screen and (min-width: 0 \0 ) {
+    @media screen and (min-width: 0 \0 ) {
       .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor *, .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor::before {
         color: rgba(20, 20, 20, 0.6) !important; } }
     @supports (-ms-accelerator: true) {
@@ -493,11 +503,11 @@ body.trumbowyg-body-fullscreen {
   border-bottom-color: #343434; }
   .trumbowyg-dark .trumbowyg-button-pane::after {
     background: #343434; }
-  .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-button-group:not(:empty)::before {
+  .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-button-group:not(:empty)::after {
     background-color: #343434; }
   .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-button-group:not(:empty) .trumbowyg-fullscreen-button svg {
     color: transparent; }
-  .trumbowyg-dark .trumbowyg-button-pane.trumbowyg-disable .trumbowyg-button-group::before {
+  .trumbowyg-dark .trumbowyg-button-pane.trumbowyg-disable .trumbowyg-button-group::after {
     background-color: #2a2a2a; }
   .trumbowyg-dark .trumbowyg-button-pane button:not(.trumbowyg-disable):hover,
   .trumbowyg-dark .trumbowyg-button-pane button:not(.trumbowyg-disable):focus,

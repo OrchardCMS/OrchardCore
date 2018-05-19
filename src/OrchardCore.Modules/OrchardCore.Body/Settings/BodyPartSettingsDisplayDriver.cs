@@ -17,7 +17,7 @@ namespace OrchardCore.Body.Settings
                 return null;
             }
 
-            return Shape<BodyPartSettingsViewModel>("BodyPartSettings_Edit", model =>
+            return Initialize<BodyPartSettingsViewModel>("BodyPartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<BodyPartSettings>();
 

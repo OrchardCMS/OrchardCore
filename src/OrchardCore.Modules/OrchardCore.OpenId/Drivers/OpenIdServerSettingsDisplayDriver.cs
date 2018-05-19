@@ -57,7 +57,7 @@ namespace OrchardCore.OpenId.Drivers
                 return null;
             }
 
-            return Shape<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit", async model =>
+            return Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit", async model =>
             {
                 model.TestingModeEnabled = settings.TestingModeEnabled;
                 model.AccessTokenFormat = settings.AccessTokenFormat;

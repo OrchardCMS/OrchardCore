@@ -47,7 +47,7 @@ namespace OrchardCore.Layers.Drivers
 				}
 			}
 
-			return Shape<LayerMetadataEditViewModel>("LayerMetadata_Edit", async shape =>
+			return Initialize<LayerMetadataEditViewModel>("LayerMetadata_Edit", async shape =>
 			{
 				shape.LayerMetadata = layerMetadata;
 				shape.Layers = (await _layerService.GetLayersAsync()).Layers;

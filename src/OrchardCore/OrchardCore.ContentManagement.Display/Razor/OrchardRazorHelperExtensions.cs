@@ -14,7 +14,7 @@ namespace OrchardCore.ContentManagement
             var displayManager = razorHelper.HttpContext.RequestServices.GetService<IContentItemDisplayManager>();
             var shape = await displayManager.BuildDisplayAsync(content, updater, displayType, groupId);
 
-            return await razorHelper.DisplayHelper(shape);
+            return await razorHelper.DisplayHelper.ShapeExecuteAsync(shape);
         }
     }
 }

@@ -1,18 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Scripting;
@@ -125,6 +125,16 @@ namespace OrchardCore.Recipes.Services
                                             {
                                                 capturedException.Throw();
                                             }
+
+                                            if (recipeStep.InnerRecipes != null)
+                                            {
+                                                foreach (var descriptor in recipeStep.InnerRecipes)
+                                                {
+                                                    var innerExecutionId = Guid.NewGuid().ToString();
+                                                    await ExecuteAsync(innerExecutionId, descriptor, environment);
+                                                }
+
+                                            }
                                         }
                                     }
                                 }
@@ -152,20 +162,22 @@ namespace OrchardCore.Recipes.Services
             {
                 if (!shellContext.IsActivated)
                 {
-                    var tenantEvents = scope.ServiceProvider
-                        .GetServices<IModularTenantEvents>();
-
-                    foreach (var tenantEvent in tenantEvents)
+                    using (var activatingScope = shellContext.EnterServiceScope())
                     {
-                        tenantEvent.ActivatingAsync().Wait();
+                        var tenantEvents = activatingScope.ServiceProvider.GetServices<IModularTenantEvents>();
+
+                        foreach (var tenantEvent in tenantEvents)
+                        {
+                            await tenantEvent.ActivatingAsync();
+                        }
+
+                        foreach (var tenantEvent in tenantEvents.Reverse())
+                        {
+                            await tenantEvent.ActivatedAsync();
+                        }
                     }
 
                     shellContext.IsActivated = true;
-
-                    foreach (var tenantEvent in tenantEvents)
-                    {
-                        tenantEvent.ActivatedAsync().Wait();
-                    }
                 }
 
                 var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
@@ -179,7 +191,7 @@ namespace OrchardCore.Recipes.Services
                 {
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Executing recipe step '{0}'.", recipeStep.Name);
+                        Logger.LogInformation("Executing recipe step '{RecipeName}'.", recipeStep.Name);
                     }
 
                     await _recipeEventHandlers.InvokeAsync(e => e.RecipeStepExecutingAsync(recipeStep), Logger);
@@ -190,7 +202,7 @@ namespace OrchardCore.Recipes.Services
 
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Finished executing recipe step '{0}'.", recipeStep.Name);
+                        Logger.LogInformation("Finished executing recipe step '{RecipeName}'.", recipeStep.Name);
                     }
                 }
             }
@@ -239,7 +251,7 @@ namespace OrchardCore.Recipes.Services
             {
                 case JTokenType.Array:
                     var array = (JArray)node;
-                    for (var i=0; i < array.Count; i++)
+                    for (var i = 0; i < array.Count; i++)
                     {
                         EvaluateJsonTree(scriptingManager, context, array[i]);
                     }

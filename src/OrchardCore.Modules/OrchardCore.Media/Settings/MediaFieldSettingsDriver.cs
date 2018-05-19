@@ -10,7 +10,7 @@ namespace OrchardCore.Media.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Shape<MediaFieldSettings>("MediaFieldSettings_Edit", model => partFieldDefinition.Settings.Populate(model))
+            return Initialize<MediaFieldSettings>("MediaFieldSettings_Edit", model => partFieldDefinition.Settings.Populate(model))
                 .Location("Content");
         }
 

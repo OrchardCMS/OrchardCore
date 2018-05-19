@@ -4,11 +4,17 @@
 // we alter the variable before importing boostrap as _variables.scss will use !default
 
 @import "src/OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/scss/bootstrap.scss";
+@import "codemirror.scss";
 
 $top-nav-height: 59px;
+$footer-height: 60px;
 $left-navigation-width: 260px;
+$left-navigation-width-when-compact: 60px;
 $border-content: 1px solid rgba(0, 0, 0, 0.05);
 $link-padding-left: 16px !default;
+// technique to avoid loosing submenus when hovering. http://www.positioniseverything.net/css-dropdowns-red.html
+$mini-hover-free-zone-length: 20px;
+$extended-hover-length: 30px; 
 
 @mixin word-wrap() {
     overflow-wrap: break-word;
@@ -22,196 +28,373 @@ $link-padding-left: 16px !default;
     hyphens: auto;
 }
 
+body {
+    margin-bottom: $footer-height;
+}
+
+
+.ta-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: $footer-height;
+    line-height: $footer-height;
+    background-color: $gray-100;
+    z-index: 8;
+}
+
 // Layout
 // -----------------------------
 
-.ta-wrapper {
 
-    .ta-navbar-top {
-        @extend .navbar, .navbar-expand-md, .navbar-light, .bg-light, .fixed-top;
-        min-height: $top-nav-height;
-        border-bottom: $border-content;
-        z-index: 8;
+// Layout 1 : ta-navbar-top
+// -----------------------------
+
+.ta-navbar-top {
+    @extend .navbar, .navbar-expand-md, .navbar-light, .bg-light, .fixed-top;
+    min-height: $top-nav-height;
+    border-bottom: $border-content;
+    z-index: 8;
+    padding-left: 0px;
+}
+
+
+.ta-navbar-brand {
+    @extend .navbar-brand;
+    overflow: hidden;
+    width: 230px;
+    height: 42px;
+    margin-left: 14px;
+    margin-right: 24px;
+    padding-left: 36px;
+    padding-top: 8px;
+    background-image: url(../logo.png);
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 28px auto;
+    text-transform: uppercase;
+    white-space: nowrap;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: width 0.2s ease-in-out;
+}
+
+
+// When left-sidebar is compact nav brand is compacted too.
+// It displays logo only, not text.
+.left-sidebar-compact .ta-navbar-brand {
+    width: 30px;
+
+    span {
+        display: none;
     }
+}
 
-    .ta-navbar-brand {
-        @extend .navbar-brand;
-        margin-left: 4px;
+
+
+// Layout 2 : ta-content
+// -----------------------------
+
+.ta-content {
+    padding: 15px;
+    margin-left: $left-navigation-width;
+    margin-top: $top-nav-height;
+    transition: margin-left 0.2s ease-in-out;
+}
+
+.left-sidebar-compact .ta-content {
+    margin-left: $left-navigation-width-when-compact;
+}
+
+@include media-breakpoint-down(sm) {
+    .ta-content {
+        margin-left: $left-navigation-width-when-compact;
+        transition: margin-left 0.5s ease-in-out;
     }
-    // Menu toggling button
-    #navbar-toggler {
-        @extend .navbar-toggler;
+}
+
+// Layout 3 : ta-left-sidebar when expanded
+// ----------------------------------------
+
+#ta-left-sidebar {
+    @extend .bg-light;
+    height: 100%;
+    z-index: 7;
+    position: fixed;
+    top: $top-nav-height;
+    bottom: 0;
+    left: 0px;
+    width: $left-navigation-width;
+    color: $gray-800;
+    border-right: $border-content;
+    transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+
+    #left-nav {
+        position: relative;
+        height: calc(100% - #{$top-nav-height * 2});
+        //border-top: 1px solid $gray-300;
     }
-    // Icons in the main nav bar
-    /*#navbar-content {
-        @extend .hidden-xs-down;
-    }*/
-    // The menu is hidden for sm
-    #ta-left-sidebar {
-        @extend .bg-light;
-        width: $left-navigation-width;
-        height: 100%;
-        z-index: 7;
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        color: $gray-800;
-        border-right: $border-content;
-        left: 0px;
-        transition: left 0.5s ease-in-out;
-
-        #left-nav {
-            position: relative;
-            margin-top: $top-nav-height;
-            height: calc(100% - #{$top-nav-height});
-        }
-        // Remove padding/margin from all uls
-        ul {
-            margin: 0;
-            padding: 0;
-        }
-        // Rotate the chevron's icon when the menu is active
-        label[aria-expanded="true"] {
-            .chevron {
-                transform: rotate(90deg);
-                transition-duration: 0.2s;
-            }
-        }
-
-        label[aria-expanded="false"] {
-            .chevron {
-                transition-duration: 0.2s;
-            }
-        }
-
-        .collapse {
-            display: none;
-        }
-
-        .collapse.show {
-            display: block;
-        }
-        // Make each line a block
-        label, a {
-            position: relative;
-            display: block;
-            margin: 0;
-        }
-
-        #left-nav ul {
-            margin: 0;
-            padding: 0;
-            white-space: nowrap;
-
-            li {
-                position: relative;
-                margin: 0;
-                padding: 0;
-                display: list-item;
-                list-style: none;
-                line-height: 2.5em;
-
-                label {
-                    cursor: pointer;
-                }
-            }
-        }
-
-        #left-nav ul.menu-admin {
-            margin-bottom: 100px;
-        }
-
+    // Remove padding/margin from all uls
+    ul {
+        margin: 0;
+        padding: 0;
+    }
+    // Rotate the chevron's icon when the menu is active
+    label[aria-expanded="true"] {
         .chevron {
-            position: absolute;
-            top: 33%;
-            left: 100%;
-            margin-left: -25px;
+            transform: rotate(90deg);
+            transition-duration: 0.2s;
         }
+    }
 
-        .icon {
-            padding-right: 10px;
+    label[aria-expanded="false"] {
+        .chevron {
+            transition-duration: 0.2s;
+        }
+    }
 
-            .fa {
-                min-width: 16px;
+    .collapse {
+        display: none;
+    }
+
+    .collapse.show {
+        display: block;
+    }
+    // Make each line a block
+    label, a {
+        position: relative;
+        display: block;
+        margin: 0;
+    }
+
+    #left-nav ul {
+        margin: 0;
+        padding: 0;
+        white-space: nowrap;
+
+        li {
+            position: relative;
+            margin: 0;
+            padding: 0;
+            display: list-item;
+            list-style: none;
+            line-height: 2.5em;
+
+            label {
+                cursor: pointer;
             }
         }
+    }
 
-        li label,
-        li a,
-        li a:hover,
-        li a:active,
-        li a:visited {
-            color: $gray-700;
-            text-decoration: none;
-            padding-left: $link-padding-left - 4px;
+    #left-nav ul.menu-admin {
+        margin-bottom: 100px;
+    }
+
+    .chevron {
+        position: absolute;
+        top: 33%;
+        left: 100%;
+        margin-left: -25px;
+    }
+
+    .icon {
+        padding-right: 10px;
+
+        .fa {
+            min-width: 16px;
         }
-        // Hovering the navigation items
-        li a:hover, li label:hover {
+    }
+    // changing the padding of the icons on the first level to match
+    // the padding when leftbar is collapsed. Avoid small movement
+    // when switching between the two states
+    #left-nav ul.menu-admin > li > label {
+        padding-left: 0px !important;
+
+        > span.icon {
+            padding-left: 20px;
+        }
+    }
+
+
+
+    li label,
+    li a,
+    li a:hover,
+    li a:active,
+    li a:visited {
+        color: $gray-700;
+        text-decoration: none;
+        padding-left: $link-padding-left - 4px;
+    }
+    // Hovering the navigation items
+    li a:hover, li label:hover {
+        background-color: $gray-700;
+        color: $gray-100;
+    }
+    // Current page
+    li.active > a {
+        background-color: $gray-600;
+        border-left: 4px solid $gray-800;
+        color: $gray-100 !important;
+        padding-left: (2 * $link-padding-left) + 2 !important;
+    }
+
+    li.active > label {
+        background-color: #b4bdc4;
+        color: $gray-100 !important;
+    }
+    // Second level colors and indent
+    li ul > li > a,
+    li ul > li > label {
+        background-color: $gray-200;
+        color: $gray-700 !important;
+        padding-left: (2 * $link-padding-left) + 6 !important;
+    }
+
+    li ul > li > a:hover,
+    li ul > li > label:hover {
+        color: $gray-100 !important;
+    }
+    // third level indent
+    li ul > li ul > li > a {
+        padding-left: 3 * $link-padding-left !important;
+    }
+
+    li ul > li ul > .active > a {
+        padding-left: (3 * $link-padding-left - 4) !important;
+    }
+}
+
+
+
+// Layout 4 : ta-left-sidebar when compacted
+// -----------------------------------------
+
+.left-sidebar-compact #ta-left-sidebar {
+    width: $left-navigation-width-when-compact;
+
+    #left-nav ul.menu-admin {
+
+        > li {
+            overflow: hidden;
+        }
+
+        > li:hover {
+            overflow: visible;
+            width: $left-navigation-width-when-compact + $left-navigation-width;
+        }
+
+        li, label, a {
+            min-height: 40px;
+        }
+
+        > li > div {
+            position: absolute;
+            left: $left-navigation-width-when-compact;
+            width: $left-navigation-width + $extended-hover-length;
+            padding-bottom: $extended-hover-length;
+            padding-right: $extended-hover-length;
+            padding-top: $extended-hover-length + 40px;
+            top: - $extended-hover-length;
+        }
+
+        > li > div > ul {
+            width: $left-navigation-width;
+            top: 40px;
+        }
+
+        > li > label {
             background-color: $gray-700;
             color: $gray-100;
+            padding: 0px;
+            margin: 0px;
         }
-        // Current page
-        li.active > a {
-            background-color: $gray-600;
-            border-left: 4px solid $gray-800;
-            color: $gray-100 !important;
-            padding-left: (2 * $link-padding-left) + 2 !important;
+        // formatting of icons
+        > li label span.icon {
+            display: inline-block !important;
+            margin: 0px 20px 0px 0px;
+            padding-bottom: 0px;
+            padding-top: 0px;
+            font-size: 16px !important;
+            color: $gray-700;
+            background-color: $gray-100;
+            width: $left-navigation-width-when-compact;
         }
 
-        li.active > label {
+        > li.active label span.icon {
             background-color: #b4bdc4;
             color: $gray-100 !important;
         }
 
-        li ul > li > a,
-        li ul > li > label {
-            background-color: $gray-200;
-            color: $gray-700 !important;
-            padding-left: (2 * $link-padding-left) + 6 !important;
+        > li:hover span.icon {
+            color: $gray-100;
+            background-color: $gray-700;
+        }
+        // hide chevrons on first level
+        > li > label span:last-child {
+            color: rgba(255, 0, 0, 0); // don't use display:none. don't use opacity. Because of IE/Edge
         }
 
-        li ul > li > a:hover,
-        li ul > li > label:hover {
-            color: $gray-100 !important;
+        .hover-free-zone {
+            position: absolute;
+            padding: 0;
+            width: $mini-hover-free-zone-length;
+            height: $mini-hover-free-zone-length;
+            font-size: 1px;
+            margin-left: -999px;
+            bottom: -$mini-hover-free-zone-length;
+            top: auto;
+            z-index: $zindex-dropdown;
         }
 
-        li ul > li ul > li > a {
-            padding-left: 3 * $link-padding-left !important;
-        }
-
-        li ul > li ul > .active > a {
-            padding-left: (3 * $link-padding-left - 4) !important;
-        }
-    }
-
-    .ta-content {
-        padding: ($grid-gutter-width / 2);
-        margin-top: ($top-nav-height);
-    }
-    // When the screen is bigger than md, add a margin of the size of the menu
-    @include media-breakpoint-up(sm) {
-        .ta-content {
-            margin-left: $left-navigation-width;
-            transition: margin-left 0.5s ease-in-out;
-        }
-    }
-
-    @include media-breakpoint-down(sm) {
-        #ta-left-sidebar {
-            left: -$left-navigation-width;
-            transition: left 0.5s ease-in-out;
-        }
-
-        .ta-content {
-            margin-left: 0;
-            transition: margin-left 0.5s ease-in-out;
+        > li:hover > div.hover-free-zone {
+            margin-left: - $mini-hover-free-zone-length;
+            top: auto;
         }
     }
 }
+// fixing a flickering that occurs on compact leftbar while icons load.
+html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > label {
+    background-color: $gray-100 !important;
+}
+// Layout 5 : leftbar compactor button
+// -----------------------------------
+.leftbar-compactor {
+    display: block;
+    width: $left-navigation-width-when-compact;
+    height: 40px;
+    padding: 8px 0px 10px 12px;
+    border: none;
+    background-color: transparent;
+    font-size: 1.4rem;
+    color: $gray-700;
+    cursor: pointer;
+    font-size: 16px;
 
+    &:focus {
+        outline: none;
+    }
+
+    &:hover {
+        color: $gray-100;
+        background-color: $gray-700;
+    }
+
+    span {
+        width: 30px;
+        transition-duration: 0.2s;
+        display: block;
+    }
+}
+
+.left-sidebar-compact .leftbar-compactor span {
+    transition-duration: 0.2s;
+    transform: scale(-1, 1);
+}
+// END OF LAYOUT
+// -----------------------------
 // Forms
 // -----------------------------
-
 .hint {
     @extend .small, .text-muted;
     @include word-wrap;
@@ -234,6 +417,18 @@ $link-padding-left: 16px !default;
     @extend .is-invalid;
 }
 
+.inline-form {
+    display: inline;
+}
+
+.code, .form-control.code {
+    font-family: $font-family-monospace;
+    font-size: $code-font-size;
+    padding: $kbd-padding-y $kbd-padding-x;
+    color: $pre-color;
+    @include border-radius($border-radius);
+}
+
 // When the validation message in inside the label, add a separator
 label .field-validation-error::before {
     content: "- ";
@@ -247,17 +442,18 @@ label .field-validation-error::before {
     display: none;
 }
 
+select[multiple] {
+    min-height: 300px;
+}
+
 // Toolbar
 // ------------------------------
-
 .admin-toolbar {
     @extend .navbar, .navbar-expand-md, .navbar-light, .bg-light;
     margin-bottom: 1em;
 }
-
 // Messages
 // ------------------------------
-
 .message {
     @extend .alert;
 }
@@ -277,11 +473,8 @@ label .field-validation-error::before {
 .message-error {
     @extend .alert-danger;
 }
-
-
 // Pager
 // ------------------------------
-
 ul.pager {
     @extend .pagination;
 }
@@ -293,10 +486,8 @@ ul.pager li {
 ul.pager li a {
     @extend .page-link;
 }
-
 // Sortable
 // ------------------------------
-
 .ui-sortable-handle {
     cursor: move;
 }
@@ -312,7 +503,6 @@ ul.pager li a {
 .related {
     @extend .float-right;
 }
-
 // Responsive sizes
 // Creates mixins to target all breakpoints
 // ------------------------------
@@ -334,4 +524,16 @@ ul.pager li a {
 
 .col-xl {
     @extend .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-12;
+}
+// No transitions on load
+// Prevents Firefox and Edge transitions on load.
+// This class is added by default and removed trought Javascript
+// after a few milliseconds.
+// https://css-tricks.com/transitions-only-after-page-load/
+// ------------------------------
+.preload * {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -ms-transition: none !important;
+    -o-transition: none !important;
 }
