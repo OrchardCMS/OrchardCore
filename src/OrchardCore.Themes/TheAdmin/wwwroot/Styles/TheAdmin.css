@@ -167,7 +167,7 @@ html {
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   -ms-overflow-style: scrollbar;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
+  -webkit-tap-highlight-color: transparent; }
 
 @-ms-viewport {
   width: device-width; }
@@ -6878,14 +6878,21 @@ span.CodeMirror-selectedtext {
 body {
   margin-bottom: 60px; }
 
+.left-sidebar-compact .ta-footer {
+  width: calc(100% - 60px);
+  transition: width 0.2s ease-in-out, width 0.2s ease-in-out; }
+
 .ta-footer {
   position: fixed;
   bottom: 0;
-  width: 100%;
+  right: 0;
+  width: calc(100% - 260px);
   height: 60px;
   line-height: 60px;
   background-color: #f8f9fa;
-  z-index: 8; }
+  z-index: 8;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  transition: width 0.2s ease-in-out, width 0.2s ease-in-out; }
 
 .ta-navbar-top {
   min-height: 59px;

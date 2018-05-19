@@ -32,15 +32,22 @@ body {
     margin-bottom: $footer-height;
 }
 
+.left-sidebar-compact .ta-footer {
+    width: calc(100% - 60px);
+    transition: width 0.2s ease-in-out, width 0.2s ease-in-out;
+}
 
 .ta-footer {
     position: fixed;
     bottom: 0;
-    width: 100%;
+    right: 0;
+    width: calc(100% - 260px);
     height: $footer-height;
     line-height: $footer-height;
     background-color: $gray-100;
     z-index: 8;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    transition: width 0.2s ease-in-out, width 0.2s ease-in-out;
 }
 
 // Layout
