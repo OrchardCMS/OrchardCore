@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Http;
-using OrchardCore.DisplayManagement.TimeZone;
-using System;
 using System.Threading.Tasks;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Users.TimeZone.Services
 {
@@ -20,19 +18,14 @@ namespace OrchardCore.Users.TimeZone.Services
             _userTimeZoneService = userTimeZoneService;
         }
 
-        public async Task<TimeZoneSelectorResult> GetTimeZoneAsync()
+        public Task<TimeZoneSelectorResult> GetTimeZoneAsync()
         {
-            var currentTimeZoneId = await _userTimeZoneService.GetCurrentTimeZoneIdAsync();
-            if (String.IsNullOrEmpty(currentTimeZoneId))
-            {
-                return null;
-            }
-
-            return new TimeZoneSelectorResult
+            return Task.FromResult(new TimeZoneSelectorResult
             {
                 Priority = 100,
-                Id = currentTimeZoneId
-            };
+                TimeZoneId = () => _userTimeZoneService.GetUserTimeZoneAsync().ContinueWith(x => x.Result?.TimeZoneId)
+            });
         }
+
     }
 }

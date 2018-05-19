@@ -9,7 +9,7 @@ namespace OrchardCore.Modules
     public interface ILocalClock
     {
         /// <summary>
-        /// Gets the time for the loca timezone.
+        /// Gets the time for the local timezone.
         /// </summary>
         Task<DateTimeOffset> LocalNowAsync { get; }
 
