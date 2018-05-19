@@ -90,7 +90,6 @@ namespace OrchardCore.Setup.Services
             string[] hardcoded =
             {
                 _applicationName,
-                "OrchardCore.Commons",
                 "OrchardCore.Features",
                 "OrchardCore.Recipes",
                 "OrchardCore.Scripting"

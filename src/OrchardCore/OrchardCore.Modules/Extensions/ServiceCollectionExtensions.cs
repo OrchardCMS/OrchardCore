@@ -46,7 +46,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // Let the app change the default tenant behavior and set of features
             configure?.Invoke(services.ToModules());
 
-            // Registers the application feature
+            // Registers the application main feature
             services.AddTransient(sp =>
             {
                 return new ShellFeature(sp.GetRequiredService<IHostingEnvironment>().ApplicationName);

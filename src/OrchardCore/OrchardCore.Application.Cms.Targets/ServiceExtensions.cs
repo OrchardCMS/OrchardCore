@@ -20,8 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddModules()
 
                 .WithDefaultFeatures(
-                    "OrchardCore.Settings", "OrchardCore.Setup",
-                    "OrchardCore.Recipes", "OrchardCore.Commons")
+                    "OrchardCore.Settings", "OrchardCore.Setup", "OrchardCore.Recipes")
 
                 .AddMvc()
                 .AddAntiForgery()
