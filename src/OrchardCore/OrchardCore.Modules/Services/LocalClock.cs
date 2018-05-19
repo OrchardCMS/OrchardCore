@@ -2,14 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Modules;
+using NodaTime;
 
 namespace OrchardCore.Modules
 {
     public class LocalClock : ILocalClock
     {
+        private static readonly Task<ITimeZone> Empty = Task.FromResult<ITimeZone>(null);
+
         private readonly IEnumerable<ITimeZoneSelector> _timeZoneSelectors;
         private readonly IClock _clock;
-        private Task<ITimeZone> _timeZone;
+        private Task<ITimeZone> _timeZone = Empty;
 
         public LocalClock(IEnumerable<ITimeZoneSelector> timeZoneSelectors, IClock clock)
         {
@@ -28,12 +31,22 @@ namespace OrchardCore.Modules
         public Task<ITimeZone> GetLocalTimeZoneAsync()
         {
             // Caching the result per request
-            if (_timeZone == null)
+            if (_timeZone == Empty)
             {
                 _timeZone = LoadLocalTimeZoneAsync();
             }
 
             return _timeZone;
+        }
+
+        public Task<DateTimeOffset> ConvertToLocalAsync(DateTimeOffset dateTimeOffSet)
+        {
+            return GetLocalTimeZoneAsync().ContinueWith(localTimeZone =>
+            {
+                var dateTimeZone = ((TimeZone)localTimeZone.Result).DateTimeZone;
+                var offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet);
+                return offsetDateTime.InZone(dateTimeZone).ToDateTimeOffset();
+            });
         }
 
         private async Task<ITimeZone> LoadLocalTimeZoneAsync()
@@ -54,10 +67,22 @@ namespace OrchardCore.Modules
             {
                 return _clock.GetSystemTimeZone();
             }
+            else if (timeZoneResults.Count > 1)
+            {
+                timeZoneResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
+            }
 
-            timeZoneResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
+            foreach(var result in timeZoneResults)
+            {
+                var value = await result.TimeZoneId();
 
-            return _clock.GetTimeZone(timeZoneResults[0].Id);
+                if (!String.IsNullOrEmpty(value))
+                {
+                    return _clock.GetTimeZone(value);
+                }
+            }
+
+            return _clock.GetSystemTimeZone();
         }
     }
 }

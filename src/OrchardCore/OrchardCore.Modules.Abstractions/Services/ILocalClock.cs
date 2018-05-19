@@ -17,5 +17,10 @@ namespace OrchardCore.Modules
         /// Returns the local timezone.
         /// </summary>
         Task<ITimeZone> GetLocalTimeZoneAsync();
+
+        /// <summary>
+        /// Converts a <see cref="DateTimeOffset" /> to the specified <see cref="ITimeZone" /> instance.
+        /// </summary>
+        Task<DateTimeOffset> ConvertToLocalAsync(DateTimeOffset dateTimeOffset);
     }
 }
