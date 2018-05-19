@@ -36,6 +36,8 @@ namespace OrchardCore.Settings
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<ILiquidTemplateEventHandler, SiteLiquidTemplateEventHandler>();
+
+            services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

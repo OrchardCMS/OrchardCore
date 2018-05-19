@@ -84,7 +84,17 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             {
                 shape.Id = Convert.ToString(output.Attributes["id"].Value);
             }
-            
+
+            if (output.Attributes.ContainsName("alternate"))
+            {
+                shape.Metadata.Alternates.Add(Convert.ToString(output.Attributes["alternate"].Value));
+            }
+
+            if (output.Attributes.ContainsName("wrapper"))
+            {
+                shape.Metadata.Wrappers.Add(Convert.ToString(output.Attributes["wrapper"].Value));
+            }
+
             tagHelperContext.Items.Add(typeof(IShape), shape);
 
             if (!string.IsNullOrWhiteSpace(Cache))

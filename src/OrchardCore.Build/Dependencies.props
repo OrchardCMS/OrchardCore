@@ -21,9 +21,8 @@
     <PackageManagement Include="xunit" Version="2.3.0-beta2-build3683" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.3.0-beta2-build1317" />
     <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9442" />
-    <PackageManagement Include="YesSql" Version="2.0.0-beta-1194" />
+    <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1194" />
     <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1194" />
-    <PackageManagement Include="YesSql.Providers" Version="1.0.0-beta-1194" />
     <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1194" />
     <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1194" />
     <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1194" />
@@ -48,6 +47,7 @@
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0003" />
     <PackageManagement Include="Markdig" Version="0.13.1" />
     <PackageManagement Include="WindowsAzure.Storage" Version="8.5.0" />
+    <PackageManagement Include="NodaTime" Version="2.3.0-beta02" />
   </ItemGroup>
 
 </Project>

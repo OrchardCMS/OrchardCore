@@ -1,36 +1,28 @@
-﻿using System;
+using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.Settings;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
     public class DateTimeShapes : IShapeAttributeProvider
     {
         private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";
-
         private readonly IClock _clock;
-        private readonly ISiteService _siteService;
-
-        //private readonly IDateLocalizationServices _dateLocalizationServices;
-        //private readonly IDateTimeFormatProvider _dateTimeLocalization;
+        private readonly ILocalClock _localClock;
 
         public DateTimeShapes(
             IClock clock,
             IPluralStringLocalizer<DateTimeShapes> localizer,
-            ISiteService siteService
-            //IDateLocalizationServices dateLocalizationServices,
-            //IDateTimeFormatProvider dateTimeLocalization
+            ILocalClock localClock
             )
         {
+            _localClock = localClock;
             _clock = clock;
-            _siteService = siteService;
-            //_dateLocalizationServices = dateLocalizationServices;
-            //_dateTimeLocalization = dateTimeLocalization;
             T = localizer;
         }
 
@@ -87,20 +79,15 @@ namespace OrchardCore.DisplayManagement.Shapes
         [Shape]
         public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format)
         {
-            if (Utc == null)
-            {
-                Utc = _clock.UtcNow;
-            }
-
-            var timeZone = TimeZoneInfo.FindSystemTimeZoneById((await _siteService.GetSiteSettingsAsync()).TimeZone);
-            var local = TimeZoneInfo.ConvertTime(Utc.Value.ToUniversalTime(), TimeZoneInfo.Utc, timeZone);
+            Utc = Utc ?? _clock.UtcNow;
+            var zonedTime = await _localClock.ConvertToLocalAsync(Utc.Value);
 
             if (Format == null)
             {
                 Format = T[LongDateTimeFormat, LongDateTimeFormat, 0].Value;
             }
 
-            return Html.Raw(Html.Encode(local.ToString(Format)));
+            return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.InvariantCulture)));
         }
     }
 
