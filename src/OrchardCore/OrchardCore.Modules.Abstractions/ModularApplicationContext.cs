@@ -121,6 +121,8 @@ namespace OrchardCore.Modules
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
                     .Where(f => !(f is ModuleAttribute)).ToList();
 
+                ModuleInfo.Id = Name;
+
                 if (isApplication)
                 {
                     ModuleInfo.Name = Application.ModuleName;
@@ -132,7 +134,7 @@ namespace OrchardCore.Modules
                     {
                         features.Insert(0, new Manifest.FeatureAttribute()
                         {
-                            Id = Name,
+                            Id = ModuleInfo.Id,
                             Name = ModuleInfo.Name,
                             Description = ModuleInfo.Description,
                             Priority = ModuleInfo.Priority,
@@ -142,7 +144,6 @@ namespace OrchardCore.Modules
                 }
 
                 ModuleInfo.Features.AddRange(features);
-                ModuleInfo.Id = Name;
             }
             else
             {
