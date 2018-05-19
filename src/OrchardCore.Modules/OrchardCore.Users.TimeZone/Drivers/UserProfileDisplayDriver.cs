@@ -25,7 +25,7 @@ namespace OrchardCore.Users.TimeZone.Drivers
 
         public override IDisplayResult Edit(UserProfile profile, BuildEditorContext context)
         {
-            return Initialize<EditUserProfileViewModel>("UserProfile_Edit", model =>
+            return Initialize<UserProfileViewModel>("UserProfile_Edit", model =>
             {
                 model.TimeZone = profile.TimeZone;
                 model.TimeZones = _clock.GetTimeZones();
@@ -34,7 +34,7 @@ namespace OrchardCore.Users.TimeZone.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(UserProfile profile, IUpdateModel updater, BuildEditorContext context)
         {
-            var model = new EditUserProfileViewModel();
+            var model = new UserProfileViewModel();
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
