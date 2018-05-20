@@ -3,6 +3,11 @@
 }
 
 <div id="mediaApp" style="display:none" v-on:dragover="handleScrollWhileDrag($event)">
+    <div id="customdropzone">
+        <h3>@T["Drop your media here"]</h3>
+        <p>@T["Your files will be uploaded to the current folder when you drop them here"]</p>
+    </div>
+
     <div class="message-warning" v-if="errors.length > 0">
         <ul>
             <li v-for="e in errors">
@@ -22,6 +27,7 @@
         </div>
 
         <div class="media-container-main" v-cloak>
+
             <nav class="navbar action-bar">
                 <div class="dropdown d-lg-none visible-on-modal">
                     <button class="btn btn-secondary dropdown-toggle btn-sm mr-2" type="button" id="selectionButtonsDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -42,7 +48,7 @@
                             <span v-if="smallThumbs"> @T["Large"] </span>
                             <span v-else> @T["Small"] </span>
                         </a>
-                        <a  href="javascript:;" class="dropdown-item"
+                        <a href="javascript:;" class="dropdown-item"
                            v-on:click="gridView = !gridView">
                             <span v-if="gridView"> @T["Table"]</span>
                             <span v-else> @T["Grid"] </span>
@@ -121,7 +127,7 @@
                         v-on:click.stop="toggleSelectionOfMedia(media)"
                         draggable="true" v-on:dragstart="handleDragStart(media, $event)"
                         :key="media.name" style="height: 80px;">
-                        <td class="thumbnail-column" style="width: 80px;"><img style="max-width:80px; max-height:80px;" v-bind:src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" /></td>
+                        <td class="thumbnail-column" style="width: 80px;"><img draggable="false" style="max-width:80px; max-height:80px;" v-bind:src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" /></td>
                         <td>
                             <div class="media-name-cell">
                                 <p class="media-filename" v-bind:title="media.name">{{ media.name }}</p>
@@ -129,7 +135,7 @@
                                     <a href="javascript:;" class="btn btn-light btn-sm mr-2" v-on:click.stop="renameMedia(media)"><i style="" class="fa fa-edit mr-1"></i> @T["Edit"]</a>
                                     <a href="javascript:;" class="btn btn-light btn-sm" v-on:click.stop="deleteMediaItem(media)"><i class="fa fa-trash  mr-1"></i>@T["Delete"]</a>
                                 </div>
-                            </div>                            
+                            </div>
                         </td>
 
                     </tr>
@@ -146,7 +152,7 @@
                     v-on:click.stop="toggleSelectionOfMedia(media)"
                     draggable="true" v-on:dragstart="handleDragStart(media, $event)">
                     <div class="thumb-container" v-bind:style="{height: thumbSize + 'px'}">
-                        <img v-bind:src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" />
+                        <img draggable="false" v-bind:src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" />
                     </div>
                     <div class="media-container-main-item-title">
                         <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button mr-4" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a>
@@ -221,3 +227,4 @@
         </div>
     </div>
 </div>
+

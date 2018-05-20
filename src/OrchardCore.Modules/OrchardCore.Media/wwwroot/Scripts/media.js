@@ -440,6 +440,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
 }
 $(document).on('mediaApp:ready', function () {
     $('#fileupload').fileupload({
+        dropZone: $('#mediaApp'),
         dataType: 'json',
         url: $('#uploadFiles').val(),
         formData: function () {
@@ -467,6 +468,25 @@ $(document).on('mediaApp:ready', function () {
     });
 });
 
+
+$(document).bind('dragover', function (e) {
+    var dt = e.originalEvent.dataTransfer;
+    if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
+        var dropZone = $('#customdropzone'),
+            timeout = window.dropZoneTimeout;
+        if (timeout) {
+            clearTimeout(timeout);
+        } else {
+            dropZone.addClass('in');
+        }
+        var hoveredDropZone = $(e.target).closest(dropZone);
+        dropZone.toggleClass('hover', hoveredDropZone.length);
+        window.dropZoneTimeout = setTimeout(function () {
+            window.dropZoneTimeout = null;
+            dropZone.removeClass('in hover');
+        }, 100);
+    }    
+});
 // <folder> component
 Vue.component('folder', {
     template: '\
