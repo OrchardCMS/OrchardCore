@@ -15,3 +15,9 @@
     </select>
     <span class="hint">@T["The HTTP method to use when submitting the form."]</span>
 </fieldset>
+
+<fieldset class="form-group">
+    <label asp-for="WorkflowTypeId">@T["Workflow Type"]</label>
+    @await Component.InvokeAsync("SelectWorkflowType", new { selectedWorkflowTypeId = Model.WorkflowTypeId, htmlName = Html.NameFor(m => m.WorkflowTypeId) })
+    <span class="hint">@T["Optionally select a workflow to invoke when the form is submitted."]</span>
+</fieldset>

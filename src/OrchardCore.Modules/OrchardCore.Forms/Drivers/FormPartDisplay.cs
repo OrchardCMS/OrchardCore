@@ -16,6 +16,7 @@ namespace OrchardCore.Forms.Drivers
             {
                 m.Action = part.Action;
                 m.Method = part.Method;
+                m.WorkflowTypeId = part.WorkflowTypeId;
             });
         }
 
@@ -27,6 +28,7 @@ namespace OrchardCore.Forms.Drivers
             {
                 part.Action = viewModel.Action?.Trim();
                 part.Method = viewModel.Method;
+                part.WorkflowTypeId = viewModel.WorkflowTypeId;
             }
 
             return Edit(part);
