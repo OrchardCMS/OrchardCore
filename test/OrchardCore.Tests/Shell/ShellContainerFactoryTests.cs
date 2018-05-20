@@ -28,11 +28,11 @@ namespace OrchardCore.Tests.Shell
             applicationServices.AddTransient<ITestTransient, TestTransient>();
             applicationServices.AddScoped<ITestScoped, TestScoped>();
 
-            applicationServices.AddSingleton<ITwoHostSingletonsOfTheSameType, TwoHostSingletonsOfTheSameType1>();
-            applicationServices.AddSingleton<ITwoHostSingletonsOfTheSameType, TwoHostSingletonsOfTheSameType2>();
+            applicationServices.AddSingleton<ITwoHostSingletonsOfTheSameType, FirstHostSingletonsOfTheSameType>();
+            applicationServices.AddSingleton<ITwoHostSingletonsOfTheSameType, SecondHostSingletonsOfTheSameType>();
 
-            applicationServices.AddSingleton<IHostSingletonAndScopedOfTheSameType, HostSingletonAndScopedOfTheSameType1>();
-            applicationServices.AddScoped<IHostSingletonAndScopedOfTheSameType, HostSingletonAndScopedOfTheSameType2>();
+            applicationServices.AddSingleton<IHostSingletonAndScopedOfTheSameType, HostSingletonOfTheSameTypeAsScoped>();
+            applicationServices.AddScoped<IHostSingletonAndScopedOfTheSameType, HostScopedOfTheSameTypeAsSingleton>();
 
             _shellContainerFactory = new ShellContainerFactory(
                 _applicationServiceProvider = applicationServices.BuildServiceProvider(),
@@ -106,28 +106,28 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public void ResolvingIEnumerable_TwoHostSingletonsShouldNotHideShellServices()
+        public void WhenTwoHostSingletons_GetServices_Returns_HostAndShellServices()
         {
             var shellBlueprint = CreateBlueprint();
-            AddStartup(shellBlueprint, typeof(EnumerableServiceStartup));
+            AddStartup(shellBlueprint, typeof(ServicesOfTheSameTypeStartup));
             var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
 
-            var services = container.GetService<IEnumerable<ITwoHostSingletonsOfTheSameType>>();
+            var services = container.GetServices<ITwoHostSingletonsOfTheSameType>();
 
             Assert.Equal(5, services.Count());
         }
 
         [Fact]
-        public void ResolvingIEnumerable_HostSingletonAndScopedShouldNotInterfere()
+        public void WhenHostSingletonAndScoped_GetServices_Returns_CorrectImplementations()
         {
             var shellBlueprint = CreateBlueprint();
             var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
 
-            var services = container.GetService<IEnumerable<IHostSingletonAndScopedOfTheSameType>>();
+            var services = container.GetServices<IHostSingletonAndScopedOfTheSameType>();
 
             Assert.Equal(2, services.Count());
-            Assert.IsType<HostSingletonAndScopedOfTheSameType1>(services.ElementAt(0));
-            Assert.IsType<HostSingletonAndScopedOfTheSameType2>(services.ElementAt(1));
+            Assert.IsType<HostSingletonOfTheSameTypeAsScoped>(services.ElementAt(0));
+            Assert.IsType<HostScopedOfTheSameTypeAsSingleton>(services.ElementAt(1));
         }
 
         private ShellBlueprint CreateBlueprint()
@@ -189,25 +189,25 @@ namespace OrchardCore.Tests.Shell
         private class TestScoped : ITestScoped { }
 
         private interface ITwoHostSingletonsOfTheSameType { }
-        private class TwoHostSingletonsOfTheSameType1 : ITwoHostSingletonsOfTheSameType { }
-        private class TwoHostSingletonsOfTheSameType2 : ITwoHostSingletonsOfTheSameType { }
-        private class TwoHostSingletonsOfTheSameType3 : ITwoHostSingletonsOfTheSameType { }
-        private class TwoHostSingletonsOfTheSameType4 : ITwoHostSingletonsOfTheSameType { }
-        private class TwoHostSingletonsOfTheSameType5 : ITwoHostSingletonsOfTheSameType { }
+        private class FirstHostSingletonsOfTheSameType : ITwoHostSingletonsOfTheSameType { }
+        private class SecondHostSingletonsOfTheSameType : ITwoHostSingletonsOfTheSameType { }
+        private class ShellSingletonOfTheSametype : ITwoHostSingletonsOfTheSameType { }
+        private class ShellTransientOfTheSametype : ITwoHostSingletonsOfTheSameType { }
+        private class ShellScopedOfTheSametype : ITwoHostSingletonsOfTheSameType { }
 
         private interface IHostSingletonAndScopedOfTheSameType { }
-        private class HostSingletonAndScopedOfTheSameType1 : IHostSingletonAndScopedOfTheSameType { }
-        private class HostSingletonAndScopedOfTheSameType2 : IHostSingletonAndScopedOfTheSameType { }
+        private class HostSingletonOfTheSameTypeAsScoped : IHostSingletonAndScopedOfTheSameType { }
+        private class HostScopedOfTheSameTypeAsSingleton : IHostSingletonAndScopedOfTheSameType { }
 
-        private class EnumerableServiceStartup : StartupBase
+        private class ServicesOfTheSameTypeStartup : StartupBase
         {
             public override int Order => 1;
 
             public override void ConfigureServices(IServiceCollection services)
             {
-                services.AddSingleton<ITwoHostSingletonsOfTheSameType, TwoHostSingletonsOfTheSameType3>();
-                services.AddTransient<ITwoHostSingletonsOfTheSameType, TwoHostSingletonsOfTheSameType4>();
-                services.AddScoped<ITwoHostSingletonsOfTheSameType, TwoHostSingletonsOfTheSameType5>();
+                services.AddSingleton<ITwoHostSingletonsOfTheSameType, ShellSingletonOfTheSametype>();
+                services.AddTransient<ITwoHostSingletonsOfTheSameType, ShellTransientOfTheSametype>();
+                services.AddScoped<ITwoHostSingletonsOfTheSameType, ShellScopedOfTheSametype>();
             }
         }
     }
