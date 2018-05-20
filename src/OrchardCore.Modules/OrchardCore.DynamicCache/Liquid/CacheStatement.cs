@@ -80,10 +80,16 @@ namespace OrchardCore.DynamicCache.Liquid
             }
             
             cacheScopeManager.EnterScope(cacheContext);
+            String content;
 
-            var content = await EvaluateStatementsAsync(encoder, context);
-
-            cacheScopeManager.ExitScope();
+            try
+            {
+                content = await EvaluateStatementsAsync(encoder, context);
+            }
+            finally
+            {
+                cacheScopeManager.ExitScope();
+            }
 
             if (debugMode)
             {

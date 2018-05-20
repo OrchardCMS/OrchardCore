@@ -49,9 +49,11 @@ namespace OrchardCore.Tests.DisplayManagement
         {
             public Action<ShapeDisplayContext> Displaying = ctx => { };
             public Action<ShapeDisplayContext> Displayed = ctx => { };
+            public Action<ShapeDisplayContext> Finalized = ctx => { };
 
             Task IShapeDisplayEvents.DisplayingAsync(ShapeDisplayContext context) { Displaying(context); return Task.CompletedTask; }
             Task IShapeDisplayEvents.DisplayedAsync(ShapeDisplayContext context) { Displayed(context); return Task.CompletedTask; }
+            Task IShapeDisplayEvents.DisplayingFinalizedAsync(ShapeDisplayContext context) { Finalized(context); return Task.CompletedTask; }
         }
 
         void AddShapeDescriptor(ShapeDescriptor shapeDescriptor)

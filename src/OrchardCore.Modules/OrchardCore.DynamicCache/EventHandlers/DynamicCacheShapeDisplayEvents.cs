@@ -16,6 +16,7 @@ namespace OrchardCore.DynamicCache.EventHandlers
     public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
     {
         private readonly HashSet<CacheContext> _cached = new HashSet<CacheContext>();
+        private readonly HashSet<CacheContext> _openScopes = new HashSet<CacheContext>();
 
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;
@@ -33,13 +34,10 @@ namespace OrchardCore.DynamicCache.EventHandlers
             // The shape has cache settings and no content yet
             if (context.ShapeMetadata.IsCached && context.ChildContent == null)
             {
-                if (debugMode)
-                {
-                    context.ShapeMetadata.Wrappers.Add("CachedShapeWrapper");
-                }
 
                 var cacheContext = context.ShapeMetadata.Cache();
                 _cacheScopeManager.EnterScope(cacheContext);
+                _openScopes.Add(cacheContext);
 
                 var cachedContent = await _dynamicCacheService.GetCachedValueAsync(cacheContext);
 
@@ -49,6 +47,10 @@ namespace OrchardCore.DynamicCache.EventHandlers
                     // Add the cacheContext to _cached so that we don't try to cache the content again in the DisplayedAsync method.
                     _cached.Add(cacheContext);
                     context.ChildContent = new HtmlString(cachedContent);
+                }
+                else if (debugMode)
+                {
+                    context.ShapeMetadata.Wrappers.Add("CachedShapeWrapper");
                 }
             }
         }
@@ -89,14 +91,25 @@ namespace OrchardCore.DynamicCache.EventHandlers
             // So, if the cache context is not present in the _cached collection, we need to insert the ChildContent value into the cache:
             if (!_cached.Contains(cacheContext) && context.ChildContent != null)
             {
-                _cacheScopeManager.ExitScope(); // todo: how can we guarantee that this is called, even on failures?
-
                 using (var sw = new StringWriter())
                 {
                     context.ChildContent.WriteTo(sw, HtmlEncoder.Default);
                     await _dynamicCacheService.SetCachedValueAsync(cacheContext, sw.ToString());
                 }
             }
+        }
+
+        public Task DisplayingFinalizedAsync(ShapeDisplayContext context)
+        {
+            var cacheContext = context.ShapeMetadata.Cache();
+
+            if (cacheContext != null && _openScopes.Contains(cacheContext))
+            {
+                _cacheScopeManager.ExitScope();
+                _openScopes.Remove(cacheContext);
+            }
+
+            return Task.CompletedTask;
         }
     }
 }
