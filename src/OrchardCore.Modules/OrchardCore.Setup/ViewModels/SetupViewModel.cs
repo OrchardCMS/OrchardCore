@@ -45,6 +45,6 @@ namespace OrchardCore.Setup.ViewModels
 
         public string SiteTimeZone { get; set; }
 
-        public ITimeZone[] TimeZones { get; set; }
+        public IList<ITimeZone> TimeZones { get; set; }
     }
 }
