@@ -7,7 +7,7 @@
 @import "codemirror.scss";
 
 $top-nav-height: 59px;
-$footer-height: 60px;
+$footer-height: 40px;
 $left-navigation-width: 260px;
 $left-navigation-width-when-compact: 60px;
 $border-content: 1px solid rgba(0, 0, 0, 0.05);
@@ -48,6 +48,7 @@ body {
     z-index: 8;
     border-top: 1px solid rgba(0, 0, 0, 0.05);
     transition: width 0.2s ease-in-out, width 0.2s ease-in-out;
+    font-size: .7rem;
 }
 
 // Layout
@@ -106,6 +107,7 @@ body {
     padding: 15px;
     margin-left: $left-navigation-width;
     margin-top: $top-nav-height;
+    margin-bottom: $footer-height;
     transition: margin-left 0.2s ease-in-out;
 }
 

@@ -6876,7 +6876,7 @@ span.CodeMirror-selectedtext {
   background: none; }
 
 body {
-  margin-bottom: 60px; }
+  margin-bottom: 40px; }
 
 .left-sidebar-compact .ta-footer {
   width: calc(100% - 60px);
@@ -6887,12 +6887,13 @@ body {
   bottom: 0;
   right: 0;
   width: calc(100% - 260px);
-  height: 60px;
-  line-height: 60px;
+  height: 40px;
+  line-height: 40px;
   background-color: #f8f9fa;
   z-index: 8;
   border-top: 1px solid rgba(0, 0, 0, 0.05);
-  transition: width 0.2s ease-in-out, width 0.2s ease-in-out; }
+  transition: width 0.2s ease-in-out, width 0.2s ease-in-out;
+  font-size: .7rem; }
 
 .ta-navbar-top {
   min-height: 59px;
@@ -6927,6 +6928,7 @@ body {
   padding: 15px;
   margin-left: 260px;
   margin-top: 59px;
+  margin-bottom: 40px;
   transition: margin-left 0.2s ease-in-out; }
 
 .left-sidebar-compact .ta-content {
