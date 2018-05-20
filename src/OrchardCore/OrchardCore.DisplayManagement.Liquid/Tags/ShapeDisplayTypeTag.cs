@@ -4,20 +4,19 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using OrchardCore.DisplayManagement.Liquid.Ast;
-using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class RemoveItemTag : ExpressionArgumentsTag
+    public class ShapeDisplayTypeTag : ExpressionArgumentsTag
     {
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
         {
             var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
 
-            if (objectValue is Shape shape && shape.Items != null)
+            if (objectValue is IShape shape)
             {
                 var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
-                shape.Remove(arguments["item"].Or(arguments.At(0)).ToStringValue());
+                shape.Metadata.DisplayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
             }
 
             return Completion.Normal;
