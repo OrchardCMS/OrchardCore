@@ -24,9 +24,9 @@ namespace OrchardCore.Tests.Shell
             var applicationServices = new ServiceCollection();
             applicationServices.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 
-            applicationServices.AddSingleton<ITestSingleton, TestSingleton1>();
-            applicationServices.AddTransient<ITestTransient, TestTransient1>();
-            applicationServices.AddScoped<ITestScoped, TestScoped1>();
+            applicationServices.AddSingleton<ITestSingleton, TestSingleton>();
+            applicationServices.AddTransient<ITestTransient, TestTransient>();
+            applicationServices.AddScoped<ITestScoped, TestScoped>();
 
             applicationServices.AddSingleton<ITwoHostSingletonsOfTheSameType, TwoHostSingletonsOfTheSameType1>();
             applicationServices.AddSingleton<ITwoHostSingletonsOfTheSameType, TwoHostSingletonsOfTheSameType2>();
@@ -92,11 +92,11 @@ namespace OrchardCore.Tests.Shell
                 scoped4 = scope.ServiceProvider.GetRequiredService<ITestScoped>();
             }
 
-            Assert.IsType<TestSingleton1>(singleton1);
-            Assert.IsType<TestTransient1>(transient1);
-            Assert.IsType<TestTransient1>(transient2);
-            Assert.IsType<TestScoped1>(scoped1);
-            Assert.IsType<TestScoped1>(scoped3);
+            Assert.IsType<TestSingleton>(singleton1);
+            Assert.IsType<TestTransient>(transient1);
+            Assert.IsType<TestTransient>(transient2);
+            Assert.IsType<TestScoped>(scoped1);
+            Assert.IsType<TestScoped>(scoped3);
 
             Assert.Equal(singleton1, singleton2);
             Assert.NotEqual(transient1, transient2);
@@ -114,7 +114,7 @@ namespace OrchardCore.Tests.Shell
 
             var services = container.GetService<IEnumerable<ITwoHostSingletonsOfTheSameType>>();
 
-            Assert.Equal(3, services.Count());
+            Assert.Equal(5, services.Count());
         }
 
         [Fact]
@@ -184,17 +184,16 @@ namespace OrchardCore.Tests.Shell
         private interface ITestTransient { }
         private interface ITestScoped { }
 
-        private class TestSingleton1 : ITestSingleton { }
-        private class TestSingleton2 : ITestSingleton { }
-        private class TestTransient1 : ITestTransient { }
-        private class TestTransient2 : ITestTransient { }
-        private class TestScoped1 : ITestScoped { }
-        private class TestScoped2 : ITestScoped { }
+        private class TestSingleton : ITestSingleton { }
+        private class TestTransient : ITestTransient { }
+        private class TestScoped : ITestScoped { }
 
         private interface ITwoHostSingletonsOfTheSameType { }
         private class TwoHostSingletonsOfTheSameType1 : ITwoHostSingletonsOfTheSameType { }
         private class TwoHostSingletonsOfTheSameType2 : ITwoHostSingletonsOfTheSameType { }
         private class TwoHostSingletonsOfTheSameType3 : ITwoHostSingletonsOfTheSameType { }
+        private class TwoHostSingletonsOfTheSameType4 : ITwoHostSingletonsOfTheSameType { }
+        private class TwoHostSingletonsOfTheSameType5 : ITwoHostSingletonsOfTheSameType { }
 
         private interface IHostSingletonAndScopedOfTheSameType { }
         private class HostSingletonAndScopedOfTheSameType1 : IHostSingletonAndScopedOfTheSameType { }
@@ -206,7 +205,9 @@ namespace OrchardCore.Tests.Shell
 
             public override void ConfigureServices(IServiceCollection services)
             {
-                services.AddScoped<ITwoHostSingletonsOfTheSameType, TwoHostSingletonsOfTheSameType3>();
+                services.AddSingleton<ITwoHostSingletonsOfTheSameType, TwoHostSingletonsOfTheSameType3>();
+                services.AddTransient<ITwoHostSingletonsOfTheSameType, TwoHostSingletonsOfTheSameType4>();
+                services.AddScoped<ITwoHostSingletonsOfTheSameType, TwoHostSingletonsOfTheSameType5>();
             }
         }
     }
