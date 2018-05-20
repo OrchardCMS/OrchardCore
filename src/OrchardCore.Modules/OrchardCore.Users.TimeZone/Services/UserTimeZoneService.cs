@@ -46,16 +46,19 @@ namespace OrchardCore.Users.TimeZone.Services
 
         public async Task UpdateUserTimeZoneAsync(UserProfile profile)
         {
-            var session = GetSession();
-
-            var user = await session.Query<User, UserIndex>().Where(x => x.NormalizedUserName == _httpContextAccessor.HttpContext.User.Identity.Name.ToUpper()).FirstOrDefaultAsync();
-            if (user.Properties["UserProfile"] != null && user.Properties["UserProfile"]["TimeZone"] != null)
+            if (!String.IsNullOrEmpty(_httpContextAccessor.HttpContext.User.Identity.Name))
             {
-                user.Properties["UserProfile"]["TimeZone"] = profile.TimeZone;
-            }
+                var session = GetSession();
 
-            _memoryCache.Set(CacheKey, (string)profile.TimeZone);
-            session.Save(user);
+                var user = await session.Query<User, UserIndex>().Where(x => x.NormalizedUserName == _httpContextAccessor.HttpContext.User.Identity.Name.ToUpper()).FirstOrDefaultAsync();
+                if (user.Properties["UserProfile"] != null && user.Properties["UserProfile"]["TimeZone"] != null)
+                {
+                    user.Properties["UserProfile"]["TimeZone"] = profile.TimeZone;
+                }
+
+                _memoryCache.Set(CacheKey, (string)profile.TimeZone);
+                session.Save(user);
+            }
         }
 
         public async Task<string> GetCurrentUserTimeZoneIdAsync()
