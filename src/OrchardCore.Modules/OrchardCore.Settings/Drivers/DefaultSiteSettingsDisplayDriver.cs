@@ -3,12 +3,19 @@ using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings.ViewModels;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Settings.Drivers
 {
     public class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
     {
+        private readonly IClock _clock;
         public const string GroupId = "general";
+
+        public DefaultSiteSettingsDisplayDriver(IClock clock)
+        {
+            _clock = clock;
+        }
 
         public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
@@ -17,11 +24,12 @@ namespace OrchardCore.Settings.Drivers
                     {
                         model.SiteName = site.SiteName;
                         model.BaseUrl = site.BaseUrl;
-                        model.TimeZone = site.TimeZone;
-                        model.TimeZones = TimeZoneInfo.GetSystemTimeZones();
+                        model.TimeZone = site.TimeZoneId;
+                        model.TimeZones = _clock.GetTimeZones();
                     }).Location("Content:1").OnGroup(GroupId)
             );
         }
+
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
         {
             if (context.GroupId == GroupId)
@@ -32,7 +40,7 @@ namespace OrchardCore.Settings.Drivers
                 {
                     site.SiteName = model.SiteName;
                     site.BaseUrl = model.BaseUrl;
-                    site.TimeZone = model.TimeZone;
+                    site.TimeZoneId = model.TimeZone;
                 }
             }
 

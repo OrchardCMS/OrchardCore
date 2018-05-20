@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json.Linq;
@@ -74,7 +74,7 @@ namespace OrchardCore.Settings.Recipes
                         break;
 
                     case "TimeZone":
-                        site.TimeZone = property.ToString();
+                        site.TimeZoneId = property.ToString();
                         break;
 
                     case "UseCdn":
