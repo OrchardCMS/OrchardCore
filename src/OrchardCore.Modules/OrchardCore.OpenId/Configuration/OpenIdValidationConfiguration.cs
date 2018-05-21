@@ -80,7 +80,7 @@ namespace OrchardCore.OpenId.Configuration
             {
                 if (scope == null)
                 {
-                    _logger.LogError($"The specified tenant {settings.Tenant} is disabled.");
+                    _logger.LogError("The specified tenant '{TenantName}' is disabled.", settings.Tenant);
                     return;
                 }
 
@@ -150,7 +150,7 @@ namespace OrchardCore.OpenId.Configuration
             {
                 if (scope == null)
                 {
-                    _logger.LogError($"The specified tenant {settings.Tenant} is disabled.");
+                    _logger.LogError("The specified tenant '{TenantName}' is disabled.", settings.Tenant);
                     return;
                 }
 
@@ -225,7 +225,7 @@ namespace OrchardCore.OpenId.Configuration
                 {
                     if (scope == null)
                     {
-                        _logger.LogError($"The specified tenant {settings.Tenant} is disabled.");
+                        _logger.LogError("The specified tenant '{TenantName}' is disabled.", settings.Tenant);
                     }
                     else
                     {
