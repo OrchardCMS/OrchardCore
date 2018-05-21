@@ -4,3 +4,8 @@
     <input asp-for="UsersCanRegister" type="checkbox" />
     <label asp-for="UsersCanRegister">@T["Users can create new accounts on the site"] <span asp-validation-for="UsersCanRegister"></span></label>
 </fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="EnableLostPassword">
+    <input asp-for="EnableLostPassword" type="checkbox" />
+    <label asp-for="EnableLostPassword">@T["Display a link to enable users to reset their password"] <span asp-validation-for="EnableLostPassword"></span></label>
+</fieldset>

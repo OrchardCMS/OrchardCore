@@ -105,14 +105,14 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("font-awesome")
-                .SetCdn("https://use.fontawesome.com/releases/v5.0.9/js/all.js")
-                .SetVersion("5.0.9")
+                .SetCdn("https://use.fontawesome.com/releases/v5.0.12/js/all.js")
+                .SetVersion("5.0.12")
                 ;
 
             manifest
                 .DefineScript("font-awesome-v4-shims")
-                .SetCdn("https://use.fontawesome.com/releases/v5.0.9/js/v4-shims.js")
-                .SetVersion("5.0.9")
+                .SetCdn("https://use.fontawesome.com/releases/v5.0.12/js/v4-shims.js")
+                .SetVersion("5.0.12")
                 ;
         }
     }

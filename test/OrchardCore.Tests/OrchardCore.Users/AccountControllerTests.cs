@@ -1,12 +1,19 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json.Linq;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.Email;
 using OrchardCore.Settings;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
@@ -35,7 +42,11 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 MockSignInManager(mockUserManager).Object,
                 mockUserManager,
                 Mock.Of<ILogger<AccountController>>(),
-                mockSiteService);
+                mockSiteService,
+                Mock.Of<ISmtpService>(),
+                Mock.Of<IShapeFactory>(),
+                Mock.Of<IHtmlDisplay>(),
+                Mock.Of<IStringLocalizer<AccountController>>());
 
             var result = await controller.Register();
             Assert.IsType<NotFoundResult>(result);
@@ -61,7 +72,11 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 MockSignInManager(mockUserManager).Object,
                 mockUserManager,
                 Mock.Of<ILogger<AccountController>>(),
-                mockSiteService);
+                mockSiteService,
+                Mock.Of<ISmtpService>(),
+                Mock.Of<IShapeFactory>(),
+                Mock.Of<IHtmlDisplay>(),
+                Mock.Of<IStringLocalizer<AccountController>>());
 
 
             var result = await controller.Register();
@@ -71,7 +86,6 @@ namespace OrchardCore.Tests.OrchardCore.Users
             result = await controller.Register(new RegisterViewModel());
             Assert.IsType<ViewResult>(result);
         }
-
 
         public static Mock<SignInManager<TUser>> MockSignInManager<TUser>(UserManager<TUser> userManager = null) where TUser : class
         {
@@ -106,6 +120,5 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 null);
             return mgr;
         }
-
     }
 }

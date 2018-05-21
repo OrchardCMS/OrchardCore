@@ -33,12 +33,12 @@
 
             <input asp-for="Paths" type="hidden" class="paths" :value="paths" data-init="@Model.Paths" />
 
-            <nav class="media-field-toolbar">
+            <nav class="media-field-toolbar" v-cloak>
                 <div class="btn-group">
                     <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></a>
                     <a v-show="canRemoveMedia" href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm"><i class="fa fa-trash"></i></a>
                 </div>
-                <code class="pull-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ fileSize }}}} KB)"]</code>
+                <code class="pull-right" v-if="selectedMedia" >@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
             </nav>
 
         </fieldset>
@@ -50,10 +50,17 @@
                         class="media-container-main-list-item"
                         v-on:click="selectMedia(media)">
                         <div class="media-container-main-item" v-bind:class="{selected: selectedMedia == media}">
-                            <img v-if="media.mime.startsWith('image')" v-bind:src="media.url + '?width=240&height=240'" v-bind:data-mime="media.mime" />
-                            <i v-else class="fa fa-file-o" v-bind:data-mime="media.mime"></i>
-                            <div class="media-container-main-item-title">
-                                <span class="media-filename">{{ media.name }}</span>
+                            <div v-if="media.mediaPath!== 'not-found'">
+                                <img v-if="media.mime.startsWith('image')" v-bind:src="media.url + '?width=240&height=240'" v-bind:data-mime="media.mime" />
+                                <i v-else class="fa fa-file-o" v-bind:data-mime="media.mime"></i>
+                                <div class="media-container-main-item-title">
+                                    <span class="media-filename">{{media.name}}</span>                                    
+                                </div>
+                            </div>
+                            <div v-else>
+                                <span class="media-filename">{{media.name}}</span>
+                                <br />
+                                <span class="text-warning">(@T["Not Found"])</span>
                             </div>
                         </div>
                     </li>

@@ -4,7 +4,7 @@
 
 .modal-activities {
     h4.card-title {
-        .fa {
+        .svg-inline--fa {
             margin-right: 0.5em;
         }
     }
@@ -25,6 +25,14 @@
 
         .activity-commands {
             display: none;
+        }
+
+        header {
+            h4 {
+                .svg-inline--fa {
+                    margin-right: 0.5em;
+                }
+            }
         }
     }
 

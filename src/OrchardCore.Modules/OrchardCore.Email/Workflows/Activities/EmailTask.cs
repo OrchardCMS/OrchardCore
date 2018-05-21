@@ -89,14 +89,14 @@ namespace OrchardCore.Email.Workflows.Activities
             }
 
             var result = await _smtpService.SendAsync(message);
+            workflowContext.LastResult = result;
 
             if (!result.Succeeded)
             {
-                return Outcomes("Done");
+                return Outcomes("Failed");
             }
-
-            workflowContext.LastResult = result;
-            return Outcomes("Failed");
+            
+            return Outcomes("Done");
         }
     }
 }

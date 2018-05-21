@@ -21,7 +21,7 @@ namespace OrchardCore.Menu
                 .Creatable()
                 .Listable()
                 .WithPart("TitlePart", part => part.WithPosition("1"))
-                .WithPart("AliasPart", part => part.WithPosition("2").WithSettings(new AliasPartSettings { Pattern = "{{slug}}" }))
+                .WithPart("AliasPart", part => part.WithPosition("2").WithSettings(new AliasPartSettings { Pattern = "{{ ContentItem | display_text | slugify }}" }))
                 .WithPart("MenuPart", part => part.WithPosition("3"))
                 .WithPart("MenuItemsListPart", part => part.WithPosition("4"))
             );

@@ -7,10 +7,14 @@
 @import "codemirror.scss";
 
 $top-nav-height: 59px;
+$footer-height: 60px;
 $left-navigation-width: 260px;
 $left-navigation-width-when-compact: 60px;
 $border-content: 1px solid rgba(0, 0, 0, 0.05);
 $link-padding-left: 16px !default;
+// technique to avoid loosing submenus when hovering. http://www.positioniseverything.net/css-dropdowns-red.html
+$mini-hover-free-zone-length: 20px;
+$extended-hover-length: 30px; 
 
 @mixin word-wrap() {
     overflow-wrap: break-word;
@@ -24,8 +28,20 @@ $link-padding-left: 16px !default;
     hyphens: auto;
 }
 
+body {
+    margin-bottom: $footer-height;
+}
 
 
+.ta-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: $footer-height;
+    line-height: $footer-height;
+    background-color: $gray-100;
+    z-index: 8;
+}
 
 // Layout
 // -----------------------------
@@ -90,7 +106,12 @@ $link-padding-left: 16px !default;
     margin-left: $left-navigation-width-when-compact;
 }
 
-
+@include media-breakpoint-down(sm) {
+    .ta-content {
+        margin-left: $left-navigation-width-when-compact;
+        transition: margin-left 0.5s ease-in-out;
+    }
+}
 
 // Layout 3 : ta-left-sidebar when expanded
 // ----------------------------------------
@@ -111,7 +132,7 @@ $link-padding-left: 16px !default;
     #left-nav {
         position: relative;
         height: calc(100% - #{$top-nav-height * 2});
-        border-top: 1px solid $gray-300;
+        //border-top: 1px solid $gray-300;
     }
     // Remove padding/margin from all uls
     ul {
@@ -267,9 +288,17 @@ $link-padding-left: 16px !default;
             min-height: 40px;
         }
 
-        > li > ul {
+        > li > div {
             position: absolute;
             left: $left-navigation-width-when-compact;
+            width: $left-navigation-width + $extended-hover-length;
+            padding-bottom: $extended-hover-length;
+            padding-right: $extended-hover-length;
+            padding-top: $extended-hover-length + 40px;
+            top: - $extended-hover-length;
+        }
+
+        > li > div > ul {
             width: $left-navigation-width;
             top: 40px;
         }
@@ -304,6 +333,23 @@ $link-padding-left: 16px !default;
         // hide chevrons on first level
         > li > label span:last-child {
             color: rgba(255, 0, 0, 0); // don't use display:none. don't use opacity. Because of IE/Edge
+        }
+
+        .hover-free-zone {
+            position: absolute;
+            padding: 0;
+            width: $mini-hover-free-zone-length;
+            height: $mini-hover-free-zone-length;
+            font-size: 1px;
+            margin-left: -999px;
+            bottom: -$mini-hover-free-zone-length;
+            top: auto;
+            z-index: $zindex-dropdown;
+        }
+
+        > li:hover > div.hover-free-zone {
+            margin-left: - $mini-hover-free-zone-length;
+            top: auto;
         }
     }
 }

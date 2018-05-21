@@ -105,6 +105,12 @@ namespace OrchardCore.Lucene
                         if (task.Type == IndexingTaskTypes.Update)
                         {
                             var contentItem = await contentManager.GetAsync(task.ContentItemId);
+
+                            if (contentItem == null)
+                            {
+                                continue;
+                            }
+
                             var context = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, contentItem.ContentType);
 
                             // Update the document from the index if its lastIndexId is smaller than the current task id. 

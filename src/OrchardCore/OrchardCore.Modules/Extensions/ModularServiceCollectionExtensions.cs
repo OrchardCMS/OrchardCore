@@ -110,6 +110,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IClock, Clock>();
+            services.AddScoped<ILocalClock, LocalClock>();
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
             services.AddScoped<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();

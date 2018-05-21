@@ -18,7 +18,7 @@ namespace OrchardCore.Email
             services.AddScoped<IDisplayDriver<ISite>, SmtpSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddScoped<IConfigureOptions<SmtpSettings>, SmtpSettingsConfiguration>();
+            services.AddTransient<IConfigureOptions<SmtpSettings>, SmtpSettingsConfiguration>();
             services.AddScoped<ISmtpService, SmtpService>();
         }
     }
