@@ -54,6 +54,12 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, NumericFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, NumericFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, NumericFieldIndexHandler>();
+
+            // DateTime Field
+            services.AddSingleton<ContentField, DateTimeField>();
+            services.AddScoped<IContentFieldDisplayDriver, DateTimeFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, DateTimeFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, DateTimeFieldIndexHandler>();
         }
     }
 }
