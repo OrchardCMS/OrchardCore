@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Antiforgery\OrchardCore.Antiforgery.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Authentication\OrchardCore.Authentication.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.DataProtection.Azure\OrchardCore.DataProtection.Azure.csproj" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.DataProtection\OrchardCore.DataProtection.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Https\OrchardCore.Https.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Media.Azure\OrchardCore.Media.Azure.csproj" PrivateAssets="none" />
