@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Options" Version="$(MicrosoftExtensionsOptionsPackageVersion)" />
-    <PackageReference Include="ncrontab" Version="$(NCrontabVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="ncrontab" />
   </ItemGroup>
 
 </Project>

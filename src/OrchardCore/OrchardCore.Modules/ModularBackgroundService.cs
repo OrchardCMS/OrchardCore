@@ -106,7 +106,7 @@ namespace OrchardCore.Modules
 
                         try
                         {
-                            Logger.Information($"Start processing background task {taskName} on tenant {tenant}.");
+                            Logger.Information("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
 
                             scheduler.Run();
 
@@ -114,14 +114,14 @@ namespace OrchardCore.Modules
 
                             scheduler.Idle();
 
-                            Logger.Information($"Finished processing background task {taskName} on tenant {tenant}.");
+                            Logger.Information("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
 
                         catch (Exception e)
                         {
                             scheduler.Fault(e);
 
-                            Logger.Error(e, $"Error while processing background task {taskName} on tenant {tenant}.");
+                            Logger.Error(e, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
                     }
                 }
@@ -190,7 +190,7 @@ namespace OrchardCore.Modules
                         catch (Exception e)
                         {
                             scheduler.Fault(e);
-                            Logger.Error(e, $"Error while updating settings of background task {taskName} on tenant {tenant}.");
+                            Logger.Error(e, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
 
                         finally
@@ -399,19 +399,19 @@ namespace OrchardCore.Modules
 
     internal static class LoggerExtensions
     {
-        public static void Information(this ILogger logger, string message)
+        public static void Information(this ILogger logger, string message, params object[] args)
         {
             if (logger.IsEnabled(LogLevel.Information))
             {
-                logger.LogInformation(message);
+                logger.LogInformation(message, args);
             }
         }
 
-        public static void Error(this ILogger logger, Exception e, string message)
+        public static void Error(this ILogger logger, Exception e, string message, params object[] args)
         {
             if (logger.IsEnabled(LogLevel.Error))
             {
-                logger.LogError(e, message);
+                logger.LogError(e, message, args);
             }
         }
     }
