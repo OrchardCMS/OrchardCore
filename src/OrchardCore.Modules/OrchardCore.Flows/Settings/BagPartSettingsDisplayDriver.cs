@@ -33,7 +33,7 @@ namespace OrchardCore.Flows.Settings
                 return null;
             }
 
-            return Shape<BagPartSettingsViewModel>("BagPartSettings_Edit", model =>
+            return Initialize<BagPartSettingsViewModel>("BagPartSettings_Edit", model =>
             {
                 model.BagPartSettings = contentTypePartDefinition.Settings.ToObject<BagPartSettings>();
                 model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;

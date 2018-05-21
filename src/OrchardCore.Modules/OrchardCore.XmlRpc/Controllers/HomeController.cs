@@ -36,7 +36,7 @@ namespace OrchardCore.XmlRpc.Controllers
         {
             if (Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug("XmlRpc methodName {0}", methodCall.MethodName);
+                Logger.LogDebug("XmlRpc method '{XmlRpcMethodName}' invoked", methodCall.MethodName);
             }
 
             var methodResponse = await DispatchAsync(methodCall);

@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
-    <PackageReference Include="Lucene.Net" Version="$(LuceneNetVersion)" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Lucene.Net" />
   </ItemGroup>
 </Project>

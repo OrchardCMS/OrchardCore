@@ -96,22 +96,19 @@ namespace OrchardCore.BackgroundTasks
 
                         if (Logger.IsEnabled(LogLevel.Information))
                         {
-                            Logger.LogInformation("Start processing background task \"{0}\".", taskName);
+                            Logger.LogInformation("Start processing background task '{BackgroundTaskName}'.", taskName);
                         }
 
                         await task.DoWorkAsync(scope.ServiceProvider, _applicationLifetime.ApplicationStopping);
 
                         if (Logger.IsEnabled(LogLevel.Information))
                         {
-                            Logger.LogInformation("Finished processing background task \"{0}\".", taskName);
+                            Logger.LogInformation("Finished processing background task '{BackgroundTaskName}'.", taskName);
                         }
                     }
                     catch (Exception ex)
                     {
-                        if (Logger.IsEnabled(LogLevel.Error))
-                        {
-                            Logger.LogError(ex, $"Error while processing background task \"{taskName}\"");
-                        }
+                        Logger.LogError(ex, "Error while processing background task '{BackgroundTaskName}'", taskName);
                     }
                     finally
                     {

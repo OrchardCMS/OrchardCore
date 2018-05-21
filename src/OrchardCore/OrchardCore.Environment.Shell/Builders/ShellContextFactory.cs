@@ -31,7 +31,7 @@ namespace OrchardCore.Environment.Shell.Builders
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
+                _logger.LogInformation("Creating shell context for tenant '{TenantName}'", settings.Name);
             }
 
             var describedContext = await CreateDescribedContextAsync(settings, MinimumShellDescriptor());
@@ -68,7 +68,7 @@ namespace OrchardCore.Environment.Shell.Builders
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
-                _logger.LogDebug("Creating described context for tenant {0}", settings.Name);
+                _logger.LogDebug("Creating described context for tenant '{TenantName}'", settings.Name);
             }
 
             var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);

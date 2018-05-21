@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Fluid;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Settings;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Environment.Cache;
@@ -47,6 +48,7 @@ namespace OrchardCore.Alias.Handlers
                 templateContext.SetValue("ContentItem", part.ContentItem);
 
                 part.Alias = await _liquidTemplateManager.RenderAsync(pattern, templateContext);
+                part.Apply();
             }
         }
 

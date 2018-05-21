@@ -17,7 +17,7 @@ namespace OrchardCore.Widgets.Settings
                 return null;
             }
 
-            return Shape<WidgetsListPartSettingsViewModel>("WidgetsPartSettings_Edit", model =>
+            return Initialize<WidgetsListPartSettingsViewModel>("WidgetsPartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<WidgetsListPartSettings>();
 

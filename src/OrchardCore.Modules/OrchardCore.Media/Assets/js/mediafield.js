@@ -17,7 +17,12 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
             paths: {
                 get: function () {
                     var mediaPaths = [];
-                    this.mediaItems.forEach(function (x) { mediaPaths.push(x.mediaPath); });
+                    this.mediaItems.forEach(function (x) {
+                        if (x.mediaPath === 'not-found') {
+                            return;
+                        }
+                        mediaPaths.push(x.mediaPath);
+                    });
                     return JSON.stringify(mediaPaths);
                 },
                 set: function (values) {
@@ -25,15 +30,18 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                     var mediaPaths = values || [];
                     var signal = $.Deferred();
                     mediaPaths.forEach(function (x, i) {
+                        self.mediaItems.push({ name: ' ' + x, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
+
                         promise = $.when(signal).done(function () {
                             $.ajax({
                                 url: mediaItemUrl + "?path=" + encodeURIComponent(x),
                                 method: 'GET',
                                 success: function (data) {
-                                    self.mediaItems.push(data);
+                                    self.mediaItems.splice( i, 1, data);
                                 },
                                 error: function (error) {
                                     console.log(JSON.stringify(error));
+                                    self.mediaItems.splice(i, 1, { name: x, mime: '', mediaPath: 'not-found' });
                                 }
                             });
                         });
@@ -66,7 +74,9 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                     $("#mediaApp").show();
                     var modal = $(modalBodyElement).modal();
                     $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
-                        mediaFieldApp.mediaItems.push(mediaApp.selectedMedia);
+                        if (mediaApp.selectedMedia != null) {
+                            mediaFieldApp.mediaItems.push(mediaApp.selectedMedia);
+                        }
 
                         modal.modal('hide');
                         return true;
@@ -86,6 +96,7 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                         this.mediaItems.splice(0, 1);
                     }
                 }
+                this.selectedMedia = null;
             }
         },
         watch: {

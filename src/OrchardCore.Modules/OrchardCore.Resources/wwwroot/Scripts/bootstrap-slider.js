@@ -1,5 +1,5 @@
 /*! =======================================================
-                      VERSION  10.0.0              
+                      VERSION  10.0.2              
 ========================================================= */
 "use strict";
 
@@ -658,7 +658,7 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 				} else {
 					this.stylePos = 'left';
 				}
-				this.mousePos = 'pageX';
+				this.mousePos = 'clientX';
 				this.sizePos = 'offsetWidth';
 			}
 			// specific rtl class
@@ -1389,6 +1389,10 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 			_mousedown: function _mousedown(ev) {
 				if (!this._state.enabled) {
 					return false;
+				}
+
+				if (ev.preventDefault) {
+					ev.preventDefault();
 				}
 
 				this._state.offset = this._offset(this.sliderElem);
