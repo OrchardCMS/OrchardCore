@@ -33,34 +33,6 @@ namespace OrchardCore.Users
         }
     }
     
-    [Feature("OrchardCore.Users.Password")]
-    public class PasswordAdminMenu : INavigationProvider
-    {
-        public PasswordAdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            T = localizer;
-        }
-
-        public IStringLocalizer T { get; set; }
-
-        public void BuildNavigation(string name, NavigationBuilder builder)
-        {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            builder
-                .Add(T["Configuration"], configuration => configuration
-                    .Add(T["Settings"], settings => settings
-                        .Add(T["Password"], T["Password"], password => password
-                            .Permission(Permissions.ManageUsers)
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = PasswordSettingsDisplayDriver.GroupId })
-                            .LocalNav()
-                        )));
-        }
-    }
-
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationAdminMenu : INavigationProvider
     {
@@ -84,6 +56,34 @@ namespace OrchardCore.Users
                         .Add(T["Registration"], T["Registration"], registration => registration
                             .Permission(Permissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RegistrationSettingsDisplayDriver.GroupId })
+                            .LocalNav()
+                        )));
+        }
+    }
+
+    [Feature("OrchardCore.Users.ResetPassword")]
+    public class ResetPasswordAdminMenu : INavigationProvider
+    {
+        public ResetPasswordAdminMenu(IStringLocalizer<AdminMenu> localizer)
+        {
+            T = localizer;
+        }
+
+        public IStringLocalizer T { get; set; }
+
+        public void BuildNavigation(string name, NavigationBuilder builder)
+        {
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            builder
+                .Add(T["Configuration"], configuration => configuration
+                    .Add(T["Settings"], settings => settings
+                        .Add(T["Reset password"], T["Reset password"], password => password
+                            .Permission(Permissions.ManageUsers)
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ResetPasswordSettingsDisplayDriver.GroupId })
                             .LocalNav()
                         )));
         }

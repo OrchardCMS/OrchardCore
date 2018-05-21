@@ -7,4 +7,5 @@
 <fieldset class="form-check" asp-validation-class-for="UsersMustValidateEmail">
     <input asp-for="UsersMustValidateEmail" type="checkbox" class="form-check-input"/>
     <label asp-for="UsersMustValidateEmail" class="form-check-label">@T["Users must verify their email address"] <span asp-validation-for="UsersMustValidateEmail"></span></label>
+    <span class="form-text text-muted">@T["An email will be sent on registration to verify the user's email address.<br />The users whose email address has not been confirmed will not be able to login."]</span>
 </fieldset>

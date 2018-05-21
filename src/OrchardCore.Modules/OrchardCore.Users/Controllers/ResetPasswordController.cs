@@ -17,21 +17,21 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers
 {
-    [Feature("OrchardCore.Users.Password")]
-    public class PasswordController : BaseEmailController
+    [Feature("OrchardCore.Users.ResetPassword")]
+    public class ResetPasswordController : BaseEmailController
     {
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
         private readonly ISiteService _siteService;
 
-        public PasswordController(
+        public ResetPasswordController(
             IUserService userService,
             UserManager<IUser> userManager,
             ISiteService siteService,
             ISmtpService smtpService,
             IShapeFactory shapeFactory,
             IHtmlDisplay displayManager,
-            IStringLocalizer<PasswordController> stringLocalizer) : base(smtpService, shapeFactory, displayManager)
+            IStringLocalizer<ResetPasswordController> stringLocalizer) : base(smtpService, shapeFactory, displayManager)
         {
             _userService = userService;
             _userManager = userManager;
@@ -46,7 +46,7 @@ namespace OrchardCore.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword()
         {
-            if (!(await _siteService.GetSiteSettingsAsync()).As<PasswordSettings>().EnableLostPassword)
+            if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
             {
                 return NotFound();
             }
@@ -58,7 +58,7 @@ namespace OrchardCore.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
-            if (!(await _siteService.GetSiteSettingsAsync()).As<PasswordSettings>().EnableLostPassword)
+            if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
             {
                 return NotFound();
             }
@@ -93,7 +93,7 @@ namespace OrchardCore.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(string code = null)
         {
-            if (!(await _siteService.GetSiteSettingsAsync()).As<PasswordSettings>().EnableLostPassword)
+            if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
             {
                 return NotFound();
             }
@@ -109,7 +109,7 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
-            if (!(await _siteService.GetSiteSettingsAsync()).As<PasswordSettings>().EnableLostPassword)
+            if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
             {
                 return NotFound();
             }
@@ -118,7 +118,7 @@ namespace OrchardCore.Users.Controllers
             {
                 if (await _userService.ResetPasswordAsync(model.Email, Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)), model.NewPassword, (key, message) => ModelState.AddModelError(key, message)))
                 {
-                    return RedirectToLocal(Url.Action("ResetPasswordConfirmation", "Password"));
+                    return RedirectToLocal(Url.Action("ResetPasswordConfirmation", "ResetPassword"));
                 }
             }
 

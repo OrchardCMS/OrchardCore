@@ -141,14 +141,36 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
         }
     }
-    
-    [Feature("OrchardCore.Users.Password")]
+
+    [Feature("OrchardCore.Users.Registration")]
+    public class RegistrationStartup : StartupBase
+    {
+        private const string RegisterPath = "Register";
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaRoute(
+                name: "Register",
+                areaName: "OrchardCore.Users",
+                template: RegisterPath,
+                defaults: new { controller = "Registration", action = "Register" }
+            );
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
+            services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Users.ResetPassword")]
     public class PasswordStartup : StartupBase
     {
         private const string ForgotPasswordPath = "ForgotPassword";
         private const string ForgotPasswordConfirmationPath = "ForgotPasswordConfirmation";
         private const string ResetPasswordPath = "ResetPassword";
-        private const string ResetPasswordConfirmationPath = "ForgotPasswordConfirmation";
+        private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
@@ -180,30 +202,8 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<INavigationProvider, PasswordAdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, PasswordSettingsDisplayDriver>();
-        }
-    }
-
-    [Feature("OrchardCore.Users.Registration")]
-    public class RegistrationStartup : StartupBase
-    {
-        private const string RegisterPath = "Register";
-
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaRoute(
-                name: "Register",
-                areaName: "OrchardCore.Users",
-                template: RegisterPath,
-                defaults: new { controller = "Registration", action = "Register" }
-            );
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
+            services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
         }
     }
 }
