@@ -266,7 +266,7 @@ namespace OrchardCore.Environment.Shell
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
-                    _logger.LogDebug("Creating disabled shell context for tenant '{TenantName}' setup", settings.Name);
+                    _logger.LogDebug("Creating disabled shell context for tenant '{TenantName}'", settings.Name);
                 }
 
                 return Task.FromResult(new ShellContext { Settings = settings });
