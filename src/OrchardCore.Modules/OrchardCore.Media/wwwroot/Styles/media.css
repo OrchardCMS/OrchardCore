@@ -6192,15 +6192,19 @@ a.text-dark:hover, a.text-dark:focus {
   text-align: left;
   margin-bottom: 16px; }
   .media-container-main .action-bar .input-filter {
-    width: 100px; }
+    /*width: 100px;*/ }
 
 .media-container-main .breadcrumb {
   background-color: transparent;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 0px; }
   .media-container-main .breadcrumb .breadcrumb-buttons {
-    justify-content: flex-end;
+    justify-content: flex-start;
     flex-grow: 1;
+    margin-top: -5px; }
+  .media-container-main .breadcrumb .visibility-buttons {
+    justify-content: flex-end;
+    flex-grow: 0;
     margin-top: -5px; }
 
 .media-container-main-item-title {

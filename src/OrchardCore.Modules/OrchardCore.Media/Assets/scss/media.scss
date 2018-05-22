@@ -230,7 +230,7 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
         margin-bottom: 16px;
 
         .input-filter {
-            width: 100px;
+            /*width: 100px;*/
         }
     }
 
@@ -240,8 +240,14 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
         border-radius: 0px;
 
         .breadcrumb-buttons {
-            justify-content: flex-end;
+            justify-content: flex-start;
             flex-grow: 1;
+            margin-top: -5px;
+        }
+
+        .visibility-buttons {
+            justify-content: flex-end;
+            flex-grow: 0;
             margin-top: -5px;
         }
     }

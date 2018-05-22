@@ -20,83 +20,79 @@
 
         <div id="navigationApp" class="media-container-navigation" v-cloak>
             <h5>Media Explorer</h5>
-            <ol id="media-container-navigation-menu">
-                <folder :model="root" ref="rootFolder" :selected-in-media-app="selectedFolder">
-                </folder>
-            </ol>
+            @* <div class="row">
+                <div class="col-sm">
+                <div class="btn-group btn-group-sm text-right" style="max-width:300px; width: 100%; margin-top: 8px;">
+                    <label for="fileupload" class="btn btn-sm btn-success fileinput-button upload-button" style="width:100%;">
+                        <input id="fileupload" type="file" name="files" multiple="multiple">
+                        <i class="fa fa-upload" aria-hidden="true"></i>
+                        @T["Upload files..."]
+                    </label>
+                </div>
+            </div>
+        </div>*@
+
+        <ol id="media-container-navigation-menu" style="margin-top:35px;">
+            <folder :model="root" ref="rootFolder" :selected-in-media-app="selectedFolder">
+            </folder>
+        </ol>
         </div>
 
         <div class="media-container-main" v-cloak>
 
             <nav class="navbar action-bar">
-                <div class="dropdown d-lg-none visible-on-modal">
+
+                <div class="dropdown d-lg-none visible-on-modal" style="flex-grow: 1;">
                     <button class="btn btn-secondary dropdown-toggle btn-sm mr-2" type="button" id="selectionButtonsDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         @T["Actions"]
                     </button>
                     <div class="dropdown-menu" aria-labelledby="selectionButtonsDropDown">
-                        <a href="javascript:;" class="dropdown-item" v-on:click="selectAll">@T["All"]</a>
-                        <a href="javascript:;" class="dropdown-item" v-on:click="unSelectAll" v-bind:disabled="selectedMedias.length < 1">@T["None"]</a>
+                        <a href="javascript:;" class="dropdown-item" v-on:click="selectAll">@T["Select All"]</a>
+                        <a href="javascript:;" class="dropdown-item" v-on:click="unSelectAll" v-bind:disabled="selectedMedias.length < 1">@T["Select None"]</a>
                         <a href="javascript:;" class="dropdown-item" v-on:click="invertSelection">@T["Invert"]</a>
                         <div class="dropdown-divider"></div>
                         <a href="javascript:;" class="dropdown-item"
                            v-bind:class="{ disabled : selectedMedias.length < 1 }" v-on:click="deleteMediaList">
                             @T["Delete"] <span>({{ selectedMedias.length }})</span>
                         </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="javascript:;" class="dropdown-item"
-                           v-on:click="smallThumbs = !smallThumbs">
-                            <span v-if="smallThumbs"> @T["Large"] </span>
-                            <span v-else> @T["Small"] </span>
-                        </a>
-                        <a href="javascript:;" class="dropdown-item"
-                           v-on:click="gridView = !gridView">
-                            <span v-if="gridView"> @T["Table"]</span>
-                            <span v-else> @T["Grid"] </span>
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <button type="button" class="btn btn-outline-secondary" v-bind:disabled="mediaFilter == '' " v-on:click="mediaFilter = '' ">
-                                    <i class="fa fa-times"></i>
-                                </button>
-                            </div>
-                            <input type="text" class="form-control" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]"
-                                   v-model="mediaFilter">
+                        @*<div class="dropdown-divider"></div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <button type="button" class="btn btn-outline-secondary" v-bind:disabled="mediaFilter == '' " v-on:click="mediaFilter = '' ">
+                                <i class="fa fa-times"></i>
+                            </button>
                         </div>
+                        <input type="text" class="form-control" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]"
+                               v-model="mediaFilter">
+                    </div>*@
                     </div>
                 </div>
-                <div class="d-lg-inline-flex d-none hidden-on-modal">
-                    <button type="button" class="btn btn-secondary btn-sm mr-1" v-on:click="selectAll">@T["All"]</button>
-                    <button type="button" class="btn btn-secondary btn-sm mr-1" v-on:click="unSelectAll" v-bind:disabled="selectedMedias.length < 1">@T["None"]</button>
+                <div class="d-lg-inline-flex d-none hidden-on-modal" style="flex-grow:1;">
+                    <button type="button" class="btn btn-secondary btn-sm mr-1" v-on:click="selectAll">@T["Select All"]</button>
+                    <button type="button" class="btn btn-secondary btn-sm mr-1" v-on:click="unSelectAll" v-bind:disabled="selectedMedias.length < 1">@T["Select None"]</button>
                     <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="invertSelection">@T["Invert"]</button>
                     <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="deleteMediaList"
                             v-bind:disabled="selectedMedias.length < 1">
                         @T["Delete"] <span style="min-width:25px; display:inline-block;">({{ selectedMedias.length}})</span>
                     </button>
-                    <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="smallThumbs = !smallThumbs">
-                        <span v-if="smallThumbs">
-                            @T["Large"]
-                        </span> <span v-else> @T["Small"] </span>
-                    </button>
-                    <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="gridView = !gridView">
-                        <span v-if="gridView">
-                            @T["Table"]
-                        </span> <span v-else> @T["Grid"] </span>
-                    </button>
+
+                </div>
+
+                <div class="d-inline-flex text-right" style="justify-content:flex-end; flex-grow:0;">
                     <div class="input-group input-group-sm">
                         <div class="input-group-prepend">
                             <button class="btn btn-outline-secondary" type="button" v-bind:disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa fa-times"></i></button>
                         </div>
                         <input type="text" v-model="mediaFilter" class="form-control input-filter" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]">
                     </div>
-                </div>
-
-                <div class="btn-group btn-group-sm text-right" style="justify-content:flex-end; flex-grow:1;">
-                    <label for="fileupload" class="btn btn-sm btn-success fileinput-button upload-button">
-                        <input id="fileupload" type="file" name="files" multiple="multiple">
-                        <i class="fa fa-upload" aria-hidden="true"></i>
-                        @T["Upload files..."]
-                    </label>
+                    @*<button type="button" class="btn btn-light btn-sm mr-2" v-show="gridView" v-on:click="smallThumbs = !smallThumbs">
+                    <span v-show="!smallThumbs"><i class="fa fa-image"></i></span>
+                    <span v-show="smallThumbs"><i class="fa fa-th"></i></span>
+                </button>
+                <button type="button" class="btn btn-light btn-sm" v-on:click="gridView = !gridView">
+                    <span v-show="!gridView"><i class="fa fa-th-large"></i></span>
+                    <span v-show="gridView"><i class="fa fa-th-list"></i></span>
+                </button>*@
                 </div>
             </nav>
 
@@ -111,6 +107,16 @@
                 <div class="btn-group breadcrumb-buttons">
                     <a v-cloak href="javascript:;" class="btn btn-light btn-sm" v-on:click="createFolder"><i class="fa fa-plus"></i></a>
                     <a v-cloak v-show="!isHome" href="javascript:;" v-on:click="deleteFolder" class="btn btn-light btn-sm"><i class="fa fa-trash"></i></a>
+                </div>
+                <div class="btn-group visibility-buttons">
+                    <button type="button" class="btn btn-light btn-sm mr-2" v-bind:disabled="!gridView" v-on:click="smallThumbs = !smallThumbs">
+                        <span v-show="!smallThumbs" title="@T["Small Thumbs"]"><i class="fa fa-th"></i></span>
+                        <span v-show="smallThumbs" title="@T["Large Thumbs"]"><i class="fa fa-expand-arrows-alt"></i></span>
+                    </button>
+                    <button type="button" class="btn btn-light btn-sm" v-on:click="gridView = !gridView">
+                        <span v-show="!gridView" title="@T["Grid View"]"><i class="fa fa-th-large"></i></span>
+                        <span v-show="gridView" title="@T["List View"]"><i class="fa fa-th-list"></i></span>
+                    </button>
                 </div>
             </nav>
 
@@ -162,7 +168,7 @@
                 </li>
             </ol>
         </div>
-    </div>
+        </div>
 </div>
 
 <input type="hidden" id="getFoldersUrl" value="@Url.Action("GetFolders", "Admin", new { area = "OrchardCore.Media" })" />
