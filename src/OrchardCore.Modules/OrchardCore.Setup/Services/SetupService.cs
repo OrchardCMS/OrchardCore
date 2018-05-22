@@ -91,8 +91,8 @@ namespace OrchardCore.Setup.Services
             {
                 _applicationName,
                 "OrchardCore.Features",
-                "OrchardCore.Recipes",
-                "OrchardCore.Scripting"
+                "OrchardCore.Scripting",
+                "OrchardCore.Recipes"
             };
 
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
