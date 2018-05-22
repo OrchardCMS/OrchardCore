@@ -105,7 +105,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static ModularServicesBuilder AddDataProtection(this ModularServicesBuilder builder)
         {
-            builder.Services.PostConfigureTenantServices<IOptions<ShellOptions>, ShellSettings>((collection, options, settings) =>
+            builder.Services.ConfigureTenantServices<IOptions<ShellOptions>, ShellSettings>((collection, options, settings) =>
             {
                 var directory = Directory.CreateDirectory(Path.Combine(
                 options.Value.ShellsApplicationDataPath,
