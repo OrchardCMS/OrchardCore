@@ -9,12 +9,13 @@ namespace OrchardCore.Modules
 
     public class ConfigureTenant : StartupBase, IConfigureTenant
     {
-        public ConfigureTenant(Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure)
+        public ConfigureTenant(Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure, int order)
         {
             configureAction = configure;
+            Order = order;
         }
 
-        public override int Order { get; internal set; } = int.MinValue;
+        public override int Order { get; }
 
         public Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configureAction { get; }
 
@@ -26,12 +27,13 @@ namespace OrchardCore.Modules
 
     public class ConfigureTenantServices : StartupBase, IConfigureTenant
     {
-        public ConfigureTenantServices(Action<IServiceCollection> configureServices)
+        public ConfigureTenantServices(Action<IServiceCollection> configureServices, int order)
         {
             configureServicesAction = configureServices;
+            Order = order;
         }
 
-        public override int Order { get; internal set; } = int.MinValue;
+        public override int Order { get; }
 
         public Action<IServiceCollection> configureServicesAction { get; }
 
@@ -44,13 +46,14 @@ namespace OrchardCore.Modules
     public class ConfigureTenantServices<TDep> : StartupBase, IConfigureTenant
         where TDep : class
     {
-        public ConfigureTenantServices(TDep dependency, Action<IServiceCollection, TDep> configureServices)
+        public ConfigureTenantServices(TDep dependency, Action<IServiceCollection, TDep> configureServices, int order)
         {
-            configureServicesAction = configureServices;
             Dependency = dependency;
+            configureServicesAction = configureServices;
+            Order = order;
         }
 
-        public override int Order { get; internal set; } = int.MinValue;
+        public override int Order { get; }
 
         public Action<IServiceCollection, TDep> configureServicesAction { get; }
 
@@ -67,14 +70,15 @@ namespace OrchardCore.Modules
         where TDep2: class
     {
         public ConfigureTenantServices(TDep1 dependency1, TDep2 dependency2,
-            Action<IServiceCollection, TDep1, TDep2> configureServices)
+            Action<IServiceCollection, TDep1, TDep2> configureServices, int order)
         {
-            configureServicesAction = configureServices;
             Dependency1 = dependency1;
             Dependency2 = dependency2;
+            configureServicesAction = configureServices;
+            Order = order;
         }
 
-        public override int Order { get; internal set; } = int.MinValue;
+        public override int Order { get; }
 
         public Action<IServiceCollection, TDep1, TDep2> configureServicesAction { get; }
 
@@ -93,15 +97,16 @@ namespace OrchardCore.Modules
         where TDep3 : class
     {
         public ConfigureTenantServices(TDep1 dependency1, TDep2 dependency2, TDep3 dependency3,
-            Action<IServiceCollection, TDep1, TDep2, TDep3> configureServices)
+            Action<IServiceCollection, TDep1, TDep2, TDep3> configureServices, int order)
         {
-            configureServicesAction = configureServices;
             Dependency1 = dependency1;
             Dependency2 = dependency2;
             Dependency3 = dependency3;
+            configureServicesAction = configureServices;
+            Order = order;
         }
 
-        public override int Order { get; internal set; } = int.MinValue;
+        public override int Order { get; }
 
         public Action<IServiceCollection, TDep1, TDep2, TDep3> configureServicesAction { get; }
 
@@ -122,16 +127,17 @@ namespace OrchardCore.Modules
         where TDep4 : class
     {
         public ConfigureTenantServices(TDep1 dependency1, TDep2 dependency2, TDep3 dependency3, TDep4 dependency4,
-            Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4> configureServices)
+            Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4> configureServices, int order)
         {
-            configureServicesAction = configureServices;
             Dependency1 = dependency1;
             Dependency2 = dependency2;
             Dependency3 = dependency3;
             Dependency4 = dependency4;
+            configureServicesAction = configureServices;
+            Order = order;
         }
 
-        public override int Order { get; internal set; } = int.MinValue;
+        public override int Order { get; }
 
         public Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4> configureServicesAction { get; }
 
@@ -154,17 +160,18 @@ namespace OrchardCore.Modules
         where TDep5 : class
     {
         public ConfigureTenantServices(TDep1 dependency1, TDep2 dependency2, TDep3 dependency3, TDep4 dependency4, TDep5 dependency5,
-            Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4, TDep5> configureServices)
+            Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4, TDep5> configureServices, int order)
         {
-            configureServicesAction = configureServices;
             Dependency1 = dependency1;
             Dependency2 = dependency2;
             Dependency3 = dependency3;
             Dependency4 = dependency4;
             Dependency5 = dependency5;
+            configureServicesAction = configureServices;
+            Order = order;
         }
 
-        public override int Order { get; internal set; } = int.MinValue;
+        public override int Order { get; }
 
         public Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4, TDep5> configureServicesAction { get; }
 
@@ -183,14 +190,13 @@ namespace OrchardCore.Modules
     public static class ConfigureTenantServiceCollectionExtensions
     {
         /// <summary>
-        /// Configure the tenant pipeline before all modules.
+        /// Configure the tenant pipeline before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
         public static IServiceCollection ConfigureTenant(this IServiceCollection services,
-            Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure)
+            Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure, int order = int.MinValue)
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenant(configure));
-            return services;
+            return services.AddTransient<IStartup>(sp => new ConfigureTenant(configure, order));
         }
 
         /// <summary>
@@ -200,19 +206,17 @@ namespace OrchardCore.Modules
         public static IServiceCollection PostConfigureTenant(this IServiceCollection services,
             Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure)
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenant(configure) { Order = int.MaxValue });
-            return services;
+            return services.ConfigureTenant(configure, int.MaxValue);
         }
 
         /// <summary>
-        /// Adds tenant level services before all modules.
+        /// Adds tenant level services before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
         public static IServiceCollection ConfigureTenantServices(this IServiceCollection services,
-            Action<IServiceCollection> configureServices)
+            Action<IServiceCollection> configureServices, int order = int.MinValue)
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenantServices(configureServices));
-            return services;
+            return services.AddTransient<IStartup>(sp => new ConfigureTenantServices(configureServices, order));
         }
 
         /// <summary>
@@ -222,23 +226,21 @@ namespace OrchardCore.Modules
         public static IServiceCollection PostConfigureTenantServices(this IServiceCollection services,
             Action<IServiceCollection> configureServices)
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenantServices(configureServices) { Order = int.MaxValue });
-            return services;
+            return services.ConfigureTenantServices(configureServices, int.MaxValue);
         }
 
         /// <summary>
-        /// Adds tenant level services before all modules.
+        /// Adds tenant level services before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
         public static IServiceCollection ConfigureTenantServices<TDep>(this IServiceCollection services,
-            Action<IServiceCollection, TDep> configureServices)
+            Action<IServiceCollection, TDep> configureServices, int order = int.MinValue)
             where TDep : class
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep>(
+            return services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep>(
                 sp.GetRequiredService<TDep>(),
-                configureServices));
-
-            return services;
+                configureServices,
+                order));
         }
 
         /// <summary>
@@ -249,29 +251,23 @@ namespace OrchardCore.Modules
             Action<IServiceCollection, TDep> configureServices)
             where TDep : class
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep>(
-                sp.GetRequiredService<TDep>(),
-                configureServices)
-                { Order = int.MaxValue });
-
-            return services;
+            return services.ConfigureTenantServices(configureServices, int.MaxValue);
         }
 
         /// <summary>
-        /// Adds tenant level services before all modules.
+        /// Adds tenant level services before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
         public static IServiceCollection ConfigureTenantServices<TDep1, TDep2>(this IServiceCollection services,
-            Action<IServiceCollection, TDep1, TDep2> configureServices)
+            Action<IServiceCollection, TDep1, TDep2> configureServices, int order = int.MinValue)
             where TDep1 : class
             where TDep2 : class
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2>(
+            return services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2>(
                 sp.GetRequiredService<TDep1>(),
                 sp.GetRequiredService<TDep2>(),
-                configureServices));
-
-            return services;
+                configureServices,
+                order));
         }
 
         /// <summary>
@@ -283,32 +279,25 @@ namespace OrchardCore.Modules
             where TDep1 : class
             where TDep2 : class
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2>(
-                sp.GetRequiredService<TDep1>(),
-                sp.GetRequiredService<TDep2>(),
-                configureServices)
-                { Order = int.MaxValue });
-
-            return services;
+            return services.ConfigureTenantServices(configureServices, int.MaxValue);
         }
 
         /// <summary>
-        /// Adds tenant level services before all modules.
+        /// Adds tenant level services before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
         public static IServiceCollection ConfigureTenantServices<TDep1, TDep2, TDep3>(this IServiceCollection services,
-            Action<IServiceCollection, TDep1, TDep2, TDep3> configureServices)
+            Action<IServiceCollection, TDep1, TDep2, TDep3> configureServices, int order = int.MinValue)
             where TDep1 : class
             where TDep2 : class
             where TDep3 : class
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2, TDep3>(
+            return services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2, TDep3>(
                 sp.GetRequiredService<TDep1>(),
                 sp.GetRequiredService<TDep2>(),
                 sp.GetRequiredService<TDep3>(),
-                configureServices));
-
-            return services;
+                configureServices,
+                order));
         }
 
         /// <summary>
@@ -321,35 +310,27 @@ namespace OrchardCore.Modules
             where TDep2 : class
             where TDep3 : class
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2, TDep3>(
-                sp.GetRequiredService<TDep1>(),
-                sp.GetRequiredService<TDep2>(),
-                sp.GetRequiredService<TDep3>(),
-                configureServices)
-                { Order = int.MaxValue });
-
-            return services;
+            return services.ConfigureTenantServices(configureServices, int.MaxValue);
         }
 
         /// <summary>
-        /// Adds tenant level services before all modules.
+        /// Adds tenant level services before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
         public static IServiceCollection ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4>(this IServiceCollection services,
-            Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4> configureServices)
+            Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4> configureServices, int order = int.MinValue)
             where TDep1 : class
             where TDep2 : class
             where TDep3 : class
             where TDep4 : class
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4>(
+            return services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4>(
                 sp.GetRequiredService<TDep1>(),
                 sp.GetRequiredService<TDep2>(),
                 sp.GetRequiredService<TDep3>(),
                 sp.GetRequiredService<TDep4>(),
-                configureServices));
-
-            return services;
+                configureServices,
+                order));
         }
 
         /// <summary>
@@ -363,38 +344,29 @@ namespace OrchardCore.Modules
             where TDep3 : class
             where TDep4 : class
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4>(
-                sp.GetRequiredService<TDep1>(),
-                sp.GetRequiredService<TDep2>(),
-                sp.GetRequiredService<TDep3>(),
-                sp.GetRequiredService<TDep4>(),
-                configureServices)
-                { Order = int.MaxValue });
-
-            return services;
+            return services.ConfigureTenantServices(configureServices, int.MaxValue);
         }
 
         /// <summary>
-        /// Adds tenant level services before all modules.
+        /// Adds tenant level services before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
         public static IServiceCollection ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4, TDep5>(this IServiceCollection services,
-            Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4, TDep5> configureServices)
+            Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4, TDep5> configureServices, int order = int.MinValue)
             where TDep1 : class
             where TDep2 : class
             where TDep3 : class
             where TDep4 : class
             where TDep5 : class
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4, TDep5>(
+            return services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4, TDep5>(
                 sp.GetRequiredService<TDep1>(),
                 sp.GetRequiredService<TDep2>(),
                 sp.GetRequiredService<TDep3>(),
                 sp.GetRequiredService<TDep4>(),
                 sp.GetRequiredService<TDep5>(),
-                configureServices));
-
-            return services;
+                configureServices,
+                order));
         }
 
         /// <summary>
@@ -409,16 +381,7 @@ namespace OrchardCore.Modules
             where TDep4 : class
             where TDep5 : class
         {
-            services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4, TDep5>(
-                sp.GetRequiredService<TDep1>(),
-                sp.GetRequiredService<TDep2>(),
-                sp.GetRequiredService<TDep3>(),
-                sp.GetRequiredService<TDep4>(),
-                sp.GetRequiredService<TDep5>(),
-                configureServices)
-                { Order = int.MaxValue });
-
-            return services;
+            return services.ConfigureTenantServices(configureServices, int.MaxValue);
         }
     }
 }
