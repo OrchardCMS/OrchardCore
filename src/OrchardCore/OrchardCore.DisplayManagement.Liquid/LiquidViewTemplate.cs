@@ -20,6 +20,7 @@ using OrchardCore.DisplayManagement.Liquid.Internal;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.DynamicCache.Liquid;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid
@@ -70,6 +71,13 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterBlock<HelperBlock>("block");
             Factory.RegisterBlock<NamedHelperBlock>("a");
             Factory.RegisterBlock<NamedHelperBlock>("zone");
+
+            // Dynamic caching
+            Factory.RegisterBlock<CacheBlock>("cache");
+            Factory.RegisterTag<CacheDependencyTag>("cache_dependency");
+            Factory.RegisterTag<CacheExpiresOnTag>("cache_expires_on");
+            Factory.RegisterTag<CacheExpiresAfterTag>("cache_expires_after");
+            Factory.RegisterTag<CacheExpiresSlidingTag>("cache_expires_sliding");
 
             NamedHelperTag.RegisterDefaultArgument("shape", "type");
             NamedHelperBlock.RegisterDefaultArgument("zone", "name");

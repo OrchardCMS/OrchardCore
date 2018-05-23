@@ -209,7 +209,7 @@ Gives access to the current site settings, e.g `Site.SiteName`.
 | `PageSize` | `10` | The default page size of lists | 
 | `SiteName` | `My Site` | The friendly name of the site | 
 | `SuperUser` | `admin` | The user name of the site's super user | 
-| `TimeZone` | `Mountain Standard Time` | The site's time zone | 
+| `TimeZoneId` | `America/Los_Angeles` | The site's time zone id as per the tz database, c.f., https://en.wikipedia.org/wiki/List_of_tz_database_time_zones | 
 | `UseCdn` | `false` | Enable/disable the use of a CDN | 
 
 ### Request
@@ -477,7 +477,7 @@ Renders a specific named tag with its properties
 
 Input
 ```liquid
-{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_duration: "00:05:00", cache_tag: "alias:main-menu" %}
+{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_expires_after: "00:05:00", cache_tag: "alias:main-menu" %}
 ```
 When using the shape tag a specific wrapper and / or alternate can be specified.
 

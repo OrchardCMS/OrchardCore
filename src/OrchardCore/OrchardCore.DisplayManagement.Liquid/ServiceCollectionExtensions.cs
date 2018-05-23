@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Liquid.Internal;
 using OrchardCore.DisplayManagement.Liquid.TagHelpers;
@@ -29,6 +30,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             services.AddSingleton<LiquidTagHelperFactory>();
 
             services.AddScoped<ILiquidTemplateEventHandler, RequestLiquidTemplateEventHandler>();
+
             return services;
         }
     }
