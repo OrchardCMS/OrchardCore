@@ -15,6 +15,7 @@ namespace OrchardCore.DynamicCache.Liquid
 {
     public class CacheStatement : TagStatement
     {
+        private static readonly char[] SplitChars = new [] { ',', ' ' };
         private readonly ArgumentsExpression _arguments;
 
         public CacheStatement(ArgumentsExpression arguments, IList<Statement> statements = null) : base(statements)
@@ -48,7 +49,6 @@ namespace OrchardCore.DynamicCache.Liquid
             }
             
             var debugMode = Configuration.IsDebugModeEnabled;
-            var splitChars = new[] { ',', ' ' };
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
             var cacheKey = arguments.At(0).ToStringValue();
@@ -58,8 +58,8 @@ namespace OrchardCore.DynamicCache.Liquid
             var slidingDurationString = arguments["expires_sliding"].ToStringValue();
 
             var cacheContext = new CacheContext(cacheKey)
-                .AddContext(contexts.Split(splitChars, StringSplitOptions.RemoveEmptyEntries))
-                .AddTag(tags.Split(splitChars, StringSplitOptions.RemoveEmptyEntries));
+                .AddContext(contexts.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries))
+                .AddTag(tags.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries));
 
             if (TimeSpan.TryParse(durationString, out var duration))
             {
