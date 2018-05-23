@@ -3,12 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
-using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Models;
-using YesSql;
 
 namespace OrchardCore.Users.TimeZone.Services
 {
