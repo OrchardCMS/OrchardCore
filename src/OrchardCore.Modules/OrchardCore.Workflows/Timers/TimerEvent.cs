@@ -70,7 +70,7 @@ namespace OrchardCore.Workflows.Timers
 
             if (StartedUtc == null)
             {
-                StartedUtc = StartAtUtc ?? _clock.UtcNow;
+                StartedUtc = StartAtUtc ?? _clock.UtcNow.DateTime;
             }
 
             var schedule = CrontabSchedule.Parse(CronExpression);

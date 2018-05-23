@@ -13,7 +13,7 @@ namespace OrchardCore.Modules
         /// Returns a Datetime Kind.Utc that is "Now"
         /// </summary>
         /// <inheritdoc />
-        public DateTime UtcNow => CurrentInstant.ToDateTimeUtc();
+        public DateTimeOffset UtcNow => CurrentInstant.ToDateTimeOffset();
 
         /// <summary>
         /// Returns a list of valid timezones as a ITimeZone[], where the key is

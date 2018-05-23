@@ -12,7 +12,7 @@ namespace OrchardCore.Modules
         /// <summary>
         /// Gets the current <see cref="DateTime"/> of the system, expressed in Utc
         /// </summary>
-        DateTime UtcNow { get; }
+        DateTimeOffset UtcNow { get; }
 
         /// <summary>
         /// Returns the list of all available <see cref="ITimeZone" />.
