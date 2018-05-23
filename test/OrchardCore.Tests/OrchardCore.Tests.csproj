@@ -48,6 +48,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Cache.Abstractions\OrchardCore.Environment.Cache.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Cache\OrchardCore.Environment.Cache.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Modules\OrchardCore.Modules.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\BaseThemeSample\BaseThemeSample.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\BaseThemeSample2\BaseThemeSample2.csproj" />

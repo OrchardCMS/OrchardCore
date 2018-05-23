@@ -53,7 +53,7 @@ namespace OrchardCore.Liquid.Filters
                 }
             }
 
-            return new ObjectValue(await _localClock.LocalNowAsync);
+            return new ObjectValue(await _localClock.ConvertToLocalAsync(value));
         }
     }
 }
