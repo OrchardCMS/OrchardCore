@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using OrchardCore.Modules;
-
 namespace OrchardCore.Users.TimeZone.ViewModels
 {
     public class UserProfileViewModel

@@ -18,13 +18,15 @@ namespace OrchardCore.Users.TimeZone.Services
         private readonly IServiceProvider _serviceProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<IUser> _userManager;
+        private readonly YesSql.ISession _session;
 
         public UserTimeZoneService(
             IClock clock,
             IMemoryCache memoryCache,
             IServiceProvider serviceProvider,
             IHttpContextAccessor httpContextAccessor,
-            UserManager<IUser> userManager
+            UserManager<IUser> userManager,
+            YesSql.ISession session
             )
         {
             _clock = clock;
@@ -32,6 +34,7 @@ namespace OrchardCore.Users.TimeZone.Services
             _serviceProvider = serviceProvider;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
+            _session = session;
         }
 
         public async Task<ITimeZone> GetUserTimeZoneAsync()
@@ -57,7 +60,7 @@ namespace OrchardCore.Users.TimeZone.Services
                 }
 
                 _memoryCache.Set(CacheKey, (string)profile.TimeZoneId, new TimeSpan(0, 1, 0));
-                await _userManager.UpdateAsync(user);
+                _session.Save(user);
             }
         }
 
