@@ -55,11 +55,6 @@ namespace OrchardCore.Users.TimeZone.Services
             {
                 var user = await _userManager.FindByNameAsync(_httpContextAccessor.HttpContext.User.Identity.Name) as User;
 
-                if (user.Properties["UserProfile"] != null && user.Properties["UserProfile"]["TimeZone"] != null)
-                {
-                    user.Properties["UserProfile"]["TimeZone"] = userTimeZone.TimeZoneId;
-                }
-
                 _memoryCache.Set(CacheKey, (string)userTimeZone.TimeZoneId, SlidingExpiration);
                 _session.Save(user);
             }
@@ -72,9 +67,13 @@ namespace OrchardCore.Users.TimeZone.Services
                 if (!_memoryCache.TryGetValue(CacheKey, out string timeZoneId))
                 {
                     var user = await _userManager.FindByNameAsync(_httpContextAccessor.HttpContext.User.Identity.Name) as User;
-                    timeZoneId = (string)user.Properties["UserProfile"]["TimeZone"] ?? _clock.GetSystemTimeZone().TimeZoneId;
 
-                    _memoryCache.Set(CacheKey, (string)user.Properties["UserProfile"]["TimeZone"], SlidingExpiration);
+                    if (user.Properties["UserTimeZone"] != null && user.Properties["UserTimeZone"]["TimeZoneId"] != null)
+                    {
+                        timeZoneId = (string)user.Properties["UserTimeZone"]["TimeZoneId"];
+                    }
+
+                    _memoryCache.Set(CacheKey, timeZoneId, SlidingExpiration);
                 }
 
                 return timeZoneId;

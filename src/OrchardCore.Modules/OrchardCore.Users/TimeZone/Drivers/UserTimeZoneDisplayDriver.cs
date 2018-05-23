@@ -27,7 +27,7 @@ namespace OrchardCore.Users.TimeZone.Drivers
         public override Task<IDisplayResult> EditAsync(UserTimeZone userTimeZone, BuildEditorContext context)
         {
             return Task.FromResult<IDisplayResult>(
-                Initialize<UserTimeZoneViewModel>("UserProfile_Edit", model =>
+                Initialize<UserTimeZoneViewModel>("UserTimeZone_Edit", model =>
                 {
                     model.TimeZone = userTimeZone.TimeZoneId;
                 }).Location("Content:2")
