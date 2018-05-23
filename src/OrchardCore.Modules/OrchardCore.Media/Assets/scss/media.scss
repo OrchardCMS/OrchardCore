@@ -172,31 +172,58 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     .media-items-table {
+        border: solid 1px $gray-200;
+        padding: 20px;
+        font-size: 0.875rem;
+
         .header-row th {
             color: $gray-700;
             font-weight: 500 !important;
         }
 
-        td.thumbnail-column {
+        .thumbnail-column {
             text-align: center;
-            padding: 4px;
+            width: 80px;
+            padding-left: 16px;
+            padding-right: 16px;
+            border-right: dashed 1px #ddd;
+
+            .image-wrapper {
+                width: 80px;
+                height: 80px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            img {
+                max-width: 80px;
+                max-height: 80px;
+            }
         }
 
         td {
             vertical-align: middle;
         }
 
-        tr:not(.header-row):hover {
+        .text-col {
+            margin-top: -15px;
+        }
+
+        tr:hover {
             cursor: pointer;
         }
 
         tr.selected {
             background-color: #e0f7fa;
+            border-left: solid 2px #007bff;            
         }
 
         .media-name-cell {
+            margin-top: 16px;
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
 
             .media-filename {
                 flex-grow: 1;
@@ -204,10 +231,6 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
 
             .buttons-container {
                 opacity: 0;
-                text-align: right;
-                flex-shrink: 0;
-                display: flex;
-                align-items: center;
                 transition: all 0.2s;
             }
         }
@@ -217,8 +240,9 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
             transition: all 0.2s;
         }
 
-        .btn {
-            border: solid 1px #ddd;
+        .btn-link {
+            color: $gray-600;
+            padding-left: 0;
         }
     }
 

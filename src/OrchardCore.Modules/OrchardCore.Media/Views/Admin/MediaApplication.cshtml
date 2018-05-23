@@ -27,7 +27,7 @@
 
         <div class="media-container-main" v-cloak>
 
-            <nav class="navbar action-bar">                
+            <nav class="navbar action-bar">
                 <div class="dropdown d-lg-none visible-on-modal">
                     <button class="btn btn-secondary dropdown-toggle btn-sm mr-2" type="button" id="selectionButtonsDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         @T["Actions"]
@@ -71,7 +71,6 @@
                         </label>
                     </div>
                 </div>
-
             </nav>
 
 
@@ -98,11 +97,13 @@
                 </div>
             </nav>
 
-            <table class="table table-bordered media-items-table" v-show="filteredMediaItems.length > 0 && !gridView">
+            <table class="table media-items-table" v-show="filteredMediaItems.length > 0 && !gridView">
                 <thead>
                     <tr class="header-row">
-                        <th scope="col">@T["Image"]</th>
+                        <th scope="col" class="thumbnail-column" style="padding-left:16px;">@T["Image"]</th>
                         <th scope="col">@T["Name"]</th>
+                        <th scope="col">@T["Size"]</th>
+                        <th scope="col">@T["Type"]</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -111,17 +112,26 @@
                         v-on:click.stop="toggleSelectionOfMedia(media)"
                         draggable="true" v-on:dragstart="handleDragStart(media, $event)"
                         :key="media.name" style="height: 80px;">
-                        <td class="thumbnail-column" style="width: 80px;"><img draggable="false" style="max-width:80px; max-height:80px;" v-bind:src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" /></td>
+                        <td class="thumbnail-column">
+                            <div class="img-wrapper">
+                                <img draggable="false" v-bind:src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" />
+                            </div>
+                        </td>
                         <td>
                             <div class="media-name-cell">
-                                <p class="media-filename" v-bind:title="media.name">{{ media.name }}</p>
+                                {{ media.name }}
                                 <div class="buttons-container">
-                                    <a href="javascript:;" class="btn btn-light btn-sm mr-2" v-on:click.stop="renameMedia(media)"><i style="" class="fa fa-edit mr-1"></i> @T["Edit"]</a>
-                                    <a href="javascript:;" class="btn btn-light btn-sm" v-on:click.stop="deleteMediaItem(media)"><i class="fa fa-trash  mr-1"></i>@T["Delete"]</a>
+                                    <a href="javascript:;" class="btn btn-link btn-sm mr-1" v-on:click.stop="renameMedia(media)">@T["Edit"]</a>
+                                    <a href="javascript:;" class="btn btn-link btn-sm" v-on:click.stop="deleteMediaItem(media)">@T["Delete"]</a>
                                 </div>
                             </div>
                         </td>
-
+                        <td>
+                            <div class="text-col">@T["{{{{ isNaN(media.size)? 0 : media.size}}}} KB"]</div>                            
+                        </td>
+                        <td>
+                            <div class="text-col">{{ media.mime }}</div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
