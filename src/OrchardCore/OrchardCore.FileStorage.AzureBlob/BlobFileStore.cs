@@ -89,7 +89,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
             var blobDirectory = GetBlobDirectoryReference(path);
 
-            return new BlobDirectory(path, _clock.UtcNow);
+            return new BlobDirectory(path, _clock.UtcNow.DateTime);
         }
 
         public async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = "")
@@ -121,7 +121,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                     switch (item)
                     {
                         case CloudBlobDirectory directoryItem:
-                            results.Add(new BlobDirectory(itemPath, _clock.UtcNow));
+                            results.Add(new BlobDirectory(itemPath, _clock.UtcNow.DateTime));
                             break;
                         case CloudBlockBlob blobItem:
                             // Ignore directory marker files.

@@ -47,7 +47,7 @@ namespace OrchardCore.Indexing.Services
 
             var indexingTask = new IndexingTask
             {
-                CreatedUtc = _clock.UtcNow,
+                CreatedUtc = _clock.UtcNow.DateTime,
                 ContentItemId = contentItem.ContentItemId,
                 Type = type
             };

@@ -66,7 +66,7 @@ namespace OrchardCore.Workflows.Services
                     ActivityStates = workflowType.Activities.Select(x => x).ToDictionary(x => x.ActivityId, x => x.Properties)
                 }),
                 CorrelationId = correlationId,
-                CreatedUtc = _clock.UtcNow
+                CreatedUtc = _clock.UtcNow.DateTime
             };
 
             workflow.WorkflowId = _workflowIdGenerator.GenerateUniqueId(workflow);

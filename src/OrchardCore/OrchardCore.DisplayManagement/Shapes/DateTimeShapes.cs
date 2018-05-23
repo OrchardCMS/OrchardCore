@@ -31,8 +31,8 @@ namespace OrchardCore.DisplayManagement.Shapes
         [Shape]
         public IHtmlContent TimeSpan(IHtmlHelper Html, DateTime? Utc, DateTime? Origin)
         {
-            Utc = Utc ?? _clock.UtcNow;
-            Origin = Origin ?? _clock.UtcNow;
+            Utc = Utc ?? _clock.UtcNow.DateTime;
+            Origin = Origin ?? _clock.UtcNow.DateTime;
 
             var time = _clock.UtcNow - Utc.Value;
 
@@ -79,7 +79,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         [Shape]
         public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format)
         {
-            Utc = Utc ?? _clock.UtcNow;
+            Utc = Utc ?? _clock.UtcNow.DateTime;
             var zonedTime = await _localClock.ConvertToLocalAsync(Utc.Value);
 
             if (Format == null)

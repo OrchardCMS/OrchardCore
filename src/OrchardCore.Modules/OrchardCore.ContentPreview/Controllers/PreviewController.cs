@@ -88,9 +88,9 @@ namespace OrchardCore.ContentPreview.Controllers
             contentItem.Id = contentId;
             contentItem.ContentItemId = contentItemId;
             contentItem.ContentItemVersionId = contentItemVersionId;
-            contentItem.CreatedUtc = _clock.UtcNow;
-            contentItem.ModifiedUtc = _clock.UtcNow;
-            contentItem.PublishedUtc = _clock.UtcNow;
+            contentItem.CreatedUtc = _clock.UtcNow.DateTime;
+            contentItem.ModifiedUtc = _clock.UtcNow.DateTime;
+            contentItem.PublishedUtc = _clock.UtcNow.DateTime;
 
             // TODO: we should probably get this value from the main editor as it might impact validators
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);

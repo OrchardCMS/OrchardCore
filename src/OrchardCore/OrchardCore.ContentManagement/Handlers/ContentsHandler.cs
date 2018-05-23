@@ -17,7 +17,7 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public override Task CreatingAsync(CreateContentContext context)
         {
-            var utcNow = _clock.UtcNow;
+            var utcNow = _clock.UtcNow.DateTime;
             if (!context.ContentItem.CreatedUtc.HasValue)
             {
                 context.ContentItem.CreatedUtc = utcNow;
@@ -35,7 +35,7 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public override Task UpdatingAsync(UpdateContentContext context)
         {
-            var utcNow = _clock.UtcNow;
+            var utcNow = _clock.UtcNow.DateTime;
             context.ContentItem.ModifiedUtc = utcNow;
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext?.User?.Identity?.IsAuthenticated ?? false)
@@ -50,7 +50,7 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public override Task VersioningAsync(VersionContentContext context)
         {
-            var utcNow = _clock.UtcNow;
+            var utcNow = _clock.UtcNow.DateTime;
 
             context.BuildingContentItem.Owner = context.ContentItem.Owner;
             context.BuildingContentItem.CreatedUtc = context.ContentItem.CreatedUtc ?? utcNow;
@@ -62,7 +62,7 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public override Task PublishedAsync(PublishContentContext context)
         {
-            var utcNow = _clock.UtcNow;
+            var utcNow = _clock.UtcNow.DateTime;
 
             // The first time the content is published, reassign the CreateUtc value
             if (!context.ContentItem.PublishedUtc.HasValue)

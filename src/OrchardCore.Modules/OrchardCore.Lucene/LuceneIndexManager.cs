@@ -158,7 +158,7 @@ namespace OrchardCore.Lucene
                 await searcher(indexSearcher);
             }
 
-            _timestamps[indexName] = _clock.UtcNow;
+            _timestamps[indexName] = _clock.UtcNow.DateTime;
         }
 
         public void Read(string indexName, Action<IndexReader> reader)
@@ -168,7 +168,7 @@ namespace OrchardCore.Lucene
                 reader(indexReader.IndexReader);
             }
 
-            _timestamps[indexName] = _clock.UtcNow;
+            _timestamps[indexName] = _clock.UtcNow.DateTime;
         }
 
         /// <summary>
@@ -295,7 +295,7 @@ namespace OrchardCore.Lucene
                 }
             }
 
-            _timestamps[indexName] = _clock.UtcNow;
+            _timestamps[indexName] = _clock.UtcNow.DateTime;
         }
 
         private IndexReaderPool.IndexReaderLease GetReader(string indexName)
