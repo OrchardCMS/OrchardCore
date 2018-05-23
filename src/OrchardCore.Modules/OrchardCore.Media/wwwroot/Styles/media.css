@@ -6257,9 +6257,12 @@ a.text-dark:hover, a.text-dark:focus {
   display: none !important; }
 
 .modal-body .media-container #media-container-navigation-menu a,
-.modal-body .media-container .breadcrumb-item a,
-.modal-body .media-container .media-items-table .media-filename {
+.modal-body .media-container .breadcrumb-item a {
   font-size: 0.9rem; }
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .modal-body .media-container .optional-col {
+    display: none; } }
 
 #customdropzone {
   align-items: center;

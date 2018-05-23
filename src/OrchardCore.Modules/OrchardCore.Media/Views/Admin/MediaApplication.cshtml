@@ -102,8 +102,8 @@
                     <tr class="header-row">
                         <th scope="col" class="thumbnail-column" style="padding-left:16px;">@T["Image"]</th>
                         <th scope="col">@T["Name"]</th>
-                        <th scope="col">@T["Size"]</th>
-                        <th scope="col">@T["Type"]</th>
+                        <th scope="col"><span class="optional-col">@T["Size"]</span></th>
+                        <th scope="col"><span class="optional-col"> @T["Type"]</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -127,10 +127,10 @@
                             </div>
                         </td>
                         <td>
-                            <div class="text-col">@T["{{{{ isNaN(media.size)? 0 : media.size}}}} KB"]</div>                            
+                            <div class="text-col optional-col">@T["{{{{ isNaN(media.size)? 0 : media.size}}}} KB"]</div>                            
                         </td>
                         <td>
-                            <div class="text-col">{{ media.mime }}</div>
+                            <div class="text-col optional-col">{{ media.mime }}</div>
                         </td>
                     </tr>
                 </tbody>
