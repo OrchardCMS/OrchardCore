@@ -9,7 +9,7 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.Recipes.Executors
 {
     /// <summary>
-    /// This recipe step adds a set of features.
+    /// This step adds a set of features to any recipe that have a 'Feature' step, need to be registered first.
     /// </summary>
     public class AddRecipeFeaturesStep : IRecipeStepHandler
     {
