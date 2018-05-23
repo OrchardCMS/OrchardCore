@@ -8,7 +8,7 @@
         <p>@T["Your files will be uploaded to the current folder when you drop them here"]</p>
     </div>
 
-    <div class="message-warning" v-if="errors.length > 0">
+    <div class="alert message-warning" v-if="errors.length > 0">
         <ul>
             <li v-for="e in errors">
                 <p>{{e}}</p>
