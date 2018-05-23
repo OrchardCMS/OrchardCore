@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
@@ -64,13 +64,6 @@ namespace OrchardCore.Features.Recipes.Executors
 
                 await _shellFeatureManager.EnableFeaturesAsync(featuresToEnable, true);
             }
-        }
-
-        private class FeatureStepModel
-        {
-            public string Name { get; set; }
-            public string[] Disable { get; set; }
-            public string[] Enable { get; set; }
         }
     }
 }

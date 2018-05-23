@@ -8,6 +8,7 @@ using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Shell.Data;
 using OrchardCore.Mvc;
 using OrchardCore.ResourceManagement;
+using OrchardCore.Recipes;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -35,6 +36,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddLiquidViews()
                 .AddResourceManagement()
                 .AddCaching()
+
+                //.AddRecipeFeatures("OrchardCore.Lucene.Worker")
+                //.RemoveRecipeFeatures("OrchardCore.Lucene")
 
                 .Services;
         }
