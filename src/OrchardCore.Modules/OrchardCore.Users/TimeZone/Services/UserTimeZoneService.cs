@@ -48,7 +48,7 @@ namespace OrchardCore.Users.TimeZone.Services
             return _clock.GetTimeZone(currentTimeZoneId);
         }
 
-        public async Task UpdateUserTimeZoneAsync(UserProfile profile)
+        public async Task UpdateUserTimeZoneAsync(UserTimeZone userTimeZone)
         {
             if (!String.IsNullOrEmpty(_httpContextAccessor.HttpContext.User.Identity.Name))
             {
@@ -56,10 +56,10 @@ namespace OrchardCore.Users.TimeZone.Services
 
                 if (user.Properties["UserProfile"] != null && user.Properties["UserProfile"]["TimeZone"] != null)
                 {
-                    user.Properties["UserProfile"]["TimeZone"] = profile.TimeZoneId;
+                    user.Properties["UserProfile"]["TimeZone"] = userTimeZone.TimeZoneId;
                 }
 
-                _memoryCache.Set(CacheKey, (string)profile.TimeZoneId, new TimeSpan(0, 1, 0));
+                _memoryCache.Set(CacheKey, (string)userTimeZone.TimeZoneId, new TimeSpan(0, 1, 0));
                 _session.Save(user);
             }
         }

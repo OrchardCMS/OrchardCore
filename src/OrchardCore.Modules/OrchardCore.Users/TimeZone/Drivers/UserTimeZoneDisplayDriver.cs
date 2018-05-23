@@ -11,12 +11,12 @@ using OrchardCore.Users.TimeZone.ViewModels;
 
 namespace OrchardCore.Users.TimeZone.Drivers
 {
-    public class UserProfileDisplayDriver : SectionDisplayDriver<User, UserProfile>
+    public class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone>
     {
         private readonly IClock _clock;
         private readonly UserTimeZoneService _userTimeZoneService;
 
-        public UserProfileDisplayDriver(
+        public UserTimeZoneDisplayDriver(
             IClock clock,
             UserTimeZoneService userTimeZoneService)
         {
@@ -24,28 +24,28 @@ namespace OrchardCore.Users.TimeZone.Drivers
             _userTimeZoneService = userTimeZoneService;
         }
 
-        public override Task<IDisplayResult> EditAsync(UserProfile profile, BuildEditorContext context)
+        public override Task<IDisplayResult> EditAsync(UserTimeZone userTimeZone, BuildEditorContext context)
         {
             return Task.FromResult<IDisplayResult>(
-                Initialize<UserProfileViewModel>("UserProfile_Edit", model =>
+                Initialize<UserTimeZoneViewModel>("UserProfile_Edit", model =>
                 {
-                    model.TimeZone = profile.TimeZoneId;
+                    model.TimeZone = userTimeZone.TimeZoneId;
                 }).Location("Content:2")
             );
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(UserProfile profile, IUpdateModel updater, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(UserTimeZone userTimeZone, IUpdateModel updater, BuildEditorContext context)
         {
-            var model = new UserProfileViewModel();
+            var model = new UserTimeZoneViewModel();
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                profile.TimeZoneId = model.TimeZone;
+                userTimeZone.TimeZoneId = model.TimeZone;
             }
 
-            await _userTimeZoneService.UpdateUserTimeZoneAsync(profile);
+            await _userTimeZoneService.UpdateUserTimeZoneAsync(userTimeZone);
 
-            return await EditAsync(profile, context);
+            return await EditAsync(userTimeZone, context);
         }
     }
 }
