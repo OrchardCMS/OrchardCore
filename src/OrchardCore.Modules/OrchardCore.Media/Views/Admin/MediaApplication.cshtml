@@ -19,7 +19,7 @@
     <div class="media-container row">
         <div id="navigationApp" class="media-container-navigation" v-cloak>
             <h5>Media Explorer</h5>
-            <ol id="media-container-navigation-menu" style="margin-top:35px;">
+            <ol id="media-container-navigation-menu" style="margin-top:46px;">
                 <folder :model="root" ref="rootFolder" :selected-in-media-app="selectedFolder">
                 </folder>
             </ol>
@@ -28,7 +28,7 @@
         <div class="media-container-main" v-cloak>
 
             <nav class="navbar action-bar">
-                <div class="dropdown d-lg-none visible-on-modal">
+                <div class="dropdown d-lg-none visible-on-modal mb-1 pt-1">
                     <button class="btn btn-secondary dropdown-toggle btn-sm mr-2" type="button" id="selectionButtonsDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         @T["Actions"]
                     </button>
@@ -44,7 +44,7 @@
                     </div>
                 </div>
 
-                <div class="d-lg-inline-flex d-none hidden-on-modal">
+                <div class="d-lg-inline-flex d-none mb-1 pt-1 hidden-on-modal">
                     <button type="button" class="btn btn-secondary btn-sm mr-1" v-on:click="selectAll">@T["Select All"]</button>
                     <button type="button" class="btn btn-secondary btn-sm mr-1" v-on:click="unSelectAll" v-bind:disabled="selectedMedias.length < 1">@T["Select None"]</button>
                     <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="invertSelection">@T["Invert"]</button>
@@ -54,7 +54,7 @@
                     </button>
                 </div>
 
-                <div class="d-inline-flex text-right mr-2 media-filter">
+                <div class="d-inline-flex text-right mr-2 mb-1 pt-1 media-filter">
                     <div class="input-group input-group-sm">
                         <div class="input-group-prepend">
                             <button class="btn btn-outline-secondary" type="button" v-bind:disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa fa-times"></i></button>
@@ -62,7 +62,7 @@
                         <input type="text" v-model="mediaFilter" class="form-control input-filter" style="max-width:160px;" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]">
                     </div>
                 </div>
-                <div class="d-inline-flex">
+                <div class="d-inline-flex mb-1 pt-1">
                     <div class="btn-group btn-group-sm text-right" style="max-width:300px; width: 100%;">
                         <label for="fileupload" class="btn btn-sm btn-success fileinput-button upload-button" style="width:100%;">
                             <input id="fileupload" type="file" name="files" multiple="multiple">
