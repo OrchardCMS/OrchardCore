@@ -122,7 +122,7 @@
             <select asp-for="SiteTimeZone" class="form-control">
 
                 <option value="@localTimeZone.TimeZoneId">@localTimeZone</option>
-                @foreach (var timezone in Model.TimeZones)
+                @foreach (var timezone in clock.GetTimeZones())
                 {
                     <option value="@timezone.TimeZoneId" selected="@(Model.SiteTimeZone == timezone.TimeZoneId)">
                         @timezone
