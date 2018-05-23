@@ -30,7 +30,6 @@ namespace OrchardCore.Users.TimeZone.Drivers
                 Initialize<UserProfileViewModel>("UserProfile_Edit", model =>
                 {
                     model.TimeZone = profile.TimeZoneId;
-                    model.TimeZones = _clock.GetTimeZones();
                 }).Location("Content:2")
             );
         }

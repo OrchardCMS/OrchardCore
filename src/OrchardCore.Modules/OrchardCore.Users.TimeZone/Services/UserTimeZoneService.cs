@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
@@ -19,18 +20,21 @@ namespace OrchardCore.Users.TimeZone.Services
         private readonly IMemoryCache _memoryCache;
         private readonly IServiceProvider _serviceProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly UserManager<IUser> _userManager;
 
         public UserTimeZoneService(
             IClock clock,
             IMemoryCache memoryCache,
             IServiceProvider serviceProvider,
-            IHttpContextAccessor httpContextAccessor
+            IHttpContextAccessor httpContextAccessor,
+            UserManager<IUser> userManager
             )
         {
             _clock = clock;
             _memoryCache = memoryCache;
             _serviceProvider = serviceProvider;
             _httpContextAccessor = httpContextAccessor;
+            _userManager = userManager;
         }
 
         public async Task<ITimeZone> GetUserTimeZoneAsync()
@@ -48,16 +52,15 @@ namespace OrchardCore.Users.TimeZone.Services
         {
             if (!String.IsNullOrEmpty(_httpContextAccessor.HttpContext.User.Identity.Name))
             {
-                var session = GetSession();
+                var user = await _userManager.FindByNameAsync(_httpContextAccessor.HttpContext.User.Identity.Name) as User;
 
-                var user = await session.Query<User, UserIndex>().Where(x => x.NormalizedUserName == _httpContextAccessor.HttpContext.User.Identity.Name.ToUpper()).FirstOrDefaultAsync();
                 if (user.Properties["UserProfile"] != null && user.Properties["UserProfile"]["TimeZone"] != null)
                 {
                     user.Properties["UserProfile"]["TimeZone"] = profile.TimeZoneId;
                 }
 
                 _memoryCache.Set(CacheKey, (string)profile.TimeZoneId, new TimeSpan(0, 1, 0));
-                session.Save(user);
+                await _userManager.UpdateAsync(user);
             }
         }
 
@@ -67,9 +70,7 @@ namespace OrchardCore.Users.TimeZone.Services
             {
                 if (!_memoryCache.TryGetValue(CacheKey, out string timeZoneId))
                 {
-                    var session = GetSession();
-
-                    var user = await session.Query<User, UserIndex>().Where(x => x.NormalizedUserName == _httpContextAccessor.HttpContext.User.Identity.Name.ToUpper()).FirstOrDefaultAsync();
+                    var user = await _userManager.FindByNameAsync(_httpContextAccessor.HttpContext.User.Identity.Name) as User;
                     timeZoneId = (string)user.Properties["UserProfile"]["TimeZone"] ?? _clock.GetSystemTimeZone().TimeZoneId;
 
                     _memoryCache.Set(CacheKey, (string)user.Properties["UserProfile"]["TimeZone"], new TimeSpan(0, 1, 0));
@@ -78,12 +79,6 @@ namespace OrchardCore.Users.TimeZone.Services
                 return timeZoneId;
             }
             else return null;
-        }
-
-        private YesSql.ISession GetSession()
-        {
-            var httpContextAccessor = _serviceProvider.GetService<IHttpContextAccessor>();
-            return httpContextAccessor.HttpContext.RequestServices.GetService<YesSql.ISession>();
         }
     }
 }
