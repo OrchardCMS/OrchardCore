@@ -37,9 +37,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddResourceManagement()
                 .AddCaching()
 
-                //.AddRecipeFeatures("OrchardCore.Lucene.Worker")
-                //.RemoveRecipeFeatures("OrchardCore.Lucene")
-
                 .Services;
         }
     }
