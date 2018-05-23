@@ -24,7 +24,7 @@ namespace OrchardCore.Forms
             builder
                 .Add(T["Configuration"], configuration => configuration
                     .Add(T["Settings"], settings => settings
-                        .Add(T["Forms"], T["Forms"], layers => layers
+                        .Add(T["Forms"], T["Forms"], forms => forms
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ReCaptchaSettingsDisplay.GroupId })
                             .LocalNav()
                         )));
