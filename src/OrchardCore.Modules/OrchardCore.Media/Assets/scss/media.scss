@@ -229,8 +229,8 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
         text-align: left;
         margin-bottom: 16px;
 
-        .input-filter {
-            /*width: 100px;*/
+        .media-filter {
+            flex-grow: 1;
         }
     }
 

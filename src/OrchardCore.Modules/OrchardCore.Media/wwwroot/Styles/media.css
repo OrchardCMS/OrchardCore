@@ -6191,8 +6191,8 @@ a.text-dark:hover, a.text-dark:focus {
   flex-grow: 1;
   text-align: left;
   margin-bottom: 16px; }
-  .media-container-main .action-bar .input-filter {
-    /*width: 100px;*/ }
+  .media-container-main .action-bar .media-filter {
+    flex-grow: 1; }
 
 .media-container-main .breadcrumb {
   background-color: transparent;
