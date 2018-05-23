@@ -19,26 +19,22 @@ namespace OrchardCore.Forms.Drivers
             _siteService = siteService;
         }
 
-        public override async Task<IDisplayResult> DisplayAsync(ReCaptchaPart part, BuildPartDisplayContext context)
+        public override IDisplayResult Display(ReCaptchaPart part, BuildPartDisplayContext context)
         {
-            // TODO: We need an InitializeAsync so we can do this sort of initialization from within the shape factory..
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-            return Initialize<ReCaptchaPartViewModel>("ReCaptchaPart", m =>
+            return Initialize<ReCaptchaPartViewModel>("ReCaptchaPart", async m =>
             {
+                var siteSettings = await _siteService.GetSiteSettingsAsync();
                 var settings = siteSettings.As<ReCaptchaSettings>();
                 m.SettingsAreConfigured = settings.IsValid();
                 m.SiteKey = settings.SiteKey;
             }).Location("Detail", "Content");
         }
 
-        public override async Task<IDisplayResult> EditAsync(ReCaptchaPart part, BuildPartEditorContext context)
+        public override IDisplayResult Edit(ReCaptchaPart part, BuildPartEditorContext context)
         {
-            // TODO: We need an InitializeAsync so we can do this sort of initialization from within the shape factory..
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-            return Initialize<ReCaptchaPartEditViewModel>("ReCaptchaPart_Fields_Edit", m =>
+            return Initialize<ReCaptchaPartEditViewModel>("ReCaptchaPart_Fields_Edit", async m =>
             {
+                var siteSettings = await _siteService.GetSiteSettingsAsync();
                 var settings = siteSettings.As<ReCaptchaSettings>();
                 m.SettingsAreConfigured = settings.IsValid();
             });
