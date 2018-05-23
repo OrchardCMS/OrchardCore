@@ -9,7 +9,9 @@ namespace OrchardCore.Environment.Cache
         private HashSet<string> _contexts;
         private HashSet<string> _tags;
         private string _cacheId;
-        private TimeSpan? _duration;
+        private DateTimeOffset? _expiresOn;
+        private TimeSpan? _expiresAfter;
+        private TimeSpan? _expiresSliding;
 
         public CacheContext(string cacheId)
         {
@@ -17,12 +19,32 @@ namespace OrchardCore.Environment.Cache
         }
 
         /// <summary>
-        /// Defines the absolute time the shape should be cached for.
+        /// Defines the absolute time the value should be cached for.
         /// If not called a sliding value will be used.
         /// </summary>
-        public CacheContext During(TimeSpan duration)
+        public CacheContext WithExpiryOn(DateTimeOffset expiry)
         {
-            _duration = duration;
+            _expiresOn = expiry;
+            return this;
+        }
+
+        /// <summary>
+        /// Defines the absolute time (relative from now) the value should be cached for.
+        /// If not called a sliding value will be used.
+        /// </summary>
+        public CacheContext WithExpiryAfter(TimeSpan duration)
+        {
+            _expiresAfter = duration;
+            return this;
+        }
+
+        /// <summary>
+        /// Defines the sliding expiry time the value should be cached for.
+        /// If not called a default sliding value will be used (unless an absolute expiry time has been specified).
+        /// </summary>
+        public CacheContext WithExpirySliding(TimeSpan window)
+        {
+            _expiresSliding = window;
             return this;
         }
 
@@ -58,24 +80,6 @@ namespace OrchardCore.Environment.Cache
             return this;
         }
 
-        /// <summary>
-        /// Defines a dimension that will invalidate the cache entry when it changes.
-        /// For instance by using <code>"features"</code> every time the list of features
-        /// will change the value of the cache will be invalidated.
-        /// </summary>
-        public CacheContext AddDependency(params string[] context)
-        {
-            return AddContext(context);
-        }
-
-        /// <summary>
-        /// Removes a specific dependency.
-        /// </summary>
-        public CacheContext RemoveDependency(string context)
-        {
-            return RemoveContext(context);
-        }
-
         public CacheContext AddTag(params string[] tags)
         {
             if (_tags == null)
@@ -104,7 +108,9 @@ namespace OrchardCore.Environment.Cache
         public string CacheId => _cacheId;
         public ICollection<string> Contexts => (ICollection<string>) _contexts ?? Array.Empty<string>();
         public IEnumerable<string> Tags => _tags ?? Enumerable.Empty<string>();
-        public TimeSpan? Duration => _duration;
+        public DateTimeOffset? ExpiresOn => _expiresOn;
+        public TimeSpan? ExpiresAfter => _expiresAfter;
+        public TimeSpan? ExpiresSliding => _expiresSliding;
 
     }
 }

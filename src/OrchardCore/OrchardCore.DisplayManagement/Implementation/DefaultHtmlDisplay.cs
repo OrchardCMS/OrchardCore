@@ -60,9 +60,6 @@ namespace OrchardCore.DisplayManagement.Implementation
                 return CoerceHtmlString(context.Value);
             }
 
-            var theme = await _themeManager.GetThemeAsync();
-            var shapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
-
             var displayContext = new ShapeDisplayContext
             {
                 Shape = shape,
@@ -71,106 +68,116 @@ namespace OrchardCore.DisplayManagement.Implementation
                 ServiceProvider = _serviceProvider
             };
 
-            // Use the same prefix as the shape
-            var originalHtmlFieldPrefix = context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
-            context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = shapeMetadata.Prefix ?? "";
-
-            // Evaluate global Shape Display Events
-            await _shapeDisplayEvents.InvokeAsync(sde => sde.DisplayingAsync(displayContext), _logger);
-
-            // Find base shape association using only the fundamental shape type.
-            // Alternates that may already be registered do not affect the "displaying" event calls.
-            ShapeBinding shapeBinding;
-            if (TryGetDescriptorBinding(shapeMetadata.Type, Enumerable.Empty<string>(), shapeTable, out shapeBinding))
+            try
             {
-                await shapeBinding.ShapeDescriptor.DisplayingAsync.InvokeAsync(action => action(displayContext), _logger);
+                var theme = await _themeManager.GetThemeAsync();
+                var shapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
 
-                // copy all binding sources (all templates for this shape) in order to use them as Localization scopes
-                shapeMetadata.BindingSources = shapeBinding.ShapeDescriptor.BindingSources.Where(x => x != null).ToList();
-                if (!shapeMetadata.BindingSources.Any())
+                // Use the same prefix as the shape
+                var originalHtmlFieldPrefix = context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
+                context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = shapeMetadata.Prefix ?? "";
+
+                // Evaluate global Shape Display Events
+                await _shapeDisplayEvents.InvokeAsync(sde => sde.DisplayingAsync(displayContext), _logger);
+
+                // Find base shape association using only the fundamental shape type.
+                // Alternates that may already be registered do not affect the "displaying" event calls.
+                ShapeBinding shapeBinding;
+                if (TryGetDescriptorBinding(shapeMetadata.Type, Enumerable.Empty<string>(), shapeTable, out shapeBinding))
                 {
-                    shapeMetadata.BindingSources.Add(shapeBinding.ShapeDescriptor.BindingSource);
-                }
-            }
+                    await shapeBinding.ShapeDescriptor.DisplayingAsync.InvokeAsync(action => action(displayContext), _logger);
 
-            // invoking ShapeMetadata displaying events
-            shapeMetadata.Displaying.Invoke(action => action(displayContext), _logger);
-
-            // use pre-fectched content if available (e.g. coming from specific cache implementation)
-            if (displayContext.ChildContent != null)
-            {
-                shape.Metadata.ChildContent = displayContext.ChildContent;
-            }
-            
-            if (shape.Metadata.ChildContent == null)
-            {
-                // now find the actual binding to render, taking alternates into account
-                ShapeBinding actualBinding;
-                if (TryGetDescriptorBinding(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable, out actualBinding))
-                {
-                    // There might be no shape binding for the main shape, and only for its alternates.
-                    if (shapeBinding != null)
+                    // copy all binding sources (all templates for this shape) in order to use them as Localization scopes
+                    shapeMetadata.BindingSources = shapeBinding.ShapeDescriptor.BindingSources.Where(x => x != null).ToList();
+                    if (!shapeMetadata.BindingSources.Any())
                     {
-                        await shapeBinding.ShapeDescriptor.ProcessingAsync.InvokeAsync(action => action(displayContext), _logger);
-                    }
-
-                    // invoking ShapeMetadata processing events, this includes the Drivers results
-                    await shapeMetadata.ProcessingAsync.InvokeAsync(processing => processing(displayContext.Shape), _logger);
-
-                    shape.Metadata.ChildContent = await ProcessAsync(actualBinding, shape, context);
-                }
-                else
-                {
-                    throw new Exception($"Shape type '{shapeMetadata.Type}' not found");
-                }
-            }
-
-            // Process wrappers
-            if (shape.Metadata.Wrappers.Count > 0)
-            {
-                foreach (var frameType in shape.Metadata.Wrappers)
-                {
-                    ShapeBinding frameBinding;
-                    if (TryGetDescriptorBinding(frameType, Enumerable.Empty<string>(), shapeTable, out frameBinding))
-                    {
-                        shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, context);
+                        shapeMetadata.BindingSources.Add(shapeBinding.ShapeDescriptor.BindingSource);
                     }
                 }
 
-                // Clear wrappers to prevent the child content from rendering them again
-                shape.Metadata.Wrappers.Clear();
-            }
+                // invoking ShapeMetadata displaying events
+                shapeMetadata.Displaying.Invoke(action => action(displayContext), _logger);
 
-            await _shapeDisplayEvents.InvokeAsync(async sde =>
-            {
-                var prior = displayContext.ChildContent = displayContext.ShapeMetadata.ChildContent;
-                await sde.DisplayedAsync(displayContext);
-                // update the child content if the context variable has been reassigned
-                if (prior != displayContext.ChildContent)
-                    displayContext.ShapeMetadata.ChildContent = displayContext.ChildContent;
-            }, _logger);
+                // use pre-fectched content if available (e.g. coming from specific cache implementation)
+                if (displayContext.ChildContent != null)
+                {
+                    shape.Metadata.ChildContent = displayContext.ChildContent;
+                }
 
-            if (shapeBinding != null)
-            {
-                await shapeBinding.ShapeDescriptor.DisplayedAsync.InvokeAsync(async action =>
+                if (shape.Metadata.ChildContent == null)
+                {
+                    // now find the actual binding to render, taking alternates into account
+                    ShapeBinding actualBinding;
+                    if (TryGetDescriptorBinding(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable, out actualBinding))
+                    {
+                        // There might be no shape binding for the main shape, and only for its alternates.
+                        if (shapeBinding != null)
+                        {
+                            await shapeBinding.ShapeDescriptor.ProcessingAsync.InvokeAsync(action => action(displayContext), _logger);
+                        }
+
+                        // invoking ShapeMetadata processing events, this includes the Drivers results
+                        await shapeMetadata.ProcessingAsync.InvokeAsync(processing => processing(displayContext.Shape), _logger);
+
+                        shape.Metadata.ChildContent = await ProcessAsync(actualBinding, shape, context);
+                    }
+                    else
+                    {
+                        throw new Exception($"Shape type '{shapeMetadata.Type}' not found");
+                    }
+                }
+
+                // Process wrappers
+                if (shape.Metadata.Wrappers.Count > 0)
+                {
+                    foreach (var frameType in shape.Metadata.Wrappers)
+                    {
+                        ShapeBinding frameBinding;
+                        if (TryGetDescriptorBinding(frameType, Enumerable.Empty<string>(), shapeTable, out frameBinding))
+                        {
+                            shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, context);
+                        }
+                    }
+
+                    // Clear wrappers to prevent the child content from rendering them again
+                    shape.Metadata.Wrappers.Clear();
+                }
+
+                await _shapeDisplayEvents.InvokeAsync(async sde =>
                 {
                     var prior = displayContext.ChildContent = displayContext.ShapeMetadata.ChildContent;
-
-                    await action(displayContext);
-
+                    await sde.DisplayedAsync(displayContext);
                     // update the child content if the context variable has been reassigned
                     if (prior != displayContext.ChildContent)
-                    {
                         displayContext.ShapeMetadata.ChildContent = displayContext.ChildContent;
-                    }
                 }, _logger);
+
+                if (shapeBinding != null)
+                {
+                    await shapeBinding.ShapeDescriptor.DisplayedAsync.InvokeAsync(async action =>
+                    {
+                        var prior = displayContext.ChildContent = displayContext.ShapeMetadata.ChildContent;
+
+                        await action(displayContext);
+
+                        // update the child content if the context variable has been reassigned
+                        if (prior != displayContext.ChildContent)
+                        {
+                            displayContext.ShapeMetadata.ChildContent = displayContext.ChildContent;
+                        }
+                    }, _logger);
+                }
+
+                // invoking ShapeMetadata displayed events
+                shapeMetadata.Displayed.Invoke(action => action(displayContext), _logger);
+
+                //restore original HtmlFieldPrefix
+                context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = originalHtmlFieldPrefix;
             }
-
-            // invoking ShapeMetadata displayed events
-            shapeMetadata.Displayed.Invoke(action => action(displayContext), _logger);
-
-            //restore original HtmlFieldPrefix
-            context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = originalHtmlFieldPrefix;
+            finally
+            {
+                await _shapeDisplayEvents.InvokeAsync(sde => sde.DisplayingFinalizedAsync(displayContext), _logger);
+            }
 
             return shape.Metadata.ChildContent;
         }
