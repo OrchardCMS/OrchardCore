@@ -14,11 +14,11 @@ namespace OrchardCore.Users.TimeZone.Drivers
     public class UserProfileDisplayDriver : SectionDisplayDriver<User, UserProfile>
     {
         private readonly IClock _clock;
-        private readonly IUserTimeZoneService _userTimeZoneService;
+        private readonly UserTimeZoneService _userTimeZoneService;
 
         public UserProfileDisplayDriver(
             IClock clock,
-            IUserTimeZoneService userTimeZoneService)
+            UserTimeZoneService userTimeZoneService)
         {
             _clock = clock;
             _userTimeZoneService = userTimeZoneService;
@@ -29,7 +29,7 @@ namespace OrchardCore.Users.TimeZone.Drivers
             return Task.FromResult<IDisplayResult>(
                 Initialize<UserProfileViewModel>("UserProfile_Edit", model =>
                 {
-                    model.TimeZone = profile.TimeZone;
+                    model.TimeZone = profile.TimeZoneId;
                     model.TimeZones = _clock.GetTimeZones();
                 }).Location("Content:2")
             );
@@ -41,7 +41,7 @@ namespace OrchardCore.Users.TimeZone.Drivers
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                profile.TimeZone = model.TimeZone;
+                profile.TimeZoneId = model.TimeZone;
             }
 
             await _userTimeZoneService.UpdateUserTimeZoneAsync(profile);

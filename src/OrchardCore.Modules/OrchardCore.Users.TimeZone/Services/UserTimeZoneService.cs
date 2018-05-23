@@ -11,7 +11,7 @@ using YesSql;
 
 namespace OrchardCore.Users.TimeZone.Services
 {
-    public class UserTimeZoneService : IUserTimeZoneService
+    public class UserTimeZoneService
     {
         private const string CacheKey = "UserTimeZone";
 
@@ -53,10 +53,10 @@ namespace OrchardCore.Users.TimeZone.Services
                 var user = await session.Query<User, UserIndex>().Where(x => x.NormalizedUserName == _httpContextAccessor.HttpContext.User.Identity.Name.ToUpper()).FirstOrDefaultAsync();
                 if (user.Properties["UserProfile"] != null && user.Properties["UserProfile"]["TimeZone"] != null)
                 {
-                    user.Properties["UserProfile"]["TimeZone"] = profile.TimeZone;
+                    user.Properties["UserProfile"]["TimeZone"] = profile.TimeZoneId;
                 }
 
-                _memoryCache.Set(CacheKey, (string)profile.TimeZone);
+                _memoryCache.Set(CacheKey, (string)profile.TimeZoneId, new TimeSpan(0, 1, 0));
                 session.Save(user);
             }
         }
@@ -72,7 +72,7 @@ namespace OrchardCore.Users.TimeZone.Services
                     var user = await session.Query<User, UserIndex>().Where(x => x.NormalizedUserName == _httpContextAccessor.HttpContext.User.Identity.Name.ToUpper()).FirstOrDefaultAsync();
                     timeZoneId = (string)user.Properties["UserProfile"]["TimeZone"] ?? _clock.GetSystemTimeZone().TimeZoneId;
 
-                    _memoryCache.Set(CacheKey, (string)user.Properties["UserProfile"]["TimeZone"]);
+                    _memoryCache.Set(CacheKey, (string)user.Properties["UserProfile"]["TimeZone"], new TimeSpan(0, 1, 0));
                 }
 
                 return timeZoneId;

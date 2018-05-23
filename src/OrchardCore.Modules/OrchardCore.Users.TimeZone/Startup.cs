@@ -17,7 +17,7 @@ namespace OrchardCore.Users.TimeZone
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ITimeZoneSelector, UserTimeZoneSelector>();
-            services.AddScoped<IUserTimeZoneService, UserTimeZoneService>();
+            services.AddScoped<UserTimeZoneService>();
 
             services.AddScoped<IDisplayDriver<User>, UserProfileDisplayDriver>();
         }
