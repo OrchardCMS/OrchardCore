@@ -11,6 +11,8 @@ namespace OrchardCore.Modules
     {
         /// <summary>
         /// Gets the current <see cref="DateTime"/> of the system, expressed in Utc
+        /// We don't return a DateTimeOffset here since DateTimeOffset.DateTime and DateTimeOffset.LocalDateTime
+        /// would return the same DateTime with a Offset of 0.
         /// </summary>
         DateTime UtcNow { get; }
 
