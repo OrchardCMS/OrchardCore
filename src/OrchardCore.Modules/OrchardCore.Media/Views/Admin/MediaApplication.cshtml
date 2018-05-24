@@ -127,7 +127,7 @@
                             </div>
                         </td>
                         <td>
-                            <div class="text-col optional-col">@T["{{{{ isNaN(media.size)? 0 : media.size}}}} KB"]</div>                            
+                            <div class="text-col optional-col">@T["{{{{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }}}} KB"]</div>
                         </td>
                         <td>
                             <div class="text-col optional-col">{{ media.mime }}</div>
