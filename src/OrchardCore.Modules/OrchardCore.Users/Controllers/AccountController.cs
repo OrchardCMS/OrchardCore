@@ -17,7 +17,7 @@ using OrchardCore.Users.ViewModels;
 namespace OrchardCore.Users.Controllers
 {
     [Authorize]
-    public class AccountController : BaseEmailController
+    public class AccountController : Controller
     {
         private readonly IUserService _userService;
         private readonly SignInManager<IUser> _signInManager;
@@ -31,10 +31,7 @@ namespace OrchardCore.Users.Controllers
             UserManager<IUser> userManager,
             ILogger<AccountController> logger,
             ISiteService siteService,
-            ISmtpService smtpService,
-            IShapeFactory shapeFactory,
-            IHtmlDisplay displayManager,
-            IStringLocalizer<AccountController> stringLocalizer) : base(smtpService, shapeFactory, displayManager)
+            IStringLocalizer<AccountController> stringLocalizer)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -65,7 +62,7 @@ namespace OrchardCore.Users.Controllers
         {
             ViewData["ReturnUrl"] = returnUrl;
 
-            if (!(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail)
+            if ((await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail)
             {
                 // Require the user to have a confirmed email before they can log on.
                 var user = (User)await _userManager.FindByNameAsync(model.UserName);
@@ -73,9 +70,7 @@ namespace OrchardCore.Users.Controllers
                 {
                     if (!await _userManager.IsEmailConfirmedAsync(user))
                     {
-                        ModelState.AddModelError(string.Empty, T["You must have a confirmed email to log on. The confirmation token has been resent to your email account."]);
-
-                        var callbackUrl = await SendEmailConfirmationTokenAsync(user, T["Confirm your account-Resend"]);
+                        ModelState.AddModelError(string.Empty, T["You must have a confirmed email to log on."]);
                     }
                 }
             }
@@ -147,14 +142,17 @@ namespace OrchardCore.Users.Controllers
         {
             return View();
         }
-        
-        private async Task<string> SendEmailConfirmationTokenAsync(User user, string subject)
-        {
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = Url.Action("ConfirmEmail", "Registration", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-            await SendEmailAsync(user.Email, subject, new ConfirmEmailViewModel() { User = user, ConfirmEmailUrl = callbackUrl }, "TemplateUserConfirmEmail");
 
-            return callbackUrl;
+        protected IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return Redirect("~/");
+            }
         }
     }
 }
