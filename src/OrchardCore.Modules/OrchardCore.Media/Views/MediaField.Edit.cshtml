@@ -44,6 +44,9 @@
                     <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></a>
                     <a v-show="canRemoveMedia" href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm"><i class="fa fa-trash"></i></a>
                 </div>
+                <div style="display:flex; justify-content:flex-end; align-items:flex-end; flex-grow:1;">
+                    <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+                </div>
             </nav>
 
         </fieldset>
