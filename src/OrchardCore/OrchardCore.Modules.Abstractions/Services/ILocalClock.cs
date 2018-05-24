@@ -4,17 +4,17 @@ using System.Threading.Tasks;
 namespace OrchardCore.Modules
 {
     /// <summary>
-    /// Provides local values of the current time and timezone.
+    /// Provides local values of the current time and time zone.
     /// </summary>
     public interface ILocalClock
     {
         /// <summary>
-        /// Gets the time for the loca timezone.
+        /// Gets the time for the loca time zone.
         /// </summary>
         Task<DateTimeOffset> LocalNowAsync { get; }
 
         /// <summary>
-        /// Returns the local timezone.
+        /// Returns the local time zone.
         /// </summary>
         Task<ITimeZone> GetLocalTimeZoneAsync();
 

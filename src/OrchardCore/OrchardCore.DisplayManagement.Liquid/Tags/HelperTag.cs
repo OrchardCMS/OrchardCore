@@ -14,8 +14,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement.Liquid.Ast;
 using OrchardCore.DisplayManagement.Liquid.Filters;
+using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
