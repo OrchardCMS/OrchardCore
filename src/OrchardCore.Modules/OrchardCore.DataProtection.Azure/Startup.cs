@@ -2,7 +2,6 @@ using System;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.WindowsAzure.Storage;
@@ -35,14 +34,7 @@ namespace OrchardCore.DataProtection.Azure
         {
             var blobName = $"{_shellOptions.Value.ShellsContainerName}/{_shellSettings.Name}/DataProtectionKeys.xml";
 
-            // Re-register the data protection services to be tenant-aware so that modules that internally
-            // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that
-            // manages its own key ring and doesn't allow decrypting payloads encrypted by another tenant.
-            services.Add(new ServiceCollection()
-                .AddDataProtection()
-                .PersistKeysToAzureBlobStorage(GetBlobContainer(), blobName)
-                .SetApplicationName(_shellSettings.Name)
-                .Services);
+            services.AddDataProtection().PersistKeysToAzureBlobStorage(GetBlobContainer(), blobName);
         }
 
         private CloudBlobContainer GetBlobContainer()
@@ -50,7 +42,7 @@ namespace OrchardCore.DataProtection.Azure
             var connectionString = _configuration.GetValue<string>("Modules:OrchardCore.DataProtection.Azure:ConnectionString");
             var containerName = _configuration.GetValue<string>("Modules:OrchardCore.DataProtection.Azure:ContainerName") ?? "dataprotection";
 
-            if (string.IsNullOrWhiteSpace(connectionString))
+            if (String.IsNullOrWhiteSpace(connectionString))
             {
                 _logger.LogCritical("No connection string was supplied for OrchardCore.DataProtection.Azure. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`.");
             }
