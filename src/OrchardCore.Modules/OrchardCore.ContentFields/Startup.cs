@@ -21,6 +21,7 @@ namespace OrchardCore.ContentFields
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayLinkFieldViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayNumericFieldViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTextFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayDateTimeFieldViewModel>();
         }
 
         public override void ConfigureServices(IServiceCollection services)

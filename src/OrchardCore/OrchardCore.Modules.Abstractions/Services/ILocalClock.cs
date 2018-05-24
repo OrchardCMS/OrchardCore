@@ -22,5 +22,10 @@ namespace OrchardCore.Modules
         /// Converts a <see cref="DateTimeOffset" /> to the specified <see cref="ITimeZone" /> instance.
         /// </summary>
         Task<DateTimeOffset> ConvertToLocalAsync(DateTimeOffset dateTimeOffset);
+
+        /// <summary>
+        /// Converts a <see cref="DateTime" /> representing a local time to the UTC value.
+        /// </summary>
+        Task<DateTime> ConvertToUtcAsync(DateTime dateTime);
     }
 }

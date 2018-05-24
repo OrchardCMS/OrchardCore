@@ -7,8 +7,8 @@
 
 <fieldset class="form-group">
     <div class="row col-sm-12 col-md-6 col-lg-3">
-        <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
-        <input asp-for="Value" type="datetime-local" class="form-control content-preview-select" required="@settings.Required" />
+        <label asp-for="LocalDateTime">@Model.PartFieldDefinition.DisplayName()</label>
+        <input asp-for="LocalDateTime" type="datetime-local" class="form-control content-preview-select" required="@settings.Required" />
         <span class="hint">@settings.Hint</span>
     </div>
 </fieldset>
