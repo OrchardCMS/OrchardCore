@@ -298,5 +298,20 @@ Display a shape after removing a specific shape by name
 
 Display a specific shape by name
 ```liquid
-{{ Model.Content.BodyPart | shape_display }}
+{{ Model.Content.BodyPart | shape_render }}
+```
+
+To access or render the shapes for a field that is added to the content type directly, the `[PartName]` is equal to the content type.
+For instance, given a content type `Article` with a Text field named `Description`, the shapes for this field would be named `"Article-Description"`. Render these shapes in Liquid would be:
+
+```liquid
+{{ Model.Content["Article-Description"] | shape_render }}
+```
+
+In this example the indexer syntax is necessary as the name of the differentiator is not compatible with Liquid language.
+
+Instead of rendering the shape directly, you can also access its properties. In the case of a text field you have access to the `Field` property which has a `Text` property.
+
+```liquid
+{{ Model.Content["Article-Description"].Field.Text }}
 ```

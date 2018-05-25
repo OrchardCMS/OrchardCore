@@ -16,11 +16,21 @@ namespace OrchardCore.ContentFields
     {
         static Startup()
         {
+            // Registering both field types and shape types are necessary as they can 
+            // be accessed from inner properties.
+            
+            TemplateContext.GlobalMemberAccessStrategy.Register<BooleanField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayBooleanFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<HtmlField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayHtmlFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<LinkField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayLinkFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<NumericField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayNumericFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<TextField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTextFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DateTimeField>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayDateTimeFieldViewModel>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -54,6 +64,12 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, NumericFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, NumericFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, NumericFieldIndexHandler>();
+
+            // DateTime Field
+            services.AddSingleton<ContentField, DateTimeField>();
+            services.AddScoped<IContentFieldDisplayDriver, DateTimeFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, DateTimeFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, DateTimeFieldIndexHandler>();
         }
     }
 }
