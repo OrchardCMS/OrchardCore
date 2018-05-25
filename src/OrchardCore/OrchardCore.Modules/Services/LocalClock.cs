@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using NodaTime;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Modules
 {
@@ -46,6 +46,16 @@ namespace OrchardCore.Modules
                 var dateTimeZone = ((TimeZone)localTimeZone.Result).DateTimeZone;
                 var offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet);
                 return offsetDateTime.InZone(dateTimeZone).ToDateTimeOffset();
+            });
+        }
+
+        public Task<DateTime> ConvertToUtcAsync(DateTime dateTime)
+        {
+            return GetLocalTimeZoneAsync().ContinueWith(localTimeZone =>
+            {
+                var dateTimeZone = ((TimeZone)localTimeZone.Result).DateTimeZone;
+                var localDate = LocalDateTime.FromDateTime(dateTime);
+                return dateTimeZone.AtStrictly(localDate).ToDateTimeUtc();
             });
         }
 
