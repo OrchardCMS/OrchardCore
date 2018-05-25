@@ -37,7 +37,7 @@
             <div id="navbar" class="collapse navbar-collapse">
 
                 @*@await DisplayAsync(await New.Menu(ContentItemId: "main-menu"))*@
-                <menu alias="alias:main-menu" cache-id="main-menu" cache-duration="00:05:00" cache-tag="alias:main-menu" />
+                <menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" />
 
                 <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post">
                     <ul class="nav navbar-nav navbar-right">

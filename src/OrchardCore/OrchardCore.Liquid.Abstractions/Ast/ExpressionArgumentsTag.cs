@@ -7,7 +7,7 @@ using Fluid.Ast;
 using Fluid.Tags;
 using Irony.Parsing;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags
+namespace OrchardCore.Liquid.Ast
 {
     public abstract class ExpressionArgumentsTag : ITag
     {

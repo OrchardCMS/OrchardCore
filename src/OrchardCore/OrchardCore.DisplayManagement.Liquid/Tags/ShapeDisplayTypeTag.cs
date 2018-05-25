@@ -3,11 +3,11 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using OrchardCore.DisplayManagement.Liquid.Ast;
+using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class DisplayTypeTag : ExpressionArgumentsTag
+    public class ShapeDisplayTypeTag : ExpressionArgumentsTag
     {
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
         {

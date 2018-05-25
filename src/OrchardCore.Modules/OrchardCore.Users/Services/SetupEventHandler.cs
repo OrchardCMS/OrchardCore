@@ -24,6 +24,7 @@ namespace OrchardCore.Users.Services
             string dbProvider,
             string dbConnectionString,
             string dbTablePrefix,
+            string siteTimeZone,
             Action<string, string> reportError
             )
         {

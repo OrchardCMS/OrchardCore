@@ -6875,6 +6875,18 @@ div.CodeMirror-dragcursors {
 span.CodeMirror-selectedtext {
   background: none; }
 
+body {
+  margin-bottom: 60px; }
+
+.ta-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  line-height: 60px;
+  background-color: #f8f9fa;
+  z-index: 8; }
+
 .ta-navbar-top {
   min-height: 59px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -6931,8 +6943,7 @@ span.CodeMirror-selectedtext {
   transition: left 0.2s ease-in-out, width 0.2s ease-in-out; }
   #ta-left-sidebar #left-nav {
     position: relative;
-    height: calc(100% - 118px);
-    border-top: 1px solid #dee2e6; }
+    height: calc(100% - 118px); }
   #ta-left-sidebar ul {
     margin: 0;
     padding: 0; }
