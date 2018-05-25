@@ -16,11 +16,20 @@ namespace OrchardCore.ContentFields
     {
         static Startup()
         {
+            // Registering both field types and shape types are necessary as they can 
+            // be accessed from inner properties.
+            
+            TemplateContext.GlobalMemberAccessStrategy.Register<BooleanField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayBooleanFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<HtmlField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayHtmlFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<LinkField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayLinkFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<NumericField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayNumericFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<TextField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTextFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DateTimeField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayDateTimeFieldViewModel>();
         }
 
