@@ -1,6 +1,14 @@
 @model EditUserViewModel
-    
-<input asp-for="Id" type="hidden"/>
+@using OrchardCore.Entities
+@using OrchardCore.Settings
+@using OrchardCore.Users.Models
+@inject ISiteService _site
+
+@{
+    var usersMustValidateEmail = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail;
+}
+
+<input asp-for="Id" type="hidden" />
 
 <div class="form-group" asp-validation-class-for="UserName">
     <label asp-for="UserName">@T["User name"]</label>
@@ -14,10 +22,13 @@
     <input asp-for="Email" class="form-control" type="email" />
 </div>
 
-<fieldset class="form-check" asp-validation-class-for="EmailConfirmed">
-    <input asp-for="EmailConfirmed" type="checkbox" disabled="disabled" class="form-check-input"/>
-    <label asp-for="EmailConfirmed" class="form-check-label">@T["The email is confirmed"] <span asp-validation-for="EmailConfirmed"></span></label>
-</fieldset>
+@if (usersMustValidateEmail)
+{
+    <fieldset class="form-check" asp-validation-class-for="EmailConfirmed">
+        <input asp-for="EmailConfirmed" type="checkbox" disabled="disabled" class="form-check-input" />
+        <label asp-for="EmailConfirmed" class="form-check-label">@T["The email is confirmed"] <span asp-validation-for="EmailConfirmed"></span></label>
+    </fieldset>
+}
 
 @if (Model.DisplayPasswordFields)
 {
