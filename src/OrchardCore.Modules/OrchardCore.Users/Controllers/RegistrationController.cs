@@ -84,9 +84,7 @@ namespace OrchardCore.Users.Controllers
                     {
                         // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                         // Send an email with this link
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        var callbackUrl = Url.Action("ConfirmEmail", "Registration", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                        await SendEmailAsync(user.Email, T["Confirm your account"], new ConfirmEmailViewModel() { User = user, ConfirmEmailUrl = callbackUrl }, "TemplateUserConfirmEmail");
+                        await SendEmailConfirmationTokenAsync(user);
                     }
                     else
                     {
@@ -117,6 +115,15 @@ namespace OrchardCore.Users.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, code);
 
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
+        }
+        
+        private async Task<string> SendEmailConfirmationTokenAsync(User user)
+        {
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = Url.Action("ConfirmEmail", "Registration", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+            await SendEmailAsync(user.Email, T["Confirm your account"], new ConfirmEmailViewModel() { User = user, ConfirmEmailUrl = callbackUrl }, "TemplateUserConfirmEmail");
+
+            return callbackUrl;
         }
     }
 }

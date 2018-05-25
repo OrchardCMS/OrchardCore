@@ -70,7 +70,6 @@ namespace OrchardCore.Users.Drivers
 
             model.UserName = model.UserName?.Trim();
             model.Email = model.Email?.Trim();
-            user.EmailConfirmed = model.EmailConfirmed;
 
             if (await IsNewUser(model.Id))
             {

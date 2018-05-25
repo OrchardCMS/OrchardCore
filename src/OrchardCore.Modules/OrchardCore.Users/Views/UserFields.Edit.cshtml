@@ -15,7 +15,7 @@
 </div>
 
 <fieldset class="form-check" asp-validation-class-for="EmailConfirmed">
-    <input asp-for="EmailConfirmed" type="checkbox" class="form-check-input"/>
+    <input asp-for="EmailConfirmed" type="checkbox" disabled="disabled" class="form-check-input"/>
     <label asp-for="EmailConfirmed" class="form-check-label">@T["The email is confirmed"] <span asp-validation-for="EmailConfirmed"></span></label>
 </fieldset>
 
