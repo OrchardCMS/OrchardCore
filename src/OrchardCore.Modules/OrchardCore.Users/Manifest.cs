@@ -12,14 +12,15 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Users",
     Name = "Users",
-    Description = "The Workflows module provides tools and APIs to create custom workflows",
-    Dependencies = new[] { "OrchardCore.Authentication", "OrchardCore.DataProtection", "OrchardCore.Email" },
+    Description = "The users feature enables authentication UI and user management.",
+    Dependencies = new [] { "OrchardCore.Authentication", "OrchardCore.DataProtection", "OrchardCore.Email" },
     Category = "Security"
 )]
+
 
 [assembly: Feature(
     Id = "OrchardCore.Users.TimeZone",
     Name = "Users Time Zone",
-    Description = "Set the time zone per user account",
+    Description = "Provides way to set the time zone per user.",
     Category = "Settings"
 )]
