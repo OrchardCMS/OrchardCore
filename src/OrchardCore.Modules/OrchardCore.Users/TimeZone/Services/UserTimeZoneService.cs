@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
+using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Models;
@@ -12,7 +13,7 @@ namespace OrchardCore.Users.TimeZone.Services
     public class UserTimeZoneService
     {
         private const string CacheKey = "UserTimeZone";
-        private readonly TimeSpan SlidingExpiration = new TimeSpan(0, 1, 0);
+        private readonly TimeSpan SlidingExpiration = TimeSpan.FromMinutes(1);
 
         private readonly IClock _clock;
         private readonly IMemoryCache _memoryCache;
@@ -68,9 +69,9 @@ namespace OrchardCore.Users.TimeZone.Services
                 {
                     var user = await _userManager.FindByNameAsync(_httpContextAccessor.HttpContext.User.Identity.Name) as User;
 
-                    if (user.Properties["UserTimeZone"] != null && user.Properties["UserTimeZone"]["TimeZoneId"] != null)
+                    if (user.As<UserTimeZone>().TimeZoneId != null)
                     {
-                        timeZoneId = (string)user.Properties["UserTimeZone"]["TimeZoneId"];
+                        timeZoneId = user.As<UserTimeZone>().TimeZoneId;
                     }
 
                     _memoryCache.Set(CacheKey, timeZoneId, SlidingExpiration);
