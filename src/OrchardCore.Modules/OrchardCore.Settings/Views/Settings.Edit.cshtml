@@ -1,5 +1,5 @@
 @model SiteSettingsViewModel
-@inject OrchardCore.Modules.IClock clock
+@inject OrchardCore.Modules.IClock Clock
 
 <fieldset class="form-group" asp-validation-class-for="SiteName">
     <label asp-for="SiteName">@T["Site name"] <span asp-validation-for="SiteName"></span></label>
@@ -17,7 +17,7 @@
     <label asp-for="TimeZone">@T["Default Time Zone"] <span asp-validation-for="TimeZone"></span></label>
     <select asp-for="TimeZone" class="form-control">
         <option value="">@T["Local to server"]</option>
-        @foreach (var timezone in clock.GetTimeZones())
+        @foreach (var timezone in Clock.GetTimeZones())
         {
             <option value="@timezone.TimeZoneId" selected="@(Model.TimeZone == timezone.TimeZoneId)">
                 @timezone
