@@ -165,7 +165,7 @@ namespace OrchardCore.Users
     }
 
     [Feature("OrchardCore.Users.ResetPassword")]
-    public class PasswordStartup : StartupBase
+    public class ResetPasswordStartup : StartupBase
     {
         private const string ForgotPasswordPath = "ForgotPassword";
         private const string ForgotPasswordConfirmationPath = "ForgotPasswordConfirmation";
@@ -178,25 +178,25 @@ namespace OrchardCore.Users
                 name: "ForgotPassword",
                 areaName: "OrchardCore.Users",
                 template: ForgotPasswordPath,
-                defaults: new { controller = "Password", action = "ForgotPassword" }
+                defaults: new { controller = "ResetPassword", action = "ForgotPassword" }
             );
             routes.MapAreaRoute(
                 name: "ForgotPasswordConfirmation",
                 areaName: "OrchardCore.Users",
                 template: ForgotPasswordConfirmationPath,
-                defaults: new { controller = "Password", action = "ForgotPasswordConfirmation" }
+                defaults: new { controller = "ResetPassword", action = "ForgotPasswordConfirmation" }
             );
             routes.MapAreaRoute(
                 name: "ResetPassword",
                 areaName: "OrchardCore.Users",
                 template: ResetPasswordPath,
-                defaults: new { controller = "Password", action = "ResetPassword" }
+                defaults: new { controller = "ResetPassword", action = "ResetPassword" }
             );
             routes.MapAreaRoute(
                 name: "ResetPasswordConfirmation",
                 areaName: "OrchardCore.Users",
                 template: ResetPasswordConfirmationPath,
-                defaults: new { controller = "Password", action = "ResetPasswordConfirmation" }
+                defaults: new { controller = "ResetPassword", action = "ResetPasswordConfirmation" }
             );
         }
 
