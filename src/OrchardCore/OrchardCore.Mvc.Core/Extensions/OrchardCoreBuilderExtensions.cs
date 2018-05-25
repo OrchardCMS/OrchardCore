@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -19,10 +20,22 @@ using OrchardCore.Mvc.RazorPages;
 
 namespace OrchardCore.Mvc
 {
-    public static class ServiceCollectionExtensions
+    public static class OrchardCoreBuilderExtensions
     {
-        public static IServiceCollection AddMvcModules(this IServiceCollection services,
-            IServiceProvider applicationServices)
+        /// <summary>
+        /// Adds tenant level MVC services and configuration.
+        /// </summary>
+        public static OrchardCoreBuilder AddMvc(this OrchardCoreBuilder builder)
+        {
+            return builder.ConfigureTenantServices<IServiceProvider>((collection, sp) =>
+            {
+                AddMvcTenantServices(collection, sp);
+            })
+            .UseStaticFiles();
+        }
+
+        public static void AddMvcTenantServices(IServiceCollection services,
+            IServiceProvider serviceProvider)
         {
             services.TryAddSingleton(new ApplicationPartManager());
 
@@ -37,7 +50,7 @@ namespace OrchardCore.Mvc
             builder.AddViews();
             builder.AddViewLocalization();
 
-            AddModularFrameworkParts(applicationServices, builder.PartManager);
+            AddModularFrameworkParts(serviceProvider, builder.PartManager);
 
             builder.AddModularRazorViewEngine();
             builder.AddModularRazorPages();
@@ -50,8 +63,6 @@ namespace OrchardCore.Mvc
 
             // Order important
             builder.AddJsonFormatters();
-
-            return services;
         }
 
         internal static void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)

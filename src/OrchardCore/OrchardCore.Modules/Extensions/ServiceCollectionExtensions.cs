@@ -12,29 +12,14 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Create a new <see cref="OrchardCore.Modules.ModularServicesBuilder"/>.
-        /// </summary>
-        public static ModularServicesBuilder ToModules(this IServiceCollection services)
-        {
-            return new ModularServicesBuilder(services);
-        }
-
-        /// <summary>
         /// Adds modules services.
         /// </summary>
-        public static ModularServicesBuilder AddModules(this IServiceCollection services)
+        public static IServiceCollection AddOrchardCore(this IServiceCollection services, Action<OrchardCoreBuilder> configure = null)
         {
-            return services.AddModules(null).ToModules();
-        }
+            var builder = new OrchardCoreBuilder(services);
 
-        /// <summary>
-        /// Adds modules services to the specified <see cref="Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
-        /// Kept for backward compatibility to still allow to pass a configure action and return a regular service collection.
-        /// </summary>
-        public static IServiceCollection AddModules(this IServiceCollection services, Action<ModularServicesBuilder> configure)
-        {
-            services.AddWebHost();
-            services.AddManifestDefinition("module");
+            builder.AddWebHost();
+            builder.AddManifestDefinition("module");
 
             // ModularTenantRouterMiddleware which is configured with UseModules() calls UserRouter() which requires the routing services to be
             // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
@@ -44,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddAllFeaturesDescriptor();
 
             // Let the app change the default tenant behavior and set of features
-            configure?.Invoke(services.ToModules());
+            configure?.Invoke(builder);
 
             // Registers the application main feature
             services.AddTransient(sp =>
@@ -58,18 +43,16 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddWebHost(
-            this IServiceCollection services)
+        public static OrchardCoreBuilder AddWebHost(this OrchardCoreBuilder builder)
         {
+            var services = builder.Services;
+
             services.AddLogging();
             services.AddOptions();
             services.AddLocalization();
             services.AddHostingShellServices();
 
-            services.AddExtensionManagerHost().ConfigureTenantServices(collection =>
-            {
-                collection.AddExtensionManager();
-            });
+            builder.AddExtensionManager();
 
             services.AddWebEncoders();
 
@@ -80,7 +63,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
             services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
 
-            return services;
+            return builder;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Microsoft.AspNetCore.Builder
 {
     public static class ModularApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseModules(this IApplicationBuilder app, Action<IApplicationBuilder> modules = null)
+        public static IApplicationBuilder UseModules(this IApplicationBuilder app, Action<IApplicationBuilder> configure = null)
         {
             var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
 
@@ -21,16 +21,10 @@ namespace Microsoft.AspNetCore.Builder
             app.UseMiddleware<PoweredByMiddleware>();
             app.UseMiddleware<ModularTenantContainerMiddleware>();
 
-            app.ConfigureModules(modules);
+            configure?.Invoke(app);
 
             app.UseMiddleware<ModularTenantRouterMiddleware>();
 
-            return app;
-        }
-
-        public static IApplicationBuilder ConfigureModules(this IApplicationBuilder app, Action<IApplicationBuilder> modules)
-        {
-            modules?.Invoke(app);
             return app;
         }
     }

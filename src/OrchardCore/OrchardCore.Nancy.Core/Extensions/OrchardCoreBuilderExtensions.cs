@@ -8,28 +8,26 @@ using OrchardCore.Nancy.AssemblyCatalogs;
 
 namespace OrchardCore.Nancy
 {
-    public static class ModularApplicationBuilderExtensions
+    public static class OrchardCoreBuilderExtensions
     {
         /// <summary>
-        /// Adds tenant level Nancy services.
+        /// Adds tenant level Nancy services and configuration.
         /// </summary>
         /// <param name="services"></param>
-        public static ModularServicesBuilder AddNancy(this ModularServicesBuilder builder)
+        public static OrchardCoreBuilder AddNancy(this OrchardCoreBuilder builder)
         {
-            builder.Services.ConfigureTenantServices(collection =>
+            return builder.ConfigureTenantServices(collection =>
             {
                 collection.AddRouting();
             })
             .ConfigureTenant((app, routes, sp) =>
             {
-                app.UseNancyModules();
-                app.UseStaticFilesModules();
-            });
-
-            return builder;
+                UseNancyTenantConfiguration(app);
+            })
+            .UseStaticFiles();
         }
 
-        public static IApplicationBuilder UseNancyModules(this IApplicationBuilder app)
+        public static void UseNancyTenantConfiguration(IApplicationBuilder app)
         {
             var contextAccessor =
                 app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
@@ -42,8 +40,6 @@ namespace OrchardCore.Nancy
                         (IAssemblyCatalog)new AmbientAssemblyCatalog(contextAccessor)
                     });
             }));
-
-            return app;
         }
     }
 }

@@ -1,14 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Extensions.Manifests
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddManifestDefinition(
-            this IServiceCollection services,
-            string moduleType)
+        public static OrchardCoreBuilder AddManifestDefinition(this OrchardCoreBuilder builder, string moduleType)
         {
-            return services.Configure<ManifestOptions>(configureOptions: options =>
+            builder.Services.Configure<ManifestOptions>(configureOptions: options =>
             {
                 var option = new ManifestOption {
                     Type = moduleType
@@ -16,6 +15,8 @@ namespace OrchardCore.Environment.Extensions.Manifests
 
                 options.ManifestConfigurations.Add(option);
             });
+
+            return builder;
         }
     }
 }

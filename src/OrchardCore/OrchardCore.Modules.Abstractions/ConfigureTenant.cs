@@ -187,171 +187,181 @@ namespace OrchardCore.Modules
         }
     }
 
-    public static class ConfigureTenantServiceCollectionExtensions
+    public static class OrchardCoreBuilderExtensions
     {
         /// <summary>
         /// Configure the tenant pipeline before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection ConfigureTenant(this IServiceCollection services,
+        public static OrchardCoreBuilder ConfigureTenant(this OrchardCoreBuilder builder,
             Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure, int order = int.MinValue)
         {
-            return services.AddTransient<IStartup>(sp => new ConfigureTenant(configure, order));
+            builder.Services.AddTransient<IStartup>(sp => new ConfigureTenant(configure, order));
+            return builder;
         }
 
         /// <summary>
         /// Configure the tenant pipeline after all modules.
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection PostConfigureTenant(this IServiceCollection services,
+        public static OrchardCoreBuilder PostConfigureTenant(this OrchardCoreBuilder builder,
             Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure)
         {
-            return services.ConfigureTenant(configure, int.MaxValue);
+            return builder.ConfigureTenant(configure, int.MaxValue);
         }
 
         /// <summary>
         /// Adds tenant level services before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection ConfigureTenantServices(this IServiceCollection services,
+        public static OrchardCoreBuilder ConfigureTenantServices(this OrchardCoreBuilder builder,
             Action<IServiceCollection> configureServices, int order = int.MinValue)
         {
-            return services.AddTransient<IStartup>(sp => new ConfigureTenantServices(configureServices, order));
+            builder.Services.AddTransient<IStartup>(sp => new ConfigureTenantServices(configureServices, order));
+            return builder;
         }
 
         /// <summary>
         /// Adds tenant level services after all modules.
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection PostConfigureTenantServices(this IServiceCollection services,
+        public static OrchardCoreBuilder PostConfigureTenantServices(this OrchardCoreBuilder builder,
             Action<IServiceCollection> configureServices)
         {
-            return services.ConfigureTenantServices(configureServices, int.MaxValue);
+            return builder.ConfigureTenantServices(configureServices, int.MaxValue);
         }
 
         /// <summary>
         /// Adds tenant level services before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection ConfigureTenantServices<TDep>(this IServiceCollection services,
+        public static OrchardCoreBuilder ConfigureTenantServices<TDep>(this OrchardCoreBuilder builder,
             Action<IServiceCollection, TDep> configureServices, int order = int.MinValue)
             where TDep : class
         {
-            return services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep>(
+            builder.Services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep>(
                 sp.GetRequiredService<TDep>(),
                 configureServices,
                 order));
+
+            return builder;
         }
 
         /// <summary>
         /// Adds tenant level services after all modules.
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection PostConfigureTenantServices<TDep>(this IServiceCollection services,
+        public static OrchardCoreBuilder PostConfigureTenantServices<TDep>(this OrchardCoreBuilder builder,
             Action<IServiceCollection, TDep> configureServices)
             where TDep : class
         {
-            return services.ConfigureTenantServices(configureServices, int.MaxValue);
+            return builder.ConfigureTenantServices(configureServices, int.MaxValue);
         }
 
         /// <summary>
         /// Adds tenant level services before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection ConfigureTenantServices<TDep1, TDep2>(this IServiceCollection services,
+        public static OrchardCoreBuilder ConfigureTenantServices<TDep1, TDep2>(this OrchardCoreBuilder builder,
             Action<IServiceCollection, TDep1, TDep2> configureServices, int order = int.MinValue)
             where TDep1 : class
             where TDep2 : class
         {
-            return services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2>(
+            builder.Services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2>(
                 sp.GetRequiredService<TDep1>(),
                 sp.GetRequiredService<TDep2>(),
                 configureServices,
                 order));
+
+            return builder;
         }
 
         /// <summary>
         /// Adds tenant level services after all modules.
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection PostConfigureTenantServices<TDep1, TDep2>(this IServiceCollection services,
+        public static OrchardCoreBuilder PostConfigureTenantServices<TDep1, TDep2>(this OrchardCoreBuilder builder,
             Action<IServiceCollection, TDep1, TDep2> configureServices)
             where TDep1 : class
             where TDep2 : class
         {
-            return services.ConfigureTenantServices(configureServices, int.MaxValue);
+            return builder.ConfigureTenantServices(configureServices, int.MaxValue);
         }
 
         /// <summary>
         /// Adds tenant level services before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection ConfigureTenantServices<TDep1, TDep2, TDep3>(this IServiceCollection services,
+        public static OrchardCoreBuilder ConfigureTenantServices<TDep1, TDep2, TDep3>(this OrchardCoreBuilder builder,
             Action<IServiceCollection, TDep1, TDep2, TDep3> configureServices, int order = int.MinValue)
             where TDep1 : class
             where TDep2 : class
             where TDep3 : class
         {
-            return services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2, TDep3>(
+            builder.Services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2, TDep3>(
                 sp.GetRequiredService<TDep1>(),
                 sp.GetRequiredService<TDep2>(),
                 sp.GetRequiredService<TDep3>(),
                 configureServices,
                 order));
+
+            return builder;
         }
 
         /// <summary>
         /// Adds tenant level services after all modules.
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection PostConfigureTenantServices<TDep1, TDep2, TDep3>(this IServiceCollection services,
+        public static OrchardCoreBuilder PostConfigureTenantServices<TDep1, TDep2, TDep3>(this OrchardCoreBuilder builder,
             Action<IServiceCollection, TDep1, TDep2, TDep3> configureServices)
             where TDep1 : class
             where TDep2 : class
             where TDep3 : class
         {
-            return services.ConfigureTenantServices(configureServices, int.MaxValue);
+            return builder.ConfigureTenantServices(configureServices, int.MaxValue);
         }
 
         /// <summary>
         /// Adds tenant level services before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4>(this IServiceCollection services,
+        public static OrchardCoreBuilder ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4>(this OrchardCoreBuilder builder,
             Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4> configureServices, int order = int.MinValue)
             where TDep1 : class
             where TDep2 : class
             where TDep3 : class
             where TDep4 : class
         {
-            return services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4>(
+            builder.Services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4>(
                 sp.GetRequiredService<TDep1>(),
                 sp.GetRequiredService<TDep2>(),
                 sp.GetRequiredService<TDep3>(),
                 sp.GetRequiredService<TDep4>(),
                 configureServices,
                 order));
+
+            return builder;
         }
 
         /// <summary>
         /// Adds tenant level services after all modules.
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection PostConfigureTenantServices<TDep1, TDep2, TDep3, TDep4>(this IServiceCollection services,
+        public static OrchardCoreBuilder PostConfigureTenantServices<TDep1, TDep2, TDep3, TDep4>(this OrchardCoreBuilder builder,
             Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4> configureServices)
             where TDep1 : class
             where TDep2 : class
             where TDep3 : class
             where TDep4 : class
         {
-            return services.ConfigureTenantServices(configureServices, int.MaxValue);
+            return builder.ConfigureTenantServices(configureServices, int.MaxValue);
         }
 
         /// <summary>
         /// Adds tenant level services before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4, TDep5>(this IServiceCollection services,
+        public static OrchardCoreBuilder ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4, TDep5>(this OrchardCoreBuilder builder,
             Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4, TDep5> configureServices, int order = int.MinValue)
             where TDep1 : class
             where TDep2 : class
@@ -359,7 +369,7 @@ namespace OrchardCore.Modules
             where TDep4 : class
             where TDep5 : class
         {
-            return services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4, TDep5>(
+            builder.Services.AddTransient<IStartup>(sp => new ConfigureTenantServices<TDep1, TDep2, TDep3, TDep4, TDep5>(
                 sp.GetRequiredService<TDep1>(),
                 sp.GetRequiredService<TDep2>(),
                 sp.GetRequiredService<TDep3>(),
@@ -367,13 +377,15 @@ namespace OrchardCore.Modules
                 sp.GetRequiredService<TDep5>(),
                 configureServices,
                 order));
+
+            return builder;
         }
 
         /// <summary>
         /// Adds tenant level services after all modules.
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection PostConfigureTenantServices<TDep1, TDep2, TDep3, TDep4, TDep5>(this IServiceCollection services,
+        public static OrchardCoreBuilder PostConfigureTenantServices<TDep1, TDep2, TDep3, TDep4, TDep5>(this OrchardCoreBuilder builder,
             Action<IServiceCollection, TDep1, TDep2, TDep3, TDep4, TDep5> configureServices)
             where TDep1 : class
             where TDep2 : class
@@ -381,7 +393,7 @@ namespace OrchardCore.Modules
             where TDep4 : class
             where TDep5 : class
         {
-            return services.ConfigureTenantServices(configureServices, int.MaxValue);
+            return builder.ConfigureTenantServices(configureServices, int.MaxValue);
         }
     }
 }

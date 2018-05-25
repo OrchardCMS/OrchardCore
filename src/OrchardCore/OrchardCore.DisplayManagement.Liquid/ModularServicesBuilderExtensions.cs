@@ -7,14 +7,12 @@ namespace OrchardCore.DisplayManagement.Liquid
         /// <summary>
         /// Adds tenant level services for managing liquid view template files.
         /// </summary>
-        public static ModularServicesBuilder AddLiquidViews(this ModularServicesBuilder builder)
+        public static OrchardCoreBuilder AddLiquidViews(this OrchardCoreBuilder builder)
         {
-            builder.Services.ConfigureTenantServices((collection) =>
+            return builder.ConfigureTenantServices((collection) =>
             {
                 collection.AddLiquidViews();
             });
-
-            return builder;
         }
     }
 }

@@ -8,7 +8,6 @@ using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Shell.Data;
 using OrchardCore.Mvc;
 using OrchardCore.ResourceManagement;
-using OrchardCore.Recipes;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -18,26 +17,25 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return services
                 .AddCommands()
-                .AddModules()
+                .AddOrchardCore(builder => builder
 
-                .WithDefaultFeatures("OrchardCore.Setup", "OrchardCore.Recipes")
+                    .WithDefaultFeatures("OrchardCore.Setup")
 
-                .AddMvc()
-                .AddAntiForgery()
-                .AddAuthentication()
-                .AddDataProtection()
+                    .AddMvc()
+                    .AddAntiForgery()
+                    .AddAuthentication()
+                    .AddDataProtection()
 
-                .AddDataAccess()
-                .AddDataStorage()
-                .AddBackgroundTasks()
-                .AddDeferredTasks()
+                    .AddDataAccess()
+                    .AddDataStorage()
+                    .AddBackgroundTasks()
+                    .AddDeferredTasks()
 
-                .AddTheming()
-                .AddLiquidViews()
-                .AddResourceManagement()
-                .AddCaching()
-
-                .Services;
+                    .AddTheming()
+                    .AddLiquidViews()
+                    .AddResourceManagement()
+                    .AddCaching()
+                );
         }
     }
 }

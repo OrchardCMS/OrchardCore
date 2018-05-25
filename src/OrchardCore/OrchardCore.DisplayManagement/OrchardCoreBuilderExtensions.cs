@@ -19,33 +19,44 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.TagHelpers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Manifests;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
 
 namespace OrchardCore.DisplayManagement
 {
-    public static class ServiceCollectionExtensions
+    public static class OrchardCoreBuilderExtensions
     {
         /// <summary>
-        /// Adds host level services.
+        /// Adds host and tenant level services for managing themes.
         /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddThemingHost(this IServiceCollection services)
+        public static OrchardCoreBuilder AddTheming(this OrchardCoreBuilder builder)
+        {
+            AddThemingHostServices(builder.Services);
+            builder.Services.AddTagHelpers(typeof(BaseShapeTagHelper).Assembly);
+
+            return builder.AddManifestDefinition("theme")
+                .ConfigureTenantServices(collection =>
+                {
+                    AddThemingTenantServices(collection);
+                });
+        }
+
+        public static void AddThemingHostServices(IServiceCollection services)
         {
             services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
             services.AddSingleton<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
-
-            return services;
         }
 
-        public static IServiceCollection AddTheming(this IServiceCollection services)
+        public static void AddThemingTenantServices(IServiceCollection services)
         {
-		    services.Configure<MvcOptions>((options) =>
+            services.Configure<MvcOptions>((options) =>
             {
                 options.Filters.Add(typeof(ModelBinderAccessorFilter));
                 options.Filters.Add(typeof(NotifyFilter));
@@ -90,8 +101,6 @@ namespace OrchardCore.DisplayManagement
 
             services.AddScoped(typeof(IPluralStringLocalizer<>), typeof(PluralStringLocalizer<>));
             services.AddShapeAttributes<DateTimeShapes>();
-
-            return services;
         }
     }
 }

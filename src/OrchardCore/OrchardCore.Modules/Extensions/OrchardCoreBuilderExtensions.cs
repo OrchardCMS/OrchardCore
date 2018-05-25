@@ -12,14 +12,14 @@ using OrchardCore.Modules;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ModularServicesBuilderExtensions
+    public static class OrchardCoreBuilderExtensions
     {
         /// <summary>
         /// Registers a default tenant with a set of features that are used to setup and configure the actual tenants.
         /// For instance you can use this to add a custom Setup module.
         /// </summary>
-        public static ModularServicesBuilder WithDefaultFeatures(
-            this ModularServicesBuilder builder, params string[] featureIds)
+        public static OrchardCoreBuilder WithDefaultFeatures(
+            this OrchardCoreBuilder builder, params string[] featureIds)
         {
             foreach (var featureId in featureIds)
             {
@@ -32,7 +32,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Registers tenants defined in configuration.
         /// </summary>
-        public static ModularServicesBuilder WithTenants(this ModularServicesBuilder builder)
+        public static OrchardCoreBuilder WithTenants(this OrchardCoreBuilder builder)
         {
             builder.Services.AddSingleton<IShellSettingsConfigurationProvider, FileShellSettingsConfigurationProvider>();
             builder.Services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
@@ -45,8 +45,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Registers a single tenant with the specified set of features.
         /// </summary>
-        public static ModularServicesBuilder WithFeatures(
-            this ModularServicesBuilder builder, params string[] featureIds)
+        public static OrchardCoreBuilder WithFeatures(
+            this OrchardCoreBuilder builder, params string[] featureIds)
         {
             builder.WithDefaultFeatures(featureIds);
             builder.Services.AddSetFeaturesDescriptor();
@@ -57,11 +57,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds host and tenant level authentication services.
         /// </summary>
-        public static ModularServicesBuilder AddAuthentication(this ModularServicesBuilder builder)
+        public static OrchardCoreBuilder AddAuthentication(this OrchardCoreBuilder builder)
         {
             builder.Services.AddAuthentication();
 
-            builder.Services.ConfigureTenantServices<ShellSettings>((collection, settings) =>
+            return builder.ConfigureTenantServices<ShellSettings>((collection, settings) =>
             {
                 collection.AddAuthentication();
 
@@ -74,18 +74,16 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 app.UseAuthentication();
             });
-
-            return builder;
         }
 
         /// <summary>
         /// Adds host and tenant level antiforgery services.
         /// </summary>
-        public static ModularServicesBuilder AddAntiForgery(this ModularServicesBuilder builder)
+        public static OrchardCoreBuilder AddAntiForgery(this OrchardCoreBuilder builder)
         {
             builder.Services.AddAntiforgery();
 
-            builder.Services.ConfigureTenantServices<ShellSettings>((collection, settings) =>
+            return builder.ConfigureTenantServices<ShellSettings>((collection, settings) =>
             {
                 var tenantName = settings.Name;
                 var tenantPrefix = "/" + settings.RequestUrlPrefix;
@@ -96,16 +94,14 @@ namespace Microsoft.Extensions.DependencyInjection
                     options.Cookie.Path = tenantPrefix;
                 });
             });
-
-            return builder;
         }
 
         /// <summary>
         /// Adds tenant level data protection services.
         /// </summary>
-        public static ModularServicesBuilder AddDataProtection(this ModularServicesBuilder builder)
+        public static OrchardCoreBuilder AddDataProtection(this OrchardCoreBuilder builder)
         {
-            builder.Services.ConfigureTenantServices<IOptions<ShellOptions>, ShellSettings>((collection, options, settings) =>
+            return builder.ConfigureTenantServices<IOptions<ShellOptions>, ShellSettings>((collection, options, settings) =>
             {
                 var directory = Directory.CreateDirectory(Path.Combine(
                 options.Value.ShellsApplicationDataPath,
@@ -122,8 +118,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     .SetApplicationName(settings.Name)
                     .Services);
             });
-
-            return builder;
         }
     }
 }

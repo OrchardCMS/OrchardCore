@@ -16,9 +16,20 @@ using YesSql.Provider.SqlServer;
 
 namespace OrchardCore.Data
 {
-    public static class ServiceCollectionExtensions
+    public static class OrchardCoreBuilderExtensions
     {
-        public static IServiceCollection AddDataAccess(this IServiceCollection services)
+        /// <summary>
+        /// Adds tenant level data access services.
+        /// </summary>
+        public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
+        {
+            return builder.ConfigureTenantServices((collection) =>
+            {
+                AddDataAccessTenantServices(collection);
+            });
+        }
+
+        public static void AddDataAccessTenantServices(IServiceCollection services)
         {
             services.AddScoped<IDataMigrationManager, DataMigrationManager>();
             services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
@@ -26,12 +37,12 @@ namespace OrchardCore.Data
             // Adding supported databases
             services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true);
             services.TryAddDataProvider(name: "Sqlite", value: "Sqlite", hasConnectionString: false);
-			services.TryAddDataProvider(name: "MySql", value: "MySql", hasConnectionString: true);
-			services.TryAddDataProvider(name: "Postgres", value: "Postgres", hasConnectionString: true);
+            services.TryAddDataProvider(name: "MySql", value: "MySql", hasConnectionString: true);
+            services.TryAddDataProvider(name: "Postgres", value: "Postgres", hasConnectionString: true);
 
-			// Configuring data access
+            // Configuring data access
 
-			services.AddSingleton<IStore>(sp =>
+            services.AddSingleton<IStore>(sp =>
             {
                 var shellSettings = sp.GetService<ShellSettings>();
 
@@ -39,7 +50,7 @@ namespace OrchardCore.Data
                 {
                     return null;
                 }
-                
+
                 var storeConfiguration = new Configuration();
 
                 // Disabling query gating as it's failing to improve performance right now
@@ -58,13 +69,13 @@ namespace OrchardCore.Data
                         Directory.CreateDirectory(databaseFolder);
                         storeConfiguration.UseSqLite($"Data Source={databaseFile};Cache=Shared", IsolationLevel.ReadUncommitted);
                         break;
-					case "MySql":
+                    case "MySql":
                         storeConfiguration.UseMySql(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
-						break;
-					case "Postgres":
+                        break;
+                    case "Postgres":
                         storeConfiguration.UsePostgreSql(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
                         break;
-					default:
+                    default:
                         throw new ArgumentException("Unknown database provider: " + shellSettings.DatabaseProvider);
                 }
 
@@ -92,8 +103,6 @@ namespace OrchardCore.Data
 
                 return session;
             });
-
-            return services;
         }
     }
 }
