@@ -119,6 +119,8 @@ namespace OrchardCore.Setup.Controllers
                 model.TablePrefix = _shellSettings.TablePrefix;
             }
 
+            model.TimeZones = _clock.GetTimeZones();
+
             if (!ModelState.IsValid)
             {
                 return View(model);
