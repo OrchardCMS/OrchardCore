@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Services;
@@ -24,7 +25,7 @@ namespace OrchardCore.Email.Drivers
             _currentShellSettings = currentShellSettings;
         }
 
-        public override IDisplayResult Edit(SmtpSettings section)
+        public override IDisplayResult Edit(SmtpSettings section, BuildEditorContext context)
         {
             var shapes = new List<IDisplayResult>
             {
