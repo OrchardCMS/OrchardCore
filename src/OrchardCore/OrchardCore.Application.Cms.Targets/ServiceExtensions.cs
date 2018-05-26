@@ -17,18 +17,19 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return services
                 .AddCommands()
+
                 .AddOrchardCore(builder => builder
-
-                    .WithDefaultFeatures("OrchardCore.Setup")
-
                     .AddMvc()
                     .AddSecurity()
+                    .WithDefaultFeatures("OrchardCore.Setup"))
 
+                .AddOrchardCore(builder => builder
                     .AddDataAccess()
                     .AddDataStorage()
                     .AddBackgroundTasks()
-                    .AddDeferredTasks()
+                    .AddDeferredTasks())
 
+                .AddOrchardCore(builder => builder
                     .AddTheming()
                     .AddLiquidViews()
                     .AddResourceManagement()

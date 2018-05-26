@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Environment.Extensions;
@@ -18,25 +19,28 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var builder = new OrchardCoreBuilder(services);
 
-            builder.AddShellHost();
-            builder.AddExtensionManager();
-            builder.AddManifestDefinition("module");
-            AddDefaultHostServices(builder.Services);
-
-            // Use a single tenant and all features by default
-            services.AddAllFeaturesDescriptor();
-
-            // Registers the application main feature
-            services.AddTransient(sp =>
+            if (!IsServiceTypeInCollection<IShellHost>(services))
             {
-                return new ShellFeature(sp.GetRequiredService<IHostingEnvironment>().ApplicationName);
-            });
+                builder.AddShellHost();
+                builder.AddExtensionManager();
+                builder.AddManifestDefinition("module");
+                AddDefaultHostServices(builder.Services);
+
+                // Use a single tenant and all features by default
+                services.AddAllFeaturesDescriptor();
+
+                // Registers the application main feature
+                services.AddTransient(sp =>
+                {
+                    return new ShellFeature(sp.GetRequiredService<IHostingEnvironment>().ApplicationName);
+                });
+
+                // Register the list of services to be resolved later on
+                services.AddSingleton(_ => services);
+            }
 
             // Let the app change the default tenant behavior and set of features
             configure?.Invoke(builder);
-
-            // Register the list of services to be resolved later on
-            services.AddSingleton(_ => services);
 
             return services;
         }
@@ -59,6 +63,11 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
             services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
+        }
+
+        private static bool IsServiceTypeInCollection<T>(IServiceCollection services)
+        {
+            return services.LastOrDefault(d => d.ServiceType == typeof(T)) != null;
         }
     }
 }
