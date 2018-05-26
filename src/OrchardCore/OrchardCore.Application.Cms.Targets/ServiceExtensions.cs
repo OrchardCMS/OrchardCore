@@ -16,7 +16,9 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddOrchardCms(this IServiceCollection services)
         {
             return services
-                .AddCommands()
+
+                .AddOrchardCore(builder => builder
+                    .AddCommands())
 
                 .AddOrchardCore(builder => builder
                     .AddMvc()
