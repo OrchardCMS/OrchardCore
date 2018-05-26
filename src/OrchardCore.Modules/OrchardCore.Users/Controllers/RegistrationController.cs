@@ -3,10 +3,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -24,28 +26,34 @@ namespace OrchardCore.Users.Controllers
         private readonly UserManager<IUser> _userManager;
         private readonly SignInManager<IUser> _signInManager;
         private readonly ISiteService _siteService;
+        private readonly INotifier _notifier;
 
         public RegistrationController(
             IUserService userService,
             UserManager<IUser> userManager,
             SignInManager<IUser> signInManager,
             ISiteService siteService,
+            INotifier notifier,
             ISmtpService smtpService,
             IShapeFactory shapeFactory,
             IHtmlDisplay displayManager,
             ILogger<RegistrationController> logger,
+            IHtmlLocalizer<RegistrationController> htmlLocalizer,
             IStringLocalizer<RegistrationController> stringLocalizer) : base(smtpService, shapeFactory, displayManager)
         {
             _userService = userService;
             _userManager = userManager;
             _signInManager = signInManager;
             _siteService = siteService;
+            _notifier = notifier;
 
             _logger = logger;
+            TH = htmlLocalizer;
             T = stringLocalizer;
         }
 
         ILogger _logger;
+        IHtmlLocalizer TH { get; set; }
         IStringLocalizer T { get; set; }
 
         [HttpGet]
@@ -116,7 +124,22 @@ namespace OrchardCore.Users.Controllers
 
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
-        
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SendVerificationEmail(string id)
+        {
+            var user = (User)await _userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                await SendEmailConfirmationTokenAsync(user);
+
+                _notifier.Success(TH["Verification email sent to {0}.", user.Email]);
+            }
+
+            return RedirectToAction(nameof(AdminController.Index), "Admin");
+        }
+
         private async Task<string> SendEmailConfirmationTokenAsync(User user)
         {
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
