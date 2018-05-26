@@ -177,5 +177,41 @@ Nested blocks:
 {% endcache %}
 ```
 
+### Altering a cache scope
+
+You may not yet know all the child dependencies, or even how long the cache block should be cached for when you enter a cache block. 
+An example might be a cache block around a list of content items from a query- because you do not know which content items will be displayed by the query, you cannot define the correct dependencies when you enter the cache block.
+
+There are four tags that allow you to alter the current cache scope. It's safe to use these tags even if you don't necessarily know if you're inside a cache block:
+
+| Liquid Tag | Description | Example |
+| --------- | ----------- | ----------- |
+| `cache_dependency` | Adds a dependency to the current cache scope | {% cache_dependency "alias:{Alias}" %} |
+| `cache_expires_on` | Sets a fixed date and time that the cache item will expire. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block.  | {% cache_expires_on {A DateTime or DateTimeOffset instance %} (e.g. from a date/time field on a content item) |
+| `cache_expires_after` | Sets a timespan relative to when the item was cached that the cache item will expire. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block. | {% cache_expires_after "01:00:00" %} (One hour) |
+| `cache_expires_sliding` | Sets a sliding window for the expiry of the cache item. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block. | {% cache_expires_sliding "00:01:00" %} (One minute) |
+
+#### Example:
+
+Displaying content items from a query:
+
+```
+{% cache "recent-blog-posts"}
+    {% assign recentBlogPosts = Queries.RecentBlogPosts | query %}
+    {% for item in recentBlogPosts %}
+        {% display item | build_display: "Summary"  %}
+    {% endfor %}
+{% endcache %}
+```
+
+Inside the summary view for a blog post:
+
+```
+{% assign cacheDependency = "contentitemid:" | append: Model.ContentItem.ContentItemId %}
+{% cache_dependency cacheDependency %}
+```
+
+Each item that is displayed by the query will now add its own cache dependency to the `recent-blog-posts` cache block.
+
 ### Razor cache tag
 This has not yet been implemented. If you feel up to it, and you'd like to help out, then please raise a pull request.
