@@ -186,10 +186,10 @@ There are four tags that allow you to alter the current cache scope. It's safe t
 
 | Liquid Tag | Description | Example |
 | --------- | ----------- | ----------- |
-| `cache_dependency` | Adds a dependency to the current cache scope | {% cache_dependency "alias:{Alias}" %} |
-| `cache_expires_on` | Sets a fixed date and time that the cache item will expire. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block.  | {% cache_expires_on {A DateTime or DateTimeOffset instance %} (e.g. from a date/time field on a content item) |
-| `cache_expires_after` | Sets a timespan relative to when the item was cached that the cache item will expire. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block. | {% cache_expires_after "01:00:00" %} (One hour) |
-| `cache_expires_sliding` | Sets a sliding window for the expiry of the cache item. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block. | {% cache_expires_sliding "00:01:00" %} (One minute) |
+| `cache_dependency` | Adds a dependency to the current cache scope | `{% cache_dependency "alias:{Alias}" %}` |
+| `cache_expires_on` | Sets a fixed date and time that the cache item will expire. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block.  | `{% cache_expires_on {A DateTime or DateTimeOffset instance %}` (e.g. from a date/time field on a content item) |
+| `cache_expires_after` | Sets a timespan relative to when the item was cached that the cache item will expire. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block. | `{% cache_expires_after "01:00:00" %}` (One hour) |
+| `cache_expires_sliding` | Sets a sliding window for the expiry of the cache item. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block. | `{% cache_expires_sliding "00:01:00" %}` (One minute) |
 
 #### Example:
 
