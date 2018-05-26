@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Users.Models;
@@ -16,7 +16,7 @@ namespace OrchardCore.Users.TimeZone.Services
         private readonly TimeSpan SlidingExpiration = TimeSpan.FromMinutes(1);
 
         private readonly IClock _clock;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IDistributedCache _distributedCache;
         private readonly IServiceProvider _serviceProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<IUser> _userManager;
@@ -24,7 +24,7 @@ namespace OrchardCore.Users.TimeZone.Services
 
         public UserTimeZoneService(
             IClock clock,
-            IMemoryCache memoryCache,
+            IDistributedCache distributedCache,
             IServiceProvider serviceProvider,
             IHttpContextAccessor httpContextAccessor,
             UserManager<IUser> userManager,
@@ -32,7 +32,7 @@ namespace OrchardCore.Users.TimeZone.Services
             )
         {
             _clock = clock;
-            _memoryCache = memoryCache;
+            _distributedCache = distributedCache;
             _serviceProvider = serviceProvider;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
@@ -56,7 +56,7 @@ namespace OrchardCore.Users.TimeZone.Services
 
             if (!String.IsNullOrEmpty(userName))
             {
-                _memoryCache.Remove(GetCacheKey(userName));
+                return _distributedCache.RemoveAsync(GetCacheKey(userName));
             }
 
             return Task.CompletedTask;
@@ -72,24 +72,20 @@ namespace OrchardCore.Users.TimeZone.Services
             }
 
             var key = GetCacheKey(userName);
+            var timeZoneId = await _distributedCache.GetStringAsync(key);
 
-            if (!_memoryCache.TryGetValue(key, out string timeZoneId))
+            if (String.IsNullOrEmpty(timeZoneId))
             {
                 var user = await _userManager.FindByNameAsync(userName) as User;
                 timeZoneId = user.As<UserTimeZone>()?.TimeZoneId;
                 
                 if (!String.IsNullOrEmpty(timeZoneId))
                 {
-                    _memoryCache.Set(key, timeZoneId, SlidingExpiration);
-                    return timeZoneId;
+                    await _distributedCache.SetStringAsync(key, timeZoneId, new DistributedCacheEntryOptions { SlidingExpiration = SlidingExpiration });
                 }                
             }
-            else
-            {
-                return timeZoneId;
-            }
-
-            return null;
+            
+            return timeZoneId;
         }
 
         private string GetCacheKey(string userName) => CacheKey + userName;
