@@ -14,7 +14,7 @@ namespace OrchardCore.ResourceManagement
         {
             AddResourceManagementHostServices(builder.Services);
 
-            return builder.ConfigureTenantServices((collection) =>
+            return builder.ConfigureTenantServices((collection, sp) =>
             {
                 AddResourceManagementTenantServices(collection);
             });

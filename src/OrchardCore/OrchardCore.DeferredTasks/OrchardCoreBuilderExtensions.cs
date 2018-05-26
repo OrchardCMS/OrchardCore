@@ -11,7 +11,7 @@ namespace OrchardCore.DeferredTasks
         /// </summary>
         public static OrchardCoreBuilder AddDeferredTasks(this OrchardCoreBuilder builder)
         {
-            return builder.ConfigureTenantServices((collection) =>
+            return builder.ConfigureTenantServices((collection, sp) =>
             {
                 AddDeferredTasksTenantServices(collection);
             });

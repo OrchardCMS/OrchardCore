@@ -11,9 +11,4 @@ namespace OrchardCore.Modules
 
         public IServiceCollection Services { get; }
     }
-
-    public class OrchardBuilder : OrchardCoreBuilder
-    {
-        public OrchardBuilder(IServiceCollection services) : base(services) { }
-    }
 }

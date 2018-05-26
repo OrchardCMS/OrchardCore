@@ -23,7 +23,7 @@ namespace OrchardCore.Data
         /// </summary>
         public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
         {
-            return builder.ConfigureTenantServices((collection) =>
+            return builder.ConfigureTenantServices((collection, sp) =>
             {
                 AddDataAccessTenantServices(collection);
             });

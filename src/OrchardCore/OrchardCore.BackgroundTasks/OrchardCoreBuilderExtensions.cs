@@ -11,7 +11,7 @@ namespace OrchardCore.BackgroundTasks
         /// </summary>
         public static OrchardCoreBuilder AddBackgroundTasks(this OrchardCoreBuilder builder)
         {
-            return builder.ConfigureTenantServices((collection) =>
+            return builder.ConfigureTenantServices((collection, sp) =>
             {
                 AddBackgroundTasksTenantServices(collection);
             });

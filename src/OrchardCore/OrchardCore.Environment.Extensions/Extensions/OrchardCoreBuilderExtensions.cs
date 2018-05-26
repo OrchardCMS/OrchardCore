@@ -16,7 +16,7 @@ namespace OrchardCore.Environment.Extensions
         {
             AddExtensionManagerHostServices(builder.Services);
 
-            return builder.ConfigureTenantServices(collection =>
+            return builder.ConfigureTenantServices((collection, sp) =>
             {
                 AddExtensionManagerTenantServices(collection);
             });

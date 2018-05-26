@@ -61,7 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddAuthentication();
 
-            return builder.ConfigureTenantServices<ShellSettings>((collection, settings) =>
+            return builder.ConfigureTenantServices((collection, sp) =>
             {
                 collection.AddAuthentication();
 
@@ -83,8 +83,10 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddAntiforgery();
 
-            return builder.ConfigureTenantServices<ShellSettings>((collection, settings) =>
+            return builder.ConfigureTenantServices((collection, sp) =>
             {
+                var settings = sp.GetRequiredService<ShellSettings>();
+
                 var tenantName = settings.Name;
                 var tenantPrefix = "/" + settings.RequestUrlPrefix;
 
@@ -101,8 +103,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddDataProtection(this OrchardCoreBuilder builder)
         {
-            return builder.ConfigureTenantServices<IOptions<ShellOptions>, ShellSettings>((collection, options, settings) =>
+            return builder.ConfigureTenantServices((collection, sp) =>
             {
+                var settings = sp.GetRequiredService<ShellSettings>();
+                var options = sp.GetRequiredService<IOptions<ShellOptions>>();
+
                 var directory = Directory.CreateDirectory(Path.Combine(
                 options.Value.ShellsApplicationDataPath,
                 options.Value.ShellsContainerName,
