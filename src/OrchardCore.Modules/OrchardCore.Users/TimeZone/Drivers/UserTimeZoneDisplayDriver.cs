@@ -16,36 +16,33 @@ namespace OrchardCore.Users.TimeZone.Drivers
         private readonly IClock _clock;
         private readonly UserTimeZoneService _userTimeZoneService;
 
-        public UserTimeZoneDisplayDriver(
-            IClock clock,
-            UserTimeZoneService userTimeZoneService)
+        public UserTimeZoneDisplayDriver(IClock clock, UserTimeZoneService userTimeZoneService)
         {
             _clock = clock;
             _userTimeZoneService = userTimeZoneService;
         }
 
-        public override Task<IDisplayResult> EditAsync(UserTimeZone userTimeZone, BuildEditorContext context)
+        public override IDisplayResult Edit(UserTimeZone userTimeZone, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<UserTimeZoneViewModel>("UserTimeZone_Edit", model =>
-                {
-                    model.TimeZone = userTimeZone.TimeZoneId;
-                }).Location("Content:2")
-            );
+            return Initialize<UserTimeZoneViewModel>("UserTimeZone_Edit", model =>
+            {
+                model.TimeZoneId = userTimeZone.TimeZoneId;
+            }).Location("Content:2");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(UserTimeZone userTimeZone, IUpdateModel updater, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(User user, UserTimeZone userTimeZone, IUpdateModel updater, BuildEditorContext context)
         {
             var model = new UserTimeZoneViewModel();
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                userTimeZone.TimeZoneId = model.TimeZone;
-            }
+                userTimeZone.TimeZoneId = model.TimeZoneId;
 
-            await _userTimeZoneService.UpdateUserTimeZoneAsync(userTimeZone);
+                // Remove the cache entry, don't update it, as the form might still fail validation for other reasons.
+                await _userTimeZoneService.UpdateUserTimeZoneAsync(user);
+            }            
 
-            return await EditAsync(userTimeZone, context);
+            return Edit(userTimeZone, context);
         }
     }
 }

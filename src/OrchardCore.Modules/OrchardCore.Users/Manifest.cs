@@ -20,7 +20,7 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Feature(
     Id = "OrchardCore.Users.TimeZone",
-    Name = "Users Time Zone",
-    Description = "Provides way to set the time zone per user.",
+    Name = "User Time Zone",
+    Description = "Provides a way to set the time zone per user.",
     Category = "Settings"
 )]

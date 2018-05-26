@@ -12,6 +12,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Settings;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 using YesSql;
 
@@ -25,6 +26,7 @@ namespace OrchardCore.Users.Controllers
         private readonly ISiteService _siteService;
         private readonly IDisplayManager<User> _userDisplayManager;
         private readonly INotifier _notifier;
+        private readonly IUserService _userService;
 
         private readonly dynamic New;
         private readonly IHtmlLocalizer TH;
@@ -34,6 +36,7 @@ namespace OrchardCore.Users.Controllers
             IAuthorizationService authorizationService,
             ISession session,
             UserManager<IUser> userManager,
+            IUserService userService,
             INotifier notifier,
             ISiteService siteService,
             IShapeFactory shapeFactory,
@@ -46,6 +49,7 @@ namespace OrchardCore.Users.Controllers
             _userManager = userManager;
             _notifier = notifier;
             _siteService = siteService;
+            _userService = userService;
 
             New = shapeFactory;
             TH = htmlLocalizer;
@@ -150,12 +154,16 @@ namespace OrchardCore.Users.Controllers
                 return Unauthorized();
             }
             
-            var shape = await _userDisplayManager.UpdateEditorAsync(new User(), updater: this, isNew: true);
+            var user = new User();
+
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: this, isNew: true);
 
             if (!ModelState.IsValid)
             {
                 return View(shape);
             }
+
+            _session.Save(user);
 
             _notifier.Success(TH["User created successfully"]);
 
@@ -169,13 +177,13 @@ namespace OrchardCore.Users.Controllers
                 return Unauthorized();
             }
 
-            var currentUser = await _userManager.FindByIdAsync(id);
-            if (!(currentUser is User))
+            var user = await _userManager.FindByIdAsync(id) as User;
+            if (user == null)
             {
                 return NotFound();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync((User) currentUser, updater: this, isNew: false);
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: this, isNew: false);
 
             return View(shape);
         }
@@ -189,18 +197,20 @@ namespace OrchardCore.Users.Controllers
                 return Unauthorized();
             }
 
-            var currentUser = await _userManager.FindByIdAsync(id);
-            if (currentUser == null)
+            var user = await _userManager.FindByIdAsync(id) as User;
+            if (user == null)
             {
                 return NotFound();
             }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync((User) currentUser, updater: this, isNew: false);
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: this, isNew: false);
 
             if (!ModelState.IsValid)
             {
                 return View(shape);
             }
+
+            _session.Save(user);
 
             _notifier.Success(TH["User updated successfully"]);
 
@@ -215,14 +225,14 @@ namespace OrchardCore.Users.Controllers
                 return Unauthorized();
             }
 
-            var currentUser = await _userManager.FindByIdAsync(id);
+            var user = await _userManager.FindByIdAsync(id) as User;
 
-            if (!(currentUser is User))
+            if (user == null)
             {
                 return NotFound();
             }
 
-            var result = await _userManager.DeleteAsync(currentUser);
+            var result = await _userManager.DeleteAsync(user);
 
             if (result.Succeeded)
             {

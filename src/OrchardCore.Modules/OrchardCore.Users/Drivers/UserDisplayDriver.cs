@@ -42,9 +42,9 @@ namespace OrchardCore.Users.Drivers
             );
         }
 
-        public override IDisplayResult Edit(User user)
+        public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
         {
-            return Initialize<EditUserViewModel>("UserFields_Edit", async model =>
+            return Task.FromResult<IDisplayResult>(Initialize<EditUserViewModel>("UserFields_Edit", async model =>
             {
                 var roleNames = await GetRoleNamesAsync();
                 var userRoleNames = await _userManager.GetRolesAsync(user);
@@ -54,8 +54,8 @@ namespace OrchardCore.Users.Drivers
                 model.UserName = await _userManager.GetUserNameAsync(user);
                 model.Email = await _userManager.GetEmailAsync(user);
                 model.Roles = roles;
-                model.DisplayPasswordFields = await IsNewUser(model.Id);
-            }).Location("Content:1");
+                model.DisplayPasswordFields = context.IsNew;
+            }).Location("Content:1"));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
@@ -64,13 +64,13 @@ namespace OrchardCore.Users.Drivers
 
             if (!await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                return Edit(user);
+                return await EditAsync(user, context);
             }
 
             model.UserName = model.UserName?.Trim();
             model.Email = model.Email?.Trim();
 
-            if (await IsNewUser(model.Id))
+            if (context.IsNew)
             {
                 if (model.Password != model.PasswordConfirmation)
                 {
@@ -79,7 +79,7 @@ namespace OrchardCore.Users.Drivers
 
                 if (!context.Updater.ModelState.IsValid)
                 {
-                    return Edit(user);
+                    return await EditAsync(user, context);
                 }
 
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
@@ -146,18 +146,13 @@ namespace OrchardCore.Users.Drivers
                 }
             }
 
-            return Edit(user);
+            return await EditAsync(user, context);
         }
 
         private async Task<IEnumerable<string>> GetRoleNamesAsync()
         {
             var roleNames = await _roleProvider.GetRoleNamesAsync();
             return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
-        }
-
-        private async Task<bool> IsNewUser(string userId)
-        {
-            return await _userManager.FindByIdAsync(userId) == null;
         }
     }
 }

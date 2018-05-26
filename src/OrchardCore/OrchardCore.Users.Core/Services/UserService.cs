@@ -102,13 +102,13 @@ namespace OrchardCore.Users.Services
                 return await Task.FromResult<IUser>(null);
             }
 
-            var iUser = await FindByUsernameOrEmailAsync(userIdentifier);
-            if (iUser == null)
+            var user = await FindByUsernameOrEmailAsync(userIdentifier) as User;
+            
+            if (user == null)
             {
                 return await Task.FromResult<IUser>(null);
             }
 
-            var user = (User)iUser;
             user.ResetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             return user;

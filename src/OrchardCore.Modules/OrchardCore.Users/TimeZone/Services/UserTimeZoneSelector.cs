@@ -5,8 +5,6 @@ namespace OrchardCore.Users.TimeZone.Services
 {
     /// <summary>
     /// Provides the timezone defined for the currently logged-in user for the current scope (request).
-    /// The same <see cref="TimeZoneSelectorResult"/> is returned if called multiple times 
-    /// during the same scope.
     /// </summary>
     public class UserTimeZoneSelector : ITimeZoneSelector
     {
@@ -25,6 +23,5 @@ namespace OrchardCore.Users.TimeZone.Services
                 TimeZoneId = () => _userTimeZoneService.GetUserTimeZoneAsync().ContinueWith(x => x.Result?.TimeZoneId)
             });
         }
-
     }
 }
