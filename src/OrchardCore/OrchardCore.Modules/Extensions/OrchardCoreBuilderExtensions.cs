@@ -73,7 +73,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddAntiforgery();
 
-            return builder.ConfigureTenantServices((collection, sp) =>
+            return builder.ConfigureServices((collection, sp) =>
             {
                 var settings = sp.GetRequiredService<ShellSettings>();
 
@@ -95,7 +95,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddAuthentication();
 
-            return builder.ConfigureTenantServices((collection, sp) =>
+            return builder.ConfigureServices((collection, sp) =>
             {
                 collection.AddAuthentication();
 
@@ -104,7 +104,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 collection.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
             })
 
-            .ConfigureTenant((app, routes, sp) =>
+            .Configure((app, routes, sp) =>
             {
                 app.UseAuthentication();
             });
@@ -115,7 +115,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddDataProtection(this OrchardCoreBuilder builder)
         {
-            return builder.ConfigureTenantServices((collection, sp) =>
+            return builder.ConfigureServices((collection, sp) =>
             {
                 var settings = sp.GetRequiredService<ShellSettings>();
                 var options = sp.GetRequiredService<IOptions<ShellOptions>>();

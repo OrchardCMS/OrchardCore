@@ -52,7 +52,7 @@ namespace OrchardCore.Modules
         /// Configure the tenant pipeline before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
-        public static OrchardCoreBuilder ConfigureTenant(this OrchardCoreBuilder builder,
+        public static OrchardCoreBuilder Configure(this OrchardCoreBuilder builder,
             Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure, int order = int.MinValue)
         {
             builder.Services.AddTransient<IStartup>(sp => new ConfigureTenant(configure, order));
@@ -63,17 +63,17 @@ namespace OrchardCore.Modules
         /// Configure the tenant pipeline after all modules.
         /// </summary>
         /// <param name="services"></param>
-        public static OrchardCoreBuilder PostConfigureTenant(this OrchardCoreBuilder builder,
+        public static OrchardCoreBuilder PostConfigure(this OrchardCoreBuilder builder,
             Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure)
         {
-            return builder.ConfigureTenant(configure, int.MaxValue);
+            return builder.Configure(configure, int.MaxValue);
         }
 
         /// <summary>
         /// Adds tenant level services before all modules (unless you specify a higher order).
         /// </summary>
         /// <param name="services"></param>
-        public static OrchardCoreBuilder ConfigureTenantServices(this OrchardCoreBuilder builder,
+        public static OrchardCoreBuilder ConfigureServices(this OrchardCoreBuilder builder,
             Action<IServiceCollection, IServiceProvider> configureServices, int order = int.MinValue)
         {
             builder.Services.AddTransient<IStartup>(sp => new ConfigureTenantServices(
@@ -88,10 +88,10 @@ namespace OrchardCore.Modules
         /// Adds tenant level services after all modules.
         /// </summary>
         /// <param name="services"></param>
-        public static OrchardCoreBuilder PostConfigureTenantServices(this OrchardCoreBuilder builder,
+        public static OrchardCoreBuilder PostConfigureServices(this OrchardCoreBuilder builder,
             Action<IServiceCollection, IServiceProvider> configureServices)
         {
-            return builder.ConfigureTenantServices(configureServices, int.MaxValue);
+            return builder.ConfigureServices(configureServices, int.MaxValue);
         }
     }
 }

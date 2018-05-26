@@ -41,7 +41,7 @@ namespace OrchardCore.DisplayManagement
             AddThemingHostServices(builder.Services);
 
             return builder.AddManifestDefinition("theme")
-                .ConfigureTenantServices((collection, sp) =>
+                .ConfigureServices((collection, sp) =>
                 {
                     AddThemingTenantServices(collection);
                 });

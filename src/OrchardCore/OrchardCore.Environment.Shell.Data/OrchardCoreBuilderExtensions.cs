@@ -15,7 +15,7 @@ namespace OrchardCore.Environment.Shell.Data
         public static OrchardCoreBuilder AddDataStorage(this OrchardCoreBuilder builder)
         {
             return builder.AddSitesFolder()
-                .ConfigureTenantServices((collection, sp) =>
+                .ConfigureServices((collection, sp) =>
                 {
                     AddDescriptorStorageTenantServices(collection);
                 });
@@ -36,7 +36,7 @@ namespace OrchardCore.Environment.Shell.Data
         /// <param name="services"></param>
         public static OrchardCoreBuilder AddDescriptorStorage(this OrchardCoreBuilder builder)
         {
-            return builder.ConfigureTenantServices((collection, sp) =>
+            return builder.ConfigureServices((collection, sp) =>
             {
                 AddDescriptorStorageTenantServices(collection);
             });

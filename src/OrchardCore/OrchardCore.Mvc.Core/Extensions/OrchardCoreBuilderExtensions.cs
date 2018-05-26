@@ -28,7 +28,7 @@ namespace OrchardCore.Mvc
         /// </summary>
         public static OrchardCoreBuilder AddMvc(this OrchardCoreBuilder builder)
         {
-            return builder.ConfigureTenantServices((collection, sp) =>
+            return builder.ConfigureServices((collection, sp) =>
             {
                 AddMvcTenantServices(collection, sp);
             })

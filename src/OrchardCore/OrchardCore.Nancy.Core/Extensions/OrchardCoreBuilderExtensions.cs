@@ -17,11 +17,11 @@ namespace OrchardCore.Nancy
         /// <param name="services"></param>
         public static OrchardCoreBuilder AddNancy(this OrchardCoreBuilder builder)
         {
-            return builder.ConfigureTenantServices((collection, sp) =>
+            return builder.ConfigureServices((collection, sp) =>
             {
                 collection.AddRouting();
             })
-            .ConfigureTenant((app, routes, sp) =>
+            .Configure((app, routes, sp) =>
             {
                 UseNancyTenantConfiguration(app);
             })

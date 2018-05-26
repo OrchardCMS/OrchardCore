@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +13,7 @@ namespace OrchardCore.Modules.Extensions
         /// </summary>
         public static OrchardCoreBuilder UseStaticFiles(this OrchardCoreBuilder builder)
         {
-            return builder.ConfigureTenant((app, routes, sp) =>
+            return builder.Configure((app, routes, sp) =>
             {
                 UseStaticFilesTenantConfiguration(app);
             });
@@ -42,23 +41,6 @@ namespace OrchardCore.Modules.Extensions
                 RequestPath = "",
                 FileProvider = fileProvider
             });
-        }
-
-        /// <summary>
-        /// Adds host level tag helper services.
-        /// </summary>
-        public static OrchardCoreBuilder AddTagHelpers(this OrchardCoreBuilder builder, string assemblyName)
-        {
-            return builder.AddTagHelpers(Assembly.Load(new AssemblyName(assemblyName)));
-        }
-
-        /// <summary>
-        /// Adds host level tag helper services.
-        /// </summary>
-        public static OrchardCoreBuilder AddTagHelpers(this OrchardCoreBuilder builder, Assembly assembly)
-        {
-            builder.Services.AddTagHelpers(assembly);
-            return builder;
         }
     }
 }
