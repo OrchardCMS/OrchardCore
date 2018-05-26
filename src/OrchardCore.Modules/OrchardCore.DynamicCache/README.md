@@ -199,16 +199,12 @@ Displaying content items from a query:
 {% cache "recent-blog-posts"}
     {% assign recentBlogPosts = Queries.RecentBlogPosts | query %}
     {% for item in recentBlogPosts %}
-        {% display item | build_display: "Summary"  %}
+        {{ item | display_text }}
+
+        {% assign cacheDependency = "contentitemid:" | append: Model.ContentItem.ContentItemId %}
+        {% cache_dependency cacheDependency %}
     {% endfor %}
 {% endcache %}
-```
-
-Inside the summary view for a blog post:
-
-```
-{% assign cacheDependency = "contentitemid:" | append: Model.ContentItem.ContentItemId %}
-{% cache_dependency cacheDependency %}
 ```
 
 Each item that is displayed by the query will now add its own cache dependency to the `recent-blog-posts` cache block.
