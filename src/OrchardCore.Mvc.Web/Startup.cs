@@ -24,7 +24,7 @@ namespace OrchardCore.Mvc.Web
 
             app.UseStaticFiles();
 
-            app.UseModules();
+            app.UseOrchardCore();
         }
     }
 }

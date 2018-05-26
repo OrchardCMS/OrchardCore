@@ -24,7 +24,7 @@ namespace OrchardCore.Nancy.Web
 
             app.UseStaticFiles();
 
-            app.UseModules();
+            app.UseOrchardCore();
         }
     }
 }

@@ -55,7 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds host and tenant level security services and configuration.
+        /// Adds host and tenant level authentication, antiforgery and data protection services and configuration.
         /// </summary>
         public static OrchardCoreBuilder AddSecurity(this OrchardCoreBuilder builder)
         {
@@ -64,28 +64,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddDataProtection();
 
             return builder;
-        }
-
-        /// <summary>
-        /// Adds host and tenant level authentication services and configuration.
-        /// </summary>
-        public static OrchardCoreBuilder AddAuthentication(this OrchardCoreBuilder builder)
-        {
-            builder.Services.AddAuthentication();
-
-            return builder.ConfigureTenantServices((collection, sp) =>
-            {
-                collection.AddAuthentication();
-
-                // Note: IAuthenticationSchemeProvider is already registered at the host level.
-                // We need to register it again so it is taken into account at the tenant level.
-                collection.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
-            })
-
-            .ConfigureTenant((app, routes, sp) =>
-            {
-                app.UseAuthentication();
-            });
         }
 
         /// <summary>
@@ -107,6 +85,28 @@ namespace Microsoft.Extensions.DependencyInjection
                     options.Cookie.Name = "orchantiforgery_" + tenantName;
                     options.Cookie.Path = tenantPrefix;
                 });
+            });
+        }
+
+        /// <summary>
+        /// Adds host and tenant level authentication services and configuration.
+        /// </summary>
+        public static OrchardCoreBuilder AddAuthentication(this OrchardCoreBuilder builder)
+        {
+            builder.Services.AddAuthentication();
+
+            return builder.ConfigureTenantServices((collection, sp) =>
+            {
+                collection.AddAuthentication();
+
+                // Note: IAuthenticationSchemeProvider is already registered at the host level.
+                // We need to register it again so it is taken into account at the tenant level.
+                collection.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
+            })
+
+            .ConfigureTenant((app, routes, sp) =>
+            {
+                app.UseAuthentication();
             });
         }
 

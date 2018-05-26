@@ -8,7 +8,7 @@ namespace Microsoft.AspNetCore.Builder
 {
     public static class ApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseModules(this IApplicationBuilder app, Action<IApplicationBuilder> configure = null)
+        public static IApplicationBuilder UseOrchardCore(this IApplicationBuilder app, Action<IApplicationBuilder> configure = null)
         {
             var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
 
@@ -16,9 +16,10 @@ namespace Microsoft.AspNetCore.Builder
                 new ModuleEmbeddedFileProvider(env),
                 env.ContentRootFileProvider);
 
+            app.UseMiddleware<PoweredByMiddleware>();
+
             // Ensure the shell tenants are loaded when a request comes in
             // and replaces the current service provider for the tenant's one.
-            app.UseMiddleware<PoweredByMiddleware>();
             app.UseMiddleware<ModularTenantContainerMiddleware>();
 
             configure?.Invoke(app);
