@@ -31,6 +31,8 @@ namespace OrchardCore.ContentFields
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTextFieldViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DateTimeField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayDateTimeFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<TimeField>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTimeFieldViewModel>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -70,6 +72,12 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, DateTimeFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, DateTimeFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, DateTimeFieldIndexHandler>();
+
+            // Time Field
+            services.AddSingleton<ContentField, TimeField>();
+            services.AddScoped<IContentFieldDisplayDriver, TimeFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TimeFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, TimeFieldIndexHandler>();
         }
     }
 }
