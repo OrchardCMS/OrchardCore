@@ -6,7 +6,7 @@ using OrchardCore.Modules;
 
 namespace Microsoft.AspNetCore.Builder
 {
-    public static class ModularApplicationBuilderExtensions
+    public static class ApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseModules(this IApplicationBuilder app, Action<IApplicationBuilder> configure = null)
         {

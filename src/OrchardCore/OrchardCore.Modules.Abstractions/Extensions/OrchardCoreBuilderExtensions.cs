@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using OrchardCore.Modules;
 
-namespace Microsoft.AspNetCore.Builder
+namespace OrchardCore.Modules.Extensions
 {
     public static class OrchardCoreBuilderExtensions
     {
@@ -43,13 +43,7 @@ namespace Microsoft.AspNetCore.Builder
                 FileProvider = fileProvider
             });
         }
-    }
-}
 
-namespace OrcharCore.Modules.TagHelpers
-{
-    public static class OrchardCoreBuilderExtensions
-    {
         /// <summary>
         /// Adds host level tag helper services.
         /// </summary>

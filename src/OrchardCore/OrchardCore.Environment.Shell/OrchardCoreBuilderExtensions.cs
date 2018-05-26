@@ -1,12 +1,22 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell
 {
-    public static class ShellServiceCollectionExtensions
+    public static class OrchardCoreBuilderExtensions
     {
-        public static IServiceCollection AddHostingShellServices(this IServiceCollection services)
+        /// <summary>
+        /// Adds host level shell services.
+        /// </summary>
+        public static OrchardCoreBuilder AddShellHost(this OrchardCoreBuilder builder)
+        {
+            AddShellHostServices(builder.Services);
+            return builder;
+        }
+
+        public static void AddShellHostServices(IServiceCollection services)
         {
             // Register the type as it's implementing two interfaces which can be resolved independently
             services.AddSingleton<ShellHost>();
@@ -14,7 +24,7 @@ namespace OrchardCore.Environment.Shell
             services.AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ShellHost>());
 
             {
-                // Use a single default site by default, i.e. if AddMultiTenancy hasn't been called before
+                // Use a single default site by default, i.e. if WithTenants hasn't been called before.
                 services.TryAddSingleton<IShellSettingsManager, SingleShellSettingsManager>();
 
                 services.AddSingleton<IShellContextFactory, ShellContextFactory>();
@@ -24,9 +34,8 @@ namespace OrchardCore.Environment.Shell
                     services.AddSingleton<IShellContainerFactory, ShellContainerFactory>();
                 }
             }
-            services.AddSingleton<IRunningShellTable, RunningShellTable>();
 
-            return services;
+            services.AddSingleton<IRunningShellTable, RunningShellTable>();
         }
     }
 }

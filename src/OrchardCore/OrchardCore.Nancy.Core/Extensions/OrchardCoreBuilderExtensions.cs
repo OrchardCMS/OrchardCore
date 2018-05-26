@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Nancy;
 using Nancy.Owin;
 using OrchardCore.Modules;
+using OrchardCore.Modules.Extensions;
 using OrchardCore.Nancy.AssemblyCatalogs;
 
 namespace OrchardCore.Nancy

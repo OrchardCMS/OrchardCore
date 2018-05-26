@@ -39,7 +39,6 @@ namespace OrchardCore.DisplayManagement
         public static OrchardCoreBuilder AddTheming(this OrchardCoreBuilder builder)
         {
             AddThemingHostServices(builder.Services);
-            builder.Services.AddTagHelpers(typeof(BaseShapeTagHelper).Assembly);
 
             return builder.AddManifestDefinition("theme")
                 .ConfigureTenantServices(collection =>
@@ -50,6 +49,7 @@ namespace OrchardCore.DisplayManagement
 
         public static void AddThemingHostServices(IServiceCollection services)
         {
+            services.AddTagHelpers(typeof(BaseShapeTagHelper).Assembly);
             services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
             services.AddSingleton<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
         }

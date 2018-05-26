@@ -55,7 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds host and tenant level authentication services.
+        /// Adds host and tenant level authentication services and configuration.
         /// </summary>
         public static OrchardCoreBuilder AddAuthentication(this OrchardCoreBuilder builder)
         {

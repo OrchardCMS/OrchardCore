@@ -2,12 +2,24 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Cache.CacheContextProviders;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Cache
 {
-    public static class ServiceCollectionExtensions
+    public static class OrchardCoreBuilderExtensions
     {
-        public static IServiceCollection AddCaching(this IServiceCollection services)
+        /// <summary>
+        /// Adds tenant level caching services.
+        /// </summary>
+        public static OrchardCoreBuilder AddCaching(this OrchardCoreBuilder builder)
+        {
+            return builder.ConfigureTenantServices((collection) =>
+            {
+                AddCachingTenantServices(collection);
+            });
+        }
+
+        public static void AddCachingTenantServices(IServiceCollection services)
         {
             services.AddTransient<ITagCache, DefaultTagCache>();
             services.AddSingleton<ISignal, Signal>();
@@ -30,8 +42,6 @@ namespace OrchardCore.Environment.Cache
             // LocalCache is registered as transient as its implementation resolves IMemoryCache, thus
             // there is no state to keep in its instance.
             services.AddTransient<IDistributedCache, MemoryDistributedCache>();
-
-            return services;
         }
     }
 }

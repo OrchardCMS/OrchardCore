@@ -3,18 +3,29 @@ using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Liquid.Internal;
 using OrchardCore.DisplayManagement.Liquid.TagHelpers;
 using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.Liquid;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
-    public static class ServiceCollectionExtensions
+    public static class OrchardCoreBuilderExtensions
     {
-        public static IServiceCollection AddLiquidViews(this IServiceCollection services)
+        /// <summary>
+        /// Adds tenant level services for managing liquid view template files.
+        /// </summary>
+        public static OrchardCoreBuilder AddLiquidViews(this OrchardCoreBuilder builder)
+        {
+            return builder.ConfigureTenantServices((collection) =>
+            {
+                AddLiquidViewsTenantServices(collection);
+            });
+        }
+
+        public static void AddLiquidViewsTenantServices(IServiceCollection services)
         {
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<LiquidViewOptions>,
@@ -30,8 +41,6 @@ namespace OrchardCore.DisplayManagement.Liquid
             services.AddSingleton<LiquidTagHelperFactory>();
 
             services.AddScoped<ILiquidTemplateEventHandler, RequestLiquidTemplateEventHandler>();
-
-            return services;
         }
     }
 }

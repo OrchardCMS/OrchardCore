@@ -34,8 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddTheming()
                     .AddLiquidViews()
                     .AddResourceManagement()
-                    .AddCaching()
-                );
+                    .AddCaching());
         }
     }
 }

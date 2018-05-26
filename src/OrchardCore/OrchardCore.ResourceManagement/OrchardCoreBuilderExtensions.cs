@@ -12,12 +12,17 @@ namespace OrchardCore.ResourceManagement
         /// </summary>
         public static OrchardCoreBuilder AddResourceManagement(this OrchardCoreBuilder builder)
         {
-            builder.Services.AddTagHelpers(typeof(ResourcesTagHelper).Assembly);
+            AddResourceManagementHostServices(builder.Services);
 
             return builder.ConfigureTenantServices((collection) =>
             {
                 AddResourceManagementTenantServices(collection);
             });
+        }
+
+        public static void AddResourceManagementHostServices(IServiceCollection services)
+        {
+            services.AddTagHelpers(typeof(ResourcesTagHelper).Assembly);
         }
 
         public static void AddResourceManagementTenantServices(IServiceCollection services)
