@@ -55,6 +55,18 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
+        /// Adds host and tenant level security services and configuration.
+        /// </summary>
+        public static OrchardCoreBuilder AddSecurity(this OrchardCoreBuilder builder)
+        {
+            builder.AddAntiForgery()
+                .AddAuthentication()
+                .AddDataProtection();
+
+            return builder;
+        }
+
+        /// <summary>
         /// Adds host and tenant level authentication services and configuration.
         /// </summary>
         public static OrchardCoreBuilder AddAuthentication(this OrchardCoreBuilder builder)

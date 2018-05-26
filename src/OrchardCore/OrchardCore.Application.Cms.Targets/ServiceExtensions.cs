@@ -22,9 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     .WithDefaultFeatures("OrchardCore.Setup")
 
                     .AddMvc()
-                    .AddAntiForgery()
-                    .AddAuthentication()
-                    .AddDataProtection()
+                    .AddSecurity()
 
                     .AddDataAccess()
                     .AddDataStorage()
