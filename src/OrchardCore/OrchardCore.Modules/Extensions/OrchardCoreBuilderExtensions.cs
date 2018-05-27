@@ -17,6 +17,19 @@ namespace OrchardCore.Modules
     public static class OrchardCoreBuilderExtensions
     {
         /// <summary>
+        /// Adds a set of features which are always enabled for any tenant.
+        /// </summary>
+        public static OrchardCoreBuilder AddEnabledFeatures(this OrchardCoreBuilder builder, params string[] featureIds)
+        {
+            foreach (var featureId in featureIds)
+            {
+                builder.Services.AddTransient(sp => new ShellFeature(featureId, alwaysEnabled: true));
+            }
+
+            return builder;
+        }
+
+        /// <summary>
         /// Registers a default tenant with a set of features that are used to setup and configure the actual tenants.
         /// For instance you can use this to add a custom Setup module.
         /// </summary>
@@ -53,7 +66,7 @@ namespace OrchardCore.Modules
                 builder.Services.AddTransient(sp => new ShellFeature(featureId));
             }
 
-            ShellServiceCollection.AddSetFeaturesDescriptorHostServices(builder.Services);
+            ShellServiceCollection.AddSetFeaturesHostServices(builder.Services);
 
             return builder;
         }

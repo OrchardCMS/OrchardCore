@@ -33,12 +33,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 AddDefaultHostServices(builder.Services);
 
                 // Use a single tenant and all features by default
-                ShellServiceCollection.AddAllFeaturesDescriptorHostServices(builder.Services);
+                ShellServiceCollection.AddAllFeaturesHostServices(builder.Services);
 
                 // Registers the application main feature
                 services.AddTransient(sp =>
                 {
-                    return new ShellFeature(sp.GetRequiredService<IHostingEnvironment>().ApplicationName);
+                    return new ShellFeature(sp.GetRequiredService<IHostingEnvironment>()
+                        .ApplicationName, alwaysEnabled: true);
                 });
 
                 // Register the list of services to be resolved later on

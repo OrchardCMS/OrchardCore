@@ -29,13 +29,11 @@ namespace OrchardCore.Setup.Services
         private readonly ILogger _logger;
         private readonly IStringLocalizer T;
 
-        private readonly string _applicationName;
         private IEnumerable<RecipeDescriptor> _recipes;
 
         public SetupService(
             ShellSettings shellSettings,
             IShellHost orchardHost,
-            IHostingEnvironment hostingEnvironment,
             IShellContextFactory shellContextFactory,
             IRunningShellTable runningShellTable,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
@@ -45,7 +43,6 @@ namespace OrchardCore.Setup.Services
         {
             _shellSettings = shellSettings;
             _orchardHost = orchardHost;
-            _applicationName = hostingEnvironment.ApplicationName;
             _shellContextFactory = shellContextFactory;
             _recipeHarvesters = recipeHarvesters;
             _logger = logger;
@@ -89,7 +86,6 @@ namespace OrchardCore.Setup.Services
             // Features to enable for Setup
             string[] hardcoded =
             {
-                _applicationName,
                 "OrchardCore.Features",
                 "OrchardCore.Scripting",
                 "OrchardCore.Recipes"

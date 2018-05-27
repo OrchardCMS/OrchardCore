@@ -31,7 +31,7 @@ namespace OrchardCore.Environment.Shell.Internal
             services.AddSingleton<IRunningShellTable, RunningShellTable>();
         }
 
-        public static void AddSetFeaturesDescriptorHostServices(IServiceCollection services)
+        public static void AddSetFeaturesHostServices(IServiceCollection services)
         {
             services.AddSingleton<IShellDescriptorManager>(sp =>
             {
@@ -40,7 +40,7 @@ namespace OrchardCore.Environment.Shell.Internal
             });
         }
 
-        public static void AddAllFeaturesDescriptorHostServices(IServiceCollection services)
+        public static void AddAllFeaturesHostServices(IServiceCollection services)
         {
             services.AddScoped<IShellDescriptorManager, AllFeaturesShellDescriptorManager>();
         }

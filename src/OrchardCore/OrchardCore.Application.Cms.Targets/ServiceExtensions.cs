@@ -25,6 +25,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddSecurity()
                     .WithDefaultFeatures("OrchardCore.Setup")
 
+                    .AddEnabledFeatures("OrchardCore.Lucene", "OrchardCore.Lucene.Worker")
+
                     .AddDataAccess()
                     .AddDataStorage()
                     .AddBackgroundTasks()
