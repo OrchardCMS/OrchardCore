@@ -18,8 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return services
 
-                .AddOrchardCore(builder =>
-                    builder
+                .AddOrchardCore(builder => builder
                     .AddCommands()
 
                     .AddMvc()
@@ -30,12 +29,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddDataStorage()
                     .AddBackgroundTasks()
                     .AddDeferredTasks()
-
-                    .Startup
-                        .ConfigureServices((collection, sp) => { })
-                        .Configure((app, routes, serviceProvider) => { })
-
-                    .Builder
 
                     .AddTheming()
                     .AddLiquidViews()

@@ -2,15 +2,17 @@ using System.IO;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Descriptor.Settings;
+using OrchardCore.Environment.Shell.Internal;
 using OrchardCore.Modules;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace OrchardCore.Modules
 {
     public static class OrchardCoreBuilderExtensions
     {
@@ -46,8 +48,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder WithFeatures(this OrchardCoreBuilder builder, params string[] featureIds)
         {
-            builder.WithDefaultFeatures(featureIds);
-            builder.Services.AddSetFeaturesDescriptor();
+            foreach (var featureId in featureIds)
+            {
+                builder.Services.AddTransient(sp => new ShellFeature(featureId));
+            }
+
+            ShellServiceCollection.AddSetFeaturesDescriptorHostServices(builder.Services);
+
             return builder;
         }
 
@@ -69,7 +76,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddAntiforgery();
 
-            return builder.Startup.ConfigureServices((collection, sp) =>
+            builder.Startup.ConfigureServices((collection, sp) =>
             {
                 var settings = sp.GetRequiredService<ShellSettings>();
 
@@ -81,8 +88,9 @@ namespace Microsoft.Extensions.DependencyInjection
                     options.Cookie.Name = "orchantiforgery_" + tenantName;
                     options.Cookie.Path = tenantPrefix;
                 });
-            })
-            .Builder;
+            });
+
+            return builder;
         }
 
         /// <summary>
@@ -92,7 +100,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddAuthentication();
 
-            return builder.Startup.ConfigureServices((collection, sp) =>
+            builder.Startup.ConfigureServices((collection, sp) =>
             {
                 collection.AddAuthentication();
 
@@ -104,8 +112,9 @@ namespace Microsoft.Extensions.DependencyInjection
             .Configure((app, routes, sp) =>
             {
                 app.UseAuthentication();
-            })
-            .Builder;
+            });
+
+            return builder;
         }
 
         /// <summary>
@@ -113,7 +122,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddDataProtection(this OrchardCoreBuilder builder)
         {
-            return builder.Startup.ConfigureServices((collection, sp) =>
+            builder.Startup.ConfigureServices((collection, sp) =>
             {
                 var settings = sp.GetRequiredService<ShellSettings>();
                 var options = sp.GetRequiredService<IOptions<ShellOptions>>();
@@ -132,8 +141,9 @@ namespace Microsoft.Extensions.DependencyInjection
                     .PersistKeysToFileSystem(directory)
                     .SetApplicationName(settings.Name)
                     .Services);
-            })
-            .Builder;
+            });
+
+            return builder;
         }
     }
 }

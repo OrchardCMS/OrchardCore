@@ -11,14 +11,15 @@ namespace OrchardCore.DeferredTasks
         /// </summary>
         public static OrchardCoreBuilder AddDeferredTasks(this OrchardCoreBuilder builder)
         {
-            return builder.Startup.ConfigureServices((collection, sp) =>
+            builder.Startup.ConfigureServices((collection, sp) =>
             {
                 AddDeferredTasksTenantServices(collection);
-            })
-            .Builder;
+            });
+
+            return builder;
         }
 
-        public static IServiceCollection AddDeferredTasksTenantServices(this IServiceCollection services)
+        internal static IServiceCollection AddDeferredTasksTenantServices(this IServiceCollection services)
         {
             services.TryAddScoped<IDeferredTaskEngine, DeferredTaskEngine>();
             services.TryAddScoped<IDeferredTaskState, HttpContextTaskState>();

@@ -3,8 +3,11 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Extensions.Manifests
 {
-    public static class ServiceCollectionExtensions
+    public static class OrchardCoreBuilderExtensions
     {
+        /// <summary>
+        /// Host level options configuration to add a new module type.
+        /// </summary>
         public static OrchardCoreBuilder AddManifestDefinition(this OrchardCoreBuilder builder, string moduleType)
         {
             builder.Services.Configure<ManifestOptions>(configureOptions: options =>

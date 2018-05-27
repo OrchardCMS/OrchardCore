@@ -13,14 +13,15 @@ namespace OrchardCore.Environment.Cache
         /// </summary>
         public static OrchardCoreBuilder AddCaching(this OrchardCoreBuilder builder)
         {
-            return builder.Startup.ConfigureServices((collection, sp) =>
+            builder.Startup.ConfigureServices((collection, sp) =>
             {
                 AddCachingTenantServices(collection);
-            })
-            .Builder;
+            });
+
+            return builder;
         }
 
-        public static void AddCachingTenantServices(IServiceCollection services)
+        internal static void AddCachingTenantServices(IServiceCollection services)
         {
             services.AddTransient<ITagCache, DefaultTagCache>();
             services.AddSingleton<ISignal, Signal>();

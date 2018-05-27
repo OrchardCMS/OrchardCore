@@ -6,6 +6,7 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Internal;
 using OrchardCore.Modules;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -32,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 AddDefaultHostServices(builder.Services);
 
                 // Use a single tenant and all features by default
-                services.AddAllFeaturesDescriptor();
+                ShellServiceCollection.AddAllFeaturesDescriptorHostServices(builder.Services);
 
                 // Registers the application main feature
                 services.AddTransient(sp =>
@@ -46,11 +47,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // Let the app change the default tenant behavior and set of features
             configure?.Invoke(builder);
+            builder.AddStartups();
 
-            return builder.AddStartups().Services;
+            return services;
         }
 
-        public static void AddDefaultHostServices(IServiceCollection services)
+        internal static void AddDefaultHostServices(IServiceCollection services)
         {
             services
                 .AddLogging()

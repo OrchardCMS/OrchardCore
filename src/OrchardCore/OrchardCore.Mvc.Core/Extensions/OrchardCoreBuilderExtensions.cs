@@ -35,7 +35,7 @@ namespace OrchardCore.Mvc
             .Builder.UseStaticFiles();
         }
 
-        public static void AddMvcTenantServices(IServiceCollection services, IServiceProvider serviceProvider)
+        internal static void AddMvcTenantServices(IServiceCollection services, IServiceProvider serviceProvider)
         {
             services.TryAddSingleton(new ApplicationPartManager());
 

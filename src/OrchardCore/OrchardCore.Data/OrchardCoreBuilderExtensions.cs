@@ -23,14 +23,15 @@ namespace OrchardCore.Data
         /// </summary>
         public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
         {
-            return builder.Startup.ConfigureServices((collection, sp) =>
+            builder.Startup.ConfigureServices((collection, sp) =>
             {
                 AddDataAccessTenantServices(collection);
-            })
-            .Builder;
+            });
+
+            return builder;
         }
 
-        public static void AddDataAccessTenantServices(IServiceCollection services)
+        internal static void AddDataAccessTenantServices(IServiceCollection services)
         {
             services.AddScoped<IDataMigrationManager, DataMigrationManager>();
             services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();

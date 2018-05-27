@@ -40,22 +40,23 @@ namespace OrchardCore.DisplayManagement
         {
             AddThemingHostServices(builder.Services);
 
-            return builder.AddManifestDefinition("theme")
+            builder.AddManifestDefinition("theme")
                 .Startup.ConfigureServices((collection, sp) =>
                 {
                     AddThemingTenantServices(collection);
-                })
-                .Builder;
+                });
+
+            return builder;
         }
 
-        public static void AddThemingHostServices(IServiceCollection services)
+        internal static void AddThemingHostServices(IServiceCollection services)
         {
             services.AddTagHelpers(typeof(BaseShapeTagHelper).Assembly);
             services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
             services.AddSingleton<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
         }
 
-        public static void AddThemingTenantServices(IServiceCollection services)
+        internal static void AddThemingTenantServices(IServiceCollection services)
         {
             services.Configure<MvcOptions>((options) =>
             {

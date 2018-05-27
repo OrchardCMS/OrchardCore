@@ -14,19 +14,20 @@ namespace OrchardCore.ResourceManagement
         {
             AddResourceManagementHostServices(builder.Services);
 
-            return builder.Startup.ConfigureServices((collection, sp) =>
+            builder.Startup.ConfigureServices((collection, sp) =>
             {
                 AddResourceManagementTenantServices(collection);
-            })
-            .Builder;
+            });
+
+            return builder;
         }
 
-        public static void AddResourceManagementHostServices(IServiceCollection services)
+        internal static void AddResourceManagementHostServices(IServiceCollection services)
         {
             services.AddTagHelpers(typeof(ResourcesTagHelper).Assembly);
         }
 
-        public static void AddResourceManagementTenantServices(IServiceCollection services)
+        internal static void AddResourceManagementTenantServices(IServiceCollection services)
         {
             services.TryAddScoped<IResourceManager, ResourceManager>();
             services.TryAddScoped<IRequireSettingsProvider, DefaultRequireSettingsProvider>();

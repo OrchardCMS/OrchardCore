@@ -14,11 +14,12 @@ namespace OrchardCore.Environment.Shell.Data
         /// </summary>
         public static OrchardCoreBuilder AddDataStorage(this OrchardCoreBuilder builder)
         {
-            return builder.AddSitesFolder().Startup.ConfigureServices((collection, sp) =>
+            builder.AddSitesFolder().Startup.ConfigureServices((collection, sp) =>
             {
                 AddDescriptorStorageTenantServices(collection);
-            })
-            .Builder;
+            });
+
+            return builder;
         }
 
         /// <summary>
@@ -36,14 +37,15 @@ namespace OrchardCore.Environment.Shell.Data
         /// <param name="services"></param>
         public static OrchardCoreBuilder AddDescriptorStorage(this OrchardCoreBuilder builder)
         {
-            return builder.Startup.ConfigureServices((collection, sp) =>
+            builder.Startup.ConfigureServices((collection, sp) =>
             {
                 AddDescriptorStorageTenantServices(collection);
-            })
-            .Builder;
+            });
+
+            return builder;
         }
 
-        public static void AddSitesFolderHostServices(IServiceCollection services)
+        internal static void AddSitesFolderHostServices(IServiceCollection services)
         {
             services.AddSingleton<IShellSettingsConfigurationProvider, ShellSettingsConfigurationProvider>();
             services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
@@ -54,7 +56,7 @@ namespace OrchardCore.Environment.Shell.Data
         /// Per-tenant services to store shell state and shell descriptors in the database.
         /// </summary>
         /// <param name="services"></param>
-        public static void AddDescriptorStorageTenantServices(IServiceCollection services)
+        internal static void AddDescriptorStorageTenantServices(IServiceCollection services)
         {
             services.AddScoped<IShellDescriptorManager, ShellDescriptorManager>();
             services.AddScoped<IShellStateManager, ShellStateManager>();
