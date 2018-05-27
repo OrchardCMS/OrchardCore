@@ -17,13 +17,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static IServiceCollection AddOrchardCore(this IServiceCollection services, Action<OrchardCoreBuilder> configure = null)
         {
-            var builder = new OrchardCoreBuilder(services);
+            var builder = GetServiceFromCollection<OrchardCoreBuilder>(services);
 
-            if (!IsServiceTypeInCollection<IShellHost>(services))
+            if (builder == null)
             {
-                builder.AddShellHost();
-                builder.AddExtensionManager();
-                builder.AddManifestDefinition("module");
+                builder = new OrchardCoreBuilder(services);
+                services.AddSingleton(builder);
+
+                builder
+                    .AddShellHost()
+                    .AddExtensionManager()
+                    .AddManifestDefinition("module");
+
                 AddDefaultHostServices(builder.Services);
 
                 // Use a single tenant and all features by default
@@ -42,7 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // Let the app change the default tenant behavior and set of features
             configure?.Invoke(builder);
 
-            return services;
+            return builder.AddStartups().Services;
         }
 
         public static void AddDefaultHostServices(IServiceCollection services)
@@ -65,9 +70,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
         }
 
-        private static bool IsServiceTypeInCollection<T>(IServiceCollection services)
+        private static T GetServiceFromCollection<T>(IServiceCollection services)
         {
-            return services.LastOrDefault(d => d.ServiceType == typeof(T)) != null;
+            return (T)services
+                .LastOrDefault(d => d.ServiceType == typeof(T))
+                ?.ImplementationInstance;
         }
     }
 }

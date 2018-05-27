@@ -28,15 +28,14 @@ namespace OrchardCore.Mvc
         /// </summary>
         public static OrchardCoreBuilder AddMvc(this OrchardCoreBuilder builder)
         {
-            return builder.ConfigureServices((collection, sp) =>
+            return builder.Startup.ConfigureServices((collection, sp) =>
             {
                 AddMvcTenantServices(collection, sp);
             })
-            .UseStaticFiles();
+            .Builder.UseStaticFiles();
         }
 
-        public static void AddMvcTenantServices(IServiceCollection services,
-            IServiceProvider serviceProvider)
+        public static void AddMvcTenantServices(IServiceCollection services, IServiceProvider serviceProvider)
         {
             services.TryAddSingleton(new ApplicationPartManager());
 

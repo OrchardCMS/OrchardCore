@@ -6,6 +6,7 @@ using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Shell.Data;
+using OrchardCore.Modules;
 using OrchardCore.Mvc;
 using OrchardCore.ResourceManagement;
 
@@ -17,21 +18,25 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return services
 
-                .AddOrchardCore(builder => builder
-                    .AddCommands())
+                .AddOrchardCore(builder =>
+                    builder
+                    .AddCommands()
 
-                .AddOrchardCore(builder => builder
                     .AddMvc()
                     .AddSecurity()
-                    .WithDefaultFeatures("OrchardCore.Setup"))
+                    .WithDefaultFeatures("OrchardCore.Setup")
 
-                .AddOrchardCore(builder => builder
                     .AddDataAccess()
                     .AddDataStorage()
                     .AddBackgroundTasks()
-                    .AddDeferredTasks())
+                    .AddDeferredTasks()
 
-                .AddOrchardCore(builder => builder
+                    .Startup
+                        .ConfigureServices((collection, sp) => { })
+                        .Configure((app, routes, serviceProvider) => { })
+
+                    .Builder
+
                     .AddTheming()
                     .AddLiquidViews()
                     .AddResourceManagement()

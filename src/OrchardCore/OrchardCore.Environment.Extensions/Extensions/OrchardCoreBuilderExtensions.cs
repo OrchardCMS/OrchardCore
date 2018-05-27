@@ -16,10 +16,11 @@ namespace OrchardCore.Environment.Extensions
         {
             AddExtensionManagerHostServices(builder.Services);
 
-            return builder.ConfigureServices((collection, sp) =>
+            return builder.Startup.ConfigureServices((collection, sp) =>
             {
                 AddExtensionManagerTenantServices(collection);
-            });
+            })
+            .Builder;
         }
 
         public static void AddExtensionManagerHostServices(IServiceCollection services)

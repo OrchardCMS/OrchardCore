@@ -14,11 +14,11 @@ namespace OrchardCore.Environment.Shell.Data
         /// </summary>
         public static OrchardCoreBuilder AddDataStorage(this OrchardCoreBuilder builder)
         {
-            return builder.AddSitesFolder()
-                .ConfigureServices((collection, sp) =>
-                {
-                    AddDescriptorStorageTenantServices(collection);
-                });
+            return builder.AddSitesFolder().Startup.ConfigureServices((collection, sp) =>
+            {
+                AddDescriptorStorageTenantServices(collection);
+            })
+            .Builder;
         }
 
         /// <summary>
@@ -36,10 +36,11 @@ namespace OrchardCore.Environment.Shell.Data
         /// <param name="services"></param>
         public static OrchardCoreBuilder AddDescriptorStorage(this OrchardCoreBuilder builder)
         {
-            return builder.ConfigureServices((collection, sp) =>
+            return builder.Startup.ConfigureServices((collection, sp) =>
             {
                 AddDescriptorStorageTenantServices(collection);
-            });
+            })
+            .Builder;
         }
 
         public static void AddSitesFolderHostServices(IServiceCollection services)

@@ -11,10 +11,11 @@ namespace OrchardCore.BackgroundTasks
         /// </summary>
         public static OrchardCoreBuilder AddBackgroundTasks(this OrchardCoreBuilder builder)
         {
-            return builder.ConfigureServices((collection, sp) =>
+            return builder.Startup.ConfigureServices((collection, sp) =>
             {
                 AddBackgroundTasksTenantServices(collection);
-            });
+            })
+            .Builder;
         }
 
         public static void AddBackgroundTasksTenantServices(IServiceCollection services)

@@ -17,7 +17,7 @@ namespace OrchardCore.Nancy
         /// <param name="services"></param>
         public static OrchardCoreBuilder AddNancy(this OrchardCoreBuilder builder)
         {
-            return builder.ConfigureServices((collection, sp) =>
+            return builder.Startup.ConfigureServices((collection, sp) =>
             {
                 collection.AddRouting();
             })
@@ -25,7 +25,7 @@ namespace OrchardCore.Nancy
             {
                 UseNancyTenantConfiguration(app);
             })
-            .UseStaticFiles();
+            .Builder.UseStaticFiles();
         }
 
         public static void UseNancyTenantConfiguration(IApplicationBuilder app)

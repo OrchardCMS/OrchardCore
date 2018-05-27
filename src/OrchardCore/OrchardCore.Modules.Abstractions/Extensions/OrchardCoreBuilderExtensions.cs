@@ -13,10 +13,12 @@ namespace OrchardCore.Modules.Extensions
         /// </summary>
         public static OrchardCoreBuilder UseStaticFiles(this OrchardCoreBuilder builder)
         {
-            return builder.Configure((app, routes, sp) =>
+            builder.Startup.Configure((app, routes, sp) =>
             {
                 UseStaticFilesTenantConfiguration(app);
             });
+
+            return builder;
         }
 
         public static void UseStaticFilesTenantConfiguration(IApplicationBuilder app)

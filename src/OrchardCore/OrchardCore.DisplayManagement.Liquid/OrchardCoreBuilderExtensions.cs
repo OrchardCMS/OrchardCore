@@ -19,10 +19,11 @@ namespace OrchardCore.DisplayManagement.Liquid
         /// </summary>
         public static OrchardCoreBuilder AddLiquidViews(this OrchardCoreBuilder builder)
         {
-            return builder.ConfigureServices((collection, sp) =>
+            return builder.Startup.ConfigureServices((collection, sp) =>
             {
                 AddLiquidViewsTenantServices(collection);
-            });
+            })
+            .Builder;
         }
 
         public static void AddLiquidViewsTenantServices(IServiceCollection services)

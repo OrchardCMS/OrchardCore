@@ -18,8 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Registers a default tenant with a set of features that are used to setup and configure the actual tenants.
         /// For instance you can use this to add a custom Setup module.
         /// </summary>
-        public static OrchardCoreBuilder WithDefaultFeatures(
-            this OrchardCoreBuilder builder, params string[] featureIds)
+        public static OrchardCoreBuilder WithDefaultFeatures(this OrchardCoreBuilder builder, params string[] featureIds)
         {
             foreach (var featureId in featureIds)
             {
@@ -45,12 +44,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Registers a single tenant with the specified set of features.
         /// </summary>
-        public static OrchardCoreBuilder WithFeatures(
-            this OrchardCoreBuilder builder, params string[] featureIds)
+        public static OrchardCoreBuilder WithFeatures(this OrchardCoreBuilder builder, params string[] featureIds)
         {
             builder.WithDefaultFeatures(featureIds);
             builder.Services.AddSetFeaturesDescriptor();
-
             return builder;
         }
 
@@ -59,11 +56,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddSecurity(this OrchardCoreBuilder builder)
         {
-            builder.AddAntiForgery()
+            return builder
+                .AddAntiForgery()
                 .AddAuthentication()
                 .AddDataProtection();
-
-            return builder;
         }
 
         /// <summary>
@@ -73,7 +69,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddAntiforgery();
 
-            return builder.ConfigureServices((collection, sp) =>
+            return builder.Startup.ConfigureServices((collection, sp) =>
             {
                 var settings = sp.GetRequiredService<ShellSettings>();
 
@@ -85,7 +81,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     options.Cookie.Name = "orchantiforgery_" + tenantName;
                     options.Cookie.Path = tenantPrefix;
                 });
-            });
+            })
+            .Builder;
         }
 
         /// <summary>
@@ -95,7 +92,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddAuthentication();
 
-            return builder.ConfigureServices((collection, sp) =>
+            return builder.Startup.ConfigureServices((collection, sp) =>
             {
                 collection.AddAuthentication();
 
@@ -107,7 +104,8 @@ namespace Microsoft.Extensions.DependencyInjection
             .Configure((app, routes, sp) =>
             {
                 app.UseAuthentication();
-            });
+            })
+            .Builder;
         }
 
         /// <summary>
@@ -115,7 +113,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddDataProtection(this OrchardCoreBuilder builder)
         {
-            return builder.ConfigureServices((collection, sp) =>
+            return builder.Startup.ConfigureServices((collection, sp) =>
             {
                 var settings = sp.GetRequiredService<ShellSettings>();
                 var options = sp.GetRequiredService<IOptions<ShellOptions>>();
@@ -134,7 +132,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     .PersistKeysToFileSystem(directory)
                     .SetApplicationName(settings.Name)
                     .Services);
-            });
+            })
+            .Builder;
         }
     }
 }
