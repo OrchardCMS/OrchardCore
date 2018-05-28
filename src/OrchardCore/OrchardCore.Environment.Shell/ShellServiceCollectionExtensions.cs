@@ -1,15 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Descriptor;
-using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Descriptor.Settings;
 
-namespace OrchardCore.Environment.Shell.Internal
+namespace OrchardCore.Environment.Shell
 {
-    public class ShellServiceCollection
+    public static class ShellServiceCollectionExtensions
     {
-        internal static void AddShellHostServices(IServiceCollection services)
+        public static IServiceCollection AddHostingShellServices(this IServiceCollection services)
         {
             // Register the type as it's implementing two interfaces which can be resolved independently
             services.AddSingleton<ShellHost>();
@@ -17,7 +14,7 @@ namespace OrchardCore.Environment.Shell.Internal
             services.AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ShellHost>());
 
             {
-                // Use a single default site by default, i.e. if WithTenants hasn't been called before.
+                // Use a single default site by default, i.e. if AddMultiTenancy hasn't been called before
                 services.TryAddSingleton<IShellSettingsManager, SingleShellSettingsManager>();
 
                 services.AddSingleton<IShellContextFactory, ShellContextFactory>();
@@ -27,22 +24,9 @@ namespace OrchardCore.Environment.Shell.Internal
                     services.AddSingleton<IShellContainerFactory, ShellContainerFactory>();
                 }
             }
-
             services.AddSingleton<IRunningShellTable, RunningShellTable>();
-        }
 
-        public static void AddSetFeaturesHostServices(IServiceCollection services)
-        {
-            services.AddSingleton<IShellDescriptorManager>(sp =>
-            {
-                var shellFeatures = sp.GetServices<ShellFeature>();
-                return new SetFeaturesShellDescriptorManager(shellFeatures);
-            });
-        }
-
-        public static void AddAllFeaturesHostServices(IServiceCollection services)
-        {
-            services.AddScoped<IShellDescriptorManager, AllFeaturesShellDescriptorManager>();
+            return services;
         }
     }
 }

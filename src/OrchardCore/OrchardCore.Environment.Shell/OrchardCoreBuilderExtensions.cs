@@ -1,4 +1,3 @@
-using OrchardCore.Environment.Shell.Internal;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell
@@ -10,7 +9,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public static OrchardCoreBuilder AddShellHost(this OrchardCoreBuilder builder)
         {
-            ShellServiceCollection.AddShellHostServices(builder.Services);
+            builder.Services.AddHostingShellServices();
             return builder;
         }
     }

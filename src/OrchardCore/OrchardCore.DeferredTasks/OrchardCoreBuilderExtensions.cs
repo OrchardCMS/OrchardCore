@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Modules;
 
 namespace OrchardCore.DeferredTasks
@@ -13,17 +11,10 @@ namespace OrchardCore.DeferredTasks
         {
             builder.Startup.ConfigureServices((collection, sp) =>
             {
-                AddDeferredTasksTenantServices(collection);
+                collection.AddDeferredTasks();
             });
 
             return builder;
-        }
-
-        internal static IServiceCollection AddDeferredTasksTenantServices(this IServiceCollection services)
-        {
-            services.TryAddScoped<IDeferredTaskEngine, DeferredTaskEngine>();
-            services.TryAddScoped<IDeferredTaskState, HttpContextTaskState>();
-            return services;
         }
     }
 }

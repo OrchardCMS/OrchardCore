@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -10,7 +9,6 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Descriptor.Settings;
-using OrchardCore.Environment.Shell.Internal;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Modules
@@ -63,20 +61,9 @@ namespace OrchardCore.Modules
                 builder.Services.AddTransient(sp => new ShellFeature(featureId));
             }
 
-            ShellServiceCollection.AddSetFeaturesHostServices(builder.Services);
+            builder.Services.AddSetFeaturesDescriptor();
 
             return builder;
-        }
-
-        /// <summary>
-        /// Adds host and tenant level authentication, antiforgery and data protection services and configuration.
-        /// </summary>
-        public static OrchardCoreBuilder AddSecurity(this OrchardCoreBuilder builder)
-        {
-            return builder
-                .AddAntiForgery()
-                .AddAuthentication()
-                .AddDataProtection();
         }
 
         /// <summary>
