@@ -5,6 +5,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Commands;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Data;
 using OrchardCore.Modules;
 using OrchardCore.Mvc;
@@ -25,7 +26,17 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddSecurity()
                     .WithDefaultFeatures("OrchardCore.Setup")
 
-                    .AddEnabledFeatures("OrchardCore.Lucene", "OrchardCore.Lucene.Worker")
+                    .Startup.ConfigureServices((collection, sp) =>
+                    {
+                        var tenant = sp.GetRequiredService<ShellSettings>().Name;
+
+                        if (tenant == "Alpha")
+                        {
+                            collection.AddEnabledFeatures("OrchardCore.Localization");
+                        }
+                    })
+
+                    .Builder
 
                     .AddDataAccess()
                     .AddDataStorage()

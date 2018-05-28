@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -17,15 +18,11 @@ namespace OrchardCore.Modules
     public static class OrchardCoreBuilderExtensions
     {
         /// <summary>
-        /// Adds a set of features which are always enabled for any tenant.
+        /// Registers at the host level a set of features which are always enabled for any tenant.
         /// </summary>
         public static OrchardCoreBuilder AddEnabledFeatures(this OrchardCoreBuilder builder, params string[] featureIds)
         {
-            foreach (var featureId in featureIds)
-            {
-                builder.Services.AddTransient(sp => new ShellFeature(featureId, alwaysEnabled: true));
-            }
-
+            builder.Services.AddEnabledFeatures(featureIds);
             return builder;
         }
 
