@@ -107,8 +107,9 @@ namespace OrchardCore.Modules
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
                     .Where(f => !(f is ModuleAttribute));
 
-                ModuleInfo.Features.AddRange(features);
                 ModuleInfo.Id = Name;
+                ModuleInfo.Features.AddRange(features);
+                _lastModified = File.GetLastWriteTimeUtc(Assembly.Location);
             }
             else
             {
@@ -116,10 +117,10 @@ namespace OrchardCore.Modules
                 Assets = Enumerable.Empty<Asset>();
                 AssetPaths = Enumerable.Empty<string>();
                 ModuleInfo = new ModuleAttribute();
+                _lastModified = DateTimeOffset.MinValue;
             }
 
             _baseNamespace = Name + '.';
-            _lastModified = DateTimeOffset.UtcNow;
         }
 
         public string Name { get; }
