@@ -155,6 +155,20 @@ namespace OrchardCore.Modules
 
             _baseNamespace = Name + '.';
             _lastModified = DateTimeOffset.UtcNow;
+
+            if (!string.IsNullOrEmpty(Assembly?.Location))
+            {
+                try
+                {
+                    _lastModified = File.GetLastWriteTimeUtc(Assembly.Location);
+                }
+                catch (PathTooLongException)
+                {
+                }
+                catch (UnauthorizedAccessException)
+                {
+                }
+            }
         }
 
         public string Name { get; }
