@@ -96,6 +96,7 @@
                     </button>
                 </div>
             </nav>
+            <upload-list></upload-list>
 
             <table class="table media-items-table" v-show="filteredMediaItems.length > 0 && !gridView">
                 <thead>
@@ -172,6 +173,11 @@
 <input type="hidden" id="deleteMediaMessage" value="@T["Are you sure you want to delete this media?"]" />
 <input type="hidden" id="moveMediaMessage" value="@T["Are you sure you want to move the selected media to this folder?"]" />
 <input type="hidden" id="sameFolderMessage" value="@T["The media is already on this folder"]" />
+
+@*Local Strings for upload*@
+<input type="hidden" id="t-uploads" value="@T["Uploads"]" />
+
+
 
 <div class="modal" id="createFolderModal" tabindex="-1" role="dialog" aria-labelledby="createFolderModal" aria-hidden="true">
     <div class="modal-dialog" role="document">

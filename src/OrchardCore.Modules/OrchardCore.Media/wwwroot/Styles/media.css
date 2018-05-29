@@ -6295,3 +6295,58 @@ a.text-dark:hover, a.text-dark:focus {
   -ms-transition: opacity 0.3s ease-out;
   -o-transition: opacity 0.3s ease-out;
   transition: opacity 0.3s ease-out; }
+
+.upload {
+  background-color: rgba(0, 0, 0, 0.05);
+  border: 1px solid #ccc;
+  width: 300px;
+  height: 60px;
+  font-size: 0.875rem; }
+  .upload .close-warning {
+    display: block;
+    float: right;
+    margin-top: -8px;
+    margin-right: -8px;
+    cursor: pointer;
+    padding: 2px 8px; }
+  .upload .upload-name {
+    padding-top: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-right: 50px; }
+  .upload .progress-bar {
+    display: block;
+    margin-top: 15px;
+    height: 3px;
+    background-color: #007bff; }
+  .upload .error-message {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-right: 50px; }
+
+.upload-warning {
+  color: #856404;
+  background-color: #fff3cd;
+  border-color: #856404; }
+
+.upload-list {
+  margin-bottom: 8px; }
+  .upload-list .header {
+    height: 40px;
+    padding: 6px 20px;
+    background-color: rgba(0, 0, 0, 0.03);
+    border: solid 1px #e9ecef;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: #666; }
+  .upload-list .toggle-button {
+    padding: 5px 8px;
+    margin-top: -3px;
+    float: right; }
+  .upload-list .card-body, .upload-list .media-container-main-item-title {
+    border: solid 1px #e9ecef;
+    padding: 0; }

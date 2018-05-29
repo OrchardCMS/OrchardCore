@@ -290,9 +290,6 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     deleteMediaItem: function (media) {
 
                         var self = this;
-                        console.log('media is : ');
-                        console.log(media);
-
                         if (!media) {
                             return;
                         }

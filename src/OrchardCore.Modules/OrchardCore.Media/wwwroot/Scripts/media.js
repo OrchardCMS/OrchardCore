@@ -295,9 +295,6 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     deleteMediaItem: function (media) {
 
                         var self = this;
-                        console.log('media is : ');
-                        console.log(media);
-
                         if (!media) {
                             return;
                         }
@@ -441,6 +438,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
 $(document).on('mediaApp:ready', function () {
     $('#fileupload').fileupload({
         dropZone: $('#mediaApp'),
+        limitConcurrentUploads: 20,
         dataType: 'json',
         url: $('#uploadFiles').val(),
         formData: function () {
@@ -455,15 +453,8 @@ $(document).on('mediaApp:ready', function () {
             $.each(data.result.files, function (index, file) {
                 if (!file.error) {
                     mediaApp.mediaItems.push(file)
-                } else {
-                    mediaApp.errors.push(file.error);
                 }
             });
-
-            $('#progress .progress-bar').css(
-                'width',
-                0 + '%'
-            );
         }
     });
 });
@@ -2503,3 +2494,132 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
         }
     }));
 }
+// <upload> component
+Vue.component('upload', {
+    template: '\
+        <div v-bind:class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
+            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning" style=""><i class="fa fa-times"></i> </span>\
+            <p class="upload-name" v-bind:title="model.errorMessage">{{ model.name }}</p> \
+            <div> \
+               <span v-show="!model.errorMessage" v-bind:style="{ width: model.percentage + \'%\'}" class="progress-bar"> </span> \
+               <span v-if="model.errorMessage" class="error-message" v-bind:title="model.errorMessage"> Error: {{ model.errorMessage }} </span> \
+            </div> \
+        </div> \
+        ',
+    props: {
+        model: Object
+    },
+    mounted: function () {
+        var self = this;
+        $('#fileupload').bind('fileuploadprogress', function (e, data) {
+            if (data.files[0].name !== self.model.name) {
+                return;
+            }            
+            self.model.percentage = parseInt(data.loaded / data.total * 100, 10);
+        });
+
+        $('#fileupload').bind('fileuploaddone', function (e, data) {
+            if (data.files[0].name !== self.model.name) {
+                return;
+            }
+            if (data.result.files[0].error) {
+                self.handleFailure(data.files[0].name, data.result.files[0].error);
+            } else {  
+                bus.$emit('removalRequest', self.model);
+            }
+        });
+
+        $('#fileupload').bind('fileuploadfail', function (e, data) {
+            if (data.files[0].name !== self.model.name) {
+                return;
+            }
+            self.handleFailure(data.files[0].name , data.textStatus);            
+        });
+    },
+    methods: {
+        handleFailure: function (fileName, message) {
+            if (fileName !== this.model.name) {
+                return;
+            }
+            this.model.errorMessage = message;
+            bus.$emit('ErrorOnUpload', this.model);
+        },
+        dismissWarning: function () {
+            bus.$emit('removalRequest', this.model);
+        }
+    }
+});
+
+// <upload-list> component
+Vue.component('uploadList', {
+    template: '\
+        <div class="upload-list" v-show="files.length > 0"> \
+            <div class="header" @click="expanded = !expanded"> \
+                <span :class="{ \'text-danger\' : errorCount }"> {{ T.uploads }} ({{ fileCount }})</span> \
+                    <div class="toggle-button"> \
+                    <div v-show="expanded"> \
+                        <i class="fa fa-chevron-down"></i> \
+                    </div> \
+                    <div v-show="!expanded"> \
+                        <i class="fa fa-chevron-up"></i> \
+                    </div> \
+                </div> \
+            </div> \
+            <div class="card-body" v-show="expanded"> \
+                <div class="d-flex flex-wrap"> \
+                    <div v-for="f in files" :key="f.name" > <upload :model="f"></upload> </div > \
+                </div > \
+            </div> \
+        </div> \
+        ',
+    data: function () {
+        return {
+            files: [],
+            T: {},
+            expanded: false,
+            errorCount: 0
+        }
+    },
+    created: function () {
+        var self = this;
+        // retrieving localized strings from view
+        self.T.uploads = $('#t-uploads').val();
+    },
+    computed: {
+        fileCount: function () {
+            return this.files.length;
+        }
+    },
+    mounted: function () {
+        var self = this;
+
+        $('#fileupload').bind('fileuploadadd', function (e, data) {
+            if (!data.files) { 
+                return;
+            }
+            data.files.forEach(function (f) {
+                    self.files.push({ name: f.name, percentage: 0, errorMessage: ''});
+            });            
+        });
+
+        bus.$on('removalRequest', function (fileUpload) {
+            self.files.forEach(function (item, index, array) {
+                if (item.name == fileUpload.name) {
+                    array.splice(index, 1);
+                }
+            });
+        });
+
+        bus.$on('ErrorOnUpload', function (fileUpload) {
+            self.updateErrorCount();
+        });
+    },
+    methods: {
+        updateErrorCount: function () {
+            var result = this.files.filter(function (item) {
+                return item.errorMessage != '';
+            }).length;
+            this.errorCount = result;
+        }
+    }
+});

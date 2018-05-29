@@ -1,6 +1,7 @@
 $(document).on('mediaApp:ready', function () {
     $('#fileupload').fileupload({
         dropZone: $('#mediaApp'),
+        limitConcurrentUploads: 20,
         dataType: 'json',
         url: $('#uploadFiles').val(),
         formData: function () {
@@ -15,15 +16,8 @@ $(document).on('mediaApp:ready', function () {
             $.each(data.result.files, function (index, file) {
                 if (!file.error) {
                     mediaApp.mediaItems.push(file)
-                } else {
-                    mediaApp.errors.push(file.error);
                 }
             });
-
-            $('#progress .progress-bar').css(
-                'width',
-                0 + '%'
-            );
         }
     });
 });
