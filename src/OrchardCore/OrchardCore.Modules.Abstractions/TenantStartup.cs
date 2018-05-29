@@ -1,9 +1,9 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
-using OrchardCore.Modules;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace OrchardCore.Modules
 {
     public interface ITenantStartup { }
 
