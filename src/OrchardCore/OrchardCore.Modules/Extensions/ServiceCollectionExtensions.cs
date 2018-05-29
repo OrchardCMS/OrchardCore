@@ -49,19 +49,6 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        /// <summary>
-        /// Registers a set of features which are always enabled.
-        /// </summary>
-        public static IServiceCollection AddEnabledFeatures(this IServiceCollection services, params string[] featureIds)
-        {
-            foreach (var featureId in featureIds)
-            {
-                services.AddTransient(sp => new ShellFeature(featureId, alwaysEnabled: true));
-            }
-
-            return services;
-        }
-
         public static IServiceCollection AddWebHost(this IServiceCollection services, OrchardCoreBuilder builder)
         {
             services.AddLogging();

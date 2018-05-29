@@ -18,7 +18,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddEnabledFeatures(this OrchardCoreBuilder builder, params string[] featureIds)
         {
-            builder.Services.AddEnabledFeatures(featureIds);
+            foreach (var featureId in featureIds)
+            {
+                builder.Services.AddTransient(sp => new ShellFeature(featureId, alwaysEnabled: true));
+            }
+
             return builder;
         }
 
