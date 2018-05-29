@@ -26,6 +26,7 @@ namespace OrchardCore.Settings.Drivers
                         model.BaseUrl = site.BaseUrl;
                         model.TimeZone = site.TimeZoneId;
                         model.TimeZones = _clock.GetTimeZones();
+                        model.SiteCulture = site.Culture;
                     }).Location("Content:1").OnGroup(GroupId)
             );
         }
@@ -36,11 +37,12 @@ namespace OrchardCore.Settings.Drivers
             {
                 var model = new SiteSettingsViewModel();
 
-                if (await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.SiteName, t => t.BaseUrl, t => t.TimeZone))
+                if (await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.SiteName, t => t.BaseUrl, t => t.TimeZone, t => t.SiteCulture))
                 {
                     site.SiteName = model.SiteName;
                     site.BaseUrl = model.BaseUrl;
                     site.TimeZoneId = model.TimeZone;
+                    site.Culture = model.SiteCulture;
                 }
             }
 

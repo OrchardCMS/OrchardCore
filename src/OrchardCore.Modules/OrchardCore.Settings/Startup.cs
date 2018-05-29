@@ -38,6 +38,7 @@ namespace OrchardCore.Settings
             services.AddScoped<ILiquidTemplateEventHandler, SiteLiquidTemplateEventHandler>();
 
             services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
+            services.AddScoped<ICultureSelector, DefaultCultureSelector>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

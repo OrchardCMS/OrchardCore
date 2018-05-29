@@ -14,15 +14,18 @@ namespace OrchardCore.DisplayManagement.Shapes
         private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";
         private readonly IClock _clock;
         private readonly ILocalClock _localClock;
+        private readonly ILocalCulture _localCulture;
 
         public DateTimeShapes(
             IClock clock,
             IPluralStringLocalizer<DateTimeShapes> localizer,
-            ILocalClock localClock
+            ILocalClock localClock,
+            ILocalCulture localCulture
             )
         {
             _localClock = localClock;
             _clock = clock;
+            _localCulture = localCulture;
             T = localizer;
         }
 
@@ -81,13 +84,14 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             Utc = Utc ?? _clock.UtcNow;
             var zonedTime = await _localClock.ConvertToLocalAsync(Utc.Value);
+            var currentCulture = await _localCulture.GetLocalCultureAsync();
 
             if (Format == null)
             {
                 Format = T[LongDateTimeFormat, LongDateTimeFormat, 0].Value;
             }
 
-            return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.InvariantCulture)));
+            return Html.Raw(Html.Encode(zonedTime.ToString(Format, currentCulture)));
         }
     }
 
