@@ -109,7 +109,6 @@ namespace OrchardCore.Modules
 
                 ModuleInfo.Id = Name;
                 ModuleInfo.Features.AddRange(features);
-                _lastModified = File.GetLastWriteTimeUtc(Assembly.Location);
             }
             else
             {
