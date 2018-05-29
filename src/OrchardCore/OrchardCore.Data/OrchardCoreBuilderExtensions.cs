@@ -1,6 +1,4 @@
-using OrchardCore.Modules;
-
-namespace OrchardCore.Data
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OrchardCoreBuilderExtensions
     {
@@ -9,9 +7,9 @@ namespace OrchardCore.Data
         /// </summary>
         public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
         {
-            builder.Startup.ConfigureServices((collection, sp) =>
+            builder.Startup.ConfigureServices((tenant, sp) =>
             {
-                collection.AddDataAccess();
+                tenant.AddDataAccess();
             });
 
             return builder;

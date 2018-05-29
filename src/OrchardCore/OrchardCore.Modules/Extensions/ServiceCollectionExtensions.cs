@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -24,12 +23,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 builder = new OrchardCoreBuilder(services);
                 services.AddSingleton(builder);
 
-                builder
-                    .AddShellHost()
-                    .AddExtensionManager()
-                    .AddManifestDefinition("module");
+                services.AddWebHost(builder);
 
-                AddDefaultHostServices(builder.Services);
+                // ModularTenantRouterMiddleware which is configured with UseModules() calls UserRouter() which requires the routing services to be
+                // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
+                services.AddRouting();
 
                 // Use a single tenant and all features by default
                 builder.Services.AddAllFeaturesDescriptor();
@@ -65,24 +63,29 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        internal static void AddDefaultHostServices(IServiceCollection services)
+        public static IServiceCollection AddWebHost(this IServiceCollection services, OrchardCoreBuilder builder)
         {
-            services
-                .AddLogging()
-                .AddOptions()
-                .AddLocalization()
-                .AddWebEncoders()
+            services.AddLogging();
+            services.AddOptions();
+            services.AddLocalization();
+            services.AddHostingShellServices();
+            services.AddExtensionManagerHost();
+            services.AddWebEncoders();
 
-                // ModularTenantRouterMiddleware which is configured with UseModules() calls UserRouter() which requires the routing services to be
-                // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
-                .AddRouting();
+            builder.AddManifestDefinition("module")
+                .Startup.ConfigureServices((tenant, sp) =>
+                {
+                    tenant.Services.AddExtensionManager();
+                });
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IClock, Clock>();
             services.AddScoped<ILocalClock, LocalClock>();
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
-            services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
+            services.AddScoped<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
+
+            return services;
         }
 
         private static T GetServiceFromCollection<T>(IServiceCollection services)

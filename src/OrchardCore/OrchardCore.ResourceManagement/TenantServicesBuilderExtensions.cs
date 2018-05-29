@@ -1,16 +1,19 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.ResourceManagement
+namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class TenantServicesBuilderExtensions
     {
-        public static IServiceCollection AddResourceManagement(this IServiceCollection services)
+        public static TenantServicesBuilder AddResourceManagement(this TenantServicesBuilder tenant)
         {
+            var services = tenant.Services;
+
             services.TryAddScoped<IResourceManager, ResourceManager>();
             services.TryAddScoped<IRequireSettingsProvider, DefaultRequireSettingsProvider>();
             services.TryAddSingleton<IResourceManifestState, ResourceManifestState>();
-            return services;
+
+            return tenant;
         }
     }
 }

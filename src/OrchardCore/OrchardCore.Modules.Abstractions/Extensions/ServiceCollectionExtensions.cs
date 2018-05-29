@@ -1,7 +1,7 @@
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
 
-namespace OrchardCore.Modules
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {

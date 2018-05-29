@@ -1,14 +1,16 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Cache.CacheContextProviders;
 
-namespace OrchardCore.Environment.Cache
+namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class TenantServicesBuilderExtensions
     {
-        public static IServiceCollection AddCaching(this IServiceCollection services)
+        public static TenantServicesBuilder AddCaching(this TenantServicesBuilder tenant)
         {
+            var services = tenant.Services;
+
             services.AddTransient<ITagCache, DefaultTagCache>();
             services.AddSingleton<ISignal, Signal>();
             services.AddScoped<ICacheContextManager, CacheContextManager>();
@@ -31,7 +33,7 @@ namespace OrchardCore.Environment.Cache
             // there is no state to keep in its instance.
             services.AddTransient<IDistributedCache, MemoryDistributedCache>();
 
-            return services;
+            return tenant;
         }
     }
 }

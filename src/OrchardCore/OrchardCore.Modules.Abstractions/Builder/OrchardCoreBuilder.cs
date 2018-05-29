@@ -1,19 +1,19 @@
 using System;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
 
-namespace OrchardCore.Modules
+namespace Microsoft.Extensions.DependencyInjection
 {
     public class OrchardCoreBuilder
     {
         public OrchardCoreBuilder(IServiceCollection services)
         {
             Services = services;
-            Startup = new OrchardCoreStartupBuilder(this);
+            Startup = new TenantStartupBuilder(this);
         }
 
         public IServiceCollection Services { get; }
-        public OrchardCoreStartupBuilder Startup { get; }
+        public TenantStartupBuilder Startup { get; }
 
         public OrchardCoreBuilder AddStartups()
         {
@@ -23,7 +23,7 @@ namespace OrchardCore.Modules
             {
                 var actions = Startup.Actions[order];
 
-                Services.AddTransient<IStartup>(sp => new OrchardCoreStartup(
+                Services.AddTransient<IStartup>(sp => new TenantStartup(
                     sp.GetRequiredService<IServiceProvider>(), actions, order));
             }
 

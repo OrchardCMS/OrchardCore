@@ -1,7 +1,6 @@
-using OrchardCore.Modules;
 using OrchardCore.ResourceManagement.TagHelpers;
 
-namespace OrchardCore.ResourceManagement
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OrchardCoreBuilderExtensions
     {
@@ -10,10 +9,10 @@ namespace OrchardCore.ResourceManagement
         /// </summary>
         public static OrchardCoreBuilder AddResourceManagement(this OrchardCoreBuilder builder)
         {
-            builder.Startup.ConfigureServices((collection, sp) =>
+            builder.Startup.ConfigureServices((tenant, sp) =>
             {
-                collection.AddResourceManagement();
-                collection.AddTagHelpers(typeof(ResourcesTagHelper).Assembly);
+                tenant.AddResourceManagement();
+                tenant.Services.AddTagHelpers(typeof(ResourcesTagHelper).Assembly);
             });
 
             return builder;

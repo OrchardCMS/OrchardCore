@@ -2,8 +2,8 @@ using System;
 using System.Data;
 using System.IO;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -14,12 +14,14 @@ using YesSql.Provider.PostgreSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Provider.SqlServer;
 
-namespace OrchardCore.Data
+namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class TenantServicesBuilderExtensions
     {
-        public static IServiceCollection AddDataAccess(this IServiceCollection services)
+        public static TenantServicesBuilder AddDataAccess(this TenantServicesBuilder tenant)
         {
+            var services = tenant.Services;
+
             services.AddScoped<IDataMigrationManager, DataMigrationManager>();
             services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
@@ -40,7 +42,7 @@ namespace OrchardCore.Data
                     return null;
                 }
 
-                var storeConfiguration = new Configuration();
+                var storeConfiguration = new YesSql.Configuration();
 
                 // Disabling query gating as it's failing to improve performance right now
                 storeConfiguration.DisableQueryGating();
@@ -93,7 +95,7 @@ namespace OrchardCore.Data
                 return session;
             });
 
-            return services;
+            return tenant;
         }
     }
 }

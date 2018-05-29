@@ -1,8 +1,11 @@
+using OrchardCore.DisplayManagement.Events;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.TagHelpers;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
-using OrchardCore.Modules;
 
-namespace OrchardCore.DisplayManagement
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OrchardCoreBuilderExtensions
     {
@@ -11,14 +14,29 @@ namespace OrchardCore.DisplayManagement
         /// </summary>
         public static OrchardCoreBuilder AddTheming(this OrchardCoreBuilder builder)
         {
-            builder.Services.AddThemingHost();
-
-            builder.AddManifestDefinition("theme")
-                .Startup.ConfigureServices((collection, sp) =>
+            builder
+                .AddThemingHost()
+                .AddManifestDefinition("theme")
+                .Startup.ConfigureServices((tenant, sp) =>
                 {
-                    collection.AddTheming();
-                    collection.AddTagHelpers(typeof(BaseShapeTagHelper).Assembly);
+                    tenant.AddTheming();
+                    tenant.Services.AddTagHelpers(typeof(BaseShapeTagHelper).Assembly);
                 });
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds host level services.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static OrchardCoreBuilder AddThemingHost(this OrchardCoreBuilder builder)
+        {
+            var services = builder.Services;
+
+            services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
+            services.AddSingleton<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
 
             return builder;
         }

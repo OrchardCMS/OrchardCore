@@ -1,6 +1,4 @@
-using OrchardCore.Modules;
-
-namespace OrchardCore.DisplayManagement.Liquid
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OrchardCoreBuilderExtensions
     {
@@ -9,9 +7,9 @@ namespace OrchardCore.DisplayManagement.Liquid
         /// </summary>
         public static OrchardCoreBuilder AddLiquidViews(this OrchardCoreBuilder builder)
         {
-            builder.Startup.ConfigureServices((collection, sp) =>
+            builder.Startup.ConfigureServices((tenant, sp) =>
             {
-                collection.AddLiquidViews();
+                tenant.AddLiquidViews();
             });
 
             return builder;

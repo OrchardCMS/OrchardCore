@@ -2,16 +2,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
-using OrchardCore.DisplayManagement.Events;
-using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.LocationExpander;
@@ -22,29 +20,16 @@ using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.DisplayManagement.Zones;
-using OrchardCore.Environment.Extensions;
-using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Mvc.LocationExpander;
 
-namespace OrchardCore.DisplayManagement
+namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class TenantServicesBuilderExtensions
     {
-        /// <summary>
-        /// Adds host level services.
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddThemingHost(this IServiceCollection services)
+        public static TenantServicesBuilder AddTheming(this TenantServicesBuilder tenant)
         {
-            services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
-            services.AddSingleton<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
+            var services = tenant.Services;
 
-            return services;
-        }
-
-        public static IServiceCollection AddTheming(this IServiceCollection services)
-        {
             services.Configure<MvcOptions>((options) =>
             {
                 options.Filters.Add(typeof(ModelBinderAccessorFilter));
@@ -91,7 +76,7 @@ namespace OrchardCore.DisplayManagement
             services.AddScoped(typeof(IPluralStringLocalizer<>), typeof(PluralStringLocalizer<>));
             services.AddShapeAttributes<DateTimeShapes>();
 
-            return services;
+            return tenant;
         }
     }
 }

@@ -2,16 +2,14 @@ using System.IO;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Descriptor.Settings;
-using OrchardCore.Modules;
 
-namespace OrchardCore.Modules
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OrchardCoreBuilderExtensions
     {
@@ -43,10 +41,12 @@ namespace OrchardCore.Modules
         /// </summary>
         public static OrchardCoreBuilder WithTenants(this OrchardCoreBuilder builder)
         {
-            builder.Services.AddSingleton<IShellSettingsConfigurationProvider, FileShellSettingsConfigurationProvider>();
-            builder.Services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
-            builder.Services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
-            builder.Services.AddScoped<ShellSettingsWithTenants>();
+            var services = builder.Services;
+
+            services.AddSingleton<IShellSettingsConfigurationProvider, FileShellSettingsConfigurationProvider>();
+            services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
+            services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
+            services.AddScoped<ShellSettingsWithTenants>();
 
             return builder;
         }
@@ -73,14 +73,14 @@ namespace OrchardCore.Modules
         {
             builder.Services.AddAntiforgery();
 
-            builder.Startup.ConfigureServices((collection, sp) =>
+            builder.Startup.ConfigureServices((tenant, sp) =>
             {
                 var settings = sp.GetRequiredService<ShellSettings>();
 
                 var tenantName = settings.Name;
                 var tenantPrefix = "/" + settings.RequestUrlPrefix;
 
-                collection.AddAntiforgery(options =>
+                tenant.Services.AddAntiforgery(options =>
                 {
                     options.Cookie.Name = "orchantiforgery_" + tenantName;
                     options.Cookie.Path = tenantPrefix;
@@ -97,18 +97,18 @@ namespace OrchardCore.Modules
         {
             builder.Services.AddAuthentication();
 
-            builder.Startup.ConfigureServices((collection, sp) =>
+            builder.Startup.ConfigureServices((tenant, sp) =>
             {
-                collection.AddAuthentication();
+                tenant.Services.AddAuthentication();
 
                 // Note: IAuthenticationSchemeProvider is already registered at the host level.
                 // We need to register it again so it is taken into account at the tenant level.
-                collection.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
+                tenant.Services.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
             })
 
-            .Configure((app, routes, sp) =>
+            .Configure((tenant, routes, sp) =>
             {
-                app.UseAuthentication();
+                tenant.ApplicationBuilder.UseAuthentication();
             });
 
             return builder;
@@ -119,7 +119,7 @@ namespace OrchardCore.Modules
         /// </summary>
         public static OrchardCoreBuilder AddDataProtection(this OrchardCoreBuilder builder)
         {
-            builder.Startup.ConfigureServices((collection, sp) =>
+            builder.Startup.ConfigureServices((tenant, sp) =>
             {
                 var settings = sp.GetRequiredService<ShellSettings>();
                 var options = sp.GetRequiredService<IOptions<ShellOptions>>();
@@ -133,7 +133,7 @@ namespace OrchardCore.Modules
                 // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that
                 // manages its own key ring and doesn't allow decrypting payloads encrypted by another tenant.
                 // By default, the key ring is stored in the tenant directory of the configured App_Data path.
-                collection.Add(new ServiceCollection()
+                tenant.Services.Add(new ServiceCollection()
                     .AddDataProtection()
                     .PersistKeysToFileSystem(directory)
                     .SetApplicationName(settings.Name)

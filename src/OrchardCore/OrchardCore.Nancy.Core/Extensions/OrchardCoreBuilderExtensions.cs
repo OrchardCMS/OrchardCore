@@ -17,23 +17,23 @@ namespace OrchardCore.Nancy
         /// <param name="services"></param>
         public static OrchardCoreBuilder AddNancy(this OrchardCoreBuilder builder)
         {
-            return builder.Startup.ConfigureServices((collection, sp) =>
+            return builder.Startup.ConfigureServices((tenant, sp) =>
             {
-                collection.AddRouting();
+                tenant.Services.AddRouting();
             })
-            .Configure((app, routes, sp) =>
+            .Configure((tenant, routes, sp) =>
             {
-                UseNancyTenantConfiguration(app);
+                tenant.UseNancy();
             })
             .Builder.UseStaticFiles();
         }
 
-        public static void UseNancyTenantConfiguration(IApplicationBuilder app)
+        public static TenantApplicationBuilder UseNancy(this TenantApplicationBuilder tenant)
         {
-            var contextAccessor =
-                app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
+            var contextAccessor = tenant.ApplicationBuilder
+                .ApplicationServices.GetRequiredService<IHttpContextAccessor>();
 
-            app.UseOwin(x => x.UseNancy(no =>
+            tenant.ApplicationBuilder.UseOwin(x => x.UseNancy(no =>
             {
                 no.Bootstrapper = new ModularNancyBootstrapper(
                     new[] {
@@ -41,6 +41,8 @@ namespace OrchardCore.Nancy
                         (IAssemblyCatalog)new AmbientAssemblyCatalog(contextAccessor)
                     });
             }));
+
+            return tenant;
         }
     }
 }

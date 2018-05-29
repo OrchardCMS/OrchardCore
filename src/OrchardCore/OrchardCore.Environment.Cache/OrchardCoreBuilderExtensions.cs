@@ -1,6 +1,4 @@
-using OrchardCore.Modules;
-
-namespace OrchardCore.Environment.Cache
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OrchardCoreBuilderExtensions
     {
@@ -9,9 +7,9 @@ namespace OrchardCore.Environment.Cache
         /// </summary>
         public static OrchardCoreBuilder AddCaching(this OrchardCoreBuilder builder)
         {
-            builder.Startup.ConfigureServices((collection, sp) =>
+            builder.Startup.ConfigureServices((tenant, sp) =>
             {
-                collection.AddCaching();
+                tenant.AddCaching();
             });
 
             return builder;

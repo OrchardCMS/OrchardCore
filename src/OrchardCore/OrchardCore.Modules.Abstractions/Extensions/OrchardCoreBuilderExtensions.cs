@@ -13,17 +13,17 @@ namespace OrchardCore.Modules.Extensions
         /// </summary>
         public static OrchardCoreBuilder UseStaticFiles(this OrchardCoreBuilder builder)
         {
-            builder.Startup.Configure((app, routes, sp) =>
+            builder.Startup.Configure((tenant, routes, sp) =>
             {
-                UseStaticFilesTenantConfiguration(app);
+                tenant.UseStaticFiles();
             });
 
             return builder;
         }
 
-        public static void UseStaticFilesTenantConfiguration(IApplicationBuilder app)
+        public static TenantApplicationBuilder UseStaticFiles(this TenantApplicationBuilder tenant)
         {
-            var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
+            var env = tenant.ApplicationBuilder.ApplicationServices.GetRequiredService<IHostingEnvironment>();
 
             IFileProvider fileProvider;
             if (env.IsDevelopment())
@@ -38,11 +38,13 @@ namespace OrchardCore.Modules.Extensions
                 fileProvider = new ModuleEmbeddedStaticFileProvider(env);
             }
 
-            app.UseStaticFiles(new StaticFileOptions
+            tenant.ApplicationBuilder.UseStaticFiles(new StaticFileOptions
             {
                 RequestPath = "",
                 FileProvider = fileProvider
             });
+
+            return tenant;
         }
     }
 }

@@ -1,18 +1,18 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
 
-namespace OrchardCore.Modules
+namespace Microsoft.Extensions.DependencyInjection
 {
-    public interface IOrchardCoreStartup { }
+    public interface ITenantStartup { }
 
-    public class OrchardCoreStartup : StartupBase, IOrchardCoreStartup
+    public class TenantStartup : StartupBase, ITenantStartup
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly OrchardCoreStartupActions _actions;
+        private readonly TenantStartupActions _actions;
 
-        public OrchardCoreStartup(IServiceProvider serviceProvider, OrchardCoreStartupActions actions, int order)
+        public TenantStartup(IServiceProvider serviceProvider, TenantStartupActions actions, int order)
         {
             _serviceProvider = serviceProvider;
             _actions = actions;
@@ -25,7 +25,7 @@ namespace OrchardCore.Modules
         {
             foreach (var configureServices in _actions.ConfigureServicesActions)
             {
-                configureServices(services, _serviceProvider);
+                configureServices(new TenantServicesBuilder(services), _serviceProvider);
             }
         }
 
@@ -33,7 +33,7 @@ namespace OrchardCore.Modules
         {
             foreach (var configure in _actions.ConfigureActions)
             {
-                configure(app, routes, serviceProvider);
+                configure(new TenantApplicationBuilder(app), routes, serviceProvider);
             }
         }
     }
