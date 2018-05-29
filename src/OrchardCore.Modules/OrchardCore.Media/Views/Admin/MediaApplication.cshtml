@@ -86,9 +86,9 @@
                     <a v-cloak v-show="!isHome" href="javascript:;" v-on:click="deleteFolder" class="btn btn-light btn-sm"><i class="fa fa-trash"></i></a>
                 </div>
                 <div class="btn-group visibility-buttons">
-                    <button type="button" class="btn btn-light btn-sm mr-2" v-bind:disabled="!gridView" v-on:click="smallThumbs = !smallThumbs">
-                        <span v-show="!smallThumbs" title="@T["Small Thumbs"]"><i class="fa fa-th"></i></span>
-                        <span v-show="smallThumbs" title="@T["Large Thumbs"]"><i class="fa fa-expand-arrows-alt"></i></span>
+                    <button type="button" class="btn btn-light btn-sm mr-2" v-show="gridView" v-on:click="smallThumbs = !smallThumbs">
+                        <span v-show="!smallThumbs" title="@T["Small Thumbs"]"><i class="fa fa-arrow-down"></i></span>
+                        <span v-show="smallThumbs" title="@T["Large Thumbs"]"><i class="fa fa-arrow-up"></i></span>
                     </button>
                     <button type="button" class="btn btn-light btn-sm" v-on:click="gridView = !gridView">
                         <span v-show="!gridView" title="@T["Grid View"]"><i class="fa fa-th-large"></i></span>

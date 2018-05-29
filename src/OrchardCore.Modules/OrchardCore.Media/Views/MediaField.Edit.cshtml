@@ -38,8 +38,8 @@
             <nav class="media-field-toolbar" v-cloak>
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary btn-sm" v-bind:disabled="mediaItems.length < 1" v-on:click="smallThumbs = !smallThumbs">
-                        <span v-show="!smallThumbs" title="@T["Small Thumbs"]"><i class="fa fa-th"></i></span>
-                        <span v-show="smallThumbs" title="@T["Large Thumbs"]"><i class="fa fa-expand-arrows-alt"></i></span>
+                        <span v-show="!smallThumbs" title="@T["Small Thumbs"]"><i class="fa fa-arrow-down"></i></span>
+                        <span v-show="smallThumbs" title="@T["Large Thumbs"]"><i class="fa fa-arrow-up"></i></span>
                     </button>
                     <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></a>
                     <a v-show="canRemoveMedia" href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm"><i class="fa fa-trash"></i></a>
