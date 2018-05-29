@@ -1,9 +1,4 @@
-using System.IO;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -79,16 +74,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.Startup.ConfigureServices((tenant, sp) =>
             {
-                var settings = sp.GetRequiredService<ShellSettings>();
-
-                var tenantName = settings.Name;
-                var tenantPrefix = "/" + settings.RequestUrlPrefix;
-
-                tenant.Services.AddAntiforgery(options =>
-                {
-                    options.Cookie.Name = "orchantiforgery_" + tenantName;
-                    options.Cookie.Path = tenantPrefix;
-                });
+                tenant.AddAntiForgery(sp);
             });
 
             return builder;
@@ -103,11 +89,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.Startup.ConfigureServices((tenant, sp) =>
             {
-                tenant.Services.AddAuthentication();
-
-                // Note: IAuthenticationSchemeProvider is already registered at the host level.
-                // We need to register it again so it is taken into account at the tenant level.
-                tenant.Services.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
+                tenant.AddAuthentication();
             })
 
             .Configure((tenant, routes, sp) =>
@@ -125,23 +107,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Startup.ConfigureServices((tenant, sp) =>
             {
-                var settings = sp.GetRequiredService<ShellSettings>();
-                var options = sp.GetRequiredService<IOptions<ShellOptions>>();
-
-                var directory = Directory.CreateDirectory(Path.Combine(
-                options.Value.ShellsApplicationDataPath,
-                options.Value.ShellsContainerName,
-                settings.Name, "DataProtection-Keys"));
-
-                // Re-register the data protection services to be tenant-aware so that modules that internally
-                // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that
-                // manages its own key ring and doesn't allow decrypting payloads encrypted by another tenant.
-                // By default, the key ring is stored in the tenant directory of the configured App_Data path.
-                tenant.Services.Add(new ServiceCollection()
-                    .AddDataProtection()
-                    .PersistKeysToFileSystem(directory)
-                    .SetApplicationName(settings.Name)
-                    .Services);
+                tenant.AddDataProtection(sp);
             });
 
             return builder;
