@@ -117,10 +117,24 @@ namespace OrchardCore.Modules
                 Assets = Enumerable.Empty<Asset>();
                 AssetPaths = Enumerable.Empty<string>();
                 ModuleInfo = new ModuleAttribute();
-                _lastModified = DateTimeOffset.MinValue;
             }
 
             _baseNamespace = Name + '.';
+            _lastModified = DateTimeOffset.UtcNow;
+
+            if (!string.IsNullOrEmpty(Assembly?.Location))
+            {
+                try
+                {
+                    _lastModified = File.GetLastWriteTimeUtc(Assembly.Location);
+                }
+                catch (PathTooLongException)
+                {
+                }
+                catch (UnauthorizedAccessException)
+                {
+                }
+            }
         }
 
         public string Name { get; }
