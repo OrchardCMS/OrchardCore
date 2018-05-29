@@ -1,7 +1,6 @@
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Modules;
+using OrchardCore.Environment.Extensions;
 
-namespace OrchardCore.Environment.Extensions.Manifests
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OrchardCoreBuilderExtensions
     {

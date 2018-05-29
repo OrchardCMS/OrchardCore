@@ -21,7 +21,10 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class TenantServicesBuilderExtensions
     {
-        internal static TenantServicesBuilder AddMvc(this TenantServicesBuilder tenant, IServiceProvider serviceProvider)
+        /// <summary>
+        /// Adds tenant level MVC services.
+        /// </summary>
+        public static TenantServicesBuilder AddMvc(this TenantServicesBuilder tenant, IServiceProvider serviceProvider)
         {
             tenant.Services.TryAddSingleton(new ApplicationPartManager());
 

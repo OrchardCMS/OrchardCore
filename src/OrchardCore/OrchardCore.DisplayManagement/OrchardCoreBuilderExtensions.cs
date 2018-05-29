@@ -3,7 +3,6 @@ using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.TagHelpers;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Environment.Extensions.Manifests;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -27,10 +26,8 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds host level services.
+        /// Adds host level services for managing themes.
         /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
         public static OrchardCoreBuilder AddThemingHost(this OrchardCoreBuilder builder)
         {
             var services = builder.Services;

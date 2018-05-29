@@ -6,6 +6,9 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class TenantServicesBuilderExtensions
     {
+        /// <summary>
+        /// Adds tenant level background tasks services.
+        /// </summary>
         public static TenantServicesBuilder AddBackgroundTasks(this TenantServicesBuilder tenant)
         {
             var services = tenant.Services;

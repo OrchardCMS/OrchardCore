@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using OrchardCore.Modules;
 
-namespace OrchardCore.Modules.Extensions
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OrchardCoreBuilderExtensions
     {
@@ -21,6 +21,9 @@ namespace OrchardCore.Modules.Extensions
             return builder;
         }
 
+        /// <summary>
+        /// Adds tenant level configuration to serve static files from modules
+        /// </summary>
         public static TenantApplicationBuilder UseStaticFiles(this TenantApplicationBuilder tenant)
         {
             var env = tenant.ApplicationBuilder.ApplicationServices.GetRequiredService<IHostingEnvironment>();

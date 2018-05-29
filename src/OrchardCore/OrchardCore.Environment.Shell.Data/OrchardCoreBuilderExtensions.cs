@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Data;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -24,9 +23,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         ///  Host services to load site settings from the file system
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="sitesPath"></param>
-        /// <returns></returns>
         public static OrchardCoreBuilder AddSitesFolder(this OrchardCoreBuilder builder)
         {
             var services = builder.Services;

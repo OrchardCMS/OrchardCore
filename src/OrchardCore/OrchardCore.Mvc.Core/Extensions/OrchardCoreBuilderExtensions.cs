@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules.Extensions;
-
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OrchardCoreBuilderExtensions

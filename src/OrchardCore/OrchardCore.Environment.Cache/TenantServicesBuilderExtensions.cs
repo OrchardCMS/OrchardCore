@@ -7,6 +7,9 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class TenantServicesBuilderExtensions
     {
+        /// <summary>
+        /// Adds tenant level caching services.
+        /// </summary>
         public static TenantServicesBuilder AddCaching(this TenantServicesBuilder tenant)
         {
             var services = tenant.Services;

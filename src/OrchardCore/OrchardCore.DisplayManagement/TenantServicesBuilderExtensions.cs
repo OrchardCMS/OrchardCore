@@ -26,6 +26,9 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class TenantServicesBuilderExtensions
     {
+        /// <summary>
+        /// Adds tenant level services for managing themes.
+        /// </summary>
         public static TenantServicesBuilder AddTheming(this TenantServicesBuilder tenant)
         {
             var services = tenant.Services;

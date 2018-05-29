@@ -5,6 +5,9 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class TenantServicesBuilderExtensions
     {
+        /// <summary>
+        /// Adds tenant level deferred tasks services.
+        /// </summary>
         public static TenantServicesBuilder AddDeferredTasks(this TenantServicesBuilder tenant)
         {
             var services = tenant.Services;
