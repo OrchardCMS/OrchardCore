@@ -6152,7 +6152,11 @@ a.text-dark:hover, a.text-dark:focus {
   border: solid 1px #e9ecef;
   padding: 20px;
   font-size: 0.875rem; }
+  .media-container-main .media-items-table .header-row {
+    background-color: rgba(0, 0, 0, 0.03); }
   .media-container-main .media-items-table .header-row th {
+    padding-top: 8px;
+    padding-bottom: 8px;
     color: #495057;
     font-weight: 500 !important; }
   .media-container-main .media-items-table .thumbnail-column {
