@@ -1,19 +1,19 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Html
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
-@inject Microsoft.Extensions.Options.IOptions<IdentityOptions> identityOptions
-@inject OrchardCore.Modules.IClock clock
+@inject Microsoft.Extensions.Options.IOptions<IdentityOptions> IdentityOptions
+@inject OrchardCore.Modules.IClock Clock
 @model OrchardCore.Setup.ViewModels.SetupViewModel
 
 @{
     // The Setup Layout is a standard MVC layout do that it doesn't use Shapes.
     Layout = "../_Layout.cshtml";
-    var localTimeZone = clock.GetSystemTimeZone();
+    var localTimeZone = Clock.GetSystemTimeZone();
 }
 
 @{
     var defaultRecipe = Model.Recipes.FirstOrDefault(x => x.Name == Model.RecipeName) ?? Model.Recipes.FirstOrDefault();
-    var options = identityOptions.Value;
+    var options = IdentityOptions.Value;
     var passwordOptions = new HtmlContentBuilder();
     IHtmlContent separator = HtmlString.Empty;
     string passwordRegex = "";
@@ -122,7 +122,7 @@
             <select asp-for="SiteTimeZone" class="form-control">
 
                 <option value="@localTimeZone.TimeZoneId">@localTimeZone</option>
-                @foreach (var timezone in Model.TimeZones)
+                @foreach (var timezone in Clock.GetTimeZones())
                 {
                     <option value="@timezone.TimeZoneId" selected="@(Model.SiteTimeZone == timezone.TimeZoneId)">
                         @timezone

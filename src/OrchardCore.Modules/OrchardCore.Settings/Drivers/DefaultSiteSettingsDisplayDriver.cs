@@ -9,13 +9,7 @@ namespace OrchardCore.Settings.Drivers
 {
     public class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
     {
-        private readonly IClock _clock;
         public const string GroupId = "general";
-
-        public DefaultSiteSettingsDisplayDriver(IClock clock)
-        {
-            _clock = clock;
-        }
 
         public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
@@ -25,8 +19,6 @@ namespace OrchardCore.Settings.Drivers
                         model.SiteName = site.SiteName;
                         model.BaseUrl = site.BaseUrl;
                         model.TimeZone = site.TimeZoneId;
-                        model.TimeZones = _clock.GetTimeZones();
-                        model.SiteCulture = site.Culture;
                     }).Location("Content:1").OnGroup(GroupId)
             );
         }
