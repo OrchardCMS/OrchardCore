@@ -130,11 +130,6 @@ namespace OrchardCore.Media.Controllers
                 {
                     var mediaFilePath = _mediaFileStore.Combine(path, file.FileName);
 
-                    if (await _mediaFileStore.GetFileInfoAsync(mediaFilePath) != null)
-                    {
-                        throw new Exception(T["Cannot create file '{0}' because it already exists.", mediaFilePath]);
-                    }
-
                     using (var stream = file.OpenReadStream())
                     {
                         await _mediaFileStore.CreateFileFromStream(mediaFilePath, stream);
