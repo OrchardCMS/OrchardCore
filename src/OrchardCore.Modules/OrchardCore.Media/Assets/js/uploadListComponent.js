@@ -3,7 +3,9 @@ Vue.component('uploadList', {
     template: '\
         <div class="upload-list" v-show="files.length > 0"> \
             <div class="header" @click="expanded = !expanded"> \
-                <span :class="{ \'text-danger\' : errorCount }"> {{ T.uploads }} ({{ fileCount }})</span> \
+                <span> {{ T.uploads }} </span> \
+                <span v-show="pendingCount"> (Pending: {{ pendingCount }}) </span> \
+                <span v-show="errorCount" :class="{ \'text-danger\' : errorCount }"> ( {{ T.errors }}: {{ errorCount }} / <a href="javascript:;" v-on:click.stop="clearErrors" > {{ T.clearErrors }} </a>)</span> \
                     <div class="toggle-button"> \
                     <div v-show="expanded"> \
                         <i class="fa fa-chevron-down"></i> \
@@ -25,6 +27,7 @@ Vue.component('uploadList', {
             files: [],
             T: {},
             expanded: false,
+            pendingCount: 0,
             errorCount: 0
         }
     },
@@ -32,6 +35,8 @@ Vue.component('uploadList', {
         var self = this;
         // retrieving localized strings from view
         self.T.uploads = $('#t-uploads').val();
+        self.T.errors = $('#t-errors').val();
+        self.T.clearErrors = $('#t-clear-errors').val();
     },
     computed: {
         fileCount: function () {
@@ -67,15 +72,25 @@ Vue.component('uploadList', {
         });
 
         bus.$on('ErrorOnUpload', function (fileUpload) {
-            self.updateErrorCount();
+            self.updateCount();
         });
     },
     methods: {
-        updateErrorCount: function () {
-            var result = this.files.filter(function (item) {
+        updateCount: function () {
+            this.errorCount = this.files.filter(function (item) {
                 return item.errorMessage != '';
             }).length;
-            this.errorCount = result;
+            this.pendingCount = this.files.length - this.errorCount;
+        },
+        clearErrors: function () {            
+            this.files = this.files.filter(function (item) {
+                return item.errorMessage == '';
+            });
+        }
+    },
+    watch: {
+        files: function () {
+            this.updateCount();
         }
     }
 });
