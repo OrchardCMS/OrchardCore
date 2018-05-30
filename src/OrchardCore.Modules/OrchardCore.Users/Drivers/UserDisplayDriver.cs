@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
@@ -18,19 +19,26 @@ namespace OrchardCore.Users.Drivers
         private readonly UserManager<IUser> _userManager;
         private readonly IUserService _userService;
         private readonly IRoleProvider _roleProvider;
-
+        private readonly IUserStore<IUser> _userStore;
+        private readonly IUserEmailStore<IUser> _userEmailStore;
+        private readonly IUserRoleStore<IUser> _userRoleStore;
         private readonly IStringLocalizer T;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
             IUserService userService,
             IRoleProvider roleProvider,
+            IUserStore<IUser> userStore,
+            IUserEmailStore<IUser> userEmailStore,
+            IUserRoleStore<IUser> userRoleStore,
             IStringLocalizer<UserDisplayDriver> stringLocalizer)
         {
             _userManager = userManager;
             _userService = userService;
             _roleProvider = roleProvider;
-
+            _userStore = userStore;
+            _userEmailStore = userEmailStore;
+            _userRoleStore = userRoleStore;
             T = stringLocalizer;
         }
 
@@ -42,9 +50,9 @@ namespace OrchardCore.Users.Drivers
             );
         }
 
-        public override IDisplayResult Edit(User user)
+        public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
         {
-            return Initialize<EditUserViewModel>("UserFields_Edit", async model =>
+            return Task.FromResult<IDisplayResult>(Initialize<EditUserViewModel>("UserFields_Edit", async model =>
             {
                 var roleNames = await GetRoleNamesAsync();
                 var userRoleNames = await _userManager.GetRolesAsync(user);
@@ -54,8 +62,7 @@ namespace OrchardCore.Users.Drivers
                 model.UserName = await _userManager.GetUserNameAsync(user);
                 model.Email = await _userManager.GetEmailAsync(user);
                 model.Roles = roles;
-                model.DisplayPasswordFields = await IsNewUser(model.Id);
-            }).Location("Content:1");
+            }).Location("Content:1"));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
@@ -64,58 +71,62 @@ namespace OrchardCore.Users.Drivers
 
             if (!await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                return Edit(user);
+                return await EditAsync(user, context);
             }
 
             model.UserName = model.UserName?.Trim();
             model.Email = model.Email?.Trim();
 
-            if (await IsNewUser(model.Id))
+            if (string.IsNullOrWhiteSpace(model.UserName))
             {
-                if (model.Password != model.PasswordConfirmation)
-                {
-                    context.Updater.ModelState.AddModelError(nameof(model.PasswordConfirmation), T["Password and Password Confirmation do not match"]);
-                }
-
-                if (!context.Updater.ModelState.IsValid)
-                {
-                    return Edit(user);
-                }
-
-                var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
-                await _userService.CreateUserAsync(model.UserName, model.Email, roleNames, model.Password, (key, message) => context.Updater.ModelState.AddModelError(key, message));
+                context.Updater.ModelState.AddModelError("UserName", T["A user name is required."]);
             }
-            else
+
+            if (string.IsNullOrWhiteSpace(model.Email))
             {
-                var userWithSameName = await _userManager.FindByNameAsync(model.UserName);
-                if (userWithSameName != null)
+                context.Updater.ModelState.AddModelError("Email", T["An email is required."]);
+            }
+
+            await _userStore.SetUserNameAsync(user, model.UserName, default(CancellationToken));
+            await _userEmailStore.SetEmailAsync(user, model.Email, default(CancellationToken));
+
+            var userWithSameName = await _userStore.FindByNameAsync(_userManager.NormalizeKey(model.UserName), default(CancellationToken));
+            if (userWithSameName != null)
+            {
+                var userWithSameNameId = await _userStore.GetUserIdAsync(userWithSameName, default(CancellationToken));
+                if (userWithSameNameId != model.Id)
                 {
-                    var userWithSameNameId = await _userManager.GetUserIdAsync(userWithSameName);
-                    if (userWithSameNameId != model.Id)
+                    context.Updater.ModelState.AddModelError(string.Empty, T["The user name is already used."]);
+                }
+            }
+
+            var userWithSameEmail = await _userEmailStore.FindByEmailAsync(_userManager.NormalizeKey(model.Email), default(CancellationToken));
+            if (userWithSameEmail != null)
+            {
+                var userWithSameEmailId = await _userStore.GetUserIdAsync(userWithSameEmail, default(CancellationToken));
+                if (userWithSameEmailId != model.Id)
+                {
+                    context.Updater.ModelState.AddModelError(string.Empty, T["The email is already used."]);
+                }
+            }
+
+            if (context.Updater.ModelState.IsValid)
+            {
+                var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
+
+                if (context.IsNew)
+                {
+                    // Add new roles
+                    foreach (var role in roleNames)
                     {
-                        context.Updater.ModelState.AddModelError(string.Empty, T["The user name is already used."]);
+                        await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeKey(role), default(CancellationToken));
                     }
                 }
-
-                var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
-                if (userWithSameEmail != null)
+                else
                 {
-                    var userWithSameEmailId = await _userManager.GetUserIdAsync(userWithSameEmail);
-                    if (userWithSameEmailId != model.Id)
-                    {
-                        context.Updater.ModelState.AddModelError(string.Empty, T["The email is already used."]);
-                    }
-                }
-
-                if (context.Updater.ModelState.IsValid)
-                {
-                    var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
-                    await _userManager.SetUserNameAsync(user, model.UserName);
-                    await _userManager.SetEmailAsync(user, model.Email);
-
                     // Remove roles in two steps to prevent an iteration on a modified collection
                     var rolesToRemove = new List<string>();
-                    foreach (var role in await _userManager.GetRolesAsync(user))
+                    foreach (var role in await _userRoleStore.GetRolesAsync(user, default(CancellationToken)))
                     {
                         if (!roleNames.Contains(role))
                         {
@@ -125,39 +136,27 @@ namespace OrchardCore.Users.Drivers
 
                     foreach (var role in rolesToRemove)
                     {
-                        await _userManager.RemoveFromRoleAsync(user, role);
+                        await _userRoleStore.RemoveFromRoleAsync(user, _userManager.NormalizeKey(role), default(CancellationToken));
                     }
 
                     // Add new roles
                     foreach (var role in roleNames)
                     {
-                        if (!await _userManager.IsInRoleAsync(user, role))
+                        if (!await _userRoleStore.IsInRoleAsync(user, _userManager.NormalizeKey(role), default(CancellationToken)))
                         {
-                            await _userManager.AddToRoleAsync(user, role);
+                            await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeKey(role), default(CancellationToken));
                         }
-                    }
-
-                    var result = await _userManager.UpdateAsync(user);
-                    
-                    foreach (var error in result.Errors)
-                    {
-                        context.Updater.ModelState.AddModelError(string.Empty, error.Description);
                     }
                 }
             }
 
-            return Edit(user);
+            return await EditAsync(user, context);
         }
 
         private async Task<IEnumerable<string>> GetRoleNamesAsync()
         {
             var roleNames = await _roleProvider.GetRoleNamesAsync();
             return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
-        }
-
-        private async Task<bool> IsNewUser(string userId)
-        {
-            return await _userManager.FindByIdAsync(userId) == null;
         }
     }
 }

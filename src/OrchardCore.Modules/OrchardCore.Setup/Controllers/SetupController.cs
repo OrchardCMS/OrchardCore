@@ -68,8 +68,6 @@ namespace OrchardCore.Setup.Controllers
                 model.TablePrefix = _shellSettings.TablePrefix;
             }
 
-            model.TimeZones = _clock.GetTimeZones();
-
             return View(model);
         }
 
@@ -120,8 +118,6 @@ namespace OrchardCore.Setup.Controllers
                 model.TablePrefixPreset = true;
                 model.TablePrefix = _shellSettings.TablePrefix;
             }
-
-            model.TimeZones = _clock.GetTimeZones();
 
             if (!ModelState.IsValid)
             {
