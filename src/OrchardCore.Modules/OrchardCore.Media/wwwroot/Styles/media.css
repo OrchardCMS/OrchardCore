@@ -260,7 +260,8 @@
   border: 1px solid #ccc;
   width: 300px;
   height: 60px;
-  font-size: 0.875rem; }
+  font-size: 0.875rem;
+  user-select: none; }
   .upload .close-warning {
     display: block;
     float: right;

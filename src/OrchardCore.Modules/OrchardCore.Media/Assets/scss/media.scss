@@ -390,6 +390,7 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
     width: 300px;
     height: 60px;
     font-size: 0.875rem;
+    user-select:none;
 
     .close-warning {
         display: block;
