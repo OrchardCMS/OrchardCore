@@ -2597,8 +2597,19 @@ Vue.component('uploadList', {
             if (!data.files) { 
                 return;
             }
-            data.files.forEach(function (f) {
-                    self.files.push({ name: f.name, percentage: 0, errorMessage: ''});
+            data.files.forEach(function (newFile) {
+                var alreadyInList = false;
+                self.files.forEach(function (f) {
+                    if (f.name == newFile.name) {
+                        console.log('already in list');
+                        alreadyInList = true;
+                        break;
+                    }
+                });
+
+                if (!alreadyInList) {
+                    self.files.push({ name: newFile.name, percentage: 0, errorMessage: '' });
+                }                
             });            
         });
 
