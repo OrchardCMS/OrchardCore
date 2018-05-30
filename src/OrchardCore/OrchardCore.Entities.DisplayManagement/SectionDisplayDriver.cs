@@ -32,7 +32,7 @@ namespace OrchardCore.Entities.DisplayManagement
                 section = property.ToObject<TSection>();
             }
 
-            return DisplayAsync(section, context);
+            return DisplayAsync(model, section, context);
         }
 
         public override Task<IDisplayResult> EditAsync(TModel model, BuildEditorContext context)
@@ -51,7 +51,7 @@ namespace OrchardCore.Entities.DisplayManagement
                 section = property.ToObject<TSection>();
             }            
 
-            return EditAsync(section, context);
+            return EditAsync(model, section, context);
         }
 
         public override Task<IDisplayResult> UpdateAsync(TModel model, UpdateEditorContext context)
@@ -70,7 +70,7 @@ namespace OrchardCore.Entities.DisplayManagement
                 section = property.ToObject<TSection>();
             }
             
-            var result = UpdateAsync(section, context.Updater, context);
+            var result = UpdateAsync(model, section, context.Updater, context);
 
             if (result == null)
             {
@@ -83,6 +83,11 @@ namespace OrchardCore.Entities.DisplayManagement
             }
 
             return result;
+        }
+
+        public virtual Task<IDisplayResult> DisplayAsync(TModel model, TSection section, BuildDisplayContext context)
+        {
+            return DisplayAsync(section, context);
         }
 
         public virtual Task<IDisplayResult> DisplayAsync(TSection section, BuildDisplayContext context)
@@ -100,6 +105,11 @@ namespace OrchardCore.Entities.DisplayManagement
             return null;
         }
 
+        public virtual Task<IDisplayResult> EditAsync(TModel model, TSection section, BuildEditorContext context)
+        {
+            return EditAsync(section, context);
+        }
+
         public virtual Task<IDisplayResult> EditAsync(TSection section, BuildEditorContext context)
         {
             return Task.FromResult(Edit(section, context));
@@ -113,6 +123,11 @@ namespace OrchardCore.Entities.DisplayManagement
         public virtual IDisplayResult Edit(TSection section)
         {
             return null;
+        }
+
+        public virtual Task<IDisplayResult> UpdateAsync(TModel model, TSection section, IUpdateModel updater, BuildEditorContext context)
+        {
+            return UpdateAsync(section, updater, context);
         }
 
         public virtual Task<IDisplayResult> UpdateAsync(TSection section, IUpdateModel updater, BuildEditorContext context)
