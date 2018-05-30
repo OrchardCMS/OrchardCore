@@ -20,11 +20,12 @@ install:
 
   # Download .NET Core 2.1 SDK and add to PATH
   - ps: |
-    $env:DOTNET_INSTALL_DIR = "$pwd\.dotnetsdk"
-    New-Item -ItemType Directory -Force -Path $env:DOTNET_INSTALL_DIR
-    wget "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "$env:DOTNET_INSTALL_DIR\dotnet-install.ps1"
-    $env:DOTNET_INSTALL_DIR\dotnet-install.ps1 -Channel 2.1.300 -SkipNonVersionedFiles -Version 2.1.300
-    $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
+
+      $env:DOTNET_INSTALL_DIR = "$pwd/.build"
+      New-Item -ItemType Directory -Force -Path $env:DOTNET_INSTALL_DIR
+      wget "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "$env:DOTNET_INSTALL_DIR/dotnet-install.ps1"
+      $env:DOTNET_INSTALL_DIR/dotnet-install.ps1 -Channel 2.1.300 -SkipNonVersionedFiles -Version 2.1.300
+      $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
 
   # Get the latest stable version of Node.js or io.js
   - ps: Install-Product node $env:nodejs_version
@@ -65,8 +66,8 @@ build_script:
 
       if (($IsMasterBranch -eq $true) -and (CI_LINUX -eq "true"))
       {
-        cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
-        dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
+        cd $env:APPVEYOR_BUILD_FOLDER/src/OrchardCore.Cms.Web
+        dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER/.build/release
         cd $env:APPVEYOR_BUILD_FOLDER
         docker build -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:1.0.0-beta2 .
         docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
@@ -75,8 +76,8 @@ build_script:
 
       if (($IsDevBranch -eq $true) -and (CI_LINUX -eq "true"))
       {
-        cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
-        dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
+        cd $env:APPVEYOR_BUILD_FOLDER/src/OrchardCore.Cms.Web
+        dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER/.build/release
         cd $env:APPVEYOR_BUILD_FOLDER
         docker build -t orchardproject/orchardcore-cms-linux:dev .
         docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
@@ -95,7 +96,7 @@ clone_depth: 1
 test: on
 
 artifacts:
-- path: 'src\**\*.nupkg'
+- path: 'src/**/*.nupkg'
 
 deploy_script:
 - ps:  if (($IsMasterBranch -eq $true) -and ($CI_WINDOWS -eq "true")) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:NUGET_API_KEY -Source https://www.nuget.org/api/v2/package } }
