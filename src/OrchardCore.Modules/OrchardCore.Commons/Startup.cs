@@ -10,7 +10,6 @@ namespace OrchardCore.Commons
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddGeneratorTagFilter();
         }
     }
 }

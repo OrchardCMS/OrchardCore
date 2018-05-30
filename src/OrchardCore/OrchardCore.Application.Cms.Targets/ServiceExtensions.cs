@@ -24,6 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddTheming()
                     .AddLiquidViews()
                     .AddResourceManagement()
+                    .AddGeneratorTagFilter()
                     .AddCaching());
         }
     }

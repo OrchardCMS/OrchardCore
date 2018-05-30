@@ -17,5 +17,18 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder;
         }
+
+        /// <summary>
+        /// Adds a tenant level mvc filter which registers a Generator Meta Tag.
+        /// </summary>
+        public static OrchardCoreBuilder AddGeneratorTagFilter(this OrchardCoreBuilder builder)
+        {
+            builder.Startup.ConfigureServices((tenant, sp) =>
+            {
+                tenant.AddGeneratorTagFilter();
+            });
+
+            return builder;
+        }
     }
 }
