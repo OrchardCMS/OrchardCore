@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using OrchardCore.Setup.Events;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services
 {
@@ -28,7 +29,7 @@ namespace OrchardCore.Users.Services
             Action<string, string> reportError
             )
         {
-            return _userService.CreateUserAsync(userName, email, new string[] { "Administrator" }, password, reportError);
+            return _userService.CreateUserAsync(new User { UserName = userName, Email = email, RoleNames = new string[] { "Administrator" }, PasswordHash = password }, reportError);
         }
     }
 }

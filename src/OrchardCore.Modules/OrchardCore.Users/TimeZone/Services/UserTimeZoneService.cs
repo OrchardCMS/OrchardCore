@@ -82,7 +82,7 @@ namespace OrchardCore.Users.TimeZone.Services
                 if (!String.IsNullOrEmpty(timeZoneId))
                 {
                     await _distributedCache.SetStringAsync(key, timeZoneId, new DistributedCacheEntryOptions { SlidingExpiration = SlidingExpiration });
-                }                
+                }
             }
             
             return timeZoneId;

@@ -165,7 +165,7 @@ namespace OrchardCore.Users.Controllers
                 return View(shape);
             }
 
-            await _userService.CreateUserAsync(user.UserName, user.Email, user.RoleNames, null, ModelState.AddModelError);
+            await _userService.CreateUserAsync(user, ModelState.AddModelError);
 
             if (!ModelState.IsValid)
             {
