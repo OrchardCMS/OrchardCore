@@ -27,9 +27,8 @@ namespace OrchardCore.Environment.Cache
             // not override any existing instance defined at the host level by MVC
             services.AddSingleton<IMemoryCache, MemoryCache>();
 
-            // LocalCache is registered as transient as its implementation resolves IMemoryCache, thus
-            // there is no state to keep in its instance.
-            services.AddTransient<IDistributedCache, MemoryDistributedCache>();
+            // MemoryDistributedCache needs to be registered as a singleton as it owns a MemoryCache instance.
+            services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
 
             return services;
         }
