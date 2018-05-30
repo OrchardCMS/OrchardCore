@@ -45,19 +45,16 @@ Vue.component('uploadList', {
             if (!data.files) { 
                 return;
             }
-            data.files.forEach(function (newFile) {
-                var alreadyInList = false;
-                self.files.forEach(function (f) {
-                    if (f.name == newFile.name) {
-                        console.log('already in list');
-                        alreadyInList = true;
-                        break;
-                    }
+            data.files.forEach(function (newFile) {                
+                var alreadyInList = self.files.some(function (f) {
+                    return f.name == newFile.name;
                 });
 
                 if (!alreadyInList) {
                     self.files.push({ name: newFile.name, percentage: 0, errorMessage: '' });
-                }                
+                } else {
+                    console.error('A file with the same name is already on the queue:' + newFile.name);
+                }         
             });            
         });
 
