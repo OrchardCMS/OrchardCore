@@ -38,7 +38,7 @@ namespace OrchardCore.Users.Commands
 
             var valid = true;
 
-            _userService.CreateUserAsync(new User { UserName = UserName, Email = Email, RoleNames = roleNames, PasswordHash = Password }, (key, message) =>
+            _userService.CreateUserAsync(new User { UserName = UserName, Email = Email, RoleNames = roleNames }, Password, (key, message) =>
             {
                 valid = false;
                 Context.Output.WriteLine(message);

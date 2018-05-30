@@ -22,18 +22,21 @@ namespace OrchardCore.Users.Services
             T = stringLocalizer;
         }
 
-        public async Task<IUser> CreateUserAsync(IUser user, Action<string, string> reportError)
+        public async Task<IUser> CreateUserAsync(IUser user, string password, Action<string, string> reportError)
         {
-            var userCreated = user as User;
+            if (!(user is User newUser))
+            {
+                throw new ArgumentException("Expected a User instance.", nameof(user));
+            }
 
             // Accounts can be created with no password
-            var identityResult = String.IsNullOrWhiteSpace(userCreated.PasswordHash)
+            var identityResult = String.IsNullOrWhiteSpace(password)
                 ? await _userManager.CreateAsync(user)
-                : await _userManager.CreateAsync(user, userCreated.PasswordHash);
+                : await _userManager.CreateAsync(user, password);
 
             if (!identityResult.Succeeded)
             {
-                ProcessValidationErrors(identityResult.Errors, userCreated, reportError);
+                ProcessValidationErrors(identityResult.Errors, newUser, reportError);
                 return null;
             }
 
