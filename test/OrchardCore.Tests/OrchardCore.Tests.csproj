@@ -10,12 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Extensions\**" Exclude="**\*.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Localization\PoFiles\EntryWithComments.po" />
     <None Remove="Localization\PoFiles\EntryWithContext.po" />
     <None Remove="Localization\PoFiles\EntryWithEscapedCharacters.po" />
