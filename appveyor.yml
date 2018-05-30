@@ -1,4 +1,6 @@
-image: Visual Studio 2017
+image:
+- Visual Studio 2017
+- Ubuntu
 environment:
   nodejs_version: "8"
   global:
@@ -15,27 +17,33 @@ environment:
 
 # Install scripts. (runs after repo cloning)
 install:
+
   # Download .NET Core 2.1 SDK and add to PATH
-  - ps: $urlCurrent = "https://dotnetcli.azureedge.net/dotnet/Sdk/2.1.300/dotnet-sdk-2.1.300-win-x64.zip"
-  - ps: $env:DOTNET_INSTALL_DIR = "$pwd\.dotnetsdk"
-  - ps: mkdir $env:DOTNET_INSTALL_DIR -Force | Out-Null
-  - ps: $tempFileCurrent = [System.IO.Path]::GetTempFileName()
-  - ps: (New-Object System.Net.WebClient).DownloadFile($urlCurrent, $tempFileCurrent)
-  - ps: Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory($tempFileCurrent, $env:DOTNET_INSTALL_DIR)
-  - ps: $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
+  - ps: |
+    $env:DOTNET_INSTALL_DIR = "$pwd\.dotnetsdk"
+    New-Item -ItemType Directory -Force -Path $env:DOTNET_INSTALL_DIR
+    wget "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "$env:DOTNET_INSTALL_DIR\dotnet-install.ps1"
+    $env:DOTNET_INSTALL_DIR\dotnet-install.ps1 -Channel 2.1.300 -SkipNonVersionedFiles -Version 2.1.300
+    $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
+
   # Get the latest stable version of Node.js or io.js
   - ps: Install-Product node $env:nodejs_version
+
+  # Set the BuildNumber property used in OrchardCore.Commons.props
   - ps: $env:BuildNumber= $env:APPVEYOR_BUILD_NUMBER
+
   - ps: $IsMasterBranch = ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
+
 init:
   - git config --global core.autocrlf true
+
 build_script:
   - dotnet --version
   - ps: if (($IsMasterBranch -eq $true) -or ($IsDevBranch -eq $true)) { dotnet pack -c Release }
 
   - ps: |
-      if ($IsMasterBranch -eq $true)
+      if (($IsMasterBranch -eq $true) -and ($CI_WINDOWS -eq "true"))
       {
         cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
         dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
@@ -45,7 +53,7 @@ build_script:
         docker push orchardproject/orchardcore-cms-windows
       }
 
-      if ($IsDevBranch -eq $true)
+      if (($IsDevBranch -eq $true) -and ($CI_WINDOWS -eq "true"))
       {
         cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
         dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
@@ -55,12 +63,32 @@ build_script:
         docker push orchardproject/orchardcore-cms-windows
       }
 
+      if (($IsMasterBranch -eq $true) -and (CI_LINUX -eq "true"))
+      {
+        cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
+        dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
+        cd $env:APPVEYOR_BUILD_FOLDER
+        docker build -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:1.0.0-beta2 .
+        docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+        docker push orchardproject/orchardcore-cms-linux
+      }
+
+      if (($IsDevBranch -eq $true) -and (CI_LINUX -eq "true"))
+      {
+        cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
+        dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
+        cd $env:APPVEYOR_BUILD_FOLDER
+        docker build -t orchardproject/orchardcore-cms-linux:dev .
+        docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+        docker push orchardproject/orchardcore-cms-linux
+      }
+
 test_script:
   - dotnet --version
   - node --version
   - npm --version
-  - dotnet test -c Release .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
-  - cd .\test\Functional
+  - dotnet test -c Release ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
+  - cd ./test/Functional
   - test-setup.cmd
   - test-run.cmd
 clone_depth: 1
@@ -70,5 +98,5 @@ artifacts:
 - path: 'src\**\*.nupkg'
 
 deploy_script:
-- ps:  if ($IsMasterBranch -eq $true) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:NUGET_API_KEY -Source https://www.nuget.org/api/v2/package } }
-- ps:  if ($IsDevBranch -eq $true) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:MYGET_API_KEY -Source https://www.myget.org/F/orchardcore-preview/api/v2/package } }
+- ps:  if (($IsMasterBranch -eq $true) -and ($CI_WINDOWS -eq "true")) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:NUGET_API_KEY -Source https://www.nuget.org/api/v2/package } }
+- ps:  if (($IsDevBranch -eq $true) -and ($CI_WINDOWS -eq "true")) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:MYGET_API_KEY -Source https://www.myget.org/F/orchardcore-preview/api/v2/package } }
