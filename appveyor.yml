@@ -1,6 +1,6 @@
 image:
-- Visual Studio 2017
 - Ubuntu
+- Visual Studio 2017
 environment:
   nodejs_version: "8"
   global:
@@ -24,7 +24,7 @@ install:
       $env:DOTNET_INSTALL_DIR = "$pwd/.build"
       New-Item -ItemType Directory -Force -Path $env:DOTNET_INSTALL_DIR
       wget "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "$env:DOTNET_INSTALL_DIR/dotnet-install.ps1"
-      $env:DOTNET_INSTALL_DIR/dotnet-install.ps1 -Channel 2.1.300 -SkipNonVersionedFiles -Version 2.1.300
+      "$env:DOTNET_INSTALL_DIR/dotnet-install.ps1" -Channel 2.1.300 -SkipNonVersionedFiles -Version 2.1.300
       $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
 
   # Get the latest stable version of Node.js or io.js
