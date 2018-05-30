@@ -22,52 +22,20 @@ namespace OrchardCore.Users.Services
             T = stringLocalizer;
         }
 
-        public async Task<IUser> CreateUserAsync(string userName, string email, string[] roleNames, string password, bool isEmailConfirmed, Action<string, string> reportError)
+        public async Task<IUser> CreateUserAsync(IUser user, string password, Action<string, string> reportError)
         {
-            var result = true;
-
-            if (string.IsNullOrWhiteSpace(userName))
+            if (!(user is User newUser))
             {
-                reportError("UserName", T["A user name is required."]);
-                result = false;
+                throw new ArgumentException("Expected a User instance.", nameof(user));
             }
 
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                reportError("Password", T["A password is required."]);
-                result = false;
-            }
-
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                reportError("Email", T["An email is required."]);
-                result = false;
-            }
-
-            if (!result)
-            {
-                return null;
-            }
-
-            if (await _userManager.FindByEmailAsync(email) != null)
-            {
-                reportError(string.Empty, T["The email is already used."]);
-                return null;
-            }
-
-            var user = new User
-            {
-                UserName = userName,
-                Email = email,
-                RoleNames = new List<string>(roleNames),
-                EmailConfirmed = isEmailConfirmed
-            };
-
-            var identityResult = await _userManager.CreateAsync(user, password);
-
+            // Accounts can be created with no password
+            var identityResult = String.IsNullOrWhiteSpace(password)
+                ? await _userManager.CreateAsync(user)
+                : await _userManager.CreateAsync(user, password);
             if (!identityResult.Succeeded)
             {
-                ProcessValidationErrors(identityResult.Errors, user, reportError);
+                ProcessValidationErrors(identityResult.Errors, newUser, reportError);
                 return null;
             }
 
@@ -103,13 +71,13 @@ namespace OrchardCore.Users.Services
                 return await Task.FromResult<IUser>(null);
             }
 
-            var iUser = await FindByUsernameOrEmailAsync(userIdentifier);
-            if (iUser == null)
+            var user = await FindByUsernameOrEmailAsync(userIdentifier) as User;
+            
+            if (user == null)
             {
                 return await Task.FromResult<IUser>(null);
             }
 
-            var user = (User)iUser;
             user.ResetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             return user;
@@ -141,17 +109,18 @@ namespace OrchardCore.Users.Services
                 return result;
             }
 
-            var iUser = await FindByUsernameOrEmailAsync(userIdentifier);
-            if (iUser == null)
+            var user = await FindByUsernameOrEmailAsync(userIdentifier) as User;
+
+            if (user == null)
             {
                 return false;
             }
 
-            var identityResult = await _userManager.ResetPasswordAsync(iUser, resetToken, newPassword);
+            var identityResult = await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
 
             if (!identityResult.Succeeded)
             {
-                ProcessValidationErrors(identityResult.Errors, (User)iUser, reportError);
+                ProcessValidationErrors(identityResult.Errors, user, reportError);
             }
 
             return identityResult.Succeeded;
@@ -174,7 +143,7 @@ namespace OrchardCore.Users.Services
             return user;
         }
 
-        private void ProcessValidationErrors(IEnumerable<IdentityError> errors, User user, Action<string, string> reportError)
+        public void ProcessValidationErrors(IEnumerable<IdentityError> errors, User user, Action<string, string> reportError)
         {
             foreach (var error in errors)
             {

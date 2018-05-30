@@ -42,7 +42,7 @@ namespace OrchardCore.Users.Services
         }
 
         #region IUserStore<IUser>
-        public Task<IdentityResult> CreateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IdentityResult> CreateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
@@ -51,7 +51,16 @@ namespace OrchardCore.Users.Services
 
             _session.Save(user);
 
-            return Task.FromResult(IdentityResult.Success);
+            try
+            {
+                await _session.CommitAsync();
+            }
+            catch
+            {
+                return IdentityResult.Failed();
+            }
+
+            return IdentityResult.Success;
         }
 
         public async Task<IdentityResult> DeleteAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
@@ -145,7 +154,7 @@ namespace OrchardCore.Users.Services
             return Task.CompletedTask;
         }
 
-        public async Task<IdentityResult> UpdateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IdentityResult> UpdateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
@@ -154,16 +163,7 @@ namespace OrchardCore.Users.Services
 
             _session.Save(user);
 
-            try
-            {
-                await _session.CommitAsync();
-            }
-            catch
-            {
-                return IdentityResult.Failed();
-            }
-
-            return IdentityResult.Success;
+            return Task.FromResult(IdentityResult.Success);
         }
 
         #endregion
@@ -222,6 +222,7 @@ namespace OrchardCore.Users.Services
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
             return Task.FromResult(((User)user).SecurityStamp);
         }
         #endregion
@@ -316,7 +317,6 @@ namespace OrchardCore.Users.Services
             }
             
             ((User)user).RoleNames.Add(roleName);
-            _session.Save(user);
         }
 
         public async Task RemoveFromRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
@@ -335,7 +335,6 @@ namespace OrchardCore.Users.Services
             }
 
             ((User)user).RoleNames.Remove(roleName);
-            _session.Save(user);
         }
 
         public Task<IList<string>> GetRolesAsync(IUser user, CancellationToken cancellationToken)
@@ -393,8 +392,6 @@ namespace OrchardCore.Users.Services
 
             ((User)user).LoginInfos.Add(login);
 
-            _session.Save(user);
-
             return Task.CompletedTask;
         }
 
@@ -427,7 +424,6 @@ namespace OrchardCore.Users.Services
                 if (item != null)
                 {
                     externalLogins.Remove(item);
-                    _session.Save(user);
                 }
             }
             return Task.CompletedTask;

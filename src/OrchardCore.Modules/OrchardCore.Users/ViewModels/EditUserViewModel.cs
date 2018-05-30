@@ -19,8 +19,6 @@ namespace OrchardCore.Users.ViewModels
         [DataType(DataType.Password)]
         public string PasswordConfirmation { get; set; }
 
-        public bool DisplayPasswordFields { get; set; }
-
         public bool EmailConfirmed { get; set; }
 
         public RoleViewModel[] Roles { get; set; }

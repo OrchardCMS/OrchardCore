@@ -30,3 +30,10 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[] { "OrchardCore.Users", "OrchardCore.Email" },
     Category = "Security"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Users.TimeZone",
+    Name = "User Time Zone",
+    Description = "Provides a way to set the time zone per user.",
+    Category = "Settings"
+)]

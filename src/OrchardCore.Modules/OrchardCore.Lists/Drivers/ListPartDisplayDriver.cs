@@ -41,18 +41,31 @@ namespace OrchardCore.Lists.Drivers
 
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {
-            return Initialize<ListPartViewModel>("ListPart", async model =>
-            {
-                var pager = await GetPagerAsync(context.Updater, listPart);
+            return
+                Combine( 
+                    Initialize<ListPartViewModel>("ListPart", async model =>
+                    {
+                        var pager = await GetPagerAsync(context.Updater, listPart);
 
-                model.ListPart = listPart;
-                model.ContentItems = (await QueryListItemsAsync(listPart, pager, true)).ToArray();
-                model.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
-                model.Context = context;
-                model.Pager = await context.New.PagerSlim(pager);
-            })
-            .Location("Detail", "Content:10")
-            .Location("DetailAdmin", "Content:10");
+                        model.ListPart = listPart;
+                        model.ContentItems = (await QueryListItemsAsync(listPart, pager, true)).ToArray();
+                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
+                        model.Context = context;
+                        model.Pager = await context.New.PagerSlim(pager);
+                    })
+                    .Location("Detail", "Content:10"),
+                    Initialize<ListPartViewModel>("ListPart", async model =>
+                    {
+                        var pager = await GetPagerAsync(context.Updater, listPart);
+
+                        model.ListPart = listPart;
+                        model.ContentItems = (await QueryListItemsAsync(listPart, pager, false)).ToArray();
+                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
+                        model.Context = context;
+                        model.Pager = await context.New.PagerSlim(pager);
+                    })
+                    .Location("DetailAdmin", "Content:10")
+                );
         }
 
         private async Task<PagerSlim> GetPagerAsync(IUpdateModel updater, ListPart part)
@@ -66,14 +79,14 @@ namespace OrchardCore.Lists.Drivers
             return pager;
         }
 
-        private async Task<IEnumerable<ContentItem>> QueryListItemsAsync(ListPart listPart, PagerSlim pager, bool published)
+        private async Task<IEnumerable<ContentItem>> QueryListItemsAsync(ListPart listPart, PagerSlim pager, bool publishedOnly)
         {
             if (pager.Before != null)
             {
                 var beforeValue = new DateTime(long.Parse(pager.Before));
                 var query = _session.Query<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
-                    .With<ContentItemIndex>(CreateContentIndexFilter(beforeValue, null, published))
+                    .With<ContentItemIndex>(CreateContentIndexFilter(beforeValue, null, publishedOnly))
                     .OrderBy(x => x.CreatedUtc)
                     .Take(pager.PageSize + 1);
 
@@ -103,7 +116,7 @@ namespace OrchardCore.Lists.Drivers
                 var afterValue = new DateTime(long.Parse(pager.After));
                 var query = _session.Query<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
-                    .With<ContentItemIndex>(CreateContentIndexFilter(null, afterValue, published))
+                    .With<ContentItemIndex>(CreateContentIndexFilter(null, afterValue, publishedOnly))
                     .OrderByDescending(x => x.CreatedUtc)
                     .Take(pager.PageSize + 1);
 
@@ -130,7 +143,7 @@ namespace OrchardCore.Lists.Drivers
             {
                 var query = _session.Query<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
-                    .With<ContentItemIndex>(CreateContentIndexFilter(null, null, published))
+                    .With<ContentItemIndex>(CreateContentIndexFilter(null, null, publishedOnly))
                     .OrderByDescending(x => x.CreatedUtc)
                     .Take(pager.PageSize + 1);
 

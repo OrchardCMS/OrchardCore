@@ -15,3 +15,4 @@
         <button asp-action="SendVerificationEmail" asp-controller="Registration" class="btn btn-info btn-sm">@T["Send verification email"]</button>
     </form>
 }
+<a asp-action="EditPassword" asp-route-id="@user.Id" class="btn btn-secondary btn-sm">@T["Edit Password"]</a>
