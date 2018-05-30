@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddRouting();
 
                 // Use a single tenant and all features by default
-                builder.Services.AddAllFeaturesDescriptor();
+                services.AddAllFeaturesDescriptor();
 
                 // Registers the application main feature
                 services.AddTransient(sp =>
@@ -49,14 +49,14 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddWebHost(this IServiceCollection services, OrchardCoreBuilder builder)
+        internal static IServiceCollection AddWebHost(this IServiceCollection services, OrchardCoreBuilder builder)
         {
-            services.AddLogging();
-            services.AddOptions();
-            services.AddLocalization();
-            services.AddHostingShellServices();
-            services.AddExtensionManagerHost();
-            services.AddWebEncoders();
+            services.AddLogging()
+                .AddOptions()
+                .AddLocalization()
+                .AddHostingShellServices()
+                .AddExtensionManagerHost()
+                .AddWebEncoders();
 
             builder.AddManifestDefinition("module")
                 .Startup.ConfigureServices((tenant, sp) =>

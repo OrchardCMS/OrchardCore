@@ -9,14 +9,16 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Per-tenant services to store shell state and shell descriptors in the database.
         /// </summary>
-        public static TenantServicesBuilder AddShellDescriptorStorage(this TenantServicesBuilder builder)
+        public static TenantServicesBuilder AddShellDescriptorStorage(this TenantServicesBuilder tenant)
         {
-            builder.Services.AddScoped<IShellDescriptorManager, ShellDescriptorManager>();
-            builder.Services.AddScoped<IShellStateManager, ShellStateManager>();
-            builder.Services.AddScoped<IShellFeaturesManager, ShellFeaturesManager>();
-            builder.Services.AddScoped<IShellDescriptorFeaturesManager, ShellDescriptorFeaturesManager>();
+            var services = tenant.Services;
 
-            return builder;
+            services.AddScoped<IShellDescriptorManager, ShellDescriptorManager>();
+            services.AddScoped<IShellStateManager, ShellStateManager>();
+            services.AddScoped<IShellFeaturesManager, ShellFeaturesManager>();
+            services.AddScoped<IShellDescriptorFeaturesManager, ShellDescriptorFeaturesManager>();
+
+            return tenant;
         }
     }
 }
