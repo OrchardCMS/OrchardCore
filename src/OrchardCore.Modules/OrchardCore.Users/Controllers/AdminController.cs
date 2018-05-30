@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -163,7 +165,12 @@ namespace OrchardCore.Users.Controllers
                 return View(shape);
             }
 
-            _session.Save(user);
+            await _userService.CreateUserAsync(user.UserName, user.Email, user.RoleNames, null, ModelState.AddModelError);
+
+            if (!ModelState.IsValid)
+            {
+                return View(shape);
+            }
 
             _notifier.Success(TH["User created successfully"]);
 
@@ -210,7 +217,17 @@ namespace OrchardCore.Users.Controllers
                 return View(shape);
             }
 
-            _session.Save(user);
+            var result = await _userManager.UpdateAsync(user);
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(shape);
+            }
 
             _notifier.Success(TH["User updated successfully"]);
 
@@ -251,6 +268,52 @@ namespace OrchardCore.Users.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> EditPassword(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            {
+                return Unauthorized();
+            }
+
+            var user = await _userManager.FindByIdAsync(id) as User;
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new ResetPasswordViewModel { Email = user.Email };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditPassword(ResetPasswordViewModel model)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            {
+                return Unauthorized();
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email) as User;
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            if (await _userService.ResetPasswordAsync(model.Email, token, model.NewPassword, ModelState.AddModelError))
+            {
+                _notifier.Success(TH["Password updated correctly."]);
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(model);
         }
     }
 }
