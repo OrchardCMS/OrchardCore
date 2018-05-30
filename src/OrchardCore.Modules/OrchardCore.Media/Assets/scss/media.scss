@@ -1,29 +1,23 @@
-@import '../../../OrchardCore.Resources/Assets/Bootstrap/scss/bootstrap.scss';
-
 $gray-base: #000 !default;
 $gray-nr: lighten($gray-base, 13.5%) !default; // #222
 $gray-dark: lighten($gray-base, 20%) !default; // #333
 $gray: lighten($gray-base, 33.5%) !default; // #555
-
+$gray-700: #495057 !default;
+$gray-600: #6c757d !default;
+$gray-300: #dee2e6 !default;
+$gray-200: #e9ecef !default;
+$primary: #007bff;
 $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
 
+
 .media-container {
-
     .media-container-navigation {
-        @extend .col-md-3;
-
         h5 {
             padding-top: 10px;
             margin-bottom: 38px;
             color: $gray-700;
         }
-    }
-
-    .media-container-main {
-        @extend .col-md-9
-    }
-
-    @extend .row
+    }   
 }
 
 /* navbar */
@@ -132,7 +126,6 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
         align-items: stretch;
 
         li {
-            @extend .card;
             margin-bottom: 16px;
             cursor: pointer;
             margin-left: 0.7em;
@@ -150,7 +143,7 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
             }
 
             &.selected {
-                @extend .border-primary;
+                border: 1px solid $primary;
             }
 
             &.selected .inline-media-button, &:hover .inline-media-button {
@@ -181,8 +174,8 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .header-row th {
-            padding-top:8px;
-            padding-bottom:8px;
+            padding-top: 8px;
+            padding-bottom: 8px;
             color: $gray-700;
             font-weight: 500 !important;
         }
@@ -222,8 +215,8 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         tr.selected {
-            background-color: #e0f7fa;
-            border-left: solid 2px #007bff;            
+            background-color: lighten($primary, 45%);
+            border-left: solid 2px $primary;
         }
 
         .media-name-cell {
@@ -284,15 +277,12 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .media-container-main-item-title {
-    @extend .card-body;
     border-top: solid 1px $gray-300;
     padding-top: 24px;
     position:relative;
     overflow:hidden;
 
     .media-filename {
-        @extend .card-text;
-        @extend .small;
         white-space: nowrap;
         overflow:hidden;
         text-overflow:ellipsis;
@@ -348,9 +338,14 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
     }
     // there is a size's range where the table mode overflows the modal.
     // We fix it by hidding extra columns while in that range
-    @include media-breakpoint-only(md) {
+    /*@include media-breakpoint-only(md) {
         .optional-col {            
             display:none;
+        }
+    }*/
+    @media only screen and ( max-width: 992px ) and ( min-width: 768px ) {
+        .optional-col {
+            display: none;
         }
     }
 }

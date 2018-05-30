@@ -55,7 +55,7 @@
                     <draggable :list="mediaItems" element="ol" class="row">
                         <li v-for="media in mediaItems"
                             :key="media.name"
-                            class="media-container-main-list-item"
+                            class="media-container-main-list-item card"
                             v-bind:style="{width: thumbSize + 2 + 'px'}"
                             v-bind:class="{selected: selectedMedia == media}"
                             v-on:click="selectMedia(media)">
@@ -64,10 +64,10 @@
                                     <img v-if="media.mime.startsWith('image')" v-bind:src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" v-bind:data-mime="media.mime" />
                                     <i v-else class="fa fa-file-o" v-bind:data-mime="media.mime"></i>
                                 </div>
-                                <div class="media-container-main-item-title">
+                                <div class="media-container-main-item-title card-body">
                                     <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button" 
                                        v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>
-                                    <span class="media-filename" v-bind:title="media.mediaPath">{{media.name}}</span>                                    
+                                    <span class="media-filename card-text small" v-bind:title="media.mediaPath">{{media.name}}</span>                                    
                                 </div>
                             </div>
                             <div v-else>
@@ -76,10 +76,10 @@
                                     <span class="text-danger small d-block">@T["Not Found"]</span>
                                     <span class="text-danger small d-block text-center">@T["It will be discarded on saving"]</span>
                                 </div>
-                                <div class="media-container-main-item-title">
+                                <div class="media-container-main-item-title card-body">
                                     <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button"
                                        v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>
-                                    <span class="media-filename text-danger" v-bind:title="media.name">{{media.name}}</span>
+                                    <span class="media-filename card-text small text-danger" v-bind:title="media.name">{{media.name}}</span>
                                 </div>
                                 
                             </div>
