@@ -62,13 +62,9 @@ namespace OrchardCore.Users.Drivers
                 model.UserName = await _userManager.GetUserNameAsync(user);
                 model.Email = await _userManager.GetEmailAsync(user);
                 model.Roles = roles;
-<<<<<<< HEAD
                 model.EmailConfirmed = user.EmailConfirmed;
                 model.DisplayPasswordFields = await IsNewUser(model.Id);
             }).Location("Content:1");
-=======
-            }).Location("Content:1"));
->>>>>>> dev
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
