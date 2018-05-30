@@ -129,8 +129,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Cms.Web", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Admin", "src\OrchardCore.Modules\OrchardCore.Admin\OrchardCore.Admin.csproj", "{2FE86E75-3007-4BCC-9FFD-B3D1FF06CA89}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commons", "src\OrchardCore.Modules\OrchardCore.Commons\OrchardCore.Commons.csproj", "{FACE2C7A-CB88-444B-9092-8CD8C9613BEA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Diagnostics", "src\OrchardCore.Modules\OrchardCore.Diagnostics\OrchardCore.Diagnostics.csproj", "{6A46E0DC-D958-46D9-A62D-45D7685E4FAA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.DynamicCache", "src\OrchardCore.Modules\OrchardCore.DynamicCache\OrchardCore.DynamicCache.csproj", "{B2857A9B-4405-402A-91C3-CFB63BEE5A70}"
@@ -330,7 +328,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Package.json = Package.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.DataProtection.Azure", "src\OrchardCore.Modules\OrchardCore.DataProtection.Azure\OrchardCore.DataProtection.Azure.csproj", "{AD6D9975-3371-402C-BB70-31B7870030C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.DataProtection.Azure", "src\OrchardCore.Modules\OrchardCore.DataProtection.Azure\OrchardCore.DataProtection.Azure.csproj", "{AD6D9975-3371-402C-BB70-31B7870030C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -538,10 +536,6 @@ Global
 		{2FE86E75-3007-4BCC-9FFD-B3D1FF06CA89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FE86E75-3007-4BCC-9FFD-B3D1FF06CA89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FE86E75-3007-4BCC-9FFD-B3D1FF06CA89}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FACE2C7A-CB88-444B-9092-8CD8C9613BEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FACE2C7A-CB88-444B-9092-8CD8C9613BEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FACE2C7A-CB88-444B-9092-8CD8C9613BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FACE2C7A-CB88-444B-9092-8CD8C9613BEA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6A46E0DC-D958-46D9-A62D-45D7685E4FAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6A46E0DC-D958-46D9-A62D-45D7685E4FAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A46E0DC-D958-46D9-A62D-45D7685E4FAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -968,7 +962,6 @@ Global
 		{04472175-8BFD-4BA6-A0E4-241F186F89CC} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{9D78FE2C-4179-47F6-B28A-034868280197} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 		{2FE86E75-3007-4BCC-9FFD-B3D1FF06CA89} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
-		{FACE2C7A-CB88-444B-9092-8CD8C9613BEA} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{6A46E0DC-D958-46D9-A62D-45D7685E4FAA} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{B2857A9B-4405-402A-91C3-CFB63BEE5A70} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{C585E8D0-E63E-4A4F-B2C6-014EC6954C22} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}

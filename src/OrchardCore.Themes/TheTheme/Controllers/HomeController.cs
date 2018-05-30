@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
-namespace OrchardCore.Commons.Controllers
+namespace OrchardCore.TheTheme.Controllers
 {
     public class HomeController : Controller
     {

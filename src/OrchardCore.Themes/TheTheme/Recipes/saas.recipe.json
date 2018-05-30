@@ -15,7 +15,6 @@
       "enable": [
         // SaaS
         "OrchardCore.Admin",
-        "OrchardCore.Commons",
         "OrchardCore.Diagnostics",
         "OrchardCore.DynamicCache",
         "OrchardCore.HomeRoute",
@@ -46,7 +45,7 @@
       "HomeRoute": {
         "Action": "Index",
         "Controller": "Home",
-        "Area": "OrchardCore.Commons"
+        "Area": "TheTheme"
       }
     }
   ]
