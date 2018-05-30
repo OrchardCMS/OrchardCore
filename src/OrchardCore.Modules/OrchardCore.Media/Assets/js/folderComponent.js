@@ -5,8 +5,8 @@ Vue.component('folder', {
                 v-on:dragleave.prevent = "handleDragLeave($event);" \
                 v-on:dragover.prevent.stop="handleDragOver($event);" \
                 v-on:drop.prevent.stop = "moveMediaToFolder(model, $event)" >\
-            <div v-bind:class="{folderhovered: isHovered}" >\
-                <a href="javascript:;" v-on:click="toggle" class="expand" v-bind:class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
+            <div :class="{folderhovered: isHovered}" >\
+                <a href="javascript:;" v-on:click="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
                 <a href="javascript:;" v-on:click="select" draggable="false" >\
                     <i class="folder fa fa-folder"></i>\
                     {{model.name}}\

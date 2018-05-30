@@ -485,8 +485,8 @@ Vue.component('folder', {
                 v-on:dragleave.prevent = "handleDragLeave($event);" \
                 v-on:dragover.prevent.stop="handleDragOver($event);" \
                 v-on:drop.prevent.stop = "moveMediaToFolder(model, $event)" >\
-            <div v-bind:class="{folderhovered: isHovered}" >\
-                <a href="javascript:;" v-on:click="toggle" class="expand" v-bind:class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
+            <div :class="{folderhovered: isHovered}" >\
+                <a href="javascript:;" v-on:click="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
                 <a href="javascript:;" v-on:click="select" draggable="false" >\
                     <i class="folder fa fa-folder"></i>\
                     {{model.name}}\
@@ -2497,12 +2497,12 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
 // <upload> component
 Vue.component('upload', {
     template: '\
-        <div v-bind:class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
+        <div :class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
             <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning" style=""><i class="fa fa-times"></i> </span>\
-            <p class="upload-name" v-bind:title="model.errorMessage">{{ model.name }}</p> \
+            <p class="upload-name" :title="model.errorMessage">{{ model.name }}</p> \
             <div> \
-               <span v-show="!model.errorMessage" v-bind:style="{ width: model.percentage + \'%\'}" class="progress-bar"> </span> \
-               <span v-if="model.errorMessage" class="error-message" v-bind:title="model.errorMessage"> Error: {{ model.errorMessage }} </span> \
+               <span v-show="!model.errorMessage" :style="{ width: model.percentage + \'%\'}" class="progress-bar"> </span> \
+               <span v-if="model.errorMessage" class="error-message" :title="model.errorMessage"> Error: {{ model.errorMessage }} </span> \
             </div> \
         </div> \
         ',
