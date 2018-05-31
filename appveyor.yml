@@ -39,37 +39,42 @@ build_script:
       { 
         dotnet publish -c Release -p $env:APPVEYOR_BUILD_FOLDER/src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -o $env:APPVEYOR_BUILD_FOLDER/.build/release
         dotnet pack -c Release 
+        docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
       }
 
   # Building Docker images
   - ps: cd $env:APPVEYOR_BUILD_FOLDER
-  - ps: docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
   - ps: |
 
-      if (($IsMasterBranch -eq $true) -and ($isWindows))
+      if ($isWindows)
       {
-        docker build -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:1.0.0-beta2 .
-        docker push orchardproject/orchardcore-cms-windows
+          if ($IsMasterBranch)
+          {
+            docker build -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:1.0.0-beta2 .
+            docker push orchardproject/orchardcore-cms-windows
+          }
+
+          if ($IsDevBranch)
+          {
+            docker build -t orchardproject/orchardcore-cms-windows:dev .
+            docker push orchardproject/orchardcore-cms-windows
+          }
       }
 
-      if (($IsDevBranch -eq $true) -and ($isWindows))
+      if ($isLinux)
       {
-        docker build -t orchardproject/orchardcore-cms-windows:dev .
-        docker push orchardproject/orchardcore-cms-windows
-      }
+          if ($IsMasterBranch)
+          {
+            docker build -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:1.0.0-beta2 .
+            docker push orchardproject/orchardcore-cms-linux
+          }
 
-      if (($IsMasterBranch -eq $true) -and ($isLinux))
-      {
-        docker build -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:1.0.0-beta2 .
-        docker push orchardproject/orchardcore-cms-linux
+          if ($IsDevBranch)
+          {
+            docker build -t orchardproject/orchardcore-cms-linux:dev .
+            docker push orchardproject/orchardcore-cms-linux
+          }
       }
-
-      if (($IsDevBranch -eq $true) -and ($isLinux))
-      {
-        docker build -t orchardproject/orchardcore-cms-linux:dev .
-        docker push orchardproject/orchardcore-cms-linux
-      }
-
 test_script:
   - dotnet --version
   - node --version
