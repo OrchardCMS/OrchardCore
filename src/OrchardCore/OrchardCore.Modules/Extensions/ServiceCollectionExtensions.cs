@@ -23,6 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton(builder);
 
                 services.AddWebHost(builder);
+                builder.AddManifestDefinition("module");
 
                 // ModularTenantRouterMiddleware which is configured with UseModules() calls UserRouter() which requires the routing services to be
                 // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
@@ -34,8 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 // Registers the application main feature
                 services.AddTransient(sp =>
                 {
-                    return new ShellFeature(sp.GetRequiredService<IHostingEnvironment>()
-                        .ApplicationName, alwaysEnabled: true);
+                    return new ShellFeature(sp.GetRequiredService<IHostingEnvironment>().ApplicationName, alwaysEnabled: true);
                 });
 
                 // Register the list of services to be resolved later on
@@ -51,18 +51,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
         internal static IServiceCollection AddWebHost(this IServiceCollection services, OrchardCoreBuilder builder)
         {
-            services.AddLogging()
-                .AddOptions()
-                .AddLocalization()
-                .AddHostingShellServices()
-                .AddExtensionManagerHost()
-                .AddWebEncoders();
+            services.AddLogging();
+            services.AddOptions();
+            services.AddLocalization();
+            services.AddHostingShellServices();
+            services.AddExtensionManagerHost();
+            services.AddWebEncoders();
 
-            builder.AddManifestDefinition("module")
-                .Startup.ConfigureServices((tenant, sp) =>
-                {
-                    tenant.Services.AddExtensionManager();
-                });
+            builder.Startup.ConfigureServices((tenant, sp) =>
+            {
+                tenant.Services.AddExtensionManager();
+            });
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IClock, Clock>();
@@ -76,9 +75,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static T GetServiceFromCollection<T>(IServiceCollection services)
         {
-            return (T)services
-                .LastOrDefault(d => d.ServiceType == typeof(T))
-                ?.ImplementationInstance;
+            return (T)services.LastOrDefault(d => d.ServiceType == typeof(T))?.ImplementationInstance;
         }
     }
 }

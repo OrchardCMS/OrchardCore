@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddAntiForgery()
                     .AddAuthentication()
                     .AddDataProtection()
-                    
+
                     .WithDefaultFeatures("OrchardCore.Setup")
 
                     .AddDataAccess()

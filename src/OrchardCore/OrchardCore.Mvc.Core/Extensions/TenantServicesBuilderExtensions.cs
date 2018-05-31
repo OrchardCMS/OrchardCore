@@ -36,11 +36,9 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             builder.AddAuthorization();
-
-            // Called by AddViewLocalization()
             // builder.AddViews();
             // builder.AddRazorViewEngine();
-
+            // the above is called here
             builder.AddViewLocalization();
 
             AddModularFrameworkParts(serviceProvider, builder.PartManager);
