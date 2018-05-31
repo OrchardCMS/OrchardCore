@@ -35,11 +35,11 @@ build_script:
   # Build Nuget packages and publish app for Docker
   - ps: |
   
-    if (($IsMasterBranch -eq $true) -or ($IsDevBranch -eq $true)) 
-    { 
-      dotnet publish -c Release -p $env:APPVEYOR_BUILD_FOLDER/src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -o $env:APPVEYOR_BUILD_FOLDER/.build/release
-      dotnet pack -c Release 
-    }
+      if (($IsMasterBranch -eq $true) -or ($IsDevBranch -eq $true)) 
+      { 
+        dotnet publish -c Release -p $env:APPVEYOR_BUILD_FOLDER/src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -o $env:APPVEYOR_BUILD_FOLDER/.build/release
+        dotnet pack -c Release 
+      }
 
   # Building Docker images
   - ps: cd $env:APPVEYOR_BUILD_FOLDER
