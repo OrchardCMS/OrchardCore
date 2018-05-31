@@ -62,7 +62,7 @@ namespace OrchardCore.Users.Controllers
             if ((await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail)
             {
                 // Require that the users have a confirmed email before they can log on.
-                var user = (User)await _userManager.FindByNameAsync(model.UserName);
+                var user = await _userManager.FindByNameAsync(model.UserName) as User;
                 if (user != null)
                 {
                     if (!await _userManager.IsEmailConfirmedAsync(user))

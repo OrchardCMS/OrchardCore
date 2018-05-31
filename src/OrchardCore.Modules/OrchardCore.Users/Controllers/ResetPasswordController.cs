@@ -65,7 +65,7 @@ namespace OrchardCore.Users.Controllers
 
             if (ModelState.IsValid)
             {
-                var user = (User)await _userService.GetForgotPasswordUserAsync(model.UserIdentifier);
+                var user = await _userService.GetForgotPasswordUserAsync(model.UserIdentifier) as User;
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
                     // returns to confirmation page anyway: we don't want to let scrapers know if a username or an email exist

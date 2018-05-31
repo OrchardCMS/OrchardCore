@@ -84,7 +84,7 @@ namespace OrchardCore.Users.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = (User)await _userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail, RoleNames = new string[0] }, model.Password, (key, message) => ModelState.AddModelError(key, message));
+                var user = await _userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail, RoleNames = new string[0] }, model.Password, (key, message) => ModelState.AddModelError(key, message)) as User;
                 
                 if (user != null)
                 {
@@ -118,7 +118,7 @@ namespace OrchardCore.Users.Controllers
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                throw new Exception($"Unable to load user with ID '{userId}'.");
+                return  NotFound();
             }
             var result = await _userManager.ConfirmEmailAsync(user, code);
 
@@ -129,12 +129,12 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendVerificationEmail(string id)
         {
-            var user = (User)await _userManager.FindByIdAsync(id);
+            var user = await _userManager.FindByIdAsync(id) as User;
             if (user != null)
             {
                 await SendEmailConfirmationTokenAsync(user);
 
-                _notifier.Success(TH["Verification email sent to {0}.", user.Email]);
+                _notifier.Success(TH["Verification email sent."]);
             }
 
             return RedirectToAction(nameof(AdminController.Index), "Admin");

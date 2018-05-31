@@ -2,10 +2,10 @@
 @using OrchardCore.Entities
 @using OrchardCore.Settings
 @using OrchardCore.Users.Models
-@inject ISiteService _site
+@inject ISiteService Site
 
 @{
-    var usersMustValidateEmail = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail;
+    var usersMustValidateEmail = (await Site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail;
 }
 
 <input asp-for="Id" type="hidden" />
