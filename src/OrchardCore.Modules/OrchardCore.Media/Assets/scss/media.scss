@@ -178,6 +178,7 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
             padding-bottom: 8px;
             color: $gray-700;
             font-weight: 500 !important;
+            user-select: none;
         }
 
         .thumbnail-column {

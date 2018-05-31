@@ -47,7 +47,9 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     dragDropThumbnail: new Image(),
                     smallThumbs: false,
                     gridView: false,
-                    mediaFilter: ''
+                    mediaFilter: '',
+                    sortBy: '',
+                    sortAsc: true
                 },
                 created: function () {
                     var self = this;
@@ -110,9 +112,28 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
 
                         self.selectedMedias = [];
                         
-                        return  self.mediaItems.filter(function (item) {
+                        var filtered = self.mediaItems.filter(function (item) {
                             return item.name.toLowerCase().indexOf(self.mediaFilter.toLowerCase()) > - 1;
                         });
+
+                        switch (self.sortBy) {
+                            case 'size':
+                                filtered.sort(function (a, b) {
+                                    return self.sortAsc ? a.size - b.size : b.size - a.size;
+                                });
+                                break;
+                            case 'mime':
+                                filtered.sort(function (a, b) {
+                                    return self.sortAsc ? a.mime.toLowerCase().localeCompare(b.mime.toLowerCase()) : b.mime.toLowerCase().localeCompare(a.mime.toLowerCase());
+                                });
+                                break;
+                            default:
+                                filtered.sort(function (a, b) {
+                                    return self.sortAsc ? a.name.toLowerCase().localeCompare(b.name.toLowerCase()) : b.name.toLowerCase().localeCompare(a.name.toLowerCase());
+                                });
+                        }                        
+
+                        return filtered;
                     },
                     hiddenCount: function () {
                         var result = 0;
@@ -149,7 +170,6 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         this.mediaFilter = '';
                         this.selectedFolder = newFolder;
                         this.loadFolder(newFolder);
-
                     }
                
                 },
@@ -176,6 +196,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 });
                                 self.mediaItems = data;
                                 self.selectedMedias = [];
+                                self.sortBy = '';
+                                self.sortAsc = true;
                             },
                             error: function (error) {
                                 console.error(error.responseText);
@@ -349,6 +371,14 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         if (e.clientY > window.innerHeight - 100) {                            
                             window.scrollBy(0, 10);
                         }
+                    },
+                    changeSort: function (newSort) {
+                        if (this.sortBy == newSort) {
+                            this.sortAsc = !this.sortAsc;
+                        } else {
+                            this.sortAsc = true;
+                            this.sortBy = newSort;
+                        }                        
                     }
                 }
             });
@@ -2494,6 +2524,26 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
         }
     }));
 }
+// <sort-indicator> component
+Vue.component('sortIndicator', {
+    template: '\
+        <div v-show="isActive" style="display: inline-block;"> \
+            <span v-show="asc"><i class="small fa fa-chevron-up"></i></span> \
+            <span v-show="!asc"><i class="small fa fa-chevron-down"></i></span> \
+        </div> \
+        ',
+    props: {
+        colname: String,
+        selectedcolname: String,
+        asc: Boolean
+    },
+    computed: {
+        isActive: function () {
+            return this.colname.toLowerCase() == this.selectedcolname.toLowerCase();
+        }
+    }
+});
+
 // <upload> component
 Vue.component('upload', {
     template: '\

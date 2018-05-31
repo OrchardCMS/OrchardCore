@@ -102,9 +102,22 @@
                 <thead>
                     <tr class="header-row">
                         <th scope="col" class="thumbnail-column" style="padding-left:16px;">@T["Image"]</th>
-                        <th scope="col">@T["Name"]</th>
-                        <th scope="col"><span class="optional-col">@T["Size"]</span></th>
-                        <th scope="col"><span class="optional-col"> @T["Type"]</span></th>
+                        <th scope="col" v-on:click="changeSort('name')">
+                            @T["Name"]
+                            <sort-indicator colname="name" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>
+                        </th>
+                        <th scope="col" v-on:click="changeSort('size')">
+                            <span class="optional-col">
+                                @T["Size"]
+                                <sort-indicator colname="size" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>                            
+                            </span>
+                        </th>
+                        <th scope="col" v-on:click="changeSort('mime')">
+                            <span class="optional-col">
+                                @T["Type"]
+                                <sort-indicator colname="mime" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>
+                            </span>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>

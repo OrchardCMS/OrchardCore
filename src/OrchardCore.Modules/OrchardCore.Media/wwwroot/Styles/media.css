@@ -110,7 +110,8 @@
     padding-top: 8px;
     padding-bottom: 8px;
     color: #495057;
-    font-weight: 500 !important; }
+    font-weight: 500 !important;
+    user-select: none; }
   .media-container-main .media-items-table .thumbnail-column {
     text-align: center;
     width: 80px;
