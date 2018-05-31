@@ -25,13 +25,16 @@ namespace OrchardCore.Users.Controllers
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
         private readonly SignInManager<IUser> _signInManager;
+        private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
+
         private readonly INotifier _notifier;
 
         public RegistrationController(
             IUserService userService,
             UserManager<IUser> userManager,
             SignInManager<IUser> signInManager,
+            IAuthorizationService authorizationService,
             ISiteService siteService,
             INotifier notifier,
             ISmtpService smtpService,
@@ -44,6 +47,7 @@ namespace OrchardCore.Users.Controllers
             _userService = userService;
             _userManager = userManager;
             _signInManager = signInManager;
+            _authorizationService = authorizationService;
             _siteService = siteService;
             _notifier = notifier;
 
@@ -125,10 +129,16 @@ namespace OrchardCore.Users.Controllers
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendVerificationEmail(string id)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            {
+                return Unauthorized();
+            }
+
             var user = await _userManager.FindByIdAsync(id) as User;
             if (user != null)
             {

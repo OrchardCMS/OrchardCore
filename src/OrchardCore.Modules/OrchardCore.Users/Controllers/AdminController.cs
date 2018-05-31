@@ -157,10 +157,7 @@ namespace OrchardCore.Users.Controllers
             }
             
             var user = new User();
-
-            // When created from the admin, do as if the email is confirmed
-            user.EmailConfirmed = true;
-
+            
             var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: this, isNew: true);
 
             if (!ModelState.IsValid)

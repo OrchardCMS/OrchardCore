@@ -77,6 +77,7 @@ namespace OrchardCore.Users.Drivers
 
             model.UserName = model.UserName?.Trim();
             model.Email = model.Email?.Trim();
+            user.EmailConfirmed = model.EmailConfirmed;
 
             if (string.IsNullOrWhiteSpace(model.UserName))
             {
