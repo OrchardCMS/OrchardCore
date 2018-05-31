@@ -1,6 +1,6 @@
 image:
 - Ubuntu
-- Visual Studio 2017
+# - Visual Studio 2017
 
 environment:
   global:
@@ -20,27 +20,6 @@ stack: node 9, docker
 # Install scripts. (runs after repo cloning)
 install:
 
-  # Download .NET Core 2.1 SDK and add to PATH
-  - ps: |
-      if ($isWindows)
-      {
-        $env:DOTNET_INSTALL_DIR = "$pwd/.build"
-        New-Item -ItemType Directory -Force -Path $env:DOTNET_INSTALL_DIR
-        wget "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "$env:DOTNET_INSTALL_DIR/dotnet-install.ps1"
-        .build/dotnet-install.ps1 -Channel 2.1.300 -SkipNonVersionedFiles -Version 2.1.300
-        $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
-      }
-
-  - sh: |
-      if [ "$CI_LINUX" = "true" ]
-      then
-        mkdir -p ./.build
-        wget -P ./.build/ "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.sh"
-        chmod +x ./.build/dotnet-install.sh
-        ./.build/dotnet-install.sh --channel 2.1.300 --skip-non-versioned-files --version 2.1.300
-        PATH=./.build:$PATH
-      fi
-
   # Set the BuildNumber property used in OrchardCore.Commons.props
   - ps: $env:BuildNumber= $env:APPVEYOR_BUILD_NUMBER
 
@@ -52,46 +31,42 @@ init:
 
 build_script:
   - dotnet --version
-  - ps: if (($IsMasterBranch -eq $true) -or ($IsDevBranch -eq $true)) { dotnet pack -c Release }
 
+  # Build Nuget packages and publish app for Docker
   - ps: |
+  
+    if (($IsMasterBranch -eq $true) -or ($IsDevBranch -eq $true)) 
+    { 
+      dotnet publish -c Release -p $env:APPVEYOR_BUILD_FOLDER/src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -o $env:APPVEYOR_BUILD_FOLDER/.build/release
+      dotnet pack -c Release 
+    }
+
+  # Building Docker images
+  - ps: cd $env:APPVEYOR_BUILD_FOLDER
+  - ps: docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+  - ps: |
+
       if (($IsMasterBranch -eq $true) -and ($isWindows))
       {
-        cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
-        dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
-        cd $env:APPVEYOR_BUILD_FOLDER
         docker build -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:1.0.0-beta2 .
-        docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
         docker push orchardproject/orchardcore-cms-windows
       }
 
       if (($IsDevBranch -eq $true) -and ($isWindows))
       {
-        cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
-        dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
-        cd $env:APPVEYOR_BUILD_FOLDER
         docker build -t orchardproject/orchardcore-cms-windows:dev .
-        docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
         docker push orchardproject/orchardcore-cms-windows
       }
 
       if (($IsMasterBranch -eq $true) -and ($isLinux))
       {
-        cd $env:APPVEYOR_BUILD_FOLDER/src/OrchardCore.Cms.Web
-        dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER/.build/release
-        cd $env:APPVEYOR_BUILD_FOLDER
         docker build -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:1.0.0-beta2 .
-        docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
         docker push orchardproject/orchardcore-cms-linux
       }
 
       if (($IsDevBranch -eq $true) -and ($isLinux))
       {
-        cd $env:APPVEYOR_BUILD_FOLDER/src/OrchardCore.Cms.Web
-        dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER/.build/release
-        cd $env:APPVEYOR_BUILD_FOLDER
         docker build -t orchardproject/orchardcore-cms-linux:dev .
-        docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
         docker push orchardproject/orchardcore-cms-linux
       }
 
