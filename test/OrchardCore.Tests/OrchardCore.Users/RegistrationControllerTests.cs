@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -40,6 +41,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<IUserService>(), 
                 mockUserManager,
                 MockSignInManager(mockUserManager).Object,
+                Mock.Of<IAuthorizationService>(),
                 mockSiteService,
                 Mock.Of<INotifier>(),
                 mockSmtpService, 
@@ -73,6 +75,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<IUserService>(),
                 mockUserManager,
                 MockSignInManager(mockUserManager).Object,
+                Mock.Of<IAuthorizationService>(),
                 mockSiteService,
                 Mock.Of<INotifier>(),
                 mockSmtpService,
