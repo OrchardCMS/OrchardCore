@@ -32,7 +32,7 @@ install:
       }
 
   - sh: |
-      if [ $isLinux ]
+      if [ "$CI_LINUX" = "true" ]
       then
         mkdir -p ./.build
         wget -P ./.build/ "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.sh"
