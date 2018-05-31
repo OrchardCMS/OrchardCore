@@ -84,8 +84,8 @@ namespace OrchardCore.Users.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = (User)await _userService.CreateUserAsync(model.UserName, model.Email, new string[0], model.Password, !settings.UsersMustValidateEmail, (key, message) => ModelState.AddModelError(key, message));
-
+                var user = (User)await _userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail, RoleNames = new string[0] }, model.Password, (key, message) => ModelState.AddModelError(key, message));
+                
                 if (user != null)
                 {
                     if (settings.UsersMustValidateEmail)
