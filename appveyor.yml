@@ -3,7 +3,6 @@ image:
 - Visual Studio 2017
 
 environment:
-  nodejs_version: "8"
   global:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -15,6 +14,8 @@ environment:
         secure: 8Fp2ETunhU6PvhlotuQXTZ7WkG1FikJ3BM7YLAZyfmbpy00knABu5yL7MhJ9uNcl
     NUGET_API_KEY:
         secure: bR0JuO8NuLOxL18tQ7ZtQXOHNHjqCJXlkUOzEyNQniptTszwYcwufYhKTyoybqei
+
+stack: node 9, docker
 
 # Install scripts. (runs after repo cloning)
 install:
@@ -38,9 +39,6 @@ install:
         chmod +x ./dotnet-install.sh
         ./.build/dotnet-install.sh --channel 2.1.300 --skip-non-versioned-files --version 2.1.300
       fi
-
-  # Get the latest stable version of Node.js or io.js
-  - ps: Install-Product node $env:nodejs_version
 
   # Set the BuildNumber property used in OrchardCore.Commons.props
   - ps: $env:BuildNumber= $env:APPVEYOR_BUILD_NUMBER
