@@ -1,6 +1,6 @@
 namespace OrchardCore.Deployment.ViewModels
 {
-    public class ContentTypeDeploymentStepViewModel
+    public class ContentDeploymentStepViewModel
     {
         public string[] ContentTypes { get; set; }
     }

@@ -1,15 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-
 namespace OrchardCore.Deployment.Steps
 {
     /// <summary>
     /// Adds all content items of a specific type to a <see cref="DeploymentPlanResult"/>. 
     /// </summary>
-    public class ContentTypeDeploymentStep : DeploymentStep
+    public class ContentDeploymentStep : DeploymentStep
     {
-        public ContentTypeDeploymentStep()
+        public ContentDeploymentStep()
         {
-            Name = "ContentTypeDeploymentStep";
+            Name = "ContentDeploymentStep";
         }
 
         public string[] ContentTypes { get; set; }
