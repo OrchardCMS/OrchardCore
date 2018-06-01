@@ -1,11 +1,11 @@
 {
   "author": "Orchard Project",
-  "classifications": [ "Web", "CMS" ],
+  "classifications": [ "Web", "CMS", "Orchard Core" ],
   "name": "OrchardCore Module",
   "identity": "orchardcore",
   "shortName": "ocmodule",
   "sourceName": "OrchardCore.Templates.Module",
-  "preferNameDirectory": "true",
+  "preferNameDirectory": true,
   "symbols": {
     "AddPart": {
       "type": "parameter",
@@ -16,7 +16,7 @@
     "PartName": {
       "type": "parameter",
       "datatype": "string",
-      "description": "Add all files required for a part and renames them",
+      "description": "Add all files required for a part",
       "replaces": "MyTest",
       "FileRename": "MyTest"
     }
