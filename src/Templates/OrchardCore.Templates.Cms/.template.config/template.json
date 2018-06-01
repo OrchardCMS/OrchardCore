@@ -1,0 +1,34 @@
+{
+  "author": "Orchard Project",
+  "classifications": [ "Web", "CMS" ],
+  "name": "OrchardCore Cms",
+  "identity": "orchardcore",
+  "shortName": "occms",
+  "sourceName": "OrchardCore.Templates.Cms",
+  "preferNameDirectory": "true",
+  "symbols": {
+    "AddNLog": {
+      "type": "parameter",
+      "dataType": "bool",
+      "description": "Add NLog.config file and add  .UseNLogWeb() in Program.cs",
+      "defaultValue": "true"
+    }
+  },
+  "sources": [
+    {
+      "exclude": [ "**/Properties/**/*", "**/[Bb]in/**", "**/[Oo]bj/**", ".template.config/**/*", "**/*.filelist", "**/*.user", "**/*.lock.json" ],
+      "modifiers": [
+        {
+          "condition": "(!AddNLog)",
+          "exclude": [
+            "OrchardCore.Templates.Cms.Web/NLog.config"
+          ]
+        }
+      ]
+    }
+  ],
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  }
+}
