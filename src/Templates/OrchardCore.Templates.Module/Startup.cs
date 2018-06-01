@@ -1,10 +1,4 @@
-﻿using System;
-#if (AddPart)
-using OrchardCore.Templates.Module.Drivers;
-using OrchardCore.Templates.Module.Handlers;
-using OrchardCore.Templates.Module.Models;
-using OrchardCore.Templates.Module.Settings;
-#endif
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,8 +8,12 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
+using OrchardCore.Templates.Module.Drivers;
+using OrchardCore.Templates.Module.Handlers;
+using OrchardCore.Templates.Module.Models;
+using OrchardCore.Templates.Module.Settings;
 #endif
-using OrchardCore.Templates.Modules;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Templates.Module
 {
