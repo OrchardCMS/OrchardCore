@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes
@@ -14,18 +15,18 @@ namespace OrchardCore.DisplayManagement.Shapes
         private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";
         private readonly IClock _clock;
         private readonly ILocalClock _localClock;
-        private readonly ILocalCulture _localCulture;
+        //private readonly ILocalCulture _localCulture;
 
         public DateTimeShapes(
             IClock clock,
             IPluralStringLocalizer<DateTimeShapes> localizer,
-            ILocalClock localClock,
-            ILocalCulture localCulture
+            ILocalClock localClock
+            //ILocalCulture localCulture
             )
         {
             _localClock = localClock;
             _clock = clock;
-            _localCulture = localCulture;
+            //_localCulture = localCulture;
             T = localizer;
         }
 
@@ -84,14 +85,15 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             Utc = Utc ?? _clock.UtcNow;
             var zonedTime = await _localClock.ConvertToLocalAsync(Utc.Value);
-            var currentCulture = await _localCulture.GetLocalCultureAsync();
+            //var currentCulture = await _localCulture.GetLocalCultureAsync();
 
             if (Format == null)
             {
                 Format = T[LongDateTimeFormat, LongDateTimeFormat, 0].Value;
             }
 
-            return Html.Raw(Html.Encode(zonedTime.ToString(Format, currentCulture)));
+            return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.InvariantCulture)));
+            //return Html.Raw(Html.Encode(zonedTime.ToString(Format, currentCulture)));
         }
     }
 

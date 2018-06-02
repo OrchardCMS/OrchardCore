@@ -1,5 +1,6 @@
 @model SiteSettingsViewModel
 @inject OrchardCore.Modules.IClock Clock
+@using System.Globalization
 
 <fieldset class="form-group" asp-validation-class-for="SiteName">
     <label asp-for="SiteName">@T["Site name"] <span asp-validation-for="SiteName"></span></label>
@@ -13,26 +14,27 @@
     <span class="hint">@T["Enter the fully qualified base URL of the web site."]</span>
 </fieldset>
 
-<fieldset class="form-group" asp-validation-class-for="TimeZone">
-    <label asp-for="TimeZone">@T["Default Time Zone"] <span asp-validation-for="TimeZone"></span></label>
-    <select asp-for="TimeZone" class="form-control">
-        <option value="">@T["Local to server"]</option>
-        @foreach (var timezone in Clock.GetTimeZones())
-        {
-            <option value="@timezone.TimeZoneId" selected="@(Model.TimeZone == timezone.TimeZoneId)">
-                @timezone
-            </option>
-        }
-    </select>
-    <span class="hint">@T["Determines the default time zone used when displaying and editing dates and times."]</span>
-</fieldset>
+<div class="row">
+    <fieldset class="form-group col-lg-6" asp-validation-class-for="TimeZone">
+        <label asp-for="TimeZone">@T["Default Time Zone"] <span asp-validation-for="TimeZone"></span></label>
+        <select asp-for="TimeZone" class="form-control">
+            <option value="">@T["Local to server"]</option>
+            @foreach (var timezone in Clock.GetTimeZones())
+            {
+                <option value="@timezone.TimeZoneId" selected="@(Model.TimeZone == timezone.TimeZoneId)">
+                    @timezone
+                </option>
+            }
+        </select>
+        <span class="hint">@T["Determines the default time zone used when displaying and editing dates and times."]</span>
+    </fieldset>
 
-    <fieldset class="form-group col-lg-6" asp-validation-class-for="SiteCulture">
-        <label asp-for="SiteCulture">@T["Default Culture"] <span asp-validation-for="SiteCulture"></span></label>
-        <select asp-for="SiteCulture" class="form-control">
+    <fieldset class="form-group col-lg-6" asp-validation-class-for="Culture">
+        <label asp-for="Culture">@T["Default Culture"] <span asp-validation-for="Culture"></span></label>
+        <select asp-for="Culture" class="form-control">
             @foreach (var culture in CultureInfo.GetCultures(CultureTypes.AllCultures))
             {
-                <option value="@culture.Name" selected="@(Model.SiteCulture == culture.Name)">
+                <option value="@culture.Name" selected="@(Model.Culture == culture.Name)">
                     @if (!String.IsNullOrEmpty(culture.Name))
                     {<text>(@culture.Name)</text>}
                     @culture.DisplayName
@@ -40,9 +42,9 @@
             }
         </select>
         <span class="hint">@T["Determines the default culture used"]</span>
+        <button type="button" class="btn btn-default add-row">
+            Add Locale
+            <i class="fas fa-plus"></i>
+        </button>
     </fieldset>
 </div>
-<button type="button" class="btn btn-default add-row">
-    Add Locale
-    <i class="fas fa-plus"></i>
-</button>
