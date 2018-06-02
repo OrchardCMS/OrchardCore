@@ -14,6 +14,7 @@ This modules provides common content fields.
 | `LinkField` | `Url (string), Text (string)` | `LinkField` | `DisplayLinkFieldViewModel` |
 | `NumericField` | `Value (decimal?)` | `NumericField` | `DisplayNumericFieldViewModel` |
 | `TextField` | `Text (string)` | `TextField` | `DisplayTextFieldViewModel` |
+| `TimeField` | `Value (TimeSpan?)` | `TimeField` | `DisplayTimeFieldViewModel` |
 
 ## Usage
 
