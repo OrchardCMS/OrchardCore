@@ -8,7 +8,7 @@
         </h3>
     {% enda %}
     <p class="post-meta">
-        {% assign format = "MMMM dd, yyyy" | t %}
+        {% assign format = "MMMM dd, yyyy HH:mm" | t %}
         {% assign dateTime = "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc, format: format | shape_stringify %}
         {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
     </p>
