@@ -45,7 +45,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
         {
-            IServiceCollection tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
+            var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
             tenantServiceCollection.AddSingleton(settings);
             tenantServiceCollection.AddSingleton(blueprint.Descriptor);
@@ -57,7 +57,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
             // TODO: Use StartupLoader in RTM and then don't need to register the classes anymore then
 
-            IServiceCollection moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
+            var moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
             foreach (var dependency in blueprint.Dependencies.Where(t => typeof(Modules.IStartup).IsAssignableFrom(t.Key)))
             {
@@ -98,9 +98,6 @@ namespace OrchardCore.Environment.Shell.Builders
             }
 
             (moduleServiceProvider as IDisposable).Dispose();
-
-            // add already instanciated services like DefaultOrchardHost
-            var applicationServiceDescriptors = _applicationServices.Where(x => x.Lifetime == ServiceLifetime.Singleton);
             
             var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
 

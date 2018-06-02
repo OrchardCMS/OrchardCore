@@ -11,9 +11,27 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds the minimum essential OrchardCore services.
+        /// Adds the essential OrchardCore services.
         /// </summary>
-        public static IServiceCollection AddOrchardCore(this IServiceCollection services, Action<OrchardCoreBuilder> configure = null)
+        public static OrchardCoreBuilder AddOrchardCore(this IServiceCollection services)
+        {
+            return GetBuilder(services);
+        }
+
+        /// <summary>
+        /// Adds the essential OrchardCore services.
+        /// </summary>
+        public static IServiceCollection AddOrchardCore(this IServiceCollection services, Action<OrchardCoreBuilder> configure)
+        {
+            var builder = GetBuilder(services);
+
+            // Let the app change the default tenant behavior and set of features
+            configure?.Invoke(builder);
+
+            return services;
+        }
+
+        private static OrchardCoreBuilder GetBuilder(IServiceCollection services)
         {
             var builder = GetServiceFromCollection<OrchardCoreBuilder>(services);
 
@@ -22,42 +40,39 @@ namespace Microsoft.Extensions.DependencyInjection
                 builder = new OrchardCoreBuilder(services);
                 services.AddSingleton(builder);
 
-                services.AddWebHost(builder);
-                builder.AddManifestDefinition("module");
-
-                // ModularTenantRouterMiddleware which is configured with UseModules() calls UserRouter() which requires the routing services to be
-                // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
-                services.AddRouting();
-
-                // Use a single tenant and all features by default
-                services.AddAllFeaturesDescriptor();
-
-                // Registers the application main feature
-                services.AddTransient(sp =>
-                {
-                    return new ShellFeature(sp.GetRequiredService<IHostingEnvironment>().ApplicationName, alwaysEnabled: true);
-                });
+                ConfigureServices(builder);
 
                 // Register the list of services to be resolved later on
-                services.AddSingleton(_ => services);
+                services.AddSingleton(services);
             }
 
-            // Let the app change the default tenant behavior and set of features
-            configure?.Invoke(builder);
-            builder.AddStartups();
-
-            return services;
+            return builder;
         }
 
-        internal static IServiceCollection AddWebHost(this IServiceCollection services, OrchardCoreBuilder builder)
+        private static void ConfigureServices(OrchardCoreBuilder builder)
         {
+            var services = builder.Services;
+
             services.AddLogging();
             services.AddOptions();
             services.AddLocalization();
-            services.AddHostingShellServices();
-            services.AddExtensionManagerHost();
             services.AddWebEncoders();
 
+            // ModularTenantRouterMiddleware which is configured with UseModules() calls UseRouter() which requires the routing services to be
+            // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
+            services.AddRouting();
+
+            services.AddHostingShellServices();
+
+            // Use a single tenant and all features by default
+            services.AddAllFeaturesDescriptor();
+
+            // Registers the application main feature
+            services.AddTransient(sp => new ShellFeature(sp.GetRequiredService<IHostingEnvironment>()
+                .ApplicationName, alwaysEnabled: true));
+
+            services.AddExtensionManagerHost();
+            builder.AddManifestDefinition("module");
             builder.Startup.ConfigureServices((tenant, sp) =>
             {
                 tenant.Services.AddExtensionManager();
@@ -69,8 +84,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
             services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
-
-            return services;
         }
 
         private static T GetServiceFromCollection<T>(IServiceCollection services)

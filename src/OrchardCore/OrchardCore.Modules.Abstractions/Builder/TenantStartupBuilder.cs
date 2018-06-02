@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Modules;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -20,6 +21,9 @@ namespace Microsoft.Extensions.DependencyInjection
             if (!Actions.TryGetValue(order, out var actions))
             {
                 actions = Actions[order] = new TenantStartupActions(order);
+
+                Builder.Services.AddTransient<IStartup>(sp => new TenantStartup(
+                    sp.GetRequiredService<IServiceProvider>(), actions, order));
             }
 
             actions.ConfigureServicesActions.Add(configureServicesAction);
@@ -32,6 +36,9 @@ namespace Microsoft.Extensions.DependencyInjection
             if (!Actions.TryGetValue(order, out var actions))
             {
                 actions = Actions[order] = new TenantStartupActions(order);
+
+                Builder.Services.AddTransient<IStartup>(sp => new TenantStartup(
+                    sp.GetRequiredService<IServiceProvider>(), actions, order));
             }
 
             actions.ConfigureActions.Add(configureAction);
