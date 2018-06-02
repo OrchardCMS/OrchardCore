@@ -36,7 +36,7 @@
             {
                 <option value="@culture.Name" selected="@(Model.Culture == culture.Name)">
                     @if (!String.IsNullOrEmpty(culture.Name))
-                    {<text>(@culture.Name)</text>}
+                    {<text>@culture.Name | </text>}
                     @culture.DisplayName
                 </option>
             }

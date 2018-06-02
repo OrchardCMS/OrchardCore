@@ -8,6 +8,7 @@ using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Descriptor.Settings;
 using OrchardCore.Modules;
+using OrchardCore.Modules.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -110,6 +111,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IClock, Clock>();
             services.AddScoped<ILocalClock, LocalClock>();
+            services.AddScoped<ILocalCulture, LocalCulture>();
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
             services.AddScoped<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();

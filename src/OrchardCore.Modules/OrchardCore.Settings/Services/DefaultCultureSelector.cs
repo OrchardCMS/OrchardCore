@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using OrchardCore.Localization.Services;
+using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Settings.Services
 {

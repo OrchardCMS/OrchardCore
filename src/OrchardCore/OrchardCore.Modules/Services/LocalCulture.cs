@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Localization.Services
+namespace OrchardCore.Modules.Services
 {
     public class LocalCulture : ILocalCulture
     {

@@ -33,7 +33,6 @@ namespace OrchardCore.Localization
 
             services.AddScoped<ICultureStore, CultureStore>();
             services.AddScoped<ICultureManager, CultureManager>();
-            services.AddScoped<ILocalCulture, LocalCulture>();
         }
     }
 }

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace OrchardCore.Localization.Services
+namespace OrchardCore.Modules.Services
 {
     /// <summary>
     /// Provides the culture for the current request.
