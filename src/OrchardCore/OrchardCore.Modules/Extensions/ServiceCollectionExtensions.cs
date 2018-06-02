@@ -68,8 +68,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddAllFeaturesDescriptor();
 
             // Registers the application main feature
-            services.AddTransient(sp => new ShellFeature(sp.GetRequiredService<IHostingEnvironment>()
-                .ApplicationName, alwaysEnabled: true));
+            services.AddTransient(sp => new ShellFeature
+            (
+                sp.GetRequiredService<IHostingEnvironment>().ApplicationName, alwaysEnabled: true)
+            );
 
             services.AddExtensionManagerHost();
             builder.AddManifestDefinition("module");
