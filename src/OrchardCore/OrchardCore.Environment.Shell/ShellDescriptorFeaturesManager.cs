@@ -95,10 +95,10 @@ namespace OrchardCore.Environment.Shell
         /// <returns>An enumeration with the disabled feature IDs.</returns>
         public async Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features, bool force)
         {
-            var enabledIds = _alwaysEnabledFeatures.Select(sf => sf.Id).ToArray();
+            var alwaysEnabledIds = _alwaysEnabledFeatures.Select(sf => sf.Id).ToArray();
 
             var featuresToDisable = features
-                .Where(f => !enabledIds.Contains(f.Id))
+                .Where(f => !alwaysEnabledIds.Contains(f.Id))
                 .SelectMany(feature => GetFeaturesToDisable(feature, force))
                 .Distinct()
                 .ToList();

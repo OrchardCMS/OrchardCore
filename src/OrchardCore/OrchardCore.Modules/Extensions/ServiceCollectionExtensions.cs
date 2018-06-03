@@ -15,23 +15,21 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddOrchardCore(this IServiceCollection services)
         {
-            return GetBuilder(services);
+            return GetOrchardCoreBuilder(services);
         }
 
         /// <summary>
-        /// Adds the essential OrchardCore services.
+        /// Adds the essential OrchardCore services and let the app change the
+        /// default tenant behavior and set of features through a configure action.
         /// </summary>
         public static IServiceCollection AddOrchardCore(this IServiceCollection services, Action<OrchardCoreBuilder> configure)
         {
-            var builder = GetBuilder(services);
-
-            // Let the app change the default tenant behavior and set of features
+            var builder = GetOrchardCoreBuilder(services);
             configure?.Invoke(builder);
-
             return services;
         }
 
-        private static OrchardCoreBuilder GetBuilder(IServiceCollection services)
+        private static OrchardCoreBuilder GetOrchardCoreBuilder(IServiceCollection services)
         {
             var builder = GetServiceFromCollection<OrchardCoreBuilder>(services);
 
@@ -40,7 +38,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 builder = new OrchardCoreBuilder(services);
                 services.AddSingleton(builder);
 
-                ConfigureServices(builder);
+                ConfigureDefaultServices(services);
+                ConfigureShellServices(services);
+                ConfigureExtensionServices(builder);
 
                 // Register the list of services to be resolved later on
                 services.AddSingleton(services);
@@ -49,10 +49,8 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        private static void ConfigureServices(OrchardCoreBuilder builder)
+        private static void ConfigureDefaultServices(IServiceCollection services)
         {
-            var services = builder.Services;
-
             services.AddLogging();
             services.AddOptions();
             services.AddLocalization();
@@ -62,9 +60,18 @@ namespace Microsoft.Extensions.DependencyInjection
             // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
             services.AddRouting();
 
-            services.AddHostingShellServices();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IClock, Clock>();
+            services.AddScoped<ILocalClock, LocalClock>();
 
+            services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
+            services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
+        }
+
+        private static void ConfigureShellServices(IServiceCollection services)
+        {
             // Use a single tenant and all features by default
+            services.AddHostingShellServices();
             services.AddAllFeaturesDescriptor();
 
             // Registers the application main feature
@@ -72,20 +79,17 @@ namespace Microsoft.Extensions.DependencyInjection
             (
                 sp.GetRequiredService<IHostingEnvironment>().ApplicationName, alwaysEnabled: true)
             );
+        }
 
-            services.AddExtensionManagerHost();
+        private static void ConfigureExtensionServices(OrchardCoreBuilder builder)
+        {
+            builder.Services.AddExtensionManagerHost();
             builder.AddManifestDefinition("module");
+
             builder.Startup.ConfigureServices((tenant, sp) =>
             {
                 tenant.Services.AddExtensionManager();
             });
-
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IClock, Clock>();
-            services.AddScoped<ILocalClock, LocalClock>();
-
-            services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
-            services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
         }
 
         private static T GetServiceFromCollection<T>(IServiceCollection services)

@@ -21,6 +21,12 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddBackgroundTasks()
                     .AddDeferredTasks()
 
+                    .Startup.ConfigureServices((tenant, sp) =>
+                    {
+                    })
+                    .Builder
+
+
                     .AddTheming()
                     .AddLiquidViews()
                     .AddResourceManagement()

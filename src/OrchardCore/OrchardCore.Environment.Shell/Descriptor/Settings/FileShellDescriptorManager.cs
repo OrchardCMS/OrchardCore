@@ -13,7 +13,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
     public class FileShellDescriptorManager : IShellDescriptorManager
     {
         private readonly ShellSettingsWithTenants _shellSettings;
-        private readonly IEnumerable<ShellFeature> _enabledFeatures;
+        private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
         private readonly string _applicationFeatureId;
         private ShellDescriptor _shellDescriptor;
 
@@ -23,7 +23,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
             IHostingEnvironment hostingEnvironment)
         {
             _shellSettings = shellSettings ?? throw new ArgumentException(nameof(shellSettings));
-            _enabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
+            _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
             _applicationFeatureId = hostingEnvironment.ApplicationName;
         }
 
@@ -31,7 +31,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
         {
             if (_shellDescriptor == null)
             {
-                var features = _enabledFeatures.Concat(_shellSettings.Features
+                var features = _alwaysEnabledFeatures.Concat(_shellSettings.Features
                     .Select(id => new ShellFeature(id))).Distinct().ToList();
 
                 _shellDescriptor = new ShellDescriptor
