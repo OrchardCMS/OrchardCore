@@ -38,7 +38,12 @@ namespace OrchardCore.Environment.Shell
 
             foreach (var tenant in tenants)
             {
-                builder.AddYamlFile(GetSettingsFilePath(tenant));
+                var filePath = GetSettingsFilePath(tenant);
+
+                if (File.Exists(filePath))
+                {
+                    builder.AddYamlFile(filePath);
+                }
             }
         }
 

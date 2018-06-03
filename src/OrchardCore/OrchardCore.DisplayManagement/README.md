@@ -95,7 +95,7 @@ Metadata tag helper example:
 
 #### DateTime
 
-Renders a Date and Time value using the timezone of the request.
+Renders a Date and Time value using the time zone of the request.
 
 | Parameter | Type | Description |
 | --------- | ---- |------------ |

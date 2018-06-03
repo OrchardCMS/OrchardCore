@@ -1,8 +1,8 @@
-@model dynamic
+@model ShapeViewModel<ContentDeploymentStep>
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
-@{ 
-    var contentTypes = (string[])Model.ContentTypes;
+@{
+    var contentTypes = Model.Value.ContentTypes;
 }
 
 <h5>@T["Content Types"]</h5>
