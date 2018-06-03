@@ -1,25 +1,17 @@
-﻿@model OrchardCore.ContentFields.ViewModels.EditBooleanFieldViewModel
+@model OrchardCore.ContentFields.ViewModels.EditBooleanFieldViewModel
 @using OrchardCore.ContentFields.Settings;
 @using OrchardCore.ContentManagement.Metadata.Models
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<BooleanFieldSettings>();
-    string id = Html.IdFor(m => m.Value);
 }
 
-<script asp-name="bootstrap-switch" depends-on="admin" asp-src="/OrchardCore.Resources/Scripts/bootstrap-switch.min.js" debug-src="/OrchardCore.Resources/Scripts/bootstrap-switch.js" at="Foot"></script>
-<style asp-name="bootstrap-switch" asp-src="/OrchardCore.Resources/Styles/bootstrap-switch.min.css" debug-src="/OrchardCore.Resources/Styles/bootstrap-switch.css"></style>
-
-<fieldset class="form-check">
-    <label class="form-check-label" asp-for="Value">
-        <input asp-for="Value" type="checkbox" class="form-check-input content-preview-select" checked="@Model.Value" data-label-text="@settings.Label" />
-        @if (!String.IsNullOrEmpty(settings.Hint))
-        {
-            <span class="hint">@T["— {0}", settings.Hint]</span>
-        }
-    </label>
+<fieldset class="form-group">
+    <span class="switch switch-sm">
+        <input asp-for="Value" type="checkbox" class="switch content-preview-select" checked="@Model.Value" data-label-text="@settings.Label" />
+        <label asp-for="Value">@(string.IsNullOrEmpty(settings.Label) ? Model.PartFieldDefinition.DisplayName() : settings.Label)</label>
+    </span>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@T["— {0}", settings.Hint]</span>
+    }
 </fieldset>
-<script at="Foot">
-    $(function () {
-        $('#@(id)').bootstrapSwitch();
-    });
-</script>
