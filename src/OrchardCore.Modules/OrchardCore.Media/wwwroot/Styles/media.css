@@ -238,7 +238,7 @@
   top: 0;
   opacity: 0;
   overflow: hidden;
-  position: absolute;
+  position: fixed;
   width: 100%;
   z-index: 50;
   -webkit-transition: opacity 0.3s ease-out;
