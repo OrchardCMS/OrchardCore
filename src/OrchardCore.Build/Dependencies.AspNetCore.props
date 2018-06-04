@@ -1,7 +1,7 @@
 <Project>
   <ItemGroup>
     <PackageManagement Include="Libuv" Version="1.10.0" />
-    <PackageManagement Include="Microsoft.Application.Insights.AspNetCore" Version="2.3.0-beta1" />
+    <PackageManagement Include="Microsoft.Application.Insights.AspNetCore" Version="2.3.0" />
     <PackageManagement Include="Microsoft.AspNetCore" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.All" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Antiforgery" Version="2.1.0" />
@@ -31,7 +31,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.Azure.Storage" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection" Version="2.1.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.Redis" Version="0.4.0-preview3-final" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.Redis" Version="0.4.0" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.SystemWeb" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Abstractions" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.2.2" />
@@ -197,6 +197,6 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <SystemComponentModelAnnotations>4.5.0-rc1</SystemComponentModelAnnotations>
+    <SystemComponentModelAnnotations>4.5.0</SystemComponentModelAnnotations>
   </PropertyGroup>
 </Project>
