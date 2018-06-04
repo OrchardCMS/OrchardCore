@@ -81,6 +81,9 @@ Vue.component('uploadList', {
                 return item.errorMessage != '';
             }).length;
             this.pendingCount = this.files.length - this.errorCount;
+            if (this.files.length < 1) {
+                this.expanded = false;
+            }
         },
         clearErrors: function () {            
             this.files = this.files.filter(function (item) {
