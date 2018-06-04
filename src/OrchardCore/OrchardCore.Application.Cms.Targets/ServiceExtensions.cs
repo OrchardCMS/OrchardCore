@@ -4,28 +4,29 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddOrchardCms(this IServiceCollection services)
         {
-            return services
+            return services.AddOrchardCore()
 
-                .AddOrchardCore(builder => builder
-                    .AddCommands()
+                .AddCommands()
 
-                    .AddMvc()
-                    .AddAntiForgery()
-                    .AddAuthentication()
-                    .AddDataProtection()
+                .AddMvc()
+                .AddAntiForgery()
+                .AddAuthentication()
+                .AddDataProtection()
 
-                    .WithDefaultFeatures("OrchardCore.Setup")
+                .WithDefaultFeatures("OrchardCore.Setup")
 
-                    .AddDataAccess()
-                    .AddDataStorage()
-                    .AddBackgroundTasks()
-                    .AddDeferredTasks()
+                .AddDataAccess()
+                .AddDataStorage()
+                .AddBackgroundTasks()
+                .AddDeferredTasks()
 
-                    .AddTheming()
-                    .AddLiquidViews()
-                    .AddResourceManagement()
-                    .AddGeneratorTagFilter()
-                    .AddCaching());
+                .AddTheming()
+                .AddLiquidViews()
+                .AddResourceManagement()
+                .AddGeneratorTagFilter()
+                .AddCaching()
+
+                .Services;
         }
     }
 }
