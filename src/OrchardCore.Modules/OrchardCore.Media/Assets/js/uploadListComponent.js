@@ -17,7 +17,7 @@ Vue.component('uploadList', {
             </div> \
             <div class="card-body" v-show="expanded"> \
                 <div class="d-flex flex-wrap"> \
-                    <div v-for="f in files" :key="f.name" > <upload :model="f"></upload> </div > \
+                    <upload v-for="f in files" :key="f.name"  :model="f"></upload> \
                 </div > \
             </div> \
         </div> \

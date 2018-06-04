@@ -387,11 +387,16 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
 
 .upload {
     background-color: rgba(0,0,0,0.05);
+    border-radius: 2px;
     border: 1px solid #ccc;
-    width: 300px;
     height: 60px;
     font-size: 0.875rem;
-    user-select:none;
+    user-select: none;
+    min-width: 300px;
+    flex-grow: 1;
+    @media only screen and ( min-width: 768px ) {
+        width:300px;
+    }
 
     .close-warning {
         display: block;
@@ -440,6 +445,7 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
         padding: 6px 20px;
         background-color: rgba(0,0,0,0.03);
         border: solid 1px #e9ecef;
+        border-radius: 2px;
         cursor: pointer;
         font-size: 0.875rem;
         color: #666;
