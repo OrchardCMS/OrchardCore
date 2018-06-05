@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +8,7 @@ using Newtonsoft.Json;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Localization.Services;
 using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Controllers
@@ -16,26 +19,29 @@ namespace OrchardCore.Settings.Controllers
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
+        private readonly ICultureManager _cultureManager;
 
         public AdminController(
             ISiteService siteService,
             IDisplayManager<ISite> siteSettingsDisplayManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            IHtmlLocalizer<AdminController> h)
+            IHtmlLocalizer<AdminController> h,
+            ICultureManager cultureManager)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
             _siteService = siteService;
             _notifier = notifier;
             _authorizationService = authorizationService;
             H = h;
+            _cultureManager = cultureManager;
         }
 
         IHtmlLocalizer H { get; set; }
 
         public async Task<IActionResult> Index(string groupId)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object) groupId))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object)groupId))
             {
                 return Unauthorized();
             }
@@ -81,6 +87,54 @@ namespace OrchardCore.Settings.Controllers
             }
 
             return View(viewModel);
+        }
+
+        public async Task<IActionResult> Culture()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSettings))
+            {
+                return Unauthorized();
+            }
+
+            var model = new SiteCulturesViewModel
+            {
+                //CurrentCulture = _cultureManager.GetCurrentCulture(HttpContext),
+                SiteCultures = _cultureManager.ListCultures().Select(x => x.Culture)
+            };
+            model.AvailableSystemCultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
+                .Select(ci => ci.Name)
+                .Where(s => !model.SiteCultures.Contains(s));
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddCulture(string systemCultureName, string cultureName)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSettings))
+            {
+                return Unauthorized();
+            }
+
+            cultureName = string.IsNullOrWhiteSpace(cultureName) ? systemCultureName : cultureName;
+
+            if (!string.IsNullOrWhiteSpace(cultureName))
+            {
+                _cultureManager.AddCulture(cultureName);
+            }
+            return RedirectToAction("Culture");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCulture(string cultureName)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSettings))
+            {
+                return Unauthorized();
+            }
+
+            _cultureManager.DeleteCulture(cultureName);
+            return RedirectToAction("Culture");
         }
     }
 }

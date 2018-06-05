@@ -42,9 +42,6 @@
             }
         </select>
         <span class="hint">@T["Determines the default culture used"]</span>
-        <button type="button" class="btn btn-default add-row">
-            Add Locale
-            <i class="fas fa-plus"></i>
-        </button>
+        <p>@Html.ActionLink(T["Add or remove supported cultures for the site"].Value, "Culture")</p>
     </fieldset>
 </div>

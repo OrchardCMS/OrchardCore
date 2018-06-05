@@ -1,0 +1,23 @@
+@model SiteCulturesViewModel
+@using OrchardCore.Settings.ViewModels;
+
+<h1>@RenderTitleSegments(T["Settings"])</h1>
+
+<p class="breadcrumb">@Html.ActionLink(T["Manage Settings"].Value, "index")@T[" &#62; "]@T["Supported Cultures"]</p>
+<h3>@T["Available Cultures"]</h3>
+
+<form asp-action="Culture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
+    <fieldset class="addCulture">
+        <label for="CultureName">@T["Add a culture..."]</label>
+        @Html.DropDownList("SystemCultureName", new SelectList(Model.AvailableSystemCultures.OrderBy(s => s), Model.CurrentCulture))
+        @T["Other"]: @Html.TextBox("CultureName")
+        <button class="primaryAction" type="submit">@T["Add"]</button>
+    </fieldset>
+
+    <h3>@T["Cultures this site supports"]</h3>
+
+    @*@Html.UnorderedList(
+        Model.SiteCultures.OrderBy(s => s),
+        (s, i) => Html.DisplayFor(scvm => s, s == Model.CurrentCulture ? "CurrentCulture" : "RemovableCulture", ""),
+        "site-cultures", "culture", "odd")*@
+</form>

@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using OrchardCore.Modules;
-
 namespace OrchardCore.Settings.ViewModels
 {
     public class SiteSettingsViewModel
