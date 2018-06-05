@@ -73,7 +73,6 @@
                 </div>
             </nav>
 
-
             <nav class="breadcrumb">
                 <span class="breadcrumb-item" :class="{ active: isHome }"><a :href="isHome ? null : '#'" v-on:click="selectRoot">@T["Media Library"]</a></span>
                 <span v-for="(folder, i) in parents" v-cloak
@@ -96,79 +95,22 @@
                     </button>
                 </div>
             </nav>
-            <upload-list></upload-list>
 
-            <table class="table media-items-table" v-show="filteredMediaItems.length > 0 && !gridView">
-                <thead>
-                    <tr class="header-row">
-                        <th scope="col" class="thumbnail-column" style="padding-left:16px;">@T["Image"]</th>
-                        <th scope="col" v-on:click="changeSort('name')">
-                            @T["Name"]
-                            <sort-indicator colname="name" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>
-                        </th>
-                        <th scope="col" v-on:click="changeSort('size')">
-                            <span class="optional-col">
-                                @T["Size"]
-                                <sort-indicator colname="size" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>                            
-                            </span>
-                        </th>
-                        <th scope="col" v-on:click="changeSort('mime')">
-                            <span class="optional-col">
-                                @T["Type"]
-                                <sort-indicator colname="mime" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>
-                            </span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="media in filteredMediaItems"
-                        :class="{selected: isMediaSelected(media)}"
-                        v-on:click.stop="toggleSelectionOfMedia(media)"
-                        draggable="true" v-on:dragstart="handleDragStart(media, $event)"
-                        :key="media.name" style="height: 80px;">
-                        <td class="thumbnail-column">
-                            <div class="img-wrapper">
-                                <img draggable="false" :src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" />
-                            </div>
-                        </td>
-                        <td>
-                            <div class="media-name-cell">
-                                {{ media.name }}
-                                <div class="buttons-container">
-                                    <a href="javascript:;" class="btn btn-link btn-sm mr-1" v-on:click.stop="renameMedia(media)">@T["Edit"]</a>
-                                    <a href="javascript:;" class="btn btn-link btn-sm" v-on:click.stop="deleteMediaItem(media)">@T["Delete"]</a>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="text-col optional-col">@T["{{{{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }}}} KB"]</div>
-                        </td>
-                        <td>
-                            <div class="text-col optional-col">{{ media.mime }}</div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <upload-list />
 
+            <media-items-table :sort-by="sortBy" :sort-asc="sortAsc"
+                               :filtered-media-items="filteredMediaItems"
+                               :selected-medias="selectedMedias"
+                               :thumb-size="thumbSize"
+                               v-show="filteredMediaItems.length > 0 && !gridView"></media-items-table>
 
-            <ol class="row" v-show="gridView">
-                <li v-for="media in filteredMediaItems"
-                    :key="media.name"
-                    class="media-container-main-list-item card"
-                    :style="{width: thumbSize + 2 + 'px'}"
-                    :class="{selected: isMediaSelected(media)}"
-                    v-on:click.stop="toggleSelectionOfMedia(media)"
-                    draggable="true" v-on:dragstart="handleDragStart(media, $event)">
-                    <div class="thumb-container" :style="{height: thumbSize + 'px'}">
-                        <img draggable="false" :src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" />
-                    </div>
-                    <div class="media-container-main-item-title card-body">
-                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button mr-4" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a>
-                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button" v-on:click.stop="deleteMediaItem(media)"><i class="fa fa-trash"></i></a>
-                        <span class="media-filename card-text small" :title="media.name">{{ media.name }}</span>
-                    </div>
-                </li>
-            </ol>
+            <media-items-grid v-show="gridView"
+                              :filtered-media-items="filteredMediaItems"
+                              :selected-medias="selectedMedias"
+                              :thumb-size="thumbSize">
+
+            </media-items-grid>
+
         </div>
     </div>
 </div>
@@ -187,10 +129,21 @@
 <input type="hidden" id="moveMediaMessage" value="@T["Are you sure you want to move the selected media to this folder?"]" />
 <input type="hidden" id="sameFolderMessage" value="@T["The media is already on this folder"]" />
 
-@*Local Strings for upload*@
+@*Localizable Strings shared*@
+<input type="hidden" id="t-edit-button" value="@T["Edit"]" />
+<input type="hidden" id="t-delete-button" value="@T["Delete"]" />
+
+
+@*Localizable Strings for uploadListcomponent*@
 <input type="hidden" id="t-uploads" value="@T["Uploads"]" />
 <input type="hidden" id="t-errors" value="@T["Errors"]" />
 <input type="hidden" id="t-clear-errors" value="@T["Clear Errors"]" />
+
+@*Localizable Strings for mediaItemsTableComponent*@
+<input type="hidden" id="t-image-header" value="@T["Image"]" />
+<input type="hidden" id="t-name-header" value="@T["Name"]" />
+<input type="hidden" id="t-size-header" value="@T["Size"]" />
+<input type="hidden" id="t-type-header" value="@T["Type"]" />
 
 
 

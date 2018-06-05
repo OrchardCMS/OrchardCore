@@ -84,6 +84,30 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         media.name = newName;
                     });
 
+                    // common handlers for actions in both grid and table view.
+                    bus.$on('sortChangeRequested', function (newSort) {
+                        self.changeSort(newSort);
+                    });
+
+                    bus.$on('mediaToggleRequested', function (media) {
+                        self.toggleSelectionOfMedia(media);
+                    });
+
+                    bus.$on('renameMediaRequested', function (media) {
+                        self.renameMedia(media);
+                    });
+
+                    bus.$on('deleteMediaRequested', function (media) {
+                        self.deleteMediaItem(media);
+                    });
+
+                    bus.$on('mediaDragStartRequested', function (media, e) {
+                        self.handleDragStart(media, e);
+                    });
+
+
+                    
+
                     self.currentPrefs = JSON.parse(localStorage.getItem('mediaApplicationPrefs'));
                 },
                 computed: {
