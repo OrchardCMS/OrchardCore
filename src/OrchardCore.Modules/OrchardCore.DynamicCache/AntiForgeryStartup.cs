@@ -13,7 +13,7 @@ namespace OrchardCore.DynamicCache
         public override void ConfigureServices(IServiceCollection services)
         {
             services.RemoveAll<IDynamicCacheService>();
-            services.AddScoped<IDynamicCacheService>(sp => new AntiForgeryDynamicCacheService(
+            services.AddScoped<IDynamicCacheService>(sp => new AntiforgeryDynamicCacheService(
                 sp.GetRequiredService<DefaultDynamicCacheService>(),
                 sp.GetRequiredService<IAntiforgery>(),
                 sp.GetRequiredService<IHttpContextAccessor>()

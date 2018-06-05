@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Text.Encodings.Web;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http;
@@ -11,22 +10,20 @@ using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DynamicCache
 {
-    public class AntiForgeryDynamicCacheService : IDynamicCacheService
+    public class AntiforgeryDynamicCacheService : IDynamicCacheService
     {
         private const string Placeholder = "#{AntiForgeryToken}";
 
         private readonly IDynamicCacheService _dynamicCacheService;
-        private readonly Regex _tagRegex;
         private readonly Lazy<string> _tagFactory; // This ensures that we only generate the markup once per request
 
-        public AntiForgeryDynamicCacheService(
+        public AntiforgeryDynamicCacheService(
             IDynamicCacheService dynamicCacheService, 
             IAntiforgery antiforgery,
             IHttpContextAccessor httpContextAccessor)
         {
             _dynamicCacheService = dynamicCacheService;
-
-            _tagRegex = new Regex("<input name=\"__RequestVerificationToken\" type=\"hidden\" value=\"[^\"]*\" />");
+            
             _tagFactory = new Lazy<string>(() =>
             {
                 var htmlContent = antiforgery.GetHtml(httpContextAccessor.HttpContext);
@@ -53,16 +50,12 @@ namespace OrchardCore.DynamicCache
 
         private string ReplaceTagWithPlaceholder(string value)
         {
-            return _tagRegex.Replace(value, Placeholder);
+            return value?.Replace(_tagFactory.Value, Placeholder);
         }
 
         private string ReplacePlaceholderWithTag(string value)
         {
-            // Don't bother if this was a cache miss or if there's no placeholders to be replaced
-            if (value != null && value.Contains(Placeholder))
-            {
-                value = value.Replace(Placeholder, _tagFactory.Value);
-            }
+            value = value?.Replace(Placeholder, _tagFactory.Value);
 
             return value;
         }
