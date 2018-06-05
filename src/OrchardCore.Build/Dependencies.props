@@ -48,6 +48,7 @@
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0003" />
     <PackageManagement Include="Markdig" Version="0.13.1" />
     <PackageManagement Include="WindowsAzure.Storage" Version="8.5.0" />
+    <PackageManagement Include="NodaTime" Version="2.3.0-beta02" />
   </ItemGroup>
 
 </Project>

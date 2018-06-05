@@ -7,6 +7,7 @@
 @import "codemirror.scss";
 
 $top-nav-height: 59px;
+$footer-height: 40px;
 $left-navigation-width: 260px;
 $left-navigation-width-when-compact: 60px;
 $border-content: 1px solid rgba(0, 0, 0, 0.05);
@@ -27,8 +28,28 @@ $extended-hover-length: 30px;
     hyphens: auto;
 }
 
+body {
+    margin-bottom: $footer-height;
+}
 
+.left-sidebar-compact .ta-footer {
+    width: calc(100% - 60px);
+    transition: width 0.2s ease-in-out, width 0.2s ease-in-out;
+}
 
+.ta-footer {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: calc(100% - 260px);
+    height: $footer-height;
+    line-height: $footer-height;
+    background-color: $gray-100;
+    z-index: 8;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    transition: width 0.2s ease-in-out, width 0.2s ease-in-out;
+    font-size: .7rem;
+}
 
 // Layout
 // -----------------------------
@@ -86,6 +107,7 @@ $extended-hover-length: 30px;
     padding: 15px;
     margin-left: $left-navigation-width;
     margin-top: $top-nav-height;
+    margin-bottom: $footer-height;
     transition: margin-left 0.2s ease-in-out;
 }
 
@@ -119,7 +141,7 @@ $extended-hover-length: 30px;
     #left-nav {
         position: relative;
         height: calc(100% - #{$top-nav-height * 2});
-        border-top: 1px solid $gray-300;
+        //border-top: 1px solid $gray-300;
     }
     // Remove padding/margin from all uls
     ul {

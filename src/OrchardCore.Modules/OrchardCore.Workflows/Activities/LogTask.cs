@@ -11,12 +11,12 @@ namespace OrchardCore.Workflows.Activities
     public class LogTask : TaskActivity
     {
         private readonly ILogger<LogTask> _logger;
-        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
-        public LogTask(ILogger<LogTask> logger, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<NotifyTask> localizer)
+        public LogTask(ILogger<LogTask> logger, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<NotifyTask> localizer)
         {
             _logger = logger;
-            _scriptEvaluator = scriptEvaluator;
+            _expressionEvaluator = expressionEvaluator;
             T = localizer;
         }
 
@@ -43,7 +43,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var text = await _scriptEvaluator.EvaluateAsync(Text, workflowContext);
+            var text = await _expressionEvaluator.EvaluateAsync(Text, workflowContext);
             var logLevel = LogLevel;
 
             _logger.Log(logLevel, 0, text, null, (state, error) => state.ToString());
