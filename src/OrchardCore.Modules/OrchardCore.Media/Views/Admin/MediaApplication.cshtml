@@ -115,6 +115,7 @@
     </div>
 </div>
 
+@* Endpoints *@
 <input type="hidden" id="getFoldersUrl" value="@Url.Action("GetFolders", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="deleteFolderUrl" value="@Url.Action("DeleteFolder", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="createFolderUrl" value="@Url.Action("CreateFolder", "Admin", new { area = "OrchardCore.Media" })" />
@@ -124,12 +125,12 @@
 <input type="hidden" id="deleteMediaListUrl" value="@Url.Action("DeleteMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="moveMediaListUrl" value="@Url.Action("MoveMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })" />
+
+@*Localizable Strings shared*@
 <input type="hidden" id="deleteFolderMessage" value="@T["Are you sure you want to delete this folder?"]" />
 <input type="hidden" id="deleteMediaMessage" value="@T["Are you sure you want to delete this media?"]" />
 <input type="hidden" id="moveMediaMessage" value="@T["Are you sure you want to move the selected media to this folder?"]" />
 <input type="hidden" id="sameFolderMessage" value="@T["The media is already on this folder"]" />
-
-@*Localizable Strings shared*@
 <input type="hidden" id="t-edit-button" value="@T["Edit"]" />
 <input type="hidden" id="t-delete-button" value="@T["Delete"]" />
 
