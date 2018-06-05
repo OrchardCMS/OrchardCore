@@ -2,6 +2,7 @@ using System.Globalization;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using OrchardCore.Localization;
+using OrchardCore.Localization.Services;
 using Xunit;
 
 namespace OrchardCore.Tests.Localization

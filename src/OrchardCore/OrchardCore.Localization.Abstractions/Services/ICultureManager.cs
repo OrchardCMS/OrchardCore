@@ -3,7 +3,7 @@ using OrchardCore.Localization.Models;
 
 namespace OrchardCore.Localization.Services {
     public interface ICultureManager {
-        IEnumerable<string> ListCultures();
+        IEnumerable<ICulture> ListCultures();
         void AddCulture(string cultureName);
         void DeleteCulture(string cultureName);
         //string GetCurrentCulture(HttpContextBase requestContext);

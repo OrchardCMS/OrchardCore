@@ -14,19 +14,19 @@ namespace OrchardCore.Localization.Services {
             _distributedCache = distributedCache;
         }
 
-        public IEnumerable<string> ListCultures()
+        public IEnumerable<ICulture> ListCultures()
         {
-            throw new NotImplementedException();
+            return _cultureStore.GetAllCultures().Result;
         }
 
         public void AddCulture(string cultureName)
         {
-            throw new NotImplementedException();
+            _cultureStore.SaveAsync(new CultureRecord{ Culture = cultureName }, new System.Threading.CancellationToken());
         }
 
         public void DeleteCulture(string cultureName)
         {
-            throw new NotImplementedException();
+            _cultureStore.DeleteAsync(new CultureRecord { Culture = cultureName }, new System.Threading.CancellationToken());
         }
 
         public ICulture GetCultureById(int id)

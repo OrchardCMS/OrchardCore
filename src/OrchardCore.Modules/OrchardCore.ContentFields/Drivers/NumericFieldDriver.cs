@@ -9,18 +9,21 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Modules.Services;
 
 namespace OrchardCore.ContentFields.Fields
 {
     public class NumericFieldDisplayDriver : ContentFieldDisplayDriver<NumericField>
     {
-        private readonly CultureInfo _cultureInfo;
+        private readonly ILocalCulture _localeCulture;
 
-        public NumericFieldDisplayDriver(IStringLocalizer<NumericFieldDisplayDriver> localizer)
+        public NumericFieldDisplayDriver(
+            IStringLocalizer<NumericFieldDisplayDriver> localizer,
+            ILocalCulture localeCulture)
         {
             T = localizer;
 
-            _cultureInfo = CultureInfo.InvariantCulture; // Todo: Get CurrentCulture from site settings
+            _localeCulture = localeCulture;
         }
 
         public IStringLocalizer T { get; set; }
@@ -42,7 +45,7 @@ namespace OrchardCore.ContentFields.Fields
             return Initialize<EditNumericFieldViewModel>("NumericField_Edit", model =>
             {
                 var settings = context.PartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
-                model.Value = context.IsNew ? settings.DefaultValue : Convert.ToString(field.Value, _cultureInfo);
+                model.Value = context.IsNew ? settings.DefaultValue : Convert.ToString(field.Value, _localeCulture.GetLocalCultureAsync().Result);
 
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -71,7 +74,7 @@ namespace OrchardCore.ContentFields.Fields
                         updater.ModelState.AddModelError(Prefix, T["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
                     }
                 }
-                else if (!decimal.TryParse(viewModel.Value, NumberStyles.Any, _cultureInfo, out value))
+                else if (!decimal.TryParse(viewModel.Value, NumberStyles.Any, _localeCulture.GetLocalCultureAsync().Result, out value))
                 {
                     updater.ModelState.AddModelError(Prefix, T["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
                 }
