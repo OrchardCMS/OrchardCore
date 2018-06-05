@@ -35,7 +35,7 @@ Vue.component('folder', {
     },
     computed: {
         empty: function () {
-            return this.children && this.children.length == 0;
+            return !this.children || this.children.length == 0;
         },
         isSelected: function () {
             return (this.selectedInMediaApp.name == this.model.name) && (this.selectedInMediaApp.path == this.model.path);
@@ -79,26 +79,30 @@ Vue.component('folder', {
         },
         toggle: function () {
             this.open = !this.open
-            var self = this;
             if (this.open && !this.children) {
-                $.ajax({
-                    url: $('#getFoldersUrl').val() + "?path=" + encodeURIComponent(self.model.path),
-                    method: 'GET',
-                    success: function (data) {
-                        self.children = data;
-                        self.children.forEach(function (c) {
-                            c.parent = self.model;
-                        });
-                    },
-                    error: function (error) {
-                        emtpy = false;
-                        console.error(error.responseText);
-                    }
-                });
+                this.loadChildren();
             }
         },
         select: function () {
             bus.$emit('folderSelected', this.model);
+            this.loadChildren();
+        },
+        loadChildren: function () {            
+            var self = this;
+            $.ajax({
+                url: $('#getFoldersUrl').val() + "?path=" + encodeURIComponent(self.model.path),
+                method: 'GET',
+                success: function (data) {
+                    self.children = data;
+                    self.children.forEach(function (c) {
+                        c.parent = self.model;
+                    });
+                },
+                error: function (error) {
+                    emtpy = false;
+                    console.error(error.responseText);
+                }
+            });
         },
         handleDragOver: function (e) {
             this.isHovered = true;
@@ -155,5 +159,6 @@ Vue.component('folder', {
                 }
             });
         }
+
     }
 });
