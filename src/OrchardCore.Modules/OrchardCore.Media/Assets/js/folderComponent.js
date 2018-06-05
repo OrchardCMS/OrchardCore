@@ -75,10 +75,18 @@ Vue.component('folder', {
             return this.model.path === '';
         },
         isAncestorOfSelectedFolder: function () {
-            return mediaApp.selectedFolder.path.indexOf(this.model.path) > -1;
+            parentFolder = mediaApp.selectedFolder;
+            while (parentFolder) {
+                if (parentFolder.path == this.model.path) {
+                    return true;
+                }
+            parentFolder = parentFolder.parent;
+            }
+
+            return false;
         },
         toggle: function () {
-            this.open = !this.open
+            this.open = !this.open;
             if (this.open && !this.children) {
                 this.loadChildren();
             }
