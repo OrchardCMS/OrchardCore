@@ -8,7 +8,7 @@ $gray: lighten($gray-base, 33.5%) !default; // #555
 .media-container {
 
     .media-container-navigation {
-        @include .col-md-3
+        @extend .col-md-3
     }
 
     .media-container-main {
