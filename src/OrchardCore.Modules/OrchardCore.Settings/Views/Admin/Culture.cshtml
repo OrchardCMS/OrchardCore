@@ -24,9 +24,4 @@
             </li>
         }
     </ul>
-
-    @*@Html.UnorderedList(
-        Model.SiteCultures.OrderBy(s => s),
-        (s, i) => Html.DisplayFor(scvm => s, s == Model.CurrentCulture ? "CurrentCulture" : "RemovableCulture", ""),
-        "site-cultures", "culture", "odd")*@
 </form>

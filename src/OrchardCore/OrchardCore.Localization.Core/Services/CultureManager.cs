@@ -25,22 +25,41 @@ namespace OrchardCore.Localization.Services
 
         public void AddCulture(string cultureName)
         {
+            if (!IsValidCulture(cultureName))
+            {
+                throw new ArgumentException("cultureName");
+            }
+
+            if (ListCultures().Any(culture => culture.Culture == cultureName))
+            {
+                return;
+            }
+
             _cultureStore.SaveAsync(new CultureRecord{ Culture = cultureName }, new System.Threading.CancellationToken());
         }
 
         public void DeleteCulture(string cultureName)
         {
-            _cultureStore.DeleteAsync(new CultureRecord { Culture = cultureName }, new System.Threading.CancellationToken());
+            if (!IsValidCulture(cultureName))
+            {
+                throw new ArgumentException("cultureName");
+            }
+
+            if (ListCultures().Any(culture => culture.Culture == cultureName))
+            {
+                var culture = ListCultures().Where(cr => cr.Culture == cultureName).FirstOrDefault();
+                _cultureStore.DeleteAsync(culture, new System.Threading.CancellationToken());
+            }
         }
 
         public CultureRecord GetCultureById(int id)
         {
-            throw new NotImplementedException();
+            return ListCultures().Where(c => c.Id == id).FirstOrDefault();
         }
 
         public CultureRecord GetCultureByName(string cultureName)
         {
-            throw new NotImplementedException();
+            return ListCultures().Where(c => c.Culture == cultureName).FirstOrDefault();
         }
 
         public string GetSiteCulture()
