@@ -1,17 +1,13 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace OrchardCore.Environment.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        /// <summary>
-        /// Add host level services for managing extensions.
-        /// </summary>
-        /// <param name="services"></param>
         public static IServiceCollection AddExtensionManagerHost(this IServiceCollection services)
         {
             services.TryAddEnumerable(
