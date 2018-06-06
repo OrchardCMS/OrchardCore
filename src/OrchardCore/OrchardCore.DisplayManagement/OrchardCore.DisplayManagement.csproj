@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Modules.Abstractions\OrchardCore.Modules.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Environment.Cache.Abstractions\OrchardCore.Environment.Cache.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Environment.Extensions.Abstractions\OrchardCore.Environment.Extensions.Abstractions.csproj" />

@@ -6,7 +6,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Liquid;
-using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Services;
 using OrchardCore.Recipes;
