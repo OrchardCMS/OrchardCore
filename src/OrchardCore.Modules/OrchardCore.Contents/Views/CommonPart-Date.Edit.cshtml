@@ -4,7 +4,7 @@
 <fieldset class="form-group" asp-validation-class-for="CreatedUtc">
     <div class="row col-md-6 col-lg-3">
         <label asp-for="CreatedUtc">@T["Created"] <span asp-validation-for="CreatedUtc"></span></label>
-        <input asp-for="CreatedUtc" class="form-control" step="1" type="datetime-local" />
+        <input asp-for="CreatedUtc" class="form-control" type="datetime-local" />
     </div>
     <span class="hint">@T["The date when the content item was created or first published."]</span>
 </fieldset>
