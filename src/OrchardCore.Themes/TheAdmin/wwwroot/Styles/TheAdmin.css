@@ -167,7 +167,7 @@ html {
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   -ms-overflow-style: scrollbar;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
+  -webkit-tap-highlight-color: transparent; }
 
 @-ms-viewport {
   width: device-width; }
@@ -6933,11 +6933,6 @@ body {
 
 .left-sidebar-compact .ta-content {
   margin-left: 60px; }
-
-@media (max-width: 767.98px) {
-  .ta-content {
-    margin-left: 60px;
-    transition: margin-left 0.5s ease-in-out; } }
 
 @media (max-width: 767.98px) {
   .ta-content {

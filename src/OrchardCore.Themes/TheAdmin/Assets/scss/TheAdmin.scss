@@ -40,16 +40,6 @@ body {
 .ta-footer {
     position: fixed;
     bottom: 0;
-    width: 100%;
-    height: $footer-height;
-    line-height: $footer-height;
-    background-color: $gray-100;
-    z-index: 8;
-}
-
-.ta-footer {
-    position: fixed;
-    bottom: 0;
     right: 0;
     width: calc(100% - 260px);
     height: $footer-height;
