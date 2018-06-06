@@ -162,17 +162,19 @@ namespace OrchardCore.Recipes.Services
             {
                 if (!shellContext.IsActivated)
                 {
-                    var tenantEvents = scope.ServiceProvider
-                        .GetServices<IModularTenantEvents>();
-
-                    foreach (var tenantEvent in tenantEvents)
+                    using (var activatingScope = shellContext.EnterServiceScope())
                     {
-                        await tenantEvent.ActivatingAsync();
-                    }
+                        var tenantEvents = activatingScope.ServiceProvider.GetServices<IModularTenantEvents>();
 
-                    foreach (var tenantEvent in tenantEvents.Reverse())
-                    {
-                        await tenantEvent.ActivatedAsync();
+                        foreach (var tenantEvent in tenantEvents)
+                        {
+                            await tenantEvent.ActivatingAsync();
+                        }
+
+                        foreach (var tenantEvent in tenantEvents.Reverse())
+                        {
+                            await tenantEvent.ActivatedAsync();
+                        }
                     }
 
                     shellContext.IsActivated = true;
@@ -189,7 +191,7 @@ namespace OrchardCore.Recipes.Services
                 {
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Executing recipe step '{0}'.", recipeStep.Name);
+                        Logger.LogInformation("Executing recipe step '{RecipeName}'.", recipeStep.Name);
                     }
 
                     await _recipeEventHandlers.InvokeAsync(e => e.RecipeStepExecutingAsync(recipeStep), Logger);
@@ -200,7 +202,7 @@ namespace OrchardCore.Recipes.Services
 
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Finished executing recipe step '{0}'.", recipeStep.Name);
+                        Logger.LogInformation("Finished executing recipe step '{RecipeName}'.", recipeStep.Name);
                     }
                 }
             }

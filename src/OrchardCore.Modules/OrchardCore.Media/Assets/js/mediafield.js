@@ -43,7 +43,7 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                                 url: mediaItemUrl + "?path=" + encodeURIComponent(x),
                                 method: 'GET',
                                 success: function (data) {
-                                    self.mediaItems.splice(i, 1, data);
+                                    self.mediaItems.splice( i, 1, data);
                                 },
                                 error: function (error) {
                                     console.log(JSON.stringify(error));

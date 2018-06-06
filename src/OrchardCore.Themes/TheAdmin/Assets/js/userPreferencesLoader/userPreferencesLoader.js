@@ -14,6 +14,9 @@ var observer = new MutationObserver(function (mutations) {
                     if (adminPreferences.leftSidebarCompact == true) {
                         body.className += ' left-sidebar-compact';
                     }
+                    isCompactExplicit = adminPreferences.isCompactExplicit;
+                } else {
+                    body.className += ' no-admin-preferences';
                 }
                 // we're done: 
                 observer.disconnect();

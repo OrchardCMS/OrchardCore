@@ -36,14 +36,14 @@ namespace OrchardCore.Demo.ContentElementDisplays
                         return Task.CompletedTask;
                     })
                     .Location("Detail", "Content")
-                    .Cache("lowerdoll2", cache => cache.During(TimeSpan.FromSeconds(5))),
+                    .Cache("lowerdoll2", cache => cache.WithExpiryAfter(TimeSpan.FromSeconds(5))),
                 // A strongly typed shape model is used and initialized when rendered
                 Initialize<TestContentPartAShape>(shape => { shape.Line = "Strongly typed shape"; })
                     .Location("Detail", "Content:2"),
                 // Cached shape
                 Dynamic("LowerDoll")
                     .Location("Detail", "/Footer")
-                    .Cache("lowerdoll", cache => cache.During(TimeSpan.FromSeconds(5)))
+                    .Cache("lowerdoll", cache => cache.WithExpiryAfter(TimeSpan.FromSeconds(5)))
                 );
         }
 

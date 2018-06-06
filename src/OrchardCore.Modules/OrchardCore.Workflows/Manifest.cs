@@ -6,7 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "The Workflows module provides tools and APIs to create custom workflows",
-    Dependencies = new[] { "OrchardCore.Liquid", "OrchardCore.Scripting" },
     Category = "Workflows"
 )]
 
@@ -14,7 +13,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Workflows",
     Name = "Workflows",
     Description = "The Workflows module provides tools and APIs to create custom workflows",
-    Dependencies = new[] { "OrchardCore.Liquid", "OrchardCore.Scripting" },
+    Dependencies = new[] { "OrchardCore.Liquid", "OrchardCore.Scripting", "OrchardCore.DataProtection" },
     Category = "Workflows"
 )]
 

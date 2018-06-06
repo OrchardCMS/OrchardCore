@@ -116,10 +116,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     parents: function () {
                         var p = [];
-                        parent = this.selectedFolder;
-                        while (parent && parent.path != '') {
-                            p.unshift(parent);
-                            parent = parent.parent;
+                        parentFolder = self.selectedFolder;
+                        while (parentFolder && parentFolder != root) {
+                            p.unshift(parentFolder);
+                            parentFolder = parentFolder.parent;                            
                         }
                         return p;
                     },

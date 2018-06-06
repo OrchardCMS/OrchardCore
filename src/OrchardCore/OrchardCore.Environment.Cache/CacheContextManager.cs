@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,7 +13,7 @@ namespace OrchardCore.Environment.Cache
             _cacheContextProviders = cacheContextProviders;
         }
 
-        public async Task<IEnumerable<CacheContextEntry>> GetContextAsync(IEnumerable<string> contexts)
+        public async Task<IEnumerable<CacheContextEntry>> GetDiscriminatorsAsync(IEnumerable<string> contexts)
         {
             var entries = new List<CacheContextEntry>();
 
@@ -24,6 +24,5 @@ namespace OrchardCore.Environment.Cache
 
             return entries;
         }
-
     }
 }

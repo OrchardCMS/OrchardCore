@@ -121,10 +121,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     parents: function () {
                         var p = [];
-                        parent = this.selectedFolder;
-                        while (parent && parent.path != '') {
-                            p.unshift(parent);
-                            parent = parent.parent;
+                        parentFolder = self.selectedFolder;
+                        while (parentFolder && parentFolder != root) {
+                            p.unshift(parentFolder);
+                            parentFolder = parentFolder.parent;                            
                         }
                         return p;
                     },
@@ -2458,7 +2458,7 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                                 url: mediaItemUrl + "?path=" + encodeURIComponent(x),
                                 method: 'GET',
                                 success: function (data) {
-                                    self.mediaItems.splice(i, 1, data);
+                                    self.mediaItems.splice( i, 1, data);
                                 },
                                 error: function (error) {
                                     console.log(JSON.stringify(error));

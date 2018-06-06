@@ -33,9 +33,9 @@ namespace OrchardCore.Autoroute.Routing
 
             var displayRouteData = GetContentItemDisplayRoutes(context.HttpContext, contentItemId).Result;
             
-            if (string.Equals(context.Values["area"]?.ToString(), displayRouteData["area"].ToString(), StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(context.Values["controller"]?.ToString(), displayRouteData["controller"].ToString(), StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(context.Values["action"]?.ToString(), displayRouteData["action"].ToString(), StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(context.Values["area"]?.ToString(), displayRouteData?["area"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(context.Values["controller"]?.ToString(), displayRouteData?["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(context.Values["action"]?.ToString(), displayRouteData?["action"]?.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 string path;
                 if (_entries.TryGetPath(contentItemId, out path))

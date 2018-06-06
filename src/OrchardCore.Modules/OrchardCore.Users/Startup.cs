@@ -30,6 +30,8 @@ namespace OrchardCore.Users
     public class Startup : StartupBase
     {
         private const string LoginPath = "Login";
+        private const string ChangePasswordPath = "ChangePassword";
+        private const string ForgotPasswordPath = "ForgotPassword";
 
         private readonly string _tenantName;
         private readonly string _tenantPrefix;
@@ -47,6 +49,18 @@ namespace OrchardCore.Users
                 areaName: "OrchardCore.Users",
                 template: LoginPath,
                 defaults: new { controller = "Account", action = "Login" }
+            );
+            routes.MapAreaRoute(
+                name: "ChangePassword",
+                areaName: "OrchardCore.Users",
+                template: ChangePasswordPath,
+                defaults: new { controller = "Account", action = "ChangePassword" }
+            );
+            routes.MapAreaRoute(
+                name: "ForgotPassword",
+                areaName: "OrchardCore.Users",
+                template: ForgotPasswordPath,
+                defaults: new { controller = "Account", action = "ForgotPassword" }
             );
         }
 
@@ -103,7 +117,13 @@ namespace OrchardCore.Users
             services.TryAddScoped<UserManager<IUser>>();
             services.TryAddScoped<SignInManager<IUser>>();
 
-            services.TryAddScoped<IUserStore<IUser>, UserStore>();
+            services.TryAddScoped<UserStore>();
+            services.TryAddScoped<IUserStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserRoleStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserPasswordStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserEmailStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserSecurityStampStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserLoginStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
 
             services.ConfigureApplicationCookie(options =>
             {
