@@ -9,7 +9,7 @@
     <PackageReference Include="Microsoft.Extensions.Localization" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" />
-    <PackageReference Include="YesSql.Core" Version="2.0.0-beta-1189" />
+    <PackageReference Include="YesSql.Core" />
   </ItemGroup>
 
   <ItemGroup>
