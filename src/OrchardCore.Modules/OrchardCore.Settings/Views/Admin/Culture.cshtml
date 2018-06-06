@@ -21,19 +21,19 @@
     </fieldset>
 
     <button class="btn btn-primary" type="submit">@T["Add"]</button>
-
-    <hr />
-
-    <fieldset class="form-group">
-        <h3>@T["Cultures this site supports"]</h3>
-
-        <ul class="list-group">
-            @foreach (var contentItem in Model.SiteCultures.OrderBy(s => s))
-            {
-                <li class="list-group-item list-group-item-action flex-column align-items-start">
-                    @Html.DisplayFor(scvm => contentItem, contentItem == Model.CurrentCulture ? "CurrentCulture" : "RemovableCulture", "")
-                </li>
-            }
-        </ul>
-    </fieldset>
 </form>
+<hr />
+
+<fieldset class="form-group">
+    <h3>@T["Cultures this site supports"]</h3>
+
+    <ul class="list-group">
+        @foreach (var contentItem in Model.SiteCultures.OrderBy(s => s))
+        {
+            <li class="list-group-item list-group-item-action flex-column align-items-start">
+                @Html.DisplayFor(scvm => contentItem, contentItem == Model.CurrentCulture ? "CurrentCulture" : "RemovableCulture", "")
+            </li>
+        }
+    </ul>
+</fieldset>
+

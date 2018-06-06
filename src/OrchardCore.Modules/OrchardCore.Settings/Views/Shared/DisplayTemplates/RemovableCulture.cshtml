@@ -1,9 +1,9 @@
-<form asp-action="DeleteCulture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
+<form name="delete-culture" asp-action="DeleteCulture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
     <div class="d-flex w-100 justify-content-between">
         <div>@Model</div>
         <div>
+            @Html.Hidden("cultureName", (string)Model, new { id = "" })
             <button type="submit" class="btn btn-link" title="@T["Delete"]">
-                @Html.Hidden("cultureName", (string)Model, new { id = "" })
                 <i class="fas fa-times"></i>
             </button>
         </div>
