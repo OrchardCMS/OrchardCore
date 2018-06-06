@@ -1,0 +1,7 @@
+<div>
+    @Model
+    <form asp-action="DeleteCulture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
+        @Html.Hidden("cultureName", (string)Model, new { id = "" })
+        <button type="submit" class="remove" title="@T["Delete"]">x</button>
+    </form>
+</div>

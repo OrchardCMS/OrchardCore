@@ -24,7 +24,7 @@ namespace OrchardCore.Localization
         {
             var siteCulture = serviceProvider.GetService<ILocalCulture>().GetLocalCultureAsync().Result;
             var siteCultures = serviceProvider.GetService<ICultureManager>().ListCultures();
-            IList<CultureInfo> supportedCultures = null;
+            IList<CultureInfo> supportedCultures = new List<CultureInfo>();
 
             foreach (var culture in siteCultures)
             {

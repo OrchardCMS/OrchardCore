@@ -1,20 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.Localization.Models;
 
-namespace OrchardCore.Localization.Services {
+namespace OrchardCore.Localization.Services
+{
     public class CultureManager : ICultureManager {
         private readonly ICultureStore _cultureStore;
         private readonly IDistributedCache _distributedCache;
 
-        public CultureManager(ICultureStore cultureStore, IDistributedCache distributedCache) {
+        public CultureManager(
+            ICultureStore cultureStore,
+            IDistributedCache distributedCache) {
             _cultureStore = cultureStore;
             _distributedCache = distributedCache;
         }
 
-        public IEnumerable<ICulture> ListCultures()
+        public IEnumerable<CultureRecord> ListCultures()
         {
             return _cultureStore.GetAllCultures().Result;
         }
@@ -29,17 +33,22 @@ namespace OrchardCore.Localization.Services {
             _cultureStore.DeleteAsync(new CultureRecord { Culture = cultureName }, new System.Threading.CancellationToken());
         }
 
-        public ICulture GetCultureById(int id)
+        public CultureRecord GetCultureById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public ICulture GetCultureByName(string cultureName)
+        public CultureRecord GetCultureByName(string cultureName)
         {
             throw new NotImplementedException();
         }
 
         public string GetSiteCulture()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetCurrentCulture(HttpContext requestContext)
         {
             throw new NotImplementedException();
         }
@@ -64,5 +73,6 @@ namespace OrchardCore.Localization.Services {
 
             return true;
         }
+
     }
 }

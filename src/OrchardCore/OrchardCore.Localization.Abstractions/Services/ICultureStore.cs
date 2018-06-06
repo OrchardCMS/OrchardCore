@@ -7,12 +7,12 @@ namespace OrchardCore.Localization.Services
 {
     public interface ICultureStore
     {
-        Task<IEnumerable<ICulture>> GetAllCultures();
+        Task<IEnumerable<CultureRecord>> GetAllCultures();
 
-        Task SaveAsync(ICulture culture, CancellationToken cancellationToken);
+        Task SaveAsync(CultureRecord culture, CancellationToken cancellationToken);
         
-        Task DeleteAsync(ICulture culture, CancellationToken cancellationToken);
+        Task DeleteAsync(CultureRecord culture, CancellationToken cancellationToken);
         
-        Task<ICulture> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken);
+        Task<CultureRecord> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken);
     }
 }

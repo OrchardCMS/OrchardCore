@@ -3,10 +3,10 @@
 
 <h1>@RenderTitleSegments(T["Settings"])</h1>
 
-<p class="breadcrumb">@Html.ActionLink(T["Manage Settings"].Value, "index")@T[" &#62; "]@T["Supported Cultures"]</p>
+<p class="breadcrumb">@Html.ActionLink(T["Manage Settings"].Value, "Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })@T[" &#62; "]@T["Supported Cultures"]</p>
 <h3>@T["Available Cultures"]</h3>
 
-<form asp-action="Culture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
+<form asp-action="AddCulture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
     <fieldset class="addCulture">
         <label for="CultureName">@T["Add a culture..."]</label>
         @Html.DropDownList("SystemCultureName", new SelectList(Model.AvailableSystemCultures.OrderBy(s => s), Model.CurrentCulture))
@@ -15,6 +15,15 @@
     </fieldset>
 
     <h3>@T["Cultures this site supports"]</h3>
+
+    <ul>
+        @foreach (var contentItem in Model.SiteCultures.OrderBy(s => s))
+        {
+            <li>
+                @Html.DisplayFor(scvm => contentItem, contentItem == Model.CurrentCulture ? "CurrentCulture" : "RemovableCulture", "")
+            </li>
+        }
+    </ul>
 
     @*@Html.UnorderedList(
         Model.SiteCultures.OrderBy(s => s),

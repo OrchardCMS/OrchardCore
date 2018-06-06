@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using OrchardCore.Localization.Indexes;
 using OrchardCore.Localization.Models;
 using YesSql;
 
@@ -21,11 +22,11 @@ namespace OrchardCore.Localization.Services
         {
         }
 
-        public Task<IEnumerable<ICulture>> GetAllCultures() {
-            return _session.Query<ICulture>().ListAsync();
+        public Task<IEnumerable<CultureRecord>> GetAllCultures() {
+            return _session.Query<CultureRecord, CultureIndex>().ListAsync();
         }
 
-        public Task SaveAsync(ICulture culture, CancellationToken cancellationToken)
+        public Task SaveAsync(CultureRecord culture, CancellationToken cancellationToken)
         {
             if (culture == null)
             {
@@ -38,7 +39,7 @@ namespace OrchardCore.Localization.Services
             return _session.CommitAsync();
         }
 
-        public Task DeleteAsync(ICulture culture, CancellationToken cancellationToken)
+        public Task DeleteAsync(CultureRecord culture, CancellationToken cancellationToken)
         {
             if (culture == null)
             {
@@ -51,7 +52,7 @@ namespace OrchardCore.Localization.Services
             return _session.CommitAsync();
         }
 
-        public Task<ICulture> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        public Task<CultureRecord> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -60,7 +61,7 @@ namespace OrchardCore.Localization.Services
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.GetAsync<ICulture>(int.Parse(identifier, CultureInfo.InvariantCulture));
+            return _session.GetAsync<CultureRecord>(int.Parse(identifier, CultureInfo.InvariantCulture));
         }
     }
 }
