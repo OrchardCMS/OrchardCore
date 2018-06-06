@@ -1,5 +1,5 @@
 image:
-- Ubuntu
+#- Ubuntu
 - Visual Studio 2017
 
 environment:
