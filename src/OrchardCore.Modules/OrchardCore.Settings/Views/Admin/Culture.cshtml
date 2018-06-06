@@ -7,21 +7,33 @@
 <h3>@T["Available Cultures"]</h3>
 
 <form asp-action="AddCulture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
-    <fieldset class="addCulture">
-        <label for="CultureName">@T["Add a culture..."]</label>
-        @Html.DropDownList("SystemCultureName", new SelectList(Model.AvailableSystemCultures.OrderBy(s => s), Model.CurrentCulture))
-        @T["Other"]: @Html.TextBox("CultureName")
-        <button class="primaryAction" type="submit">@T["Add"]</button>
+    <fieldset class="form-group">
+        <div class="form-row">
+            <div class="col">
+                <label for="CultureName">@T["Add a culture..."]</label>
+                @Html.DropDownList("SystemCultureName", new SelectList(Model.AvailableSystemCultures.OrderBy(s => s), Model.CurrentCulture), new { @class = "form-control" })
+            </div>
+            <div class="col">
+                <label for="CultureName">@T["Other"]:</label>
+                @Html.TextBox("CultureName", "", new { @class = "form-control" })
+            </div>
+        </div>
     </fieldset>
 
-    <h3>@T["Cultures this site supports"]</h3>
+    <button class="btn btn-primary" type="submit">@T["Add"]</button>
 
-    <ul>
-        @foreach (var contentItem in Model.SiteCultures.OrderBy(s => s))
-        {
-            <li>
-                @Html.DisplayFor(scvm => contentItem, contentItem == Model.CurrentCulture ? "CurrentCulture" : "RemovableCulture", "")
-            </li>
-        }
-    </ul>
+    <hr />
+
+    <fieldset class="form-group">
+        <h3>@T["Cultures this site supports"]</h3>
+
+        <ul class="list-group">
+            @foreach (var contentItem in Model.SiteCultures.OrderBy(s => s))
+            {
+                <li class="list-group-item list-group-item-action flex-column align-items-start">
+                    @Html.DisplayFor(scvm => contentItem, contentItem == Model.CurrentCulture ? "CurrentCulture" : "RemovableCulture", "")
+                </li>
+            }
+        </ul>
+    </fieldset>
 </form>
