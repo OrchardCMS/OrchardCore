@@ -11,7 +11,6 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         public IServiceCollection Services { get; }
-
         public IServiceProvider ServiceProvider { get; }
     }
 }
