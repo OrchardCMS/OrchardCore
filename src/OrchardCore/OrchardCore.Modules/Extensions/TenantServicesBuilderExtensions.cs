@@ -30,7 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static TenantServicesBuilder AddAntiForgery(this TenantServicesBuilder tenant)
         {
             var settings = tenant.ServiceProvider.GetRequiredService<ShellSettings>();
-            
+
             var tenantName = settings.Name;
             var tenantPrefix = "/" + settings.RequestUrlPrefix;
 
