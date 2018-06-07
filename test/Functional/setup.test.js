@@ -10,7 +10,7 @@ const basePath = "http://localhost:5000";
 // e.g., npm test --debug
 // In debug mode we show the editor, slow down operations, and increase the timeout for each test
 let debug = process.env.npm_config_debug || false;
-jest.setTimeout(debug ? 60000 : 15000);
+jest.setTimeout(debug ? 60000 : 30000);
 
 beforeAll(async () => {
 

@@ -10,16 +10,13 @@ namespace OrchardCore.DataProtection
 {
     public class Startup : StartupBase
     {
-        private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IOptions<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
 
         public Startup(
-            IDataProtectionProvider dataProtectionProvider,
             IOptions<ShellOptions> shellOptions,
             ShellSettings shellSettings)
         {
-            _dataProtectionProvider = dataProtectionProvider;
             _shellOptions = shellOptions;
             _shellSettings = shellSettings;
         }

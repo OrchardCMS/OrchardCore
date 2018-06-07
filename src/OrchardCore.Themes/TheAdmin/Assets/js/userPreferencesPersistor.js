@@ -5,7 +5,7 @@ function persistAdminPreferences() {
     setTimeout(function () {
         var adminPreferences = {};        
         adminPreferences.leftSidebarCompact = $('body').hasClass('left-sidebar-compact') ? true : false;
-        
+        adminPreferences.isCompactExplicit = isCompactExplicit;
         localStorage.setItem('adminPreferences', JSON.stringify(adminPreferences));
     }, 200);
 }

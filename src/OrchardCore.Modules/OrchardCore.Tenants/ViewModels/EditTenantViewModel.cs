@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Tenants.ViewModels
+namespace OrchardCore.Tenants.ViewModels
 {
     public class EditTenantViewModel
     {

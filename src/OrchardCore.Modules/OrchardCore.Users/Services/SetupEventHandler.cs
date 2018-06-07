@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using OrchardCore.Setup.Events;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services
 {
@@ -24,10 +25,19 @@ namespace OrchardCore.Users.Services
             string dbProvider,
             string dbConnectionString,
             string dbTablePrefix,
+            string siteTimeZone,
             Action<string, string> reportError
             )
         {
-            return _userService.CreateUserAsync(userName, email, new string[] { "Administrator" }, password, reportError);
+
+            var user = new User
+            {
+                UserName = userName,
+                Email = email,
+                RoleNames = new string[] { "Administrator" }
+            };
+
+            return _userService.CreateUserAsync(user, password, reportError);
         }
     }
 }

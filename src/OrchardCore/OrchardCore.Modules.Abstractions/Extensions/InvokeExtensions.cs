@@ -128,7 +128,7 @@ namespace OrchardCore.Modules
         {
             if (IsLogged(ex))
             {
-                logger.LogError(ex, "{2} thrown from {0} by {1}",
+                logger.LogError(ex, "{Type} thrown from {Method} by {Exception}",
                     sourceType,
                     method,
                     ex.GetType().Name);

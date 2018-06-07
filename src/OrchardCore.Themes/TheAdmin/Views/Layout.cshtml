@@ -1,4 +1,5 @@
 @inject OrchardCore.Settings.ISiteService SiteService
+@using System.Reflection
 @{
         var site = await SiteService.GetSiteSettingsAsync();
 }
@@ -55,6 +56,11 @@
             @await RenderBodyAsync()
         </div>
 
+        <footer class="ta-footer">
+          <div class="container-fluid">
+            <span class="text-muted float-right">Orchard Core v@(typeof(TheAdmin.Placeholder).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion)</span>
+          </div>
+        </footer>
     </div><!-- /.ta-wrapper -->
 
     @await RenderSectionAsync("Footer", required: false)

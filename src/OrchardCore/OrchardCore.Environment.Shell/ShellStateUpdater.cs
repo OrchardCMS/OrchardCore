@@ -45,7 +45,7 @@ namespace OrchardCore.Environment.Shell
         {
             if (Logger.IsEnabled(LogLevel.Information))
             {
-                Logger.LogInformation("Applying changes for for shell '{0}'", _settings.Name);
+                Logger.LogInformation("Applying changes for for tenant '{TenantName}'", _settings.Name);
             }
 
             var loadedFeatures = await _extensionManager.LoadFeaturesAsync();
@@ -87,7 +87,7 @@ namespace OrchardCore.Environment.Shell
             {
                 if (Logger.IsEnabled(LogLevel.Information))
                 {
-                    Logger.LogInformation("Disabling feature '{0}'", entry.Feature.FeatureInfo.Id);
+                    Logger.LogInformation("Disabling feature '{FeatureName}'", entry.Feature.FeatureInfo.Id);
                 }
 
                 _featureEventHandlers.Invoke(x => x.Disabling(entry.Feature.FeatureInfo), Logger);
@@ -100,7 +100,7 @@ namespace OrchardCore.Environment.Shell
             {
                 if (Logger.IsEnabled(LogLevel.Information))
                 {
-                    Logger.LogInformation("Uninstalling feature '{0}'", entry.Feature.FeatureInfo.Id);
+                    Logger.LogInformation("Uninstalling feature '{FeatureName}'", entry.Feature.FeatureInfo.Id);
                 }
 
                 _featureEventHandlers.Invoke(x => x.Uninstalling(entry.Feature.FeatureInfo), Logger);
@@ -115,7 +115,7 @@ namespace OrchardCore.Environment.Shell
                 {
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Installing feature '{0}'", entry.Feature.FeatureInfo.Id);
+                        Logger.LogInformation("Installing feature '{FeatureName}'", entry.Feature.FeatureInfo.Id);
                     }
 
                     _featureEventHandlers.Invoke(x => x.Installing(entry.Feature.FeatureInfo), Logger);
@@ -126,7 +126,7 @@ namespace OrchardCore.Environment.Shell
                 {
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Enabling feature '{0}'", entry.Feature.FeatureInfo.Id);
+                        Logger.LogInformation("Enabling feature '{FeatureName}'", entry.Feature.FeatureInfo.Id);
                     }
 
                     _featureEventHandlers.Invoke(x => x.Enabling(entry.Feature.FeatureInfo), Logger);

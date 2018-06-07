@@ -15,11 +15,12 @@ $(function () {
 
 
 $('.leftbar-compactor').click(function () {
-    $('body').hasClass('left-sidebar-compact') ? unSetCompactStatus() : setCompactStatus();
+    $('body').hasClass('left-sidebar-compact') ? unSetCompactStatus() : setCompactStatus(true);
 });
 
+var isCompactExplicit = (isCompactExplicit === undefined) ? false : isCompactExplicit ;
 
-function setCompactStatus() {
+function setCompactStatus(explicit) {
     // This if is to avoid that when sliding from expanded to compact the 
     // underliyng ul is visible while shrinking. It is ugly.    
     if (!$('body').hasClass('left-sidebar-compact')) {
@@ -41,6 +42,9 @@ function setCompactStatus() {
     $('#left-nav').removeClass('ps');
     $('#left-nav').removeClass('ps--active-y'); // need this too because of Edge IE11
 
+    if (explicit == true) {
+        isCompactExplicit = explicit;
+    }
     persistAdminPreferences();
 }
 
@@ -54,5 +58,6 @@ function unSetCompactStatus() {
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', 'collapse');
     $('#left-nav').addClass('ps');
 
+    isCompactExplicit = false;
     persistAdminPreferences();
 }

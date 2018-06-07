@@ -16,6 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddManifestDefinition("theme");
             services.AddSitesFolder();
             services.AddCommands();
+            services.AddAntiforgery();
             services.AddAuthentication();
             services.AddModules(modules => 
             {
