@@ -87,7 +87,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddExtensionManagerHost();
             builder.AddManifestDefinition("module");
 
-            builder.Startup.ConfigureServices((tenant, sp) =>
+            builder.Startup.ConfigureServices(tenant =>
             {
                 tenant.Services.AddExtensionManager();
             });

@@ -25,7 +25,7 @@ namespace OrchardCore.Modules
         {
             foreach (var configureServices in _actions.ConfigureServicesActions)
             {
-                configureServices(new TenantServicesBuilder(services), _serviceProvider);
+                configureServices(new TenantServicesBuilder(services, _serviceProvider));
             }
         }
 
@@ -33,7 +33,7 @@ namespace OrchardCore.Modules
         {
             foreach (var configure in _actions.ConfigureActions)
             {
-                configure(new TenantApplicationBuilder(app), routes, serviceProvider);
+                configure(new TenantApplicationBuilder(app), routes);
             }
         }
     }

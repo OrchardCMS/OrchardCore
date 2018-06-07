@@ -13,10 +13,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public int Order { get; }
 
-        public ICollection<Action<TenantServicesBuilder, IServiceProvider>> ConfigureServicesActions { get; set; } =
-            new List<Action<TenantServicesBuilder, IServiceProvider>>();
+        public ICollection<Action<TenantServicesBuilder>> ConfigureServicesActions { get; set; } =
+            new List<Action<TenantServicesBuilder>>();
 
-        public ICollection<Action<TenantApplicationBuilder, IRouteBuilder, IServiceProvider>> ConfigureActions { get; set; } =
-            new List<Action<TenantApplicationBuilder, IRouteBuilder, IServiceProvider>>();
+        public ICollection<Action<TenantApplicationBuilder, IRouteBuilder>> ConfigureActions { get; set; } =
+            new List<Action<TenantApplicationBuilder, IRouteBuilder>>();
     }
 }

@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         internal IDictionary<int, TenantStartupActions> Actions { get; } = new Dictionary<int, TenantStartupActions>();
 
-        internal TenantStartupBuilder AddConfigureServices(Action<TenantServicesBuilder, IServiceProvider> configureServicesAction, int order)
+        internal TenantStartupBuilder AddConfigureServices(Action<TenantServicesBuilder> configureServicesAction, int order)
         {
             if (!Actions.TryGetValue(order, out var actions))
             {
@@ -31,7 +31,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return this;
         }
 
-        internal TenantStartupBuilder AddConfigure(Action<TenantApplicationBuilder, IRouteBuilder, IServiceProvider> configureAction, int order)
+        internal TenantStartupBuilder AddConfigure(Action<TenantApplicationBuilder, IRouteBuilder> configureAction, int order)
         {
             if (!Actions.TryGetValue(order, out var actions))
             {

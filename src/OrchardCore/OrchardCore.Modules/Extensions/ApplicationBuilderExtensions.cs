@@ -8,6 +8,9 @@ namespace Microsoft.AspNetCore.Builder
 {
     public static class ApplicationBuilderExtensions
     {
+        /// <summary>
+        /// Enables multi-tenant requests support for the current path.
+        /// </summary>
         public static IApplicationBuilder UseOrchardCore(this IApplicationBuilder app, Action<IApplicationBuilder> configure = null)
         {
             var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();

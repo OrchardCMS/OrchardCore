@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static OrchardCoreBuilder AddDataStorage(this OrchardCoreBuilder builder)
         {
             builder.AddSitesFolder()
-                .Startup.ConfigureServices((tenant, sp) =>
+                .Startup.ConfigureServices(tenant =>
                 {
                     tenant.AddShellDescriptorStorage();
                 });

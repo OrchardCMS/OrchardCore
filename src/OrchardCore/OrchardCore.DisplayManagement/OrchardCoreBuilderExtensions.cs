@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.AddThemingHost()
                 .AddManifestDefinition("theme")
-                .Startup.ConfigureServices((tenant, sp) =>
+                .Startup.ConfigureServices(tenant =>
                 {
                     tenant.AddTheming();
                     tenant.Services.AddTagHelpers(typeof(BaseShapeTagHelper).Assembly);

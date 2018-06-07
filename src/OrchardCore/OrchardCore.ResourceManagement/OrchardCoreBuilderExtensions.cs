@@ -9,7 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddResourceManagement(this OrchardCoreBuilder builder)
         {
-            builder.Startup.ConfigureServices((tenant, sp) =>
+            builder.Startup.ConfigureServices(tenant =>
             {
                 tenant.AddResourceManagement();
                 tenant.Services.AddTagHelpers(typeof(ResourcesTagHelper).Assembly);
@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddGeneratorTagFilter(this OrchardCoreBuilder builder)
         {
-            builder.Startup.ConfigureServices((tenant, sp) =>
+            builder.Startup.ConfigureServices(tenant =>
             {
                 tenant.AddGeneratorTagFilter();
             });

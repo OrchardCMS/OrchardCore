@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds tenant level MVC services.
         /// </summary>
-        public static TenantServicesBuilder AddMvc(this TenantServicesBuilder tenant, IServiceProvider serviceProvider)
+        public static TenantServicesBuilder AddMvc(this TenantServicesBuilder tenant)
         {
             tenant.Services.AddSingleton(new ApplicationPartManager());
 
@@ -41,7 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // the above is called here
             builder.AddViewLocalization();
 
-            AddModularFrameworkParts(serviceProvider, builder.PartManager);
+            AddModularFrameworkParts(tenant.ServiceProvider, builder.PartManager);
 
             builder.AddModularRazorViewEngine();
             builder.AddModularRazorPages();

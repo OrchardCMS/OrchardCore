@@ -27,10 +27,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds tenant level antiforgery services.
         /// </summary>
-        public static TenantServicesBuilder AddAntiForgery(this TenantServicesBuilder tenant, IServiceProvider sp)
+        public static TenantServicesBuilder AddAntiForgery(this TenantServicesBuilder tenant)
         {
-            var settings = sp.GetRequiredService<ShellSettings>();
-
+            var settings = tenant.ServiceProvider.GetRequiredService<ShellSettings>();
+            
             var tenantName = settings.Name;
             var tenantPrefix = "/" + settings.RequestUrlPrefix;
 
@@ -60,10 +60,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds tenant level data protection services.
         /// </summary>
-        public static TenantServicesBuilder AddDataProtection(this TenantServicesBuilder tenant, IServiceProvider sp)
+        public static TenantServicesBuilder AddDataProtection(this TenantServicesBuilder tenant)
         {
-            var settings = sp.GetRequiredService<ShellSettings>();
-            var options = sp.GetRequiredService<IOptions<ShellOptions>>();
+            var settings = tenant.ServiceProvider.GetRequiredService<ShellSettings>();
+            var options = tenant.ServiceProvider.GetRequiredService<IOptions<ShellOptions>>();
 
             var directory = Directory.CreateDirectory(Path.Combine(
             options.Value.ShellsApplicationDataPath,

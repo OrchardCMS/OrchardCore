@@ -72,9 +72,9 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddAntiforgery();
 
-            builder.Startup.ConfigureServices((tenant, sp) =>
+            builder.Startup.ConfigureServices(tenant =>
             {
-                tenant.AddAntiForgery(sp);
+                tenant.AddAntiForgery();
             });
 
             return builder;
@@ -87,12 +87,12 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddAuthentication();
 
-            builder.Startup.ConfigureServices((tenant, sp) =>
+            builder.Startup.ConfigureServices(tenant =>
             {
                 tenant.AddAuthentication();
             })
 
-            .Configure((tenant, routes, sp) =>
+            .Configure((tenant, routes) =>
             {
                 tenant.ApplicationBuilder.UseAuthentication();
             });
@@ -105,9 +105,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddDataProtection(this OrchardCoreBuilder builder)
         {
-            builder.Startup.ConfigureServices((tenant, sp) =>
+            builder.Startup.ConfigureServices(tenant =>
             {
-                tenant.AddDataProtection(sp);
+                tenant.AddDataProtection();
             });
 
             return builder;

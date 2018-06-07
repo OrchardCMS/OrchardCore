@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
         {
-            builder.Startup.ConfigureServices((tenant, sp) =>
+            builder.Startup.ConfigureServices(tenant =>
             {
                 tenant.AddDataAccess();
             });

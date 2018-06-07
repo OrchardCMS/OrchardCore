@@ -7,10 +7,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddMvc(this OrchardCoreBuilder builder)
         {
-            return builder.Startup.ConfigureServices((tenant, sp) =>
+            return builder.Startup.ConfigureServices(tenant =>
             {
-                tenant.AddMvc(sp);
+                tenant.AddMvc();
             })
+
             .Builder.UseStaticFiles();
         }
     }

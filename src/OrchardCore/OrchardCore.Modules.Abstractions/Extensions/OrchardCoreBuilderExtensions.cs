@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder UseStaticFiles(this OrchardCoreBuilder builder)
         {
-            builder.Startup.Configure((tenant, routes, sp) =>
+            builder.Startup.Configure((tenant, routes) =>
             {
                 tenant.UseStaticFiles();
             });
