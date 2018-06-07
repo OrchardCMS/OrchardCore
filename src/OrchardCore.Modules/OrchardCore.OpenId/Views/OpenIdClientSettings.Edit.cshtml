@@ -47,16 +47,6 @@
     <span class="hint">@T["extra scopes except openid and profile"]</span>
 </fieldset>
 
-<fieldset class="form-group" asp-validation-class-for="ResponseMode">
-    <label>@T["Response Mode"] <span asp-validation-for="ResponseMode"></span></label>
-    <select asp-for="ResponseMode" class="form-control">
-        <option value="@OpenIdConnectResponseMode.FormPost">@T[OpenIdConnectResponseMode.FormPost]</option>
-        <option value="@OpenIdConnectResponseMode.Fragment">@T[OpenIdConnectResponseMode.Fragment]</option>
-        <option value="@OpenIdConnectResponseMode.Query">@T[OpenIdConnectResponseMode.Query]</option>
-    </select>
-    <span class="hint">@T["Configure Response Mode see: http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthResponse"]</span>
-</fieldset>
-
 <h3>@T["Code Authentication Flow"]</h3>
 <h5><a class="hint" href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth" target="_blank">@T["see: "]http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></h5>
 <fieldset class="form-group" asp-validation-class-for="UseCodeFlow">
@@ -125,6 +115,17 @@
     <a class="hint" href="http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample" target="_blank">@T["example: "]http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample</a>
 </fieldset>
 
+<fieldset class="form-group" asp-validation-class-for="ResponseMode">
+    <label>@T["Response Mode"] <span asp-validation-for="ResponseMode"></span></label>
+    <select asp-for="ResponseMode" class="form-control">
+        <option id="@OpenIdConnectResponseMode.FormPost" value="@OpenIdConnectResponseMode.FormPost">@T[OpenIdConnectResponseMode.FormPost]</option>
+        @*<option id="@OpenIdConnectResponseMode.Fragment" value="@OpenIdConnectResponseMode.Fragment">@T[OpenIdConnectResponseMode.Fragment]</option>*@
+        <option id="@OpenIdConnectResponseMode.Query" value="@OpenIdConnectResponseMode.Query">@T[OpenIdConnectResponseMode.Query]</option>
+    </select>
+    <span class="hint">@T["Configure Response Mode see: http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthResponse"]</span>
+</fieldset>
+
+
 <fieldset class="form-group collapse" asp-validation-class-for="ClientSecret">
     <label>@T["Client Secret"] <span asp-validation-for="ClientSecret"></span></label>
     <input asp-for="ClientSecret" class="form-control" type="password" />
@@ -135,9 +136,7 @@
 ////<![CDATA[
     window.onload = function () {
         refreshFlows();
-        @*$("#@Html.IdFor(m => m.ResponseMode)").change(function () {
-            refreshFlows();
-        });*@
+
         $("#@Html.IdFor(m => m.ResponseMode), #@Html.IdFor(m => m.UseCodeFlow), #@Html.IdFor(m => m.UseCodeIdTokenFlow),#@Html.IdFor(m => m.UseCodeTokenFlow), #@Html.IdFor(m => m.UseCodeIdTokenTokenFlow), #@Html.IdFor(m => m.UseIdTokenFlow),#@Html.IdFor(m => m.UseIdTokenTokenFlow)").change(function () {
             if (this !=@Html.IdFor(m => m.ResponseMode)) {
                 $('input[type="checkbox"]').not(this).prop('checked', false);
@@ -158,21 +157,12 @@
 
             var clientSecretElement = $("#@Html.IdFor(m => m.ClientSecret)");
 
-            var responseMode = responseModeElement.prop("value");
-
-            if (responseMode === "@OpenIdConnectResponseMode.FormPost") {
-                useCodeIdTokenFlowElement.removeAttr("disabled");
-                useCodeIdTokenTokenFlowElement.removeAttr("disabled");
-                useCodeTokenFlowElement.removeAttr("disabled");
-                useIdTokenFlowElement.removeAttr("disabled");
-                useIdTokenTokenFlowElement.removeAttr("disabled");
+            var queryOptionElement = $("#@OpenIdConnectResponseMode.Query");
+            if (useCodeFlowElement.prop("checked")) {
+                queryOptionElement.removeAttr("disabled");
             } else {
-                useCodeFlowElement.prop("checked", true);
-                useCodeIdTokenFlowElement.prop("disabled",'disabled');
-                useCodeIdTokenTokenFlowElement.prop("disabled",'disabled');
-                useCodeTokenFlowElement.prop("disabled",'disabled');
-                useIdTokenFlowElement.prop("disabled", 'disabled');
-                useIdTokenTokenFlowElement.prop("disabled", 'disabled');
+                queryOptionElement.prop("disabled", 'disabled');
+                responseModeElement.prop("value", "@OpenIdConnectResponseMode.FormPost");
             }
 
             var showSecret = useCodeFlowElement.prop("checked") || useCodeIdTokenFlowElement.prop("checked") ||

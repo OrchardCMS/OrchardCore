@@ -318,7 +318,8 @@ namespace OrchardCore.Users.Controllers
 
                 if (!model.IsExistingUser)
                 {
-                    user = await _userService.CreateUserAsync(model.UserName, model.Email, new string[0], model.Password, (key, message) => ModelState.AddModelError(key, message));
+                    user = new User() { UserName = model.UserName, Email = model.Email };
+                    user = await _userService.CreateUserAsync(user, model.Password, (key, message) => ModelState.AddModelError(key, message));
                     _logger.LogInformation(3, "User created an account with password.");
                 }
                 else
