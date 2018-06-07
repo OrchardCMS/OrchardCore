@@ -6,7 +6,7 @@
 
 @{
     var userCanRegister = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister;
-    //var allowResetPassword = (await _site.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword;
+    var allowResetPassword = (await _site.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword;
 }
 
 <div class="row">
@@ -44,18 +44,16 @@
                     <button type="submit" class="btn btn-default">@T["Log in"]</button>
                 </div>
             </div>
-            @if (userCanRegister)
-            {
-                <p>
-                    <a asp-controller="Registration" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">@T["Register as a new user"]</a>
-                </p>
+            @if (userCanRegister) {
+            <p>
+                <a asp-controller="Registration" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">@T["Register as a new user"]</a>
+            </p>
             }
-            @*@if (allowResetPassword)
-            {
-                <p>
-                    <a asp-controller="ResetPassword" asp-action="ForgotPassword">@T["Forgot your password?"]</a>
-                </p>
-            }*@
+            @if (allowResetPassword) {
+            <p>
+                <a asp-controller="ResetPassword" asp-action="ForgotPassword">@T["Forgot your password?"]</a>
+            </p>
+            }
         </form>
     </div>
     @*<div class="col-md-4">

@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.Modules;
 
 namespace OrchardCore.BackgroundTasks
@@ -26,6 +26,8 @@ namespace OrchardCore.BackgroundTasks
 
         public Task TerminatedAsync()
         {
+            _backgroundService.Terminate();
+
             return Task.CompletedTask;
         }
 
