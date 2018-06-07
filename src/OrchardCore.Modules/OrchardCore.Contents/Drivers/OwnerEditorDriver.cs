@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -12,7 +11,7 @@ using OrchardCore.Contents.Models;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Security;
-using OrchardCore.Users;
+using OrchardCore.Users.Services;
 
 namespace OrchardCore.Contents.Drivers
 {
@@ -21,20 +20,20 @@ namespace OrchardCore.Contents.Drivers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly UserManager<IUser> _userManager;
+        private readonly IUserService _userService;
         private readonly IStringLocalizer T;
 
         public OwnerEditorDriver(
             IContentDefinitionManager contentDefinitionManager,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,
-            UserManager<IUser> userManager,
+            IUserService userService,
             IStringLocalizer<OwnerEditorDriver> stringLocalizer)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
-            _userManager = userManager;
+            _userService = userService;
             T = stringLocalizer;
         }
 
@@ -78,7 +77,7 @@ namespace OrchardCore.Contents.Drivers
 
                 if (!string.IsNullOrEmpty(part.ContentItem.Owner) || !context.IsNew)
                 {
-                    var newOwner = await _userManager.FindByNameAsync(model.Owner);
+                    var newOwner = await _userService.GetUserAsync(model.Owner);
 
                     if (newOwner == null)
                     {
