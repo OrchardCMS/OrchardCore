@@ -48,8 +48,6 @@ namespace OrchardCore.Contents.Drivers
                 results.Add(Dynamic("Content_SaveDraftButton").Location("Actions:20"));
             }
 
-            results.Add(Shape("Content_ViewButton", new ContentItemViewModel(contentItem)).Location("Actions:30"));
-
             return Combine(results.ToArray());
         }
     }
