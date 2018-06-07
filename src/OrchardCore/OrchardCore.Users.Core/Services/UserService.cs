@@ -33,7 +33,6 @@ namespace OrchardCore.Users.Services
             var identityResult = String.IsNullOrWhiteSpace(password)
                 ? await _userManager.CreateAsync(user)
                 : await _userManager.CreateAsync(user, password);
-
             if (!identityResult.Succeeded)
             {
                 ProcessValidationErrors(identityResult.Errors, newUser, reportError);
