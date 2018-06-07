@@ -29,12 +29,12 @@ namespace OrchardCore.Users.Services
             Action<string, string> reportError
             )
         {
-
             var user = new User
             {
                 UserName = userName,
                 Email = email,
-                RoleNames = new string[] { "Administrator" }
+                RoleNames = new string[] { "Administrator" },
+                EmailConfirmed = true
             };
 
             return _userService.CreateUserAsync(user, password, reportError);
