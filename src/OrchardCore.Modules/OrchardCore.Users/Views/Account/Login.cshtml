@@ -8,63 +8,59 @@
 @inject ISiteService _site
 
 @{
-    var settings = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>();
-    var userCanRegister = settings.UsersCanRegister;
-    var enableLostPassword = settings.EnableLostPassword;
-    var loginProviders = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
     var userCanRegister = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister;
     var allowResetPassword = (await _site.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword;
+    var loginProviders = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 }
 
 <div class="row">
     <div class="col-md-8">
-        <section>
-            <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
-                <h4>@T["Use a local account to log in."]</h4>
-                <hr />
-                <div asp-validation-summary="All" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="UserName" class="col-md-3 control-label">@T["Username"]</label>
-                    <div class="col-md-9">
-                        <input asp-for="UserName" class="form-control" autofocus />
-                        <span asp-validation-for="UserName" class="text-danger"></span>
+        <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+            <h4>@T["Use a local account to log in."]</h4>
+            <hr />
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="UserName" class="col-md-3 control-label">@T["Username"]</label>
+                <div class="col-md-9">
+                    <input asp-for="UserName" class="form-control" autofocus />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="col-md-3 control-label">@T["Password"]</label>
+                <div class="col-md-9">
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-3 col-md-9">
+                    <div class="checkbox">
+                        <label asp-for="RememberMe">
+                            <input asp-for="RememberMe" />
+                            @T["Remember me"]
+                        </label>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label asp-for="Password" class="col-md-3 control-label">@T["Password"]</label>
-                    <div class="col-md-9">
-                        <input asp-for="Password" class="form-control" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-3 col-md-9">
+                    <button type="submit" class="btn btn-default">@T["Log in"]</button>
                 </div>
-                <div class="form-group">
-                    <div class="col-md-offset-3 col-md-9">
-                        <div class="checkbox">
-                            <label asp-for="RememberMe">
-                                <input asp-for="RememberMe" />
-                                @T["Remember me"]
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-3 col-md-9">
-                        <button type="submit" class="btn btn-default">@T["Log in"]</button>
-                    </div>
-                </div>
-                @if (userCanRegister)
-                {
-                    <p>
-                        <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">@T["Register as a new user?"]</a>
-                    </p>
-                }
-                @if (enableLostPassword) {
+            </div>
+            @if (userCanRegister)
+            {
                 <p>
-                    <a asp-action="ForgotPassword">@T["Forgot your password?"]</a>
+                    <a asp-controller="Registration" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">@T["Register as a new user"]</a>
                 </p>
-                }
-            </form>
-        </section>
+            }
+            @if (allowResetPassword)
+            {
+                <p>
+                    <a asp-controller="ResetPassword" asp-action="ForgotPassword">@T["Forgot your password?"]</a>
+                </p>
+            }
+        </form>
     </div>
 
     @if (loginProviders.Count > 0)
