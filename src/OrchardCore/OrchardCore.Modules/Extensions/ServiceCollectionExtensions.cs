@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds the essential OrchardCore services.
+        /// Adds OrchardCore services to the host service collection.
         /// </summary>
         public static OrchardCoreBuilder AddOrchardCore(this IServiceCollection services)
         {
@@ -41,6 +41,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddLogging();
             services.AddOptions();
+
+            // These services might be moved at a higher level if no components from OrchardCore needs them.
             services.AddLocalization();
             services.AddWebEncoders();
 

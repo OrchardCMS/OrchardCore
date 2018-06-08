@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Loaders;
@@ -56,8 +55,7 @@ namespace OrchardCore.Environment.Extensions
             IEnumerable<IExtensionPriorityStrategy> extensionPriorityStrategies,
             ITypeFeatureProvider typeFeatureProvider,
             IFeaturesProvider featuresProvider,
-            ILogger<ExtensionManager> logger,
-            IStringLocalizer<ExtensionManager> localizer)
+            ILogger<ExtensionManager> logger)
         {
             _hostingEnvironment = hostingEnvironment;
             _extensionDependencyStrategies = extensionDependencyStrategies;
@@ -65,11 +63,9 @@ namespace OrchardCore.Environment.Extensions
             _typeFeatureProvider = typeFeatureProvider;
             _featuresProvider = featuresProvider;
             L = logger;
-            T = localizer;
         }
 
         public ILogger L { get; set; }
-        public IStringLocalizer T { get; set; }
 
         public IExtensionInfo GetExtension(string extensionId)
         {

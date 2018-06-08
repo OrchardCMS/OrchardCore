@@ -5,8 +5,6 @@ namespace OrchardCore.Modules
 {
     public class ModularTenantRouteBuilder : IModularTenantRouteBuilder
     {
-        // Register one top level TenantRoute per tenant. Each instance contains all the routes
-        // for this tenant.
         public ModularTenantRouteBuilder()
         {
         }
