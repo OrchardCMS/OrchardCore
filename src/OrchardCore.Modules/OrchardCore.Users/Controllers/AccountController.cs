@@ -1,25 +1,11 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Mail;
-using System.Text;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
@@ -36,9 +22,6 @@ namespace OrchardCore.Users.Controllers
         private readonly UserManager<IUser> _userManager;
         private readonly ILogger _logger;
         private readonly ISiteService _siteService;
-        private readonly ISmtpService _smtpService;
-        private readonly IShapeFactory _shapeFactory;
-        private readonly IHtmlDisplay _displayManager;
 
         public AccountController(
             IUserService userService,
@@ -46,9 +29,6 @@ namespace OrchardCore.Users.Controllers
             UserManager<IUser> userManager,
             ILogger<AccountController> logger,
             ISiteService siteService,
-            ISmtpService smtpService,
-            IShapeFactory shapeFactory,
-            IHtmlDisplay displayManager,
             IStringLocalizer<AccountController> stringLocalizer)
         {
             _signInManager = signInManager;
@@ -56,9 +36,6 @@ namespace OrchardCore.Users.Controllers
             _userService = userService;
             _logger = logger;
             _siteService = siteService;
-            _smtpService = smtpService;
-            _shapeFactory = shapeFactory;
-            _displayManager = displayManager;
 
             T = stringLocalizer;
         }
@@ -82,6 +59,20 @@ namespace OrchardCore.Users.Controllers
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+
+            if ((await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail)
+            {
+                // Require that the users have a confirmed email before they can log on.
+                var user = await _userManager.FindByNameAsync(model.UserName) as User;
+                if (user != null)
+                {
+                    if (!await _userManager.IsEmailConfirmedAsync(user))
+                    {
+                        ModelState.AddModelError(string.Empty, T["You must have a confirmed email to log on."]);
+                    }
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 // This doesn't count login failures towards account lockout
@@ -103,7 +94,7 @@ namespace OrchardCore.Users.Controllers
                 //}
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
                     return View(model);
                 }
             }
@@ -112,58 +103,6 @@ namespace OrchardCore.Users.Controllers
             return View(model);
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> Register(string returnUrl = null)
-        {
-            if (!(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister)
-            {
-                _logger.LogInformation("Site does not allow user registration.");
-                return NotFound();
-            }
-
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
-        {
-            if (!(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister)
-            {
-                _logger.LogInformation("Site does not allow user registration.");
-                return NotFound();
-            }
-
-            ViewData["ReturnUrl"] = returnUrl;
-            if (ModelState.IsValid)
-            {
-                var user = await _userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, RoleNames = new string[0] }, model.Password, (key, message) => ModelState.AddModelError(key, message));
-
-                if (user != null)
-                {
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
-                    // Send an email with this link
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                    //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-
-                    _logger.LogInformation("New account created for user {UserName} and email {Email}", model.UserName, model.Email);
-
-                    return RedirectToLocal(returnUrl);
-                }
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
-        }
-
-        //
-        // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogOff()

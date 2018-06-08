@@ -1,18 +1,17 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
 using OrchardCore.Settings;
 using OrchardCore.Users;
@@ -24,7 +23,7 @@ using Xunit;
 
 namespace OrchardCore.Tests.OrchardCore.Users
 {
-    public class AccountControllerTests
+    public class RegistrationControllerTests
     {
         [Fact]
         public async Task UsersShouldNotBeAbleToRegisterIfNotAllowed()
@@ -36,17 +35,21 @@ namespace OrchardCore.Tests.OrchardCore.Users
                     Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { RegistrationSettings = settings }))
                     )
             );
+            var mockSmtpService = Mock.Of<ISmtpService>();
 
-            var controller = new AccountController(
-                Mock.Of<IUserService>(),
-                MockSignInManager(mockUserManager).Object,
+            var controller = new RegistrationController(
+                Mock.Of<IUserService>(), 
                 mockUserManager,
-                Mock.Of<ILogger<AccountController>>(),
+                MockSignInManager(mockUserManager).Object,
+                Mock.Of<IAuthorizationService>(),
                 mockSiteService,
-                Mock.Of<ISmtpService>(),
+                Mock.Of<INotifier>(),
+                mockSmtpService, 
                 Mock.Of<IShapeFactory>(),
                 Mock.Of<IHtmlDisplay>(),
-                Mock.Of<IStringLocalizer<AccountController>>());
+                Mock.Of<ILogger<RegistrationController>>(),
+                Mock.Of<IHtmlLocalizer<RegistrationController>>(),
+                Mock.Of<IStringLocalizer<RegistrationController>>());
 
             var result = await controller.Register();
             Assert.IsType<NotFoundResult>(result);
@@ -66,18 +69,21 @@ namespace OrchardCore.Tests.OrchardCore.Users
                     Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { RegistrationSettings = settings }))
                     )
             );
+            var mockSmtpService = Mock.Of<ISmtpService>();
 
-            var controller = new AccountController(
+            var controller = new RegistrationController(
                 Mock.Of<IUserService>(),
-                MockSignInManager(mockUserManager).Object,
                 mockUserManager,
-                Mock.Of<ILogger<AccountController>>(),
+                MockSignInManager(mockUserManager).Object,
+                Mock.Of<IAuthorizationService>(),
                 mockSiteService,
-                Mock.Of<ISmtpService>(),
+                Mock.Of<INotifier>(),
+                mockSmtpService,
                 Mock.Of<IShapeFactory>(),
                 Mock.Of<IHtmlDisplay>(),
-                Mock.Of<IStringLocalizer<AccountController>>());
-
+                Mock.Of<ILogger<RegistrationController>>(),
+                Mock.Of<IHtmlLocalizer<RegistrationController>>(),
+                Mock.Of<IStringLocalizer<RegistrationController>>());
 
             var result = await controller.Register();
             Assert.IsType<ViewResult>(result);

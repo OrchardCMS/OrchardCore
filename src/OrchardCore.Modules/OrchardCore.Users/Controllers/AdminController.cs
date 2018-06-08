@@ -157,7 +157,7 @@ namespace OrchardCore.Users.Controllers
             }
             
             var user = new User();
-
+            
             var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: this, isNew: true);
 
             if (!ModelState.IsValid)

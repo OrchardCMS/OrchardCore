@@ -5,79 +5,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>@RenderTitleSegments(site.SiteName, "before")</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@RenderTitleSegments(site.SiteName, "before")</title>
     <link type="image/x-icon" rel="shortcut icon" href="/TheTheme/favicon.ico" />
-
-    <script asp-name="bootstrap" use-cdn="true" version="3" at="Foot"></script>
-
-    <style asp-name="bootstrap" use-cdn="true" version="3"></style>
-    <style asp-name="bootstrap-theme"></style>
-    <style asp-src="https://getbootstrap.com/docs/3.3/examples/theme/theme.css"></style>
-
+    <script asp-name="bootstrap" use-cdn="true" version="4" at="Foot"></script>
+    <style asp-name="bootstrap" use-cdn="true" version="4"></style>
     <resources type="Meta" />
     <resources type="HeadLink" />
     <resources type="Stylesheet" />
     <resources type="HeadScript" />
-    @await RenderSectionAsync("Header", required: false)
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">@site.SiteName</a>
+            <a class="navbar-brand" href="~/#">@site.SiteName</a>
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbar">
+                <menu alias="alias:main-menu" cache-id="main-menu" cache-duration="00:05:00" cache-tag="alias:main-menu" />
+                @Html.Partial("LoginMenu")
             </div>
-            <div id="navbar" class="collapse navbar-collapse">
-
-                @*@await DisplayAsync(await New.Menu(ContentItemId: "main-menu"))*@
-                <menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" />
-
-                <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post">
-                    <ul class="nav navbar-nav navbar-right">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">@User.Identity.Name<b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    <li><a asp-route-area="OrchardCore.Admin" asp-controller="Admin" asp-action="Index">@T["Dashboard"]</a></li>
-                                    <li class="divider"></li>
-                                    <li><a asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="ChangePassword">@T["Change Password"]</a></li>
-                                    <li><a asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="ExternalLogins">@T["External Logins"]</a></li>
-                                    <li>
-                                        <button type="submit" class="btn btn-link navbar-btn navbar-link">@T["Log off"]</button>
-                                    </li>
-                                </ul>
-                            </li>
-
-                        }
-                        else
-                        {
-                            <li><a asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="Login">@T["Log in"]</a></li>
-                        }
-                    </ul>
-                </form>
-
-            </div><!--/.nav-collapse -->
         </div>
     </nav>
-
-    <div class="container">
+    @await RenderSectionAsync("Header", required: false)
+    <main role="main" class="container">
         @await RenderSectionAsync("Messages", required: false)
-        @await RenderBodyAsync()
-    </div><!-- /.container -->
-
-    <div class="container">
-        @await RenderSectionAsync("Footer", required: false)
-    </div>
-
+        <div class="row">
+            @await RenderBodyAsync()
+        </div>
+    </main>
     <resources type="FootScript" />
-
 </body>
 </html>

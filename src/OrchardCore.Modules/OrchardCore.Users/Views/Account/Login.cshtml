@@ -12,6 +12,8 @@
     var userCanRegister = settings.UsersCanRegister;
     var enableLostPassword = settings.EnableLostPassword;
     var loginProviders = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+    var userCanRegister = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister;
+    var allowResetPassword = (await _site.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword;
 }
 
 <div class="row">
