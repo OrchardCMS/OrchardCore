@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Loaders;
 using OrchardCore.Environment.Extensions.Manifests;
@@ -20,7 +19,6 @@ namespace OrchardCore.Environment.Extensions
     {
         private readonly IHostingEnvironment _hostingEnvironment;
 
-        private readonly ManifestOptions _manifestOptions;
         private readonly IEnumerable<IExtensionDependencyStrategy> _extensionDependencyStrategies;
         private readonly IEnumerable<IExtensionPriorityStrategy> _extensionPriorityStrategies;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
@@ -54,7 +52,6 @@ namespace OrchardCore.Environment.Extensions
 
         public ExtensionManager(
             IHostingEnvironment hostingEnvironment,
-            IOptions<ManifestOptions> manifestOptionsAccessor,
             IEnumerable<IExtensionDependencyStrategy> extensionDependencyStrategies,
             IEnumerable<IExtensionPriorityStrategy> extensionPriorityStrategies,
             ITypeFeatureProvider typeFeatureProvider,
@@ -63,7 +60,6 @@ namespace OrchardCore.Environment.Extensions
             IStringLocalizer<ExtensionManager> localizer)
         {
             _hostingEnvironment = hostingEnvironment;
-            _manifestOptions = manifestOptionsAccessor.Value;
             _extensionDependencyStrategies = extensionDependencyStrategies;
             _extensionPriorityStrategies = extensionPriorityStrategies;
             _typeFeatureProvider = typeFeatureProvider;
@@ -258,19 +254,6 @@ namespace OrchardCore.Environment.Extensions
                     {
                         return;
                     }
-
-                    var manifestConfiguration = _manifestOptions
-                        .ManifestConfigurations
-                        .FirstOrDefault(mc =>
-                        {
-                            return module.ModuleInfo.Type.Equals(mc.Type, StringComparison.OrdinalIgnoreCase);
-                        });
-
-                    if (manifestConfiguration == null)
-                    {
-                        return;
-                    }
-
                     var manifestInfo = new ManifestInfo(module.ModuleInfo);
 
                     var extensionInfo = new ExtensionInfo(module.SubPath, manifestInfo, (mi, ei) => {

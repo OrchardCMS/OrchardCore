@@ -15,22 +15,6 @@ namespace OrchardCore.Tests.Extensions
         private static IHostingEnvironment HostingEnvironment
             = new StubHostingEnvironment();
 
-        private static IOptions<ManifestOptions> ModuleManifestOptions =
-            new StubManifestOptions(
-                new ManifestOption { Type = "module" }
-                );
-
-        private static IOptions<ManifestOptions> ThemeManifestOptions =
-            new StubManifestOptions(
-                new ManifestOption { Type = "theme" }
-                );
-
-        private static IOptions<ManifestOptions> ModuleAndThemeManifestOptions =
-            new StubManifestOptions(
-                new ManifestOption { Type = "module" },
-                new ManifestOption { Type = "theme" }
-                );
-
         private static IFeaturesProvider ModuleFeatureProvider =
             new FeaturesProvider(Enumerable.Empty<IFeatureBuilderEvents>(), new NullLogger<FeaturesProvider>());
 
@@ -45,7 +29,6 @@ namespace OrchardCore.Tests.Extensions
         {
             ModuleScopedExtensionManager = new ExtensionManager(
                 HostingEnvironment,
-                ModuleManifestOptions,
                 new[] { new ExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
                 new TypeFeatureProvider(),
@@ -55,7 +38,6 @@ namespace OrchardCore.Tests.Extensions
 
             ThemeScopedExtensionManager = new ExtensionManager(
                 HostingEnvironment,
-                ThemeManifestOptions,
                 new[] { new ExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
                 new TypeFeatureProvider(),
@@ -65,7 +47,6 @@ namespace OrchardCore.Tests.Extensions
 
             ModuleThemeScopedExtensionManager = new ExtensionManager(
                 HostingEnvironment,
-                ModuleAndThemeManifestOptions,
                 new IExtensionDependencyStrategy[] { new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
                 new TypeFeatureProvider(),

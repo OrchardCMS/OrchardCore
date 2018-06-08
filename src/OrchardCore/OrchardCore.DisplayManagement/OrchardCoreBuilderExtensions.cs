@@ -14,7 +14,6 @@ namespace Microsoft.Extensions.DependencyInjection
         public static OrchardCoreBuilder AddTheming(this OrchardCoreBuilder builder)
         {
             builder.AddThemingHost()
-                .AddManifestDefinition("theme")
                 .Startup.ConfigureServices(tenant =>
                 {
                     tenant.AddTheming();
