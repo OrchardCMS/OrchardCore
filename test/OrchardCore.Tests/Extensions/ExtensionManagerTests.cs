@@ -1,6 +1,5 @@
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Events;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
@@ -33,8 +32,8 @@ namespace OrchardCore.Tests.Extensions
                 new[] { new ExtensionPriorityStrategy() },
                 new TypeFeatureProvider(),
                 ModuleFeatureProvider,
-                new NullLogger<ExtensionManager>(),
-                null);
+                new NullLogger<ExtensionManager>()
+                );
 
             ThemeScopedExtensionManager = new ExtensionManager(
                 HostingEnvironment,
@@ -42,8 +41,8 @@ namespace OrchardCore.Tests.Extensions
                 new[] { new ExtensionPriorityStrategy() },
                 new TypeFeatureProvider(),
                 ThemeFeatureProvider,
-                new NullLogger<ExtensionManager>(),
-                null);
+                new NullLogger<ExtensionManager>()
+                );
 
             ModuleThemeScopedExtensionManager = new ExtensionManager(
                 HostingEnvironment,
@@ -51,8 +50,8 @@ namespace OrchardCore.Tests.Extensions
                 new[] { new ExtensionPriorityStrategy() },
                 new TypeFeatureProvider(),
                 ThemeFeatureProvider,
-                new NullLogger<ExtensionManager>(),
-                null);
+                new NullLogger<ExtensionManager>()
+                );
         }
 
         [Fact]

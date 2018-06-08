@@ -1,3 +1,5 @@
+using OrchardCore.Mvc;
+
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OrchardCoreBuilderExtensions
@@ -7,12 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddMvc(this OrchardCoreBuilder builder)
         {
-            return builder.Startup.ConfigureServices(tenant =>
-            {
-                tenant.AddMvc();
-            })
-
-            .Builder.UseStaticFiles();
+            return builder.Configure<Startup>();
         }
     }
 }

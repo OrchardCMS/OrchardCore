@@ -87,14 +87,13 @@ namespace OrchardCore.Environment.Shell.Builders
             // Let any module add custom service descriptors to the tenant
             foreach (var startup in startups)
             {
-                var feature = startup is Modules.ITenantStartup ? _applicationFeature :
-                    blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FeatureInfo;
+                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FeatureInfo;
 
-                if (feature != null)
-                {
-                    featureAwareServiceCollection.SetCurrentFeature(feature);
-                    startup.ConfigureServices(featureAwareServiceCollection);
-                }
+                // If the startup is not coming from an extension, associate it to the application feature.
+                // For instance when Startup classes are registered with Configure<Startup>() from the application.
+
+                featureAwareServiceCollection.SetCurrentFeature(feature ?? _applicationFeature);
+                startup.ConfigureServices(featureAwareServiceCollection);
             }
 
             (moduleServiceProvider as IDisposable).Dispose();
