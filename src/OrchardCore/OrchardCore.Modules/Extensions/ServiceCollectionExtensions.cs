@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -16,32 +15,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddOrchardCore(this IServiceCollection services)
         {
-            return GetOrchardCoreBuilder(services);
-        }
-
-        /// <summary>
-        /// Adds the essential OrchardCore services and let the app change the
-        /// default tenant behavior and set of features through a configure action.
-        /// </summary>
-        public static IServiceCollection AddOrchardCore(this IServiceCollection services, Action<OrchardCoreBuilder> configure)
-        {
-            var builder = GetOrchardCoreBuilder(services);
-            configure?.Invoke(builder);
-            return services;
-        }
-
-        private static OrchardCoreBuilder GetOrchardCoreBuilder(IServiceCollection services)
-        {
-            var builder = GetServiceFromCollection<OrchardCoreBuilder>(services);
+            // If an instance of OrchardCoreBuilder exists reuse it,
+            // so we can call AddOrchardCore several times.
+            var builder = services
+                .LastOrDefault(d => d.ServiceType == typeof(OrchardCoreBuilder))?
+                .ImplementationInstance as OrchardCoreBuilder;
 
             if (builder == null)
             {
                 builder = new OrchardCoreBuilder(services);
                 services.AddSingleton(builder);
 
-                ConfigureDefaultServices(services);
-                ConfigureShellServices(services);
-                ConfigureExtensionServices(builder);
+                AddDefaultServices(services);
+                AddShellServices(services);
+                AddExtensionServices(builder);
 
                 // Register the list of services to be resolved later on
                 services.AddSingleton(services);
@@ -50,7 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        private static void ConfigureDefaultServices(IServiceCollection services)
+        private static void AddDefaultServices(IServiceCollection services)
         {
             services.AddLogging();
             services.AddOptions();
@@ -69,7 +56,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
         }
 
-        private static void ConfigureShellServices(IServiceCollection services)
+        private static void AddShellServices(IServiceCollection services)
         {
             // Use a single tenant and all features by default
             services.AddHostingShellServices();
@@ -82,20 +69,14 @@ namespace Microsoft.Extensions.DependencyInjection
             );
         }
 
-        private static void ConfigureExtensionServices(OrchardCoreBuilder builder)
+        private static void AddExtensionServices(OrchardCoreBuilder builder)
         {
             builder.Services.AddExtensionManagerHost();
-            builder.AddManifestDefinition("module");
 
             builder.Startup.ConfigureServices(tenant =>
             {
                 tenant.Services.AddExtensionManager();
             });
-        }
-
-        private static T GetServiceFromCollection<T>(IServiceCollection services)
-        {
-            return (T)services.LastOrDefault(d => d.ServiceType == typeof(T))?.ImplementationInstance;
         }
     }
 }
