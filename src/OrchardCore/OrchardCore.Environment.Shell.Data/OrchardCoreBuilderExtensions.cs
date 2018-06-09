@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Data.Descriptors;
+using OrchardCore.Environment.Shell.Descriptor;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -12,9 +14,12 @@ namespace Microsoft.Extensions.DependencyInjection
         public static OrchardCoreBuilder AddDataStorage(this OrchardCoreBuilder builder)
         {
             builder.AddSitesFolder()
-                .Startup.ConfigureServices(tenant =>
+                .ConfigureServices((services, serviceProvider) =>
                 {
-                    tenant.AddShellDescriptorStorage();
+                    services.AddScoped<IShellDescriptorManager, ShellDescriptorManager>();
+                    services.AddScoped<IShellStateManager, ShellStateManager>();
+                    services.AddScoped<IShellFeaturesManager, ShellFeaturesManager>();
+                    services.AddScoped<IShellDescriptorFeaturesManager, ShellDescriptorFeaturesManager>();
                 });
 
             return builder;
@@ -25,7 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddSitesFolder(this OrchardCoreBuilder builder)
         {
-            var services = builder.Services;
+            var services = builder.ApplicationServices;
 
             services.AddSingleton<IShellSettingsConfigurationProvider, ShellSettingsConfigurationProvider>();
             services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();

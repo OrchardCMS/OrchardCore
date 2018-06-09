@@ -1,3 +1,7 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.BackgroundTasks;
+using OrchardCore.Modules;
+
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OrchardCoreBuilderExtensions
@@ -7,9 +11,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddBackgroundTasks(this OrchardCoreBuilder builder)
         {
-            builder.Startup.ConfigureServices(tenant =>
+            builder.ConfigureServices((services, sp) =>
             {
-                tenant.AddBackgroundTasks();
+                services.TryAddSingleton<IBackgroundTaskService, BackgroundTaskService>();
+                services.AddScoped<BackgroundTasksStarter>();
+                services.AddScoped<IModularTenantEvents>(serviceProvider => serviceProvider.GetRequiredService<BackgroundTasksStarter>());
             });
 
             return builder;

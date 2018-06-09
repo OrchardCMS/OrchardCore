@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.FileProviders;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -29,6 +32,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 AddDefaultServices(services);
                 AddShellServices(services);
                 AddExtensionServices(builder);
+
+                AddStaticFiles(builder);
 
                 // Register the list of services to be resolved later on
                 services.AddSingleton(services);
@@ -73,11 +78,41 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static void AddExtensionServices(OrchardCoreBuilder builder)
         {
-            builder.Services.AddExtensionManagerHost();
+            builder.ApplicationServices.AddExtensionManagerHost();
 
-            builder.Startup.ConfigureServices(tenant =>
+            builder.ConfigureServices((services, sp) =>
             {
-                tenant.Services.AddExtensionManager();
+                services.AddExtensionManager();
+            });
+        }
+
+        /// <summary>
+        /// Adds tenant level configuration to serve static files from modules
+        /// </summary>
+        private static void AddStaticFiles(OrchardCoreBuilder builder)
+        {
+            builder.Configure((app, routes, sp) =>
+            {
+                var env = sp.GetRequiredService<IHostingEnvironment>();
+
+                IFileProvider fileProvider;
+                if (env.IsDevelopment())
+                {
+                    var fileProviders = new List<IFileProvider>();
+                    fileProviders.Add(new ModuleProjectStaticFileProvider(env));
+                    fileProviders.Add(new ModuleEmbeddedStaticFileProvider(env));
+                    fileProvider = new CompositeFileProvider(fileProviders);
+                }
+                else
+                {
+                    fileProvider = new ModuleEmbeddedStaticFileProvider(env);
+                }
+
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    RequestPath = "",
+                    FileProvider = fileProvider
+                });
             });
         }
     }

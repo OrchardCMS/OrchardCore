@@ -5,9 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Modules
 {
-    public interface ITenantStartup { }
-
-    public class TenantStartup : StartupBase, ITenantStartup
+    /// <summary>
+    /// Represents a fake Startup class that is composed of Configure and ConfigureServices lambdas.
+    /// </summary>
+    internal class TenantStartup : StartupBase
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly TenantStartupActions _actions;
@@ -25,7 +26,7 @@ namespace OrchardCore.Modules
         {
             foreach (var configureServices in _actions.ConfigureServicesActions)
             {
-                configureServices(new TenantServicesBuilder(services, _serviceProvider));
+                configureServices?.Invoke(services, _serviceProvider);
             }
         }
 
@@ -33,7 +34,7 @@ namespace OrchardCore.Modules
         {
             foreach (var configure in _actions.ConfigureActions)
             {
-                configure(new TenantApplicationBuilder(app), routes);
+                configure?.Invoke(app, routes, serviceProvider);
             }
         }
     }

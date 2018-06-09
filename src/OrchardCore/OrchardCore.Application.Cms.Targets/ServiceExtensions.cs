@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static IServiceCollection AddOrchardCms(this IServiceCollection services)
         {
-            return services.AddOrchardCore()
+            services.AddOrchardCore()
 
                 .AddCommands()
 
@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddAuthentication()
                 .AddDataProtection()
 
-                .WithDefaultFeatures("OrchardCore.Setup")
+                .AddSetupFeatures("OrchardCore.Setup")
 
                 .AddDataAccess()
                 .AddDataStorage()
@@ -27,9 +27,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddLiquidViews()
                 .AddResourceManagement()
                 .AddGeneratorTagFilter()
-                .AddCaching()
+                .AddCaching();
 
-                .Services;
+
+            return services;
         }
     }
 }

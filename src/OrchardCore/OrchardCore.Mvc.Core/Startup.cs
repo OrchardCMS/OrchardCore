@@ -106,10 +106,5 @@ namespace OrchardCore.Mvc
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IApplicationModelProvider, ModularApplicationModelProvider>());
         }
-
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            base.Configure(app, routes, serviceProvider);
-        }
     }
 }

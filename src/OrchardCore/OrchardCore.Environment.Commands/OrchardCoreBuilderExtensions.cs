@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddCommands(this OrchardCoreBuilder builder)
         {
-            var services = builder.Services;
+            var services = builder.ApplicationServices;
 
             services.AddScoped<ICommandManager, DefaultCommandManager>();
             services.AddScoped<ICommandHandler, HelpCommand>();

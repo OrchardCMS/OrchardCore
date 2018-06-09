@@ -11,7 +11,10 @@ namespace OrchardCore.Mvc.Web
         public void ConfigureServices(IServiceCollection services)
         {
             // Add ASP.NET MVC and support for modules
-            services.AddOrchardCore().AddMvc();
+            services
+                .AddOrchardCore()
+                .AddMvc()
+                ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

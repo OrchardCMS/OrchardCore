@@ -1,4 +1,9 @@
+using System.IO;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -11,12 +16,28 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Registers at the host level a set of features which are always enabled for any tenant.
         /// </summary>
-        public static OrchardCoreBuilder AddEnabledFeatures(this OrchardCoreBuilder builder, params string[] featureIds)
+        public static OrchardCoreBuilder AddGlobalFeatures(this OrchardCoreBuilder builder, params string[] featureIds)
         {
             foreach (var featureId in featureIds)
             {
-                builder.Services.AddTransient(sp => new ShellFeature(featureId, alwaysEnabled: true));
+                builder.ApplicationServices.AddTransient(sp => new ShellFeature(featureId, alwaysEnabled: true));
             }
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Registers at the tenant level a set of features which are always enabled.
+        /// </summary>
+        public static OrchardCoreBuilder AddTenantFeatures(this OrchardCoreBuilder builder, params string[] featureIds)
+        {
+            builder.ConfigureServices((services, serviceProvider) =>
+            {
+                foreach (var featureId in featureIds)
+                {
+                    services.AddTransient(sp => new ShellFeature(featureId, alwaysEnabled: true));
+                }
+            });
 
             return builder;
         }
@@ -25,11 +46,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Registers a default tenant with a set of features that are used to setup and configure the actual tenants.
         /// For instance you can use this to add a custom Setup module.
         /// </summary>
-        public static OrchardCoreBuilder WithDefaultFeatures(this OrchardCoreBuilder builder, params string[] featureIds)
+        public static OrchardCoreBuilder AddSetupFeatures(this OrchardCoreBuilder builder, params string[] featureIds)
         {
             foreach (var featureId in featureIds)
             {
-                builder.Services.AddTransient(sp => new ShellFeature(featureId));
+                builder.ApplicationServices.AddTransient(sp => new ShellFeature(featureId));
             }
 
             return builder;
@@ -40,7 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder WithTenants(this OrchardCoreBuilder builder)
         {
-            var services = builder.Services;
+            var services = builder.ApplicationServices;
 
             services.AddSingleton<IShellSettingsConfigurationProvider, FileShellSettingsConfigurationProvider>();
             services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
@@ -57,10 +78,10 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             foreach (var featureId in featureIds)
             {
-                builder.Services.AddTransient(sp => new ShellFeature(featureId));
+                builder.ApplicationServices.AddTransient(sp => new ShellFeature(featureId));
             }
 
-            builder.Services.AddSetFeaturesDescriptor();
+            builder.ApplicationServices.AddSetFeaturesDescriptor();
 
             return builder;
         }
@@ -70,11 +91,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddAntiForgery(this OrchardCoreBuilder builder)
         {
-            builder.Services.AddAntiforgery();
+            builder.ApplicationServices.AddAntiforgery();
 
-            builder.Startup.ConfigureServices(tenant =>
+            builder.ConfigureServices((services, serviceProvider) =>
             {
-                tenant.AddAntiForgery();
+                var settings = serviceProvider.GetRequiredService<ShellSettings>();
+
+                var tenantName = settings.Name;
+                var tenantPrefix = "/" + settings.RequestUrlPrefix;
+
+                services.AddAntiforgery(options =>
+                {
+                    options.Cookie.Name = "orchantiforgery_" + tenantName;
+                    options.Cookie.Path = tenantPrefix;
+                });
             });
 
             return builder;
@@ -85,16 +115,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddAuthentication(this OrchardCoreBuilder builder)
         {
-            builder.Services.AddAuthentication();
+            builder.ApplicationServices.AddAuthentication();
 
-            builder.Startup.ConfigureServices(tenant =>
+            builder.ConfigureServices((services, serviceProvider) =>
             {
-                tenant.AddAuthentication();
+                services.AddAuthentication();
+
+                // Note: IAuthenticationSchemeProvider is already registered at the host level.
+                // We need to register it again so it is taken into account at the tenant level.
+                services.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
+
             })
-
-            .Configure((tenant, routes) =>
+            .Configure((app, routes, serviceProvider) =>
             {
-                tenant.ApplicationBuilder.UseAuthentication();
+                app.UseAuthentication();
             });
 
             return builder;
@@ -105,9 +139,25 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddDataProtection(this OrchardCoreBuilder builder)
         {
-            builder.Startup.ConfigureServices(tenant =>
+            builder.ConfigureServices((services, serviceProvider) =>
             {
-                tenant.AddDataProtection();
+                var settings = serviceProvider.GetRequiredService<ShellSettings>();
+                var options = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+
+                var directory = Directory.CreateDirectory(Path.Combine(
+                options.Value.ShellsApplicationDataPath,
+                options.Value.ShellsContainerName,
+                settings.Name, "DataProtection-Keys"));
+
+                // Re-register the data protection services to be tenant-aware so that modules that internally
+                // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that
+                // manages its own key ring and doesn't allow decrypting payloads encrypted by another tenant.
+                // By default, the key ring is stored in the tenant directory of the configured App_Data path.
+                services.Add(new ServiceCollection()
+                    .AddDataProtection()
+                    .PersistKeysToFileSystem(directory)
+                    .SetApplicationName(settings.Name)
+                    .Services);
             });
 
             return builder;
