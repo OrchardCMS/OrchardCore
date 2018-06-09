@@ -1,5 +1,6 @@
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentFields.Drivers;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Indexing;
 using OrchardCore.ContentFields.Settings;
@@ -16,9 +17,9 @@ namespace OrchardCore.ContentFields
     {
         static Startup()
         {
-            // Registering both field types and shape types are necessary as they can 
+            // Registering both field types and shape types are necessary as they can
             // be accessed from inner properties.
-            
+
             TemplateContext.GlobalMemberAccessStrategy.Register<BooleanField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayBooleanFieldViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<HtmlField>();
@@ -42,6 +43,13 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, BooleanFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, BooleanFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, BooleanFieldIndexHandler>();
+
+            // Coordinate Field
+            services.AddSingleton<ContentField, CoordinateField>();
+            services.AddScoped<IContentFieldDisplayDriver, CoordinateFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, CoordinateFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, CoordinateFieldIndexHandler>();
+
 
             // Text Field
             services.AddSingleton<ContentField, TextField>();

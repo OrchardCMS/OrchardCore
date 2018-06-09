@@ -3,10 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
-using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Spatial.Drivers;
-using OrchardCore.Spatial.Indexing;
 using OrchardCore.Spatial.ViewModels;
 
 namespace OrchardCore.Spatial
@@ -23,7 +21,6 @@ namespace OrchardCore.Spatial
             services.AddSingleton<ContentPart, GeoPointPart>();
 
             services.AddScoped<IContentPartDisplayDriver, GeoPointPartDisplayDriver>();
-            services.AddScoped<IContentPartIndexHandler, GeoPointPartIndexHandler>();
             services.AddScoped<IDataMigration, Migrations>();
         }
     }

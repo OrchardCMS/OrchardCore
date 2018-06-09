@@ -51,8 +51,8 @@ namespace OrchardCore.Indexing
 
         public class Point
         {
-            public double Longitude;
-            public double Latitude;
+            public double X;
+            public double Y;
         }
 
         public class DocumentIndexEntry

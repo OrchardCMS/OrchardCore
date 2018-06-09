@@ -1,8 +1,8 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Spatial
+namespace OrchardCore.ContentFields.Fields
 {
-    public class GeoPointPart : ContentPart
+    public class CoordinateField : ContentField
     {
         public double Latitude { get; set; }
 
