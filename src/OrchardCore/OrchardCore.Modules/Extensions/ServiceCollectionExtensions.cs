@@ -80,7 +80,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ApplicationServices.AddExtensionManagerHost();
 
-            builder.ConfigureServices((services, sp) =>
+            builder.ConfigureServices((services, serviceProvider) =>
             {
                 services.AddExtensionManager();
             });
@@ -91,9 +91,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         private static void AddStaticFiles(OrchardCoreBuilder builder)
         {
-            builder.Configure((app, routes, sp) =>
+            builder.Configure((app, routes, serviceProvider) =>
             {
-                var env = sp.GetRequiredService<IHostingEnvironment>();
+                var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
 
                 IFileProvider fileProvider;
                 if (env.IsDevelopment())
