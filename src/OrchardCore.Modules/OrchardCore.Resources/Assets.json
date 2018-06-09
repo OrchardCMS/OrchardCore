@@ -30,12 +30,5 @@
       "Assets/trumbowyg/plugins/*/*.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg.js"
-  },
-  {
-    "generateSourceMaps": false,
-    "inputs": [
-      "Assets/bootstrap/scss/bootstrap-switch.scss"
-    ],
-    "output": "wwwroot/Styles/bootstrap-switch.css"
   }
 ]
