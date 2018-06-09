@@ -55,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 if (!Path.GetFileName(path).StartsWith("_"))
                 {
                     var viewPath = Path.ChangeExtension(path, RazorViewEngine.ViewExtension);
-                    feature.ViewDescriptors.Add( new CompiledViewDescriptor { RelativePath = viewPath, ViewAttribute = new RazorViewAttribute(path, typeof(LiquidPage)) });
+                    feature.ViewDescriptors.Add(new CompiledViewDescriptor { RelativePath = viewPath, ViewAttribute = new RazorViewAttribute(path, typeof(LiquidPage)) });
                 }
             }
         }

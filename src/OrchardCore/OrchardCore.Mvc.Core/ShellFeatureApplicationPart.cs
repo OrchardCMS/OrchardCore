@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using OrchardCore.Environment.Shell.Builders.Models;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc
 {
@@ -44,8 +45,18 @@ namespace OrchardCore.Mvc
         {
             get
             {
-                var shellBluePrint = _httpContextAccessor.HttpContext.RequestServices?.GetRequiredService<ShellBlueprint>();
-                return shellBluePrint?.Dependencies.Keys.Select(type => type.GetTypeInfo()) ?? Enumerable.Empty<TypeInfo>();
+                var services = _httpContextAccessor.HttpContext.RequestServices;
+
+                if (services == null)
+                {
+                    return Enumerable.Empty<TypeInfo>();
+                }
+
+                var tagHelpers = services.GetServices<ITagHelpersProvider>();
+                var shellBluePrint = services.GetRequiredService<ShellBlueprint>();
+
+                return shellBluePrint.Dependencies.Keys.Select(type => type.GetTypeInfo())
+                    .Concat(tagHelpers.SelectMany(p => p.Types));
             }
         }
 

@@ -99,6 +99,18 @@ namespace OrchardCore.Mvc
             }
 
             var application = _hostingEnvironment.GetApplication();
+
+            foreach (var descriptor in feature.ViewDescriptors)
+            {
+                if (descriptor.RelativePath.StartsWith(Application.ModulesRoot) ||
+                    !descriptor.ViewAttribute.ViewType.Name.EndsWith("_cshtml"))
+                {
+                    continue;
+                }
+
+                descriptor.RelativePath = '/' + application.ModulePath + descriptor.RelativePath;
+            }
+
             foreach (var descriptor in feature.ViewDescriptors)
             {
                 if (descriptor.RelativePath.StartsWith(Application.ModulesRoot) ||

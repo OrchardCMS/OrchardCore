@@ -61,12 +61,12 @@ namespace OrchardCore.Contents
             // Feeds
             // TODO: Move to feature
             services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
+
+            services.AddTagHelpers(typeof(ContentLinkTagHelper).Assembly);
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            serviceProvider.AddTagHelpers(typeof(ContentLinkTagHelper).Assembly);
-
             routes.MapAreaRoute(
                 name: "DisplayContentItem",
                 areaName: "OrchardCore.Contents",

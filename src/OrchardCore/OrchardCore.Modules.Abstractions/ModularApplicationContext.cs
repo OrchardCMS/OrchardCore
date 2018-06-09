@@ -127,9 +127,30 @@ namespace OrchardCore.Modules
                 }
 
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
-                    .Where(f => !(f is ModuleAttribute));
+                    .Where(f => !(f is ModuleAttribute)).ToList();
 
                 ModuleInfo.Id = Name;
+
+                if (isApplication)
+                {
+                    ModuleInfo.Name = Application.ModuleName;
+                    ModuleInfo.Description = "Provides core features defined at the application level";
+                    ModuleInfo.Priority = int.MinValue.ToString();
+                    ModuleInfo.Category = "Application";
+
+                    if (features.Any())
+                    {
+                        features.Insert(0, new Manifest.FeatureAttribute()
+                        {
+                            Id = ModuleInfo.Id,
+                            Name = ModuleInfo.Name,
+                            Description = ModuleInfo.Description,
+                            Priority = ModuleInfo.Priority,
+                            Category = ModuleInfo.Category
+                        });
+                    }
+                }
+
                 ModuleInfo.Features.AddRange(features);
             }
             else

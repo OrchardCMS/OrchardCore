@@ -33,11 +33,8 @@ namespace OrchardCore.Menu
             // LinkMenuItemPart
             services.AddScoped<IContentPartDisplayDriver, LinkMenuItemPartDisplayDriver>();
             services.AddSingleton<ContentPart, LinkMenuItemPart>();
-        }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            serviceProvider.AddTagHelpers(typeof(MenuTagHelper).Assembly);
+            services.AddTagHelpers(typeof(MenuTagHelper).Assembly);
         }
     }
 }

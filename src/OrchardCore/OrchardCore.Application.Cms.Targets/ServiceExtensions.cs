@@ -1,25 +1,34 @@
-using OrchardCore.DisplayManagement;
-using OrchardCore.Environment.Commands;
-using OrchardCore.Environment.Extensions.Manifests;
-using OrchardCore.Environment.Shell.Data;
-
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceExtensions
     {
+        /// <summary>
+        /// Adds Orchard CMS services to the application. 
+        /// </summary>
         public static IServiceCollection AddOrchardCms(this IServiceCollection services)
         {
-            services.AddThemingHost();
-            services.AddManifestDefinition("theme");
-            services.AddSitesFolder();
-            services.AddCommands();
-            services.AddAntiforgery();
-            services.AddAuthentication();
+            services.AddOrchardCore()
 
-            services.AddModules()
-                .WithDefaultFeatures(
-                    "OrchardCore.Antiforgery", "OrchardCore.Mvc", "OrchardCore.Settings",
-                    "OrchardCore.Setup", "OrchardCore.Recipes", "OrchardCore.Commons");
+                .AddCommands()
+
+                .AddMvc()
+                .AddAntiForgery()
+                .AddAuthentication()
+                .AddDataProtection()
+
+                .AddSetupFeatures("OrchardCore.Setup")
+
+                .AddDataAccess()
+                .AddDataStorage()
+                .AddBackgroundTasks()
+                .AddDeferredTasks()
+
+                .AddTheming()
+                .AddLiquidViews()
+                .AddResourceManagement()
+                .AddGeneratorTagFilter()
+                .AddCaching();
+
 
             return services;
         }

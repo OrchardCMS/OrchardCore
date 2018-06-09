@@ -6,24 +6,20 @@ namespace OrchardCore.Environment.Extensions
 {
     public class ExtensionInfo : IExtensionInfo
     {
-        private readonly string _subPath;
-        private readonly IManifestInfo _manifestInfo;
-        private readonly IEnumerable<IFeatureInfo> _features;
-
         public ExtensionInfo(
             string subPath,
             IManifestInfo manifestInfo,
             Func<IManifestInfo, IExtensionInfo, IEnumerable<IFeatureInfo>> features) {
 
-            _subPath = subPath;
-            _manifestInfo = manifestInfo;
-            _features = features(manifestInfo, this);
+            SubPath = subPath;
+            Manifest = manifestInfo;
+            Features = features(manifestInfo, this);
         }
 
-        public string Id => _manifestInfo.ModuleInfo.Id;
-        public string SubPath => _subPath;
-        public IManifestInfo Manifest => _manifestInfo;
-        public IEnumerable<IFeatureInfo> Features => _features;
-        public bool Exists => _manifestInfo.Exists;
+        public string Id => Manifest.ModuleInfo.Id;
+        public string SubPath { get; }
+        public IManifestInfo Manifest { get; }
+        public IEnumerable<IFeatureInfo> Features { get; }
+        public bool Exists => Manifest.Exists;
     }
 }

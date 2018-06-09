@@ -45,7 +45,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
         {
-            IServiceCollection tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
+            var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
             tenantServiceCollection.AddSingleton(settings);
             tenantServiceCollection.AddSingleton(blueprint.Descriptor);
@@ -57,7 +57,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
             // TODO: Use StartupLoader in RTM and then don't need to register the classes anymore then
 
-            IServiceCollection moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
+            var moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
             foreach (var dependency in blueprint.Dependencies.Where(t => typeof(Modules.IStartup).IsAssignableFrom(t.Key)))
             {
@@ -87,29 +87,17 @@ namespace OrchardCore.Environment.Shell.Builders
             // Let any module add custom service descriptors to the tenant
             foreach (var startup in startups)
             {
-                IFeatureInfo feature;
+                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FeatureInfo;
 
-                if (startup is Modules.IConfigureTenant)
-                {
-                    feature = _applicationFeature;
-                }
-                else
-                {
-                    feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FeatureInfo;
-                }
+                // If the startup is not coming from an extension, associate it to the application feature.
+                // For instance when Startup classes are registered with Configure<Startup>() from the application.
 
-                if (feature != null)
-                {
-                    featureAwareServiceCollection.SetCurrentFeature(feature);
-                    startup.ConfigureServices(featureAwareServiceCollection);
-                }
+                featureAwareServiceCollection.SetCurrentFeature(feature ?? _applicationFeature);
+                startup.ConfigureServices(featureAwareServiceCollection);
             }
 
             (moduleServiceProvider as IDisposable).Dispose();
-
-            // add already instanciated services like DefaultOrchardHost
-            var applicationServiceDescriptors = _applicationServices.Where(x => x.Lifetime == ServiceLifetime.Singleton);
-
+            
             var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
 
             // Register all DIed types in ITypeFeatureProvider

@@ -32,8 +32,6 @@ using OrchardCore.OpenId;
     {
         OpenIdConstants.Features.Core,
         OpenIdConstants.Features.Management,
-        "OrchardCore.Authentication",
-        "OrchardCore.DataProtection",
         "OrchardCore.Users",
         "OrchardCore.Roles"
     }
@@ -46,8 +44,6 @@ using OrchardCore.OpenId;
     Description = "Validates tokens issued by the Orchard OpenID server or by a remote server supporting JWT and OpenID Connect discovery.",
     Dependencies = new[]
     {
-        OpenIdConstants.Features.Core,
-        "OrchardCore.Authentication",
-        "OrchardCore.DataProtection"
+        OpenIdConstants.Features.Core
     }
 )]
