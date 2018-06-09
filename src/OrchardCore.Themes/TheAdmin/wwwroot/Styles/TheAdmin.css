@@ -6553,12 +6553,6 @@ a.text-dark:hover, a.text-dark:focus {
   .switch + .switch {
     margin-left: 1rem; }
 
-body {
-  padding: 1rem; }
-
-.dropdown-menu {
-  margin-top: .75rem; }
-
 /* BASICS */
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
