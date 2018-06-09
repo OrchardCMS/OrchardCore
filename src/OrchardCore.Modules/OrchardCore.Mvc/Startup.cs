@@ -24,5 +24,9 @@ namespace OrchardCore.Mvc
         {
             app.UseStaticFilesModules();
         }
+
+        // Assume that this module will initialize the site with configuration that could be overridden by a module.
+        // A low order ensures that this module's configuration is executed before other modules that may override defaults.
+        public override int Order => Int32.MinValue;
     }
 }

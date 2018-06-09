@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Cache.CacheContextProviders;
 
 namespace OrchardCore.Environment.Cache
 {
@@ -11,6 +12,14 @@ namespace OrchardCore.Environment.Cache
             services.AddTransient<ITagCache, DefaultTagCache>();
             services.AddSingleton<ISignal, Signal>();
             services.AddScoped<ICacheContextManager, CacheContextManager>();
+            services.AddScoped<ICacheScopeManager, CacheScopeManager>();
+
+            services.AddScoped<ICacheContextProvider, FeaturesCacheContextProvider>();
+            services.AddScoped<ICacheContextProvider, QueryCacheContextProvider>();
+            services.AddScoped<ICacheContextProvider, RolesCacheContextProvider>();
+            services.AddScoped<ICacheContextProvider, RouteCacheContextProvider>();
+            services.AddScoped<ICacheContextProvider, UserCacheContextProvider>();
+            services.AddScoped<ICacheContextProvider, KnownValueCacheContextProvider>();
 
             // MVC is already registering IMemoryCache as host singleton. We are registering it again
             // in this module so that there is one instance for each tenant.
@@ -18,9 +27,8 @@ namespace OrchardCore.Environment.Cache
             // not override any existing instance defined at the host level by MVC
             services.AddSingleton<IMemoryCache, MemoryCache>();
 
-            // LocalCache is registered as transient as its implementation resolves IMemoryCache, thus
-            // there is no state to keep in its instance.
-            services.AddTransient<IDistributedCache, MemoryDistributedCache>();
+            // MemoryDistributedCache needs to be registered as a singleton as it owns a MemoryCache instance.
+            services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
 
             return services;
         }

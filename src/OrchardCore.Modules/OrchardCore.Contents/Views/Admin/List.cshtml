@@ -1,5 +1,4 @@
 @using OrchardCore.ContentManagement;
-@using OrchardCore.Contents.ViewModels;
 @inject IContentManager ContentManager
 @{
     var typeDisplayName = Model.TypeDisplayName;
@@ -12,8 +11,6 @@
     }
 
     IEnumerable<string> cultures = Model.Options.Cultures;
-
-
 }
 <h1>@RenderTitleSegments(pageTitle)</h1>
 
@@ -63,9 +60,7 @@
             @Html.SelectOption((ContentsStatus)Model.Options.ContentsStatus, ContentsStatus.AllVersions, T("all versions").ToString())
         </select>
         <button type="submit" name="submit.Filter" value="yes please">@T("Apply")</button>
-    </fieldset>*@
-
-    
+    </fieldset>*@    
 <ul class="list-group">
     @foreach (var contentItemSummary in Model.ContentItems)
     {

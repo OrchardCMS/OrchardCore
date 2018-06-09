@@ -89,7 +89,7 @@ namespace OrchardCore.Environment.Shell
 
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Adding pending task 'ApplyChanges' for shell '{0}'", _settings.Name);
+                        Logger.LogInformation("Adding pending task 'ApplyChanges' for tenant '{TenantName}'", _settings.Name);
                     }
 
                     await shellStateUpdater.ApplyChanges();

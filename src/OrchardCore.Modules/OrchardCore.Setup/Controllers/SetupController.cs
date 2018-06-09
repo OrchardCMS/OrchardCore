@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
 using OrchardCore.Setup.ViewModels;
@@ -16,7 +17,6 @@ namespace OrchardCore.Setup.Controllers
     {
         private readonly ISetupService _setupService;
         private readonly ShellSettings _shellSettings;
-        private const string DefaultRecipe = "Default";
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
 
         public SetupController(
@@ -56,6 +56,10 @@ namespace OrchardCore.Setup.Controllers
             {
                 model.DatabaseProviderPreset = true;
                 model.DatabaseProvider = _shellSettings.DatabaseProvider;
+            }
+            else
+            {
+                model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
             }
 
             if (!String.IsNullOrEmpty(_shellSettings.TablePrefix))
@@ -128,7 +132,8 @@ namespace OrchardCore.Setup.Controllers
                 AdminEmail = model.Email,
                 AdminPassword = model.Password,
                 Errors = new Dictionary<string, string>(),
-                Recipe = selectedRecipe
+                Recipe = selectedRecipe,
+                SiteTimeZone = model.SiteTimeZone
             };
 
             if (!model.DatabaseProviderPreset)

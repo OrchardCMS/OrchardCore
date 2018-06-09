@@ -191,7 +191,7 @@ namespace OrchardCore.Recipes.Services
                 {
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Executing recipe step '{0}'.", recipeStep.Name);
+                        Logger.LogInformation("Executing recipe step '{RecipeName}'.", recipeStep.Name);
                     }
 
                     await _recipeEventHandlers.InvokeAsync(e => e.RecipeStepExecutingAsync(recipeStep), Logger);
@@ -202,7 +202,7 @@ namespace OrchardCore.Recipes.Services
 
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Finished executing recipe step '{0}'.", recipeStep.Name);
+                        Logger.LogInformation("Finished executing recipe step '{RecipeName}'.", recipeStep.Name);
                     }
                 }
             }

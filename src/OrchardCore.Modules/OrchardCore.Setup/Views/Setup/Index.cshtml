@@ -1,17 +1,19 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Html
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
-@inject Microsoft.Extensions.Options.IOptions<IdentityOptions> identityOptions
+@inject Microsoft.Extensions.Options.IOptions<IdentityOptions> IdentityOptions
+@inject OrchardCore.Modules.IClock Clock
 @model OrchardCore.Setup.ViewModels.SetupViewModel
 
 @{
     // The Setup Layout is a standard MVC layout do that it doesn't use Shapes.
     Layout = "../_Layout.cshtml";
+    var localTimeZone = Clock.GetSystemTimeZone();
 }
 
 @{
     var defaultRecipe = Model.Recipes.FirstOrDefault(x => x.Name == Model.RecipeName) ?? Model.Recipes.FirstOrDefault();
-    var options = identityOptions.Value;
+    var options = IdentityOptions.Value;
     var passwordOptions = new HtmlContentBuilder();
     IHtmlContent separator = HtmlString.Empty;
     string passwordRegex = "";
@@ -75,7 +77,7 @@
     }
 
     <div class="row">
-        <fieldset class="form-group col-md-6" asp-validation-class-for="SiteName">
+        <fieldset class="form-group col-md-4" asp-validation-class-for="SiteName">
             <div>
                 <label asp-for="SiteName">@T["What is the name of your site?"]</label>
                 <input asp-for="SiteName" class="form-control" autofocus required />
@@ -83,7 +85,7 @@
                 <span class="text-muted form-text small">@T["This is used as the default title of your pages."]</span>
             </div>
         </fieldset>
-        <fieldset class="form-group col-md-6">
+        <fieldset class="form-group col-md-4">
             <input type="hidden" asp-for="RecipeName" required />
             <nav>
                 <div asp-validation-class-for="RecipeName">
@@ -99,7 +101,7 @@
                     else
                     {
                         <div id="recipes" class="dropdown">
-                            <button id="recipeButton" title="@defaultRecipe.Description" class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button id="recipeButton" title="@defaultRecipe.Description" class="btn btn-light dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @defaultRecipe.DisplayName
                             </button>
                             <div class="dropdown-menu">
@@ -115,7 +117,23 @@
                 </div>
             </nav>
         </fieldset>
+        <fieldset class="form-group col-md-4" asp-validation-class-for="SiteTimeZone">
+            <label asp-for="SiteTimeZone">@T["Default Time Zone"] <span asp-validation-for="SiteTimeZone"></span></label>
+            <select asp-for="SiteTimeZone" class="form-control">
+
+                <option value="@localTimeZone.TimeZoneId">@localTimeZone</option>
+                @foreach (var timezone in Clock.GetTimeZones())
+                {
+                    <option value="@timezone.TimeZoneId" selected="@(Model.SiteTimeZone == timezone.TimeZoneId)">
+                        @timezone
+                    </option>
+                }
+            </select>
+            <span class="text-muted form-text small">@T["Determines the default time zone used when displaying and editing dates and times."]</span>
+        </fieldset>
+
     </div>
+
     @if (!Model.TablePrefixPreset || !Model.ConnectionStringPreset || !Model.DatabaseProviderPreset)
     {
         <h6>
@@ -135,7 +153,7 @@
                 <select asp-for="DatabaseProvider" class="form-control" required>
                     @foreach (var provider in Model.DatabaseProviders)
                     {
-                        <option value="@provider.Value" data-connection-string="@provider.HasConnectionString">@provider.Name</option>
+                        <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix">@provider.Name</option>
                     }
                 </select>
             }
@@ -148,7 +166,7 @@
         }
         else
         {
-            <div class="form-group col-md-6" asp-validation-class-for="TablePrefix">
+            <div class="form-group col-md-6 tablePrefix" asp-validation-class-for="TablePrefix">
                 <label asp-for="TablePrefix">@T["Table Prefix"]</label>
                 <input asp-for="TablePrefix" class="form-control" />
                 <span asp-validation-for="TablePrefix" class="text-danger"></span>
@@ -156,7 +174,7 @@
         }
     </div>
 
-    @if (Model.ConnectionStringPreset || (!string.IsNullOrEmpty(Model.DatabaseProvider) && !Model.DatabaseProviders.SingleOrDefault(dp => dp.Value == Model.DatabaseProvider).HasConnectionString))
+    @if (Model.ConnectionStringPreset)
     {
         <input asp-for="ConnectionString" type="hidden" />
     }
@@ -211,7 +229,7 @@
     </div>
     <fieldset>
         <div class="form-group">
-            <button class="btn btn-primary" type="submit">@T["Finish Setup"]</button>
+            <button class="btn btn-primary" type="submit" id="SubmitButton">@T["Finish Setup"]</button>
         </div>
     </fieldset>
 </form>
@@ -228,9 +246,10 @@
             target: '#passwordStrength',
             style: "margin-top: 7px; height: 7px; border-radius: 5px"
         });
+
         $('#Password').popover({
             trigger: 'focus'
-        })
+        });
 
         $(".reveal").on('click',function() {
             var $pwd = $(".pwd");
@@ -243,14 +262,6 @@
                 $(this).find('button > i').toggleClass('fa-eye fa-eye-slash');
                 $pwd.focus();
             }
-        });
-
-        $("#DatabaseProvider").change(function () {
-            $("#DatabaseProvider option:selected").each(function () {
-                $(this).data("connection-string").toLowerCase() === "true"
-                    ? $(".pwd").attr('required', 'required')
-                    : $(".pwd").removeAttr('required');
-            });
         });
     })
     //]]>

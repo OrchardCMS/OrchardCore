@@ -1,4 +1,5 @@
-﻿@{
+@{
+    int level = (int)Model.Level;
     TagBuilder tag = Tag(Model, "li");
 
     if ((bool)Model.HasItems)
@@ -19,6 +20,7 @@
 
         foreach (var item in Model.Items)
         {
+            item.Level = level + 1;
             item.ParentTag = parentTag;
             parentTag.InnerHtml.AppendHtml(await DisplayAsync(item));
         }

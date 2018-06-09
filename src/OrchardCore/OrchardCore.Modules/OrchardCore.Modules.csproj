@@ -18,6 +18,7 @@
     <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" />
     <PackageReference Include="Microsoft.Extensions.Localization" />
     <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="NodaTime" />
   </ItemGroup>
 
 </Project>
