@@ -81,7 +81,8 @@ namespace OrchardCore.OpenId.Configuration
                 if (scope == null)
                 {
                     _logger.LogError("The specified tenant '{TenantName}' is disabled.", settings.Tenant);
-                    return;
+
+                    throw new ApplicationException("A tenant could not be started, it depends on another tenant that is not available.");
                 }
 
                 var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
