@@ -4,7 +4,7 @@
 
   <PropertyGroup>
     <!-- Special case - this property is used by a DotNetCliToolReference -->
-    <DotNetXunitVersion>2.4.0-beta.1.build3958</DotNetXunitVersion>
+    <DotNetXunitVersion>2.3.0-beta3-build3705</DotNetXunitVersion>
   </PropertyGroup>
   
   <ItemGroup>
@@ -32,8 +32,8 @@
     <PackageManagement Include="SQLitePCLRaw.bundle_green" Version="1.1.10-*" />
     <PackageManagement Include="WindowsAzure.Storage" Version="9.2.0" />
     <PackageManagement Include="xunit.analyzers" Version="0.3.0" />
-    <PackageManagement Include="xunit" Version="2.4.0-beta.1.build3958" />
-    <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.0-beta.1.build3958" />  
+    <PackageManagement Include="xunit" Version="2.3.0-beta3-build3705" />
+    <PackageManagement Include="xunit.runner.visualstudio" Version="2.3.0-beta3-build3705" />  
     <PackageManagement Include="YamlDotNet" Version="4.2.1" />
     <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1194" />
     <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1194" />
