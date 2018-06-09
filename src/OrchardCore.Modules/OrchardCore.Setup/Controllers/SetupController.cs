@@ -17,21 +17,17 @@ namespace OrchardCore.Setup.Controllers
     {
         private readonly ISetupService _setupService;
         private readonly ShellSettings _shellSettings;
-        private const string DefaultRecipe = "Default";
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
-        private readonly IClock _clock;
 
         public SetupController(
             ISetupService setupService,
             ShellSettings shellSettings,
             IEnumerable<DatabaseProvider> databaseProviders,
-            IStringLocalizer<SetupController> t,
-            IClock clock)
+            IStringLocalizer<SetupController> t)
         {
             _setupService = setupService;
             _shellSettings = shellSettings;
             _databaseProviders = databaseProviders;
-            _clock = clock;
 
             T = t;
         }
@@ -61,14 +57,16 @@ namespace OrchardCore.Setup.Controllers
                 model.DatabaseProviderPreset = true;
                 model.DatabaseProvider = _shellSettings.DatabaseProvider;
             }
+            else
+            {
+                model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
+            }
 
             if (!String.IsNullOrEmpty(_shellSettings.TablePrefix))
             {
                 model.TablePrefixPreset = true;
                 model.TablePrefix = _shellSettings.TablePrefix;
             }
-
-            model.TimeZones = _clock.GetTimeZones();
 
             return View(model);
         }
@@ -120,8 +118,6 @@ namespace OrchardCore.Setup.Controllers
                 model.TablePrefixPreset = true;
                 model.TablePrefix = _shellSettings.TablePrefix;
             }
-
-            model.TimeZones = _clock.GetTimeZones();
 
             if (!ModelState.IsValid)
             {

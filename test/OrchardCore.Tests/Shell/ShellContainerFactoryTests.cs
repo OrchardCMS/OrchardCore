@@ -1,15 +1,17 @@
 using System;
-using OrchardCore.Environment.Shell;
 using System.Collections.Generic;
-using Xunit;
-using OrchardCore.Modules;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Environment.Extensions;
+using OrchardCore.Modules;
+using OrchardCore.Tests.Stubs;
+using Xunit;
 
 namespace OrchardCore.Tests.Shell
 {
@@ -23,7 +25,19 @@ namespace OrchardCore.Tests.Shell
             var applicationServices = new ServiceCollection();
             applicationServices.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 
+            applicationServices.AddSingleton<ITestSingleton, TestSingleton>();
+            applicationServices.AddTransient<ITestTransient, TestTransient>();
+            applicationServices.AddScoped<ITestScoped, TestScoped>();
+
+            applicationServices.AddSingleton<ITwoHostSingletonsOfTheSameType, FirstHostSingletonsOfTheSameType>();
+            applicationServices.AddSingleton<ITwoHostSingletonsOfTheSameType, SecondHostSingletonsOfTheSameType>();
+
+            applicationServices.AddSingleton<IHostSingletonAndScopedOfTheSameType, HostSingletonOfTheSameTypeAsScoped>();
+            applicationServices.AddScoped<IHostSingletonAndScopedOfTheSameType, HostScopedOfTheSameTypeAsSingleton>();
+
             _shellContainerFactory = new ShellContainerFactory(
+                new StubHostingEnvironment(),
+                new StubExtensionManager(),
                 _applicationServiceProvider = applicationServices.BuildServiceProvider(),
                 new StubLoggerFactory(),
                 new NullLogger<ShellContainerFactory>(),
@@ -59,6 +73,64 @@ namespace OrchardCore.Tests.Shell
             // Check that the default service has been replaced with the custom service and that the feature info is correct.
             Assert.IsType<CustomTestService>(container.GetRequiredService(typeof(ITestService)));
             Assert.Same(expectedFeatureInfo, typeFeatureProvider.GetFeatureForDependency(typeof(CustomTestService)));
+        }
+
+        [Fact]
+        public void HostServiceLifeTimesShouldBePreserved()
+        {
+            var shellBlueprint = CreateBlueprint();
+            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
+
+            var singleton1 = container.GetRequiredService<ITestSingleton>();
+            var singleton2 = container.GetRequiredService<ITestSingleton>();
+            var transient1 = container.GetRequiredService<ITestTransient>();
+            var transient2 = container.GetRequiredService<ITestTransient>();
+            var scoped1 = container.GetRequiredService<ITestScoped>();
+            var scoped2 = container.GetRequiredService<ITestScoped>();
+
+            ITestScoped scoped3, scoped4;
+            using (var scope = container.CreateScope())
+            {
+                scoped3 = scope.ServiceProvider.GetRequiredService<ITestScoped>();
+                scoped4 = scope.ServiceProvider.GetRequiredService<ITestScoped>();
+            }
+
+            Assert.IsType<TestSingleton>(singleton1);
+            Assert.IsType<TestTransient>(transient1);
+            Assert.IsType<TestTransient>(transient2);
+            Assert.IsType<TestScoped>(scoped1);
+            Assert.IsType<TestScoped>(scoped3);
+
+            Assert.Equal(singleton1, singleton2);
+            Assert.NotEqual(transient1, transient2);
+            Assert.NotEqual(scoped1, scoped3);
+            Assert.Equal(scoped1, scoped2);
+            Assert.Equal(scoped3, scoped4);
+        }
+
+        [Fact]
+        public void WhenTwoHostSingletons_GetServices_Returns_HostAndShellServices()
+        {
+            var shellBlueprint = CreateBlueprint();
+            AddStartup(shellBlueprint, typeof(ServicesOfTheSameTypeStartup));
+            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
+
+            var services = container.GetServices<ITwoHostSingletonsOfTheSameType>();
+
+            Assert.Equal(5, services.Count());
+        }
+
+        [Fact]
+        public void WhenHostSingletonAndScoped_GetServices_Returns_CorrectImplementations()
+        {
+            var shellBlueprint = CreateBlueprint();
+            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
+
+            var services = container.GetServices<IHostSingletonAndScopedOfTheSameType>();
+
+            Assert.Equal(2, services.Count());
+            Assert.IsType<HostSingletonOfTheSameTypeAsScoped>(services.ElementAt(0));
+            Assert.IsType<HostScopedOfTheSameTypeAsSingleton>(services.ElementAt(1));
         }
 
         private ShellBlueprint CreateBlueprint()
@@ -108,6 +180,37 @@ namespace OrchardCore.Tests.Shell
             public override void ConfigureServices(IServiceCollection services)
             {
                 services.Replace(ServiceDescriptor.Scoped(typeof(ITestService), typeof(CustomTestService)));
+            }
+        }
+
+        private interface ITestSingleton { }
+        private interface ITestTransient { }
+        private interface ITestScoped { }
+
+        private class TestSingleton : ITestSingleton { }
+        private class TestTransient : ITestTransient { }
+        private class TestScoped : ITestScoped { }
+
+        private interface ITwoHostSingletonsOfTheSameType { }
+        private class FirstHostSingletonsOfTheSameType : ITwoHostSingletonsOfTheSameType { }
+        private class SecondHostSingletonsOfTheSameType : ITwoHostSingletonsOfTheSameType { }
+        private class ShellSingletonOfTheSametype : ITwoHostSingletonsOfTheSameType { }
+        private class ShellTransientOfTheSametype : ITwoHostSingletonsOfTheSameType { }
+        private class ShellScopedOfTheSametype : ITwoHostSingletonsOfTheSameType { }
+
+        private interface IHostSingletonAndScopedOfTheSameType { }
+        private class HostSingletonOfTheSameTypeAsScoped : IHostSingletonAndScopedOfTheSameType { }
+        private class HostScopedOfTheSameTypeAsSingleton : IHostSingletonAndScopedOfTheSameType { }
+
+        private class ServicesOfTheSameTypeStartup : StartupBase
+        {
+            public override int Order => 1;
+
+            public override void ConfigureServices(IServiceCollection services)
+            {
+                services.AddSingleton<ITwoHostSingletonsOfTheSameType, ShellSingletonOfTheSametype>();
+                services.AddTransient<ITwoHostSingletonsOfTheSameType, ShellTransientOfTheSametype>();
+                services.AddScoped<ITwoHostSingletonsOfTheSameType, ShellScopedOfTheSametype>();
             }
         }
     }

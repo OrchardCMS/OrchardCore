@@ -3,9 +3,9 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-///<reference path='../Lib/jquery/typings.d.ts' />
-///<reference path='../Lib/jsplumb/typings.d.ts' />
-///<reference path='./workflow-models.ts' />
+///<reference path='../../Assets/Lib/jquery/typings.d.ts' />
+///<reference path='../../Assets/Lib/jsplumb/typings.d.ts' />
+///<reference path='../../Assets/Scripts/workflow-models.ts' />
 var WorkflowCanvas = /** @class */ (function () {
     function WorkflowCanvas(container, workflowType) {
         var _this = this;
