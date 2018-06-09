@@ -9,6 +9,9 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services
 {
+    /// <summary>
+    /// Implements <see cref="IUserService"/> by using the ASP.NET Core Identity packages.
+    /// </summary>
     public class UserService : IUserService
     {
         private readonly UserManager<IUser> _userManager;
@@ -33,7 +36,6 @@ namespace OrchardCore.Users.Services
             var identityResult = String.IsNullOrWhiteSpace(password)
                 ? await _userManager.CreateAsync(user)
                 : await _userManager.CreateAsync(user, password);
-
             if (!identityResult.Succeeded)
             {
                 ProcessValidationErrors(identityResult.Errors, newUser, reportError);
@@ -136,12 +138,20 @@ namespace OrchardCore.Users.Services
             userIdentifier = userIdentifier.Normalize();
 
             var user = await _userManager.FindByNameAsync(userIdentifier);
+
             if (user == null)
             {
                 user = await _userManager.FindByEmailAsync(userIdentifier);
             }
 
             return user;
+        }
+
+        public Task<IUser> GetUserAsync(string userName)
+        {
+            userName = userName.Normalize();
+
+            return _userManager.FindByNameAsync(userName);
         }
 
         public void ProcessValidationErrors(IEnumerable<IdentityError> errors, User user, Action<string, string> reportError)

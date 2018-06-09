@@ -8,7 +8,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Nancy\OrchardCore.Nancy.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\OrchardCore.Nancy.Core\OrchardCore.Nancy.Core.csproj" />
   </ItemGroup>
 
 </Project>

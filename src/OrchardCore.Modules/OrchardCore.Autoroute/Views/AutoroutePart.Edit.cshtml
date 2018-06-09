@@ -1,10 +1,22 @@
-﻿@using OrchardCore.Autoroute.ViewModels;
+@using OrchardCore.Autoroute.ViewModels;
 @model AutoroutePartViewModel
 @inject IAuthorizationService AuthorizationService;
+@inject OrchardCore.Settings.ISiteService SiteService
+@{
+    var site = await SiteService.GetSiteSettingsAsync();
+}
 
 <fieldset class="form-group" asp-validation-class-for="Path">
     <label asp-for="Path">@T["Permalink"] <span asp-validation-for="Path"></span></label>
-    <input asp-for="Path" class="form-control" disabled="@(!Model.Settings.AllowCustomPath)"/>
+    <div class="input-group">
+        @if (!String.IsNullOrWhiteSpace(site.BaseUrl))
+        {
+            <div class="input-group-prepend">
+                <div class="input-group-text">@site.BaseUrl</div>
+            </div>
+        }
+        <input asp-for="Path" class="form-control" disabled="@(!Model.Settings.AllowCustomPath)" />
+    </div>
     @if (!String.IsNullOrWhiteSpace(Model.Settings.Pattern) && Model.Settings.AllowCustomPath)
     {
         <span class="hint">@T["The url of the content item. Leave empty to auto-generate it."]</span>
@@ -20,7 +32,7 @@
     var showHomepageOption = Model.Settings.ShowHomepageOption && authorized;
 }
 
-@if (Model.IsHomepage) 
+@if (Model.IsHomepage)
 {
     <div class="alert alert-info">@T["This content item is the current homepage"]</div>
 }

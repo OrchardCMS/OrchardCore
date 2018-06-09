@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "The setup module is creating the application's setup experience.",
-    Dependencies = new [] { "OrchardCore.Mvc" },
+    Dependencies = new[] { "OrchardCore.Recipes" },
     Category = "Infrastructure"
 )]

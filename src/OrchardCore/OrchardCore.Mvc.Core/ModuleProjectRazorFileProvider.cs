@@ -66,9 +66,9 @@ namespace OrchardCore.Mvc
 
             var path = NormalizePath(subpath);
 
-            if (_paths.ContainsKey(path))
+            if (_paths.TryGetValue(path, out var projectAssetPath))
             {
-                return new PhysicalFileInfo(new FileInfo(_paths[path]));
+                return new PhysicalFileInfo(new FileInfo(projectAssetPath));
             }
 
             return new NotFoundFileInfo(subpath);
@@ -83,9 +83,9 @@ namespace OrchardCore.Mvc
 
             var path = NormalizePath(filter);
 
-            if (_paths.ContainsKey(path))
+            if (_paths.TryGetValue(path, out var projectAssetPath))
             {
-                return new PollingFileChangeToken(new FileInfo(_paths[path]));
+                return new PollingFileChangeToken(new FileInfo(projectAssetPath));
             }
 
             return NullChangeToken.Singleton;
