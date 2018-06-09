@@ -9,7 +9,7 @@
   
   <ItemGroup>
     <PackageManagement Include="AspNet.Security.OAuth.Validation" Version="2.0.0-rc2-final" />
-    <PackageManagement Include="Castle.Core" Version="4.3.0" />
+    <PackageManagement Include="Castle.Core" Version="4.2.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
     <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9442" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-1158" />
@@ -31,7 +31,7 @@
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0003" />
     <PackageManagement Include="SQLitePCLRaw.bundle_green" Version="1.1.10-*" />
     <PackageManagement Include="WindowsAzure.Storage" Version="9.2.0" />
-    <PackageManagement Include="xunit.analyzers" Version="0.9.0" />
+    <PackageManagement Include="xunit.analyzers" Version="0.3.0" />
     <PackageManagement Include="xunit" Version="2.4.0-beta.1.build3958" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.0-beta.1.build3958" />  
     <PackageManagement Include="YamlDotNet" Version="4.2.1" />
