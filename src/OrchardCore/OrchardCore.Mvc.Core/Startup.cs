@@ -21,13 +21,13 @@ namespace OrchardCore.Mvc
 {
     public class Startup : StartupBase
     {
-        private readonly IServiceProvider _applicationServices;
-
         public override int Order => -200;
 
-        public Startup(IServiceProvider applicationServices)
+        private readonly IServiceProvider _serviceProvider;
+
+        public Startup(IServiceProvider serviceProvider)
         {
-            _applicationServices = applicationServices;
+            _serviceProvider = serviceProvider;
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -47,14 +47,14 @@ namespace OrchardCore.Mvc
             // the above is called here
             builder.AddViewLocalization();
 
-            AddModularFrameworkParts(_applicationServices, builder.PartManager);
+            AddModularFrameworkParts(_serviceProvider, builder.PartManager);
 
             builder.Services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
 
             builder.AddModularRazorPages();
 
-            // Use a custom IViewCompilerProvider so that all tenants reuse the same IMemoryCache instance
+            // Use a custom IViewCompilerProvider so that all tenants reuse the same ICompilerCache instance
             builder.Services.Replace(new ServiceDescriptor(typeof(IViewCompilerProvider), typeof(SharedViewCompilerProvider), ServiceLifetime.Singleton));
 
             AddMvcModuleCoreServices(services);

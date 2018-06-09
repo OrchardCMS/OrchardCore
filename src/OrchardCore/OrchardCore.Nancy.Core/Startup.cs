@@ -14,13 +14,6 @@ namespace OrchardCore.Nancy
     {
         public override int Order => -200;
 
-        private readonly IServiceProvider _applicationServices;
-
-        public Startup(IServiceProvider applicationServices)
-        {
-            _applicationServices = applicationServices;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddRouting();
