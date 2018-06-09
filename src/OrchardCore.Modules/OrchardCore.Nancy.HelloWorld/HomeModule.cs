@@ -1,4 +1,4 @@
-﻿using Nancy;
+using Nancy;
 
 namespace OrchardCore.Nancy.HelloWorld
 {
@@ -8,7 +8,7 @@ namespace OrchardCore.Nancy.HelloWorld
         {
             Get("/{category}", parameters => "My category is " + parameters.category);
 
-            Get("/sayhello", _ => "Hello from Nancy");
+            Get("/", _ => "Hello from Nancy");
         }
     }
 }
