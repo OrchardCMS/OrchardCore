@@ -10,6 +10,7 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
+using OrchardCore.Tests.Stubs;
 using Xunit;
 
 namespace OrchardCore.Tests.Shell
@@ -35,6 +36,8 @@ namespace OrchardCore.Tests.Shell
             applicationServices.AddScoped<IHostSingletonAndScopedOfTheSameType, HostScopedOfTheSameTypeAsSingleton>();
 
             _shellContainerFactory = new ShellContainerFactory(
+                new StubHostingEnvironment(),
+                new StubExtensionManager(),
                 _applicationServiceProvider = applicationServices.BuildServiceProvider(),
                 new StubLoggerFactory(),
                 new NullLogger<ShellContainerFactory>(),

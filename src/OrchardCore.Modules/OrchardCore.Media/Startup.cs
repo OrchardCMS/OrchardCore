@@ -24,8 +24,10 @@ using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.Settings;
+using OrchardCore.Media.TagHelpers;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
+using OrchardCore.Mvc;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using SixLabors.ImageSharp;
@@ -161,6 +163,8 @@ namespace OrchardCore.Media
 
             // MIME types
             services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
+
+            services.AddTagHelpers(typeof(ImageTagHelper).Assembly);
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

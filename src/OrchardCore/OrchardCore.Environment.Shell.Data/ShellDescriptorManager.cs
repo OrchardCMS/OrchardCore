@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.Environment.Shell.Data.Descriptors
@@ -16,6 +16,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
     public class ShellDescriptorManager : IShellDescriptorManager
     {
         private readonly ShellSettings _shellSettings;
+        private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
         private readonly IEnumerable<IShellDescriptorManagerEventHandler> _shellDescriptorManagerEventHandlers;
         private readonly ISession _session;
         private readonly ILogger _logger;
@@ -23,11 +24,13 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
         public ShellDescriptorManager(
             ShellSettings shellSettings,
+            IEnumerable<ShellFeature> shellFeatures,
             IEnumerable<IShellDescriptorManagerEventHandler> shellDescriptorManagerEventHandlers,
             ISession session,
             ILogger<ShellDescriptorManager> logger)
         {
             _shellSettings = shellSettings;
+            _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
             _shellDescriptorManagerEventHandlers = shellDescriptorManagerEventHandlers;
             _session = session;
             _logger = logger;
@@ -39,6 +42,12 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             if (_shellDescriptor == null)
             {
                 _shellDescriptor = await _session.Query<ShellDescriptor>().FirstOrDefaultAsync();
+
+                if (_shellDescriptor != null)
+                {
+                    _shellDescriptor.Features = _alwaysEnabledFeatures.Concat(
+                        _shellDescriptor.Features).Distinct().ToList();
+                }
             }
 
             return _shellDescriptor;

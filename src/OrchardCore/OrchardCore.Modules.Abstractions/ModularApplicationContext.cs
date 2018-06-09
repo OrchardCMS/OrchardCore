@@ -24,7 +24,7 @@ namespace OrchardCore.Modules
                 {
                     if (_application == null)
                     {
-                        _application = new Application(environment.ApplicationName);
+                        _application = new Application(environment);
                     }
                 }
             }
@@ -45,7 +45,7 @@ namespace OrchardCore.Modules
                 {
                     if (!_modules.TryGetValue(name, out module))
                     {
-                        _modules[name] = module = new Module(name);
+                        _modules[name] = module = new Module(name, name == environment.ApplicationName);
                     }
                 }
             }
@@ -57,32 +57,46 @@ namespace OrchardCore.Modules
     public class Application
     {
         public const string ModulesPath = ".Modules";
+        public const string ModuleName = "Application";
         public static string ModulesRoot = ModulesPath + "/";
 
-        public Application(string application)
+        public Application(IHostingEnvironment environment)
         {
-            Name = application;
-            Assembly = Assembly.Load(new AssemblyName(application));
+            Name = environment.ApplicationName;
+            Path = environment.ContentRootPath;
+            Root = Path + '/';
 
-            ModuleNames = Assembly.GetCustomAttributes<ModuleNameAttribute>()
-                .Select(m => m.Name).ToArray();
+            Assembly = Assembly.Load(new AssemblyName(Name));
+
+            var moduleNames = Assembly.GetCustomAttributes<ModuleNameAttribute>()
+                .Select(m => m.Name).ToList();
+
+            moduleNames.Add(Name);
+            ModuleNames = moduleNames;
+
+            ModulePath = ModulesRoot + Name;
+            ModuleRoot = ModulePath + '/';
         }
 
         public string Name { get; }
+        public string Path { get; }
+        public string Root { get; }
         public Assembly Assembly { get; }
         public IEnumerable<string> ModuleNames { get; }
+        public string ModulePath { get; }
+        public string ModuleRoot { get; }
     }
 
     public class Module
     {
-        public const string ContentPath = "wwwroot";
-        public static string ContentRoot = ContentPath + "/";
+        public const string WebRootPath = "wwwroot";
+        public static string WebRoot = WebRootPath + "/";
 
         private readonly string _baseNamespace;
         private readonly DateTimeOffset _lastModified;
         private readonly IDictionary<string, IFileInfo> _fileInfos = new Dictionary<string, IFileInfo>();
 
-        public Module(string name)
+        public Module(string name, bool isApplication = false)
         {
             if (!string.IsNullOrWhiteSpace(name))
             {
@@ -99,15 +113,36 @@ namespace OrchardCore.Modules
 
                 var moduleInfos = Assembly.GetCustomAttributes<ModuleAttribute>();
 
-                ModuleInfo = 
+                ModuleInfo =
                     moduleInfos.Where(f => !(f is ModuleMarkerAttribute)).FirstOrDefault() ??
                     moduleInfos.Where(f => f is ModuleMarkerAttribute).FirstOrDefault() ??
                     new ModuleAttribute { Name = Name };
 
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
-                    .Where(f => !(f is ModuleAttribute));
+                    .Where(f => !(f is ModuleAttribute)).ToList();
 
                 ModuleInfo.Id = Name;
+
+                if (isApplication)
+                {
+                    ModuleInfo.Name = Application.ModuleName;
+                    ModuleInfo.Description = "Provides core features defined at the application level";
+                    ModuleInfo.Priority = int.MinValue.ToString();
+                    ModuleInfo.Category = "Application";
+
+                    if (features.Any())
+                    {
+                        features.Insert(0, new Manifest.FeatureAttribute()
+                        {
+                            Id = ModuleInfo.Id,
+                            Name = ModuleInfo.Name,
+                            Description = ModuleInfo.Description,
+                            Priority = ModuleInfo.Priority,
+                            Category = ModuleInfo.Category
+                        });
+                    }
+                }
+
                 ModuleInfo.Features.AddRange(features);
             }
             else
@@ -194,7 +229,7 @@ namespace OrchardCore.Modules
             }
         }
 
-        public string ModuleAssetPath { get;  }
+        public string ModuleAssetPath { get; }
         public string ProjectAssetPath { get; }
     }
 }
