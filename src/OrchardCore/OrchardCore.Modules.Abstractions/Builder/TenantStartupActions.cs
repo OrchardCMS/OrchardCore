@@ -9,16 +9,16 @@ namespace Microsoft.Extensions.DependencyInjection
     /// Represents an action to configure the services of a tenant.
     /// </summary>
     /// <param name="services">The collection of service descriptors.</param>
-    /// <param name="sp">A service provider containing the application services and a <see cref="ShellSettings"/> instance for the current tenant.</param>
-    public delegate void ConfigureServicesDelegate(IServiceCollection services, IServiceProvider sp);
+    /// <param name="serviceProvider">A service provider containing the application services and a <see cref="ShellSettings"/> instance for the current tenant.</param>
+    public delegate void ConfigureServicesDelegate(IServiceCollection services, IServiceProvider serviceProvider);
 
     /// <summary>
     /// Represents an action to configure the request's pipeline of a tenant.
     /// </summary>
     /// <param name="builder">The tenant request's pipeline.</param>
     /// <param name="routes">The route builder for the tenant.</param>
-    /// <param name="sp">A service provider containing the tenant services.</param>
-    public delegate void ConfigureDelegate(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider sp);
+    /// <param name="serviceProvider">A service provider containing the tenant services.</param>
+    public delegate void ConfigureDelegate(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider);
 
     public class TenantStartupActions
     {
