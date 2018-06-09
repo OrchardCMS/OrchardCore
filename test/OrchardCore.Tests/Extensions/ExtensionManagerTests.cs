@@ -15,7 +15,7 @@ namespace OrchardCore.Tests.Extensions
             = new StubHostingEnvironment();
 
         private static IFeaturesProvider ModuleFeatureProvider =
-            new FeaturesProvider(Enumerable.Empty<IFeatureBuilderEvents>(), new NullLogger<FeaturesProvider>());
+            new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() }, new NullLogger<FeaturesProvider>());
 
         private static IFeaturesProvider ThemeFeatureProvider =
             new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() }, new NullLogger<FeaturesProvider>());
@@ -100,7 +100,7 @@ namespace OrchardCore.Tests.Extensions
         public void GetFeaturesShouldReturnAllFeaturesOrderedByDependency()
         {
             var features = ModuleScopedExtensionManager.GetFeatures()
-                .Where(f => f.Category == "Test");
+                .Where(f => f.Category == "Test" && !f.Extension.IsTheme());
 
             Assert.Equal(4, features.Count());
             Assert.Equal("Sample1", features.ElementAt(0).Id);
