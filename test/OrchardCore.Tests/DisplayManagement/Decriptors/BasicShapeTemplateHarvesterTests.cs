@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using Xunit;
 
@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         {
             var harvester = new BasicShapeTemplateHarvester();
             var harvestShapeHits = harvester.HarvestShape(new HarvestShapeInfo { SubPath = givenSubPath, FileName = givenFileName });
-            Assert.Equal(1, harvestShapeHits.Count());
+            Assert.Single(harvestShapeHits);
             Assert.Equal(expectedShapeType, harvestShapeHits.Single().ShapeType, ignoreCase: true);
         }
 
