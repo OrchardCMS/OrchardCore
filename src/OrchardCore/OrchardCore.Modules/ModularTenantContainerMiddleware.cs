@@ -36,15 +36,15 @@ namespace OrchardCore.Modules
 
             var shellSettings = _runningShellTable.Match(httpContext);
 
-            // Register the shell settings as a custom feature.
-            httpContext.Features.Set(shellSettings);
-
             // We only serve the next request if the tenant has been resolved.
             if (shellSettings != null)
             {
                 var hasPendingTasks = false;
                 using (var scope = _orchardHost.EnterServiceScope(shellSettings, out var shellContext))
                 {
+                    // Register the shell context as a custom feature.
+                    httpContext.Features.Set(shellContext);
+
                     if (!shellContext.IsActivated)
                     {
                         var semaphore = _semaphores.GetOrAdd(shellSettings.Name, (name) => new SemaphoreSlim(1));
@@ -78,12 +78,12 @@ namespace OrchardCore.Modules
                             }
                         }
                         finally
-                        {                            
+                        {
                             semaphore.Release();
                             _semaphores.TryRemove(shellSettings.Name, out semaphore);
                         }
                     }
-                    
+
                     await _next.Invoke(httpContext);
                     var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
                     hasPendingTasks = deferredTaskEngine?.HasPendingTasks ?? false;

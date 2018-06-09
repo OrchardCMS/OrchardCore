@@ -7,7 +7,6 @@
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>
     <MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
-    <TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -129,7 +129,9 @@ namespace OrchardCore.BackgroundTasks
         {
             lock (_states)
             {
-                foreach (var task in _states.Keys)
+                var tasks = _states.Keys.ToArray();
+
+                foreach (var task in tasks)
                 {
                     _states[task] = BackgroundTaskState.Stopped;
                 }

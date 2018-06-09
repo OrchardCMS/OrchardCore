@@ -32,7 +32,9 @@ $(function () {
 
             if ((direction == "increasing") && (width > breakPoint)) {
                 // breakpoint reached while going up
-                // do what you think is needed here.  
+                if (isCompactExplicit == false) {
+                    unSetCompactStatus();
+                }
                 lastDirectionManaged = direction;
                 BreakpointChangeManaged = true;
             }

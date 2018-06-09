@@ -1,31 +1,24 @@
-﻿using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Builder.Internal;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc
 {
     public class ModularTenantRouteBuilder : IModularTenantRouteBuilder
     {
-        private readonly IServiceProvider _serviceProvider;
-
         // Register one top level TenantRoute per tenant. Each instance contains all the routes
         // for this tenant.
-        public ModularTenantRouteBuilder(IServiceProvider serviceProvider)
+        public ModularTenantRouteBuilder()
         {
-            _serviceProvider = serviceProvider;
         }
 
-        public IRouteBuilder Build()
+        public IRouteBuilder Build(IApplicationBuilder appBuilder)
         {
-            IApplicationBuilder appBuilder = new ApplicationBuilder(_serviceProvider);
-
             var routeBuilder = new RouteBuilder(appBuilder)
             {
-                DefaultHandler = _serviceProvider.GetRequiredService<MvcRouteHandler>()
+                DefaultHandler = appBuilder.ApplicationServices.GetRequiredService<MvcRouteHandler>()
             };
 
             return routeBuilder;
@@ -33,7 +26,7 @@ namespace OrchardCore.Mvc
 
         public void Configure(IRouteBuilder builder)
         {
-            var inlineConstraintResolver = _serviceProvider.GetService<IInlineConstraintResolver>();
+            var inlineConstraintResolver = builder.ServiceProvider.GetService<IInlineConstraintResolver>();
 
             // The default route is added to each tenant as a template route, with a prefix
             builder.Routes.Add(new Route(
@@ -46,7 +39,7 @@ namespace OrchardCore.Mvc
                 inlineConstraintResolver)
             );
 
-            builder.Routes.Insert(0, AttributeRouting.CreateAttributeMegaRoute(_serviceProvider));
+            builder.Routes.Insert(0, AttributeRouting.CreateAttributeMegaRoute(builder.ServiceProvider));
         }
     }
 }

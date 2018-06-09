@@ -3,15 +3,19 @@ using System;
 namespace OrchardCore.Modules
 {
     /// <summary>
-    /// Provides the current Utc <see cref="DateTime"/>, and time related method for cache management.
+    /// Provides the current Utc <see cref="DateTime"/>, and timezone related methods.
     /// This service should be used whenever the current date and time are needed, instead of <seealso cref="DateTime"/> directly.
-    /// It also makes implementations more testable, as time can be mocked.
+    /// If local date time and timezones are needed use <see cref="ILocalClock" /> instead.
     /// </summary>
     public interface IClock
     {
         /// <summary>
-        /// Gets the current <see cref="DateTime"/> of the system, expressed in Utc
+        /// Gets the current <see cref="DateTime"/> of the system, expressed in Utc.!--
         /// </summary>
+        /// <remarks>
+        /// A <see cref="DateTime"/> as this property is usually used to store the current date time in UTC and a <see cref="DateTimeOffset" /> 
+        /// would affect usability.
+        /// </remarks>
         DateTime UtcNow { get; }
 
         /// <summary>

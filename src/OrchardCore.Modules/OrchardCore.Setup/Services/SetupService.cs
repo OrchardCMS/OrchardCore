@@ -2,18 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using OrchardCore.Modules;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DeferredTasks;
-using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Setup.Events;
@@ -26,10 +25,6 @@ namespace OrchardCore.Setup.Services
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _orchardHost;
         private readonly IShellContextFactory _shellContextFactory;
-        private readonly ICompositionStrategy _compositionStrategy;
-        private readonly IExtensionManager _extensionManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IRunningShellTable _runningShellTable;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly ILogger _logger;
         private readonly IStringLocalizer T;
@@ -40,9 +35,6 @@ namespace OrchardCore.Setup.Services
             ShellSettings shellSettings,
             IShellHost orchardHost,
             IShellContextFactory shellContextFactory,
-            ICompositionStrategy compositionStrategy,
-            IExtensionManager extensionManager,
-            IHttpContextAccessor httpContextAccessor,
             IRunningShellTable runningShellTable,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             ILogger<SetupService> logger,
@@ -52,10 +44,6 @@ namespace OrchardCore.Setup.Services
             _shellSettings = shellSettings;
             _orchardHost = orchardHost;
             _shellContextFactory = shellContextFactory;
-            _compositionStrategy = compositionStrategy;
-            _extensionManager = extensionManager;
-            _httpContextAccessor = httpContextAccessor;
-            _runningShellTable = runningShellTable;
             _recipeHarvesters = recipeHarvesters;
             _logger = logger;
             T = stringLocalizer;
@@ -98,10 +86,9 @@ namespace OrchardCore.Setup.Services
             // Features to enable for Setup
             string[] hardcoded =
             {
-                "OrchardCore.Commons",
                 "OrchardCore.Features",
-                "OrchardCore.Recipes",
-                "OrchardCore.Scripting"
+                "OrchardCore.Scripting",
+                "OrchardCore.Recipes"
             };
 
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();

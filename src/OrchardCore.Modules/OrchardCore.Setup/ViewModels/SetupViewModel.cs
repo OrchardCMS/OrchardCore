@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using OrchardCore.Data;
-using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Annotations;
 
@@ -44,7 +43,5 @@ namespace OrchardCore.Setup.ViewModels
         public string RecipeName { get; set; }
 
         public string SiteTimeZone { get; set; }
-
-        public ITimeZone[] TimeZones { get; set; }
     }
 }

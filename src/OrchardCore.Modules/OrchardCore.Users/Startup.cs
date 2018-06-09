@@ -31,7 +31,6 @@ namespace OrchardCore.Users
     {
         private const string LoginPath = "Login";
         private const string ChangePasswordPath = "ChangePassword";
-        private const string ForgotPasswordPath = "ForgotPassword";
 
         private readonly string _tenantName;
         private readonly string _tenantPrefix;
@@ -55,12 +54,6 @@ namespace OrchardCore.Users
                 areaName: "OrchardCore.Users",
                 template: ChangePasswordPath,
                 defaults: new { controller = "Account", action = "ChangePassword" }
-            );
-            routes.MapAreaRoute(
-                name: "ForgotPassword",
-                areaName: "OrchardCore.Users",
-                template: ForgotPasswordPath,
-                defaults: new { controller = "Account", action = "ForgotPassword" }
             );
         }
 
@@ -117,7 +110,13 @@ namespace OrchardCore.Users
             services.TryAddScoped<UserManager<IUser>>();
             services.TryAddScoped<SignInManager<IUser>>();
 
-            services.TryAddScoped<IUserStore<IUser>, UserStore>();
+            services.TryAddScoped<UserStore>();
+            services.TryAddScoped<IUserStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserRoleStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserPasswordStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserEmailStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserSecurityStampStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserLoginStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -146,8 +145,71 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
-            
+        }
+    }
+
+    [Feature("OrchardCore.Users.Registration")]
+    public class RegistrationStartup : StartupBase
+    {
+        private const string RegisterPath = "Register";
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaRoute(
+                name: "Register",
+                areaName: "OrchardCore.Users",
+                template: RegisterPath,
+                defaults: new { controller = "Registration", action = "Register" }
+            );
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Users.ResetPassword")]
+    public class ResetPasswordStartup : StartupBase
+    {
+        private const string ForgotPasswordPath = "ForgotPassword";
+        private const string ForgotPasswordConfirmationPath = "ForgotPasswordConfirmation";
+        private const string ResetPasswordPath = "ResetPassword";
+        private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaRoute(
+                name: "ForgotPassword",
+                areaName: "OrchardCore.Users",
+                template: ForgotPasswordPath,
+                defaults: new { controller = "ResetPassword", action = "ForgotPassword" }
+            );
+            routes.MapAreaRoute(
+                name: "ForgotPasswordConfirmation",
+                areaName: "OrchardCore.Users",
+                template: ForgotPasswordConfirmationPath,
+                defaults: new { controller = "ResetPassword", action = "ForgotPasswordConfirmation" }
+            );
+            routes.MapAreaRoute(
+                name: "ResetPassword",
+                areaName: "OrchardCore.Users",
+                template: ResetPasswordPath,
+                defaults: new { controller = "ResetPassword", action = "ResetPassword" }
+            );
+            routes.MapAreaRoute(
+                name: "ResetPasswordConfirmation",
+                areaName: "OrchardCore.Users",
+                template: ResetPasswordConfirmationPath,
+                defaults: new { controller = "ResetPassword", action = "ResetPasswordConfirmation" }
+            );
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
+            services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
         }
     }
 }

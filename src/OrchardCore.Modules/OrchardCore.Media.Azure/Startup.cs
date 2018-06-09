@@ -23,6 +23,8 @@ namespace OrchardCore.Media.Azure
             _logger = logger;
         }
 
+        public override int Order => 10;
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<MediaBlobStorageOptions>(_configuration.GetSection("Modules:OrchardCore.Media.Azure"));
