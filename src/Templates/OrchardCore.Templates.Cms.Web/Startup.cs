@@ -20,7 +20,7 @@ namespace OrchardCore.Templates.Cms.Web
 
             app.UseStaticFiles();
 
-            app.UseModules(); 
+            app.UseOrchardCore(); 
         }
     }
 }
