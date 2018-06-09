@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
 using OrchardCore.Mvc.ModelBinding;
@@ -48,17 +49,8 @@ namespace OrchardCore.Mvc
 
             AddModularFrameworkParts(_applicationServices, builder.PartManager);
 
-            builder.AddRazorViewEngine(options =>
-            {
-                options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
-
-                var env = _applicationServices.GetRequiredService<IHostingEnvironment>();
-
-                if (env.IsDevelopment())
-                {
-                    options.FileProviders.Insert(0, new ModuleProjectRazorFileProvider(env));
-                }
-            });
+            builder.Services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
 
             builder.AddModularRazorPages();
 
