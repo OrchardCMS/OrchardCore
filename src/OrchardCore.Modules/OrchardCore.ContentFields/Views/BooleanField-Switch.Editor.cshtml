@@ -5,8 +5,8 @@
     var settings = Model.PartFieldDefinition.Settings.ToObject<BooleanFieldSettings>();
 }
 <fieldset class="form-group">
-    <span class="switch switch-sm">
-        <input asp-for="Value" type="checkbox" class="switch content-preview-select" checked="@Model.Value" data-label-text="@settings.Label" />
+    <span class="switch">
+        <input asp-for="Value" type="checkbox" class="switch content-preview-select" checked="@Model.Value" />
         <label asp-for="Value">@(string.IsNullOrEmpty(settings.Label) ? Model.PartFieldDefinition.DisplayName() : settings.Label)</label>
     </span>
     @if (!String.IsNullOrEmpty(settings.Hint))
