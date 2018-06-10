@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc
 {
@@ -91,6 +92,18 @@ namespace OrchardCore.Mvc
             foreach (var provider in featureProviders)
             {
                 provider.PopulateFeature(assemblyParts, feature);
+            }
+
+            var application = _hostingEnvironment.GetApplication();
+            foreach (var descriptor in feature.ViewDescriptors)
+            {
+                if (descriptor.RelativePath.StartsWith(Application.ModulesRoot) ||
+                    !descriptor.ViewAttribute.ViewType.Name.EndsWith("_cshtml"))
+                {
+                    continue;
+                }
+
+                descriptor.RelativePath = '/' + application.ModulePath + descriptor.RelativePath;
             }
 
             return new SharedRazorViewCompiler(
