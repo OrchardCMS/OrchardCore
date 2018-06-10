@@ -121,6 +121,12 @@ namespace OrchardCore.Resources
                 .SetCdnIntegrity("sha384-STc8Gazx86A+NmeBWQTqa5Ob1wGSRQZevexYiUkKdiqZhi5LSZ28XYAvgptHK5HH")
                 .SetVersion("5.0.12")
                 ;
+
+            manifest
+                .DefineScript("menu")
+                .SetDependencies("jQuery")
+                .SetUrl("/OrchardCore.Resources/Scripts/menu.min.js", "/OrchardCore.Resources/Scripts/menu.js")
+                ;
         }
     }
 }

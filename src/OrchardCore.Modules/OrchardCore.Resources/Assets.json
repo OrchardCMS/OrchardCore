@@ -30,5 +30,11 @@
       "Assets/trumbowyg/plugins/*/*.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg.js"
+  },
+  {
+    "inputs": [
+      "Assets/menu/menu.js"
+    ],
+    "output": "wwwroot/Scripts/menu.js"
   }
 ]
