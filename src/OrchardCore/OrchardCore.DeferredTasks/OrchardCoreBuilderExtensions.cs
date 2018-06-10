@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddDeferredTasks(this OrchardCoreBuilder builder)
         {
-            builder.ConfigureServices((services, serviceProvider) =>
+            builder.ConfigureServices(services =>
             {
                 services.TryAddScoped<IDeferredTaskEngine, DeferredTaskEngine>();
                 services.TryAddScoped<IDeferredTaskState, HttpContextTaskState>();

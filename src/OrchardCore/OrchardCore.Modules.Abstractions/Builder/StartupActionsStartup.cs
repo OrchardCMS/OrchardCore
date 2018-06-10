@@ -8,12 +8,12 @@ namespace OrchardCore.Modules
     /// <summary>
     /// Represents a fake Startup class that is composed of Configure and ConfigureServices lambdas.
     /// </summary>
-    internal class TenantStartup : StartupBase
+    internal class StartupActionsStartup : StartupBase
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly TenantStartupActions _actions;
+        private readonly StartupActions _actions;
 
-        public TenantStartup(IServiceProvider serviceProvider, TenantStartupActions actions, int order)
+        public StartupActionsStartup(IServiceProvider serviceProvider, StartupActions actions, int order)
         {
             _serviceProvider = serviceProvider;
             _actions = actions;
