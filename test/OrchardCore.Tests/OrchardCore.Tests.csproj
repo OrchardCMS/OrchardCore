@@ -1,19 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>OrchardCore.Tests</AssemblyName>
     <PackageId>OrchardCore.Tests</PackageId>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Include="Extensions\**" Exclude="**\*.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Localization\PoFiles\EntryWithComments.po" />
@@ -48,9 +42,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Cache.Abstractions\OrchardCore.Environment.Cache.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Cache\OrchardCore.Environment.Cache.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Modules\OrchardCore.Modules.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\BaseThemeSample\BaseThemeSample.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\BaseThemeSample2\BaseThemeSample2.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\DerivedThemeSample\DerivedThemeSample.csproj" />

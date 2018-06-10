@@ -1,4 +1,6 @@
-﻿using OrchardCore.Modules;
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -8,6 +10,9 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Lists.Drivers;
 using OrchardCore.Menu.Handlers;
 using OrchardCore.Menu.Models;
+using OrchardCore.Menu.TagHelpers;
+using OrchardCore.Modules;
+using OrchardCore.Mvc;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Menu
@@ -28,6 +33,8 @@ namespace OrchardCore.Menu
             // LinkMenuItemPart
             services.AddScoped<IContentPartDisplayDriver, LinkMenuItemPartDisplayDriver>();
             services.AddSingleton<ContentPart, LinkMenuItemPart>();
+
+            services.AddTagHelpers(typeof(MenuTagHelper).Assembly);
         }
     }
 }

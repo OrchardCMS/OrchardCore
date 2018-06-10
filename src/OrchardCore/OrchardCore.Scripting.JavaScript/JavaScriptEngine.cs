@@ -4,7 +4,6 @@ using Esprima;
 using Jint;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Scripting.JavaScript
 {
@@ -12,17 +11,10 @@ namespace OrchardCore.Scripting.JavaScript
     {
 		private readonly IMemoryCache _memoryCache;
 
-		public JavaScriptEngine(
-			IMemoryCache memoryCache,
-			IStringLocalizer<JavaScriptEngine> localizer)
+		public JavaScriptEngine(IMemoryCache memoryCache)
         {
 			_memoryCache = memoryCache;
-            S = localizer;
         }
-
-        IStringLocalizer S { get; }
-
-        public LocalizedString Name => S["JavaScript"];
 
         public string Prefix => "js";
 
