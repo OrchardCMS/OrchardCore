@@ -1,30 +1,34 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Environment.Shell
 {
     public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
     {
         private readonly IExtensionManager _extensionManager;
+        private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
         private readonly IShellDescriptorManager _shellDescriptorManager;
 
         private readonly ILogger<ShellFeaturesManager> _logger;
 
         public FeatureDependencyNotificationHandler FeatureDependencyNotification { get; set; }
 
-        public ShellDescriptorFeaturesManager(IExtensionManager extensionManager,
+        public ShellDescriptorFeaturesManager(
+            IExtensionManager extensionManager,
+            IEnumerable<ShellFeature> shellFeatures,
             IShellDescriptorManager shellDescriptorManager,
             ILogger<ShellFeaturesManager> logger,
             IStringLocalizer<ShellFeaturesManager> localizer)
         {
             _extensionManager = extensionManager;
+            _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
             _shellDescriptorManager = shellDescriptorManager;
 
             _logger = logger;
@@ -91,7 +95,10 @@ namespace OrchardCore.Environment.Shell
         /// <returns>An enumeration with the disabled feature IDs.</returns>
         public async Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features, bool force)
         {
+            var alwaysEnabledIds = _alwaysEnabledFeatures.Select(sf => sf.Id).ToArray();
+
             var featuresToDisable = features
+                .Where(f => !alwaysEnabledIds.Contains(f.Id))
                 .SelectMany(feature => GetFeaturesToDisable(feature, force))
                 .Distinct()
                 .ToList();

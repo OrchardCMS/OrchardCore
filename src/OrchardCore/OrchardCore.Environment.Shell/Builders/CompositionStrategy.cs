@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -15,14 +15,11 @@ namespace OrchardCore.Environment.Shell.Builders
     {
         private readonly IExtensionManager _extensionManager;
         private readonly ILogger _logger;
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         public CompositionStrategy(
             IExtensionManager extensionManager,
-            ITypeFeatureProvider typeFeatureProvider,
             ILogger<CompositionStrategy> logger)
         {
-            _typeFeatureProvider = typeFeatureProvider;
             _extensionManager = extensionManager;
             _logger = logger;
         }

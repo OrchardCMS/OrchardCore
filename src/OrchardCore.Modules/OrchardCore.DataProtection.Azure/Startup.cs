@@ -64,8 +64,5 @@ namespace OrchardCore.DataProtection.Azure
                 throw;
             }
         }
-
-        // Assume that this module will override default configuration, so set the Order to a value above the default.
-        public override int Order => 1;
     }
 }

@@ -1,6 +1,5 @@
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Events;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
@@ -15,24 +14,8 @@ namespace OrchardCore.Tests.Extensions
         private static IHostingEnvironment HostingEnvironment
             = new StubHostingEnvironment();
 
-        private static IOptions<ManifestOptions> ModuleManifestOptions =
-            new StubManifestOptions(
-                new ManifestOption { Type = "module" }
-                );
-
-        private static IOptions<ManifestOptions> ThemeManifestOptions =
-            new StubManifestOptions(
-                new ManifestOption { Type = "theme" }
-                );
-
-        private static IOptions<ManifestOptions> ModuleAndThemeManifestOptions =
-            new StubManifestOptions(
-                new ManifestOption { Type = "module" },
-                new ManifestOption { Type = "theme" }
-                );
-
         private static IFeaturesProvider ModuleFeatureProvider =
-            new FeaturesProvider(Enumerable.Empty<IFeatureBuilderEvents>(), new NullLogger<FeaturesProvider>());
+            new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() }, new NullLogger<FeaturesProvider>());
 
         private static IFeaturesProvider ThemeFeatureProvider =
             new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() }, new NullLogger<FeaturesProvider>());
@@ -45,33 +28,30 @@ namespace OrchardCore.Tests.Extensions
         {
             ModuleScopedExtensionManager = new ExtensionManager(
                 HostingEnvironment,
-                ModuleManifestOptions,
                 new[] { new ExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
                 new TypeFeatureProvider(),
                 ModuleFeatureProvider,
-                new NullLogger<ExtensionManager>(),
-                null);
+                new NullLogger<ExtensionManager>()
+                );
 
             ThemeScopedExtensionManager = new ExtensionManager(
                 HostingEnvironment,
-                ThemeManifestOptions,
                 new[] { new ExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
                 new TypeFeatureProvider(),
                 ThemeFeatureProvider,
-                new NullLogger<ExtensionManager>(),
-                null);
+                new NullLogger<ExtensionManager>()
+                );
 
             ModuleThemeScopedExtensionManager = new ExtensionManager(
                 HostingEnvironment,
-                ModuleAndThemeManifestOptions,
                 new IExtensionDependencyStrategy[] { new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
                 new TypeFeatureProvider(),
                 ThemeFeatureProvider,
-                new NullLogger<ExtensionManager>(),
-                null);
+                new NullLogger<ExtensionManager>()
+                );
         }
 
         [Fact]
@@ -120,7 +100,7 @@ namespace OrchardCore.Tests.Extensions
         public void GetFeaturesShouldReturnAllFeaturesOrderedByDependency()
         {
             var features = ModuleScopedExtensionManager.GetFeatures()
-                .Where(f => f.Category == "Test");
+                .Where(f => f.Category == "Test" && !f.Extension.IsTheme());
 
             Assert.Equal(4, features.Count());
             Assert.Equal("Sample1", features.ElementAt(0).Id);

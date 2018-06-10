@@ -2,21 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Scripting.Files
 {
+    /// <summary>
+    /// Provides 
+    /// </summary>
     public class FilesScriptEngine : IScriptingEngine
     {
-		public FilesScriptEngine(IStringLocalizer<FilesScriptEngine> localizer)
-        {
-            S = localizer;
-        }
-
-        IStringLocalizer S { get; }
-
-        public LocalizedString Name => S["Files"];
-
         public string Prefix => "file";
 
         public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
