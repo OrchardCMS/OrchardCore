@@ -14,11 +14,19 @@ environment:
 
 stack: node 9, docker
 
+# build cache to preserve files/folders between builds
+cache:
+  - node_modules                    # local npm modules
+  - '%LocalAppData%\NuGet\Cache'    # NuGet < v3
+  - '%LocalAppData%\NuGet\v3-cache' # NuGet v3
+
 # Install scripts. (runs after repo cloning)
 install:
   - ps: $env:BuildNumber= $env:APPVEYOR_BUILD_NUMBER
   - ps: $IsMasterBranch = ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
+
+build: off
 
 init:
   - dotnet --version
@@ -26,14 +34,12 @@ init:
   - npm --version
   - git config --global core.autocrlf true
 
-build_script:
-  # Necessary step to prevent appveyor from building the solution by itself
-  
 test_script:
   - dotnet test -c Release .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
   - cd .\test\Functional
   - test-setup.cmd
   - test-run.cmd
+
 clone_depth: 1
 test: on
 
