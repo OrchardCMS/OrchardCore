@@ -26,6 +26,9 @@ init:
   - npm --version
   - git config --global core.autocrlf true
 
+build_script:
+  # Necessary step to prevent appveyor from building the solution by itself
+  
 test_script:
   - dotnet test -c Release .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
   - cd .\test\Functional
