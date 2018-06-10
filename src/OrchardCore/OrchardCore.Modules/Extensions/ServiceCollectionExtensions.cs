@@ -32,7 +32,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 AddDefaultServices(services);
                 AddShellServices(services);
                 AddExtensionServices(builder);
-
                 AddStaticFiles(builder);
 
                 // Register the list of services to be resolved later on
