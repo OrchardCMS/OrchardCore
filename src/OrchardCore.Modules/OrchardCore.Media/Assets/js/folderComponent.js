@@ -97,6 +97,9 @@ Vue.component('folder', {
         },
         loadChildren: function () {            
             var self = this;
+            if (this.open == false) {
+                this.open = true;
+            }
             $.ajax({
                 url: $('#getFoldersUrl').val() + "?path=" + encodeURIComponent(self.model.path),
                 method: 'GET',
