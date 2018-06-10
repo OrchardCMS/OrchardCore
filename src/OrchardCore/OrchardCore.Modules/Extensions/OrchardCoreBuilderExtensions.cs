@@ -31,7 +31,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddTenantFeatures(this OrchardCoreBuilder builder, params string[] featureIds)
         {
-            builder.ConfigureServices((services, serviceProvider) =>
+            builder.ConfigureServices(services =>
             {
                 foreach (var featureId in featureIds)
                 {
@@ -117,7 +117,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ApplicationServices.AddAuthentication();
 
-            builder.ConfigureServices((services, serviceProvider) =>
+            builder.ConfigureServices(services =>
             {
                 services.AddAuthentication();
 
@@ -126,7 +126,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
 
             })
-            .Configure((app, routes, serviceProvider) =>
+            .Configure(app =>
             {
                 app.UseAuthentication();
             });

@@ -5,8 +5,4 @@
     <RootNamespace>OrchardCore.DeferredTasks</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.ComponentModel" Version="4.3.0" />
-  </ItemGroup>
-
 </Project>
