@@ -225,36 +225,38 @@ namespace OrchardCore.Hosting.ShellBuilders
             public IServiceProvider ServiceProvider { get; }
 
             /// <summary>
-            /// Returns true is the shell context should be disposed consequently to this scope being released.
+            /// Returns true if the shell context should be disposed consequently to this scope being released.
             /// </summary>
             private bool ScopeReleased()
             {
-                var refCount = Interlocked.CompareExchange(ref _shellContext._refCount, 1, 1);
-
-                if (refCount == 1)
+                // A disabled shell still in use is released by its last scope.
+                if (_shellContext.Settings.State == TenantState.Disabled)
                 {
-                    // A disabled shell still in use is released by its last scope.
-                    if (_shellContext.Settings.State == TenantState.Disabled)
+                    var count = Interlocked.CompareExchange(ref _shellContext._refCount, 1, 1);
+
+                    if (count == 1)
                     {
                         _shellContext.Release();
                     }
+                }
 
-                    if (_shellContext._released)
+                var refCount = Interlocked.Decrement(ref _shellContext._refCount);
+
+                if (_shellContext._released && refCount == 0)
+                {
+                    var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
+
+                    foreach (var tenantEvent in tenantEvents)
                     {
-                        var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
-
-                        foreach (var tenantEvent in tenantEvents)
-                        {
-                            tenantEvent.TerminatingAsync().GetAwaiter().GetResult();
-                        }
-
-                        foreach (var tenantEvent in tenantEvents.Reverse())
-                        {
-                            tenantEvent.TerminatedAsync().GetAwaiter().GetResult();
-                        }
-
-                        return true;
+                        tenantEvent.TerminatingAsync().GetAwaiter().GetResult();
                     }
+
+                    foreach (var tenantEvent in tenantEvents.Reverse())
+                    {
+                        tenantEvent.TerminatedAsync().GetAwaiter().GetResult();
+                    }
+
+                    return true;
                 }
 
                 return false;
@@ -274,8 +276,10 @@ namespace OrchardCore.Hosting.ShellBuilders
                         _shellContext.Dispose();
                     }
                 }
-
-                Interlocked.Decrement(ref _shellContext._refCount);
+                else
+                {
+                    Interlocked.Decrement(ref _shellContext._refCount);
+                }
             }
         }
     }
