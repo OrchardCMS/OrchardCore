@@ -79,7 +79,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ApplicationServices.AddExtensionManagerHost();
 
-            builder.ConfigureServices((services, serviceProvider) =>
+            builder.ConfigureServices(services =>
             {
                 services.AddExtensionManager();
             });
