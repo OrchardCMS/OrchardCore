@@ -5,7 +5,6 @@
     It contains the logic to be referenced as a module by the main application.
   -->
   <ItemGroup>
-    <ModulePackageRazorFiles Include="$(MSBuildThisFileDirectory)..\..\assets\**\*.cshtml" />
     <ModulePackageNames Include="$(MSBuildThisFileName)" />
   </ItemGroup>
 </Project>
