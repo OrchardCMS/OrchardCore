@@ -1,0 +1,10 @@
+@model OrchardCore.ContentFields.ViewModels.DisplayDateFieldViewModel
+@using OrchardCore.Mvc.Utilities;
+
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+}
+
+<div class="field field-type-datefield field-name-@name">
+    @Model.Value
+</div>
