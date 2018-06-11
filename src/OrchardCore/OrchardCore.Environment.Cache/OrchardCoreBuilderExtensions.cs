@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddCaching(this OrchardCoreBuilder builder)
         {
-            builder.ConfigureServices((services, serviceProvider) =>
+            builder.ConfigureServices(services =>
             {
                 services.AddTransient<ITagCache, DefaultTagCache>();
                 services.AddSingleton<ISignal, Signal>();

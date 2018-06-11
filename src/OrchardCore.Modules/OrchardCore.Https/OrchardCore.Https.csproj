@@ -1,15 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" />
     <PackageReference Include="Microsoft.AspNetCore.Rewrite" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Entities.DisplayManagement\OrchardCore.Entities.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Navigation\OrchardCore.Environment.Navigation.csproj" />
   </ItemGroup>

@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddResourceManagement(this OrchardCoreBuilder builder)
         {
-            builder.ConfigureServices((services, serviceProvider) =>
+            builder.ConfigureServices(services =>
             {
                 services.TryAddScoped<IResourceManager, ResourceManager>();
                 services.TryAddScoped<IRequireSettingsProvider, DefaultRequireSettingsProvider>();
@@ -30,7 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddGeneratorTagFilter(this OrchardCoreBuilder builder)
         {
-            builder.ConfigureServices((services, serviceProvider) =>
+            builder.ConfigureServices(services =>
             {
                 services.Configure<MvcOptions>((options) =>
                 {
