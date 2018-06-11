@@ -24,13 +24,11 @@ namespace OrchardCore.Nancy
             var contextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
 
             app.UseOwin(x => x.UseNancy(no =>
-            {
                 no.Bootstrapper = new ModularNancyBootstrapper(
                     new[] {
                         (IAssemblyCatalog)new DependencyContextAssemblyCatalog(),
                         (IAssemblyCatalog)new AmbientAssemblyCatalog(contextAccessor)
-                    });
-            }));
+                    })));
         }
     }
 }
