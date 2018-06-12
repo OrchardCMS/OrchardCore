@@ -55,8 +55,8 @@
     <fieldset class="row connectionString" asp-validation-class-for="ConnectionString">
         <div class="form-group col-md-12">
             <label asp-for="ConnectionString">@T["Connection string"]</label>
-            <span asp-validation-for="ConnectionString" class="text-danger"></span>
             <input asp-for="ConnectionString" class="form-control" />
+            <span asp-validation-for="ConnectionString" class="text-danger"></span>
             <span class="text-muted form-text small">@T["The connection string to your database instance. e.g., Data Source=<em>localhost</em>;Initial Catalog=<em>Orchard</em>;User Id=<em>userid</em>;Password=<em>password</em>"]</span>
         </div>
     </fieldset>
