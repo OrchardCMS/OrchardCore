@@ -274,7 +274,12 @@ $media-border-content: 1px solid rgba(0, 0, 0, 0.1);
             justify-content: flex-end;
             flex-grow: 0;
             margin-top: -5px;
+
+            .selected {
+                color: $primary;
+            }
         }
+
     }
 }
 
