@@ -11,7 +11,6 @@
     <link type="image/x-icon" rel="shortcut icon" href="/TheTheme/favicon.ico" />
     <script asp-name="bootstrap" use-cdn="true" version="4" at="Foot"></script>
     <style asp-name="bootstrap" use-cdn="true" version="4"></style>
-    <style asp-src="/TheTheme/css/sticky-footer-navbar.css"></style>
     <resources type="Meta" />
     <resources type="HeadLink" />
     <resources type="Stylesheet" />
@@ -37,7 +36,6 @@
             @await RenderBodyAsync()
         </div>
     </main>
-    @await RenderSectionAsync("Footer", required: false)
     <resources type="FootScript" />
 </body>
 </html>
