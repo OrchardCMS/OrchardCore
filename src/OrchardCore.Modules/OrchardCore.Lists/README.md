@@ -12,7 +12,7 @@ These shapes are available for theming when a `ListPart` is attached to a conten
 
 ### Templates
 
-Example of Liquid alternate or template for a ListPart with a custom Pager:
+Example of Liquid alternate or template for a `ListPart` with a custom pager:
 
 ```liquid
 {% for item in Model.ContentItems %}
