@@ -9,7 +9,7 @@ namespace OrchardCore.Body.RemotePublishing
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IMetaWeblogDriver, BodyMetaWeblogDriver>();
+            services.AddScoped<IMetaWeblogDriver, HtmlBodyMetaWeblogDriver>();
         }
     }
 }

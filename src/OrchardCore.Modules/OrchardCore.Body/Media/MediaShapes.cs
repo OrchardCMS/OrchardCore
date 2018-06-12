@@ -7,14 +7,14 @@ namespace OrchardCore.Body.Media
     {
         public void Discover(ShapeTableBuilder builder)
         {
-            builder.Describe("Body_Editor")
+            builder.Describe("HtmlBody_Editor")
                 .OnDisplaying(displaying =>
                 {
                     IShape editor = displaying.Shape;
 
-                    if (editor.Metadata.Alternates.Contains("Body_Editor__Wysiwyg"))
+                    if (editor.Metadata.Alternates.Contains("HtmlBody_Editor__Wysiwyg"))
                     {
-                        editor.Metadata.Wrappers.Add("Media_Wrapper__Body");
+                        editor.Metadata.Wrappers.Add("Media_Wrapper__HtmlBody");
                     }
                 });
         }

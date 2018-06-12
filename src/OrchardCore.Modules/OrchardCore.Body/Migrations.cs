@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 
@@ -15,9 +15,9 @@ namespace OrchardCore.Body
 
         public int Create()
         {
-            _contentDefinitionManager.AlterPartDefinition("BodyPart", builder => builder
+            _contentDefinitionManager.AlterPartDefinition("HtmlBodyPart", builder => builder
                 .Attachable()
-                .WithDescription("Provides a Body for your content item."));
+                .WithDescription("Provides an HTML Body for your content item."));
 
             return 1;
         }

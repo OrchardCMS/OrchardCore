@@ -1,4 +1,4 @@
-@model OrchardCore.Body.Settings.BodyPartSettingsViewModel
+@model OrchardCore.Body.Settings.HtmlBodyPartSettingsViewModel
 
 @inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
 @inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
@@ -6,7 +6,7 @@
 @{ 
     var theme = await ThemeManager.GetThemeAsync();
     var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
-    var bodyEditorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith("Body_Option__", StringComparison.OrdinalIgnoreCase));
+    var bodyEditorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith("HtmlBody_Option__", StringComparison.OrdinalIgnoreCase));
 }
 
 <div class="row">

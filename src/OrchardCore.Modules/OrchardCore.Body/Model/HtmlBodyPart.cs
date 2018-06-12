@@ -1,8 +1,8 @@
-﻿using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Body.Model
 {
-    public class BodyPart : ContentPart
+    public class HtmlBodyPart : ContentPart
     {
         public string Body { get; set; }
     }

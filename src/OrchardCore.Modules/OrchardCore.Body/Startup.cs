@@ -20,18 +20,18 @@ namespace OrchardCore.Body
     {
         static Startup()
         {
-            TemplateContext.GlobalMemberAccessStrategy.Register<BodyPartViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<HtmlBodyPartViewModel>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
             // Body Part
-            services.AddScoped<IContentPartDisplayDriver, BodyPartDisplay>();
-            services.AddSingleton<ContentPart, BodyPart>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, BodyPartSettingsDisplayDriver>();
+            services.AddScoped<IContentPartDisplayDriver, HtmlBodyPartDisplay>();
+            services.AddSingleton<ContentPart, HtmlBodyPart>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IContentPartIndexHandler, BodyPartIndexHandler>();
-            services.AddScoped<IContentPartHandler, BodyPartHandler>();
+            services.AddScoped<IContentPartIndexHandler, HtmlBodyPartIndexHandler>();
+            services.AddScoped<IContentPartHandler, HtmlBodyPartHandler>();
         }
     }
 }

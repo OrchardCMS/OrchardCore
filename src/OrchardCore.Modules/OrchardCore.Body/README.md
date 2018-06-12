@@ -4,38 +4,38 @@
 
 ### Shapes
 
-The following shapes are rendered when the **BodyPart** is attached to a content type
+The following shapes are rendered when the **HtmlBodyPart** is attached to a content type
 
 | Name | Display Type | Default Location | Model Type |
 | ------| ------------ |----------------- | ---------- |
-| `BodyPart` | `Detail` | `Content:5` | `BodyPartViewModel` |
-| `BodyPart` | `Summary` | `Content:10` | `BodyPartViewModel` |
+| `HtmlBodyPart` | `Detail` | `Content:5` | `HtmlBodyPartViewModel` |
+| `HtmlBodyPart` | `Summary` | `Content:10` | `HtmlBodyPartViewModel` |
 
-### BodyPartViewModel
+### HtmlBodyPartViewModel
 
-The following properties are available on the `BodyPartViewModel` class.
+The following properties are available on the `HtmlBodyPartViewModel` class.
 
 | Property | Type | Description |
 | --------- | ---- |------------ |
 | `Body` | `string` | The content that was edited. It might contain tokens. |
 | `Html` | `string` | The HTML content once all tokens have been processed |
 | `ContentItem` | `ContentItem` | The content item of the part |
-| `BodyPart` | `BodyPart` | The `BodyPart` instance|
-| `TypePartSettings` | `BodyPartSettings` | The settings of the part |
+| `HtmlBodyPart` | `HtmlBodyPart` | The `HtmlBodyPart` instance|
+| `TypePartSettings` | `HtmlBodyPartSettings` | The settings of the part |
 
-### BodyPart
+### HtmlBodyPart
 
-The following properties are available on `BodyPart`
+The following properties are available on `HtmlBodyPart`
 
 | Name | Type | Description |
 | -----| ---- |------------ |
-| `Body` | `string` | The HTML content in the body. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `BodyPart` shape instead |
+| `Body` | `string` | The HTML content in the body. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `HtmlBodyPart` shape instead |
 | `Content` | The raw content of the part |
 | `ContentItem` | The content item containing this part |
 
 ## Editors
 
-The __Body Part__ editor can be different for each content type. In the __Body Part__ settings of a 
+The __HtmlBody Part__ editor can be different for each content type. In the __HtmlBody Part__ settings of a 
 content type, just select the one that needs to be used.
 
 There are two predefined editor names:
@@ -54,8 +54,8 @@ render the actual HTML for the editor.
 
 #### Declaration
 
-To declare a new editor, create a shape named `Body_Option__{Name}` where `{Name}` is a value 
-of your choosing. This will be represented by a file named `Body-{Name}.Option.cshtml`.
+To declare a new editor, create a shape named `HtmlBody_Option__{Name}` where `{Name}` is a value 
+of your choosing. This will be represented by a file named `HtmlBody-{Name}.Option.cshtml`.
 
 Sample content:
 
@@ -69,13 +69,13 @@ Sample content:
 #### HTML Editor
 
 To define what HTML to render when the editor is selected from the settings, a shape named 
-`Body_Editor__{Name}` corresponding to a file `Body-{Name}.Editor.cshtml` can be created.
+`HtmlBody_Editor__{Name}` corresponding to a file `Body-{Name}.Editor.cshtml` can be created.
 
 Sample content:
 
 ```csharp
 @using OrchardCore.Body.ViewModels;
-@model BodyPartViewModel
+@model HtmlBodyPartViewModel
 
 <fieldset class="form-group">
     <label asp-for="Body">@T["Body"]</label>
@@ -87,8 +87,8 @@ Sample content:
 ### Overriding the predefined editors
 
 You can override the HTML editor for the `Default` editor by creating a shape file named 
-`Body.Editor.cshtml`. The Wysiwyg editor is defined by using the file named 
-`Body-Wysiwyg.Editor.cshtml`.
+`HtmlBody.Editor.cshtml`. The Wysiwyg editor is defined by using the file named 
+`HtmlBody-Wysiwyg.Editor.cshtml`.
 
 ## CREDITS
 

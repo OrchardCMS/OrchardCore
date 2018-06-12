@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Body.Settings
 {
-    public class BodyPartSettingsViewModel
+    public class HtmlBodyPartSettingsViewModel
     {
         public string Editor { get; set; }
 
         [BindNever]
-        public BodyPartSettings BodyPartSettings { get; set; }
+        public HtmlBodyPartSettings HtmlBodyPartSettings { get; set; }
     }
 }

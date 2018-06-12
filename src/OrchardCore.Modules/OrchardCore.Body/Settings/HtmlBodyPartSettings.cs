@@ -1,6 +1,6 @@
 namespace OrchardCore.Body.Settings
 {
-    public class BodyPartSettings
+    public class HtmlBodyPartSettings
     {
         public string Editor { get; set; }
     }

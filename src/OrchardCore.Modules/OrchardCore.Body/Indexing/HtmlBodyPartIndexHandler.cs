@@ -1,12 +1,12 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.Body.Model;
 using OrchardCore.Indexing;
 
 namespace OrchardCore.Body.Indexing
 {
-    public class BodyPartIndexHandler : ContentPartIndexHandler<BodyPart>
+    public class HtmlBodyPartIndexHandler : ContentPartIndexHandler<HtmlBodyPart>
     {
-        public override Task BuildIndexAsync(BodyPart part, BuildPartIndexContext context)
+        public override Task BuildIndexAsync(HtmlBodyPart part, BuildPartIndexContext context)
         {
             var options = context.Settings.ToOptions() 
                 | DocumentIndexOptions.Sanitize 

@@ -5,7 +5,7 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Body.ViewModels
 {
-    public class BodyPartViewModel
+    public class HtmlBodyPartViewModel
     {
         public string Body { get; set; }
         public string Html { get; set; }
@@ -14,9 +14,9 @@ namespace OrchardCore.Body.ViewModels
         public ContentItem ContentItem { get; set; } 
 
         [BindNever]
-        public BodyPart BodyPart { get; set; }
+        public HtmlBodyPart HtmlBodyPart { get; set; }
 
         [BindNever]
-        public BodyPartSettings TypePartSettings { get; set; }
+        public HtmlBodyPartSettings TypePartSettings { get; set; }
     }
 }
