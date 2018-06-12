@@ -1,3 +1,4 @@
+using System;
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -16,6 +17,7 @@ using OrchardCore.Forms.Services;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using Polly;
 
 namespace OrchardCore.Forms
 {
@@ -70,7 +72,10 @@ namespace OrchardCore.Forms
             services.AddScoped<IPermissionProvider, Permissions>();
 
             services.AddTransient<IConfigureOptions<ReCaptchaSettings>, ReCaptchaSettingsConfiguration>();
-            services.AddScoped<IReCaptchaClient, ReCaptchaClient>();
+            services.AddHttpClient<IReCaptchaClient, ReCaptchaClient>(client =>
+            {
+                client.BaseAddress = new Uri("https://www.google.com/recaptcha/api/siteverify");
+            }).AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(0.5 * attempt)));
         }
     }
 }
