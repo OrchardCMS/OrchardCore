@@ -42,7 +42,7 @@ Placement information consists of:
   "TextField": [
     {
 		"display-type": "Detail",
-		"differentiator": "Article.MyTextField",
+		"differentiator": "Article-MyTextField",
 
 		"place": "Content",
 		"alternates": [ "TextField_Title" ],
