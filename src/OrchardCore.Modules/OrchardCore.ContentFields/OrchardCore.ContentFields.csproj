@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -11,6 +11,7 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Display\OrchardCore.ContentManagement.Display.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentTypes.Abstractions\OrchardCore.ContentTypes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Indexing.Abstractions\OrchardCore.Indexing.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
   </ItemGroup>
 
   <ItemGroup>

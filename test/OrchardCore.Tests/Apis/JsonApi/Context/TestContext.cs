@@ -17,7 +17,7 @@ namespace OrchardCore.Tests.Apis.JsonApi.Context
         {
             Site = new OrchardTestFixture<SiteStartup>(EnvironmentHelpers.GetApplicationPath());
 
-            Client = new OrchardJsonApiClient(Site.Client);
+            Client = new OrchardJsonApiClient(Site.CreateClient());
         }
 
         public void Dispose()

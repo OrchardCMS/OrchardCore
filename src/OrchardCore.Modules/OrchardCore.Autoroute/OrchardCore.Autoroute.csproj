@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -17,6 +17,10 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Indexing.Abstractions\OrchardCore.Indexing.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Security\OrchardCore.Security.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.MetaWeblog.Abstractions\OrchardCore.MetaWeblog.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" />
   </ItemGroup>
 
 </Project>

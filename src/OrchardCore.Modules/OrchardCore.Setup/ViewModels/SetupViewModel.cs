@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using OrchardCore.Data;
-using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Annotations;
 
@@ -14,15 +13,16 @@ namespace OrchardCore.Setup.ViewModels
         [SiteNameValid(maximumLength: 70)]
         public string SiteName { get; set; }
 
-        [Required]
         public string DatabaseProvider { get; set; }
-        public bool DatabaseProviderPreset { get; set; }
 
         public string ConnectionString { get; set; }
-        public bool ConnectionStringPreset { get; set; }
 
         public string TablePrefix { get; set; }
-        public bool TablePrefixPreset { get; set; }
+
+        /// <summary>
+        /// True if the database configuration is preset and can't be changed or displayed on the Setup screen.
+        /// </summary>
+        public bool DatabaseConfigurationPreset { get; set; }
 
         [Required]
         public string UserName { get; set; }

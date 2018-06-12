@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -12,15 +12,18 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Navigation\OrchardCore.Environment.Navigation.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.OpenId.Core\OrchardCore.OpenId.Core.csproj" />
+
     <ProjectReference Include="..\OrchardCore.Roles\OrchardCore.Roles.csproj" />
     <ProjectReference Include="..\OrchardCore.Settings\OrchardCore.Settings.csproj" />
     <ProjectReference Include="..\OrchardCore.Users\OrchardCore.Users.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" />
     <PackageReference Include="AspNet.Security.OAuth.Validation" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="OpenIddict" />

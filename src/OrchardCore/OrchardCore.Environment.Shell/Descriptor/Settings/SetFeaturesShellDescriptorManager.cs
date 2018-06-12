@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -25,7 +25,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
             {
                 _shellDescriptor = new ShellDescriptor
                 {
-                    Features = _shellFeatures.ToList()
+                    Features = _shellFeatures.Distinct().ToList()
                 };
             }
 

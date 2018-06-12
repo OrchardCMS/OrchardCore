@@ -30,6 +30,7 @@ pages:
     - Orchard Core Modules: OrchardCore/OrchardCore.Modules/README.md
     - CMS Modules:
         - Title: OrchardCore.Modules/OrchardCore.Title/README.md
+        - Autoroute: OrchardCore.Modules/OrchardCore.Autoroute/README.md
         - Body: OrchardCore.Modules/OrchardCore.Body/README.md
         - Contents: OrchardCore.Modules/OrchardCore.Contents/README.md
         - Content Fields: OrchardCore.Modules/OrchardCore.ContentFields/README.md

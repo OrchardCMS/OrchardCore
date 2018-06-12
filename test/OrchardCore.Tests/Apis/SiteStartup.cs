@@ -22,11 +22,8 @@ namespace OrchardCore.Tests.Apis
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOrchardCms(configure: cfg => {
-                cfg.Configure(mcfg => {
-                    mcfg.AddScoped<IAuthorizationHandler, AlwaysLoggedInAuthHandler>();
-                });
-            });
+            services.AddOrchardCms();
+            services.AddScoped<IAuthorizationHandler, AlwaysLoggedInAuthHandler>();
 
             services
                 .Configure<ShellOptions>(options => options.ShellsContainerName = Path.Combine("sites", _configuration.SiteName));
@@ -34,7 +31,7 @@ namespace OrchardCore.Tests.Apis
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseModules();
+            app.UseOrchardCore();
         }
     }
 

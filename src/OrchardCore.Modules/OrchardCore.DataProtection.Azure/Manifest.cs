@@ -6,6 +6,5 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "Provides Azure Blob Storage for data protection key rings.",
-    Category = "Security",
-    Dependencies = new [] {"OrchardCore.DataProtection"}
+    Category = "Security"
 )]

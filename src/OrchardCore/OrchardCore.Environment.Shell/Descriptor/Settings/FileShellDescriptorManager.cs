@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 
 namespace OrchardCore.Environment.Shell.Descriptor.Settings
@@ -12,25 +13,30 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
     public class FileShellDescriptorManager : IShellDescriptorManager
     {
         private readonly ShellSettingsWithTenants _shellSettings;
+        private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
+        private readonly string _applicationFeatureId;
         private ShellDescriptor _shellDescriptor;
 
-        public FileShellDescriptorManager(ShellSettingsWithTenants shellSettings)
+        public FileShellDescriptorManager(
+            ShellSettingsWithTenants shellSettings,
+            IEnumerable<ShellFeature> shellFeatures,
+            IHostingEnvironment hostingEnvironment)
         {
-            if (shellSettings == null)
-            {
-                throw new ArgumentException(nameof(shellSettings));
-            }
-
-            _shellSettings = shellSettings;
+            _shellSettings = shellSettings ?? throw new ArgumentException(nameof(shellSettings));
+            _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
+            _applicationFeatureId = hostingEnvironment.ApplicationName;
         }
 
         public Task<ShellDescriptor> GetShellDescriptorAsync()
         {
             if (_shellDescriptor == null)
             {
+                var features = _alwaysEnabledFeatures.Concat(_shellSettings.Features
+                    .Select(id => new ShellFeature(id))).Distinct().ToList();
+
                 _shellDescriptor = new ShellDescriptor
                 {
-                    Features = _shellSettings.Features.Select(x => new ShellFeature(x)).ToList()
+                    Features = features
                 };
             }
 

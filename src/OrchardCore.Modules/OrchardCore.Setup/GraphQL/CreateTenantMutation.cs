@@ -73,19 +73,19 @@ namespace OrchardCore.Setup.GraphQL
 
                 if (!String.IsNullOrEmpty(_shellSettings.ConnectionString))
                 {
-                    model.ConnectionStringPreset = true;
+                    model.DatabaseConfigurationPreset = true;
                     model.ConnectionString = _shellSettings.ConnectionString;
                 }
 
                 if (!String.IsNullOrEmpty(_shellSettings.DatabaseProvider))
                 {
-                    model.DatabaseProviderPreset = true;
+                    model.DatabaseConfigurationPreset = true;
                     model.DatabaseProvider = _shellSettings.DatabaseProvider;
                 }
 
                 if (!String.IsNullOrEmpty(_shellSettings.TablePrefix))
                 {
-                    model.TablePrefixPreset = true;
+                    model.DatabaseConfigurationPreset = true;
                     model.TablePrefix = _shellSettings.TablePrefix;
                 }
 
@@ -105,18 +105,10 @@ namespace OrchardCore.Setup.GraphQL
                     Recipe = selectedRecipe
                 };
 
-                if (!model.DatabaseProviderPreset)
+                if (!model.DatabaseConfigurationPreset)
                 {
                     setupContext.DatabaseProvider = model.DatabaseProvider;
-                }
-
-                if (!model.ConnectionStringPreset)
-                {
                     setupContext.DatabaseConnectionString = model.ConnectionString;
-                }
-
-                if (!model.TablePrefixPreset)
-                {
                     setupContext.DatabaseTablePrefix = model.TablePrefix;
                 }
 

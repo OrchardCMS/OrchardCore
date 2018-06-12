@@ -12,20 +12,29 @@ using OrchardCore.Tests.Apis.Sources;
 
 namespace Microsoft.AspNetCore.Mvc.FunctionalTests
 {
-    public class OrchardTestFixture<TStartup> : WebApplicationTestFixture<TStartup>
+    public class OrchardTestFixture<TStartup> : WebApplicationFactory<TStartup>
         where TStartup : class
     {
         public string SiteName => "Sites_" + Guid.NewGuid().ToString().Replace("-", "");
         public string AppData => Path.Combine(EnvironmentHelpers.GetApplicationPath(), "App_Data", SiteName);
 
+        public string Root;
+
         public OrchardTestFixture()
-            : base(Path.Combine("test", "WebSites", typeof(TStartup).Assembly.GetName().Name))
         {
+            Root = Path.Combine("test", "WebSites", typeof(TStartup).Assembly.GetName().Name);
         }
 
         public OrchardTestFixture(string solutionRelativePath)
-            : base(solutionRelativePath)
         {
+            Root = solutionRelativePath;
+        }
+
+        protected override IWebHostBuilder CreateWebHostBuilder()
+        {
+            return base
+                .CreateWebHostBuilder()
+                .UseContentRoot(Root);
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder) {
