@@ -146,7 +146,11 @@
             <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
             @if (Model.DatabaseProviderPreset)
             {
-                <input asp-for="DatabaseProvider" readonly class="form-control form-control-static" required />
+                var provider = Model.DatabaseProviders.FirstOrDefault(p => p.Value == Model.DatabaseProvider);
+
+                <select asp-for="DatabaseProvider" class="form-control" required disabled>
+                    <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix">@provider.Name</option>
+                </select>
             }
             else
             {
