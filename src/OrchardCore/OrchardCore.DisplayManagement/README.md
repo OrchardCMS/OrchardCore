@@ -62,6 +62,10 @@ be `Address.City`.
 
 ## Shapes
 
+### What is a shape?
+
+Everything you need to know about Shapes is in [this video](https://youtu.be/gKLjtCIs4GU).
+
 ### Tag Helpers
 
 #### Manipulating shape metadata
