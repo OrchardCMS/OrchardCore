@@ -10,27 +10,6 @@ These shapes are available for theming when a `ListPart` is attached to a conten
 | ------| ------------ |----------------- | ---------- |
 | `ListPart` | `Detail`, `DetailAdmin` | `Content:10` | `ListPartViewModel` |
 
-### Templates
-
-Example of Liquid alternate or template for a `ListPart` with a custom pager:
-
-```liquid
-{% for item in Model.ContentItems %}
-    {{ item | shape_build_display: "Summary" | shape_render }}
-{% endfor %}
-
-{% assign previousText = "← Newer Posts" | t %}
-{% assign nextText = "Older Posts →" | t %}
-{% assign previousClass = "previous" | t %}
-{% assign nextClass = "next" | t %}
-{% assign itemClasses = "page-item" | split: " " %}
-
-{% shape_add_classes Model.Pager "pagination" %}
-{% shape_pager Model.Pager previous_text: previousText, next_text: nextText, previous_class: previousClass, next_class: nextClass, item_classes: itemClasses %}
-
-{{ Model.Pager | shape_render }}
-```
-
 ### ListPartViewModel
 
 The following properties are available on the `ListPartViewModel` class.
@@ -52,3 +31,23 @@ The following properties are available on the `ListPart` class.
 | `Content` | The raw content of the part |
 | `ContentItem` | The content item containing this part |
 
+### Template
+
+The following example is used to render the items of a `ListPart` and customize the pager.
+For instance it can be set in a file named `Blog-ListPart.liquid` to override the `Blog` content type only.
+
+```liquid
+{% for item in Model.ContentItems %}
+    {{ item | shape_build_display: "Summary" | shape_render }}
+{% endfor %}
+
+{% assign previousText = "← Newer Posts" | t %}
+{% assign nextText = "Older Posts →" | t %}
+{% assign previousClass = "previous" | t %}
+{% assign nextClass = "next" | t %}
+
+{% shape_pager Model.Pager previous_text: previousText, next_text: nextText,
+    previous_class: previousClass, next_class: nextClass %}
+
+{{ Model.Pager | shape_render }}
+```
