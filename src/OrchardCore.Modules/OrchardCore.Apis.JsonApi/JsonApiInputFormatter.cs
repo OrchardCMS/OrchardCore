@@ -2,11 +2,13 @@ using System;
 using System.Buffers;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JsonApiFramework.JsonApi;
-using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Formatters.Json.Internal;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -20,54 +22,28 @@ namespace OrchardCore.Apis.JsonApi
     /// <summary>
     /// A <see cref="TextInputFormatter"/> for JSON content.
     /// </summary>
-    public class JsonApiInputFormatter : TextInputFormatter
+    public class JsonApiInputFormatter : TextInputFormatter, IInputFormatterExceptionPolicy
     {
         private readonly IArrayPool<char> _charPool;
         private readonly ILogger _logger;
         private readonly ObjectPoolProvider _objectPoolProvider;
+        private readonly MvcOptions _options;
+        private readonly MvcJsonOptions _jsonOptions;
+
+        // These fields are used when one of the legacy constructors is called that doesn't provide the MvcOptions or
+        // MvcJsonOptions.
         private readonly bool _suppressInputFormatterBuffering;
+        private readonly bool _allowInputFormatterExceptionMessages;
 
         private ObjectPool<JsonSerializer> _jsonSerializerPool;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="JsonInputFormatter"/>.
-        /// </summary>
-        /// <param name="logger">The <see cref="ILogger"/>.</param>
-        /// <param name="serializerSettings">
-        /// The <see cref="JsonSerializerSettings"/>. Should be either the application-wide settings
-        /// (<see cref="MvcJsonOptions.SerializerSettings"/>) or an instance
-        /// <see cref="JsonSerializerSettingsProvider.CreateSerializerSettings"/> initially returned.
-        /// </param>
-        /// <param name="charPool">The <see cref="ArrayPool{Char}"/>.</param>
-        /// <param name="objectPoolProvider">The <see cref="ObjectPoolProvider"/>.</param>
         public JsonApiInputFormatter(
-            ILogger logger,
-            JsonSerializerSettings serializerSettings,
-            ArrayPool<char> charPool,
-            ObjectPoolProvider objectPoolProvider) :
-            this(logger, serializerSettings, charPool, objectPoolProvider, suppressInputFormatterBuffering: false)
-        {
-            // This constructor by default buffers the request body as its the most secure setting 
-        }
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="JsonInputFormatter"/>.
-        /// </summary>
-        /// <param name="logger">The <see cref="ILogger"/>.</param>
-        /// <param name="serializerSettings">
-        /// The <see cref="JsonSerializerSettings"/>. Should be either the application-wide settings
-        /// (<see cref="MvcJsonOptions.SerializerSettings"/>) or an instance
-        /// <see cref="JsonSerializerSettingsProvider.CreateSerializerSettings"/> initially returned.
-        /// </param>
-        /// <param name="charPool">The <see cref="ArrayPool{Char}"/>.</param>
-        /// <param name="objectPoolProvider">The <see cref="ObjectPoolProvider"/>.</param>
-        /// <param name="suppressInputFormatterBuffering">Flag to buffer entire request body before deserializing it.</param>
-        public JsonApiInputFormatter(
-            ILogger logger,
-            JsonSerializerSettings serializerSettings,
-            ArrayPool<char> charPool,
-            ObjectPoolProvider objectPoolProvider,
-            bool suppressInputFormatterBuffering)
+           ILogger logger,
+           JsonSerializerSettings serializerSettings,
+           ArrayPool<char> charPool,
+           ObjectPoolProvider objectPoolProvider,
+           MvcOptions options,
+           MvcJsonOptions jsonOptions)
         {
             if (logger == null)
             {
@@ -93,23 +69,26 @@ namespace OrchardCore.Apis.JsonApi
             SerializerSettings = serializerSettings;
             _charPool = new JsonArrayPool<char>(charPool);
             _objectPoolProvider = objectPoolProvider;
-            _suppressInputFormatterBuffering = suppressInputFormatterBuffering;
+            _options = options;
+            _jsonOptions = jsonOptions;
 
             SupportedEncodings.Add(UTF8EncodingWithoutBOM);
             SupportedEncodings.Add(UTF16EncodingLittleEndian);
-            SupportedEncodings.Add(Encoding.UTF8);
 
             SupportedMediaTypes.Add(MediaTypeHeaderValues.ApplicationJsonApi);
         }
 
-        public override Task<InputFormatterResult> ReadAsync(InputFormatterContext context)
+        /// <inheritdoc />
+        public virtual InputFormatterExceptionPolicy ExceptionPolicy
         {
-            return base.ReadAsync(context);
-        }
-
-        public override Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context)
-        {
-            return base.ReadRequestBodyAsync(context);
+            get
+            {
+                if (GetType() == typeof(JsonInputFormatter))
+                {
+                    return InputFormatterExceptionPolicy.MalformedInputExceptions;
+                }
+                return InputFormatterExceptionPolicy.AllExceptions;
+            }
         }
 
         /// <summary>
@@ -138,11 +117,13 @@ namespace OrchardCore.Apis.JsonApi
 
             var request = context.HttpContext.Request;
 
-            if (!request.Body.CanSeek && !_suppressInputFormatterBuffering)
+            var suppressInputFormatterBuffering = _options?.SuppressInputFormatterBuffering ?? _suppressInputFormatterBuffering;
+
+            if (!request.Body.CanSeek && !suppressInputFormatterBuffering)
             {
-                // JSON.Net does synchronous reads. In order to avoid blocking on the stream, we asynchronously 
-                // read everything into a buffer, and then seek back to the beginning. 
-                BufferingHelper.EnableRewind(request);
+                // JSON.Net does synchronous reads. In order to avoid blocking on the stream, we asynchronously
+                // read everything into a buffer, and then seek back to the beginning.
+                request.EnableBuffering();
                 Debug.Assert(request.Body.CanSeek);
 
                 await request.Body.DrainAsync(CancellationToken.None);
@@ -157,7 +138,7 @@ namespace OrchardCore.Apis.JsonApi
                     jsonReader.CloseInput = false;
 
                     var successful = true;
-
+                    Exception exception = null;
                     void ErrorHandler(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs eventArgs)
                     {
                         successful = false;
@@ -181,9 +162,12 @@ namespace OrchardCore.Apis.JsonApi
                         }
 
                         var metadata = GetPathMetadata(context.Metadata, eventArgs.ErrorContext.Path);
-                        context.ModelState.TryAddModelError(key, eventArgs.ErrorContext.Error, metadata);
+                        var modelStateException = WrapExceptionForModelState(eventArgs.ErrorContext.Error);
+                        context.ModelState.TryAddModelError(key, modelStateException, metadata);
 
                         //_logger.JsonInputException(eventArgs.ErrorContext.Error);
+
+                        exception = eventArgs.ErrorContext.Error;
 
                         // Error must always be marked as handled
                         // Failure to do so can cause the exception to be rethrown at every recursive level and
@@ -224,6 +208,12 @@ namespace OrchardCore.Apis.JsonApi
                         {
                             return InputFormatterResult.Success(model);
                         }
+                    }
+
+                    if (!(exception is JsonException || exception is OverflowException))
+                    {
+                        var exceptionDispatchInfo = ExceptionDispatchInfo.Capture(exception);
+                        exceptionDispatchInfo.Throw();
                     }
 
                     return InputFormatterResult.Failure();
@@ -304,6 +294,30 @@ namespace OrchardCore.Apis.JsonApi
             }
 
             return metadata;
+        }
+
+        private Exception WrapExceptionForModelState(Exception exception)
+        {
+            // In 2.0 and earlier we always gave a generic error message for errors that come from JSON.NET
+            // We only allow it in 2.1 and newer if the app opts-in.
+            if (!(_jsonOptions?.AllowInputFormatterExceptionMessages ?? _allowInputFormatterExceptionMessages))
+            {
+                // This app is not opted-in to JSON.NET messages, return the original exception.
+                return exception;
+            }
+
+            // It's not known that Json.NET currently ever raises error events with exceptions
+            // other than these two types, but we're being conservative and limiting which ones
+            // we regard as having safe messages to expose to clients
+            if (exception is JsonReaderException || exception is JsonSerializationException)
+            {
+                // InputFormatterException specifies that the message is safe to return to a client, it will
+                // be added to model state.
+                return new InputFormatterException(exception.Message, exception);
+            }
+
+            // Not a known exception type, so we're not going to assume that it's safe.
+            return exception;
         }
     }
 }
