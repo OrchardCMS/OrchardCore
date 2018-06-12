@@ -148,7 +148,7 @@
             {
                 var provider = Model.DatabaseProviders.FirstOrDefault(p => p.Value == Model.DatabaseProvider);
 
-                <select asp-for="DatabaseProvider" class="form-control" required disabled>
+                <select asp-for="DatabaseProvider" class="form-control" required readonly>
                     <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix">@provider.Name</option>
                 </select>
             }
