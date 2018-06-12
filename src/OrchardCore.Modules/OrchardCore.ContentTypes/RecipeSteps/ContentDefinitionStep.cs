@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
@@ -58,7 +58,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
                     builder.MergeSettings(record.Settings);
                 }
 
-                foreach(var part in record.ContentTypePartDefinitionRecords)
+                foreach (var part in record.ContentTypePartDefinitionRecords)
                 {
                     builder.WithPart(part.Name, part.PartName, partBuilder => partBuilder.MergeSettings(part.Settings));
                 }

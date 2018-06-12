@@ -2,18 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using OrchardCore.Modules;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DeferredTasks;
-using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Setup.Events;
@@ -26,23 +25,18 @@ namespace OrchardCore.Setup.Services
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _orchardHost;
         private readonly IShellContextFactory _shellContextFactory;
-        private readonly ICompositionStrategy _compositionStrategy;
-        private readonly IExtensionManager _extensionManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IRunningShellTable _runningShellTable;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly ILogger _logger;
         private readonly IStringLocalizer T;
 
+        private readonly string _applicationName;
         private IEnumerable<RecipeDescriptor> _recipes;
 
         public SetupService(
             ShellSettings shellSettings,
             IShellHost orchardHost,
+            IHostingEnvironment hostingEnvironment,
             IShellContextFactory shellContextFactory,
-            ICompositionStrategy compositionStrategy,
-            IExtensionManager extensionManager,
-            IHttpContextAccessor httpContextAccessor,
             IRunningShellTable runningShellTable,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             ILogger<SetupService> logger,
@@ -51,11 +45,8 @@ namespace OrchardCore.Setup.Services
         {
             _shellSettings = shellSettings;
             _orchardHost = orchardHost;
+            _applicationName = hostingEnvironment.ApplicationName;
             _shellContextFactory = shellContextFactory;
-            _compositionStrategy = compositionStrategy;
-            _extensionManager = extensionManager;
-            _httpContextAccessor = httpContextAccessor;
-            _runningShellTable = runningShellTable;
             _recipeHarvesters = recipeHarvesters;
             _logger = logger;
             T = stringLocalizer;
@@ -98,10 +89,10 @@ namespace OrchardCore.Setup.Services
             // Features to enable for Setup
             string[] hardcoded =
             {
-                "OrchardCore.Commons",
+                _applicationName,
                 "OrchardCore.Features",
-                "OrchardCore.Recipes",
-                "OrchardCore.Scripting"
+                "OrchardCore.Scripting",
+                "OrchardCore.Recipes"
             };
 
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
@@ -139,7 +130,7 @@ namespace OrchardCore.Setup.Services
                         store = scope.ServiceProvider.GetRequiredService<IStore>();
                         await store.InitializeAsync();
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         // Tables already exist or database was not found
 
@@ -182,9 +173,9 @@ namespace OrchardCore.Setup.Services
                     // to query the current execution.
                     //await Task.Run(async () =>
                     //{
-                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe, new 
+                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe, new
                     {
-                        SiteName  = context.SiteName,
+                        SiteName = context.SiteName,
                         AdminUsername = context.AdminUsername,
                         AdminEmail = context.AdminEmail,
                         AdminPassword = context.AdminPassword,

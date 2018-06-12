@@ -29,14 +29,14 @@ namespace OrchardCore.Deployment
 
             services.AddTransient<IDeploymentSource, AllContentDeploymentSource>();
             services.AddTransient<IDeploymentSource, CustomFileDeploymentSource>();
-            services.AddTransient<IDeploymentSource, ContentTypeDeploymentSource>();
+            services.AddTransient<IDeploymentSource, ContentDeploymentSource>();
 
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentTypeDeploymentStep>());
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDeploymentStep>());
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllContentDeploymentStep>());
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<CustomFileDeploymentStep>());
 
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllContentDeploymentStepDriver>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentTypeDeploymentStepDriver>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDeploymentStepDriver>();
             services.AddScoped<IDisplayDriver<DeploymentStep>, CustomFileDeploymentStepDriver>();
 
             services.AddSingleton<IIndexProvider, DeploymentPlanIndexProvider>();

@@ -6,20 +6,81 @@ This modules provides common content fields.
 
 ## Available Fields
 
-| Name | Properties | Shape Type |
-| --- | --- | --- |
-| `TextField` | `Text (string)` | `TextField` |
-| `BooleanField` | `Value (bool)` | `BooleanField` |
-| `HtmlField` | `Html (string)` | `HtmlField` |
-| `NumericField` | `Value (decimal?)` | `NumericField` |
+| Name | Properties | Shape Type | Shape Class |
+| --- | --- | --- | --- |
+| `BooleanField` | `Value (bool)` | `BooleanField` | `DisplayBooleanFieldViewModel` |
+| `DateField` | `Value (DateTime?)` | `DateField` | `DisplayDateFieldViewModel` |
+| `DateTimeField` | `Value (DateTime?)` | `DateTimeField` | `DisplayDateTimeFieldViewModel` |
+| `HtmlField` | `Html (string)` | `HtmlField` | `DisplayHtmlFieldViewModel` |
+| `LinkField` | `Url (string), Text (string)` | `LinkField` | `DisplayLinkFieldViewModel` |
+| `NumericField` | `Value (decimal?)` | `NumericField` | `DisplayNumericFieldViewModel` |
+| `TextField` | `Text (string)` | `TextField` | `DisplayTextFieldViewModel` |
+| `TimeField` | `Value (TimeSpan?)` | `TimeField` | `DisplayTimeFieldViewModel` |
 
 ## Usage
 
 From a `Content` template, you can reference a field's value like this
 (if the content type is `Article` and has a Text Field named `MyField`):
 
+In Razor:
+
 ```csharp
-var fieldValue = contentItem.Content.Article.MyField.Text;
+var fieldValue = Model.ContentItem.Content.Article.MyField.Text;
+```
+
+In Liquid:
+
+```liquid
+{{ Model.ContentItem.Content.Article.MyField.Value }}
+```
+
+From a field shape (see Shape Type in the table listing all the fields) you can also access properties specific to each view model.
+
+### Common field properties
+The convention for a field view model is to also expose these properties:
+
+| Property | Description |
+| --- | --- |
+| `Field` | The ContentField. |
+| `Part` | The ContentPart that contains the field. |
+| `ContentPartFieldDefinition` | The Content Part Field Definition that contains the part. Which also give access to the Content Type |
+
+Some view models have special properties that are computed from the actual field data and which are more useful for templating.
+
+### DisplayHtmlFieldViewModel
+
+| Property | Description |
+| --- | --- |
+| `Html` | The processed Html once all liquid tags are processed. |
+
+#### Example
+
+```liquid
+{{ Model.Html }}
+```
+
+or, to display the raw content before the tags are converted:
+
+```liquid
+{{ Model.Field.Html }}
+```
+
+### DisplayDateTimeFieldViewModel
+
+| Property | Description |
+| --- | --- |
+| `LocalDateTime` | The date time in the time zone of the site. |
+
+#### Example
+
+```liquid
+{{ Model.LocalDateTime }}
+```
+
+or, to display the UTC value before is it converted:
+
+```liquid
+{{ Model.Field.Value }}
 ```
 
 ## Creating Custom Fields

@@ -13,7 +13,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Workflows",
     Name = "Workflows",
     Description = "The Workflows module provides tools and APIs to create custom workflows",
-    Dependencies = new[] { "OrchardCore.Liquid", "OrchardCore.Scripting", "OrchardCore.DataProtection" },
+    Dependencies = new[] { "OrchardCore.Liquid", "OrchardCore.Scripting" },
     Category = "Workflows"
 )]
 

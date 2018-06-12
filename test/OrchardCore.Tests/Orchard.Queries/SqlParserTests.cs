@@ -168,7 +168,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
             var result = SqlParser.TryParse("SEL a", _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
 
             Assert.False(result);
-            Assert.Equal(1, messages.Count());
+            Assert.Single(messages);
             Assert.Contains("at line:0, col:0", messages.First());
         }
 

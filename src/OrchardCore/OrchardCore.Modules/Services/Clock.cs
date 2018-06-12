@@ -21,10 +21,6 @@ namespace OrchardCore.Modules
         /// choices that are reasonably valid for the present and near future for real places. The list is
         /// also sorted first by UTC Offset and then by timezone name.
         /// </summary>
-        /// <param name="countryCode">
-        /// The two-letter country code to get timezones for.
-        /// Returns all timezones if null or empty.
-        /// </param>
         public ITimeZone[] GetTimeZones()
         {
             var list =
@@ -67,11 +63,9 @@ namespace OrchardCore.Modules
             if (!String.IsNullOrEmpty(timeZone) && IsValidTimeZone(DateTimeZoneProviders.Tzdb, timeZone))
             {
                 return DateTimeZoneProviders.Tzdb[timeZone];
-            }
-            else
-            {
-                return DateTimeZoneProviders.Tzdb.GetSystemDefault();
-            }
+            } 
+
+            return DateTimeZoneProviders.Tzdb.GetSystemDefault();
         }
 
         private ITimeZone CreateTimeZone(DateTimeZone dateTimeZone)

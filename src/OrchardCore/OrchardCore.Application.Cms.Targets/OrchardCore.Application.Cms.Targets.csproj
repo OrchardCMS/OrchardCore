@@ -12,6 +12,13 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DeferredTasks\OrchardCore.DeferredTasks.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.BackgroundTasks\OrchardCore.BackgroundTasks.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Cache\OrchardCore.Environment.Cache.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Shell.Data\OrchardCore.Environment.Shell.Data.csproj" />
+  </ItemGroup>
+
   <!--
     When a package is not directly referenced, e.g only through the reference of this bundle package,
     the files in its build folder are not evaluated on building if this folder is marked as private.
@@ -22,9 +29,7 @@
   -->
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Antiforgery\OrchardCore.Antiforgery.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Authentication\OrchardCore.Authentication.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.DataProtection\OrchardCore.DataProtection.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.DataProtection.Azure\OrchardCore.DataProtection.Azure.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Forms\OrchardCore.Forms.csproj" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Https\OrchardCore.Https.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Media.Azure\OrchardCore.Media.Azure.csproj" PrivateAssets="none" />
@@ -38,7 +43,6 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Alias\OrchardCore.Alias.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Autoroute\OrchardCore.Autoroute.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Body\OrchardCore.Body.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Commons\OrchardCore.Commons.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentFields\OrchardCore.ContentFields.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentPreview\OrchardCore.ContentPreview.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Contents\OrchardCore.Contents.csproj" PrivateAssets="none" />
@@ -58,7 +62,6 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Markdown\OrchardCore.Markdown.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Menu\OrchardCore.Menu.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Features\OrchardCore.Features.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Mvc\OrchardCore.Mvc.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Navigation\OrchardCore.Navigation.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.OpenId\OrchardCore.OpenId.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.OpenId.EntityFrameworkCore\OrchardCore.OpenId.EntityFrameworkCore.csproj" PrivateAssets="none" />
