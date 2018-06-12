@@ -52,6 +52,7 @@
     <PackageManagement Include="JsonApiFramework.Server" Version="1.6.0" />
     <PackageManagement Include="Microsoft.OpenApi" Version="1.0.0" />
     <PackageManagement Include="NSwag.Annotations" Version="11.17.4" />
+    <PackageManagement Include="NodaTime" Version="2.3.0-beta02" />
   </ItemGroup>
 
 </Project>

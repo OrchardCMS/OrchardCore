@@ -117,7 +117,13 @@ namespace OrchardCore.Users
             services.TryAddScoped<UserManager<IUser>>();
             services.TryAddScoped<SignInManager<IUser>>();
 
-            services.TryAddScoped<IUserStore<IUser>, UserStore>();
+            services.TryAddScoped<UserStore>();
+            services.TryAddScoped<IUserStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserRoleStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserPasswordStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserEmailStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserSecurityStampStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserLoginStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
 
             services.ConfigureApplicationCookie(options =>
             {

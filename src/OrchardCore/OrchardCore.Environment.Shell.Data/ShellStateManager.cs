@@ -44,7 +44,7 @@ namespace OrchardCore.Environment.Shell
         {
             if (Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug("Feature {0} EnableState changed from {1} to {2}",
+                Logger.LogDebug("Feature '{FeatureName}' EnableState changed from '{FeatureState}' to '{FeatureState}'",
                              featureState.Id, featureState.EnableState, value);
             }
 
@@ -53,7 +53,7 @@ namespace OrchardCore.Environment.Shell
             {
                 if (Logger.IsEnabled(LogLevel.Warning))
                 {
-                    Logger.LogWarning("Feature {0} prior EnableState was {1} when {2} was expected",
+                    Logger.LogWarning("Feature '{FeatureName}' prior EnableState was '{FeatureState}' when '{FeatureState}' was expected",
                                featureState.Id, previousFeatureState.EnableState, featureState.EnableState);
                 }
             }
@@ -68,7 +68,7 @@ namespace OrchardCore.Environment.Shell
         {
             if (Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug("Feature {0} InstallState changed from {1} to {2}", featureState.Id, featureState.InstallState, value);
+                Logger.LogDebug("Feature '{FeatureName}' InstallState changed from '{FeatureState}' to '{FeatureState}'", featureState.Id, featureState.InstallState, value);
             }
 
             var previousFeatureState = await GetOrCreateFeatureStateAsync(featureState.Id);
@@ -76,7 +76,7 @@ namespace OrchardCore.Environment.Shell
             {
                 if (Logger.IsEnabled(LogLevel.Warning))
                 {
-                    Logger.LogWarning("Feature {0} prior InstallState was {1} when {2} was expected",
+                    Logger.LogWarning("Feature '{FeatureName}' prior InstallState was '{FeatureState}' when '{FeatureState}' was expected",
                                featureState.Id, previousFeatureState.InstallState, featureState.InstallState);
                 }
             }

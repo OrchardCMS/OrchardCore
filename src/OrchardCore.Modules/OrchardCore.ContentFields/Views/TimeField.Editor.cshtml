@@ -1,0 +1,14 @@
+@model OrchardCore.ContentFields.ViewModels.EditTimeFieldViewModel
+@using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<TimeFieldSettings>();
+}
+
+<fieldset class="form-group">
+    <div class="row col-md-4 col-lg-2">
+        <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
+        <input asp-for="Value" type="time" class="form-control content-preview-select" required="@settings.Required" />
+        <span class="hint">@settings.Hint</span>
+    </div>
+</fieldset>
