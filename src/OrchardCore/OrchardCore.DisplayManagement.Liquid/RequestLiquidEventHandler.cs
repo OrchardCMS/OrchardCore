@@ -31,7 +31,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     case "Cookies": return new ObjectValue(request.Cookies);
                     case "Headers": return new ObjectValue(new HeaderDictionaryWrapper(request.Headers));
                     case "Query": return new ObjectValue(request.Query);
-                    case "Form": return new ObjectValue(request.Form);
+                    case "Form": return request.HasFormContentType ? (FluidValue) new ObjectValue(request.Form) : NilValue.Instance;
                     case "Protocol": return new StringValue(request.Protocol);
                     case "Path": return new StringValue(request.Path.Value);
                     case "PathBase": return new StringValue(request.PathBase.Value);

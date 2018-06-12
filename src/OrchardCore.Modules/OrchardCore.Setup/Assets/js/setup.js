@@ -1,9 +1,9 @@
-﻿$(function () {
-    toggleConnectionString();
+$(function () {
+    toggleConnectionStringAndPrefix();
 
     // Show hide the connection string when a provider is selected
     $("#DatabaseProvider").change(function () {
-        toggleConnectionString();
+        toggleConnectionStringAndPrefix();
     });
 
     // Refresh the description hide the connection string when a provider is selected
@@ -13,13 +13,20 @@
 
 });
 
-// Show or hide the connection string section when the database provider
-function toggleConnectionString() {
+// Show or hide the connection string or table prefix section when the database provider is selected
+function toggleConnectionStringAndPrefix() {
     $("#DatabaseProvider option:selected").each(function () {
         $(this).data("connection-string").toLowerCase() === "true"
-        ? $(".connectionString").show()
-        : $(".connectionString").hide();
-        ;
+            ? $(".connectionString").show()
+            : $(".connectionString").hide();
+
+        $(this).data("table-prefix").toLowerCase() === "true"
+            ? $(".tablePrefix").show()
+            : $(".tablePrefix").hide();
+        
+        $(this).data("connection-string").toLowerCase() === "true"
+            ? $(".pwd").attr('required', 'required')
+            : $(".pwd").removeAttr('required');
     });
 }
 

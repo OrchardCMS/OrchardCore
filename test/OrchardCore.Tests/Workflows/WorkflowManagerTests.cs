@@ -86,7 +86,7 @@ namespace OrchardCore.Tests.Workflows
         private IWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider)
         {
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var javaScriptEngine = new JavaScriptEngine(memoryCache, new Mock<IStringLocalizer<JavaScriptEngine>>().Object);
+            var javaScriptEngine = new JavaScriptEngine(memoryCache);
             var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
             var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
             var globalMethodProviders = new IGlobalMethodProvider[0];

@@ -1,6 +1,4 @@
-using System.Web;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using OrchardCore.Media.Processing;
 
 namespace OrchardCore.Media.TagHelpers
 {

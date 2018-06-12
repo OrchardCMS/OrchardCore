@@ -13,7 +13,7 @@ Okay so first, let's open up `Startup.cs`.
 Within the `ConfigureServices` method, add these lines:
 
 ```csharp
-services.AddModuleServices(configure => configure
+services.UseOrchardCore(configure => configure
     .AddConfiguration(Configuration)
 );
 ```
@@ -21,7 +21,7 @@ services.AddModuleServices(configure => configure
 Next, at the end of the `Configure` method, add this line:
 
 ```csharp
-app.UseModules();
+app.UseOrchardCore();
 ```
 
 That's it. Erm, wait, what? Okay so right now you must be thinking, well what the hell does this do? Good question.

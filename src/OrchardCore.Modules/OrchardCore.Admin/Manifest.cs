@@ -9,7 +9,6 @@ using OrchardCore.Modules.Manifest;
     Category = "Infrastructure",
     Dependencies = new[]
     {
-        "OrchardCore.Antiforgery",
         "OrchardCore.Settings"
     }
 )]
