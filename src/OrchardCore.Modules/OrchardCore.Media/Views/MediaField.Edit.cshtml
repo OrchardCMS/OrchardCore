@@ -22,6 +22,8 @@
         @(settings.Multiple ? "true" : "false"));
 </script>
 
+<input type="hidden" id="onlyOneItemMessage" value="@T["Only one item is allowed on this field."]" />
+
 <div class="mediafield-editor" id="@Html.IdFor(m => m)" data-for="@Html.IdFor(m => m.Paths)">
     <div class="media-field">
         <fieldset class="form-group">
@@ -35,37 +37,55 @@
 
             <nav class="media-field-toolbar" v-cloak>
                 <div class="btn-group">
+                    <button type="button" class="btn btn-secondary btn-sm" :disabled="mediaItems.length < 1" v-on:click="smallThumbs = !smallThumbs">
+                        <span v-show="!smallThumbs" title="@T["Small Thumbs"]"><i class="fa fa-compress"></i></span>
+                        <span v-show="smallThumbs" title="@T["Large Thumbs"]"><i class="fa fa-expand"></i></span>
+                    </button>
                     <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></a>
                     <a v-show="canRemoveMedia" href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm"><i class="fa fa-trash"></i></a>
                 </div>
-                <code class="pull-right" v-if="selectedMedia" >@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+                <div style="display:flex; justify-content:flex-end; align-items:flex-end; flex-grow:1;">
+                    <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+                </div>
             </nav>
 
         </fieldset>
         <fieldset class="form-group">
-            <div class="media-container-main" v-cloak>
-                <draggable :list="mediaItems" element="ol" class="row media-container-main-list">
-                    <li v-for="media in mediaItems"
-                        :key="media.name"
-                        class="media-container-main-list-item"
-                        v-on:click="selectMedia(media)">
-                        <div class="media-container-main-item" v-bind:class="{selected: selectedMedia == media}">
+                <div class="media-container-main" v-cloak>
+                    <draggable :list="mediaItems" element="ol" class="row">
+                        <li v-for="media in mediaItems"
+                            :key="media.name"
+                            class="media-container-main-list-item card"
+                            :style="{width: thumbSize + 2 + 'px'}"
+                            :class="{selected: selectedMedia == media}"
+                            v-on:click="selectMedia(media)">
                             <div v-if="media.mediaPath!== 'not-found'">
-                                <img v-if="media.mime.startsWith('image')" v-bind:src="media.url + '?width=240&height=240'" v-bind:data-mime="media.mime" />
-                                <i v-else class="fa fa-file-o" v-bind:data-mime="media.mime"></i>
-                                <div class="media-container-main-item-title">
-                                    <span class="media-filename">{{media.name}}</span>                                    
+                                <div class="thumb-container" :style="{height: thumbSize + 'px'}">
+                                    <img v-if="media.mime.startsWith('image')" :src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" :data-mime="media.mime" />
+                                    <i v-else class="fa fa-file-o" :data-mime="media.mime"></i>
+                                </div>
+                                <div class="media-container-main-item-title card-body">
+                                    <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button" 
+                                       v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>
+                                    <span class="media-filename card-text small" :title="media.mediaPath">{{media.name}}</span>                                    
                                 </div>
                             </div>
                             <div v-else>
-                                <span class="media-filename">{{media.name}}</span>
-                                <br />
-                                <span class="text-warning">(@T["Not Found"])</span>
+                                <div class="thumb-container flex-column" :style="{height: thumbSize + 'px'}">
+                                    <i class="fa fa-ban text-danger d-block"></i>
+                                    <span class="text-danger small d-block">@T["Not Found"]</span>
+                                    <span class="text-danger small d-block text-center">@T["It will be discarded on saving"]</span>
+                                </div>
+                                <div class="media-container-main-item-title card-body">
+                                    <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button"
+                                       v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>
+                                    <span class="media-filename card-text small text-danger" :title="media.name">{{media.name}}</span>
+                                </div>
+                                
                             </div>
-                        </div>
-                    </li>
-                </draggable>
-            </div>
+                        </li>
+                    </draggable>
+                </div>
         </fieldset>
     </div>
 </div>

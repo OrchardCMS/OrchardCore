@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using OrchardCore.Features.Models;
-using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.Features.ViewModels 
 {
@@ -9,7 +9,7 @@ namespace OrchardCore.Features.ViewModels
     {
         public IEnumerable<ModuleFeature> Features { get; set; }
         public FeaturesBulkAction BulkAction { get; set; }
-        public Func<IExtensionInfo, bool> IsAllowed { get; set; }
+        public Func<IFeatureInfo, bool> IsAllowed { get; set; }
     }
 
     public enum FeaturesBulkAction 

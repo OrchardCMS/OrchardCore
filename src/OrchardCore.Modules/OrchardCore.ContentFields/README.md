@@ -9,6 +9,7 @@ This modules provides common content fields.
 | Name | Properties | Shape Type | Shape Class |
 | --- | --- | --- | --- |
 | `BooleanField` | `Value (bool)` | `BooleanField` | `DisplayBooleanFieldViewModel` |
+| `DateField` | `Value (DateTime?)` | `DateField` | `DisplayDateFieldViewModel` |
 | `DateTimeField` | `Value (DateTime?)` | `DateTimeField` | `DisplayDateTimeFieldViewModel` |
 | `HtmlField` | `Html (string)` | `HtmlField` | `DisplayHtmlFieldViewModel` |
 | `LinkField` | `Url (string), Text (string)` | `LinkField` | `DisplayLinkFieldViewModel` |

@@ -52,6 +52,7 @@ namespace OrchardCore.Environment.Extensions.Features
 
                     var featureCategory = feature.Category ?? manifestInfo.ModuleInfo.Category;
                     var featureDescription = feature.Description ?? manifestInfo.ModuleInfo.Description;
+                    var featureDefaultTenantOnly = feature.DefaultTenantOnly;
 
                     var context = new FeatureBuildingContext
                     {
@@ -62,7 +63,8 @@ namespace OrchardCore.Environment.Extensions.Features
                         ExtensionInfo = extensionInfo,
                         ManifestInfo = manifestInfo,
                         Priority = featurePriority,
-                        FeatureDependencyIds = featureDependencyIds
+                        FeatureDependencyIds = featureDependencyIds,
+                        DefaultTenantOnly = featureDefaultTenantOnly,
                     };
 
                     foreach (var builder in _featureBuilderEvents)
@@ -77,7 +79,8 @@ namespace OrchardCore.Environment.Extensions.Features
                         featureCategory,
                         featureDescription,
                         extensionInfo,
-                        featureDependencyIds);
+                        featureDependencyIds,
+                        featureDefaultTenantOnly);
 
                     foreach (var builder in _featureBuilderEvents)
                     {
@@ -103,6 +106,7 @@ namespace OrchardCore.Environment.Extensions.Features
 
                 var featureCategory = manifestInfo.ModuleInfo.Category;
                 var featureDescription = manifestInfo.ModuleInfo.Description;
+                var featureDefaultTenantOnly = manifestInfo.ModuleInfo.DefaultTenantOnly;
 
                 var context = new FeatureBuildingContext
                 {
@@ -113,7 +117,8 @@ namespace OrchardCore.Environment.Extensions.Features
                     ExtensionInfo = extensionInfo,
                     ManifestInfo = manifestInfo,
                     Priority = featurePriority,
-                    FeatureDependencyIds = featureDependencyIds
+                    FeatureDependencyIds = featureDependencyIds,
+                    DefaultTenantOnly = featureDefaultTenantOnly,
                 };
 
                 foreach (var builder in _featureBuilderEvents)
@@ -128,7 +133,8 @@ namespace OrchardCore.Environment.Extensions.Features
                     context.Category,
                     context.Description,
                     context.ExtensionInfo,
-                    context.FeatureDependencyIds);
+                    context.FeatureDependencyIds,
+                    context.DefaultTenantOnly);
 
                 foreach (var builder in _featureBuilderEvents)
                 {

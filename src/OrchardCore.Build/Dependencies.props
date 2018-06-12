@@ -27,20 +27,19 @@
     <PackageManagement Include="OpenIddict" Version="2.0.0-rc2-final" />
     <PackageManagement Include="OpenIddict.Core" Version="2.0.0-rc2-final" />
     <PackageManagement Include="OpenIddict.EntityFrameworkCore" Version="2.0.0-rc2-final" />
-    <PackageManagement Include="SixLabors.ImageSharp" Version="1.0.0-dev001179" />
+    <PackageManagement Include="SixLabors.ImageSharp" Version="1.0.0-beta0004" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0003" />
-    <PackageManagement Include="SQLitePCLRaw.bundle_green" Version="1.1.10-*" />
     <PackageManagement Include="WindowsAzure.Storage" Version="9.2.0" />
     <PackageManagement Include="xunit.analyzers" Version="0.3.0" />
     <PackageManagement Include="xunit" Version="2.3.0-beta3-build3705" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.3.0-beta3-build3705" />  
     <PackageManagement Include="YamlDotNet" Version="4.2.1" />
-    <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1194" />
-    <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1194" />
-    <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1194" />
-    <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1194" />
-    <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1194" />
-    <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1194" />
+    <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1215" />
+    <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1215" />
+    <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1215" />
+    <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1215" />
+    <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1215" />
+    <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1215" />
   </ItemGroup>
 
 </Project>
