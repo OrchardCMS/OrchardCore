@@ -33,11 +33,11 @@
                         @T["Actions"]
                     </button>
                     <div class="dropdown-menu" aria-labelledby="selectionButtonsDropDown">
-                        <a href="javascript:;" class="dropdown-item" v-on:click="selectAll">@T["Select All"]</a>
-                        <a href="javascript:;" class="dropdown-item" v-on:click="unSelectAll" :disabled="selectedMedias.length < 1">@T["Select None"]</a>
-                        <a href="javascript:;" class="dropdown-item" v-on:click="invertSelection">@T["Invert"]</a>
+                        <a href="javascript:;" class="dropdown-item select-all-button" v-on:click="selectAll">@T["Select All"]</a>
+                        <a href="javascript:;" class="dropdown-item select-none-button" v-on:click="unSelectAll" :disabled="selectedMedias.length < 1">@T["Select None"]</a>
+                        <a href="javascript:;" class="dropdown-item invert-selection-button" v-on:click="invertSelection">@T["Invert"]</a>
                         <div class="dropdown-divider"></div>
-                        <a href="javascript:;" class="dropdown-item"
+                        <a href="javascript:;" class="dropdown-item delete-all-button"
                            :class="{ disabled : selectedMedias.length < 1 }" v-on:click="deleteMediaList">
                             @T["Delete"] <span>({{ selectedMedias.length }})</span>
                         </a>
@@ -45,10 +45,10 @@
                 </div>
 
                 <div class="d-lg-inline-flex d-none mb-1 pt-1 hidden-on-modal">
-                    <button type="button" class="btn btn-secondary btn-sm mr-1" v-on:click="selectAll">@T["Select All"]</button>
-                    <button type="button" class="btn btn-secondary btn-sm mr-1" v-on:click="unSelectAll" :disabled="selectedMedias.length < 1">@T["Select None"]</button>
-                    <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="invertSelection">@T["Invert"]</button>
-                    <button type="button" class="btn btn-secondary btn-sm mr-2" v-on:click="deleteMediaList"
+                    <button type="button" class="btn btn-secondary btn-sm mr-1 select-all-button" v-on:click="selectAll">@T["Select All"]</button>
+                    <button type="button" class="btn btn-secondary btn-sm mr-1 select-none-button" v-on:click="unSelectAll" :disabled="selectedMedias.length < 1">@T["Select None"]</button>
+                    <button type="button" class="btn btn-secondary btn-sm mr-2 invert-selection-button" v-on:click="invertSelection">@T["Invert"]</button>
+                    <button type="button" class="btn btn-secondary btn-sm mr-2 delete-all-button" v-on:click="deleteMediaList"
                             :disabled="selectedMedias.length < 1">
                         @T["Delete"] <span style="min-width:25px; display:inline-block;">({{ selectedMedias.length}})</span>
                     </button>
@@ -57,9 +57,9 @@
                 <div class="d-inline-flex text-right mr-2 mb-1 pt-1 media-filter">
                     <div class="input-group input-group-sm">
                         <div class="input-group-prepend">
-                            <button class="btn btn-outline-secondary" type="button" :disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa fa-times"></i></button>
+                            <button id="clear-media-filter-button" class="btn btn-outline-secondary" type="button" :disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa fa-times"></i></button>
                         </div>
-                        <input type="text" v-model="mediaFilter" class="form-control input-filter" style="max-width:160px;" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]">
+                        <input type="text" id="media-filter-input" v-model="mediaFilter" class="form-control input-filter" style="max-width:160px;" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]">
                     </div>
                 </div>
                 <div class="d-inline-flex mb-1 pt-1">
@@ -81,15 +81,15 @@
                     <a :href="parents.length - i == 1 ? null : '#'" v-on:click="selectedFolder = folder;">{{ folder.name }}</a>
                 </span>
                 <div class="btn-group breadcrumb-buttons">
-                    <a v-cloak href="javascript:;" class="btn btn-light btn-sm" v-on:click="createFolder"><i class="fa fa-plus"></i></a>
-                    <a v-cloak v-show="!isHome" href="javascript:;" v-on:click="deleteFolder" class="btn btn-light btn-sm"><i class="fa fa-trash"></i></a>
+                    <a v-cloak href="javascript:;" id="create-folder-button" class="btn btn-light btn-sm" v-on:click="createFolder"><i class="fa fa-plus"></i></a>
+                    <a v-cloak v-show="!isHome" href="javascript:;" id="delete-folder-button" v-on:click="deleteFolder" class="btn btn-light btn-sm"><i class="fa fa-trash"></i></a>
                 </div>
                 <div class="btn-group visibility-buttons">
-                    <button type="button" class="btn btn-light btn-sm mr-2" v-show="gridView" v-on:click="smallThumbs = !smallThumbs">
+                    <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm mr-2" v-show="gridView" v-on:click="smallThumbs = !smallThumbs">
                         <span v-show="!smallThumbs" title="@T["Small Thumbs"]"><i class="fa fa-arrow-down"></i></span>
                         <span v-show="smallThumbs" title="@T["Large Thumbs"]"><i class="fa fa-arrow-up"></i></span>
                     </button>
-                    <button type="button" class="btn btn-light btn-sm" v-on:click="gridView = !gridView">
+                    <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm" v-on:click="gridView = !gridView">
                         <span v-show="!gridView" title="@T["Grid View"]"><i class="fa fa-th-large"></i></span>
                         <span v-show="gridView" title="@T["List View"]"><i class="fa fa-th-list"></i></span>
                     </button>

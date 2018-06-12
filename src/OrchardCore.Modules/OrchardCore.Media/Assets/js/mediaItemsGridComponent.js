@@ -4,7 +4,7 @@ Vue.component('mediaItemsGrid', {
         <ol class="row">\
                 <li v-for="media in filteredMediaItems" \
                     :key="media.name" \
-                    class="media-container-main-list-item card" \
+                    class="media-item media-container-main-list-item card" \
                     :style="{width: thumbSize + 2 + \'px\'}" \
                     :class="{selected: isMediaSelected(media)}" \
                     v-on:click.stop="toggleSelectionOfMedia(media)" \
@@ -13,8 +13,8 @@ Vue.component('mediaItemsGrid', {
                         <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" /> \
                     </div> \
                     <div class="media-container-main-item-title card-body"> \
-                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button mr-4" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a> \
-                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button" v-on:click.stop="deleteMedia(media)"><i class="fa fa-trash"></i></a> \
+                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button edit-button mr-4" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a> \
+                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button" v-on:click.stop="deleteMedia(media)"><i class="fa fa-trash"></i></a> \
                         <span class="media-filename card-text small" :title="media.name">{{ media.name }}</span> \
                     </div> \
                  </li> \

@@ -25,6 +25,7 @@ Vue.component('mediaItemsTable', {
             </thead>\
             <tbody> \
                     <tr v-for="media in filteredMediaItems" \
+                          class="media-item" \
                           :class="{selected: isMediaSelected(media)}" \
                           v-on:click.stop="toggleSelectionOfMedia(media)" \
                           draggable="true" v-on:dragstart="dragStart(media, $event)" \
@@ -38,8 +39,8 @@ Vue.component('mediaItemsTable', {
                                 <div class="media-name-cell"> \
                                     {{ media.name }} \
                                     <div class="buttons-container"> \
-                                        <a href="javascript:;" class="btn btn-link btn-sm mr-1" v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a > \
-                                        <a href="javascript:;" class="btn btn-link btn-sm" v-on:click.stop="deleteMedia(media)"> {{ T.deleteButton }} </a> \
+                                        <a href="javascript:;" class="btn btn-link btn-sm mr-1 edit-button" v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a > \
+                                        <a href="javascript:;" class="btn btn-link btn-sm delete-button" v-on:click.stop="deleteMedia(media)"> {{ T.deleteButton }} </a> \
                                     </div> \
                                 </div> \
                             </td> \
