@@ -6,8 +6,7 @@ Any extension can contain an optional `placement.json` file providing custom pla
 
 ### Format
 
-A `placement.json` file contains an object whose properties are shape names. Each of these properties is an array of 
-placement rules.
+A `placement.json` file contains an object whose properties are shape names. Each of these properties is an array of placement rules.
 
 In the following example, we describe the placement for the `TextField` and `Parts_Contents_Publish` shapes.
 
@@ -38,10 +37,9 @@ Placement information consists of:
 - `wrappers` (Optional): An array of shape types to use as wrappers for the current shape.
 - `shape` (Optional): A substitution shape type.
 
-
 ```json
 {
-  "TextField": [ 
+  "TextField": [
     {
 		"display-type": "Detail",
 		"differentiator": "Article.MyTextField",
@@ -126,3 +124,20 @@ Tag helper example:
 ```
 3 days ago
 ```
+
+## Shape differentiators
+
+The differentiator uniquely identifies a shape in a zone. When rendering a content item, the shape has a `Content` property that contains
+all the shapes provided by content display drivers, including the ones for content parts and content fields.
+
+Differentiators can be used to configure the placement information, or to access specific shapes in a zone using these template helpers:
+
+### Content Part differentiator
+
+If the shape type is the same as the content part name, the shape will be named `[PartName]`, e.g. `HtmlBodyPart`, `Services`.
+If the shape type is different than the content part name, it will be `[PartName]-[ShapeType]`, e.g. `ListPart-ListPartFeed`
+
+### Content Field differentiator
+
+If the shape type is the same as the content field name, the shape will be named `[PartName]-[FieldName]`, e.g. `HtmlBodyPart-Description`, `Services-Image`.
+If the shape type is different than the content field name, it will be `[PartName]-[FieldName]-[ShapeType]`, e.g. `HtmlBodyPart-Description-CustomFieldSummary`, `Services-Image-ImageFieldSummary`
