@@ -1,14 +1,21 @@
 @using OrchardCore.Forms.Drivers
 @using OrchardCore.Forms.ViewModels
 @model ReCaptchaPartEditViewModel
-
+@{
+    var settingsUrl = Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ReCaptchaSettingsDisplay.GroupId });
+    var successMessageTemplate = "<a {0}>reCaptcha settings</a> are configured.";
+    var warningMessageTemplate = "<a {0}>reCaptcha settings</a> are not configured. The captcha will not be displayed.";
+    var hyperLinkAttributes = $"class=alert-link target=_blank href={settingsUrl}";
+    var successMessage = T[successMessageTemplate, hyperLinkAttributes];
+    var warningMessage = T[warningMessageTemplate, hyperLinkAttributes];
+}
 @{
     if (Model.SettingsAreConfigured)
     {
-        <div class="alert alert-success"><a class="alert-link" target="_blank" asp-controller="Admin" asp-action="Index" asp-area="OrchardCore.Settings" asp-route-groupId="@ReCaptchaSettingsDisplay.GroupId">reCaptcha settings</a> are configured.</div>
+        <div class="alert alert-success">@successMessage</div>
     }
     else
     {
-        <div class="alert alert-warning"><a class="alert-link" target="_blank" asp-controller="Admin" asp-action="Index" asp-area="OrchardCore.Settings" asp-route-groupId="@ReCaptchaSettingsDisplay.GroupId">reCaptcha settings</a> are not configured. The captcha will not be displayed.</div>
+        <div class="alert alert-warning">@warningMessage</div>
     }
 }
