@@ -64,13 +64,13 @@ This will use the latest available version between `3.3` and `3.4`. If the versi
 At the beginning of the HTML document:
 
 ```csharp
-resourceManager.RegisterHeadScript("<script>alert('Hello')</script>');
+resourceManager.RegisterHeadScript(new HtmlString("<script>alert('Hello')</script>"));
 ```
 
 At the end of the HTML document:
 
 ```csharp
-resourceManager.RegisterFootScript("<script>alert('Hello')</script>');
+resourceManager.RegisterFootScript(new HtmlString("<script>alert('Hello')</script>"));
 ```
 
 ### Add custom meta tag
