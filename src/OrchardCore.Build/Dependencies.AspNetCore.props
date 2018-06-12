@@ -65,7 +65,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.Localization.Routing" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Middleware.Analysis" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.1.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Api.Explorer" Version="2.1.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.ApiExplorer" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Cors" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.DataAnnotations" Version="2.1.0" />
