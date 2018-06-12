@@ -6,14 +6,13 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace OrchardCore.Apis.JsonApi
 {
     public class JsonApiMvcOptionsSetup : IConfigureOptions<MvcOptions>
     {
         private readonly ILoggerFactory _loggerFactory;
-        private readonly JsonSerializerSettings _jsonSerializerSettings;
+        private readonly MvcJsonOptions _jsonOptions;
         private readonly ArrayPool<char> _charPool;
         private readonly ObjectPoolProvider _objectPoolProvider;
         private readonly IUrlHelperFactory _factory;
@@ -48,7 +47,7 @@ namespace OrchardCore.Apis.JsonApi
             }
 
             _loggerFactory = loggerFactory;
-            _jsonSerializerSettings = jsonOptions.Value.SerializerSettings;
+            _jsonOptions = jsonOptions.Value;
             _charPool = charPool;
             _objectPoolProvider = objectPoolProvider;
             _factory = factory;
@@ -60,15 +59,17 @@ namespace OrchardCore.Apis.JsonApi
             options.OutputFormatters.Insert(0, new JsonApiOutputFormatter(
                 _factory,
                 _actionContextAccessor,
-                _jsonSerializerSettings, 
+                _jsonOptions.SerializerSettings, 
                 _charPool));
 
             var jsonInputLogger = _loggerFactory.CreateLogger<JsonApiInputFormatter>();
             options.InputFormatters.Insert(0, new JsonApiInputFormatter(
                 jsonInputLogger,
-                _jsonSerializerSettings,
+                _jsonOptions.SerializerSettings,
                 _charPool,
-                _objectPoolProvider
+                _objectPoolProvider,
+                options,
+                _jsonOptions
                 ));
 
             options.FormatterMappings.SetMediaTypeMappingForFormat("jsonapi", MediaTypeHeaderValues.ApplicationJsonApi);
