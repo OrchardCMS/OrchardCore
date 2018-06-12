@@ -19,18 +19,21 @@ $(function () {
 
     // TODO: move to the Body module
     $(document)
-        .on('input', '.trumbowyg-editor', function () {
+        .on('tbwchange', '.trumbowyg', function () {
             $(document).trigger('contentpreview:render');
         })
         .on('propertychange', '.trumbowyg-editor', function () {
             $(document).trigger('contentpreview:render');
         })
-        .on('keyup', '.trumbowyg-editor', function (event) {
-            // handle backspace
-            if (event.keyCode == 46 || event.ctrlKey) {
-                $(document).trigger('contentpreview:render');
-            }
-        })
+        // I think that since we use 'tbwchange' this keyup is not required anymore.
+        // Just keeping it here for reference, for a while. Feel free to delete it.
+        //.on('keyup', '.trumbowyg-editor', function (event) {
+        //    console.log('keyup event');
+        //    // handle backspace
+        //    if (event.keyCode == 46 || event.ctrlKey) {
+        //        $(document).trigger('contentpreview:render');
+        //    }
+        //}) 
 });
 
 var previewButton, contentItemType, previewId, previewContentItemId, previewContentItemVersionId, form, formData;
