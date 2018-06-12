@@ -46,6 +46,7 @@ pages:
         - Queries: OrchardCore.Modules/OrchardCore.Queries/README.md
         - Templates: OrchardCore.Modules/OrchardCore.Templates/README.md
         - Liquid: OrchardCore.Modules/OrchardCore.Liquid/README.md
+        - Widgets: OrchardCore.Modules/OrchardCore.Widgets/README.md
         - Custom Settings: OrchardCore.Modules/OrchardCore.CustomSettings/README.md
     - Core Modules:
         - Placement: OrchardCore/OrchardCore.DisplayManagement/README.md

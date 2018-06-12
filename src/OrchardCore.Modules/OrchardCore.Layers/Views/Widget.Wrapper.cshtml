@@ -7,14 +7,12 @@
     bool rendertitle = layerMetadata.RenderTitle;
 }
 
-<div class="widget-container">
-    @if (rendertitle)
-    {
-        var widgetTitle = await Factory.CreateAsync("Widget_Title", new { Widget = widget });
-        widgetTitle.Metadata.Alternates.Add("Widget_Title__" + widget.ContentType);
+@if (rendertitle)
+{
+    var widgetTitle = await Factory.CreateAsync("Widget_Title", new { Widget = widget });
+    widgetTitle.Metadata.Alternates.Add("Widget_Title__" + widget.ContentType);
 
-        @await DisplayAsync(widgetTitle)
-    }
+    @await DisplayAsync(widgetTitle)
+}
 
-    @await DisplayAsync(Model.Content)
-</div>
+@await DisplayAsync(Model.Content)
