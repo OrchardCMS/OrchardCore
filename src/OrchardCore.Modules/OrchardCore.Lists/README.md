@@ -10,6 +10,27 @@ These shapes are available for theming when a `ListPart` is attached to a conten
 | ------| ------------ |----------------- | ---------- |
 | `ListPart` | `Detail`, `DetailAdmin` | `Content:10` | `ListPartViewModel` |
 
+### Templates
+
+Example of Liquid alternate or template for a ListPart with a custom Pager:
+
+```liquid
+{% for item in Model.ContentItems %}
+    {{ item | shape_build_display: "Summary" | shape_render }}
+{% endfor %}
+
+{% assign previousText = "← Newer Posts" | t %}
+{% assign nextText = "Older Posts →" | t %}
+{% assign previousClass = "previous" | t %}
+{% assign nextClass = "next" | t %}
+{% assign itemClasses = "page-item" | split: " " %}
+
+{% shape_add_classes Model.Pager "pagination" %}
+{% shape_pager Model.Pager previous_text: previousText, next_text: nextText, previous_class: previousClass, next_class: nextClass, item_classes: itemClasses %}
+
+{{ Model.Pager | shape_render }}
+```
+
 ### ListPartViewModel
 
 The following properties are available on the `ListPartViewModel` class.
