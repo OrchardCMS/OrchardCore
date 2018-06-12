@@ -131,17 +131,4 @@ Tag helper example:
 
 ## Shape differentiators
 
-The differentiator uniquely identifies a shape in a zone. When rendering a content item, the shape has a `Content` property that contains
-all the shapes provided by content display drivers, including the ones for content parts and content fields.
-
-Differentiators can be used to configure the placement information, or to access specific shapes in a zone using these template helpers:
-
-### Content Part differentiator
-
-If the shape type is the same as the content part name, the shape will be named `[PartName]`, e.g. `HtmlBodyPart`, `Services`.
-If the shape type is different than the content part name, it will be `[PartName]-[ShapeType]`, e.g. `ListPart-ListPartFeed`
-
-### Content Field differentiator
-
-If the shape type is the same as the content field name, the shape will be named `[PartName]-[FieldName]`, e.g. `HtmlBodyPart-Description`, `Services-Image`.
-If the shape type is different than the content field name, it will be `[PartName]-[FieldName]-[ShapeType]`, e.g. `HtmlBodyPart-Description-CustomFieldSummary`, `Services-Image-ImageFieldSummary`
+You can find information  about shape differenciators in the [Templates documentation](../../OrchardCore.Modules/OrchardCore.Templates/README/#content-field-differentiator)
