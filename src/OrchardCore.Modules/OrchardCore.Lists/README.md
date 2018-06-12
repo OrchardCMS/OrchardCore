@@ -52,9 +52,3 @@ The following properties are available on the `ListPart` class.
 | `Content` | The raw content of the part |
 | `ContentItem` | The content item containing this part |
 
-## CREDITS
-
-### Trumbowyg
-<https://github.com/Alex-D/Trumbowyg>  
-Copyright (c) 2012-2016 Alexandre Demode (Alex-D)  
-License: MIT
