@@ -1,4 +1,4 @@
-@inject OrchardCore.Settings.ISiteService SiteService
+﻿@inject OrchardCore.Settings.ISiteService SiteService
 @{
     var site = await SiteService.GetSiteSettingsAsync();
 }
@@ -8,6 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@RenderTitleSegments(site.SiteName, "before")</title>
+    @await RenderSectionAsync("HeadMeta", required: false)
     <link type="image/x-icon" rel="shortcut icon" href="/TheTheme/favicon.ico" />
     <script asp-name="bootstrap" use-cdn="true" version="4" at="Foot"></script>
     <style asp-name="bootstrap" use-cdn="true" version="4"></style>
@@ -32,9 +33,7 @@
     @await RenderSectionAsync("Header", required: false)
     <main role="main" class="container">
         @await RenderSectionAsync("Messages", required: false)
-        <div class="row">
-            @await RenderBodyAsync()
-        </div>
+        @await RenderBodyAsync()
     </main>
     <resources type="FootScript" />
 </body>
