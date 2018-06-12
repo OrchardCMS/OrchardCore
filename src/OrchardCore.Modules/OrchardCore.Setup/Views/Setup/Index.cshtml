@@ -134,56 +134,42 @@
 
     </div>
 
-    @if (!Model.TablePrefixPreset || !Model.ConnectionStringPreset || !Model.DatabaseProviderPreset)
+    @if (!Model.DatabaseConfigurationPreset)
     {
         <h6>
             @T["Database"]
             <span class="text-muted form-text small">@T["The database is used to store the site's configuration and its contents. You can specify a custom table prefix if you intend to reuse the same database for multiple sites."]</span>
         </h6>
-    }
-    <div class="row">
-        <div class="form-group col-md-6">
-            <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
-            @if (Model.DatabaseProviderPreset)
-            {
-                var provider = Model.DatabaseProviders.FirstOrDefault(p => p.Value == Model.DatabaseProvider);
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
+                @if (Model.DatabaseConfigurationPreset)
+                {
+                    var provider = Model.DatabaseProviders.FirstOrDefault(p => p.Value == Model.DatabaseProvider);
 
-                <select asp-for="DatabaseProvider" class="form-control" required readonly>
-                    <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix">@provider.Name</option>
-                </select>
-            }
-            else
-            {
-                <select asp-for="DatabaseProvider" class="form-control" required>
-                    @foreach (var provider in Model.DatabaseProviders)
-                    {
+                    <select asp-for="DatabaseProvider" class="form-control" required readonly>
                         <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix">@provider.Name</option>
-                    }
-                </select>
-            }
-            <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
-        </div>
+                    </select>
+                }
+                else
+                {
+                    <select asp-for="DatabaseProvider" class="form-control" required>
+                        @foreach (var provider in Model.DatabaseProviders)
+                        {
+                            <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix">@provider.Name</option>
+                        }
+                    </select>
+                }
+                <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
+            </div>
 
-        @if (Model.TablePrefixPreset)
-        {
-            <input asp-for="TablePrefix" type="hidden" />
-        }
-        else
-        {
             <div class="form-group col-md-6 tablePrefix" asp-validation-class-for="TablePrefix">
                 <label asp-for="TablePrefix">@T["Table Prefix"]</label>
                 <input asp-for="TablePrefix" class="form-control" />
                 <span asp-validation-for="TablePrefix" class="text-danger"></span>
             </div>
-        }
-    </div>
+        </div>
 
-    @if (Model.ConnectionStringPreset)
-    {
-        <input asp-for="ConnectionString" type="hidden" />
-    }
-    else
-    {
         <fieldset class="row connectionString" asp-validation-class-for="ConnectionString">
             <div class="form-group col-md-12">
                 <label asp-for="ConnectionString">@T["Connection string"]</label>
