@@ -30,11 +30,6 @@ namespace OrchardCore.Apis.JsonApi
         private readonly MvcOptions _options;
         private readonly MvcJsonOptions _jsonOptions;
 
-        // These fields are used when one of the legacy constructors is called that doesn't provide the MvcOptions or
-        // MvcJsonOptions.
-        private readonly bool _suppressInputFormatterBuffering;
-        private readonly bool _allowInputFormatterExceptionMessages;
-
         private ObjectPool<JsonSerializer> _jsonSerializerPool;
 
         public JsonApiInputFormatter(
@@ -117,7 +112,7 @@ namespace OrchardCore.Apis.JsonApi
 
             var request = context.HttpContext.Request;
 
-            var suppressInputFormatterBuffering = _options?.SuppressInputFormatterBuffering ?? _suppressInputFormatterBuffering;
+            var suppressInputFormatterBuffering = _options?.SuppressInputFormatterBuffering ?? false;
 
             if (!request.Body.CanSeek && !suppressInputFormatterBuffering)
             {
@@ -300,7 +295,7 @@ namespace OrchardCore.Apis.JsonApi
         {
             // In 2.0 and earlier we always gave a generic error message for errors that come from JSON.NET
             // We only allow it in 2.1 and newer if the app opts-in.
-            if (!(_jsonOptions?.AllowInputFormatterExceptionMessages ?? _allowInputFormatterExceptionMessages))
+            if (!(_jsonOptions?.AllowInputFormatterExceptionMessages ?? false))
             {
                 // This app is not opted-in to JSON.NET messages, return the original exception.
                 return exception;
