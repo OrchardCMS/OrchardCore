@@ -9,6 +9,19 @@ using OrchardCore.OpenId;
 )]
 
 [assembly: Feature(
+    Id = OpenIdConstants.Features.Client,
+    Name = "OpenID Client",
+    Category = "OpenID Connect",
+    Description = "Auhenticates users from an external OpenID Connect identity provider.",
+    Dependencies = new[]
+    {
+        OpenIdConstants.Features.Core,
+        "OrchardCore.Authentication",
+        "OrchardCore.DataProtection"
+    }
+)]
+
+[assembly: Feature(
     Id = OpenIdConstants.Features.Core,
     Name = "OpenID Core Components",
     Category = "OpenID Connect",
