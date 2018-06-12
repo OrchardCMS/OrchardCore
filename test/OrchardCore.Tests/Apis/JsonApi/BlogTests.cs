@@ -18,7 +18,7 @@ namespace OrchardCore.Tests.Apis.JsonApi
             var contentItemId = await _siteContext
                 .Client
                 .Content
-                .Create("Blog", contentItemBuilder => contentItemBuilder
+                .Create("Blog", builder => builder
                         .WithContentPart("TitlePart", partBuilder => partBuilder
                             .WithProperty("Title", "Hi There!"))
                 );

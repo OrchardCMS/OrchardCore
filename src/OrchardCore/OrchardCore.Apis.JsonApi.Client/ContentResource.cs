@@ -16,6 +16,12 @@ namespace OrchardCore.Apis.JsonApi.Client
 
         public Task<string> Create(string contentType, Action<ContentTypeCreateResourceBuilder> builder)
         {
+            var contentTypeBuilder = new ContentTypeCreateResourceBuilder(contentType);
+            builder(contentTypeBuilder);
+
+            var variables = contentTypeBuilder.Build();
+
+
             return Task.FromResult("");
         }
     }

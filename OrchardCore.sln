@@ -305,7 +305,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Apis.JsonApi.Ab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ContentManagement.GraphQL", "src\OrchardCore\OrchardCore.ContentManagement.GraphQL\OrchardCore.ContentManagement.GraphQL.csproj", "{476F0F2B-E3D9-47A2-A8A4-77835EAA6A96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Apis.OpenApi", "src\OrchardCore.Modules\OrchardCore.Apis.OpenApi\OrchardCore.Apis.OpenApi.csproj", "{37BB71B3-8C43-4DAF-99A5-D88274DDEF6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Apis.OpenApi", "src\OrchardCore.Modules\OrchardCore.Apis.OpenApi\OrchardCore.Apis.OpenApi.csproj", "{37BB71B3-8C43-4DAF-99A5-D88274DDEF6F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Https", "src\OrchardCore.Modules\OrchardCore.Https\OrchardCore.Https.csproj", "{5C795749-3907-4F12-A1EF-A7C4AFA0B92F}"
 EndProject

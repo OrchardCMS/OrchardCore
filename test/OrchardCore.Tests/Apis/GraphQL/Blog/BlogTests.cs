@@ -18,11 +18,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var contentItemId = await _siteContext
                 .Client
                 .Content
-                .Create("Blog", builder => {
-                    builder
+                .Create("Blog", builder => builder
                         .WithContentPart("TitlePart")
-                        .AddField("Title", "Hi There!");
-                });
+                        .AddField("Title", "Hi There!")
+                );
 
             Assert.NotEmpty(contentItemId);
         }

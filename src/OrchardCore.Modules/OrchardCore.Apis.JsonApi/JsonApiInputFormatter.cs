@@ -97,8 +97,19 @@ namespace OrchardCore.Apis.JsonApi
 
             SupportedEncodings.Add(UTF8EncodingWithoutBOM);
             SupportedEncodings.Add(UTF16EncodingLittleEndian);
+            SupportedEncodings.Add(Encoding.UTF8);
 
             SupportedMediaTypes.Add(MediaTypeHeaderValues.ApplicationJsonApi);
+        }
+
+        public override Task<InputFormatterResult> ReadAsync(InputFormatterContext context)
+        {
+            return base.ReadAsync(context);
+        }
+
+        public override Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context)
+        {
+            return base.ReadRequestBodyAsync(context);
         }
 
         /// <summary>
