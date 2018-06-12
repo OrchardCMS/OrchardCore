@@ -104,7 +104,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.Session" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Spa.Services" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Test.Host" Version="2.1.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.TestHost" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Web.Sockets" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Web.Utilities" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNet.Identity.AspNetCore.Compat" Version="0.3.2" />
