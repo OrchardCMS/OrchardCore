@@ -13,12 +13,7 @@ using OrchardCore.OpenId;
     Name = "OpenID Client",
     Category = "OpenID Connect",
     Description = "Auhenticates users from an external OpenID Connect identity provider.",
-    Dependencies = new[]
-    {
-        OpenIdConstants.Features.Core,
-        "OrchardCore.Authentication",
-        "OrchardCore.DataProtection"
-    }
+    Dependencies = new[] { OpenIdConstants.Features.Core }
 )]
 
 [assembly: Feature(
