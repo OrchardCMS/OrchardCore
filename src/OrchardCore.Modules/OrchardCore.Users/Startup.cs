@@ -90,11 +90,11 @@ namespace OrchardCore.Users
             .AddCookie(IdentityConstants.TwoFactorRememberMeScheme, options =>
             {
                 options.Cookie.Name = IdentityConstants.TwoFactorRememberMeScheme;
-            })
-            .AddCookie(IdentityConstants.TwoFactorUserIdScheme, IdentityConstants.TwoFactorUserIdScheme, options =>
-            {
-                options.Cookie.Name = IdentityConstants.TwoFactorUserIdScheme;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            //})
+            //.AddCookie(IdentityConstants.TwoFactorUserIdScheme, IdentityConstants.TwoFactorUserIdScheme, options =>
+            //{
+            //    options.Cookie.Name = IdentityConstants.TwoFactorUserIdScheme;
+            //    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
             });
 
             // Identity services
