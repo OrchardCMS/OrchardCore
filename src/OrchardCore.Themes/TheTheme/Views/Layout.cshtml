@@ -35,9 +35,7 @@
     @await RenderSectionAsync("Header", required: false)
     <main role="main" class="container">
         @await RenderSectionAsync("Messages", required: false)
-        <div class="row">
-            @await RenderBodyAsync()
-        </div>
+        @await RenderBodyAsync()
     </main>
     @await RenderSectionAsync("Footer", required: false)
     <resources type="FootScript" />
