@@ -6,19 +6,28 @@ The library Orchard Core Modules provides a mechanism to have a self-contained m
 
 First, create a brand new web application.
 
+Install OrchardCore.Application.Cms.Targets into the project by managing the project NuGet packages.
+
 Within this new application we are initially going to focus on `Startup.cs`.
 
 Okay so first, let's open up `Startup.cs`.
 
-Within the `ConfigureServices` method, add these lines:
+Within the `ConfigureServices` method, add this line:
 
 ```csharp
-services.UseOrchardCore(configure => configure
-    .AddConfiguration(Configuration)
-);
+services.AddOrchardCms(); 
 ```
 
-Next, at the end of the `Configure` method, add this line:
+Next, at the end of the `Configure` method, replace this block: 
+
+```csharp
+app.Run(async (context) => 
+{
+    await context.Response.WriteAsync("Hello World!"); 
+});
+```
+
+with this line: 
 
 ```csharp
 app.UseOrchardCore();
