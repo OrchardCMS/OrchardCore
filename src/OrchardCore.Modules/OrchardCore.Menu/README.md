@@ -18,6 +18,36 @@ The `Menu` shape is used to render a Menu.
 | ---------- | --------- | ------------ |
 | `Menu__[Differentiator]` | `Menu__MainMenu` | `Menu-MainMenu.cshtml` |
 
+#### Example
+
+##### Liquid
+
+```liquid
+<nav>
+    <ul class="nav navbar-nav {{ Model.Classes | join: " " }}">
+        {% for item in Model.Items %}
+            {{ item | shape_render }}
+        {% endfor %}
+    </ul>
+</nav>
+```
+
+##### Razor
+
+```razor
+@{
+    TagBuilder tag = Tag(Model, "ul");
+    tag.AddCssClass("nav navbar-nav");
+
+    foreach (var item in Model.Items)
+    {
+        tag.InnerHtml.AppendHtml(await DisplayAsync(item));
+    }
+}
+
+@tag
+```
+
 ### `MenuItem`
 
 The `MenuItem` shape is used to render a menu item.
@@ -41,6 +71,60 @@ The `MenuItem` shape is used to render a menu item.
 | `MenuItem__[MenuName]__level__[level]` | `MenuItem__MainMenu__level__2` | `MenuItem-MainMenu-level-2.cshtml` |
 | `MenuItem__[MenuName]__[ContentType]` | `MenuItem__MainMenu__HtmlMenuItem` | `MenuItem-MainMenu-HtmlMenuItem.cshtml` |
 | `MenuItem__[MenuName]__[ContentType]__level__[level]` | `MenuItem__MainMenu__HtmlMenuItem__level__2` | `MenuItem-MainMenu-HtmlMenuItem-level-2.cshtml` |
+
+#### Example
+
+##### Liquid
+
+```liquid
+<li class="nav-item{% if Model.HasItems %} dropdown{% endif %}">
+    {% shape_clear_alternates Model %}
+    {% shape_type Model "MenuItemLink" %}
+    {{ Model | shape_render }}
+    {% if Model.HasItems %}
+    <div class="dropdown-menu">
+        {% for item in Model.Items %}
+        {{ item | shape_render }}
+        {% endfor %}
+    </div>
+    {% endif %}
+</li>
+```
+
+##### Razor
+
+```razor
+@{
+    TagBuilder tag = Tag(Model, "li");
+
+    if ((bool)Model.HasItems)
+    {
+        tag.AddCssClass("dropdown");
+    }
+
+    // Morphing the shape to keep Model untouched
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "MenuItemLink";
+
+    tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
+
+    if ((bool)(Model.HasItems))
+    {
+        TagBuilder parentTag = Tag(Model, "div");
+        parentTag.AddCssClass("dropdown-menu");
+
+        foreach (var item in Model.Items)
+        {
+            item.ParentTag = parentTag;
+            parentTag.InnerHtml.AppendHtml(await DisplayAsync(item));
+        }
+
+        tag.InnerHtml.AppendHtml(parentTag);
+    }
+}
+
+@tag
+```
 
 ### `MenuItemLink`
 
@@ -67,6 +151,40 @@ available on the `MenuItem` shape are still available.
 | `MenuItemLink__[MenuName]__level__[level]` | `MenuItemLink__MainMenu__level__2` | `MenuItemLink-MainMenu-level-2.cshtml` |
 | `MenuItemLink__[MenuName]__[ContentType]` | `MenuItemLink__MainMenu__HtmlMenuItem` | `MenuItemLink-MainMenu-HtmlMenuItem.cshtml` |
 | `MenuItemLink__[MenuName]__[ContentType]__level__[level]` | `MenuItemLink__MainMenu__HtmlMenuItem__level__2` | `MenuItemLink-MainMenu-HtmlMenuItem-level-2.cshtml` |
+
+#### Example
+
+##### Liquid
+
+```liquid
+{% assign link = Model.ContentItem.Content.LinkMenuItemPart %}
+
+{% if Model.HasItems %}
+    <a href="{{ link.Url | href }}" class="nav-link dropdown-toggle">{{ link.Name }}<b class="caret"></b></a>
+{% else %}
+    <a href="{{ link.Url | href }}" class="nav-link">{{ link.Name }}</a>
+{% endif %}
+```
+
+##### Razor
+
+```razor
+@using OrchardCore.ContentManagement
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var link = contentItem.Content["LinkMenuItemPart"];
+}
+
+if ((bool)(Model.HasItems))
+{
+    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="@Url.Content((string)link.Url)">@link.Name<b class="caret"></b></a>
+}
+else
+{
+    <a class="nav-link" href="@Url.Content((string)link.Url)">@link.Name</a>
+}
+```
 
 ## CREDITS
 
