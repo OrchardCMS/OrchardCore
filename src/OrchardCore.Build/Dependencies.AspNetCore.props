@@ -142,7 +142,7 @@
     <PackageManagement Include="Microsoft.Extensions.Configuration.Xml" Version="2.1.0" />
     <PackageManagement Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.0" />
     <PackageManagement Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0" />
-    <PackageManagement Include="Microsoft.Extensions.DependencyModel" Version="2.1.0-rc1" />
+    <PackageManagement Include="Microsoft.Extensions.DependencyModel" Version="2.1.0" />
     <PackageManagement Include="Microsoft.Extensions.DiagnosticAdapter" Version="2.1.0" />
     <PackageManagement Include="Microsoft.Extensions.FileProviders.Abstractions" Version="2.1.0" />
     <PackageManagement Include="Microsoft.Extensions.FileProviders.Composite" Version="2.1.0" />
