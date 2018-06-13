@@ -1,8 +1,26 @@
 # Menu (OrchardCore.Menu)
 
-## Templates
+## Shapes 
 
-Example of alternate or template for a `Menu`:
+### `Menu`
+
+The `Menu` shape is used to render a Menu.
+
+| Property | Description |
+| --------- | ------------ |
+| `Model.ContentItemId` | If defined, contains the content item identifier of the menu to render. |
+| `Model.Items` | The list of menu items shapes for the menu. These are shapes of type `MenuItem`. |
+| `Model.Differentiator` | If defined, contains the formatted name of the menu. For instance `MainMenu`. |
+
+#### Alternates
+
+| Definition | Template | Filename|
+| ---------- | --------- | ------------ |
+| `Menu__[Differentiator]` | `Menu__MainMenu` | `Menu-MainMenu.cshtml` |
+
+#### Example
+
+##### Liquid
 
 ```liquid
 <nav>
@@ -14,10 +32,12 @@ Example of alternate or template for a `Menu`:
 </nav>
 ```
 
+##### Razor
+
 ```razor
 @{
     TagBuilder tag = Tag(Model, "ul");
-    tag.AddCssClass("navbar-nav mr-auto");
+    tag.AddCssClass("nav navbar-nav");
 
     foreach (var item in Model.Items)
     {
@@ -28,7 +48,33 @@ Example of alternate or template for a `Menu`:
 @tag
 ```
 
-Example of alternate or template for a `MenuItem`:
+### `MenuItem`
+
+The `MenuItem` shape is used to render a menu item.
+
+| Property | Description |
+| --------- | ------------ |
+| `Model.Menu` | The `Menu` shape owning this item. |
+| `Model.ContentItem` | The content item representing this menu item. |
+| `Model.Level` | The level of the menu item. `0` for top level menu items. |
+| `Model.Items` | The list of sub menu items shapes. These are shapes of type `MenuItem`. |
+| `Model.Differentiator` | If defined, contains the formatted name of the menu. For instance `MainMenu`. |
+
+#### Alternates
+
+| Definition | Template | Filename|
+| ---------- | --------- | ------------ |
+| `MenuItem__level__[level]` | `MenuItem__level__2` | `MenuItem-level-2.cshtml` |
+| `MenuItem__[ContentType]` | `MenuItem__HtmlMenuItem` | `MenuItem-HtmlMenuItem.cshtml` |
+| `MenuItem__[ContentType]__level__[level]` | `MenuItem__HtmlMenuItem__level__2` | `MenuItem-HtmlMenuItem-level-2.cshtml` |
+| `MenuItem__[MenuName]` | `MenuItem__MainMenu` | `MenuItem-MainMenu.cshtml` |
+| `MenuItem__[MenuName]__level__[level]` | `MenuItem__MainMenu__level__2` | `MenuItem-MainMenu-level-2.cshtml` |
+| `MenuItem__[MenuName]__[ContentType]` | `MenuItem__MainMenu__HtmlMenuItem` | `MenuItem-MainMenu-HtmlMenuItem.cshtml` |
+| `MenuItem__[MenuName]__[ContentType]__level__[level]` | `MenuItem__MainMenu__HtmlMenuItem__level__2` | `MenuItem-MainMenu-HtmlMenuItem-level-2.cshtml` |
+
+#### Example
+
+##### Liquid
 
 ```liquid
 <li class="nav-item{% if Model.HasItems %} dropdown{% endif %}">
@@ -45,9 +91,10 @@ Example of alternate or template for a `MenuItem`:
 </li>
 ```
 
+##### Razor
+
 ```razor
 @{
-    int level = (int)Model.Level;
     TagBuilder tag = Tag(Model, "li");
 
     if ((bool)Model.HasItems)
@@ -63,12 +110,11 @@ Example of alternate or template for a `MenuItem`:
 
     if ((bool)(Model.HasItems))
     {
-        TagBuilder parentTag = Tag(Model, "ul");
+        TagBuilder parentTag = Tag(Model, "div");
         parentTag.AddCssClass("dropdown-menu");
 
         foreach (var item in Model.Items)
         {
-            item.Level = level + 1;
             item.ParentTag = parentTag;
             parentTag.InnerHtml.AppendHtml(await DisplayAsync(item));
         }
@@ -80,7 +126,35 @@ Example of alternate or template for a `MenuItem`:
 @tag
 ```
 
-Example of alternate or template for a `MenuItemLink-LinkMenuItem`:
+### `MenuItemLink`
+
+The `MenuItemLink` shape is used to render a menu item link.
+This shape is created by morphing a `MenuItem` shape into a `MenuItemLink`. Hence all the properties
+available on the `MenuItem` shape are still available.
+
+| Property | Description |
+| --------- | ------------ |
+| `Model.Menu` | The `Menu` shape owning this item. |
+| `Model.ContentItem` | The content item representing this menu item. |
+| `Model.Level` | The level of the menu item. `0` for top level menu items. |
+| `Model.Items` | The list of sub menu items shapes. These are shapes of type `MenuItem`. |
+| `Model.Differentiator` | If defined, contains the formatted name of the menu. For instance `MainMenu`. |
+
+#### Alternates
+
+| Definition | Template | Filename|
+| ---------- | --------- | ------------ |
+| `MenuItemLink__level__[level]` | `MenuItemLink__level__2` | `MenuItemLink-level-2.cshtml` |
+| `MenuItemLink__[ContentType]` | `MenuItemLink__HtmlMenuItem` | `MenuItemLink-HtmlMenuItem.cshtml` |
+| `MenuItemLink__[ContentType]__level__[level]` | `MenuItemLink__HtmlMenuItem__level__2` | `MenuItemLink-HtmlMenuItem-level-2.cshtml` |
+| `MenuItemLink__[MenuName]` | `MenuItemLink__MainMenu` | `MenuItemLink-MainMenu.cshtml` |
+| `MenuItemLink__[MenuName]__level__[level]` | `MenuItemLink__MainMenu__level__2` | `MenuItemLink-MainMenu-level-2.cshtml` |
+| `MenuItemLink__[MenuName]__[ContentType]` | `MenuItemLink__MainMenu__HtmlMenuItem` | `MenuItemLink-MainMenu-HtmlMenuItem.cshtml` |
+| `MenuItemLink__[MenuName]__[ContentType]__level__[level]` | `MenuItemLink__MainMenu__HtmlMenuItem__level__2` | `MenuItemLink-MainMenu-HtmlMenuItem-level-2.cshtml` |
+
+#### Example
+
+##### Liquid
 
 ```liquid
 {% assign link = Model.ContentItem.Content.LinkMenuItemPart %}
@@ -92,26 +166,23 @@ Example of alternate or template for a `MenuItemLink-LinkMenuItem`:
 {% endif %}
 ```
 
+##### Razor
+
 ```razor
 @using OrchardCore.ContentManagement
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var linkMenuItemPart = contentItem.Content["LinkMenuItemPart"];
-    int level = (int)Model.Level;
+    var link = contentItem.Content["LinkMenuItemPart"];
 }
 
-@if (level > 0)
+if ((bool)(Model.HasItems))
 {
-    <a class="dropdown-item" href="@Url.Content((string)linkMenuItemPart.Url)">@linkMenuItemPart.Name</a>
-}
-else if ((bool)(Model.HasItems))
-{
-    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="@Url.Content((string)linkMenuItemPart.Url)">@linkMenuItemPart.Name<b class="caret"></b></a>
+    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="@Url.Content((string)link.Url)">@link.Name<b class="caret"></b></a>
 }
 else
 {
-    <a class="nav-link" href="@Url.Content((string)linkMenuItemPart.Url)">@linkMenuItemPart.Name</a>
+    <a class="nav-link" href="@Url.Content((string)link.Url)">@link.Name</a>
 }
 ```
 
