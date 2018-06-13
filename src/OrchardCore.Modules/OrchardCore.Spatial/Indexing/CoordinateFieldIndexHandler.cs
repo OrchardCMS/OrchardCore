@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using OrchardCore.ContentFields.Fields;
 using OrchardCore.Indexing;
+using OrchardCore.Spatial.Fields;
 
-namespace OrchardCore.ContentFields.Indexing
+namespace OrchardCore.Spatial.Indexing
 {
     public class CoordinateFieldIndexHandler : ContentFieldIndexHandler<CoordinateField>
     {

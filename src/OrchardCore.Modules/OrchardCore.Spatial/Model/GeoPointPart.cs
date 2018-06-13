@@ -1,6 +1,6 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Spatial
+namespace OrchardCore.Spatial.Model
 {
     public class GeoPointPart : ContentPart
     {

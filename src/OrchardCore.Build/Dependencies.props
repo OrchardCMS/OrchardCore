@@ -15,7 +15,8 @@
     <PackageManagement Include="Jint" Version="3.0.0-beta-1158" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00005" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00005" />
-    <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00005" />  
+    <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00005" />
+    <PackageManagement Include="Lucene.Net.Spatial" Version="4.8.0-beta00005" />
     <PackageManagement Include="Markdig" Version="0.15.0" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
     <PackageManagement Include="Moq" Version="4.8.2" />
@@ -33,7 +34,7 @@
     <PackageManagement Include="WindowsAzure.Storage" Version="9.2.0" />
     <PackageManagement Include="xunit.analyzers" Version="0.3.0" />
     <PackageManagement Include="xunit" Version="2.3.0-beta3-build3705" />
-    <PackageManagement Include="xunit.runner.visualstudio" Version="2.3.0-beta3-build3705" />  
+    <PackageManagement Include="xunit.runner.visualstudio" Version="2.3.0-beta3-build3705" />
     <PackageManagement Include="YamlDotNet" Version="4.2.1" />
     <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1194" />
     <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1194" />

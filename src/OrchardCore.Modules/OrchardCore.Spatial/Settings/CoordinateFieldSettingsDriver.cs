@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
-using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Spatial.Fields;
 
-namespace OrchardCore.ContentFields.Settings
+namespace OrchardCore.Spatial.Settings
 {
 
     public class CoordinateFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<CoordinateField>

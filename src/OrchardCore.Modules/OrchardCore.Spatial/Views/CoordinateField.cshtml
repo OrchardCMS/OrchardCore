@@ -1,0 +1,11 @@
+@model DisplayCoordinateFieldViewModel
+@using OrchardCore.Mvc.Utilities;
+@using OrchardCore.Spatial.ViewModels
+
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+}
+
+<div class="field field-type-booleanfield field-name-@name">
+    @Model.Field.Latitude,@Model.Field.Longitude
+</div>

@@ -1,0 +1,21 @@
+@using OrchardCore.Spatial.Settings
+@using OrchardCore.Spatial.ViewModels
+@model EditCoordinateFieldViewModel
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<CoordinateFieldSettings>();
+}
+
+@{
+    // Morph the current shape to the correct editor shape based on its Editor property
+    var shape = Model as IShape;
+    shape.Metadata.Alternates.Clear();
+    shape.Metadata.Type = "CoordinateField_Editor";
+
+    if (!string.IsNullOrEmpty(settings.Editor))
+    {
+        shape.Metadata.Alternates.Add($"CoordinateField_Editor__{settings.Editor}");
+    }
+}
+
+@await DisplayAsync(Model)

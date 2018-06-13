@@ -1,4 +1,5 @@
 using OrchardCore.ContentManagement;
+using OrchardCore.Spatial.Model;
 
 namespace OrchardCore.Spatial.ViewModels
 {

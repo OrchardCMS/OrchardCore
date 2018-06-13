@@ -1,6 +1,5 @@
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.ContentFields.Drivers;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Indexing;
 using OrchardCore.ContentFields.Settings;
@@ -43,13 +42,6 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, BooleanFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, BooleanFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, BooleanFieldIndexHandler>();
-
-            // Coordinate Field
-            services.AddSingleton<ContentField, CoordinateField>();
-            services.AddScoped<IContentFieldDisplayDriver, CoordinateFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, CoordinateFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, CoordinateFieldIndexHandler>();
-
 
             // Text Field
             services.AddSingleton<ContentField, TextField>();

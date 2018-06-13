@@ -1,12 +1,12 @@
 using System.Threading.Tasks;
-using OrchardCore.ContentFields.Fields;
-using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Spatial.Fields;
+using OrchardCore.Spatial.ViewModels;
 
-namespace OrchardCore.ContentFields.Drivers
+namespace OrchardCore.Spatial.Drivers
 {
     public class CoordinateFieldDisplayDriver : ContentFieldDisplayDriver<CoordinateField>
     {
@@ -26,6 +26,8 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<EditCoordinateFieldViewModel>("CoordinateField_Edit", model =>
             {
+                model.Latitude = field.Latitude;
+                model.Longitude = field.Longitude;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;

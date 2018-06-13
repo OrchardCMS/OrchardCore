@@ -1,9 +1,9 @@
-namespace OrchardCore.ContentFields.Settings
+namespace OrchardCore.Spatial.Settings
 {
     public class CoordinateFieldSettings
     {
         public string Hint { get; set; }
-        public string Label { get; set; }
         public string Editor { get; set; }
+        public bool Required { get; set; }
     }
 }

@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Spatial.Model;
 using OrchardCore.Spatial.ViewModels;
 
 namespace OrchardCore.Spatial.Drivers

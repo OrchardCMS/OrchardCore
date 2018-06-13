@@ -1,0 +1,43 @@
+@using OrchardCore.Spatial.Settings
+@model OrchardCore.Spatial.Settings.CoordinateFieldSettings
+
+
+@inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
+@inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
+
+@{
+    var theme = await ThemeManager.GetThemeAsync();
+    var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
+    var editorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith("CoordinateField_Option__", StringComparison.OrdinalIgnoreCase));
+}
+
+<fieldset class="form-group">
+    <div class="form-check">
+        <label class="form-check-label">
+            <input asp-for="Required" type="checkbox" class="form-check-input" />
+            <span class="hint">@T["Check if the field is required."]</span>
+        </label>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row col-md">
+        <label asp-for="Hint">@T["Hint"]</label>
+        <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+    </div>
+</fieldset>
+
+<div class="row">
+    <fieldset class="form-group col-sm-6">
+        <label asp-for="Editor">@T["What type of editor should be used?"]</label>
+        <select asp-for="Editor" class="form-control">
+            @foreach (var editorShape in editorShapes)
+            {
+                dynamic shape = await Factory.CreateAsync(editorShape);
+                shape.Editor = Model.Editor;
+                @await DisplayAsync(shape)
+            }
+        </select>
+    </fieldset>
+</div>

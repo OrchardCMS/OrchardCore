@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.Indexing;
+using OrchardCore.Spatial.Model;
 
 namespace OrchardCore.Spatial.Indexing
 {

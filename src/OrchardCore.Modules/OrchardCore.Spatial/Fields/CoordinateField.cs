@@ -1,6 +1,6 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.ContentFields.Fields
+namespace OrchardCore.Spatial.Fields
 {
     public class CoordinateField : ContentField
     {
