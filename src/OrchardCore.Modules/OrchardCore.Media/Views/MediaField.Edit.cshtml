@@ -60,8 +60,11 @@
                             :class="{selected: selectedMedia == media}"
                             v-on:click="selectMedia(media)">
                             <div v-if="media.mediaPath!== 'not-found'">
-                                <div class="thumb-container" :style="{height: thumbSize + 'px'}">
-                                    <img v-if="media.mime.startsWith('image')" :src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" :data-mime="media.mime" />
+                                <div class="thumb-container" :style="{height: thumbSize + 'px'}" >
+                                    <img v-if="media.mime.startsWith('image')" 
+                                         :src="media.url + '?width=' + thumbSize + '&height=' + thumbSize" 
+                                         :data-mime="media.mime"
+                                         :style="{maxHeight: thumbSize + 'px', maxWidth: thumbSize + 'px'}"/>
                                     <i v-else class="fa fa-file-o" :data-mime="media.mime"></i>
                                 </div>
                                 <div class="media-container-main-item-title card-body">
