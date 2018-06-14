@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Layers.Handlers;
+using OrchardCore.Layers.ViewModels;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Scripting;
 
@@ -28,11 +29,9 @@ namespace OrchardCore.Layers.Services
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
 		private readonly ILayerService _layerService;
-		private readonly IShapeFactory _shapeFactory;
 
 		public LayerFilter(
 			ILayerService layerService,
-			IShapeFactory shapeFactory,
             ILayoutAccessor layoutAccessor,
             IContentItemDisplayManager contentItemDisplayManager,
             IUpdateModelAccessor modelUpdaterAccessor,
@@ -49,7 +48,6 @@ namespace OrchardCore.Layers.Services
             _serviceProvider = serviceProvider;
             _memoryCache = memoryCache;
             _signal = signal;
-			_shapeFactory = shapeFactory;
         }
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
@@ -103,18 +101,23 @@ namespace OrchardCore.Layers.Services
 						continue;
 					}
 
-					IShape widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
+					var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
 
 					widgetContent.Classes.Add("widget");
 					widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
 
-					var wrapper = await _shapeFactory.CreateAsync("Widget_Wrapper", new { Widget = widget.ContentItem, Content = widgetContent });
-					wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
+                    var wrapper = new WidgetWrapper
+                    {
+                        Widget = widget.ContentItem,
+                        Content = widgetContent
+                    };
+
+                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
+                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__Zone__" + widget.Zone);
 
 					var contentZone = layout.Zones[widget.Zone];
 					contentZone.Add(wrapper);
 				}
-
 			}
 
 			await next.Invoke();
