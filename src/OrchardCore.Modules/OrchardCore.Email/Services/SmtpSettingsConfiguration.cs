@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Entities;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Services
@@ -12,15 +13,18 @@ namespace OrchardCore.Email.Services
         private readonly ISiteService _site;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger<SmtpSettingsConfiguration> _logger;
+        private readonly ShellSettings _shellSettings;
 
         public SmtpSettingsConfiguration(
             ISiteService site,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<SmtpSettingsConfiguration> logger)
+            ILogger<SmtpSettingsConfiguration> logger,
+            ShellSettings shellSettings)
         {
             _site = site;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
+            _shellSettings = shellSettings;
         }
 
         public void Configure(SmtpSettings options)
@@ -44,7 +48,7 @@ namespace OrchardCore.Email.Services
             {
                 try
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
+                    var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration), _shellSettings.Name);
                     options.Password = protector.Unprotect(settings.Password);
                 }
                 catch
