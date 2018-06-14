@@ -18,7 +18,7 @@ for Widgets will treat this content item in accordance. This is how the Layers m
 
 ## Theming
 
-Because `Widget` is a stereotype, all Widget content items are rendered from a main shaped named `Widget`.
+Because `Widget` is a stereotype, all Widget content items are rendered from a main shape named `Widget`.
 This main shape's template has access to these properties:
 
 | Property | Description |
@@ -43,7 +43,9 @@ The `Widget` shape is used to render a Widget. The default template will render 
 
 ```html
 <div class="widget-container">
-    <h2>A Paragraph</h2>
+    <div class="widget-container-title">
+        <h2>A Paragraph</h2>
+    </div>
     <div class="widget widget-html-widget">
         <div class="widget-body">
             <p>This is a paragraph</p>
@@ -73,6 +75,12 @@ The actual template for the `Widget` shape can be found in `src/OrchardCore.Modu
 </div>
 ```
 
+Alternates are available per Content Type.
+
+| Definition | Template | Filename|
+| ---------- | --------- | ------------ |
+| `Widget__[ContentType]` | `Widget__Paragraph` | `Widget-Paragraph.cshtml` |
+
 ### Customizing the `Widget_Wrapper` template
 
 As mentioned in the previous section, the Layers module uses a template to wrap the widgets that it renders and insert a custom title for each of them.
@@ -90,8 +98,9 @@ A common requirement is to remove these tags, which can be done by creating this
 @await DisplayAsync(Model.Content)
 ```
 
-If only the title needs to be changed, you can also change these alternates.
+Optionally you change 
 
 | Definition | Template | Filename|
 | ---------- | --------- | ------------ |
-| `Widget__[ContentType]` | `Widget__Paragraph` | `Widget-Paragraph.cshtml` |
+| `Widget_Wrapper__[ContentType]` | `Widget_Wrapper__Paragraph` | `Widget-Paragraph.Wrapper.cshtml` |
+| `Widget_Wrapper__Zone__[ContentZone]` | `Widget_Wrapper__Zone__Footer` | `Widget-Zone-Footer.Wrapper.cshtml` |

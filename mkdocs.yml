@@ -47,6 +47,7 @@ pages:
         - Templates: OrchardCore.Modules/OrchardCore.Templates/README.md
         - Liquid: OrchardCore.Modules/OrchardCore.Liquid/README.md
         - Custom Settings: OrchardCore.Modules/OrchardCore.CustomSettings/README.md
+        - Widgets: OrchardCore.Modules/OrchardCore.Widgets/README.md
     - Core Modules:
         - Placement: OrchardCore/OrchardCore.DisplayManagement/README.md
         - Dynamic Cache: OrchardCore.Modules/OrchardCore.DynamicCache/README.md
