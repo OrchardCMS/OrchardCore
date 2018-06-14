@@ -11,6 +11,7 @@ namespace OrchardCore.DynamicCache
     /// <summary>
     /// These services are registered on the tenant service collection
     /// </summary>
+    [Feature(FeatureName)]
     public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
@@ -23,8 +24,10 @@ namespace OrchardCore.DynamicCache
             services.AddScoped<IShapeDisplayEvents, DynamicCacheShapeDisplayEvents>();
 
             services.AddShapeAttributes<CachedShapeWrapperShapes>();
-            
+
             services.AddSingleton<IDynamicCache, DefaultDynamicCache>();
         }
+
+        internal const string FeatureName = "OrchardCore.DynamicCache";
     }
 }
