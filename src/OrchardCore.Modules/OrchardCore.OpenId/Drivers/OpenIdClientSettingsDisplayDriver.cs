@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities.DisplayManagement;
+using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -33,6 +34,7 @@ namespace OrchardCore.OpenId.Drivers
         private readonly IHtmlLocalizer<OpenIdClientSettingsDisplayDriver> T;
         private readonly IMemoryCache _memoryCache;
         private readonly IOpenIdClientService _clientService;
+        private readonly ShellSettings _shellSettings;
 
         public OpenIdClientSettingsDisplayDriver(
             IAuthorizationService authorizationService,
@@ -41,7 +43,8 @@ namespace OrchardCore.OpenId.Drivers
             IHttpContextAccessor httpContextAccessor,
             INotifier notifier,
             IHtmlLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            ShellSettings shellSettings)
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
@@ -50,6 +53,7 @@ namespace OrchardCore.OpenId.Drivers
             _notifier = notifier;
             T = stringLocalizer;
             _memoryCache = memoryCache;
+            _shellSettings = shellSettings;
         }
 
         public override async Task<IDisplayResult> EditAsync(OpenIdClientSettings settings, BuildEditorContext context)
@@ -176,7 +180,7 @@ namespace OrchardCore.OpenId.Drivers
                 }
                 else
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
+                    var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration), _shellSettings.Name);
                     settings.ClientSecret = protector.Protect(model.ClientSecret);
                 }
 

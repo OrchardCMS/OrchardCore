@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -23,15 +24,18 @@ namespace OrchardCore.OpenId.Configuration
         private readonly IOpenIdClientService _clientService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger<OpenIdClientConfiguration> _logger;
+        private readonly ShellSettings _shellSettings;
 
         public OpenIdClientConfiguration(
             IOpenIdClientService clientService,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<OpenIdClientConfiguration> logger)
+            ILogger<OpenIdClientConfiguration> logger,
+            ShellSettings shellSettings)
         {
             _clientService = clientService;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
+            _shellSettings = shellSettings;
         }
 
         public void Configure(AuthenticationOptions options)
@@ -85,7 +89,7 @@ namespace OrchardCore.OpenId.Configuration
 
             if (settings.ResponseType.Contains(OpenIdConnectResponseType.Code) && !string.IsNullOrEmpty(settings.ClientSecret))
             {
-                var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
+                var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration), _shellSettings.Name);
 
                 try
                 {
