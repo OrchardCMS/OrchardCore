@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
@@ -12,26 +13,17 @@ namespace OrchardCore.Menu
         public void Discover(ShapeTableBuilder builder)
         {
             builder.Describe("Menu")
-                .OnDisplaying(displaying =>
-                {
-                    var menu = displaying.Shape;
-                    string identifier = menu.ContentItemId ?? menu.Alias;
-
-                    if (!String.IsNullOrEmpty(identifier))
-                    {
-                        menu.Classes.Add("menu");
-                        menu.Metadata.Alternates.Add("Menu__" + EncodeAlternateElement(identifier));
-                    }
-                })
                 .OnProcessing(async context =>
                 {
-                    var menu = context.Shape;
+                    dynamic menu = context.Shape;
                     string identifier = menu.ContentItemId ?? menu.Alias;
 
                     if (String.IsNullOrEmpty(identifier))
                     {
                         return;
                     }
+
+                    menu.Classes.Add("menu");
 
                     // Menu population is executed when processing the shape so that its value
                     // can be cached. IShapeDisplayEvents is called before the ShapeDescriptor
@@ -61,16 +53,26 @@ namespace OrchardCore.Menu
                         return;
                     }
 
+                    string differentiator = FormatName((string) menu.MenuName);
+
+                    if (!String.IsNullOrEmpty(differentiator))
+                    {
+                        // Menu__[MenuName] e.g. Menu-MainMenu
+                        menu.Metadata.Alternates.Add("Menu__" + differentiator);
+                        menu.Differentiator = differentiator;
+                    }
+
                     // The first level of menu item shapes is created.
                     // Each other level is created when the menu item is displayed.
 
                     foreach (var contentItem in menuItems)
                     {
-                        dynamic shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
+                        var shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
                         {
                             ContentItem = contentItem,
                             Level = 0,
                             Menu = menu,
+                            Differentiator = differentiator
                         }));
 
                         // Don't use Items.Add() or the collection won't be sorted
@@ -82,10 +84,11 @@ namespace OrchardCore.Menu
             builder.Describe("MenuItem")
                 .OnDisplaying(async context =>
                 {
-                    var menuItem = context.Shape;
+                    dynamic menuItem = context.Shape;
                     ContentItem menuContentItem = menuItem.ContentItem;
                     var menu = menuItem.Menu;
                     int level = menuItem.Level;
+                    string differentiator = menuItem.Differentiator;
 
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
 
@@ -95,11 +98,12 @@ namespace OrchardCore.Menu
                     {
                         foreach (var contentItem in menuItems)
                         {
-                            dynamic shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
+                            var shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
                             {
                                 ContentItem = contentItem,
                                 Level = 0,
                                 Menu = menu,
+                                Differentiator = differentiator
                             }));
 
                             // Don't use Items.Add() or the collection won't be sorted
@@ -108,33 +112,39 @@ namespace OrchardCore.Menu
                     }
 
                     var encodedContentType = EncodeAlternateElement(menuContentItem.ContentItem.ContentType);
-                    var encodedContentItemId = EncodeAlternateElement(menuContentItem.ContentItem.ContentItemId);
 
+                    // MenuItem__level__[level] e.g. MenuItem-level-2
                     menuItem.Metadata.Alternates.Add("MenuItem__level__" + level);
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentItemId);
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentItemId + "__level__" + level);
 
                     // MenuItem__[ContentType] e.g. MenuItem-HtmlMenuItem
                     // MenuItem__[ContentType]__level__[level] e.g. MenuItem-HtmlMenuItem-level-2
                     menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentType);
                     menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentType + "__level__" + level);
 
-                    // MenuItem__[MenuName]__[ContentType] e.g. MenuItem-Main-Menu-HtmlMenuItem
-                    // MenuItem__[MenuName]__[ContentType] e.g. MenuItem-Main-Menu-HtmlMenuItem-level-2
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentItemId + "__" + encodedContentType);
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentItemId + "__" + encodedContentType + "__level__" + level);
+                    if (!String.IsNullOrEmpty(differentiator))
+                    {
+                        // MenuItem__[MenuName] e.g. MenuItem-MainMenu
+                        // MenuItem__[MenuName]__level__[level] e.g. MenuItem-MainMenu-level-2
+                        menuItem.Metadata.Alternates.Add("MenuItem__" + differentiator);
+                        menuItem.Metadata.Alternates.Add("MenuItem__" + differentiator + "__level__" + level);
+
+                        // MenuItem__[MenuName]__[ContentType] e.g. MenuItem-MainMenu-HtmlMenuItem
+                        // MenuItem__[MenuName]__[ContentType]__level__[level] e.g. MenuItem-MainMenu-HtmlMenuItem-level-2
+                        menuItem.Metadata.Alternates.Add("MenuItem__" + differentiator + "__" + encodedContentType);
+                        menuItem.Metadata.Alternates.Add("MenuItem__" + differentiator + "__" + encodedContentType + "__level__" + level);
+                    }
                 });
 
             builder.Describe("MenuItemLink")
                 .OnDisplaying(displaying =>
                 {
-                    var menuItem = displaying.Shape;
+                    dynamic menuItem = displaying.Shape;
                     int level = menuItem.Level;
+                    string differentiator = menuItem.Differentiator;
 
                     ContentItem menuContentItem = menuItem.ContentItem;
 
                     var encodedContentType = EncodeAlternateElement(menuContentItem.ContentItem.ContentType);
-                    var encodedContentItemId = EncodeAlternateElement(menuContentItem.ContentItem.ContentItemId);
 
                     menuItem.Metadata.Alternates.Add("MenuItemLink__level__" + level);
 
@@ -143,15 +153,18 @@ namespace OrchardCore.Menu
                     menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentType);
                     menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentType + "__level__" + level);
 
-                    // MenuItemLink__[MenuName] e.g. MenuItemLink-Main-Menu
-                    // MenuItemLink__[MenuName]__level__[level] e.g. MenuItemLink-Main-Menu-level-2
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentItemId);
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentItemId + "__level__" + level);
+                    if (!String.IsNullOrEmpty(differentiator))
+                    {
+                        // MenuItemLink__[MenuName] e.g. MenuItemLink-MainMenu
+                        // MenuItemLink__[MenuName]__level__[level] e.g. MenuItemLink-MainMenu-level-2
+                        menuItem.Metadata.Alternates.Add("MenuItemLink__" + differentiator);
+                        menuItem.Metadata.Alternates.Add("MenuItemLink__" + differentiator + "__level__" + level);
 
-                    // MenuItemLink__[MenuName]__[ContentType] e.g. MenuItemLink-Main-Menu-HtmlMenuItem
-                    // MenuItemLink__[MenuName]__[ContentType] e.g. MenuItemLink-Main-Menu-HtmlMenuItem-level-2
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentItemId + "__" + encodedContentType);
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentItemId + "__" + encodedContentType + "__level__" + level);
+                        // MenuItemLink__[MenuName]__[ContentType] e.g. MenuItemLink-MainMenu-HtmlMenuItem
+                        // MenuItemLink__[MenuName]__[ContentType] e.g. MenuItemLink-MainMenu-HtmlMenuItem-level-2
+                        menuItem.Metadata.Alternates.Add("MenuItemLink__" + differentiator + "__" + encodedContentType);
+                        menuItem.Metadata.Alternates.Add("MenuItemLink__" + differentiator + "__" + encodedContentType + "__level__" + level);
+                    }
                 });
         }
 
@@ -163,6 +176,44 @@ namespace OrchardCore.Menu
         private string EncodeAlternateElement(string alternateElement)
         {
             return alternateElement.Replace("-", "__").Replace(".", "_");
+        }
+
+        /// <summary>
+        /// Converts "foo-ba r" to "FooBaR"
+        /// </summary>
+        private static string FormatName(string name)
+        {
+            if (String.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
+            name = name.Trim();
+            var nextIsUpper = true;
+            var result = new StringBuilder(name.Length);
+            for (var i = 0; i < name.Length; i++)
+            {
+                var c = name[i];
+
+                if (c == '-' || char.IsWhiteSpace(c))
+                {
+                    nextIsUpper = true;
+                    continue;
+                }
+
+                if (nextIsUpper)
+                {
+                    result.Append(c.ToString().ToUpper());
+                }
+                else
+                {
+                    result.Append(c);
+                }
+
+                nextIsUpper = false;
+            }
+
+            return result.ToString();
         }
     }
 }

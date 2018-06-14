@@ -9,6 +9,7 @@
   
   <ItemGroup>
     <PackageManagement Include="AspNet.Security.OAuth.Validation" Version="2.0.0-rc2-final" />
+    <PackageManagement Include="AspNet.Security.OpenIdConnect.Primitives" Version="2.0.0-rc2-final" />
     <PackageManagement Include="Castle.Core" Version="4.2.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
     <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9442" />
@@ -27,7 +28,7 @@
     <PackageManagement Include="OpenIddict" Version="2.0.0-rc2-final" />
     <PackageManagement Include="OpenIddict.Core" Version="2.0.0-rc2-final" />
     <PackageManagement Include="OpenIddict.EntityFrameworkCore" Version="2.0.0-rc2-final" />
-    <PackageManagement Include="SixLabors.ImageSharp" Version="1.0.0-dev001179" />
+    <PackageManagement Include="SixLabors.ImageSharp" Version="1.0.0-beta0004" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0003" />
     <PackageManagement Include="WindowsAzure.Storage" Version="9.2.0" />
     <PackageManagement Include="xunit.analyzers" Version="0.3.0" />
