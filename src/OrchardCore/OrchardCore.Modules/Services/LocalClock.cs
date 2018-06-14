@@ -25,7 +25,7 @@ namespace OrchardCore.Modules
             }
         }
 
-        public async Task<DateTimeOffset> GetLocalNowAsync()
+        private async Task<DateTimeOffset> GetLocalNowAsync()
         {
             return _clock.ConvertToTimeZone(_clock.UtcNow, await GetLocalTimeZoneAsync());
         }
