@@ -125,8 +125,6 @@ namespace Microsoft.Extensions.DependencyInjection
             });
         }
 
-
-
         /// <summary>
         /// Adds host and tenant level antiforgery services.
         /// </summary>
