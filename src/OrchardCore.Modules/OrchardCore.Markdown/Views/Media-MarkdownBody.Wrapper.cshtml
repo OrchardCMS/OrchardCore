@@ -1,0 +1,8 @@
+@Model.Metadata.ChildContent
+
+@* Inject the modal window only once per page *@
+@if (!Context.Items.ContainsKey("Media_Wrapper__MarkdownBody"))
+{
+    Context.Items["Media_Wrapper__MarkdownBody"] = new object();
+    @await DisplayAsync(await New.Media_Modal__MarkdownBody())
+}

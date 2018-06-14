@@ -37,7 +37,7 @@
         // Content Management
         "OrchardCore.Alias",
         "OrchardCore.Autoroute",
-        "OrchardCore.Body",
+        "OrchardCore.Html",
         "OrchardCore.ContentFields",
         "OrchardCore.ContentPreview",
         "OrchardCore.Contents",

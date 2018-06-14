@@ -41,7 +41,6 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Admin\OrchardCore.Admin.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Alias\OrchardCore.Alias.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Autoroute\OrchardCore.Autoroute.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Body\OrchardCore.Body.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentFields\OrchardCore.ContentFields.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentPreview\OrchardCore.ContentPreview.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Contents\OrchardCore.Contents.csproj" PrivateAssets="none" />
@@ -54,6 +53,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Feeds\OrchardCore.Feeds.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Flows\OrchardCore.Flows.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.HomeRoute\OrchardCore.HomeRoute.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Html\OrchardCore.Html.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Indexing\OrchardCore.Indexing.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Layers\OrchardCore.Layers.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Lists\OrchardCore.Lists.csproj" PrivateAssets="none" />
