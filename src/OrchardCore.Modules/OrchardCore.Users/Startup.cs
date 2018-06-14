@@ -61,54 +61,12 @@ namespace OrchardCore.Users
         {
             services.AddSecurity();
 
-            // Adds the default token providers used to generate tokens for reset passwords, change email
-            // and change telephone number operations, and for two factor authentication token generation.
-            new IdentityBuilder(typeof(IUser), typeof(IRole), services).AddDefaultTokenProviders();
-
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
-                options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
-                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-            })
-            .AddCookie(IdentityConstants.ApplicationScheme, options =>
-            {
-                options.LoginPath = new PathString("/Account/Login");
-                options.Events = new CookieAuthenticationEvents
-                {
-                    OnValidatePrincipal = async context =>
-                    {
-                        await SecurityStampValidator.ValidatePrincipalAsync(context);
-                    }
-                };
-            })
-            .AddCookie(IdentityConstants.ExternalScheme, options =>
-            {
-                options.Cookie.Name = IdentityConstants.ExternalScheme;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-            })
-            .AddCookie(IdentityConstants.TwoFactorRememberMeScheme, options =>
-            {
-                options.Cookie.Name = IdentityConstants.TwoFactorRememberMeScheme;
-            })
-            .AddCookie(IdentityConstants.TwoFactorUserIdScheme, IdentityConstants.TwoFactorUserIdScheme, options =>
-            {
-                options.Cookie.Name = IdentityConstants.TwoFactorUserIdScheme;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-            });
-
-            // Identity services
-            services.TryAddScoped<IUserValidator<IUser>, UserValidator<IUser>>();
-            services.TryAddScoped<IPasswordValidator<IUser>, PasswordValidator<IUser>>();
-            services.TryAddScoped<IPasswordHasher<IUser>, PasswordHasher<IUser>>();
+            // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
             services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
 
-            // No interface for the error describer so we can add errors without rev'ing the interface
-            services.TryAddScoped<IdentityErrorDescriber>();
-            services.TryAddScoped<ISecurityStampValidator, SecurityStampValidator<IUser>>();
-            services.TryAddScoped<IUserClaimsPrincipalFactory<IUser>, UserClaimsPrincipalFactory<IUser, IRole>>();
-            services.TryAddScoped<UserManager<IUser>>();
-            services.TryAddScoped<SignInManager<IUser>>();
+            // Adds the default token providers used to generate tokens for reset passwords, change email
+            // and change telephone number operations, and for two factor authentication token generation.
+            services.AddIdentity<IUser, IRole>().AddDefaultTokenProviders();
 
             services.TryAddScoped<UserStore>();
             services.TryAddScoped<IUserStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
