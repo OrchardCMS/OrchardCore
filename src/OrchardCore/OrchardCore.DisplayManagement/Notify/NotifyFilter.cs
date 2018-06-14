@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.DisplayManagement.Notify
 {
@@ -31,6 +32,7 @@ namespace OrchardCore.DisplayManagement.Notify
             INotifier notifier,
             ILayoutAccessor layoutAccessor,
             IShapeFactory shapeFactory,
+            ShellSettings shellSettings,
             IDataProtectionProvider dataProtectionProvider,
             HtmlEncoder htmlEncoder,
             ILogger<NotifyFilter> logger)
@@ -42,6 +44,8 @@ namespace OrchardCore.DisplayManagement.Notify
             _layoutAccessor = layoutAccessor;
             _notifier = notifier;
             _shapeFactory = shapeFactory;
+
+            _tenantPath = "/" + shellSettings.RequestUrlPrefix;
         }
 
         public void OnActionExecuting(ActionExecutingContext filterContext)
