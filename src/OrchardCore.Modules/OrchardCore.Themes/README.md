@@ -1,6 +1,6 @@
 # Orchard Core Theming explained
 
-This article explains how a Content Item is rendered and how the many ways the HTML that is rendered can be customized. It also explains the fundamental theming contepts that are __Shapes__, __Alternates__, __Templates__, __Differentiators__, __Content Zones__ and __Display Types__.
+This article explains how a Content Item is rendered and how the many ways the HTML that is rendered can be customized. It also explains the fundamental theming cocepts that are __Shapes__, __Alternates__, __Templates__, __Differentiators__, __Content Zones__ and __Display Types__.
 
 ## Goals
 
@@ -18,6 +18,7 @@ The end result would look like this:
 The only obvious thing that is required is to create a new `Project` content type.
 
 However there are many different ways to model the content to represent a portfolio:
+
 - Create a `Portfolio` content type with a `List` content part that is limited to `Project` content items. In this case projects are independent from the list and can be reused elswere in the site (they are referenced by the portfolio).
 - Create a `Portfolio` content type with a `BagPart` content part that is limited to `Project` content items. In this case project content items live inside the portfolio content item (they are contained by the portfolio).
 - Create a `Liquid Page` content item to query and render all content items of type `Project`.
@@ -27,7 +28,8 @@ This article will explain how to do it with a `BagPart` as it will provide the b
 
 ## Creating the content types
 
-`Project` is a content type that will be composed of 
+`Project` is a content type that will be composed of
+
 - a `Title` part to set a custom name
 - a `Text` field to store the link to the project
 - a `Markdown` part to provide a description in markdown format
@@ -98,11 +100,13 @@ Then the `BagPart` shape is added in the `Content` zone of the main shape at the
 Once all the drivers for all the parts and all the fields have returned their shapes to specific zones of the main `Content` shape, then Orchard is looking for a matching template for it. Template matching is done dynamically, and if no specific ones are created for a Content Type, then the file `Content.cshtml` (or `Content.liquid`) is used. The default template will go over all the zones it knows about and render the shapes that are inside each of them. See https://github.com/OrchardCMS/OrchardCore/blob/dev/src/OrchardCore.Modules/OrchardCore.Contents/Views/Content.cshtml#L17 where the `Header` zone shapes are rendered (the `TitlePart` shape) and also https://github.com/OrchardCMS/OrchardCore/blob/dev/src/OrchardCore.Modules/OrchardCore.Contents/Views/Content.cshtml#L26 where the `Content` zone shapes are rendered (`BagPart` and `TextField` shapes).
 
 ## Customizing templates
+
 We can already see that many shapes, and thus templates, are used to render a single content item. But every piece of HTML can be replaced, locally (for a page) or globally (over the site).
 
 Templates are usually provided by the modules that create the corresponding shape types, but can always be redefined by a Theme. Themes are able to provide custom templates that will be used instead of the default ones. This means that a template can be copied to a theme in order to be customized.
 
 ### Alternates
+
 When the __Content__ shape is rendered into HTML, it is done using the `Content.cshtml` file as mentioned earlier. The same way for the __TitlePart__ shape will be converted using a `TitlePart.cshtml` template.
 
 This means that we can copy the `Content.cshtml` file from the __OrchardCore.Contents__ module in order to customize how the __Content__ shape is rendered.
@@ -180,6 +184,7 @@ As previously stated, the __Content__ shape is made of zones that contains all t
 Sometimes it is necessary to be able to reorganize the list of shapes that are added in these zones, for instance to remove some shapes of the list, or move them to a different location.
 
 In the case of the __Project__ main content shape, the `Content` zone contains two shapes:
+
 - `TextField`
 - `MarkdownPart`
 
@@ -195,7 +200,7 @@ This lets us customize the __Content__ shape template for __Project__.
 
 #### Content-Project.cshtml
 
-```
+```razor
 <article>
     <header>
         @await DisplayAsync(Model.Header.TitlePart)
@@ -215,11 +220,11 @@ This lets us customize the __Content__ shape template for __Project__.
         @await DisplayAsync(Model.Footer)
     </footer>
 </article>
-``` 
+```
 
 #### Content-Project.liquid
 
-```
+```liquid
 <article>
     <header>
         {{ Model.Header.TitlePart | shape_render }}
