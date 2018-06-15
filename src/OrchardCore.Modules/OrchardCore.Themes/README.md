@@ -37,13 +37,13 @@ This article will explain how to do it with a `BagPart` as it will provide the b
 
 In the admin, select __Content Definition__ then __Content Types__ and create a new type named `Project`. Click `Create`.
 
-Select __Title__ and __Markdown__ for the parts we can add already, then click `Save`.
+Select __Title__ and __Markdown__ for the parts we can add already, then click __Save__.
 
-Click __Edit__ for the __Markdown__ part. Select __Wysiwyg editor__ and click `Save`. This will provide a richer markdown editing experience.
+Click __Edit__ for the __Markdown__ part. Select __Wysiwyg editor__ and click __Save__. This will provide a richer markdown editing experience.
 
-Click __Add Field__, give it a display name `URL`, and select __Text Field__. Click `Save` then `Save` again.
+Click __Add Field__, give it a display name `Url`, and select __Text Field__. Click __Save__ then __Save__ again.
 
-Take the time to drag and drop the __Title__ part at the top of the list such that it will appear first in the editor. Then click `Save`.
+Take the time to drag and drop the __Title__ part at the top of the list such that it will appear first in the editor. Then click __Save__.
 
 ![New Content Type](./Assets/docs/new-content-type.png)
 
@@ -51,15 +51,15 @@ At that point you could already create all the Project content items you want ve
 
 In the admin, select __Content Definition__ then __Content Types__ and create a new type named `Portfolio`. Click `Create`.
 
-Select __Title__, __Autoroute__ and __Bag__, then click `Save`.
+Select __Title__, __Autoroute__ and __Bag__, then click __Save__.
 
 Now we can configure the `Portfolio` content type to only accept `Project` content items in its bag.
 
-Click __Edit__ for the __Bag__ part. Check __Project__ and click `Save`.
+Click __Edit__ for the __Bag__ part. Check __Project__ and click __Save__.
 
-Click __Edit__ for the __Autoroute__ part. Enter `{{ ContentItem | display_text | slugify }}` and check __Allow custom path__. Click `Save`. This will generate a customizable url or used what the user defines.
+Click __Edit__ for the __Autoroute__ part. Enter `{{ ContentItem | display_text | slugify }}` and check __Allow custom path__. Click __Save__. This will generate a customizable url or used what the user defines.
 
-Take the time to drag and drop the __Title__ part at the top of the list such that it will appear first in the editor. Then click `Save`.
+Take the time to drag and drop the __Title__ part at the top of the list such that it will appear first in the editor. Then click __Save__.
 
 ![Project](./Assets/docs/project.png)
 
@@ -73,7 +73,7 @@ In __Permalink__ enter `portfolio`. This will be the url to display this content
 
 As you click on __Add Item__ you'll notice that only __Project__ is available as configured in the `Bag` part for `Portfolio`.
 
-Create a few Projects, then click `Publish`.
+Create a few Projects, then click __Publish__.
 
 Click on the __View__ button to see how it looks like already.
 
