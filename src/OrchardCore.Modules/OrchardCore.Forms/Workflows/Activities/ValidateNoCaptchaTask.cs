@@ -10,26 +10,26 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Forms.Workflows.Activities
 {
-    public class ValidateReCaptchaTask : TaskActivity
+    public class ValidateNoCaptchaTask : TaskActivity
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IReCaptchaClient _reCaptchaClient;
+        private readonly NoCaptchaClient _noCaptchaClient;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
-        public ValidateReCaptchaTask(
+        public ValidateNoCaptchaTask(
             IHttpContextAccessor httpContextAccessor,
-            IReCaptchaClient reCaptchaClient,
+            NoCaptchaClient noCaptchaClient,
             IUpdateModelAccessor updateModelAccessor,
-            IStringLocalizer<ValidateReCaptchaTask> localizer
+            IStringLocalizer<ValidateNoCaptchaTask> localizer
         )
         {
             _httpContextAccessor = httpContextAccessor;
-            _reCaptchaClient = reCaptchaClient;
+            _noCaptchaClient = noCaptchaClient;
             _updateModelAccessor = updateModelAccessor;
             T = localizer;
         }
 
-        public override string Name => nameof(ValidateReCaptchaTask);
+        public override string Name => nameof(ValidateNoCaptchaTask);
         public override LocalizedString Category => T["Validation"];
         public override bool HasEditor => false;
 
@@ -44,7 +44,7 @@ namespace OrchardCore.Forms.Workflows.Activities
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var captchaResponse = httpContext.Request.Form["g-recaptcha-response"];
-            var isValid = await _reCaptchaClient.VerifyAsync(captchaResponse);
+            var isValid = await _noCaptchaClient.VerifyAsync(captchaResponse);
             var outcome = isValid ? "Valid" : "Invalid";
 
             if (!isValid)

@@ -32,7 +32,7 @@ namespace OrchardCore.Forms
             TemplateContext.GlobalMemberAccessStrategy.Register<InputPart>();
             TemplateContext.GlobalMemberAccessStrategy.Register<TextAreaPart>();
             TemplateContext.GlobalMemberAccessStrategy.Register<ButtonPart>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ReCaptchaPart>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<NoCaptchaPart>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -43,7 +43,7 @@ namespace OrchardCore.Forms
                 config.Filters.Add<ImportModelStateAttribute>();
             });
 
-            services.AddScoped<IDisplayDriver<ISite>, ReCaptchaSettingsDisplay>();
+            services.AddScoped<IDisplayDriver<ISite>, NoCaptchaSettingsDisplay>();
             services.AddScoped<IContentPartDisplayDriver, FormPartDisplay>();
             services.AddScoped<IContentPartDisplayDriver, FormElementPartDisplay>();
             services.AddScoped<IContentPartDisplayDriver, FormInputElementPartDisplay>();
@@ -51,7 +51,7 @@ namespace OrchardCore.Forms
             services.AddScoped<IContentPartDisplayDriver, LabelPartDisplay>();
             services.AddScoped<IContentPartDisplayDriver, InputPartDisplay>();
             services.AddScoped<IContentPartDisplayDriver, TextAreaPartDisplay>();
-            services.AddScoped<IContentPartDisplayDriver, ReCaptchaPartDisplay>();
+            services.AddScoped<IContentPartDisplayDriver, NoCaptchaPartDisplay>();
             services.AddScoped<IContentPartDisplayDriver, ValidationSummaryPartDisplay>();
             services.AddScoped<IContentPartDisplayDriver, ValidationPartDisplay>();
 
@@ -62,7 +62,7 @@ namespace OrchardCore.Forms
             services.AddSingleton<ContentPart, ButtonPart>();
             services.AddSingleton<ContentPart, InputPart>();
             services.AddSingleton<ContentPart, TextAreaPart>();
-            services.AddSingleton<ContentPart, ReCaptchaPart>();
+            services.AddSingleton<ContentPart, NoCaptchaPart>();
             services.AddSingleton<ContentPart, ValidationSummaryPart>();
             services.AddSingleton<ContentPart, ValidationPart>();
 
@@ -71,10 +71,11 @@ namespace OrchardCore.Forms
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
-            services.AddTransient<IConfigureOptions<ReCaptchaSettings>, ReCaptchaSettingsConfiguration>();
-            services.AddHttpClient<IReCaptchaClient, ReCaptchaClient>(client =>
+            services.AddTransient<IConfigureOptions<NoCaptchaSettings>, NoCaptchaSettingsConfiguration>();
+            services.AddHttpClient<NoCaptchaClient>(client =>
             {
-                client.BaseAddress = new Uri("https://www.google.com/recaptcha/api/siteverify");
+                const string noCaptchaUrl = "https://www.google.com/recaptcha/api/siteverify";
+                client.BaseAddress = new Uri(noCaptchaUrl);
             }).AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(0.5 * attempt)));
         }
     }

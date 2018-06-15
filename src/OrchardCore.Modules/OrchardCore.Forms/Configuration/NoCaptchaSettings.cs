@@ -1,6 +1,6 @@
 namespace OrchardCore.Forms.Configuration
 {
-    public class ReCaptchaSettings
+    public class NoCaptchaSettings
     {
         public string SiteKey { get; set; }
         public string SiteSecret { get; set; }

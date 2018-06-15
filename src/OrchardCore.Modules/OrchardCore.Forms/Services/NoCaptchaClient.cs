@@ -7,12 +7,12 @@ using OrchardCore.Forms.Configuration;
 
 namespace OrchardCore.Forms.Services
 {
-    public class ReCaptchaClient : IReCaptchaClient
+    public class NoCaptchaClient
     {
         private readonly HttpClient _httpClient;
-        private readonly ReCaptchaSettings _settings;
+        private readonly NoCaptchaSettings _settings;
 
-        public ReCaptchaClient(HttpClient httpClient, IOptions<ReCaptchaSettings> settings)
+        public NoCaptchaClient(HttpClient httpClient, IOptions<NoCaptchaSettings> settings)
         {
             _httpClient = httpClient;
             _settings = settings.Value;

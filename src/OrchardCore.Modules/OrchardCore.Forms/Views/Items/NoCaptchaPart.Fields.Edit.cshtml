@@ -1,10 +1,10 @@
 @using OrchardCore.Forms.Drivers
 @using OrchardCore.Forms.ViewModels
-@model ReCaptchaPartEditViewModel
+@model NoCaptchaPartEditViewModel
 @{
-    var settingsUrl = Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ReCaptchaSettingsDisplay.GroupId });
-    var successMessageTemplate = "<a {0}>reCaptcha settings</a> are configured.";
-    var warningMessageTemplate = "<a {0}>reCaptcha settings</a> are not configured. The captcha will not be displayed.";
+    var settingsUrl = Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = NoCaptchaSettingsDisplay.GroupId });
+    var successMessageTemplate = "<a {0}>NoCaptcha settings</a> are configured.";
+    var warningMessageTemplate = "<a {0}>NoCaptcha settings</a> are not configured. The captcha will not be displayed.";
     var hyperLinkAttributes = $"class=alert-link target=_blank href={settingsUrl}";
     var successMessage = T[successMessageTemplate, hyperLinkAttributes];
     var warningMessage = T[warningMessageTemplate, hyperLinkAttributes];

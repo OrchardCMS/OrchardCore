@@ -1,8 +1,7 @@
 namespace OrchardCore.Forms.ViewModels
 {
-    public class ReCaptchaPartViewModel
+    public class NoCaptchaPartEditViewModel
     {
-        public string SiteKey { get; set; }
         public bool SettingsAreConfigured { get; set; }
     }
 }

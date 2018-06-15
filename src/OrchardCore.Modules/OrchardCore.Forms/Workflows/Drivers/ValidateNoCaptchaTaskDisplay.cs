@@ -3,7 +3,7 @@ using OrchardCore.Workflows.Display;
 
 namespace OrchardCore.Forms.Workflows.Drivers
 {
-    public class ValidateReCaptchaTaskDisplay : ActivityDisplayDriver<ValidateReCaptchaTask>
+    public class ValidateNoCaptchaTaskDisplay : ActivityDisplayDriver<ValidateNoCaptchaTask>
     {
     }
 }

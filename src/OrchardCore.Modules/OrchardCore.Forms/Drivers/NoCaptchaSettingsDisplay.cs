@@ -10,21 +10,21 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Forms.Drivers
 {
-    public class ReCaptchaSettingsDisplay : SectionDisplayDriver<ISite, ReCaptchaSettings>
+    public class NoCaptchaSettingsDisplay : SectionDisplayDriver<ISite, NoCaptchaSettings>
     {
-        public const string GroupId = "recaptcha";
+        public const string GroupId = "nocaptcha";
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
 
-        public ReCaptchaSettingsDisplay(IShellHost shellHost, ShellSettings shellSettings)
+        public NoCaptchaSettingsDisplay(IShellHost shellHost, ShellSettings shellSettings)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
         }
 
-        public override IDisplayResult Edit(ReCaptchaSettings section, BuildEditorContext context)
+        public override IDisplayResult Edit(NoCaptchaSettings section, BuildEditorContext context)
         {
-            return Initialize<ReCaptchaSettingsViewModel>("ReCaptchaSettings_Edit", model =>
+            return Initialize<NoCaptchaSettingsViewModel>("NoCaptchaSettings_Edit", model =>
                 {
                     model.SiteKey = section.SiteKey;
                     model.SiteSecret = section.SiteSecret;
@@ -33,11 +33,11 @@ namespace OrchardCore.Forms.Drivers
                 .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ReCaptchaSettings section, IUpdateModel updater, string groupId)
+        public override async Task<IDisplayResult> UpdateAsync(NoCaptchaSettings section, IUpdateModel updater, string groupId)
         {
             if (groupId == GroupId)
             {
-                var model = new ReCaptchaSettingsViewModel();
+                var model = new NoCaptchaSettingsViewModel();
 
                 if (await updater.TryUpdateModelAsync(model, Prefix))
                 {
