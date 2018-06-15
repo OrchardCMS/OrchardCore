@@ -35,6 +35,12 @@ namespace OrchardCore.Workflows.Http.Activities
             set => SetProperty(value);
         }
 
+        public bool ValidateAntiforgeryToken
+        {
+            get => GetProperty(() => true);
+            set => SetProperty(value);
+        }
+
         public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var httpContext = _httpContextAccessor.HttpContext;
