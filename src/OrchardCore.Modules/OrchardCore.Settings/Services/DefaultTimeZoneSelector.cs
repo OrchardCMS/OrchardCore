@@ -22,7 +22,7 @@ namespace OrchardCore.Settings.Services
             return Task.FromResult(new TimeZoneSelectorResult
             {
                 Priority = 0,
-                TimeZoneId = () => _siteService.GetSiteSettingsAsync().ContinueWith(x => x.Result?.TimeZoneId)
+                TimeZoneId = async () => (await _siteService.GetSiteSettingsAsync())?.TimeZoneId
             });
         }
     }

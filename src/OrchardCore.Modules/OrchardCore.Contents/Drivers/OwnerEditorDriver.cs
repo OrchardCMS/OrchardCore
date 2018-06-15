@@ -70,12 +70,26 @@ namespace OrchardCore.Contents.Drivers
 
             var settings = GetSettings(part);
 
-            if (settings.DisplayOwnerEditor)
+            if (!settings.DisplayOwnerEditor)
+            {
+                if (part.ContentItem.Owner == null)
+                {
+                    part.ContentItem.Owner = currentUser.Identity.Name;
+                }
+            }
+            else
             {
                 var model = new OwnerEditorViewModel();
+
+                if (part.ContentItem.Owner != null)
+                {
+                    model.Owner = part.ContentItem.Owner;
+                }
+
+                var priorOwner = model.Owner;
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                if (!string.IsNullOrEmpty(part.ContentItem.Owner) || !context.IsNew)
+                if (!string.IsNullOrEmpty(part.ContentItem.Owner) && model.Owner != priorOwner)
                 {
                     var newOwner = await _userService.GetUserAsync(model.Owner);
 
@@ -87,7 +101,7 @@ namespace OrchardCore.Contents.Drivers
                     {
                         part.ContentItem.Owner = newOwner.UserName;
                     }
-                }                
+                }
             }
 
             return await EditAsync(part, context);

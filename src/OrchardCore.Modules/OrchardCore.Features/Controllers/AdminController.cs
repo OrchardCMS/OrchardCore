@@ -9,6 +9,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Features.Models;
@@ -26,6 +27,7 @@ namespace OrchardCore.Features.Controllers
         private readonly IShellDescriptorManager _shellDescriptorManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
+        private readonly ShellSettings _shellSettings;
         private readonly INotifier _notifier;
 
         public AdminController(
@@ -35,6 +37,7 @@ namespace OrchardCore.Features.Controllers
             IShellDescriptorManager shellDescriptorManager,
             IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
+            ShellSettings shellSettings,
             INotifier notifier)
         {
             _moduleService = moduleService;
@@ -42,6 +45,7 @@ namespace OrchardCore.Features.Controllers
             _shellDescriptorManager = shellDescriptorManager;
             _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
+            _shellSettings = shellSettings;
             _notifier = notifier;
 
             T = localizer;
@@ -61,7 +65,7 @@ namespace OrchardCore.Features.Controllers
             var moduleFeatures = new List<ModuleFeature>();
             foreach (var moduleFeatureInfo in _extensionManager
                 .GetFeatures()
-                .Where(f => !f.Extension.IsTheme()))
+                .Where(f => !f.Extension.IsTheme() && FeatureIsAllowed(f)))
             {
                 var dependentFeatures = _extensionManager.GetDependentFeatures(moduleFeatureInfo.Id);
                 var featureDependencies = _extensionManager.GetFeatureDependencies(moduleFeatureInfo.Id);
@@ -82,7 +86,7 @@ namespace OrchardCore.Features.Controllers
             return View(new FeaturesViewModel
             {
                 Features = moduleFeatures,
-                IsAllowed = ExtensionIsAllowed
+                IsAllowed = FeatureIsAllowed
             });
         }
 
@@ -103,7 +107,7 @@ namespace OrchardCore.Features.Controllers
             if (ModelState.IsValid)
             {
                 var availableFeatures = _extensionManager.GetFeatures();
-                var features = availableFeatures.Where(feature => ExtensionIsAllowed(feature.Extension)).ToList();
+                var features = availableFeatures.Where(feature => FeatureIsAllowed(feature)).ToList();
                 var selectedFeatures = features.Where(x => featureIds.Contains(x.Id)).ToList();
                 var allEnabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync(); //features.Where(x => x.IsEnabled && featureIds.Contains(x.Id)).Select(x => x.Descriptor.Id).ToList();
                 var idFeaturesEnabled = allEnabledFeatures.Where(x => featureIds.Contains(x.Id)).ToList();
@@ -174,7 +178,7 @@ namespace OrchardCore.Features.Controllers
         [HttpPost]
         public async Task<IActionResult> Disable(string id)
         {
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => ExtensionIsAllowed(f.Extension) && f.Id == id);
+            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => FeatureIsAllowed(f) && f.Id == id);
 
             if (feature == null)
             {
@@ -197,7 +201,7 @@ namespace OrchardCore.Features.Controllers
         [HttpPost]
         public async Task<IActionResult> Enable(string id)
         {
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => ExtensionIsAllowed(f.Extension) && f.Id == id);
+            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => FeatureIsAllowed(f) && f.Id == id);
 
             if (feature == null)
             {
@@ -218,11 +222,14 @@ namespace OrchardCore.Features.Controllers
         }
 
         /// <summary>
-        /// Checks whether the module is allowed for the current tenant
+        /// Checks whether the feature is allowed for the current tenant
         /// </summary>
-        private bool ExtensionIsAllowed(IExtensionInfo extensionDescriptor)
+        private bool FeatureIsAllowed(IFeatureInfo feature)
         {
-            return true; //_shellSettings.Modules.Length == 0 || _shellSettings.Modules.Contains(extensionDescriptor.Id);
+            // TODO: Implement white-list of modules allowed in the shell settings
+
+            // Checks if the feature is only allowed on the Default tenant
+            return _shellSettings.Name == ShellHelper.DefaultShellName || !feature.DefaultTenantOnly;
         }
     }
 }

@@ -1,0 +1,21 @@
+@model OrchardCore.ContentFields.ViewModels.EditDateFieldViewModel
+@using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<DateFieldSettings>();
+}
+
+@{
+    // Morph the current shape to the correct editor shape based on its Editor property
+    var shape = Model as OrchardCore.DisplayManagement.IShape;
+    shape.Metadata.Alternates.Clear();
+    shape.Metadata.Type = "DateField_Editor";
+
+    if (!String.IsNullOrEmpty(settings.Editor))
+    {
+        shape.Metadata.Alternates.Add($"DateField_Editor__{settings.Editor}");
+    }
+}
+
+@await DisplayAsync(Model)

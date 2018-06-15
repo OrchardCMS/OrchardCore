@@ -15,6 +15,8 @@ var root = {
 
 var bus = new Vue();
 
+
+
 function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl) {
 
     if (initialized) {
@@ -40,23 +42,78 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 data: {
                     selectedFolder: root,
                     mediaItems: [],
-                    selectedMedia: null
+                    selectedMedias: [],
+                    errors: [],
+                    dragDropThumbnail: new Image(),
+                    smallThumbs: false,
+                    gridView: false,
+                    mediaFilter: '',
+                    sortBy: '',
+                    sortAsc: true
                 },
                 created: function () {
                     var self = this;
+
+                    self.dragDropThumbnail.src = '../Images/drag-thumbnail.png';
+
+                    bus.$on('folderSelected', function (folder) {
+                        self.selectedFolder = folder;
+                    });
 
                     bus.$on('folderDeleted', function () {
                         self.selectRoot();
                     });
 
                     bus.$on('folderAdded', function (folder) {
-                        self.selectFolder(folder);
+                        self.selectedFolder = folder;
                         folder.selected = true;
                     });
 
                     bus.$on('beforeFolderAdded', function (folder) {
                         self.loadFolder(folder);
                     });
+
+                    bus.$on('mediaListMoved', function (errorInfo) {                        
+                        self.loadFolder(self.selectedFolder);
+                        if (errorInfo) {
+                            self.errors.push(errorInfo);                          
+                        }
+                    });
+
+                    bus.$on('mediaRenamed', function (newName, newPath, oldPath) {
+                        var media = self.mediaItems.filter(function (item) {                            
+                            return item.mediaPath === oldPath;
+                        })[0];
+                        
+                        media.mediaPath = newPath;
+                        media.name = newName;
+                    });
+
+                    // common handlers for actions in both grid and table view.
+                    bus.$on('sortChangeRequested', function (newSort) {
+                        self.changeSort(newSort);
+                    });
+
+                    bus.$on('mediaToggleRequested', function (media) {
+                        self.toggleSelectionOfMedia(media);
+                    });
+
+                    bus.$on('renameMediaRequested', function (media) {
+                        self.renameMedia(media);
+                    });
+
+                    bus.$on('deleteMediaRequested', function (media) {
+                        self.deleteMediaItem(media);
+                    });
+
+                    bus.$on('mediaDragStartRequested', function (media, e) {
+                        self.handleDragStart(media, e);
+                    });
+
+
+                    
+
+                    self.currentPrefs = JSON.parse(localStorage.getItem('mediaApplicationPrefs'));
                 },
                 computed: {
                     isHome: function () {
@@ -64,8 +121,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     parents: function () {
                         var p = [];
-                        parentFolder = self.selectedFolder;
-                        while (parentFolder && parentFolder != root) {
+                        parentFolder = this.selectedFolder;
+                        while (parentFolder && parentFolder.path != '') {
                             p.unshift(parentFolder);
                             parentFolder = parentFolder.parent;                            
                         }
@@ -73,26 +130,86 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     root: function () {
                         return root;
+                    },
+                    filteredMediaItems: function () {
+                        var self = this;
+
+                        self.selectedMedias = [];
+                        
+                        var filtered = self.mediaItems.filter(function (item) {
+                            return item.name.toLowerCase().indexOf(self.mediaFilter.toLowerCase()) > - 1;
+                        });
+
+                        switch (self.sortBy) {
+                            case 'size':
+                                filtered.sort(function (a, b) {
+                                    return self.sortAsc ? a.size - b.size : b.size - a.size;
+                                });
+                                break;
+                            case 'mime':
+                                filtered.sort(function (a, b) {
+                                    return self.sortAsc ? a.mime.toLowerCase().localeCompare(b.mime.toLowerCase()) : b.mime.toLowerCase().localeCompare(a.mime.toLowerCase());
+                                });
+                                break;
+                            default:
+                                filtered.sort(function (a, b) {
+                                    return self.sortAsc ? a.name.toLowerCase().localeCompare(b.name.toLowerCase()) : b.name.toLowerCase().localeCompare(a.name.toLowerCase());
+                                });
+                        }                        
+
+                        return filtered;
+                    },
+                    hiddenCount: function () {
+                        var result = 0;
+                        result = this.mediaItems.length - this.filteredMediaItems.length;
+                        return result;
+                    },
+                    thumbSize: function () {
+                        return this.smallThumbs ? 120 : 240 ;
+                    },
+                    currentPrefs: {
+                        get: function () {
+                            return {
+                                smallThumbs: this.smallThumbs,
+                                selectedFolder: this.selectedFolder,
+                                gridView: this.gridView
+                            }
+                        },
+                        set: function (newPrefs) {
+                            if (!newPrefs) {
+                                return;
+                            }
+
+                            this.smallThumbs = newPrefs.smallThumbs;
+                            this.selectedFolder = newPrefs.selectedFolder;
+                            this.gridView = newPrefs.gridView;
+                        }
                     }
                 },
+                watch: {
+                    currentPrefs: function (newPrefs) {
+                        localStorage.setItem('mediaApplicationPrefs', JSON.stringify(newPrefs));
+                    },
+                    selectedFolder: function (newFolder) {
+                        this.mediaFilter = '';
+                        this.selectedFolder = newFolder;
+                        this.loadFolder(newFolder);
+                    }
+               
+                },
                 mounted: function () {
-                    this.selectRoot();
                     this.$refs.rootFolder.toggle();
                 },
                 methods: {
-                    selectFolder: function (folder) {
-                        this.selectedFolder = folder;
-                        this.loadFolder(folder);
-                        bus.$emit('folderSelected', folder);
-                    },
                     uploadUrl: function () {
                         return this.selectedFolder ? $('#uploadFiles').val() + "?path=" + encodeURIComponent(this.selectedFolder.path) : null;
                     },
                     selectRoot: function () {
-                        this.selectFolder(this.root);
+                        this.selectedFolder = this.root;
                     },
                     loadFolder: function (folder) {
-                        this.selectedMedia = null;
+                        this.errors = [];
+                        this.selectedMedias = [];
                         var self = this;
                         $.ajax({
                             url: $('#getMediaItemsUrl').val() + "?path=" + encodeURIComponent(folder.path),
@@ -102,14 +219,45 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     item.open = false;
                                 });
                                 self.mediaItems = data;
+                                self.selectedMedias = [];
+                                self.sortBy = '';
+                                self.sortAsc = true;
                             },
                             error: function (error) {
                                 console.error(error.responseText);
                             }
                         });
                     },
-                    selectMedia: function (media) {
-                        this.selectedMedia = media;
+                    selectAll: function () {
+                        this.selectedMedias = [];
+                        for (var i = 0; i < this.filteredMediaItems.length; i++) {
+                            this.selectedMedias.push(this.filteredMediaItems[i]);
+                        }
+                    },
+                    unSelectAll: function () {
+                        this.selectedMedias = [];
+                    },
+                    invertSelection: function () {
+                        var temp = [];
+                        for (var i = 0; i < this.filteredMediaItems.length; i++) {
+                            if (this.isMediaSelected(this.filteredMediaItems[i]) == false) {
+                                temp.push(this.filteredMediaItems[i]);
+                            }
+                        }
+                        this.selectedMedias = temp;
+                    },
+                    toggleSelectionOfMedia: function (media) {
+                        if (this.isMediaSelected(media) == true) {
+                            this.selectedMedias.splice(this.selectedMedias.indexOf(media), 1);
+                        } else {
+                            this.selectedMedias.push(media);
+                        }
+                    },
+                    isMediaSelected: function (media) {
+                        var result = this.selectedMedias.some(function (element, index, array) {
+                            return element.url.toLowerCase() === media.url.toLowerCase();
+                        });
+                        return result;
                     },
                     deleteFolder: function () {
                         var folder = this.selectedFolder
@@ -140,12 +288,59 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     createFolder: function () {
                         $('#createFolderModal-errors').empty();
                         $('#createFolderModal').modal('show');
-                        $('.modal-body input').val('').focus();
+                        $('#createFolderModal .modal-body input').val('').focus();
                     },
-                    deleteMedia: function () {
-                        var media = this.selectedMedia;
+                    renameMedia: function (media) {
+                        $('#renameMediaModal-errors').empty();
+                        $('#renameMediaModal').modal('show');                       
+                        $('#old-item-name').val(media.name);
+                        $('#renameMediaModal .modal-body input').val(media.name).focus();
+                    },
+                    selectAndDeleteMedia: function (media) {
+                        this.deleteMedia();
+                    },
+                    deleteMediaList: function () {
+                        var mediaList = this.selectedMedias;
                         var self = this;
 
+                        if (mediaList.length < 1) {
+                            return;
+                        }
+
+                        if (!confirm($('#deleteMediaMessage').val())) {
+                            return;
+                        }
+
+                        var paths = [];
+                        for (var i = 0; i < mediaList.length; i++) {
+                            paths.push(mediaList[i].mediaPath);
+                        }
+
+                        $.ajax({
+                            url: $('#deleteMediaListUrl').val(),
+                            method: 'POST',
+                            data: {
+                                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                                paths: paths
+                            },
+                            success: function (data) {
+                                for (var i = 0; i < self.selectedMedias.length; i++) {
+                                    var index = self.mediaItems && self.mediaItems.indexOf(self.selectedMedias[i])
+                                    if (index > -1) {
+                                        self.mediaItems.splice(index, 1);
+                                        bus.$emit('mediaDeleted', self.selectedMedias[i]);
+                                    }
+                                }
+                                self.selectedMedias = [];
+                            },
+                            error: function (error) {
+                                console.error(error.responseText);
+                            }
+                        });
+                    },
+                    deleteMediaItem: function (media) {
+
+                        var self = this;
                         if (!media) {
                             return;
                         }
@@ -155,7 +350,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         }
 
                         $.ajax({
-                            url: $('#deleteMediaUrl').val() + "?path=" + encodeURIComponent(self.selectedMedia.mediaPath),
+                            url: $('#deleteMediaUrl').val() + "?path=" + encodeURIComponent(media.mediaPath),
                             method: 'POST',
                             data: {
                                 __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
@@ -166,13 +361,49 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     self.mediaItems.splice(index, 1)
                                     bus.$emit('mediaDeleted', media);
                                 }
-                                self.selectedMedia = null;
+                                //self.selectedMedia = null;
                             },
                             error: function (error) {
                                 console.error(error.responseText);
                             }
                         });
                     },
+                    handleDragStart: function (media, e) {
+                        // first part of move media to folder:
+                        // prepare the data that will be handled by the folder component on drop event
+                        var mediaNames = [];
+                        this.selectedMedias.forEach(function (item) {
+                            mediaNames.push(item.name);
+                        });
+
+                        // in case the user drags an unselected item, we select it first
+                        if (this.isMediaSelected(media) == false) {
+                            mediaNames.push(media.name);
+                            this.selectedMedias.push(media);
+                        }
+
+                        e.dataTransfer.setData('mediaNames', JSON.stringify(mediaNames));
+                        e.dataTransfer.setData('sourceFolder', this.selectedFolder.path);
+                        e.dataTransfer.setDragImage(this.dragDropThumbnail, 10, 10);
+                        e.dataTransfer.effectAllowed = 'move';                        
+                    },
+                    handleScrollWhileDrag: function (e) {
+                        if (e.clientY < 150) {                            
+                            window.scrollBy(0, -10);
+                        }
+
+                        if (e.clientY > window.innerHeight - 100) {                            
+                            window.scrollBy(0, 10);
+                        }
+                    },
+                    changeSort: function (newSort) {
+                        if (this.sortBy == newSort) {
+                            this.sortAsc = !this.sortAsc;
+                        } else {
+                            this.sortAsc = true;
+                            this.sortBy = newSort;
+                        }                        
+                    }
                 }
             });
 
@@ -186,6 +417,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
 
             $('#modalFooterOk').on('click', function (e) {
                 var name = $('#create-folder-name').val();
+
+                if (name === "") {
+                    return;
+                }
 
                 $.ajax({
                     url: $('#createFolderUrl').val() + "?path=" + encodeURIComponent(mediaApp.selectedFolder.path) + "&name=" + encodeURIComponent(name),
@@ -204,6 +439,44 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 });
             });
 
+            $('#renameMediaModalFooterOk').on('click', function (e) {
+                var newName = $('#new-item-name').val();
+                var oldName = $('#old-item-name').val();
+
+                if (newName === "") {
+                    return;
+                }
+
+                var currentFolder = mediaApp.selectedFolder.path + "/" ;
+                if (currentFolder === "/") {
+                    currentFolder = "";
+                }
+
+                var newPath = currentFolder + newName;
+                var oldPath = currentFolder + oldName;
+
+                if (newPath.toLowerCase() === oldPath.toLowerCase()) {
+                    $('#renameMediaModal').modal('hide');
+                    return;
+                }
+
+                $.ajax({
+                    url: $('#renameMediaUrl').val() + "?oldPath=" + encodeURIComponent(oldPath) + "&newPath=" + encodeURIComponent(newPath),
+                    method: 'POST',
+                    data: {
+                        __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+                    },
+                    success: function (data) {
+                        $('#renameMediaModal').modal('hide');
+                        bus.$emit('mediaRenamed', newName, newPath, oldPath);
+                    },
+                    error: function (error) {
+                        $('#renameMediaModal-errors').empty();
+                        $('<div class="alert alert-danger" role="alert"></div>').text(error.responseText).appendTo($('#renameMediaModal-errors'));
+                    }
+                });
+            });
+
             if (displayMediaApplication) {
                 document.getElementById('mediaApp').style.display = "";
             }
@@ -216,14 +489,59 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
         }
     });
 }
+$(document).on('mediaApp:ready', function () {
+    $('#fileupload').fileupload({
+        dropZone: $('#mediaApp'),
+        limitConcurrentUploads: 20,
+        dataType: 'json',
+        url: $('#uploadFiles').val(),
+        formData: function () {
+            var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
 
+            return [
+                { name: 'path', value: mediaApp.selectedFolder.path },
+                { name: '__RequestVerificationToken', value: antiForgeryToken },
+            ]
+        },
+        done: function (e, data) {
+            $.each(data.result.files, function (index, file) {
+                if (!file.error) {
+                    mediaApp.mediaItems.push(file)
+                }
+            });
+        }
+    });
+});
+
+
+$(document).bind('dragover', function (e) {
+    var dt = e.originalEvent.dataTransfer;
+    if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
+        var dropZone = $('#customdropzone'),
+            timeout = window.dropZoneTimeout;
+        if (timeout) {
+            clearTimeout(timeout);
+        } else {
+            dropZone.addClass('in');
+        }
+        var hoveredDropZone = $(e.target).closest(dropZone);
+        dropZone.toggleClass('hover', hoveredDropZone.length);
+        window.dropZoneTimeout = setTimeout(function () {
+            window.dropZoneTimeout = null;
+            dropZone.removeClass('in hover');
+        }, 100);
+    }    
+});
 // <folder> component
 Vue.component('folder', {
     template: '\
-        <li :class="{selected: selected}">\
-            <div>\
-                <a href="javascript:;" v-on:click="toggle" class="expand" v-bind:class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
-                <a href="javascript:;" v-on:click="select">\
+        <li :class="{selected: isSelected}" \
+                v-on:dragleave.prevent = "handleDragLeave($event);" \
+                v-on:dragover.prevent.stop="handleDragOver($event);" \
+                v-on:drop.prevent.stop = "moveMediaToFolder(model, $event)" >\
+            <div :class="{folderhovered: isHovered}" >\
+                <a href="javascript:;" v-on:click="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
+                <a href="javascript:;" v-on:click="select" draggable="false" >\
                     <i class="folder fa fa-folder"></i>\
                     {{model.name}}\
                 </a>\
@@ -231,25 +549,35 @@ Vue.component('folder', {
             <ol v-show="open">\
                 <folder v-for="folder in children"\
                         :key="folder.path"\
-                        :model="folder">\
+                        :model="folder" \
+                        :selected-in-media-app="selectedInMediaApp">\
                 </folder>\
             </ol>\
         </li>\
         ',
     props: {
-        model: Object
+        model: Object,
+        selectedInMediaApp: Object
     },
     data: function () {
         return {
             open: false,
             children: null, // not initialized state (for lazy-loading)
             parent: null,
-            selected: false
+            isHovered : false
         }
     },
     computed: {
         empty: function () {
-            return this.children && this.children.length == 0;
+            return !this.children || this.children.length == 0;
+        },
+        isSelected: function () {
+            return (this.selectedInMediaApp.name == this.model.name) && (this.selectedInMediaApp.path == this.model.path);
+        }
+    },
+    mounted: function () {
+        if ((this.isRoot() == false) && (this.isAncestorOfSelectedFolder())){
+            this.toggle();
         }
     },
     created: function () {
@@ -268,67 +596,116 @@ Vue.component('folder', {
             if (self.model == target) {
 
                 bus.$emit('beforeFolderAdded', self.model);
-
-                self.children.push(folder);
+                if (self.children !== null) {
+                    self.children.push(folder);
+                }                
                 folder.parent = self.model;
                 bus.$emit('folderAdded', folder);
             }
         });
-
-        bus.$on('folderSelected', function (folder) {
-            self.selected = self.model == folder;
-        });
     },
     methods: {
-        toggle: function () {
-            this.open = !this.open
-            var self = this;
+        isRoot: function () {
+            return this.model.path === '';
+        },
+        isAncestorOfSelectedFolder: function () {
+            parentFolder = mediaApp.selectedFolder;
+            while (parentFolder) {
+                if (parentFolder.path == this.model.path) {
+                    return true;
+                }
+            parentFolder = parentFolder.parent;
+            }
 
+            return false;
+        },
+        toggle: function () {
+            this.open = !this.open;
             if (this.open && !this.children) {
-                $.ajax({
-                    url: $('#getFoldersUrl').val() + "?path=" + encodeURIComponent(self.model.path),
-                    method: 'GET',
-                    success: function (data) {
-                        self.children = data;
-                        self.children.forEach(function (c) {
-                            c.parent = self.model;
-                        });
-                    },
-                    error: function (error) {
-                        emtpy = false;
-                        console.error(error.responseText);
-                    }
-                });
+                this.loadChildren();
             }
         },
         select: function () {
-            mediaApp.selectFolder(this.model);
-        }
-    }
-});
-
-$(document).on('mediaApp:ready', function () {
-    $('#fileupload').fileupload({
-        dataType: 'json',
-        url: $('#uploadFiles').val(),
-        formData: function () {
-            var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
-
-            return [
-                { name: 'path', value: mediaApp.selectedFolder.path },
-                { name: '__RequestVerificationToken', value: antiForgeryToken },
-            ]
+            bus.$emit('folderSelected', this.model);
+            this.loadChildren();
         },
-        done: function (e, data) {
-            $.each(data.result.files, function (index, file) {
-                mediaApp.mediaItems.push(file)
+        loadChildren: function () {            
+            var self = this;
+            if (this.open == false) {
+                this.open = true;
+            }
+            $.ajax({
+                url: $('#getFoldersUrl').val() + "?path=" + encodeURIComponent(self.model.path),
+                method: 'GET',
+                success: function (data) {
+                    self.children = data;
+                    self.children.forEach(function (c) {
+                        c.parent = self.model;
+                    });
+                },
+                error: function (error) {
+                    emtpy = false;
+                    console.error(error.responseText);
+                }
             });
-            $('#progress .progress-bar').css(
-                'width',
-                0 + '%'
-            );
+        },
+        handleDragOver: function (e) {
+            this.isHovered = true;
+        },
+        handleDragLeave: function (e) {
+            this.isHovered = false;            
+        },
+        moveMediaToFolder: function (folder, e) {
+
+            var self = this;
+            self.isHovered = false;
+
+            var mediaNames = JSON.parse(e.dataTransfer.getData('mediaNames')); 
+
+            if (mediaNames.length < 1) {
+                return;
+            }
+
+            var sourceFolder = e.dataTransfer.getData('sourceFolder');
+            var targetFolder = folder.path;
+
+            if (sourceFolder === '') {
+                sourceFolder = 'root';
+            }
+
+            if (targetFolder === '') {
+                targetFolder = 'root';
+            }
+
+            if (sourceFolder === targetFolder) {
+                alert($('#sameFolderMessage').val());
+                return;
+            }
+
+            if (!confirm($('#moveMediaMessage').val())) {
+                return;
+            }            
+
+            $.ajax({
+                url: $('#moveMediaListUrl').val(),
+                method: 'POST',
+                data: {
+                    __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                    mediaNames: mediaNames,
+                    sourceFolder: sourceFolder,
+                    targetFolder: targetFolder
+                },
+                success: function () {
+                    bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
+                },
+                error: function (error) {
+                    console.error(error.responseText);
+                    bus.$emit('mediaListMoved', error.responseText);
+                }
+            });
         }
-    });
+
+    }
 });
 
 /*
@@ -2052,7 +2429,13 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
         el: mediaFieldEditor.get(0),
         data: {
             mediaItems: [],
-            selectedMedia: null
+            selectedMedia: null,
+            smallThumbs: false
+        },
+        created: function () {
+            var self = this;
+
+            self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
         },
         computed: {
             paths: {
@@ -2099,6 +2482,22 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
             },
             canRemoveMedia: function () {
                 return this.selectedMedia || this.mediaItems.length === 1;
+            },
+            thumbSize: function () {
+                return this.smallThumbs ? 120 : 240;
+            },
+            currentPrefs: {
+                get: function () {
+                    return {
+                        smallThumbs: this.smallThumbs                        
+                    }
+                },
+                set: function (newPrefs) {
+                    if (!newPrefs) {
+                        return;
+                    }
+                    this.smallThumbs = newPrefs.smallThumbs;
+                }
             }
 
         },
@@ -2115,9 +2514,14 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                     $("#mediaApp").show();
                     var modal = $(modalBodyElement).modal();
                     $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
-                        if (mediaApp.selectedMedia != null) {
-                            mediaFieldApp.mediaItems.push(mediaApp.selectedMedia);
+                        if ((mediaApp.selectedMedias.length > 1) && (allowMultiple === false)) {
+                            alert($('#onlyOneItemMessage').val());
+                            mediaFieldApp.mediaItems.push(mediaApp.selectedMedias[0]);
+                        } else {
+                            mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(mediaApp.selectedMedias);
                         }
+                        // we don't want the included medias to be still selected the next time we open the modal.
+                        mediaApp.selectedMedias = [];
 
                         modal.modal('hide');
                         return true;
@@ -2138,13 +2542,367 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                     }
                 }
                 this.selectedMedia = null;
+            },
+            selectAndDeleteMedia: function (media) {
+                var self = this;
+                self.selectedMedia = media;
+                // setTimeout because sometimes 
+                // removeSelected was called even before the media was set.
+                setTimeout(function () {                    
+                    self.removeSelected();    
+                }, 100);
             }
         },
         watch: {
             mediaItems: function () {
                 // Trigger preview rendering
                 setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100);
+            },
+            currentPrefs: function (newPrefs) {
+                localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
             }
         }
     }));
 }
+// <media-items-grid> component
+Vue.component('mediaItemsGrid', {
+    template: '\
+        <ol class="row">\
+                <li v-for="media in filteredMediaItems" \
+                    :key="media.name" \
+                    class="media-item media-container-main-list-item card" \
+                    :style="{width: thumbSize + 2 + \'px\'}" \
+                    :class="{selected: isMediaSelected(media)}" \
+                    v-on:click.stop="toggleSelectionOfMedia(media)" \
+                    draggable="true" v-on:dragstart="dragStart(media, $event)"> \
+                    <div class="thumb-container" :style="{height: thumbSize + \'px\'}"> \
+                            <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" :style="{ maxHeight: thumbSize + \'px\' , maxWidth: thumbSize + \'px\' }"/> \
+                    </div> \
+                    <div class="media-container-main-item-title card-body"> \
+                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button edit-button mr-4" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a> \
+                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button" v-on:click.stop="deleteMedia(media)"><i class="fa fa-trash"></i></a> \
+                        <span class="media-filename card-text small" :title="media.name">{{ media.name }}</span> \
+                    </div> \
+                 </li> \
+        </ol>\
+        \
+        ',
+    data: function () {
+        return {
+            T: {}
+        }
+    },
+    props: {
+        filteredMediaItems: Array,
+        selectedMedias: Array,
+        thumbSize: Number
+    },
+    created: function () {
+        var self = this;
+        // retrieving localized strings from view
+        self.T.editButton = $('#t-edit-button').val();
+        self.T.deleteButton = $('#t-delete-button').val();
+    },
+    methods: {
+        isMediaSelected: function (media) {
+            var result = this.selectedMedias.some(function (element, index, array) {
+                return element.url.toLowerCase() === media.url.toLowerCase();
+            });
+            return result;
+        },
+
+        toggleSelectionOfMedia: function (media) {
+            bus.$emit('mediaToggleRequested', media);
+        },
+        renameMedia: function (media) {
+            bus.$emit('renameMediaRequested', media);            
+        },
+        deleteMedia: function (media) {
+            bus.$emit('deleteMediaRequested', media);
+        },
+        dragStart: function (media, e) {
+            bus.$emit('mediaDragStartRequested', media, e);
+        }
+    }
+});
+
+// <media-items-table> component
+Vue.component('mediaItemsTable', {
+    template: '\
+        <table class="table media-items-table"> \
+            <thead> \
+                <tr class="header-row"> \
+                    <th scope="col" class="thumbnail-column" style="padding-left:16px;">{{ T.imageHeader }}</th> \
+                    <th scope="col" v-on:click="changeSort(\'name\')"> \
+                       {{ T.nameHeader }} \
+                         <sort-indicator colname="name" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
+                    </th> \
+                    <th scope="col" v-on:click="changeSort(\'size\')"> \
+                        <span class="optional-col"> \
+                            {{ T.sizeHeader }} \
+                         <sort-indicator colname="size" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
+                        </span> \
+                    </th> \
+                    <th scope="col" v-on:click="changeSort(\'mime\')"> \
+                        <span class="optional-col"> \
+                           {{ T.typeHeader }} \
+                         <sort-indicator colname="mime" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
+                        </span> \
+                    </th> \
+                </tr>\
+            </thead>\
+            <tbody> \
+                    <tr v-for="media in filteredMediaItems" \
+                          class="media-item" \
+                          :class="{selected: isMediaSelected(media)}" \
+                          v-on:click.stop="toggleSelectionOfMedia(media)" \
+                          draggable="true" v-on:dragstart="dragStart(media, $event)" \
+                          :key="media.name" style="height: 80px;"> \
+                             <td class="thumbnail-column"> \
+                                <div class="img-wrapper"> \
+                                    <img draggable="false" :src="media.url + \'? width = \' + thumbSize + \' & height=\' + thumbSize" /> \
+                                </div> \
+                            </td> \
+                            <td> \
+                                <div class="media-name-cell"> \
+                                    {{ media.name }} \
+                                    <div class="buttons-container"> \
+                                        <a href="javascript:;" class="btn btn-link btn-sm mr-1 edit-button" v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a > \
+                                        <a href="javascript:;" class="btn btn-link btn-sm delete-button" v-on:click.stop="deleteMedia(media)"> {{ T.deleteButton }} </a> \
+                                    </div> \
+                                </div> \
+                            </td> \
+                            <td> \
+                                <div class="text-col optional-col"> {{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }} KB</div> \
+                            </td> \
+                            <td> \
+                                <div class="text-col optional-col">{{ media.mime }}</div> \
+                            </td> \
+                   </tr>\
+            </tbody>\
+        </table> \
+        ',
+    data: function () {
+        return {
+            T: {}
+        }
+    },
+    props: {
+        sortBy: String,
+        sortAsc: Boolean,
+        filteredMediaItems: Array,
+        selectedMedias: Array,
+        thumbSize: Number
+    },
+    created: function () {
+        var self = this;
+        // retrieving localized strings from view
+        self.T.imageHeader = $('#t-image-header').val();
+        self.T.nameHeader = $('#t-name-header').val();
+        self.T.sizeHeader = $('#t-size-header').val();
+        self.T.typeHeader = $('#t-type-header').val();
+        self.T.editButton = $('#t-edit-button').val();
+        self.T.deleteButton = $('#t-delete-button').val();
+    },
+    methods: {
+        isMediaSelected: function (media) {
+            var result = this.selectedMedias.some(function (element, index, array) {
+                return element.url.toLowerCase() === media.url.toLowerCase();
+            });
+            return result;
+        },
+
+        changeSort: function (newSort) {
+            bus.$emit('sortChangeRequested', newSort);
+        },
+
+        toggleSelectionOfMedia: function (media) {
+            bus.$emit('mediaToggleRequested', media);
+        },
+        renameMedia: function (media) {
+            bus.$emit('renameMediaRequested', media);            
+        },
+        deleteMedia: function (media) {
+            bus.$emit('deleteMediaRequested', media);
+        },
+        dragStart: function (media, e) {
+            bus.$emit('mediaDragStartRequested', media, e);
+        }
+    }
+});
+
+// <sort-indicator> component
+Vue.component('sortIndicator', {
+    template: '\
+        <div v-show="isActive" style="display: inline-block;"> \
+            <span v-show="asc"><i class="small fa fa-chevron-up"></i></span> \
+            <span v-show="!asc"><i class="small fa fa-chevron-down"></i></span> \
+        </div> \
+        ',
+    props: {
+        colname: String,
+        selectedcolname: String,
+        asc: Boolean
+    },
+    computed: {
+        isActive: function () {
+            return this.colname.toLowerCase() == this.selectedcolname.toLowerCase();
+        }
+    }
+});
+
+// <upload> component
+Vue.component('upload', {
+    template: '\
+        <div :class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
+            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning" style=""><i class="fa fa-times"></i> </span>\
+            <p class="upload-name" :title="model.errorMessage">{{ model.name }}</p> \
+            <div> \
+               <span v-show="!model.errorMessage" :style="{ width: model.percentage + \'%\'}" class="progress-bar"> </span> \
+               <span v-if="model.errorMessage" class="error-message" :title="model.errorMessage"> Error: {{ model.errorMessage }} </span> \
+            </div> \
+        </div> \
+        ',
+    props: {
+        model: Object
+    },
+    mounted: function () {
+        var self = this;
+        $('#fileupload').bind('fileuploadprogress', function (e, data) {
+            if (data.files[0].name !== self.model.name) {
+                return;
+            }            
+            self.model.percentage = parseInt(data.loaded / data.total * 100, 10);
+        });
+
+        $('#fileupload').bind('fileuploaddone', function (e, data) {
+            if (data.files[0].name !== self.model.name) {
+                return;
+            }
+            if (data.result.files[0].error) {
+                self.handleFailure(data.files[0].name, data.result.files[0].error);
+            } else {  
+                bus.$emit('removalRequest', self.model);
+            }
+        });
+
+        $('#fileupload').bind('fileuploadfail', function (e, data) {
+            if (data.files[0].name !== self.model.name) {
+                return;
+            }
+            self.handleFailure(data.files[0].name , data.textStatus);            
+        });
+    },
+    methods: {
+        handleFailure: function (fileName, message) {
+            if (fileName !== this.model.name) {
+                return;
+            }
+            this.model.errorMessage = message;
+            bus.$emit('ErrorOnUpload', this.model);
+        },
+        dismissWarning: function () {
+            bus.$emit('removalRequest', this.model);
+        }
+    }
+});
+
+// <upload-list> component
+Vue.component('uploadList', {
+    template: '\
+        <div class="upload-list" v-show="files.length > 0"> \
+            <div class="header" @click="expanded = !expanded"> \
+                <span> {{ T.uploads }} </span> \
+                <span v-show="pendingCount"> (Pending: {{ pendingCount }}) </span> \
+                <span v-show="errorCount" :class="{ \'text-danger\' : errorCount }"> ( {{ T.errors }}: {{ errorCount }} / <a href="javascript:;" v-on:click.stop="clearErrors" > {{ T.clearErrors }} </a>)</span> \
+                    <div class="toggle-button"> \
+                    <div v-show="expanded"> \
+                        <i class="fa fa-chevron-down"></i> \
+                    </div> \
+                    <div v-show="!expanded"> \
+                        <i class="fa fa-chevron-up"></i> \
+                    </div> \
+                </div> \
+            </div> \
+            <div class="card-body" v-show="expanded"> \
+                <div class="d-flex flex-wrap"> \
+                    <upload v-for="f in files" :key="f.name"  :model="f"></upload> \
+                </div > \
+            </div> \
+        </div> \
+        ',
+    data: function () {
+        return {
+            files: [],
+            T: {},
+            expanded: false,
+            pendingCount: 0,
+            errorCount: 0
+        }
+    },
+    created: function () {
+        var self = this;
+        // retrieving localized strings from view
+        self.T.uploads = $('#t-uploads').val();
+        self.T.errors = $('#t-errors').val();
+        self.T.clearErrors = $('#t-clear-errors').val();
+    },
+    computed: {
+        fileCount: function () {
+            return this.files.length;
+        }
+    },
+    mounted: function () {
+        var self = this;
+
+        $('#fileupload').bind('fileuploadadd', function (e, data) {
+            if (!data.files) { 
+                return;
+            }
+            data.files.forEach(function (newFile) {                
+                var alreadyInList = self.files.some(function (f) {
+                    return f.name == newFile.name;
+                });
+
+                if (!alreadyInList) {
+                    self.files.push({ name: newFile.name, percentage: 0, errorMessage: '' });
+                } else {
+                    console.error('A file with the same name is already on the queue:' + newFile.name);
+                }         
+            });            
+        });
+
+        bus.$on('removalRequest', function (fileUpload) {
+            self.files.forEach(function (item, index, array) {
+                if (item.name == fileUpload.name) {
+                    array.splice(index, 1);
+                }
+            });
+        });
+
+        bus.$on('ErrorOnUpload', function (fileUpload) {
+            self.updateCount();
+        });
+    },
+    methods: {
+        updateCount: function () {
+            this.errorCount = this.files.filter(function (item) {
+                return item.errorMessage != '';
+            }).length;
+            this.pendingCount = this.files.length - this.errorCount;
+            if (this.files.length < 1) {
+                this.expanded = false;
+            }
+        },
+        clearErrors: function () {            
+            this.files = this.files.filter(function (item) {
+                return item.errorMessage == '';
+            });
+        }
+    },
+    watch: {
+        files: function () {
+            this.updateCount();
+        }
+    }
+});

@@ -20,7 +20,6 @@ namespace OrchardCore.DisplayManagement.Notify
         private readonly INotifier _notifier;
         private readonly dynamic _shapeFactory;
         private readonly ILayoutAccessor _layoutAccessor;
-        private readonly ShellSettings _shellSettings;
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
         private NotifyEntry[] _existingEntries = Array.Empty<NotifyEntry>();
@@ -41,13 +40,12 @@ namespace OrchardCore.DisplayManagement.Notify
             _htmlEncoder = htmlEncoder;
             _logger = logger;
             _dataProtectionProvider = dataProtectionProvider;
-            _shellSettings = shellSettings;
 
             _layoutAccessor = layoutAccessor;
             _notifier = notifier;
             _shapeFactory = shapeFactory;
 
-            _tenantPath = "/" + _shellSettings.RequestUrlPrefix;
+            _tenantPath = "/" + shellSettings.RequestUrlPrefix;
         }
 
         public void OnActionExecuting(ActionExecutingContext filterContext)
@@ -139,14 +137,6 @@ namespace OrchardCore.DisplayManagement.Notify
             filterContext.HttpContext.Response.Cookies.Delete(CookiePrefix, new CookieOptions { Path = _tenantPath });
         }
 
-        private IDataProtector CreateTenantProtector()
-        {
-            // Note: this filter is not located in a module that depends on the DataProtection module.
-            // As such, we can't guarantee the key ring is not shared between tenants. To ensure cookies
-            // encrypted by this tenant can't be read by another one, a sub-protector is always created.
-            return _dataProtectionProvider.CreateProtector(nameof(NotifyFilter), _shellSettings.Name);
-        }
-
         private string SerializeNotifyEntry(NotifyEntry[] notifyEntries)
         {
             var settings = new JsonSerializerSettings();
@@ -154,7 +144,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
             try
             {
-                var protector = CreateTenantProtector();
+                var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
                 var signed = protector.Protect(JsonConvert.SerializeObject(notifyEntries, settings));
                 return WebUtility.UrlEncode(signed);
             }
@@ -171,7 +161,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
             try
             {
-                var protector = CreateTenantProtector();
+                var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
                 var decoded = protector.Unprotect(WebUtility.UrlDecode(value));
                 messageEntries = JsonConvert.DeserializeObject<NotifyEntry[]>(decoded, settings);
             }

@@ -33,6 +33,8 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             public int Priority { get; set; }
             public string Category { get; set; }
             public string Description { get; set; }
+            public bool DefaultTenantOnly { get; set; }
+
             public bool DependencyOn(IFeatureInfo feature)
             {
                 return false;
@@ -59,7 +61,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0, "", "", this, new string[0])}
+                        {new FeatureInfo(name, name, 0, "", "", this, new string[0], false)}
                     };
 
                 Features = features;
@@ -93,7 +95,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0, "", "", this, new string[0])}
+                        {new FeatureInfo(name, name, 0, "", "", this, new string[0], false)}
                     };
 
                 Features = features;
@@ -120,7 +122,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 Features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0, "", "", this, new string[] { baseTheme.Id })}
+                        {new FeatureInfo(name, name, 0, "", "", this, new string[] { baseTheme.Id }, false)}
                     };
 
                 Id = name;

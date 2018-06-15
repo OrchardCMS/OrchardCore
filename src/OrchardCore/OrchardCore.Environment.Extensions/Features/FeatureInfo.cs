@@ -9,7 +9,8 @@ namespace OrchardCore.Environment.Extensions.Features
             string category,
             string description,
             IExtensionInfo extension,
-            string[] dependencies)
+            string[] dependencies,
+            bool defaultTenantOnly)
         {
             Id = id;
             Name = name;
@@ -18,6 +19,7 @@ namespace OrchardCore.Environment.Extensions.Features
             Description = description;
             Extension = extension;
             Dependencies = dependencies;
+            DefaultTenantOnly = defaultTenantOnly;
         }
 
         public string Id { get; }
@@ -25,6 +27,7 @@ namespace OrchardCore.Environment.Extensions.Features
         public int Priority { get; }
         public string Category { get; }
         public string Description { get; }
+        public bool DefaultTenantOnly { get; }
         public IExtensionInfo Extension { get; }
         public string[] Dependencies { get; }
     }
