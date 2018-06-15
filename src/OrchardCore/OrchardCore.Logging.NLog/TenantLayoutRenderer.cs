@@ -1,8 +1,8 @@
-﻿using System.Text;
+using System.Text;
 using NLog;
 using NLog.LayoutRenderers;
 using NLog.Web.LayoutRenderers;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.Logging
 {
@@ -19,7 +19,7 @@ namespace OrchardCore.Logging
             var context = HttpContextAccessor.HttpContext;
 
             // If there is no ShellSettings in the Features then the log is rendered from the Host
-            var tenantName = context.Features.Get<ShellSettings>()?.Name ?? "None";
+            var tenantName = context.Features.Get<ShellContext>()?.Settings?.Name ?? "None";
             builder.Append(tenantName);
         }
     }
