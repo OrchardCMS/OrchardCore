@@ -128,7 +128,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds host and tenant level antiforgery services.
         /// </summary>
-        public static void AddAntiForgery(OrchardCoreBuilder builder)
+        private static void AddAntiForgery(OrchardCoreBuilder builder)
         {
             builder.ApplicationServices.AddAntiforgery();
 
@@ -150,7 +150,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds host and tenant level authentication services and configuration.
         /// </summary>
-        public static void AddAuthentication(OrchardCoreBuilder builder)
+        private static void AddAuthentication(OrchardCoreBuilder builder)
         {
             builder.ApplicationServices.AddAuthentication();
 
@@ -174,7 +174,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds tenant level data protection services.
         /// </summary>
-        public static void AddDataProtection(OrchardCoreBuilder builder)
+        private static void AddDataProtection(OrchardCoreBuilder builder)
         {
             builder.ConfigureServices((services, serviceProvider) =>
             {
