@@ -1,12 +1,13 @@
 # Orchard Core Theming explained
 
-This article explains how a Content Item is rendered and how the many ways the HTML that is rendered can be customized. It also explains the fundamental theming cocepts that are __Shapes__, __Alternates__, __Templates__, __Differentiators__, __Content Zones__ and __Display Types__.
+This article explains how a Content Item is rendered, and the many ways in which the HTML that is rendered can be customized.
+It also explains the fundamental theming concepts, namely __Shapes__, __Alternates__, __Templates__, __Differentiators__, __Content Zones__ and __Display Types__.
 
 ## Goals
 
 Let's assume we want to add a portfolio section to our Blog where we could list all the projects we are working on, and be able to manage these projects individually, as opposed to having an static page where we would have to copy-paste the HTML for each project.
 
-The portfolio should have it's own url like `/portfolio` and the display the project in
+The portfolio should have its own URL like `/portfolio`, and should display the projects in
 a predefined order.
 
 The end result would look like this:
@@ -19,7 +20,7 @@ The only obvious thing that is required is to create a new `Project` content typ
 
 However there are many different ways to model the content to represent a portfolio:
 
-- Create a `Portfolio` content type with a `List` content part that is limited to `Project` content items. In this case projects are independent from the list and can be reused elswere in the site (they are referenced by the portfolio).
+- Create a `Portfolio` content type with a `List` content part that is limited to `Project` content items. In this case, projects are independent from the list and can be reused elsewhere in the site (they are referenced by the portfolio).
 - Create a `Portfolio` content type with a `BagPart` content part that is limited to `Project` content items. In this case project content items live inside the portfolio content item (they are contained by the portfolio).
 - Create a `Liquid Page` content item to query and render all content items of type `Project`.
 - Create a Razor Page that will use a query to load all the project content items.
@@ -28,7 +29,7 @@ This article will explain how to do it with a `BagPart` as it will provide the b
 
 ## Creating the content types
 
-`Project` is a content type that will be composed of
+`Project` is a content type that will be composed of:
 
 - a `Title` part to set a custom name
 - a `Text` field to store the link to the project
@@ -64,7 +65,7 @@ Take the time to drag and drop the __Title__ part at the top of the list such th
 
 ## Creating the Portfolio
 
-Click on __New__ then __Portfolio__.
+Click on __New__, then __Portfolio__.
 
 Give it a title like `My Project`.
 
@@ -83,13 +84,18 @@ At that point it already looks like something that could be shipped, and all the
 ## Rendering logic
 
 ### Loading the portfolio from the database
-When the url `/portfolio` is requested, a custom action is called to render the content item that is associated with this url. The url got associated with the portfolio thanks to the __Aurotoute__ part that provides this mecanism. The autoroute registers a custom url and store the associated content item id. At this point the action will issue a database request to load the portfolio in its integrality, which means including the projects as this is how it was modeled with the __Bag__ part.
+When the url `/portfolio` is requested, a custom action is called to render the content item that is associated with this URL.
+The URL got associated with the portfolio thanks to the __Aurotoute__ part that provides this mechanism.
+The autoroute registers a custom URL and stores the associated content item id.
+At this point the action will issue a database request to load the portfolio in its entirety, including the projects, as this is how it was modeled with the __Bag__ part.
 
 ### How a Content Item is displayed
 With the portfolio in memory, the theming engine is invoked to render the content item.
 What happens at that moment is that all the components which want to participate in the rendering of a content item are invoked (the Display Drivers), and each component can return an object representing what to render (the Shapes).
 
-In our case, the __Title__ and __Bag__ parts are provided by custom modules that have specific a __Display Driver__ for each of these parts. Then another display driver will be invoked for each __Text__ field. Recursively the __Bag__ part will invoke all available display drivers to render the `Project` content items it owns.
+In our case, the __Title__ and __Bag__ parts are provided by custom modules that have specific a __Display Driver__ for each of these parts.
+Then another display driver will be invoked for each __Text__ field.
+The __Bag__ part will invoke all available display drivers recursively, to render the `Project` content items it owns.
 
 Each of these drivers return one or more shapes that are added to named zones (or sections) of a global __Shape__ called the `Content` shape. 
 
@@ -97,33 +103,48 @@ For instance the `TitleDisplayDriver` class will return a shape of type `TitlePa
 
 Then the `BagPart` shape is added in the `Content` zone of the main shape at the position `5`. See https://github.com/OrchardCMS/OrchardCore/blob/dev/src/OrchardCore.Modules/OrchardCore.Flows/Drivers/BagPartDisplay.cs#L39-L45.
 
-Once all the drivers for all the parts and all the fields have returned their shapes to specific zones of the main `Content` shape, then Orchard is looking for a matching template for it. Template matching is done dynamically, and if no specific ones are created for a Content Type, then the file `Content.cshtml` (or `Content.liquid`) is used. The default template will go over all the zones it knows about and render the shapes that are inside each of them. See https://github.com/OrchardCMS/OrchardCore/blob/dev/src/OrchardCore.Modules/OrchardCore.Contents/Views/Content.cshtml#L17 where the `Header` zone shapes are rendered (the `TitlePart` shape) and also https://github.com/OrchardCMS/OrchardCore/blob/dev/src/OrchardCore.Modules/OrchardCore.Contents/Views/Content.cshtml#L26 where the `Content` zone shapes are rendered (`BagPart` and `TextField` shapes).
+Once all the drivers for all the parts and all the fields have returned their shapes to specific zones of the main `Content` shape, Orchard will look for a matching template.
+Template matching is done dynamically, and if no specific ones are created for a Content Type, then the file `Content.cshtml` (or `Content.liquid`) is used.
+The default template will go over all the zones it knows about and render the shapes that are inside each of them.
+See https://github.com/OrchardCMS/OrchardCore/blob/dev/src/OrchardCore.Modules/OrchardCore.Contents/Views/Content.cshtml#L17 where the `Header` zone shapes are rendered (the `TitlePart` shape) and also https://github.com/OrchardCMS/OrchardCore/blob/dev/src/OrchardCore.Modules/OrchardCore.Contents/Views/Content.cshtml#L26 where the `Content` zone shapes are rendered (`BagPart` and `TextField` shapes).
 
 ## Customizing templates
 
 We can already see that many shapes, and thus templates, are used to render a single content item. But every piece of HTML can be replaced, locally (for a page) or globally (over the site).
 
-Templates are usually provided by the modules that create the corresponding shape types, but can always be redefined by a Theme. Themes are able to provide custom templates that will be used instead of the default ones. This means that a template can be copied to a theme in order to be customized.
+Templates are usually provided by the modules that create the corresponding shape types, but can always be redefined by a Theme.
+Themes are able to provide custom templates that will be used instead of the default ones. This means that a template can be copied to a theme in order to be customized.
 
 ### Alternates
 
-When the __Content__ shape is rendered into HTML, it is done using the `Content.cshtml` file as mentioned earlier. The same way for the __TitlePart__ shape will be converted using a `TitlePart.cshtml` template.
+When the __Content__ shape is rendered into HTML, it is done using the `Content.cshtml` file as mentioned earlier.
+Similarly, the __TitlePart__ shape will be converted using a `TitlePart.cshtml` template.
 
 This means that we can copy the `Content.cshtml` file from the __OrchardCore.Contents__ module in order to customize how the __Content__ shape is rendered.
 
-One issue with customizing the `Content.cshtml` file is that it would change how any content item is rendered. The original file is generic enough to be usable with any content type, and does so by rendering a generic `<article>` element with a `<header>`, a body and a `<footer>`. Each driver provides shapes that will target these predefined zones, and the `Content.cshtml` default template just renders them all in order. For this reason it is not recommended to change this file as it may impact too many pages, unless you decide to change the way content items are rendered by default.
+One issue with customizing the `Content.cshtml` file is that it would change how any content item is rendered.
+The original file is generic enough to be usable with any content type, and does so by rendering a generic `<article>` element with a `<header>`, a body and a `<footer>`.
+Each driver provides shapes that will target these predefined zones, and the `Content.cshtml` default template just renders them all in order.
+For this reason it is not recommended to change this file as it may impact too many pages, unless you decide to change the way content items are rendered by default.
 
-To be able to change how specific content types are rendered the theming engine provide the concept of __Alternates__. An alternate is an optional shape type that should be used if a template can be foud for it. Alternates provide more specific ways to customize templates. In the case of our Portfolio __Content__ shape, a special alternate named `Content__Portfolio` is added so that we can provide a template for the __Content__ shape that will be used only for __Portfolio__ content items. 
+To be able to change how specific content types are rendered the theming engine provide the concept of __Alternates__.
+An alternate is an optional shape type that should be used if a template can be found for it.
+Alternates provide more specific ways to customize templates.
+In the case of our Portfolio __Content__ shape, a special alternate named `Content__Portfolio` is added so that we can provide a template for the __Content__ shape that will be used only for __Portfolio__ content items. 
 
-When a shape contains `__` in its name, the theming engine will match a file with a `-` instead. In this case we can provide a template named `Content-Portfolio.cshtml` in order to customize how a __Portfolio__ content item is rendered. This file can be created by copying the original `Content.cshtml` file or by creating a brand new one.
+When a shape contains `__` in its name, the theming engine will match a file with a `-` instead.
+In this case we can provide a template named `Content-Portfolio.cshtml` in order to customize how a __Portfolio__ content item is rendered.
+This file can be created by copying the original `Content.cshtml` file or by creating a brand new one.
 
-Many other alternates are available to be able to selectively create templates for a content item. See http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Templates/README/#content-templates
+Many other alternates are available to be able to selectively create templates for a content item.
+See http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Templates/README/#content-templates
 
 ### Customizing Part templates
 
-It might not be necessary to change the __Content__ template, but only to change how a single part or field. These are also rendered as shapes and have specific templates to be customized.
+It might not be necessary to change the __Content__ template, but only to change how a single part or field is rendered.
+These are also rendered as shapes and have specific templates that can be customized.
 
-The __Title__ part can be customized by creating a template for the `TitlePart` shape. See http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Title/README/ the shape
+The __Title__ part can be customized by creating a template for the `TitlePart` shape. See http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Title/README/ 
 
 Changing how the title is rendered for every content items would mean creating one of these files:
 
@@ -145,11 +166,11 @@ The template file name for this shape is `Portfolio-TitlePart.cshtml`.
 
 ### Customizing Field templates
 
-Because multiple fields of the same type can be added to the same content type or even the same content part, their shape type is not the optimal way to customize the template. Fortunately differnet alternates based on their name are available.
+Because multiple fields of the same type can be added to the same content type or even the same content part, their shape type is not the optimal way to customize the template. Fortunately different alternates based on their name are available.
 
-For a list of available shape alternate for field see http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Templates/README/#content-field-templates
+For a list of available shape alternates for fields see http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Templates/README/#content-field-templates
 
-In our case the __Portfolio__ has a __Text__ field named `Url`. The best shape to override in this case is `Portfolio__Url` which will match the template `Portfolio-Url.cshtml`.
+In our case, the __Portfolio__ has a __Text__ field named `Url`. The best shape to override in this case is `Portfolio__Url` which will match the template `Portfolio-Url.cshtml`.
 
 The model accessible from this field is described here http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.ContentFields/README/#available-fields
 
@@ -157,7 +178,7 @@ This page explains that the __Text__ field contains a property `Text` that conta
 
 To create a link for this field we can create these templates.
 
-#### Portfolio-Url.cshml
+#### Portfolio-Url.cshtml
 
 ```razor
 <a href="@Model.Text">External url</a>
@@ -171,11 +192,15 @@ To create a link for this field we can create these templates.
 
 ### Display types
 
-When a content item is rendered by the theming engine, a specific __Display Type__ is provided as a context of how rendered elements will be used. The default display type is called __Detail__. This is the one that is used to render a content item in its integrality.
+When a content item is rendered by the theming engine, a specific __Display Type__ is provided as a context of how rendered elements will be used. The default display type is called __Detail__. This is the one that is used to render a content item in its entirety.
 
-When content items are rendered in a list the convention is to use the `Summary` display type. Looking at how our __Portfolio__ content item is rendered, the __Project__ content items are displayed as a list, using the `Summary` display type. Alternates exist to target templates for a specific display type. For instance we can customize how __Project__ content items are displayed when rendered as part of a list by create a template for the shape `Content_Summary__Project`, which corresponds to the file `Content-Project.Summary.cshtml`. See http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Templates/README/#content_displaytype__contenttype 
+When content items are rendered in a list, the convention is to use the `Summary` display type.
+Looking at how our __Portfolio__ content item is rendered, the __Project__ content items are displayed as a list, using the `Summary` display type.
+Alternates exist to target templates for a specific display type.
+For instance we can customize how __Project__ content items are displayed when rendered as part of a list by create a template for the shape `Content_Summary__Project`, which corresponds to the file `Content-Project.Summary.cshtml`.
+See http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Templates/README/#content_displaytype__contenttype 
 
-Here the `_` in the shape name is replaced by a dot (`.`) in the template name, and the dotted portion of the name is moved at the end.
+Here, the `_` in the shape name is replaced by a dot (`.`) in the template name, and the dotted portion of the name is moved at the end.
 
 ### Content zones, differentiators
 
@@ -192,9 +217,10 @@ The `TitlePart` shape is rendered in the zone called `Header`.
 
 Some templating helpers provide ways to select and remove these shapes.
 
-In order to cherry pick specific shapes from a zone, shapes are given a nickname called a __Differentiator__. This is necessary as multiple identical shape types can be added to content zones. See http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Templates/README/#shape-differentiators
+In order to cherrypick specific shapes from a zone, shapes are given a nickname called a __Differentiator__.
+This is necessary, as multiple identical shape types can be added to content zones. See http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Templates/README/#shape-differentiators
 
-For the `Url` text field the differentor is `Project-Url`. For the __Markdown__ part it is `MarkdownPart`.
+For the `Url` text field the differentiator is `Project-Url`. For the __Markdown__ part it is `MarkdownPart`.
 
 This lets us customize the __Content__ shape template for __Project__.
 
@@ -247,6 +273,11 @@ This lets us customize the __Content__ shape template for __Project__.
 </article>
 ```
 
- Here the known shapes are extracted from their respective zones, then rendered explicitely. Finally the rest of the shapes in each zones are rendered in case more content fields or parts are added later on to the content type. If the zones where not rendered then the new elements would not show up automatically.
+Here the known shapes are extracted from their respective zones, then rendered explicitly.
+Finally the rest of the shapes in each zones are rendered in case more content fields or parts are added later on to the content type.
+If the zones weren't being rendered, the new elements would not show up automatically.
 
- Instead of rendering the shapes that have been removed from the zone, some custom rendering can be applied directly. One advantage of reusing the shape is that its template might contain some complex logic that is not easily reusable. This is the case for the `MarkdownPart` shape for instance, as it will have to convert some markdown content to HTML. The `TitlePart` however could easily be ignored and the __Content_ template access directly the `Title` property of this shape. 
+Instead of rendering the shapes that have been removed from the zone, some custom rendering can be applied directly.
+One advantage of reusing the shape is that its template might contain some complex logic that is not easily reusable.
+This is the case for the `MarkdownPart` shape for instance, as it will have to convert some markdown content to HTML.
+The `TitlePart` however could easily be ignored and the __Content__ template directly access the `Title` property of this shape. 
