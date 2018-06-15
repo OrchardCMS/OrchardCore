@@ -12,9 +12,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddCommands()
 
                 .AddMvc()
-                .AddAntiForgery()
-                .AddAuthentication()
-                .AddDataProtection()
 
                 .AddSetupFeatures("OrchardCore.Setup")
 
