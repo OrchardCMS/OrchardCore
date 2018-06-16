@@ -84,12 +84,14 @@ At that point it already looks like something that could be shipped, and all the
 ## Rendering logic
 
 ### Loading the portfolio from the database
+
 When the url `/portfolio` is requested, a custom action is called to render the content item that is associated with this URL.
 The URL got associated with the portfolio thanks to the __Aurotoute__ part that provides this mechanism.
 The autoroute registers a custom URL and stores the associated content item id.
 At this point the action will issue a database request to load the portfolio in its entirety, including the projects, as this is how it was modeled with the __Bag__ part.
 
 ### How a Content Item is displayed
+
 With the portfolio in memory, the theming engine is invoked to render the content item.
 What happens at that moment is that all the components which want to participate in the rendering of a content item are invoked (the Display Drivers), and each component can return an object representing what to render (the Shapes).
 
@@ -97,16 +99,16 @@ In our case, the __Title__ and __Bag__ parts are provided by custom modules that
 Then another display driver will be invoked for each __Text__ field.
 The __Bag__ part will invoke all available display drivers recursively, to render the `Project` content items it owns.
 
-Each of these drivers return one or more shapes that are added to named zones (or sections) of a global __Shape__ called the `Content` shape. 
+Each of these drivers return one or more shapes that are added to named zones (or sections) of a global __Shape__ called the `Content` shape.
 
-For instance the `TitleDisplayDriver` class will return a shape of type `TitlePart` in the `Header` zone of the main shape at position `5`. See https://github.com/OrchardCMS/OrchardCore/blob/dev/src/OrchardCore.Modules/OrchardCore.Title/Drivers/TitlePartDisplay.cs#L14-L20
+For instance the `TitleDisplayDriver` class will return a shape of type `TitlePart` in the `Header` zone of the main shape at position `5`. See <../OrchardCore.Title/Drivers/TitlePartDisplay.cs#L14-L20>
 
-Then the `BagPart` shape is added in the `Content` zone of the main shape at the position `5`. See https://github.com/OrchardCMS/OrchardCore/blob/dev/src/OrchardCore.Modules/OrchardCore.Flows/Drivers/BagPartDisplay.cs#L39-L45.
+Then the `BagPart` shape is added in the `Content` zone of the main shape at the position `5`. See <../OrchardCore.Flows/Drivers/BagPartDisplay.cs#L39-L45>.
 
 Once all the drivers for all the parts and all the fields have returned their shapes to specific zones of the main `Content` shape, Orchard will look for a matching template.
 Template matching is done dynamically, and if no specific ones are created for a Content Type, then the file `Content.cshtml` (or `Content.liquid`) is used.
 The default template will go over all the zones it knows about and render the shapes that are inside each of them.
-See https://github.com/OrchardCMS/OrchardCore/blob/dev/src/OrchardCore.Modules/OrchardCore.Contents/Views/Content.cshtml#L17 where the `Header` zone shapes are rendered (the `TitlePart` shape) and also https://github.com/OrchardCMS/OrchardCore/blob/dev/src/OrchardCore.Modules/OrchardCore.Contents/Views/Content.cshtml#L26 where the `Content` zone shapes are rendered (`BagPart` and `TextField` shapes).
+See <../OrchardCore.Contents/Views/Content.cshtml#L17> where the `Header` zone shapes are rendered (the `TitlePart` shape) and also <../OrchardCore.Contents/Views/Content.cshtml#L26> where the `Content` zone shapes are rendered (`BagPart` and `TextField` shapes).
 
 ## Customizing templates
 
@@ -137,14 +139,14 @@ In this case we can provide a template named `Content-Portfolio.cshtml` in order
 This file can be created by copying the original `Content.cshtml` file or by creating a brand new one.
 
 Many other alternates are available to be able to selectively create templates for a content item.
-See http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Templates/README/#content-templates
+See <../OrchardCore.Templates/README/#content-templates>
 
 ### Customizing Part templates
 
 It might not be necessary to change the __Content__ template, but only to change how a single part or field is rendered.
 These are also rendered as shapes and have specific templates that can be customized.
 
-The __Title__ part can be customized by creating a template for the `TitlePart` shape. See http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Title/README/ 
+The __Title__ part can be customized by creating a template for the `TitlePart` shape. See <../OrchardCore.Title/README/>
 
 Changing how the title is rendered for every content items would mean creating one of these files:
 
@@ -160,7 +162,7 @@ Changing how the title is rendered for every content items would mean creating o
 <h1>{{ Model.Title }}</h1>
 ```
 
-Assuming only the title of __Portfolio__ content items should be customized, alternates can be used to create a specialized template. Content part shapes have alternates specific to their parent content type, in this case `Portfolio__TitlePart`. see http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Templates/README/#contenttype_displaytype__parttype
+Assuming only the title of __Portfolio__ content items should be customized, alternates can be used to create a specialized template. Content part shapes have alternates specific to their parent content type, in this case `Portfolio__TitlePart`. see <../OrchardCore.Templates/README/#contenttype_displaytype__parttype>
 
 The template file name for this shape is `Portfolio-TitlePart.cshtml`.
 
@@ -168,11 +170,11 @@ The template file name for this shape is `Portfolio-TitlePart.cshtml`.
 
 Because multiple fields of the same type can be added to the same content type or even the same content part, their shape type is not the optimal way to customize the template. Fortunately different alternates based on their name are available.
 
-For a list of available shape alternates for fields see http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Templates/README/#content-field-templates
+For a list of available shape alternates for fields see <../OrchardCore.Templates/README/#content-field-templates>
 
 In our case, the __Portfolio__ has a __Text__ field named `Url`. The best shape to override in this case is `Portfolio__Url` which will match the template `Portfolio-Url.cshtml`.
 
-The model accessible from this field is described here http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.ContentFields/README/#available-fields
+The model accessible from this field is described here <../OrchardCore.ContentFields/README/#available-fields>
 
 This page explains that the __Text__ field contains a property `Text` that contains the value of the field.
 
@@ -198,7 +200,7 @@ When content items are rendered in a list, the convention is to use the `Summary
 Looking at how our __Portfolio__ content item is rendered, the __Project__ content items are displayed as a list, using the `Summary` display type.
 Alternates exist to target templates for a specific display type.
 For instance we can customize how __Project__ content items are displayed when rendered as part of a list by create a template for the shape `Content_Summary__Project`, which corresponds to the file `Content-Project.Summary.cshtml`.
-See http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Templates/README/#content_displaytype__contenttype 
+See <../OrchardCore.Templates/README/#content_displaytype__contenttype>
 
 Here, the `_` in the shape name is replaced by a dot (`.`) in the template name, and the dotted portion of the name is moved at the end.
 
@@ -218,7 +220,7 @@ The `TitlePart` shape is rendered in the zone called `Header`.
 Some templating helpers provide ways to select and remove these shapes.
 
 In order to cherrypick specific shapes from a zone, shapes are given a nickname called a __Differentiator__.
-This is necessary, as multiple identical shape types can be added to content zones. See http://orchardcore.readthedocs.io/en/dev/OrchardCore.Modules/OrchardCore.Templates/README/#shape-differentiators
+This is necessary, as multiple identical shape types can be added to content zones. See <../OrchardCore.Templates/README/#shape-differentiators>
 
 For the `Url` text field the differentiator is `Project-Url`. For the __Markdown__ part it is `MarkdownPart`.
 
