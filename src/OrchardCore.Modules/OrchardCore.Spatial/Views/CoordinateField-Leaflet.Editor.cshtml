@@ -1,0 +1,32 @@
+@using OrchardCore.Spatial.Settings
+@model OrchardCore.Spatial.ViewModels.EditCoordinateFieldViewModel
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<CoordinateFieldSettings>();
+}
+
+<div class="form-row" id="CoordinateFields">
+    <div class="form-group col-md-4 col-lg-3">
+        <label asp-for="Latitude">Latitude</label>
+        <input asp-for="Latitude" class="form-control content-preview-text" required="@settings.Required" data-latitude/>
+        @if (!string.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
+    </div>
+    <div class="form-group col-md-4 col-lg-3">
+        <label asp-for="Longitude">Longitude</label>
+        <input asp-for="Longitude" class="form-control content-preview-text" required="@settings.Required" data-longitude/>
+        @if (!string.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
+    </div>
+</div>
+<div class="form-row">
+    <div class="form-group col-md-8 col-lg-6">
+        <div id="map" style="height : 200px"></div>
+    </div>
+</div>
+<script asp-name="coordinate-leaflet-field" depends-on="leaflet" asp-src="~/OrchardCore.Spatial/Scripts/coordinate-leaflet-field.js" debug-src="~/OrchardCore.Spatial/Scripts/coordinate-leaflet-field.js" type="text/javascript" at="Foot"></script>
+<style asp-name="leaflet" version="1.3.1" asp-src="~/OrchardCore.Spatial/leaflet/leaflet.css"></style>
+<script asp-name="leaflet" version="1.3.1" depends-on="jQuery" asp-src="~/OrchardCore.Spatial/leaflet/leaflet.js" at="Foot"></script>

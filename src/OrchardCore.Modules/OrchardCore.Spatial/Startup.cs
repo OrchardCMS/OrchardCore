@@ -6,6 +6,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Spatial.Drivers;
 using OrchardCore.Spatial.Fields;
 using OrchardCore.Spatial.Indexing;
@@ -19,11 +20,17 @@ namespace OrchardCore.Spatial
     {
         static Startup()
         {
+            // Registering both field types and shape types are necessary as they can
+            // be accessed from inner properties.
+
+            TemplateContext.GlobalMemberAccessStrategy.Register<CoordinateField>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayCoordinateFieldViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<GeoPointPartViewModel>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IResourceManifestProvider, ResourceManifest>();
 
             // Coordinate Field
             services.AddSingleton<ContentField, CoordinateField>();
