@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
 
@@ -8,6 +8,16 @@
     <AssemblyName>OrchardCore.Tests</AssemblyName>
     <PackageId>OrchardCore.Tests</PackageId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- For testing the testing infrastructure only -->
+    <WebApplicationFactoryContentRootAttribute Include="OrchardCore.Cms.Web" AssemblyName="OrchardCore.Cms.Web" ContentRootPath="../../src/OrchardCore.Cms.Web" ContentRootTest="OrchardCore.Cms.Web.csproj" Priority="-1" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <None Remove="Localization\PoFiles\EntryWithComments.po" />
@@ -41,6 +51,7 @@
   <Import Project="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Cache\OrchardCore.Environment.Cache.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\BaseThemeSample\BaseThemeSample.csproj" />
@@ -78,10 +89,8 @@
 
   <ItemGroup>
     <PackageReference Include="Assent" />
-    <PackageReference Include="Castle.Core" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.AspNetCore" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Moq" />
     <PackageReference Include="xunit" />

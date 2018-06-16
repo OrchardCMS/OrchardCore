@@ -15,7 +15,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Context
 
         public TestContext()
         {
-            Site = new OrchardTestFixture<SiteStartup>(EnvironmentHelpers.GetApplicationPath());
+            Site = new OrchardTestFixture<SiteStartup>();
 
             Client = new OrchardGraphQLClient(Site.CreateClient());
         }

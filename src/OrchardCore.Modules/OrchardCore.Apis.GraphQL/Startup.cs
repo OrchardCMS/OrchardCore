@@ -36,6 +36,8 @@ namespace OrchardCore.Apis.GraphQL
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddTransient<INavigationProvider, AdminMenu>();
+
+            services.AddSingleton<IGraphQLSchemaHashService, NullGraphQLSchemaHashService>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

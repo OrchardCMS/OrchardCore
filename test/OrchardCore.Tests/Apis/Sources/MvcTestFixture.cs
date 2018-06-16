@@ -2,12 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Globalization;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Tests.Apis;
 using OrchardCore.Tests.Apis.Sources;
 
 namespace Microsoft.AspNetCore.Mvc.FunctionalTests
@@ -18,49 +19,29 @@ namespace Microsoft.AspNetCore.Mvc.FunctionalTests
         public string SiteName => "Sites_" + Guid.NewGuid().ToString().Replace("-", "");
         public string AppData => Path.Combine(EnvironmentHelpers.GetApplicationPath(), "App_Data", SiteName);
 
-        public string Root;
+        public string Root => EnvironmentHelpers.GetApplicationPath();
 
-        public OrchardTestFixture()
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            Root = Path.Combine("test", "WebSites", typeof(TStartup).Assembly.GetName().Name);
-        }
-
-        public OrchardTestFixture(string solutionRelativePath)
-        {
-            Root = solutionRelativePath;
-        }
-
-        protected override IWebHostBuilder CreateWebHostBuilder()
-        {
-            return base
-                .CreateWebHostBuilder()
-                .UseContentRoot(Root);
-        }
-
-        protected override void ConfigureWebHost(IWebHostBuilder builder) {
             if (Directory.Exists(AppData))
             {
                 Directory.Delete(AppData, true);
             }
 
-            builder.ConfigureServices(x => x.AddSingleton(new TestSiteConfiguration { SiteName = SiteName }));
+            builder.UseContentRoot(Root);
+
+            builder
+                .ConfigureServices(services => {
+                    services.AddSingleton(new TestSiteConfiguration { SiteName = SiteName });
+                });
         }
 
-        protected override TestServer CreateServer(IWebHostBuilder builder)
+        protected override IWebHostBuilder CreateWebHostBuilder()
         {
-            var originalCulture = CultureInfo.CurrentCulture;
-            var originalUICulture = CultureInfo.CurrentUICulture;
-            try
-            {
-                CultureInfo.CurrentCulture = new CultureInfo("en-GB");
-                CultureInfo.CurrentUICulture = new CultureInfo("en-US");
-                return base.CreateServer(builder);
-            }
-            finally
-            {
-                CultureInfo.CurrentCulture = originalCulture;
-                CultureInfo.CurrentUICulture = originalUICulture;
-            }
+            return WebHostBuilderFactory.CreateFromAssemblyEntryPoint(
+                typeof(OrchardCore.Cms.Web.Startup).Assembly, Array.Empty<string>())
+                .UseContentRoot(Root)
+                .UseStartup<SiteStartup>();
         }
     }
 

@@ -103,11 +103,12 @@
     <PackageManagement Include="Microsoft.Build.Runtime" Version="15.6.85" />
     <PackageManagement Include="Microsoft.Build.Tasks.Core" Version="15.6.85" />
     <PackageManagement Include="Microsoft.Build.Utilities.Core" Version="15.6.85" />
-    <PackageManagement Include="Microsoft.CodeAnalysis.Common" Version="2.7.0" />
-    <PackageManagement Include="Microsoft.CodeAnalysis.CSharp" Version="2.7.0" />
-    <PackageManagement Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.7.0" />
+    <PackageManagement Include="Microsoft.CodeAnalysis" Version="2.8.2" />
+    <PackageManagement Include="Microsoft.CodeAnalysis.Common" Version="2.8.2" />
+    <PackageManagement Include="Microsoft.CodeAnalysis.CSharp" Version="2.8.2" />
+    <PackageManagement Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.8.2" />
     <PackageManagement Include="Microsoft.CodeAnalysis.Razor" Version="2.1.0" />
-    <PackageManagement Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.7.0" />
+    <PackageManagement Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.8.2" />
     <PackageManagement Include="Microsoft.CSharp" Version="4.5.0-rc1" />
     <PackageManagement Include="Microsoft.Data.Sqlite.Core" Version="2.1.0" />
     <PackageManagement Include="Microsoft.Data.Sqlite" Version="2.1.0" />

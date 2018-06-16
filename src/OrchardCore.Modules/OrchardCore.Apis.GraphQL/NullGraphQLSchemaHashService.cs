@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
-using OrchardCore.Apis.GraphQL;
 
-namespace OrchardCore.Contents.GraphQL
+namespace OrchardCore.Apis.GraphQL
 {
-    public class GraphQLSchemaHashService : IGraphQLSchemaHashService
+    public class NullGraphQLSchemaHashService : IGraphQLSchemaHashService
     {
         public Task<int> GetHash()
         {

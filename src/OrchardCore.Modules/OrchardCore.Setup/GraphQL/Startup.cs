@@ -1,7 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
-using OrchardCore.Apis.GraphQL;
-using OrchardCore.Contents.GraphQL;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Setup.GraphQL
@@ -13,7 +11,6 @@ namespace OrchardCore.Setup.GraphQL
         {
             services.AddGraphMutationType<CreateTenantMutation>();
             services.AddScoped<CreateTenantOutcomeType>();
-            services.AddSingleton<IGraphQLSchemaHashService, GraphQLSchemaHashService>();
         }
     }
 }

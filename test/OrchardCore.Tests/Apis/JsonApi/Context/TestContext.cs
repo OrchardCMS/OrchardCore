@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.FunctionalTests;
 using OrchardCore.Apis.JsonApi.Client;
-using OrchardCore.Tests.Apis.Sources;
 using Xunit;
 
 namespace OrchardCore.Tests.Apis.JsonApi.Context
@@ -15,7 +14,7 @@ namespace OrchardCore.Tests.Apis.JsonApi.Context
 
         public TestContext()
         {
-            Site = new OrchardTestFixture<SiteStartup>(EnvironmentHelpers.GetApplicationPath());
+            Site = new OrchardTestFixture<SiteStartup>();
 
             Client = new OrchardJsonApiClient(Site.CreateClient());
         }
