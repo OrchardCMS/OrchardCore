@@ -2,17 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NodaTime;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Modules
 {
     public class LocalClock : ILocalClock
     {
-        private static readonly Task<ITimeZone> Empty = Task.FromResult<ITimeZone>(null);
-
         private readonly IEnumerable<ITimeZoneSelector> _timeZoneSelectors;
         private readonly IClock _clock;
-        private Task<ITimeZone> _timeZone = Empty;
+        private ITimeZone _timeZone;
 
         public LocalClock(IEnumerable<ITimeZoneSelector> timeZoneSelectors, IClock clock)
         {
@@ -24,39 +21,40 @@ namespace OrchardCore.Modules
         {
             get
             {
-                return GetLocalTimeZoneAsync().ContinueWith(x => _clock.ConvertToTimeZone(_clock.UtcNow, x.Result));
+                return GetLocalNowAsync();
             }
         }
 
-        public Task<ITimeZone> GetLocalTimeZoneAsync()
+        private async Task<DateTimeOffset> GetLocalNowAsync()
+        {
+            return _clock.ConvertToTimeZone(_clock.UtcNow, await GetLocalTimeZoneAsync());
+        }
+
+        public async Task<ITimeZone> GetLocalTimeZoneAsync()
         {
             // Caching the result per request
-            if (_timeZone == Empty)
+            if (_timeZone == null)
             {
-                _timeZone = LoadLocalTimeZoneAsync();
+                _timeZone = await LoadLocalTimeZoneAsync();
             }
 
             return _timeZone;
         }
 
-        public Task<DateTimeOffset> ConvertToLocalAsync(DateTimeOffset dateTimeOffSet)
+        public async Task<DateTimeOffset> ConvertToLocalAsync(DateTimeOffset dateTimeOffSet)
         {
-            return GetLocalTimeZoneAsync().ContinueWith(localTimeZone =>
-            {
-                var dateTimeZone = ((TimeZone)localTimeZone.Result).DateTimeZone;
-                var offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet);
-                return offsetDateTime.InZone(dateTimeZone).ToDateTimeOffset();
-            });
+            var localTimeZone = await GetLocalTimeZoneAsync();
+            var dateTimeZone = ((TimeZone)localTimeZone).DateTimeZone;
+            var offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet);
+            return offsetDateTime.InZone(dateTimeZone).ToDateTimeOffset();
         }
 
-        public Task<DateTime> ConvertToUtcAsync(DateTime dateTime)
+        public async Task<DateTime> ConvertToUtcAsync(DateTime dateTime)
         {
-            return GetLocalTimeZoneAsync().ContinueWith(localTimeZone =>
-            {
-                var dateTimeZone = ((TimeZone)localTimeZone.Result).DateTimeZone;
-                var localDate = LocalDateTime.FromDateTime(dateTime);
-                return dateTimeZone.AtStrictly(localDate).ToDateTimeUtc();
-            });
+            var localTimeZone = await GetLocalTimeZoneAsync();
+            var dateTimeZone = ((TimeZone)localTimeZone).DateTimeZone;
+            var localDate = LocalDateTime.FromDateTime(dateTime);
+            return dateTimeZone.AtStrictly(localDate).ToDateTimeUtc();
         }
 
         private async Task<ITimeZone> LoadLocalTimeZoneAsync()

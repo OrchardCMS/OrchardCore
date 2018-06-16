@@ -79,6 +79,11 @@ namespace OrchardCore.Modules.Manifest
         /// If not provided, defaults to 'Uncategorized'.
         /// </Summary>
         public string Category { get; set; }
+
+        /// <summary>
+        /// Set to <c>true</c> to only allow the Default tenant to enable it.
+        /// </summary>
+        public bool DefaultTenantOnly { get; set; }
     }
 
     /// <summary>

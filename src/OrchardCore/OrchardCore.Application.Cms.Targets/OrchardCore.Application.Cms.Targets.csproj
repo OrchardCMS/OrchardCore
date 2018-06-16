@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <IgnorePackageAssets>true</IgnorePackageAssets>
   </PropertyGroup>
 
   <!-- Add a ".targets" file in the package specific to the "Cms" bundle -->

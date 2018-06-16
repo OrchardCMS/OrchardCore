@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -19,10 +19,6 @@
     <PackageReference Include="YesSql.Provider.MySql" />
     <PackageReference Include="YesSql.Provider.SqLite" />
     <PackageReference Include="YesSql.Provider.PostgreSql" />
-
-    <!-- Upgrade to a specific version of sqlite to allow for "-r winx64" to be used -->
-    <!-- c.f. https://github.com/ericsink/SQLitePCL.raw/issues/194 -->
-    <PackageReference Include="SQLitePCLRaw.bundle_green" />
   </ItemGroup>
 
 </Project>

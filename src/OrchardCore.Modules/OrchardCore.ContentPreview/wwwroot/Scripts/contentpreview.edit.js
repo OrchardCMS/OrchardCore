@@ -15,22 +15,6 @@ $(function () {
         .on('change', '.content-preview-select', function () {
             $(document).trigger('contentpreview:render');
         });
-
-
-    // TODO: move to the Body module
-    $(document)
-        .on('input', '.trumbowyg-editor', function () {
-            $(document).trigger('contentpreview:render');
-        })
-        .on('propertychange', '.trumbowyg-editor', function () {
-            $(document).trigger('contentpreview:render');
-        })
-        .on('keyup', '.trumbowyg-editor', function (event) {
-            // handle backspace
-            if (event.keyCode == 46 || event.ctrlKey) {
-                $(document).trigger('contentpreview:render');
-            }
-        })
 });
 
 var previewButton, contentItemType, previewId, previewContentItemId, previewContentItemVersionId, form, formData;
