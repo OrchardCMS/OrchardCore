@@ -21,8 +21,6 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public class ShellHost : IShellHost, IShellDescriptorManagerEventHandler
     {
-        private static EventId TenantNotStarted = new EventId(0);
-
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IRunningShellTable _runningShellTable;
