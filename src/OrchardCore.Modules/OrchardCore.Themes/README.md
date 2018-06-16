@@ -139,7 +139,7 @@ In this case we can provide a template named `Content-Portfolio.cshtml` in order
 This file can be created by copying the original `Content.cshtml` file or by creating a brand new one.
 
 Many other alternates are available to be able to selectively create templates for a content item.
-See <../OrchardCore.Templates/README/#content-templates>
+See [Content templates](../OrchardCore.Templates/README/#content-templates)
 
 ### Customizing Part templates
 
