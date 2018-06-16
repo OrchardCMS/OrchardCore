@@ -16,11 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddAuthentication()
                 .AddDataProtection()
 
-                .AddSetupFeatures(
-					"OrchardCore.Setup",
-					"OrchardCore.Apis.GraphQL",
-                    "OrchardCore.Apis.JsonApi",
-                    "OrchardCore.Apis.OpenApi")
+                .AddSetupFeatures("OrchardCore.Setup")
 
                 .AddDataAccess()
                 .AddDataStorage()
