@@ -162,13 +162,11 @@ namespace OrchardCore.Workflows.Controllers
             {
                 return NotFound();
             }
-            else
-            {
-                var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
-                await _workflowStore.DeleteAsync(workflow);
-                _notifier.Success(T["Workflow {0} has been deleted.", id]);
-                return RedirectToAction("Index", new { workflowTypeId = workflowType.Id });
-            }
+
+            var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
+            await _workflowStore.DeleteAsync(workflow);
+            _notifier.Success(T["Workflow {0} has been deleted.", id]);
+            return RedirectToAction("Index", new { workflowTypeId = workflowType.Id });
         }
 
         [HttpPost]

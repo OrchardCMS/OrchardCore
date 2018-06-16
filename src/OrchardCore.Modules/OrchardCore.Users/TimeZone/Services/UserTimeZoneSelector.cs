@@ -20,7 +20,7 @@ namespace OrchardCore.Users.TimeZone.Services
             return Task.FromResult(new TimeZoneSelectorResult
             {
                 Priority = 100,
-                TimeZoneId = () => _userTimeZoneService.GetUserTimeZoneAsync().ContinueWith(x => x.Result?.TimeZoneId)
+                TimeZoneId = async () => (await _userTimeZoneService.GetUserTimeZoneAsync())?.TimeZoneId
             });
         }
     }
