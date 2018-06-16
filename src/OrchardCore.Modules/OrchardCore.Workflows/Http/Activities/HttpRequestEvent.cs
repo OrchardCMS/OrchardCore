@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -14,17 +12,14 @@ namespace OrchardCore.Workflows.Http.Activities
         public static string EventName => nameof(HttpRequestEvent);
 
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAntiforgery _antiforgery;
 
         public HttpRequestEvent(
             IStringLocalizer<HttpRequestEvent> localizer,
-            IHttpContextAccessor httpContextAccessor,
-            IAntiforgery antiforgery
+            IHttpContextAccessor httpContextAccessor
         )
         {
             T = localizer;
             _httpContextAccessor = httpContextAccessor;
-            _antiforgery = antiforgery;
         }
 
         private IStringLocalizer T { get; }
@@ -61,16 +56,11 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done", "BadRequest"]);
+            return Outcomes(T["Done"]);
         }
 
-        public override async Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            if (ValidateAntiforgeryToken && (!await _antiforgery.IsRequestValidAsync(_httpContextAccessor.HttpContext)))
-            {
-                return Outcomes("BadRequest");
-            }
-
             return Outcomes("Done");
         }
     }
