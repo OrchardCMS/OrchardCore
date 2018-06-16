@@ -1,4 +1,4 @@
-﻿@model OrchardCore.ContentFields.ViewModels.EditHtmlFieldViewModel
+@model OrchardCore.ContentFields.ViewModels.EditHtmlFieldViewModel
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentFields.Settings;
 
@@ -20,6 +20,8 @@
 
 <script at="Foot">
     $(function () {
-        $('#@Html.IdFor(m => m.Html)').trumbowyg();
+        $('#@Html.IdFor(m => m.Html)').trumbowyg().on('tbwchange', function () {
+            $(document).trigger('contentpreview:render');
+        });
     });
 </script>

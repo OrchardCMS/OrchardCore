@@ -118,14 +118,6 @@ namespace OrchardCore.Modules
                     moduleInfos.Where(f => f is ModuleMarkerAttribute).FirstOrDefault() ??
                     new ModuleAttribute { Name = Name };
 
-                if (isApplication)
-                {
-                    ModuleInfo.Name = Application.ModuleName;
-                    ModuleInfo.Description = "Provides core features defined at the host level";
-                    ModuleInfo.Priority = int.MinValue.ToString();
-                    ModuleInfo.Category = "Infrastructure";
-                }
-
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
                     .Where(f => !(f is ModuleAttribute)).ToList();
 
@@ -137,6 +129,7 @@ namespace OrchardCore.Modules
                     ModuleInfo.Description = "Provides core features defined at the application level";
                     ModuleInfo.Priority = int.MinValue.ToString();
                     ModuleInfo.Category = "Application";
+                    ModuleInfo.DefaultTenantOnly = true;
 
                     if (features.Any())
                     {

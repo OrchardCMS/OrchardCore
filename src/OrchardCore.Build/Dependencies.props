@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Import Project="..\..\src\OrchardCore.Build\Dependencies.AspNetCore.props" />
+  <Import Project="Dependencies.AspNetCore.props" />
 
   <PropertyGroup>
     <!-- Special case - this property is used by a DotNetCliToolReference -->
@@ -9,6 +9,7 @@
   
   <ItemGroup>
     <PackageManagement Include="AspNet.Security.OAuth.Validation" Version="2.0.0-rc2-final" />
+    <PackageManagement Include="AspNet.Security.OpenIdConnect.Primitives" Version="2.0.0-rc2-final" />
     <PackageManagement Include="Castle.Core" Version="4.2.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
     <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9442" />

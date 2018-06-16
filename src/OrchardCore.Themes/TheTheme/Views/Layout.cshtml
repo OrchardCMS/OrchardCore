@@ -1,3 +1,5 @@
+@* Based on https://getbootstrap.com/docs/4.0/examples/sticky-footer-navbar/ *@
+
 @inject OrchardCore.Settings.ISiteService SiteService
 @{
     var site = await SiteService.GetSiteSettingsAsync();
@@ -11,6 +13,7 @@
     <link type="image/x-icon" rel="shortcut icon" href="/TheTheme/favicon.ico" />
     <script asp-name="bootstrap" use-cdn="true" version="4" at="Foot"></script>
     <style asp-name="bootstrap" use-cdn="true" version="4"></style>
+    <style asp-src="/TheTheme/css/sticky-footer-navbar.css"></style>
     <resources type="Meta" />
     <resources type="HeadLink" />
     <resources type="Stylesheet" />
@@ -32,10 +35,9 @@
     @await RenderSectionAsync("Header", required: false)
     <main role="main" class="container">
         @await RenderSectionAsync("Messages", required: false)
-        <div class="row">
-            @await RenderBodyAsync()
-        </div>
+        @await RenderBodyAsync()
     </main>
+    @await RenderSectionAsync("Footer", required: false)
     <resources type="FootScript" />
 </body>
 </html>

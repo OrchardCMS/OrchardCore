@@ -104,7 +104,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
 
             var shapeMetadata = shape.Metadata;
-            shape.Metadata.Type = shapeType;
+            shapeMetadata.Type = shapeType;
 
             // Merge wrappers if there are any
             if (shapeDescriptor != null && shapeMetadata.Wrappers.Count + shapeDescriptor.Wrappers.Count > 0)
