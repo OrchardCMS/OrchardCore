@@ -81,8 +81,7 @@ namespace OrchardCore.OpenId.Configuration
                 if (scope == null)
                 {
                     _logger.LogError("The specified tenant '{TenantName}' is disabled.", settings.Tenant);
-
-                    throw new ApplicationException("A tenant could not be started, it depends on another tenant that is not available.");
+                    throw new ApplicationException($"A tenant could not be started, it depends on the tenant {settings.Tenant} that is disabled.");
                 }
 
                 var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
@@ -152,7 +151,7 @@ namespace OrchardCore.OpenId.Configuration
                 if (scope == null)
                 {
                     _logger.LogError("The specified tenant '{TenantName}' is disabled.", settings.Tenant);
-                    return;
+                    throw new ApplicationException($"A tenant could not be started, it depends on the tenant {settings.Tenant} that is disabled.");
                 }
 
                 var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
@@ -227,20 +226,19 @@ namespace OrchardCore.OpenId.Configuration
                     if (scope == null)
                     {
                         _logger.LogError("The specified tenant '{TenantName}' is disabled.", settings.Tenant);
+                        throw new ApplicationException($"A tenant could not be started, it depends on the tenant {settings.Tenant} that is disabled.");
                     }
-                    else
-                    {
-                        // If the other tenant is released, ensure the current tenant is also restarted as it
-                        // relies on a data protection provider whose lifetime is managed by the other tenant.
-                        // To make sure the other tenant is not disposed before all the pending requests are
-                        // processed by the current tenant, a tenant dependency is manually added.
-                        context.AddDependentShell(_shellHost.GetOrCreateShellContext(_shellSettings));
 
-                        // Note: the data protection provider is always registered as a singleton and thus will
-                        // survive the current scope, which is mainly used to prevent the other tenant from being
-                        // released before we have a chance to declare the current tenant as a dependent tenant.
-                        options.DataProtectionProvider = scope.ServiceProvider.GetDataProtectionProvider();
-                    }
+                    // If the other tenant is released, ensure the current tenant is also restarted as it
+                    // relies on a data protection provider whose lifetime is managed by the other tenant.
+                    // To make sure the other tenant is not disposed before all the pending requests are
+                    // processed by the current tenant, a tenant dependency is manually added.
+                    context.AddDependentShell(_shellHost.GetOrCreateShellContext(_shellSettings));
+
+                    // Note: the data protection provider is always registered as a singleton and thus will
+                    // survive the current scope, which is mainly used to prevent the other tenant from being
+                    // released before we have a chance to declare the current tenant as a dependent tenant.
+                    options.DataProtectionProvider = scope.ServiceProvider.GetDataProtectionProvider();
                 }
             }
 
