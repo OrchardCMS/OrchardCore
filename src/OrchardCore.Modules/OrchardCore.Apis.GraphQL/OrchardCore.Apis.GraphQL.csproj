@@ -5,35 +5,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageAssetFiles Remove="Content\graphiql.css" />
-    <PackageAssetFiles Remove="Content\graphiql.js" />
-    <PackageAssetFiles Remove="Content\graphiql.min.js" />
-    <PackageAssetFiles Remove="Content\Scripts\react-dom.js" />
-    <PackageAssetFiles Remove="Content\Scripts\react-dom.min.js" />
-    <PackageAssetFiles Remove="Content\Scripts\react.js" />
-    <PackageAssetFiles Remove="Content\Scripts\react.min.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" />
     <PackageReference Include="YesSql.Abstractions" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Apis.GraphQL.Abstractions\OrchardCore.Apis.GraphQL.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Navigation\OrchardCore.Environment.Navigation.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Security.Abstractions\OrchardCore.Security.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Security\OrchardCore.Security.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-     <None Update="Views\Admin\Index.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-    <None Update="Views\_ViewImports.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>

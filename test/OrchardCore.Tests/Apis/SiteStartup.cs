@@ -1,4 +1,3 @@
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -22,11 +21,17 @@ namespace OrchardCore.Tests.Apis
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOrchardCms();
+            services.AddOrchardCms().AddOrchardCore()
+                .AddGlobalFeatures(
+                    "OrchardCore.Apis.GraphQL",
+                    "OrchardCore.Apis.JsonApi",
+                    "OrchardCore.Apis.OpenApi"
+                );
+
             services.AddScoped<IAuthorizationHandler, AlwaysLoggedInAuthHandler>();
 
             services
-                .Configure<ShellOptions>(options => options.ShellsContainerName = Path.Combine("sites", _configuration.SiteName));
+                .Configure<ShellOptions>(options => options.ShellsContainerName = _configuration.SiteName);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
