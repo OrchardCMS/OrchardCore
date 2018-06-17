@@ -276,7 +276,6 @@ body {
 }
 
 
-
 // Layout 4 : ta-left-sidebar when compacted
 // -----------------------------------------
 
@@ -289,7 +288,7 @@ body {
             overflow: hidden;
         }
 
-        > li:hover {
+        > li.hovered {
             overflow: visible;
             width: $left-navigation-width-when-compact + $left-navigation-width;
         }
