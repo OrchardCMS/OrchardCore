@@ -71,16 +71,22 @@ namespace OrchardCore.Environment.Shell
 
         public ShellContext GetOrCreateShellContext(ShellSettings settings)
         {
+            // Here, the normal path is to get an already created context and a null scope.
+            // But if the context is recreated, we also get a scope that we don't need here.
             var shell = GetOrAddShellContext(settings, out var scope);
 
+            // If the context has been recreated, we got a scope that we don't need here.
             if (scope != null)
             {
+                // So, we dispose it immediately.
                 scope.Dispose();
                 return shell;
             }
 
             if (shell.Released)
             {
+                // If the context is released, it is removed from the dictionary so that
+                // a new call on 'GetOrAddShellContext' will recreate a new shell context.
                 _shellContexts.TryRemove(settings.Name, out var value);
                 return GetOrCreateShellContext(settings);
             }
@@ -95,15 +101,23 @@ namespace OrchardCore.Environment.Shell
 
         public IServiceScope EnterServiceScope(ShellSettings settings, out ShellContext context)
         {
+            // Here, the normal path is to get an already created context and a null scope.
+            // If the context is recreated, we also get a tracked scope created atomically.
             context = GetOrAddShellContext(settings, out var scope);
 
+            // Here, the normal path is to call 'TryEnterServiceScope' to get a valid scope.
+            // If the context has been recreated above, here we already have a non null scope.
             if (scope != null || context.TryEnterServiceScope(out scope))
             {
                 return scope;
             }
 
+            // Coming here means that the shell is disabled, or was released but still
+            // in the dictionary, or has been released just before 'TryEnterServiceScope'.
             if (context.Released)
             {
+                // If the context has been released, it is removed from the dictionary so that
+                // a new call on 'GetOrAddShellContext' will return a tracked scope atomically.
                 _shellContexts.TryRemove(settings.Name, out var value);
                 return EnterServiceScope(settings, out context);
             }
@@ -117,6 +131,12 @@ namespace OrchardCore.Environment.Shell
         {
             IServiceScope scope = null;
 
+            // The normal path is to return an already created context and pass a null scope.
+            // Then the caller can use 'TryEnterServiceScope' to get a non null tracked scope.
+
+            // If the context is released, the usage is to remove it from the dictionary and then recall
+            // this method, so that a tracked scope is created atomically through the lazy value factory.
+
             var shell = _shellContexts.GetOrAdd(settings.Name, new Lazy<ShellContext>(() =>
             {
                 var shellContext = CreateShellContextAsync(settings).Result;
@@ -125,6 +145,8 @@ namespace OrchardCore.Environment.Shell
                 return shellContext;
             })).Value;
 
+            // If the context has been recreated, here the tracked scope can't be null,
+            // unless for a recreated disabled shell which has a null service provider.
             serviceScope = scope;
 
             return shell;
