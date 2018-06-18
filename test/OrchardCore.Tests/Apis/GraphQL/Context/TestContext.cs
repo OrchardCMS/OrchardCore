@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.FunctionalTests;
 using OrchardCore.Apis.GraphQL.Client;
-using OrchardCore.Tests.Apis.Sources;
 using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.Context

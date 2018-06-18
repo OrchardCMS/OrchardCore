@@ -41,7 +41,7 @@ namespace OrchardCore.Apis.JsonApi.Client
                 )
             );
 
-            var response = await _client.PostJsonApiAsync("/api/setup", requestJson.ToString());
+            var response = await _client.PostJsonApiAsync("api/setup", requestJson.ToString());
 
             response.EnsureSuccessStatusCode();
 
