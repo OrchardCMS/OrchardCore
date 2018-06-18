@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -53,6 +54,8 @@ namespace OrchardCore.Flows.Drivers
 
             var model = new FlowPartEditViewModel { FlowPart = part };
 
+            var commonModelState = new ModelStateDictionary();
+
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
             part.Widgets.Clear();
@@ -63,10 +66,15 @@ namespace OrchardCore.Flows.Drivers
 
                 contentItem.Weld(new FlowMetadata());
 
+                // Passing a clean ModelState to child contentItem.
+                commonModelState.Merge(context.Updater.ModelState);
+                context.Updater.ModelState.Clear();
                 var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
 
                 part.Widgets.Add(contentItem);
             }
+
+            context.Updater.ModelState.Merge(commonModelState);
 
             return Edit(part, context);
         }

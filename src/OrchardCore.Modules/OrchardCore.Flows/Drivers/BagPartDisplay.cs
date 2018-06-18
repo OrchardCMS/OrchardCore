@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -59,6 +60,7 @@ namespace OrchardCore.Flows.Drivers
         {
             var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
             var model = new BagPartEditViewModel { BagPart = part };
+            var commonModelState = new ModelStateDictionary();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
@@ -67,10 +69,15 @@ namespace OrchardCore.Flows.Drivers
             for (var i = 0; i < model.Prefixes.Length; i++)
             {
                 var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
+                // Passing a clean ModelState to child contentItem.
+                commonModelState.Merge(context.Updater.ModelState);
+                context.Updater.ModelState.Clear();
                 var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
 
                 part.ContentItems.Add(contentItem);
             }
+
+            context.Updater.ModelState.Merge(commonModelState);
 
             return Edit(part, context);
         }
