@@ -159,13 +159,13 @@ dotnet new ocmodule -n "Module.OrchardCore" -PartName "TestPart" -AddPart true
 
 dotnet new --debug:reinit
 
-## Adding Orchard Nuget Feeds
-
-#### MyGet:
+## Adding Orchard Core Nuget Feeds
 
 ![image](/src/docs/assets/images/38450194-c617148a-39e7-11e8-95b0-2d35f43a6fad.png)
 
 ![image](/src/docs/assets/images/38450242-886933f6-39e8-11e8-896c-1f807e5530a0.png)
+
+#### MyGet:
 
 Dev: https://www.myget.org/gallery/orchardcore-dev
 
