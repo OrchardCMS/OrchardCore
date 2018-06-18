@@ -180,8 +180,8 @@ namespace OrchardCore.Workflows.Controllers
             _session.Save(workflowType);
             _notifier.Success(H["Activity updated successfully"]);
 
-            return Url.IsLocalUrl(model.ReturnUrl) 
-                ? (IActionResult)Redirect(model.ReturnUrl) 
+            return Url.IsLocalUrl(model.ReturnUrl)
+                ? (IActionResult)Redirect(model.ReturnUrl)
                 : RedirectToAction("Edit", "WorkflowType", new { id = model.WorkflowTypeId });
         }
     }

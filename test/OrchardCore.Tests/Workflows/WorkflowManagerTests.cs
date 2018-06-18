@@ -9,19 +9,15 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
-using OrchardCore.Liquid;
-using OrchardCore.Liquid.Services;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
 using OrchardCore.Tests.Workflows.Activities;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Evaluators;
-using OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
@@ -36,7 +32,6 @@ namespace OrchardCore.Tests.Workflows
         {
             var serviceProvider = CreateServiceProvider();
             var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
-            var expressionEvaluator = CreateWorkflowExpressionEvaluator(serviceProvider);
             var localizer = new Mock<IStringLocalizer<AddTask>>();
 
             var stringBuilder = new StringBuilder();
@@ -66,7 +61,7 @@ namespace OrchardCore.Tests.Workflows
             var b = 22d;
             var expectedResult = (a + b).ToString() + System.Environment.NewLine;
 
-            var workflowContext = await workflowManager.StartWorkflowAsync(workflowType, input: new RouteValueDictionary(new { A = a, B = b }));
+            await workflowManager.StartWorkflowAsync(workflowType, input: new RouteValueDictionary(new { A = a, B = b }));
             var actualResult = stringBuilder.ToString();
 
             Assert.Equal(expectedResult, actualResult);
@@ -88,32 +83,14 @@ namespace OrchardCore.Tests.Workflows
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var javaScriptEngine = new JavaScriptEngine(memoryCache);
             var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
-            var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
             var globalMethodProviders = new IGlobalMethodProvider[0];
             var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders, serviceProvider);
 
             return new JavaScriptWorkflowScriptEvaluator(
-                scriptingManager, 
-                workflowContextHandlers.Resolve(), 
-                new Mock<IStringLocalizer<JavaScriptWorkflowScriptEvaluator>>().Object, 
+                scriptingManager,
+                workflowContextHandlers.Resolve(),
+                new Mock<IStringLocalizer<JavaScriptWorkflowScriptEvaluator>>().Object,
                 new Mock<ILogger<JavaScriptWorkflowScriptEvaluator>>().Object
-            );
-        }
-
-        private IWorkflowExpressionEvaluator CreateWorkflowExpressionEvaluator(IServiceProvider serviceProvider)
-        {
-            var liquidOptions = new Mock<IOptions<LiquidOptions>>();
-            var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
-            liquidOptions.SetupGet(x => x.Value).Returns(() => new LiquidOptions());
-            var liquidTemplateManager = new LiquidTemplateManager(memoryCache, liquidOptions.Object, serviceProvider);
-
-            return new LiquidWorkflowExpressionEvaluator(
-                serviceProvider, 
-                liquidTemplateManager, 
-                new Mock<IStringLocalizer<LiquidWorkflowExpressionEvaluator>>().Object, 
-                workflowContextHandlers.Resolve(), 
-                new Mock<ILogger<LiquidWorkflowExpressionEvaluator>>().Object
             );
         }
 
