@@ -28,7 +28,7 @@ markdown_extensions:
 
 # Page tree
 pages:
-    - About Orchard Core: index.md
+    - About Orchard Core: docs/index.md
     - Orchard Core Modules: OrchardCore/OrchardCore.Modules/README.md
     - CMS Modules:
         - Title: OrchardCore.Modules/OrchardCore.Title/README.md
