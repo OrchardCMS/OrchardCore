@@ -10,16 +10,16 @@ Fire up Visual Studio, create a new solution file (.sln) by creating a new ASP.N
 
 ![image](/src/docs/assets/images/orchard-screencast-1.gif)
 
-Now that we created a new Web Application we need to add proper dependencies so that this new Web Application uses Orchard Core.
+Now that we created a new Web Application we need to add proper dependencies so that this new Web Application be targetted as an Orchard Core application.
 
 [See adding Orchard Nuget Feeds](#adding-orchard-nuget-feeds)
 
-
+![image](/src/docs/assets/images/orchard-screencast-2.gif)
 
 ### From Command Shell
 
-dotnet new -i "OrchardCore.Templates.Cms"
-or
+dotnet new -i "OrchardCore.Templates.Cms"  
+or  
 dotnet new -i "OrchardCore.Templates.Cms" -Source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 
 dotnet new ocweb
@@ -46,11 +46,7 @@ For marking this new Class Library as a Orchard Module we will now need to refer
 
 [See adding Orchard Nuget Feeds](#adding-orchard-nuget-feeds)
 
-![image](/src/docs/assets/images/38450422-63670f1c-39eb-11e8-9c14-0743f0a4da42.png)
-
-The ***orchardcore-dev*** feed is used for the source code version of Orchard Core; we won't need it. however the one that we are interested in is the ***orchardcore-preview*** feed. 
-
-![image](/src/docs/assets/images/38450242-886933f6-39e8-11e8-896c-1f807e5530a0.png)
+The ***orchardcore-dev*** feed is used for the source code version of Orchard Core; we won't need it. however the one that we are interested in is the ***orchardcore-preview*** feed.
 
 Each of these Nuget packages are used to mark a Class Library as a specific Orchard Core functionality. OrchardCore.Module.Targets is the one we are interested in for now. We will mark our new Class Library as a module by adding OrchardCore.Module.Targets as a dependency. For doing so you will need to right click on MyModule.OrchardCore project and select "Manage Nuget Packages" option. To find the packages in Nuget Package Manager you will need to check "include prerelease" and make sure you have Orchard Core Beta feed that we added earlier selected. Once you have found it click on the Install button on the right panel next to Version : Latest prerelease x.x.x.x
 
@@ -88,8 +84,8 @@ Last step is to add our new module to the OrchardCore.Cms.Web project as a refer
 
 #### Initialize module template:
 
-dotnet new -i "OrchardCore.Templates.Module"
-or
+dotnet new -i "OrchardCore.Templates.Module"  
+or  
 dotnet new -i "OrchardCore.Templates.Module" -Source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 
 #### Module commands:
@@ -122,8 +118,8 @@ using OrchardCore.DisplayManagement.Manifest;
 
 #### Initialize theme template:
 
-dotnet new -i "OrchardCore.Templates.Theme"
-or
+dotnet new -i "OrchardCore.Templates.Theme"  
+or  
 dotnet new -i "OrchardCore.Templates.Theme" -Source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 
 #### Theme commands:
@@ -168,6 +164,8 @@ dotnet new --debug:reinit
 #### MyGet:
 
 ![image](/src/docs/assets/images/38450194-c617148a-39e7-11e8-95b0-2d35f43a6fad.png)
+
+![image](/src/docs/assets/images/38450242-886933f6-39e8-11e8-896c-1f807e5530a0.png)
 
 Dev: https://www.myget.org/gallery/orchardcore-dev
 
