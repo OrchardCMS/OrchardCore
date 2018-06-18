@@ -16,6 +16,39 @@ Now that we created a new Web Application we need to add proper dependencies so 
 
 ![image](/src/docs/assets/images/orchard-screencast-2.gif)
 
+Finally we will need to register Orchard CMS service in our Startup.cs file like this : 
+
+```C#
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace MyNewWebsite
+{
+    public class Startup
+    {
+        // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddOrchardCms();
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseOrchardCore();
+        }
+    }
+}
+```
+
 ### From Command Shell
 
 dotnet new -i "OrchardCore.Templates.Cms"  
