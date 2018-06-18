@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 
 namespace OrchardCore.Environment.Shell.Descriptor.Settings
@@ -14,17 +13,14 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
     {
         private readonly ShellSettingsWithTenants _shellSettings;
         private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
-        private readonly string _applicationFeatureId;
         private ShellDescriptor _shellDescriptor;
 
         public FileShellDescriptorManager(
             ShellSettingsWithTenants shellSettings,
-            IEnumerable<ShellFeature> shellFeatures,
-            IHostingEnvironment hostingEnvironment)
+            IEnumerable<ShellFeature> shellFeatures)
         {
             _shellSettings = shellSettings ?? throw new ArgumentException(nameof(shellSettings));
             _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
-            _applicationFeatureId = hostingEnvironment.ApplicationName;
         }
 
         public Task<ShellDescriptor> GetShellDescriptorAsync()

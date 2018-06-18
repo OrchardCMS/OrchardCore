@@ -1,0 +1,52 @@
+.md-fenced-code-tabs * {
+    box-sizing: border-box;
+}
+
+.md-fenced-code-tabs {
+    box-sizing: border-box;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12), 0 3px 1px -2px rgba(0,0,0,.2);
+    max-width: 100%;
+    border-radius: .2rem;
+}
+
+.md-fenced-code-tabs {
+    display: flex;
+    position: relative;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.md-fenced-code-tabs input {
+    position: absolute;
+    opacity: 0;
+}
+
+.md-fenced-code-tabs label {
+    width: auto;
+    cursor: pointer;
+    font-size: 1.28rem;
+    padding: 1.2rem 1.6rem;
+}
+
+.md-fenced-code-tabs input:checked + label {
+    color: #03a9f4;
+    border-bottom: 2px solid #03a9f4;
+}
+
+.md-fenced-code-tabs .code-tabpanel {
+    display: none;
+    width: 100%;
+    order: 99;
+}
+
+.md-fenced-code-tabs input:checked + label + .code-tabpanel {
+    display: block;
+}
+
+.md-fenced-code-tabs pre,
+.md-fenced-code-tabs .codehilite {
+    width: 100%;
+    margin: 0px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}

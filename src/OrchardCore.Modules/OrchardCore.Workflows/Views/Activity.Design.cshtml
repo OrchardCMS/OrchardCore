@@ -5,8 +5,7 @@
     var activity = (IActivity)Model.Activity;
     var activityEvent = activity as IEvent;
     var isEvent = activityEvent != null;
-    var canStart = activity.CanStartWorkflow;
-    var isStart = canStart && activityRecord.IsStart;
+    var isStart = activityRecord.IsStart;
     var cssClass = isStart ? "activity-start" : isEvent ? "activity-event" : "activity-task";
     var hasEditor = activity.HasEditor;
     var activityType = isEvent ? "Event" : "Task";
@@ -23,10 +22,7 @@
         </div>
     }
     <div class="activity-commands">
-        @if (canStart)
-        {
-            <a class="btn btn-outline-secondary activity-start-action" href="#" data-toggle="button" title="@T["Startup task"]"><i class="fa fa-power-off"></i></a>
-        }
+        <a class="btn btn-outline-secondary activity-start-action" href="#" data-toggle="button" title="@T["Startup task"]"><i class="fa fa-power-off"></i></a>
         @if (hasEditor)
         {
             <a class="btn btn-primary activity-edit-action" asp-action="Edit" asp-controller="Activity" asp-route-workflowtypeid="@Model.WorkflowTypeId" asp-route-activityid="@activityRecord.ActivityId" asp-route-returnurl="@Model.ReturnUrl" data-persist-workflow="true" title="@T["Edit"]"><i class="fa fa-pencil"></i></a>

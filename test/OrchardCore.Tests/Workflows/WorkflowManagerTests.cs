@@ -36,13 +36,13 @@ namespace OrchardCore.Tests.Workflows
         {
             var serviceProvider = CreateServiceProvider();
             var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
-            var expressionEvaluator = CreateWorkflowExpressionEvaluator(serviceProvider);
             var localizer = new Mock<IStringLocalizer<AddTask>>();
 
             var stringBuilder = new StringBuilder();
             var output = new StringWriter(stringBuilder);
             var addTask = new AddTask(scriptEvaluator, localizer.Object);
             var writeLineTask = new WriteLineTask(scriptEvaluator, localizer.Object, output);
+            var setOutputTask = new SetOutputTask(scriptEvaluator, new Mock<IStringLocalizer<SetOutputTask>>().Object);
             var workflowType = new WorkflowType
             {
                 Id = 1,
@@ -53,23 +53,28 @@ namespace OrchardCore.Tests.Workflows
                         A = new WorkflowExpression<double>("input(\"A\")"),
                         B = new WorkflowExpression<double>("input(\"B\")"),
                     }) },
-                    new ActivityRecord { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>("lastResult().toString()") }) }
+                    new ActivityRecord { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
+                    new ActivityRecord { ActivityId = "3", Name = setOutputTask.Name, Properties = JObject.FromObject( new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
                 },
                 Transitions = new List<Transition>
                 {
-                    new Transition{ SourceActivityId = "1", SourceOutcomeName = "Done", DestinationActivityId = "2" }
+                    new Transition{ SourceActivityId = "1", SourceOutcomeName = "Done", DestinationActivityId = "2" },
+                    new Transition{ SourceActivityId = "2", SourceOutcomeName = "Done", DestinationActivityId = "3" }
                 }
             };
 
-            var workflowManager = CreateWorkflowManager(serviceProvider, new IActivity[] { addTask, writeLineTask }, workflowType);
+            var workflowManager = CreateWorkflowManager(serviceProvider, new IActivity[] { addTask, writeLineTask, setOutputTask }, workflowType);
             var a = 10d;
             var b = 22d;
-            var expectedResult = (a + b).ToString() + System.Environment.NewLine;
+            var expectedSum = a + b;
+            var expectedResult = expectedSum.ToString() + System.Environment.NewLine;
 
-            var workflowContext = await workflowManager.StartWorkflowAsync(workflowType, input: new RouteValueDictionary(new { A = a, B = b }));
+            var workflowExecutionContext = await workflowManager.StartWorkflowAsync(workflowType, input: new RouteValueDictionary(new { A = a, B = b }));
             var actualResult = stringBuilder.ToString();
 
             Assert.Equal(expectedResult, actualResult);
+            Assert.True(workflowExecutionContext.Output.ContainsKey("Sum"));
+            Assert.Equal(expectedSum, (double)workflowExecutionContext.Output["Sum"]);
         }
 
         private IServiceProvider CreateServiceProvider()
@@ -93,9 +98,9 @@ namespace OrchardCore.Tests.Workflows
             var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders, serviceProvider);
 
             return new JavaScriptWorkflowScriptEvaluator(
-                scriptingManager, 
-                workflowContextHandlers.Resolve(), 
-                new Mock<IStringLocalizer<JavaScriptWorkflowScriptEvaluator>>().Object, 
+                scriptingManager,
+                workflowContextHandlers.Resolve(),
+                new Mock<IStringLocalizer<JavaScriptWorkflowScriptEvaluator>>().Object,
                 new Mock<ILogger<JavaScriptWorkflowScriptEvaluator>>().Object
             );
         }
@@ -109,10 +114,10 @@ namespace OrchardCore.Tests.Workflows
             var liquidTemplateManager = new LiquidTemplateManager(memoryCache, liquidOptions.Object, serviceProvider);
 
             return new LiquidWorkflowExpressionEvaluator(
-                serviceProvider, 
-                liquidTemplateManager, 
-                new Mock<IStringLocalizer<LiquidWorkflowExpressionEvaluator>>().Object, 
-                workflowContextHandlers.Resolve(), 
+                serviceProvider,
+                liquidTemplateManager,
+                new Mock<IStringLocalizer<LiquidWorkflowExpressionEvaluator>>().Object,
+                workflowContextHandlers.Resolve(),
                 new Mock<ILogger<LiquidWorkflowExpressionEvaluator>>().Object
             );
         }
