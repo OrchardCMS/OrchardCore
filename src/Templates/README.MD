@@ -6,13 +6,19 @@ Orchard Core Templates uses dotnet new templates configurations for creating new
 
 ### From Visual Studio
 
-Fire up Visual Studio, open Orchard Core solution file (.sln), select /src folder, right click and select "add --> new project" and create a new ASP.NET Core Web Application : 
+Fire up Visual Studio, create a new solution file (.sln) by creating a new ASP.NET Core Web Application : 
 
 ![image](/src/docs/assets/images/orchard-screencast-1.gif)
 
+Now that we created a new Web Application we need to add proper dependencies so that this new Web Application uses Orchard Core.
+
+
+
 ### From Command Shell
 
-dotnet new -i "C:\...\OrchardCore.Templates\src\OrchardCore.Cms.Web"
+dotnet new -i "OrchardCore.Templates.Cms"
+or
+dotnet new -i "OrchardCore.Templates.Cms" -Source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 
 dotnet new ocweb
 
@@ -36,23 +42,7 @@ Also, we strongly suggest that you name your modules like this : **MyModule.Orch
 
 For marking this new Class Library as a Orchard Module we will now need to reference OrchardCore.Module.Targets Nuget package. You can find the dev and preview feeds on MyGet as of now by searching for Orchard on the MyGet gallery.
 
-![image](/src/docs/assets/images/38450194-c617148a-39e7-11e8-95b0-2d35f43a6fad.png)
-
-#### MyGet:
-
-Dev: https://www.myget.org/gallery/orchardcore-dev
-
-Feed: https://www.myget.org/F/orchardcore-dev/api/v3/index.json
-
-
-
-Preview: https://www.myget.org/gallery/orchardcore-preview
-
-Feed: https://www.myget.org/F/orchardcore-preview/api/v3/index.json
-
-
-
-To be able to use these feeds in Visual Studio your will need to add them to the Nuget package source settings that can be found by going to Visual Studio Tools menu under Nuget Package Manager --> Package Manager Settings.
+see myget doc
 
 ![image](/src/docs/assets/images/38450422-63670f1c-39eb-11e8-9c14-0743f0a4da42.png)
 
@@ -96,15 +86,17 @@ Last step is to add our new module to the OrchardCore.Cms.Web project as a refer
 
 #### Initialize module template:
 
-dotnet new -i "C:\...\src\Templates\OrchardCore.Templates.Module"
+dotnet new -i "OrchardCore.Templates.Module"
+or
+dotnet new -i "OrchardCore.Templates.Module" -Source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 
 #### Module commands:
 
-dotnet new ocmodule -n "Module.OrchardCore"
+dotnet new ocmodule -n "ModuleName.OrchardCore"
 
-dotnet new ocmodule -n "Module.OrchardCore" -PartName "TestPart"
+dotnet new ocmodule -n "ModuleName.OrchardCore" -PartName "TestPart"
 
-dotnet new ocmodule -n "Module.OrchardCore" -PartName "TestPart" -AddPart true
+dotnet new ocmodule -n "ModuleName.OrchardCore" -PartName "TestPart" -AddPart true
 
 ## Create a new theme
 
@@ -128,11 +120,13 @@ using OrchardCore.DisplayManagement.Manifest;
 
 #### Initialize theme template:
 
-dotnet new -i "C:\...\src\Templates\OrchardCore.Templates.Theme"
+dotnet new -i "OrchardCore.Templates.Theme"
+or
+dotnet new -i "OrchardCore.Templates.Theme" -Source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 
 #### Theme commands:
 
-dotnet new octheme -n "Theme.OrchardCore"
+dotnet new octheme -n "ThemeName.OrchardCore"
 
 
 
@@ -166,3 +160,25 @@ dotnet new ocmodule -n "Module.OrchardCore" -PartName "TestPart" -AddPart true
 **Reinitialize templates :**
 
 dotnet new --debug:reinit
+
+## Adding Orchard Nuget Feeds
+
+#### MyGet:
+
+![image](/src/docs/assets/images/38450194-c617148a-39e7-11e8-95b0-2d35f43a6fad.png)
+
+Dev: https://www.myget.org/gallery/orchardcore-dev
+
+Feed: https://www.myget.org/F/orchardcore-dev/api/v3/index.json
+
+
+
+Preview: https://www.myget.org/gallery/orchardcore-preview
+
+Feed: https://www.myget.org/F/orchardcore-preview/api/v3/index.json
+
+
+
+To be able to use these feeds in Visual Studio your will need to add them to the Nuget package source settings that can be found by going to Visual Studio Tools menu under Nuget Package Manager --> Package Manager Settings.
+
+![image](/src/docs/assets/images/38450422-63670f1c-39eb-11e8-9c14-0743f0a4da42.png)
