@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,12 @@ namespace OrchardCore.Https
 {
     public class Startup : StartupBase
     {
+        private readonly IHostingEnvironment _hostingEnvironment;
+
+        public Startup(IHostingEnvironment hostingEnvironment)
+        {
+            _hostingEnvironment = hostingEnvironment;
+        }
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var rewriteOptions = new RewriteOptions();
@@ -24,6 +31,11 @@ namespace OrchardCore.Https
             serviceProvider.GetService<IConfigureOptions<RewriteOptions>>().Configure(rewriteOptions);
 
             app.UseRewriter(rewriteOptions);
+
+            if (!_hostingEnvironment.IsDevelopment())
+            {
+                app.UseHsts();
+            }
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -34,6 +46,13 @@ namespace OrchardCore.Https
             services.AddSingleton(new RewriteOptions());
             
             services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<RewriteOptions>, RewriteOptionsHttpsConfiguration>());
+
+            services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;                
+            });
+
         }
     }
 }
