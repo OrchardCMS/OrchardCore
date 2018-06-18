@@ -97,6 +97,7 @@ namespace OrchardCore.Setup.Controllers
         }
 
         [HttpPost, Route("api/setup")]
+        [Produces("application/json")]
         [IgnoreAntiforgeryToken]
         public async Task<IActionResult> ApiIndexPOST([FromBody] SetupViewModel model)
         {
