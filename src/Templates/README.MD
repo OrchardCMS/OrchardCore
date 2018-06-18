@@ -12,6 +12,8 @@ Fire up Visual Studio, create a new solution file (.sln) by creating a new ASP.N
 
 Now that we created a new Web Application we need to add proper dependencies so that this new Web Application uses Orchard Core.
 
+[See adding Orchard Nuget Feeds](#adding-orchard-nuget-feeds)
+
 
 
 ### From Command Shell
@@ -42,7 +44,7 @@ Also, we strongly suggest that you name your modules like this : **MyModule.Orch
 
 For marking this new Class Library as a Orchard Module we will now need to reference OrchardCore.Module.Targets Nuget package. You can find the dev and preview feeds on MyGet as of now by searching for Orchard on the MyGet gallery.
 
-see myget doc
+[See adding Orchard Nuget Feeds](#adding-orchard-nuget-feeds)
 
 ![image](/src/docs/assets/images/38450422-63670f1c-39eb-11e8-9c14-0743f0a4da42.png)
 
