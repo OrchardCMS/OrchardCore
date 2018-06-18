@@ -125,7 +125,9 @@ Tag helper example:
 <timespan utc="@contentItem.CreatedUtc" />
 ```
 
-```
+Result:
+
+```text
 3 days ago
 ```
 

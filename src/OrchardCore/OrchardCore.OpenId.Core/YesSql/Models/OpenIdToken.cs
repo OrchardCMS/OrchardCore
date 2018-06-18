@@ -1,13 +1,12 @@
 using System;
 using Newtonsoft.Json.Linq;
-using OrchardCore.OpenId.Abstractions.Models;
 
 namespace OrchardCore.OpenId.YesSql.Models
 {
     /// <summary>
     /// Represents an OpenId token.
     /// </summary>
-    public class OpenIdToken : IOpenIdToken
+    public class OpenIdToken
     {
         /// <summary>
         /// Gets or sets the unique identifier

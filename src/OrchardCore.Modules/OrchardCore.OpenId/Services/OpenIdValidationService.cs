@@ -8,8 +8,7 @@ using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
-using OrchardCore.OpenId.Services.Managers;
+using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
 
@@ -131,37 +130,27 @@ namespace OrchardCore.OpenId.Services
                 }
                 else
                 {
-                    using (var scope = _shellHost.EnterServiceScope(tenant))
+                    var context = _shellHost.GetOrCreateShellContext(tenant);
+                    using (var scope = context.EnterServiceScope())
                     {
-                        if (scope == null)
+                        var manager = scope.ServiceProvider.GetService<IOpenIdScopeManager>();
+                        if (manager == null)
                         {
-                            results.Add(new ValidationResult(T["The specified tenant is disabled."], new[]
+                            results.Add(new ValidationResult(T["The specified tenant is not valid."], new[]
                             {
                                 nameof(settings.Tenant)
                             }));
                         }
                         else
                         {
-                            var manager = scope.ServiceProvider.GetService<OpenIdScopeManager>();
-
-                            if (manager == null)
+                            var resource = OpenIdConstants.Prefixes.Tenant + _shellSettings.Name;
+                            var scopes = await manager.FindByResourceAsync(resource);
+                            if (scopes.IsDefaultOrEmpty)
                             {
-                                results.Add(new ValidationResult(T["The specified tenant is not valid."], new[]
+                                results.Add(new ValidationResult(T["No appropriate scope was found."], new[]
                                 {
-                                nameof(settings.Tenant)
-                            }));
-                            }
-                            else
-                            {
-                                var resource = OpenIdConstants.Prefixes.Tenant + _shellSettings.Name;
-                                var scopes = await manager.FindByResourceAsync(resource);
-                                if (scopes.IsDefaultOrEmpty)
-                                {
-                                    results.Add(new ValidationResult(T["No appropriate scope was found."], new[]
-                                    {
                                     nameof(settings.Tenant)
                                 }));
-                                }
                             }
                         }
                     }

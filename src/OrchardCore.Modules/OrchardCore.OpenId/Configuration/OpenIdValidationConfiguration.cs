@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using AspNet.Security.OAuth.Validation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
@@ -11,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using OpenIddict.Validation;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
@@ -20,8 +20,8 @@ namespace OrchardCore.OpenId.Configuration
 {
     [Feature(OpenIdConstants.Features.Validation)]
     public class OpenIdValidationConfiguration : IConfigureOptions<AuthenticationOptions>,
-        IConfigureNamedOptions<JwtBearerOptions>,
-        IConfigureNamedOptions<OAuthValidationOptions>
+        IConfigureNamedOptions<OpenIddictValidationOptions>,
+        IConfigureNamedOptions<JwtBearerOptions>
     {
         private readonly ILogger<OpenIdValidationConfiguration> _logger;
         private readonly IOpenIdValidationService _validationService;
@@ -99,9 +99,9 @@ namespace OrchardCore.OpenId.Configuration
                 // Register the JWT or validation handler in the authentication handlers collection.
                 if (configuration.AccessTokenFormat == OpenIdServerSettings.TokenFormat.Encrypted)
                 {
-                    options.AddScheme(OAuthValidationDefaults.AuthenticationScheme, builder =>
+                    options.AddScheme(OpenIddictValidationDefaults.AuthenticationScheme, builder =>
                     {
-                        builder.HandlerType = typeof(OAuthValidationHandler);
+                        builder.HandlerType = typeof(OpenIddictValidationHandler);
                     });
                 }
                 else if (configuration.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JWT)
@@ -201,10 +201,10 @@ namespace OrchardCore.OpenId.Configuration
 
         public void Configure(JwtBearerOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
-        public void Configure(string name, OAuthValidationOptions options)
+        public void Configure(string name, OpenIddictValidationOptions options)
         {
             // Ignore validation handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, OAuthValidationDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, OpenIddictValidationDefaults.AuthenticationScheme, StringComparison.Ordinal))
             {
                 return;
             }
@@ -247,7 +247,7 @@ namespace OrchardCore.OpenId.Configuration
             options.Audiences.Add(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name);
         }
 
-        public void Configure(OAuthValidationOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
+        public void Configure(OpenIddictValidationOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
         private IServiceScope CreateTenantScope(string tenant)
         {
