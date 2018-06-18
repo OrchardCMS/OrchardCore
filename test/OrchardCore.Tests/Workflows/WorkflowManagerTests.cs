@@ -38,6 +38,7 @@ namespace OrchardCore.Tests.Workflows
             var output = new StringWriter(stringBuilder);
             var addTask = new AddTask(scriptEvaluator, localizer.Object);
             var writeLineTask = new WriteLineTask(scriptEvaluator, localizer.Object, output);
+            var setOutputTask = new SetOutputTask(scriptEvaluator, new Mock<IStringLocalizer<SetOutputTask>>().Object);
             var workflowType = new WorkflowType
             {
                 Id = 1,
@@ -48,23 +49,28 @@ namespace OrchardCore.Tests.Workflows
                         A = new WorkflowExpression<double>("input(\"A\")"),
                         B = new WorkflowExpression<double>("input(\"B\")"),
                     }) },
-                    new ActivityRecord { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>("lastResult().toString()") }) }
+                    new ActivityRecord { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
+                    new ActivityRecord { ActivityId = "3", Name = setOutputTask.Name, Properties = JObject.FromObject( new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
                 },
                 Transitions = new List<Transition>
                 {
-                    new Transition{ SourceActivityId = "1", SourceOutcomeName = "Done", DestinationActivityId = "2" }
+                    new Transition{ SourceActivityId = "1", SourceOutcomeName = "Done", DestinationActivityId = "2" },
+                    new Transition{ SourceActivityId = "2", SourceOutcomeName = "Done", DestinationActivityId = "3" }
                 }
             };
 
-            var workflowManager = CreateWorkflowManager(serviceProvider, new IActivity[] { addTask, writeLineTask }, workflowType);
+            var workflowManager = CreateWorkflowManager(serviceProvider, new IActivity[] { addTask, writeLineTask, setOutputTask }, workflowType);
             var a = 10d;
             var b = 22d;
-            var expectedResult = (a + b).ToString() + System.Environment.NewLine;
+            var expectedSum = a + b;
+            var expectedResult = expectedSum.ToString() + System.Environment.NewLine;
 
-            await workflowManager.StartWorkflowAsync(workflowType, input: new RouteValueDictionary(new { A = a, B = b }));
+            var workflowExecutionContext = await workflowManager.StartWorkflowAsync(workflowType, input: new RouteValueDictionary(new { A = a, B = b }));
             var actualResult = stringBuilder.ToString();
 
             Assert.Equal(expectedResult, actualResult);
+            Assert.True(workflowExecutionContext.Output.ContainsKey("Sum"));
+            Assert.Equal(expectedSum, (double)workflowExecutionContext.Output["Sum"]);
         }
 
         private IServiceProvider CreateServiceProvider()
