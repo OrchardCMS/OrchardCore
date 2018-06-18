@@ -134,7 +134,7 @@ dotnet new octheme -n "Theme.OrchardCore"
 
 ## All Commands
 
-Initialize:
+**Initialize:**
 
 dotnet new -i "C:\...\src\Templates\OrchardCore.Templates.Cms.Web"
 
@@ -144,7 +144,7 @@ dotnet new -i "C:\...\src\Templates\OrchardCore.Templates.Theme"
 
 
 
-After initializing :
+**After initializing :**
 
 dotnet new ocweb
 
@@ -159,6 +159,6 @@ dotnet new ocweb -AddNLog true
 dotnet new ocmodule -n "Module.OrchardCore" -PartName "TestPart" -AddPart true
 
 
-Reinitialize templates : 
+**Reinitialize templates :**
 
 dotnet new --debug:reinit
