@@ -73,7 +73,7 @@ namespace OrchardCore.Setup.Controllers
         [HttpPost, ActionName("Index")]
         public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
-            var setupContext = await PrepareSeupContext(model);
+            var setupContext = await PrepareSetupContext(model);
 
             if (setupContext == null)
             {
@@ -98,9 +98,9 @@ namespace OrchardCore.Setup.Controllers
 
         [HttpPost, Route("api/setup")]
         [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> ApiIndexPOST(SetupViewModel model)
+        public async Task<IActionResult> ApiIndexPOST([FromBody] SetupViewModel model)
         {
-            var setupContext = await PrepareSeupContext(model);
+            var setupContext = await PrepareSetupContext(model);
 
             if (setupContext == null)
             {
@@ -123,7 +123,7 @@ namespace OrchardCore.Setup.Controllers
             return Created("~/", executionId);
         }
 
-        private async Task<SetupContext> PrepareSeupContext(SetupViewModel model) {
+        private async Task<SetupContext> PrepareSetupContext(SetupViewModel model) {
             model.DatabaseProviders = _databaseProviders;
             model.Recipes = await _setupService.GetSetupRecipesAsync();
 
