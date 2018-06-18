@@ -19,7 +19,6 @@ namespace OrchardCore.Workflows.Controllers
     [Admin]
     public class ActivityController : Controller, IUpdateModel
     {
-        private readonly ISiteService _siteService;
         private readonly ISession _session;
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowManager _workflowManager;
@@ -34,7 +33,6 @@ namespace OrchardCore.Workflows.Controllers
 
         public ActivityController
         (
-            ISiteService siteService,
             ISession session,
             IActivityLibrary activityLibrary,
             IWorkflowManager workflowManager,
@@ -47,7 +45,6 @@ namespace OrchardCore.Workflows.Controllers
             IHtmlLocalizer<ActivityController> h
         )
         {
-            _siteService = siteService;
             _session = session;
             _activityLibrary = activityLibrary;
             _workflowManager = workflowManager;
@@ -69,7 +66,6 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var activity = _activityLibrary.InstantiateActivity(activityName);
-            var workflowType = await _session.GetAsync<WorkflowType>(workflowTypeId);
             var activityId = _activityIdGenerator.GenerateUniqueId(new ActivityRecord());
             var activityEditor = await _activityDisplayManager.BuildEditorAsync(activity, this, isNew: true);
 
@@ -180,8 +176,8 @@ namespace OrchardCore.Workflows.Controllers
             _session.Save(workflowType);
             _notifier.Success(H["Activity updated successfully"]);
 
-            return Url.IsLocalUrl(model.ReturnUrl) 
-                ? (IActionResult)Redirect(model.ReturnUrl) 
+            return Url.IsLocalUrl(model.ReturnUrl)
+                ? (IActionResult)Redirect(model.ReturnUrl)
                 : RedirectToAction("Edit", "WorkflowType", new { id = model.WorkflowTypeId });
         }
     }
