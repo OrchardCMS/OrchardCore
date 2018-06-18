@@ -5,9 +5,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds Orchard CMS services to the application. 
         /// </summary>
-        public static OrchardCoreBuilder AddOrchardCms(this IServiceCollection services)
+        public static IServiceCollection AddOrchardCms(this IServiceCollection services)
         {
-            return services.AddOrchardCore()
+            services.AddOrchardCore()
 
                 .AddCommands()
 
@@ -25,6 +25,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddResourceManagement()
                 .AddGeneratorTagFilter()
                 .AddCaching();
+            
+            return services;
         }
 
         /// <summary>
