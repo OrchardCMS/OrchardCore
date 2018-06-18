@@ -1,10 +1,14 @@
 # Orchard Core Templates
 
+Orchard Core Templates uses dotnet new templates configurations for creating new themes and modules from command shell. Our configurations have been implemented by using examples that you can find there : https://github.com/dotnet/dotnet-template-samples
+
 ## Create a new website
 
 ### From Visual Studio
 
-TODO
+Fire up Visual Studio, open Orchard Core solution file (.sln), select /src folder, right click and select "add --> new project" and create a new ASP.NET Core Web Application : 
+
+![image](/src/docs/assets/images/orchard-screencast-1.gif)
 
 ### From Command Shell
 
