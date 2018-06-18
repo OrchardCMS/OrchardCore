@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Workflows.Helpers
 {
@@ -18,20 +18,7 @@ namespace OrchardCore.Workflows.Helpers
         /// </summary>
         public static TResult CreateInstance<TResult>(this IServiceProvider provider, Type type) where TResult : class
         {
-            var constructor = type.GetConstructors()[0];
-
-            if (constructor != null)
-            {
-                var args = constructor
-                    .GetParameters()
-                    .Select(o => o.ParameterType)
-                    .Select(o => provider.GetService(o))
-                    .ToArray();
-
-                return Activator.CreateInstance(type, args) as TResult;
-            }
-
-            return null;
+            return (TResult)ActivatorUtilities.CreateInstance(provider, type);
         }
     }
 }
