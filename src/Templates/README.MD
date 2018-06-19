@@ -52,6 +52,8 @@ namespace MyNewWebsite
 
 ### From Command Shell
 
+#### Initialize module template:
+
 ```CMD
 dotnet new -i "OrchardCore.Templates.Cms.Web"  
 
@@ -59,9 +61,13 @@ REM Alternatively from an empty folder not containing any nuget.config file :
 dotnet new -i "OrchardCore.Templates.Cms.Web" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 ```
 
-`dotnet new ocweb`
+#### Module commands:
 
-`dotnet new ocweb -AddNLog true`
+```CMD
+dotnet new ocweb  
+
+dotnet new ocweb -AddNLog true  
+```
 
 ## Create a new module
 
