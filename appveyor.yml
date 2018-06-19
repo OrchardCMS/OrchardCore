@@ -26,7 +26,8 @@ install:
   - ps: $IsMasterBranch = ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
 
-build: off
+build_script:
+  dotnet build -c Release
 
 init:
   - dotnet --version
@@ -35,7 +36,7 @@ init:
   - git config --global core.autocrlf true
 
 test_script:
-  - dotnet test -c Release .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
+  - dotnet test -c Release --no-build .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
   - cd .\test\Functional
   - test-setup.cmd
   - test-run.cmd
@@ -48,10 +49,20 @@ artifacts:
 
 deploy_script:
 # Nuget
-- ps:  if ($IsMasterBranch) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:NUGET_API_KEY -Source https://www.nuget.org/api/v2/package } }
+- ps: |  
+    if ($IsMasterBranch) 
+    { 
+      dotnet pack -c Release --no-build
+      foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:NUGET_API_KEY -Source https://www.nuget.org/api/v2/package } 
+    }
 
 # Myget
-- ps:  if ($IsDevBranch) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:MYGET_API_KEY -Source https://www.myget.org/F/orchardcore-preview/api/v2/package } }
+- ps: |  
+    if ($IsDevBranch) 
+    { 
+      dotnet pack -c Release --no-build
+      foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:MYGET_API_KEY -Source https://www.myget.org/F/orchardcore-preview/api/v2/package } 
+    }
 
 # DockerHub
 - ps: |
