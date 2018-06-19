@@ -1,0 +1,8 @@
+@using OrchardCore.Forms.ViewModels;
+@model FormElementPartEditViewModel
+
+<fieldset class="form-group">
+    <label asp-for="Id">@T["ID"]</label>
+    <input asp-for="Id" type="text" class="form-control content-preview-text"></input>
+    <span class="hint">@T["The ID to render on this form element."]</span>
+</fieldset>
