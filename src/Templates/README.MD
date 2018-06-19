@@ -28,13 +28,13 @@ dotnet new ocweb -AddNLog true
 
 Fire up Visual Studio, create a new solution file (.sln) by creating a new ASP.NET Core Web Application : 
 
-![image](/src/docs/assets/images/orchard-screencast-1.gif)
+![image](/src/docs/assets/templates/images/orchard-screencast-1.gif)
 
 Now that we created a new Web Application we need to add proper dependencies so that this new Web Application be targetted as an Orchard Core application.
 
 [See adding Orchard Core Nuget Feed](#adding-orchard-core-nuget-feed)
 
-![image](/src/docs/assets/images/orchard-screencast-2.gif)
+![image](/src/docs/assets/templates/images/orchard-screencast-2.gif)
 
 Finally we will need to register Orchard CMS service in our Startup.cs file like this : 
 
@@ -93,7 +93,7 @@ dotnet new ocmodule -n "ModuleName.OrchardCore" -PartName "TestPart" -AddPart tr
 
 Fire up Visual Studio, open Orchard Core solution file (.sln), select OrchardCore.Modules folder, right click and select "add --> new project" and create a new .NET Standard Class Library:
 
-![image](/src/docs/assets/images/38450533-6c0fbc98-39ed-11e8-91a5-d26a1105b91a.png)
+![image](/src/docs/assets/templates/images/38450533-6c0fbc98-39ed-11e8-91a5-d26a1105b91a.png)
 
 For marking this new Class Library as an Orchard Module we will now need to reference OrchardCore.Module.Targets Nuget package.
 
@@ -101,11 +101,11 @@ For marking this new Class Library as an Orchard Module we will now need to refe
 
 Each of these "*.Targets" Nuget packages are used to mark a Class Library as a specific Orchard Core functionality. OrchardCore.Module.Targets is the one we are interested in for now. We will mark our new Class Library as a module by adding OrchardCore.Module.Targets as a dependency. For doing so you will need to right click on MyModule.OrchardCore project and select "Manage Nuget Packages" option. To find the packages in Nuget Package Manager you will need to check "include prerelease" and make sure you have Orchard Core feed that we added earlier selected. Once you have found it click on the Install button on the right panel next to Version : Latest prerelease x.x.x.x
 
-![image](/src/docs/assets/images/38450558-f4b83098-39ed-11e8-93c7-0fd9e5112dff.png)
+![image](/src/docs/assets/templates/images/38450558-f4b83098-39ed-11e8-93c7-0fd9e5112dff.png)
 
 Once done your new module will look like this : 
 
-![image](/src/docs/assets/images/38450628-31c8e2b0-39ef-11e8-9de7-c15f0c6544c5.png)
+![image](/src/docs/assets/templates/images/38450628-31c8e2b0-39ef-11e8-9de7-c15f0c6544c5.png)
 
 For Orchard Core to identify this module it will now require a Manifest.cs file. Here is an example of that file:
 
@@ -206,7 +206,7 @@ dotnet new ocmodule -n "Module.OrchardCore" -PartName "TestPart" -AddPart true
 
 ## Adding Orchard Core Nuget Feed
 
-![image](/src/docs/assets/images/38450242-886933f6-39e8-11e8-896c-1f807e5530a0.png)
+![image](/src/docs/assets/templates/images/38450242-886933f6-39e8-11e8-896c-1f807e5530a0.png)
 
 #### MyGet:
 
@@ -218,4 +218,4 @@ Feed: https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 
 To be able to use these feeds in Visual Studio your will need to add them to the Nuget package source settings that can be found by going to Visual Studio Tools menu under Nuget Package Manager --> Package Manager Settings.
 
-![image](/src/docs/assets/images/38450422-63670f1c-39eb-11e8-9c14-0743f0a4da42.png)
+![image](/src/docs/assets/templates/images/38450422-63670f1c-39eb-11e8-9c14-0743f0a4da42.png)
