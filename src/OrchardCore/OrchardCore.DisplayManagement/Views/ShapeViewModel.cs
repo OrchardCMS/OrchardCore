@@ -5,6 +5,15 @@ namespace OrchardCore.DisplayManagement.Views
 {
     public class ShapeViewModel : IShape, IPositioned
     {
+        public ShapeViewModel()
+        {
+        }
+
+        public ShapeViewModel(string shapeType)
+        {
+            Metadata.Type = shapeType;
+        }
+
         private ShapeMetadata _metadata;
         public ShapeMetadata Metadata => _metadata = _metadata ?? new ShapeMetadata();
 

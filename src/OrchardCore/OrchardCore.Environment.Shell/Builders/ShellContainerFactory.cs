@@ -52,7 +52,7 @@ namespace OrchardCore.Environment.Shell.Builders
             tenantServiceCollection.AddSingleton(blueprint);
 
             AddCoreServices(tenantServiceCollection);
-            
+
             // Execute IStartup registrations
 
             // TODO: Use StartupLoader in RTM and then don't need to register the classes anymore then
@@ -121,7 +121,7 @@ namespace OrchardCore.Environment.Shell.Builders
                     }
                 }
             }
-            
+
             return shellServiceProvider;
         }
     }

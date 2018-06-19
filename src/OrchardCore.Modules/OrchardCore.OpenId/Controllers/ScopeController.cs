@@ -13,8 +13,7 @@ using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Descriptors;
-using OrchardCore.OpenId.Abstractions.Models;
-using OrchardCore.OpenId.Services.Managers;
+using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Settings;
 
@@ -26,7 +25,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringLocalizer<ScopeController> T;
         private readonly IHtmlLocalizer<ScopeController> H;
-        private readonly OpenIdScopeManager _scopeManager;
+        private readonly IOpenIdScopeManager _scopeManager;
         private readonly ISiteService _siteService;
         private readonly IShapeFactory _shapeFactory;
         private readonly INotifier _notifier;
@@ -35,7 +34,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IShellSettingsManager _shellSettingsManager;
 
         public ScopeController(
-            OpenIdScopeManager scopeManager,
+            IOpenIdScopeManager scopeManager,
             IShapeFactory shapeFactory,
             ISiteService siteService,
             IStringLocalizer<ScopeController> stringLocalizer,
@@ -209,7 +208,7 @@ namespace OrchardCore.OpenId.Controllers
                 return Unauthorized();
             }
 
-            IOpenIdScope scope = null;
+            object scope = null;
 
             if (ModelState.IsValid)
             {

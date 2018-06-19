@@ -1,12 +1,33 @@
 # OrchardCore.OpenId
 
-`OrchardCore.OpenId` provides an implementation of an OpenID Connect server based on the [OpenIddict](https://github.com/openiddict/openiddict-core) library. 
-It allows Orchard Core to act as identity provider to support token authentication without the need of an external identity provider.
+## OpenID Connect Module
+`OrchardCore.OpenId` provides the following features 
+
+- Core Components
+- Entity Framework Core Stores
+- Authorization Server
+- Management Interface 
+- Token Validation
+- OIDC Client
+
+## Core Components
+Registers the core components used by the OpenID module.
+
+## Entity Framework Core Stores
+Provides an Entity Framework Core 2.x adapter for the OpenID module.
+
+## Management Interface
+Allows adding, editing and removing the registered applications.
+
+## Authorization Server
+Enables authentication of external applications using the OpenID Connect/OAuth 2.0 standards.
+It is based on the [OpenIddict](https://github.com/openiddict/openiddict-core) library allowing 
+Orchard Core to act as identity provider to support token authentication without the need of an external identity provider.
 So, Orchard Core can also be used as an identity provider for centralizing the user access permissions to external applications, not only to Orchard Core services.
 
 Flows supported: [code/implicit/hybrid flows](http://openid.net/specs/openid-connect-core-1_0.html) and [client credentials/resource owner password grants](https://tools.ietf.org/html/rfc6749).
 
-## Configuration
+### Configuration
 
 Configuration can be set through the _OpenID Connect_ settings menu in the admin dashboard and also through a recipe step.
 
@@ -56,8 +77,8 @@ A sample of OpenID Connect Settings recipe step:
 
 ### Client OpenID Connect Apps Configuration
 
-OpenID Connect apps can be set through OpenID Connect Apps menu in the admin dashboard and also through a recipe step.
-
+OpenID Connect apps can be set through OpenID Connect Apps menu in the admin dashboard (through the Management Interface feature) 
+and also through a recipe step.
 
 OpenID Connect apps require the following configuration.
 
@@ -87,7 +108,7 @@ OpenID Connect apps require the following configuration.
       "ClientId": "openidtest",
       "DisplayName": "Open Id Test",
       "Type": "Confidential",
-	  "ClientSecret": "MyPassword",
+	   "ClientSecret": "MyPassword",
       "EnableTokenEndpoint": true,
       "EnableAuthorizationEndpoint": false,
       "EnableLogoutEndpoint": true,
@@ -100,9 +121,9 @@ OpenID Connect apps require the following configuration.
 }
 ```
 
-## Configuring Certificates
+### Configuring Certificates
 
-### Windows / IIS
+#### Windows / IIS
 
 Several tools are available for generating a signing certificate on Windows and/or IIS, for example:
 
@@ -161,6 +182,54 @@ Import-PfxCertificate -FilePath C:\securelocation\connect.example.com.pfx cert:\
 + `WinHttpCertCfg.exe` (grants Full Control)
     1. For example: `winhttpcertcfg -g -c LOCAL_MACHINE\My -s connect.example.com -a AppPoolIdentityName` https://msdn.microsoft.com/en-us/library/windows/desktop/aa384088(v=vs.85).aspx
 
+## Token Validation
+Validates tokens issued by the Orchard OpenID server or by a remote server supporting JWT and OpenID Connect discovery.
+
+## OIDC Client
+Auhenticates users from an external OpenID Connect identity provider. 
+If the site allows to register new users, a local user is linked and the external login is linked.
+If an "email" claim is received, and a local user is found, then the external login is linked to that account, after authenticating.
+
+### Configuration
+
+Configuration can be set through the _OpenID Connect_ settings menu in the admin dashboard and also through a recipe step.
+
+Available settings are:
+
++ Display Name: Display name of the IdP. It is shown in the login form.
++ Authority: Authority to use when making OpenIdConnect calls.
++ ClientId: The client_id part of the query.
++ CallbackPath: The request path within the application's base path where the user agent will be returned after sign out from the identity provider. See post_logout_redirect_uri from http://openid.net/specs/openid-connect-session-1_0.html#RedirectionAfterLogout 
++ SignedOut CallbackPath: the callback endpoint dor signout. Defaults to /signout-callback-oidc.
++ SignedOut Redirect Uri: The uri where the user agent will be redirected to after application is signed out from the identity provider. The redirect will happen after the SignedOutCallbackPath is invoked.
++ Scopes: Extra scopes except openid and profile 
++ Response Mode: Configure Response Mode see: http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthResponse. If fragment or query only Code Authentication Flow is allowed.
++ Supported Flows: Select on of the OIDC flows
+  + Code Authentication Flow (see: http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth)
+  + Hybrid Authentication Flow (see: http://openid.net/specs/openid-connect-core-1_0.html#HybridAuthRequest)
+    + Use 'code id_token' response type (example: http://openid.net/specs/openid-connect-core-1_0.html#code-id_token-tokenExample)
+    + Use 'code id_token token' response type (example: http://openid.net/specs/openid-connect-core-1_0.html#code-id_token-tokenExample)
+    + Use 'code token' response type (example: http://openid.net/specs/openid-connect-core-1_0.html#code-tokenExample)
+  + Implicit Authentication Flow (see: http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthRequest)
+    + Use 'id_token' response type (example: http://openid.net/specs/openid-connect-core-1_0.html#id_tokenExample)
+    + Use 'id_token token' response type (example: http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample)
++ Client Secret: It is used with one of the 'confidential' flows, code or hybrid
+
+A sample of OpenID Connect Client Settings recipe step:
+```
+{
+      "name": "OpenIdClientSettings",
+      "Authority": "http://localhost:44300/t1",
+      "DisplayName": "Orchard (t1) IdP",
+      "ClientId": "orchard_t2", 
+      "CallbackPath": "/signin-oidc",
+      "SignedOutCallbackPath": "/signout-callback-oidc",
+      "Scopes": "email phone",
+      "ResponseMode": "form_post",
+      "ResponseType": "code id_token"
+      "ClientSecret": "secret"
+}
+```
 ## CREDITS
 
 ### OpenIddict

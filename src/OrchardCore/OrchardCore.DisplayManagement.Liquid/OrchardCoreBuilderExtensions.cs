@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddLiquidViews(this OrchardCoreBuilder builder)
         {
-            builder.ConfigureServices((services, serviceProvider) =>
+            builder.ConfigureServices(services =>
             {
                 services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<LiquidViewOptions>,

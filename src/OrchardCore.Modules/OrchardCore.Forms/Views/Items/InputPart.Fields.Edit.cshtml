@@ -1,0 +1,42 @@
+@using OrchardCore.Forms.ViewModels;
+@model InputPartEditViewModel
+
+<fieldset class="form-group">
+    <label asp-for="Type">@T["Type"]</label>
+    <select asp-for="Type" class="form-control content-preview-select">
+        <option value="text">@T["Text"]</option>
+        <option value="number">@T["Number"]</option>
+        <option value="email">@T["Email"]</option>
+        <option value="tel">@T["Phone"]</option>
+        <option value="date">@T["Date"]</option>
+        <option value="time">@T["Time"]</option>
+        <option value="datetime">@T["DateTime"]</option>
+        <option value="datetime-local">@T["Local DateTime"]</option>
+        <option value="month">@T["Month"]</option>
+        <option value="week">@T["Week"]</option>
+        <option value="hidden">@T["Hidden"]</option>
+        <option value="password">@T["Password"]</option>
+        <option value="radio">@T["Radio"]</option>
+        <option value="checkbox">@T["Checkbox"]</option>
+        <option value="color">@T["Color"]</option>
+        <option value="range">@T["Range"]</option>
+        <option value="file">@T["File"]</option>
+        <option value="image">@T["Image"]</option>
+        <option value="reset">@T["Reset"]</option>
+        <option value="search">@T["Search"]</option>
+        <option value="submit">@T["Submit"]</option>
+    </select>
+    <span class="hint">@T["The button type."]</span>
+</fieldset>
+
+<fieldset class="form-group">
+    <label asp-for="Placeholder">@T["Placeholder Text"]</label>
+    <input asp-for="Placeholder" type="text" class="form-control content-preview-text"></input>
+    <span class="hint">@T["The text to display when the field has no value."]</span>
+</fieldset>
+
+<fieldset class="form-group">
+    <label asp-for="DefaultValue">@T["Default Value"]</label>
+    <input asp-for="DefaultValue" type="text" class="form-control content-preview-text"></input>
+    <span class="hint">@T["The default value for this field."]</span>
+</fieldset>

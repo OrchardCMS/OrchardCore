@@ -21,13 +21,9 @@ namespace OrchardCore.Workflows
             }
 
             builder.Add(T["Workflows"], "5", workflow => workflow
-                .AddClass("workflows").Id("workflows")
-                .LinkToFirstChild(true)
-                    .Add(T["Types"], "1", contentItems => contentItems
-                        .Action("Index", "WorkflowType", new { area = "OrchardCore.Workflows" })
-                        .Permission(Permissions.ManageWorkflows)
-                        .LocalNav()
-                    ));
+                .AddClass("workflows").Id("workflows").Action("Index", "WorkflowType", new { area = "OrchardCore.Workflows" })
+                    .Permission(Permissions.ManageWorkflows)
+                    .LocalNav());
         }
     }
 }

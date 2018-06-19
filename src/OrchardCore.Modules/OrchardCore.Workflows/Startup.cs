@@ -48,6 +48,7 @@ namespace OrchardCore.Workflows
             services.AddScoped<IWorkflowExpressionEvaluator, LiquidWorkflowExpressionEvaluator>();
             services.AddScoped<IWorkflowScriptEvaluator, JavaScriptWorkflowScriptEvaluator>();
 
+            services.AddActivity<Activity, ActivityMetadataDisplay>();
             services.AddActivity<NotifyTask, NotifyTaskDisplay>();
             services.AddActivity<SetPropertyTask, SetVariableTaskDisplay>();
             services.AddActivity<SetOutputTask, SetOutputTaskDisplay>();

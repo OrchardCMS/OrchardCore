@@ -8,8 +8,14 @@
   },
   {
     "inputs": [
-      "Assets/js/*.js"
+      "Assets/js/jquery.mjs.nestedSortable.js"
     ],
     "output": "wwwroot/Scripts/menu.js"
+  },
+  {
+    "inputs": [
+      "Assets/js/activate-links.js"
+    ],
+    "output": "wwwroot/Scripts/activate-links.js"
   }
 ]

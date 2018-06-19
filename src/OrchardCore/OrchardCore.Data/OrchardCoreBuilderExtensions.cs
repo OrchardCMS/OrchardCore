@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
         {
-            builder.ConfigureServices((services, serviceProvider) =>
+            builder.ConfigureServices(services =>
             {
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();

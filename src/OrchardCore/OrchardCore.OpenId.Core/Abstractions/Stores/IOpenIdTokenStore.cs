@@ -1,13 +1,12 @@
 using System.Threading;
 using System.Threading.Tasks;
-using OpenIddict.Core;
-using OrchardCore.OpenId.Abstractions.Models;
+using OpenIddict.Abstractions;
 
 namespace OrchardCore.OpenId.Abstractions.Stores
 {
-    public interface IOpenIdTokenStore : IOpenIddictTokenStore<IOpenIdToken>
+    public interface IOpenIdTokenStore<TToken> : IOpenIddictTokenStore<TToken> where TToken : class
     {
-        Task<IOpenIdToken> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken);
-        Task<string> GetPhysicalIdAsync(IOpenIdToken token, CancellationToken cancellationToken);
+        Task<TToken> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken);
+        ValueTask<string> GetPhysicalIdAsync(TToken token, CancellationToken cancellationToken);
     }
 }
