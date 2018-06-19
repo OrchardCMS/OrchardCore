@@ -1,6 +1,6 @@
 # Orchard Core Templates
 
-Orchard Core Templates uses dotnet new templates configurations for creating new themes and modules from command shell. Our configurations have been implemented by using examples that you can find there : https://github.com/dotnet/dotnet-template-samples
+Orchard Core Templates uses `dotnet new` templates configurations for creating new themes and modules from command shell. Our configurations have been implemented by using examples that you can find there : https://github.com/dotnet/dotnet-template-samples
 
 ## Create a new website
 
@@ -51,13 +51,13 @@ namespace MyNewWebsite
 
 ### From Command Shell
 
-dotnet new -i "OrchardCore.Templates.Cms"  
+`dotnet new -i "OrchardCore.Templates.Cms"`  
 or  
-dotnet new -i "OrchardCore.Templates.Cms" -Source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
+`dotnet new -i "OrchardCore.Templates.Cms" -Source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
 
-dotnet new ocweb
+`dotnet new ocweb`
 
-dotnet new ocweb -AddNLog true
+`dotnet new ocweb -AddNLog true`
 
 ## Create a new module
 
@@ -66,8 +66,6 @@ dotnet new ocweb -AddNLog true
 Fire up Visual Studio, open Orchard Core solution file (.sln), select OrchardCore.Modules folder, right click and select "add --> new project" and create a new .NET Standard Class Library:
 
 ![image](/src/docs/assets/images/38450533-6c0fbc98-39ed-11e8-91a5-d26a1105b91a.png)
-
-We strongly suggest that you name your modules like this : **MyModule.OrchardCore** if you consider sharing this module through Nuget afterward ; Since **OrchardCore.Something** is already taken by Orchard Core Nuget feed. Alternatively if you want to name your modules **OrchardCore.Something** you could use Paket https://fsprojects.github.io/Paket/ for referencing those as Github repositories or simply pointing your Nuget packages to a local folder.
 
 For marking this new Class Library as an Orchard Module we will now need to reference OrchardCore.Module.Targets Nuget package. You can find the dev and preview feeds on MyGet as of now by searching for Orchard on the MyGet gallery.
 
@@ -111,17 +109,17 @@ Last step is to add our new module to the OrchardCore.Cms.Web project as a refer
 
 #### Initialize module template:
 
-dotnet new -i "OrchardCore.Templates.Module"  
+`dotnet new -i "OrchardCore.Templates.Module"`  
 or  
-dotnet new -i "OrchardCore.Templates.Module" -Source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
+`dotnet new -i "OrchardCore.Templates.Module" -Source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
 
 #### Module commands:
 
-dotnet new ocmodule -n "ModuleName.OrchardCore"
+`dotnet new ocmodule -n "ModuleName.OrchardCore"`
 
-dotnet new ocmodule -n "ModuleName.OrchardCore" -PartName "TestPart"
+`dotnet new ocmodule -n "ModuleName.OrchardCore" -PartName "TestPart"`
 
-dotnet new ocmodule -n "ModuleName.OrchardCore" -PartName "TestPart" -AddPart true
+`dotnet new ocmodule -n "ModuleName.OrchardCore" -PartName "TestPart" -AddPart true`
 
 ## Create a new theme
 
@@ -145,13 +143,13 @@ using OrchardCore.DisplayManagement.Manifest;
 
 #### Initialize theme template:
 
-dotnet new -i "OrchardCore.Templates.Theme"  
+`dotnet new -i "OrchardCore.Templates.Theme"`  
 or  
-dotnet new -i "OrchardCore.Templates.Theme" -Source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
+`dotnet new -i "OrchardCore.Templates.Theme" -Source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
 
 #### Theme commands:
 
-dotnet new octheme -n "ThemeName.OrchardCore"
+`dotnet new octheme -n "ThemeName.OrchardCore"`
 
 
 
@@ -159,11 +157,17 @@ dotnet new octheme -n "ThemeName.OrchardCore"
 
 **Initialize:**
 
-dotnet new -i "C:\...\src\Templates\OrchardCore.Templates.Cms.Web"
+`dotnet new -i "OrchardCore.Templates.Cms"`  
+or  
+`dotnet new -i "OrchardCore.Templates.Cms" -Source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
 
-dotnet new -i "C:\...\src\Templates\OrchardCore.Templates.Module"
+`dotnet new -i "OrchardCore.Templates.Module"`  
+or  
+`dotnet new -i "OrchardCore.Templates.Module" -Source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
 
-dotnet new -i "C:\...\src\Templates\OrchardCore.Templates.Theme"
+`dotnet new -i "OrchardCore.Templates.Theme"`  
+or  
+`dotnet new -i "OrchardCore.Templates.Theme" -Source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
 
 
 
@@ -188,17 +192,9 @@ dotnet new --debug:reinit
 
 ## Adding Orchard Core Nuget Feeds
 
-![image](/src/docs/assets/images/38450194-c617148a-39e7-11e8-95b0-2d35f43a6fad.png)
-
 ![image](/src/docs/assets/images/38450242-886933f6-39e8-11e8-896c-1f807e5530a0.png)
 
 #### MyGet:
-
-Dev: https://www.myget.org/gallery/orchardcore-dev
-
-Feed: https://www.myget.org/F/orchardcore-dev/api/v3/index.json
-
-
 
 Preview: https://www.myget.org/gallery/orchardcore-preview
 
