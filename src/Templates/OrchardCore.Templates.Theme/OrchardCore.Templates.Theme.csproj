@@ -1,4 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <!-- Necessary as we reference the Project and not the Package -->
+  <Import Project="..\..\OrchardCore.Themes\Directory.Build.props" />
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -14,5 +17,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" />
   </ItemGroup>
+
+  <!-- Necessary as we reference the Project and not the Package -->
+  <Import Project="..\..\OrchardCore.Themes\Directory.Build.targets" />
 
 </Project>
