@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement
 {
@@ -61,7 +61,7 @@ namespace OrchardCore.DisplayManagement
                 group ?? "",
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
-                updater
+                new ModelStateWrapperUpdater(updater)
             );
 
             await BindPlacementAsync(context);
@@ -95,7 +95,7 @@ namespace OrchardCore.DisplayManagement
                 "",
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
-                updater
+                new ModelStateWrapperUpdater(updater)
             );
 
             await BindPlacementAsync(context);
@@ -129,7 +129,7 @@ namespace OrchardCore.DisplayManagement
                 "",
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
-                updater
+                new ModelStateWrapperUpdater(updater)
             );
 
             await BindPlacementAsync(context);
