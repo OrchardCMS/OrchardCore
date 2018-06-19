@@ -156,9 +156,9 @@ or
 
 **Initialize:**
 
-`dotnet new -i "OrchardCore.Templates.Cms"`  
+`dotnet new -i "OrchardCore.Templates.Cms.Web"`  
 or  
-`dotnet new -i "OrchardCore.Templates.Cms" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
+`dotnet new -i "OrchardCore.Templates.Cms.Web" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
 
 `dotnet new -i "OrchardCore.Templates.Module"`  
 or  
