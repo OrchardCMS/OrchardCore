@@ -27,7 +27,8 @@ install:
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
 
 build_script:
-  dotnet build -c Release
+  - dotnet build -c Release
+  - ps: if ($IsMasterBranch -or $IsDevBranch) { dotnet pack -c Release --no-build }
 
 init:
   - dotnet --version
@@ -49,20 +50,10 @@ artifacts:
 
 deploy_script:
 # Nuget
-- ps: |  
-    if ($IsMasterBranch) 
-    { 
-      dotnet pack -c Release --no-build
-      foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:NUGET_API_KEY -Source https://www.nuget.org/api/v2/package } 
-    }
+- ps:  if ($IsMasterBranch) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:NUGET_API_KEY -Source https://www.nuget.org/api/v2/package } }
 
 # Myget
-- ps: |  
-    if ($IsDevBranch) 
-    { 
-      dotnet pack -c Release --no-build
-      foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:MYGET_API_KEY -Source https://www.myget.org/F/orchardcore-preview/api/v2/package } 
-    }
+- ps:  if ($IsDevBranch) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:MYGET_API_KEY -Source https://www.myget.org/F/orchardcore-preview/api/v2/package } }
 
 # DockerHub
 - ps: |
