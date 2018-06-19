@@ -3,6 +3,9 @@
 Orchard Core Templates uses `dotnet new` templates configurations for creating new websites, themes and modules from command shell. Our configurations have been implemented by using examples that you can find there :  
 https://github.com/dotnet/dotnet-template-samples
 
+`dotnet new` documentation :  
+https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new?tabs=netcore21
+
 ## Create a new website
 
 ### From Command Shell (automated way)
