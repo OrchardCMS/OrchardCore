@@ -1,6 +1,6 @@
 # Orchard Core Templates
 
-Orchard Core Templates uses `dotnet new` templates configurations for creating new themes and modules from command shell. Our configurations have been implemented by using examples that you can find there : https://github.com/dotnet/dotnet-template-samples
+Orchard Core Templates uses `dotnet new` templates configurations for creating new websites, themes and modules from command shell. Our configurations have been implemented by using examples that you can find there : https://github.com/dotnet/dotnet-template-samples
 
 ## Create a new website
 
@@ -67,7 +67,7 @@ Fire up Visual Studio, open Orchard Core solution file (.sln), select OrchardCor
 
 ![image](/src/docs/assets/images/38450533-6c0fbc98-39ed-11e8-91a5-d26a1105b91a.png)
 
-For marking this new Class Library as an Orchard Module we will now need to reference OrchardCore.Module.Targets Nuget package. You can find the dev and preview feeds on MyGet as of now by searching for Orchard on the MyGet gallery.
+For marking this new Class Library as an Orchard Module we will now need to reference OrchardCore.Module.Targets Nuget package.
 
 [See adding Orchard Nuget Feed](#adding-orchard-core-nuget-feed)
 
