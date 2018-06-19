@@ -67,15 +67,9 @@ Fire up Visual Studio, open Orchard Core solution file (.sln), select OrchardCor
 
 ![image](/src/docs/assets/images/38450533-6c0fbc98-39ed-11e8-91a5-d26a1105b91a.png)
 
-Don't forget to select the proper folder location which should be : 
+We strongly suggest that you name your modules like this : **MyModule.OrchardCore** if you consider sharing this module through Nuget afterward ; Since **OrchardCore.Something** is already taken by Orchard Core Nuget feed. Alternatively if you want to name your modules **OrchardCore.Something** you could use Paket https://fsprojects.github.io/Paket/ for referencing those as Github repositories or simply pointing your Nuget packages to a local folder.
 
-```
-\OrchardCore.Templates\OrchardCore.Modules\
-```
-
-Also, we strongly suggest that you name your modules like this : **MyModule.OrchardCore** if you consider sharing this module through Nuget afterward ; Since **OrchardCore.Something** is already taken by Orchard Core Nuget feed. Alternatively if you want to name your modules **OrchardCore.Something** we could only use Paket https://fsprojects.github.io/Paket/ for referencing those.
-
-For marking this new Class Library as a Orchard Module we will now need to reference OrchardCore.Module.Targets Nuget package. You can find the dev and preview feeds on MyGet as of now by searching for Orchard on the MyGet gallery.
+For marking this new Class Library as an Orchard Module we will now need to reference OrchardCore.Module.Targets Nuget package. You can find the dev and preview feeds on MyGet as of now by searching for Orchard on the MyGet gallery.
 
 [See adding Orchard Nuget Feeds](#adding-orchard-core-nuget-feeds)
 
@@ -85,7 +79,7 @@ Each of these Nuget packages are used to mark a Class Library as a specific Orch
 
 ![image](/src/docs/assets/images/38450558-f4b83098-39ed-11e8-93c7-0fd9e5112dff.png)
 
-Once done you new module will look like this : 
+Once done your new module will look like this : 
 
 ![image](/src/docs/assets/images/38450628-31c8e2b0-39ef-11e8-9de7-c15f0c6544c5.png)
 
