@@ -4,7 +4,7 @@ Orchard Core Templates uses `dotnet new` templates configurations for creating n
 https://github.com/dotnet/dotnet-template-samples
 
 `dotnet new` documentation :  
-https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new?tabs=netcore21
+https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new
 
 ## Create a new website
 
