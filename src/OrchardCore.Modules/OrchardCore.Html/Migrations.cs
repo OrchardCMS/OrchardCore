@@ -2,7 +2,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 
-namespace OrchardCore.Markdown
+namespace OrchardCore.Html
 {
     public class Migrations : DataMigration
     {
@@ -15,9 +15,9 @@ namespace OrchardCore.Markdown
 
         public int Create()
         {
-            _contentDefinitionManager.AlterPartDefinition("MarkdownBodyPart", builder => builder
+            _contentDefinitionManager.AlterPartDefinition("HtmlBodyPart", builder => builder
                 .Attachable()
-                .WithDescription("Provides a Markdown formatted body for your content item."));
+                .WithDescription("Provides an HTML Body for your content item."));
 
             return 1;
         }

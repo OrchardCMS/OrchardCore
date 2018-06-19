@@ -1,16 +1,15 @@
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.MetaWeblog;
+using OrchardCore.DisplayManagement.Descriptors;
 
-namespace OrchardCore.Markdown.RemotePublishing
+namespace OrchardCore.Html.Media
 {
-
-    [RequireFeatures("OrchardCore.RemotePublishing")]
+    [RequireFeatures("OrchardCore.Media")]
     public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IMetaWeblogDriver, MarkdownBodyMetaWeblogDriver>();
+            services.AddScoped<IShapeTableProvider, MediaShapes>();
         }
     }
 }

@@ -37,7 +37,7 @@
         // Content Management
         "OrchardCore.Alias",
         "OrchardCore.Autoroute",
-        "OrchardCore.Body",
+        "OrchardCore.Html",
         "OrchardCore.ContentFields",
         "OrchardCore.ContentPreview",
         "OrchardCore.Contents",
@@ -378,8 +378,8 @@
               }
             },
             {
-              "PartName": "BodyPart",
-              "Name": "BodyPart",
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
               "Settings": {
                 "Position": "1"
               }
@@ -405,8 +405,8 @@
               }
             },
             {
-              "PartName": "BodyPart",
-              "Name": "BodyPart",
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
               "Settings": {
                 "Position": "1"
               }
@@ -432,8 +432,8 @@
               }
             },
             {
-              "PartName": "BodyPart",
-              "Name": "BodyPart",
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
               "Settings": {
                 "Position": "2"
               }
@@ -1251,7 +1251,7 @@
                     "Text": "fa-shopping-cart"
                   }
                 },
-                "BodyPart": {
+                "HtmlBodyPart": {
                   "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit."
                 },
                 "TitlePart": {
@@ -1274,7 +1274,7 @@
                     "Text": "fa-laptop"
                   }
                 },
-                "BodyPart": {
+                "HtmlBodyPart": {
                   "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit."
                 },
                 "TitlePart": {
@@ -1297,7 +1297,7 @@
                     "Text": "fa-lock"
                   }
                 },
-                "BodyPart": {
+                "HtmlBodyPart": {
                   "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit."
                 },
                 "TitlePart": {
@@ -1329,7 +1329,7 @@
                     "Text": "Illustrations"
                   }
                 },
-                "BodyPart": {
+                "HtmlBodyPart": {
                   "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
                 },
                 "TitlePart": {
@@ -1357,7 +1357,7 @@
                     "Text": "Graphic Design"
                   }
                 },
-                "BodyPart": {
+                "HtmlBodyPart": {
                   "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
                 },
                 "TitlePart": {
@@ -1385,7 +1385,7 @@
                     "Text": "Identity"
                   }
                 },
-                "BodyPart": {
+                "HtmlBodyPart": {
                   "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
                 },
                 "TitlePart": {
@@ -1413,7 +1413,7 @@
                     "Text": "Branding"
                   }
                 },
-                "BodyPart": {
+                "HtmlBodyPart": {
                   "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
                 },
                 "TitlePart": {
@@ -1441,7 +1441,7 @@
                     "Text": "Web Design"
                   }
                 },
-                "BodyPart": {
+                "HtmlBodyPart": {
                   "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
                 },
                 "TitlePart": {
@@ -1469,7 +1469,7 @@
                     "Text": "Photography"
                   }
                 },
-                "BodyPart": {
+                "HtmlBodyPart": {
                   "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
                 },
                 "TitlePart": {
@@ -1501,7 +1501,7 @@
                     ]
                   }
                 },
-                "BodyPart": {
+                "HtmlBodyPart": {
                   "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!"
                 },
                 "TitlePart": {
@@ -1529,7 +1529,7 @@
                     ]
                   }
                 },
-                "BodyPart": {
+                "HtmlBodyPart": {
                   "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!\r\n"
                 },
                 "TitlePart": {
@@ -1557,7 +1557,7 @@
                     ]
                   }
                 },
-                "BodyPart": {
+                "HtmlBodyPart": {
                   "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!"
                 },
                 "TitlePart": {
@@ -1585,7 +1585,7 @@
                     ]
                   }
                 },
-                "BodyPart": {
+                "HtmlBodyPart": {
                   "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!\r\n"
                 },
                 "TitlePart": {

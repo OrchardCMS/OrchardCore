@@ -23,19 +23,19 @@ namespace OrchardCore.Markdown
     {
         static Startup()
         {
-            TemplateContext.GlobalMemberAccessStrategy.Register<MarkdownPartViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<MarkdownFieldViewModel>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
             // Markdown Part
-            services.AddScoped<IContentPartDisplayDriver, MarkdownPartDisplay>();
-            services.AddSingleton<ContentPart, MarkdownPart>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownPartSettingsDisplayDriver>();
+            services.AddScoped<IContentPartDisplayDriver, MarkdownBodyPartDisplay>();
+            services.AddSingleton<ContentPart, MarkdownBodyPart>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IContentPartIndexHandler, MarkdownPartIndexHandler>();
-            services.AddScoped<IContentPartHandler, MarkdownPartHandler>();
+            services.AddScoped<IContentPartIndexHandler, MarkdownBodyPartIndexHandler>();
+            services.AddScoped<IContentPartHandler, MarkdownBodyPartHandler>();
 
             // Markdown Field
             services.AddSingleton<ContentField, MarkdownField>();
