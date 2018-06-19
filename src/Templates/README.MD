@@ -11,9 +11,6 @@ https://github.com/dotnet/dotnet-template-samples
 
 ```CMD
 dotnet new -i "OrchardCore.Templates.Cms.Web"  
-
-REM Alternatively from an empty folder not containing any nuget.config file :   
-dotnet new -i "OrchardCore.Templates.Cms.Web" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 ```
 
 #### Module commands:
@@ -77,9 +74,6 @@ namespace MyNewWebsite
 
 ```CMD
 dotnet new -i "OrchardCore.Templates.Module"  
-
-REM Alternatively from an empty folder not containing any nuget.config file :   
-dotnet new -i "OrchardCore.Templates.Module" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 ```
 
 #### Module commands:
@@ -142,9 +136,6 @@ Last step is to add our new module to the OrchardCore.Cms.Web project as a refer
 
 ```CMD
 dotnet new -i "OrchardCore.Templates.Theme"  
-
-REM Alternatively from an empty folder not containing any nuget.config file :  
-dotnet new -i "OrchardCore.Templates.Theme" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 ```
 
 #### Theme commands:
@@ -174,21 +165,20 @@ using OrchardCore.DisplayManagement.Manifest;
 ```CMD
 dotnet new -i "OrchardCore.Templates.Cms.Web"  
 
-REM Alternatively from an empty folder not containing any nuget.config file :  
-dotnet new -i "OrchardCore.Templates.Cms.Web" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
-
 dotnet new -i "OrchardCore.Templates.Module"   
 
-REM Alternatively from an empty folder not containing any nuget.config file :  
-dotnet new -i "OrchardCore.Templates.Module" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
-
 dotnet new -i "OrchardCore.Templates.Theme"  
-
-REM Alternatively from an empty folder not containing any nuget.config file :  
-dotnet new -i "OrchardCore.Templates.Theme" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 ```
 
+Alternatively from an empty folder not containing any nuget.config file you can use `dotnet new --nuget-source` available with .NET Core 2.1 only :  
 
+```CMD
+dotnet new -i "OrchardCore.Templates.Cms.Web" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
+
+dotnet new -i "OrchardCore.Templates.Module" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
+
+dotnet new -i "OrchardCore.Templates.Theme" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
+```
 
 **After initializing :**
 
