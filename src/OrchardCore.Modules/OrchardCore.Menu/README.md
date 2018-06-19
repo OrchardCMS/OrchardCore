@@ -1,6 +1,6 @@
 # Menu (OrchardCore.Menu)
 
-## Shapes 
+## Shapes
 
 ### `Menu`
 
@@ -12,15 +12,13 @@ The `Menu` shape is used to render a Menu.
 | `Model.Items` | The list of menu items shapes for the menu. These are shapes of type `MenuItem`. |
 | `Model.Differentiator` | If defined, contains the formatted name of the menu. For instance `MainMenu`. |
 
-#### Alternates
+#### Menu Alternates
 
 | Definition | Template | Filename|
 | ---------- | --------- | ------------ |
 | `Menu__[Differentiator]` | `Menu__MainMenu` | `Menu-MainMenu.cshtml` |
 
-#### Example
-
-##### Liquid
+#### Menu Example
 
 ```liquid
 <nav>
@@ -31,8 +29,6 @@ The `Menu` shape is used to render a Menu.
     </ul>
 </nav>
 ```
-
-##### Razor
 
 ```razor
 @{
@@ -60,7 +56,7 @@ The `MenuItem` shape is used to render a menu item.
 | `Model.Items` | The list of sub menu items shapes. These are shapes of type `MenuItem`. |
 | `Model.Differentiator` | If defined, contains the formatted name of the menu. For instance `MainMenu`. |
 
-#### Alternates
+#### MenuItem Alternates
 
 | Definition | Template | Filename|
 | ---------- | --------- | ------------ |
@@ -72,9 +68,7 @@ The `MenuItem` shape is used to render a menu item.
 | `MenuItem__[MenuName]__[ContentType]` | `MenuItem__MainMenu__HtmlMenuItem` | `MenuItem-MainMenu-HtmlMenuItem.cshtml` |
 | `MenuItem__[MenuName]__[ContentType]__level__[level]` | `MenuItem__MainMenu__HtmlMenuItem__level__2` | `MenuItem-MainMenu-HtmlMenuItem-level-2.cshtml` |
 
-#### Example
-
-##### Liquid
+#### MenuItem Example
 
 ```liquid
 <li class="nav-item{% if Model.HasItems %} dropdown{% endif %}">
@@ -90,8 +84,6 @@ The `MenuItem` shape is used to render a menu item.
     {% endif %}
 </li>
 ```
-
-##### Razor
 
 ```razor
 @{
@@ -140,7 +132,7 @@ available on the `MenuItem` shape are still available.
 | `Model.Items` | The list of sub menu items shapes. These are shapes of type `MenuItem`. |
 | `Model.Differentiator` | If defined, contains the formatted name of the menu. For instance `MainMenu`. |
 
-#### Alternates
+#### MenuItemLink Alternates
 
 | Definition | Template | Filename|
 | ---------- | --------- | ------------ |
@@ -152,9 +144,7 @@ available on the `MenuItem` shape are still available.
 | `MenuItemLink__[MenuName]__[ContentType]` | `MenuItemLink__MainMenu__HtmlMenuItem` | `MenuItemLink-MainMenu-HtmlMenuItem.cshtml` |
 | `MenuItemLink__[MenuName]__[ContentType]__level__[level]` | `MenuItemLink__MainMenu__HtmlMenuItem__level__2` | `MenuItemLink-MainMenu-HtmlMenuItem-level-2.cshtml` |
 
-#### Example
-
-##### Liquid
+#### MenuItemLink Example
 
 ```liquid
 {% assign link = Model.ContentItem.Content.LinkMenuItemPart %}
@@ -165,8 +155,6 @@ available on the `MenuItem` shape are still available.
     <a href="{{ link.Url | href }}" class="nav-link">{{ link.Name }}</a>
 {% endif %}
 ```
-
-##### Razor
 
 ```razor
 @using OrchardCore.ContentManagement
@@ -190,5 +178,5 @@ else
 
 ### nestedSortable jQuery plugin
 
-https://github.com/ilikenwf/nestedSortable  
+<https://github.com/ilikenwf/nestedSortable>  
 License: MIT

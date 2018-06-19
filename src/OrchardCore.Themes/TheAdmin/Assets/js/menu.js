@@ -61,3 +61,9 @@ function unSetCompactStatus() {
     isCompactExplicit = false;
     persistAdminPreferences();
 }
+
+$(function () {
+    function showSubmenu(el) { $(this).addClass('hovered'); }
+    function hideSubmenu(el) { $(this).removeClass('hovered'); }
+    $(".left-sidebar-compact #ta-left-sidebar ul.menu-admin li").hoverIntent(showSubmenu, hideSubmenu);
+});

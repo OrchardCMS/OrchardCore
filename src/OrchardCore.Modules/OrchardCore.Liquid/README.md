@@ -1,7 +1,7 @@
 # Liquid (OrchardCore.Liquid)
 
 This module provides a way to create templates securely from the admin site.
-For more information about the Liquid syntax, please refer to this site: https://shopify.github.io/liquid/
+For more information about the Liquid syntax, please refer to this site: <https://shopify.github.io/liquid/>
 
 ## General concepts
 
@@ -22,11 +22,13 @@ Here is a list of common filters that apply to content items.
 Returns the URL of the content item
 
 Input
+
 ```liquid
 {{ Model.ContentItem | display_url }}
 ```
 
 Output
+
 ```text
 /blog/my-blog-post
 ```
@@ -36,11 +38,13 @@ Output
 Returns the title of the content item
 
 Input
+
 ```liquid
 {{ Model.ContentItem | display_text }}
 ```
 
 Output
+
 ```text
 My Blog Post
 ```
@@ -50,11 +54,13 @@ My Blog Post
 Convert a text into a string that can be used in a URL.
 
 Input
+
 ```liquid
 {{ "This is some text" | slugify }}
 ```
 
 Output
+
 ```text
 this-is-some-text
 ```
@@ -64,12 +70,15 @@ this-is-some-text
 Returns the container content item of another content item.
 
 Input
+
 ```liquid
 {{ Model.ContentItem | container | display_text }}
 ```
+
 In this example we assume `ContentItem` represents a blog post.
 
 Output
+
 ```text
 Blog
 ```
@@ -79,15 +88,19 @@ Blog
 Converts a UTC date and time to the local date and time based on the site settings.
 
 Input
+
 ```liquid
 {{ "now" | local | date: "%c" }}
 ```
+
 or
+
 ```liquid
 {{ Model.ContentItem.CreatedUtc | local | date: "%c" }}
 ```
 
 Output
+
 ```text
 Wednesday, 02 August 2017 11:54:48
 ```
@@ -97,11 +110,13 @@ Wednesday, 02 August 2017 11:54:48
 Localizes a string using the current culture.
 
 Input
+
 ```liquid
 {{ "Hello!" | t }}
 ```
 
 Output
+
 ```text
 Bonjour!
 ```
@@ -111,11 +126,13 @@ Bonjour!
 Converts a string into a friendly HTML class.
 
 Input
+
 ```liquid
 {{ "LandingPage" | html_class }}
 ```
 
 Output
+
 ```text
 landing-page
 ```
@@ -125,11 +142,13 @@ landing-page
 Converts a Markdown string to HTML.
 
 Input
+
 ```liquid
 {{ "### Services" | markdownify }}
 ```
 
 Output
+
 ```
 <h3>Services</h3>
 ```
@@ -244,6 +263,7 @@ These filters let you create and filter shapes.
 Returns a shape with the specified name as input.
 
 Input
+
 ```liquid
 {% assign date_time = "DateTime" | shape_new %}
 ```
@@ -253,6 +273,7 @@ Input
 Renders a shape.
 
 Input
+
 ```liquid
 {{ Model.Content | shape_render }}
 
@@ -264,12 +285,14 @@ Converts a shape to its string representation. Contrary to `shape_render` the re
 be encoded if rendered in the output.
 
 Input
+
 ```liquid
 {{ "DateTime" | shape_new | shape_stringify }}
 
 ```
 
 Output
+
 ```text
 Monday, September 11, 2017 3:29:26 PM
 ```
@@ -281,6 +304,7 @@ Monday, September 11, 2017 3:29:26 PM
 Sets the layout of a view.
 
 Input
+
 ```liquid
 {% layout "CustomLayout" %}
 ```
@@ -292,6 +316,7 @@ Internally an alternate is added to the current theme `Layout` shape.
 In a layout, renders the body of the current view.
 
 Input
+
 ```liquid
 {% render_body %}
 ```
@@ -301,6 +326,7 @@ Input
 In a layout, renders the section with the specified name.
 
 Input
+
 ```liquid
 {% render_section "Header", required: false %}
 ```
@@ -325,6 +351,7 @@ The default parameter is a text that is appended to the current value of the tit
 Removes any alternates from a shape.
 
 Input
+
 ```liquid
 {% shape_clear_alternates my_shape %}
 
@@ -335,6 +362,7 @@ Input
 Adds alternates to a shape.
 
 Input
+
 ```liquid
 {% shape_add_alternates my_shape "alternate1", "alternate2" %}
 {% shape_add_alternates my_shape "alternate1 alternate2" %}
@@ -345,6 +373,7 @@ Input
 Removes any wrappers from a shape.
 
 Input
+
 ```liquid
 {% shape_clear_wrappers my_shape %}
 
@@ -355,6 +384,7 @@ Input
 Adds wrappers to a shape.
 
 Input
+
 ```liquid
 {% shape_add_wrappers my_shape "wrapper1", "wrapper2" %}
 {% shape_add_wrappers my_shape "wrapper1 wrapper2" %}
@@ -365,6 +395,7 @@ Input
 Removes any classes from a shape.
 
 Input
+
 ```liquid
 {% shape_clear_classes my_shape %}
 ```
@@ -374,6 +405,7 @@ Input
 Adds classes to a shape.
 
 Input
+
 ```liquid
 {% shape_add_classes my_shape "class1 class2" %}
 {% shape_add_classes my_shape "class1", "class2" %}
@@ -384,6 +416,7 @@ Input
 Removes any attributes from a shape.
 
 Input
+
 ```liquid
 {% shape_clear_attributes my_shape %}
 ```
@@ -393,6 +426,7 @@ Input
 Adds attributes to a shape.
 
 Input
+
 ```liquid
 {% shape_add_attributes my_shape attr_name1: "value1", attr_name2: "value2" ... %}
 ```
@@ -402,6 +436,7 @@ Input
 Sets the type of a shape.
 
 Input
+
 ```liquid
 {% shape_type my_shape "MyType" %}
 ```
@@ -413,6 +448,7 @@ Whenever the type is changed, it is recommended to clear the shape alternates be
 Sets the display type of a shape.
 
 Input
+
 ```liquid
 {% shape_display_type my_shape "Summary" %}
 ```
@@ -424,6 +460,7 @@ Whenever the display type is changed, it is recommended to clear the shape alter
 Sets the position of a shape.
 
 Input
+
 ```liquid
 {% shape_position my_shape "Content:before" %}
 
@@ -434,6 +471,7 @@ Input
 Sets the tab of a shape.
 
 Input
+
 ```liquid
 {% shape_tab my_shape "properties" %}
 
@@ -444,6 +482,7 @@ Input
 Removes a shape by its name in a Zone.
 
 Input
+
 ```liquid
 {% shape_remove_item Model.Content "HtmlBodyPart" %}
 {{ Model.Content | shape_render }}
@@ -457,16 +496,18 @@ rendered for the Body Part element. This call will remove the specific shape nam
 Replaces the properties of a Pager shape.
 
 Input
+
 ```liquid
 {% shape_pager Model.Pager next_class: 'next', next_text: '>>' %}
 ```
 
 ### shape_build_display
 
-Creates the display shape for a content item. It can be used in conjunction with `shape_render` 
+Creates the display shape for a content item. It can be used in conjunction with `shape_render`
 to render a content item.
 
 Input
+
 ```liquid
 {{ mycontentitem | shape_build_display: "Detail" | shape_render }}
 ```
@@ -476,9 +517,11 @@ Input
 Renders a specific named tag with its properties
 
 Input
+
 ```liquid
 {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_expires_after: "00:05:00", cache_tag: "alias:main-menu" %}
 ```
+
 When using the shape tag a specific wrapper and / or alternate can be specified.
 
 ```liquid
@@ -490,6 +533,7 @@ When using the shape tag a specific wrapper and / or alternate can be specified.
 Renders some HTML content in the specified zone.
 
 Input
+
 ```liquid
 {% zone "Header" %}
     <!-- some content goes here -->
@@ -531,6 +575,7 @@ Invokes the `a` content link tag helper from the **OrchardCore.Contents** packag
 Renders a `<hidden>` element (antiforgery token) that will be validated when the containing `<form>` is submitted.
 
 Example
+
 ```liquid
 {% antiforgerytoken %}
 ```
@@ -539,6 +584,6 @@ Example
 
 ### Fluid
 
-https://github.com/sebastienros/fluid
-Copyright (c) 2017 Sebastien Ros
+<https://github.com/sebastienros/fluid>  
+Copyright (c) 2017 Sebastien Ros  
 MIT License

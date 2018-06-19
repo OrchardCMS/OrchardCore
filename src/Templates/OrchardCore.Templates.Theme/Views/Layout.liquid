@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
+    <title>{% page_title Site.SiteName, position: "before", separator: " - " %}</title>
+    <link type="image/x-icon" rel="shortcut icon" href="/OrchardCore.Templates.Theme/favicon.ico" />
+    {% style src:"https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" %}
+    {% style src:"/OrchardCore.Templates.Theme/Styles/sticky-footer-navbar.css" %}
+    <!-- Custom Fonts -->
+    {% style name:"font-awesome", use_cdn:"true" %}
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    {% resources type: "Meta" %}
+    {% resources type: "HeadLink" %}
+    {% resources type: "Stylesheet" %}
+    {% resources type: "HeadScript" %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href={{ "~/" | href }}>{{ Site.SiteName }}</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <div class="navbar-nav-scroll">
+                    {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_duration: "00:05:00", cache_tag: "alias:main-menu" %}
+                </div>
+                {% render_section "Menu", required: false %}
+            </div>
+        </div>
+    </nav>
+    {% render_section "Header", required: false %}
+    <div class="container">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-lg-8 col-md-7 col-sm-6">
+                    {% render_body %}
+                </div>
+                <div class="col-lg-4 col-md-5 col-sm-6">
+                    {% render_section "Sidebar", required: false %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                {% render_section "Footer", required: false %}
+            </div>
+        </div>
+    </footer>
+    {% script name:"jquery", use_cdn:"true", at:"Foot" %}
+    {% script src:"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js", at:"Foot" %}
+    {% script src:"https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js", at:"Foot" %}
+    {% resources type: "FootScript" %}
+</body>
+</html>

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -12,7 +14,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Layers.Drivers
+namespace OrchardCore.CustomSettings.Drivers
 {
     /// <summary>
     /// This driver generates an editor for site settings. The GroupId represents the type of 
@@ -23,17 +25,22 @@ namespace OrchardCore.Layers.Drivers
         private readonly CustomSettingsService _customSettingsService;
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
-
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
         private readonly Lazy<IList<ContentTypeDefinition>> _contentTypeDefinitions;
 
         public CustomSettingsDisplayDriver(
             CustomSettingsService customSettingsService,
             IContentManager contentManager,
-            IContentItemDisplayManager contentItemDisplayManager)
+            IContentItemDisplayManager contentItemDisplayManager,
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
             _customSettingsService = customSettingsService;
             _contentManager = contentManager;
             _contentItemDisplayManager = contentItemDisplayManager;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
             _contentTypeDefinitions = new Lazy<IList<ContentTypeDefinition>>(() => _customSettingsService.GetSettingsTypes());
         }
 
@@ -47,6 +54,13 @@ namespace OrchardCore.Layers.Drivers
             {
                 return null;
             }
+
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.CreatePermissionForType(contentTypeDefinition)))
+            {
+                return null;
+            }            
 
             ContentItem contentItem;
             bool isNew;
@@ -78,6 +92,13 @@ namespace OrchardCore.Layers.Drivers
             var contentTypeDefinition = _contentTypeDefinitions.Value.FirstOrDefault(x => x.Name == context.GroupId);
 
             if (contentTypeDefinition == null)
+            {
+                return null;
+            }
+
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.CreatePermissionForType(contentTypeDefinition)))
             {
                 return null;
             }

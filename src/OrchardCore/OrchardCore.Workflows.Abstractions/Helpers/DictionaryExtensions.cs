@@ -9,7 +9,7 @@ namespace OrchardCore.Workflows.Helpers
         /// </summary>
         public static TValue GetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
-            return dictionary.ContainsKey(key) ? dictionary[key] : default(TValue);
+            return dictionary.ContainsKey(key) ? dictionary[key] : default;
         }
 
         /// <summary>

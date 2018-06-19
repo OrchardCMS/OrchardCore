@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OpenIddict.Core;
+using OpenIddict.Abstractions;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -17,9 +17,8 @@ using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Descriptors;
-using OrchardCore.OpenId.Abstractions.Models;
+using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Services;
-using OrchardCore.OpenId.Services.Managers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Security.Services;
@@ -37,7 +36,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly ISiteService _siteService;
         private readonly IShapeFactory _shapeFactory;
         private readonly IRoleProvider _roleProvider;
-        private readonly OpenIdApplicationManager _applicationManager;
+        private readonly IOpenIdApplicationManager _applicationManager;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly UserManager<IUser> _userManager;
@@ -49,7 +48,7 @@ namespace OrchardCore.OpenId.Controllers
             IStringLocalizer<ApplicationController> stringLocalizer,
             IAuthorizationService authorizationService,
             IRoleProvider roleProvider,
-            OpenIdApplicationManager applicationManager,
+            IOpenIdApplicationManager applicationManager,
             UserManager<IUser> userManager,
             IOptions<IdentityOptions> identityOptions,
             IHtmlLocalizer<ApplicationController> htmlLocalizer,
@@ -290,7 +289,7 @@ namespace OrchardCore.OpenId.Controllers
                 ModelState.AddModelError(string.Empty, "At least one flow must be enabled.");
             }
 
-            IOpenIdApplication application = null;
+            object application = null;
 
             if (ModelState.IsValid)
             {
