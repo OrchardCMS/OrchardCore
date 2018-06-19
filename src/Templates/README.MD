@@ -5,7 +5,26 @@ https://github.com/dotnet/dotnet-template-samples
 
 ## Create a new website
 
-### From Visual Studio
+### From Command Shell (automated way)
+
+#### Initialize module template:
+
+```CMD
+dotnet new -i "OrchardCore.Templates.Cms.Web"  
+
+REM Alternatively from an empty folder not containing any nuget.config file :   
+dotnet new -i "OrchardCore.Templates.Cms.Web" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
+```
+
+#### Module commands:
+
+```CMD
+dotnet new ocweb  
+
+dotnet new ocweb -AddNLog true  
+```
+
+### From Visual Studio (manual way)
 
 Fire up Visual Studio, create a new solution file (.sln) by creating a new ASP.NET Core Web Application : 
 
@@ -50,28 +69,30 @@ namespace MyNewWebsite
 }
 ```
 
-### From Command Shell
+## Create a new module
+
+### From Command Shell (automated way)
 
 #### Initialize module template:
 
 ```CMD
-dotnet new -i "OrchardCore.Templates.Cms.Web"  
+dotnet new -i "OrchardCore.Templates.Module"  
 
 REM Alternatively from an empty folder not containing any nuget.config file :   
-dotnet new -i "OrchardCore.Templates.Cms.Web" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
+dotnet new -i "OrchardCore.Templates.Module" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 ```
 
 #### Module commands:
 
 ```CMD
-dotnet new ocweb  
+dotnet new ocmodule -n "ModuleName.OrchardCore"
 
-dotnet new ocweb -AddNLog true  
+dotnet new ocmodule -n "ModuleName.OrchardCore" -PartName "TestPart"
+
+dotnet new ocmodule -n "ModuleName.OrchardCore" -PartName "TestPart" -AddPart true
 ```
 
-## Create a new module
-
-### From Visual Studio
+### From Visual Studio (manual way)
 
 Fire up Visual Studio, open Orchard Core solution file (.sln), select OrchardCore.Modules folder, right click and select "add --> new project" and create a new .NET Standard Class Library:
 
@@ -113,46 +134,9 @@ https://github.com/OrchardCMS/OrchardCore/blob/dotnetNewTemplates/src/Templates/
 
 Last step is to add our new module to the OrchardCore.Cms.Web project as a reference for including it as part as our website modules. After that, you should be all set for starting building your custom module. You can refer to our template module for examples of what's basically needed normally. https://github.com/OrchardCMS/OrchardCore/blob/dotnetNewTemplates/src/Templates/OrchardCore.Templates.Module/
 
-### From Command Shell
-
-#### Initialize module template:
-
-```CMD
-dotnet new -i "OrchardCore.Templates.Module"  
-
-REM Alternatively from an empty folder not containing any nuget.config file :   
-dotnet new -i "OrchardCore.Templates.Module" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
-```
-
-#### Module commands:
-
-```CMD
-dotnet new ocmodule -n "ModuleName.OrchardCore"
-
-dotnet new ocmodule -n "ModuleName.OrchardCore" -PartName "TestPart"
-
-dotnet new ocmodule -n "ModuleName.OrchardCore" -PartName "TestPart" -AddPart true
-```
-
 ## Create a new theme
 
-### From Visual Studio
-
-Should be the same procedure as with modules but instead we need to reference OrchardCore.Theme.Targets and Manifest.cs file slightly differ : 
-
-```C#
-using OrchardCore.DisplayManagement.Manifest;
-
-[assembly: Theme(
-    Name = "TemplateTheme.OrchardCore",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "0.0.1",
-    Description = "The TemplateTheme."
-)]
-```
-
-### From Command Shell
+### From Command Shell (automated way)
 
 #### Initialize theme template:
 
@@ -167,7 +151,21 @@ dotnet new -i "OrchardCore.Templates.Theme" --nuget-source https://www.myget.org
 
 `dotnet new octheme -n "ThemeName.OrchardCore"`
 
+### From Visual Studio (manual way)
 
+Should be the same procedure as with modules but instead we need to reference OrchardCore.Theme.Targets and Manifest.cs file slightly differ : 
+
+```C#
+using OrchardCore.DisplayManagement.Manifest;
+
+[assembly: Theme(
+    Name = "TemplateTheme.OrchardCore",
+    Author = "The Orchard Team",
+    Website = "https://orchardproject.net",
+    Version = "0.0.1",
+    Description = "The TemplateTheme."
+)]
+```
 
 ## All Commands
 
