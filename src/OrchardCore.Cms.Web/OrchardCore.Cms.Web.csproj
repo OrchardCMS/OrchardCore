@@ -5,8 +5,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <TieredCompilation>true</TieredCompilation>
-    <PreserveCompilationContext>true</PreserveCompilationContext>
-    <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>
   </PropertyGroup>
 
   <ItemGroup>

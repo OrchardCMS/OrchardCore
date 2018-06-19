@@ -5,12 +5,10 @@
     Application that references it will embedd in its assembly a list of the referenced modules.
   -->
 
-  <Target Name="PublishRazorPagesAndLinkedRazorFiles" BeforeTargets="BeforePublish">
+  <Target Name="PublishRazorPagesFiles" BeforeTargets="BeforePublish">
     <ItemGroup>
       <RazorPagesFiles Include="Pages\**\*.cshtml" />
-      <LinkedRazorFiles Include="@(Content)" Condition="'%(Content.Link)' != '' and '%(Extension)' == '.cshtml'" />
       <ResolvedFileToPublish Include="@(RazorPagesFiles)" RelativePath="%(RazorPagesFiles.Identity)" />
-      <ResolvedFileToPublish Include="@(LinkedRazorFiles)" RelativePath="%(LinkedRazorFiles.Link)" />
     </ItemGroup>
   </Target>
 
