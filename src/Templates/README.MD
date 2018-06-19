@@ -53,7 +53,8 @@ namespace MyNewWebsite
 ### From Command Shell
 
 `dotnet new -i "OrchardCore.Templates.Cms.Web"`  
-or  
+
+Alternatively from an empty folder not containing any nuget.config file :   
 `dotnet new -i "OrchardCore.Templates.Cms.Web" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
 
 `dotnet new ocweb`
@@ -109,6 +110,7 @@ Last step is to add our new module to the OrchardCore.Cms.Web project as a refer
 #### Initialize module template:
 
 `dotnet new -i "OrchardCore.Templates.Module"`  
+
 Alternatively from an empty folder not containing any nuget.config file :   
 `dotnet new -i "OrchardCore.Templates.Module" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
 
@@ -143,6 +145,7 @@ using OrchardCore.DisplayManagement.Manifest;
 #### Initialize theme template:
 
 `dotnet new -i "OrchardCore.Templates.Theme"`  
+
 Alternatively from an empty folder not containing any nuget.config file :  
 `dotnet new -i "OrchardCore.Templates.Theme" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
 
@@ -157,14 +160,21 @@ Alternatively from an empty folder not containing any nuget.config file :
 **Initialize:**
 
 `dotnet new -i "OrchardCore.Templates.Cms.Web"`  
+
 Alternatively from an empty folder not containing any nuget.config file :  
 `dotnet new -i "OrchardCore.Templates.Cms.Web" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
 
+---
+
 `dotnet new -i "OrchardCore.Templates.Module"`  
+
 Alternatively from an empty folder not containing any nuget.config file :  
 `dotnet new -i "OrchardCore.Templates.Module" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
 
+---
+
 `dotnet new -i "OrchardCore.Templates.Theme"`  
+
 Alternatively from an empty folder not containing any nuget.config file :  
 `dotnet new -i "OrchardCore.Templates.Theme" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
 
