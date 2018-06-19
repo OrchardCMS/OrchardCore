@@ -78,7 +78,7 @@ namespace OrchardCore.OpenId.Drivers
 
                 foreach (var tenant in tenants)
                 {
-                    using (var scope = _shellHost.EnterServiceScope(tenant))
+                    using (var scope = _shellHost.EnterServiceScope(tenant, throwIfDisabled: false))
                     {
                         if (scope == null)
                         {

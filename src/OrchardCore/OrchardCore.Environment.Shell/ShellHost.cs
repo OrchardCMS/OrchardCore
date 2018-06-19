@@ -94,12 +94,12 @@ namespace OrchardCore.Environment.Shell
             return shell;
         }
 
-        public IServiceScope EnterServiceScope(ShellSettings settings)
+        public IServiceScope EnterServiceScope(ShellSettings settings, bool throwIfDisabled = true)
         {
-            return EnterServiceScope(settings, out var context);
+            return EnterServiceScope(settings, out var context, throwIfDisabled);
         }
 
-        public IServiceScope EnterServiceScope(ShellSettings settings, out ShellContext context)
+        public IServiceScope EnterServiceScope(ShellSettings settings, out ShellContext context, bool throwIfDisabled = true)
         {
             // Here, the normal path is to get an already created context and a null scope.
             // If the context is recreated, we also get a tracked scope created atomically.
@@ -124,6 +124,11 @@ namespace OrchardCore.Environment.Shell
 
             // The scope is null only for a recreated disabled shell which has a null service provider.
             // But it is not null for a disabled shell which is still in use and then not yet released.
+            if (scope == null && throwIfDisabled)
+            {
+                throw new ApplicationException($"Can't use EnterServiceScope on the tenant {settings.Name} because it is disabled.");
+            }
+
             return scope;
         }
 

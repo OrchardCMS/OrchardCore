@@ -69,7 +69,7 @@ namespace OrchardCore.BackgroundTasks
             {
                 var taskName = task.GetType().FullName;
 
-                using (var scope = _orchardHost.EnterServiceScope(_shellSettings))
+                using (var scope = _orchardHost.EnterServiceScope(_shellSettings, throwIfDisabled: false))
                 {
                     if (scope == null)
                     {

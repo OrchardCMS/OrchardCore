@@ -78,12 +78,6 @@ namespace OrchardCore.OpenId.Configuration
             // this using block won't be disposed until the service scope itself is released.
             using (var scope = CreateTenantScope(settings.Tenant))
             {
-                if (scope == null)
-                {
-                    _logger.LogError("The specified tenant '{TenantName}' is disabled.", settings.Tenant);
-                    throw new ApplicationException($"A tenant could not be started, it depends on the tenant {settings.Tenant} that is disabled.");
-                }
-
                 var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
                 if (service == null)
                 {
@@ -148,12 +142,6 @@ namespace OrchardCore.OpenId.Configuration
             // this using block won't be disposed until the service scope itself is released.
             using (var scope = CreateTenantScope(settings.Tenant))
             {
-                if (scope == null)
-                {
-                    _logger.LogError("The specified tenant '{TenantName}' is disabled.", settings.Tenant);
-                    throw new ApplicationException($"A tenant could not be started, it depends on the tenant {settings.Tenant} that is disabled.");
-                }
-
                 var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
                 if (service == null)
                 {
@@ -223,12 +211,6 @@ namespace OrchardCore.OpenId.Configuration
                 var shellSettings = _shellSettingsManager.GetSettings(settings.Tenant);
                 using (var scope = _shellHost.EnterServiceScope(shellSettings, out var context))
                 {
-                    if (scope == null)
-                    {
-                        _logger.LogError("The specified tenant '{TenantName}' is disabled.", settings.Tenant);
-                        throw new ApplicationException($"A tenant could not be started, it depends on the tenant {settings.Tenant} that is disabled.");
-                    }
-
                     // If the other tenant is released, ensure the current tenant is also restarted as it
                     // relies on a data protection provider whose lifetime is managed by the other tenant.
                     // To make sure the other tenant is not disposed before all the pending requests are
