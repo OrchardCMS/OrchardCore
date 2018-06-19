@@ -12,7 +12,7 @@ Fire up Visual Studio, create a new solution file (.sln) by creating a new ASP.N
 
 Now that we created a new Web Application we need to add proper dependencies so that this new Web Application be targetted as an Orchard Core application.
 
-[See adding Orchard Nuget Feed](#adding-orchard-core-nuget-feed)
+[See adding Orchard Core Nuget Feed](#adding-orchard-core-nuget-feed)
 
 ![image](/src/docs/assets/images/orchard-screencast-2.gif)
 
@@ -69,7 +69,7 @@ Fire up Visual Studio, open Orchard Core solution file (.sln), select OrchardCor
 
 For marking this new Class Library as an Orchard Module we will now need to reference OrchardCore.Module.Targets Nuget package.
 
-[See adding Orchard Nuget Feed](#adding-orchard-core-nuget-feed)
+[See adding Orchard Core Nuget Feed](#adding-orchard-core-nuget-feed)
 
 Each of these "*.Targets" Nuget packages are used to mark a Class Library as a specific Orchard Core functionality. OrchardCore.Module.Targets is the one we are interested in for now. We will mark our new Class Library as a module by adding OrchardCore.Module.Targets as a dependency. For doing so you will need to right click on MyModule.OrchardCore project and select "Manage Nuget Packages" option. To find the packages in Nuget Package Manager you will need to check "include prerelease" and make sure you have Orchard Core feed that we added earlier selected. Once you have found it click on the Install button on the right panel next to Version : Latest prerelease x.x.x.x
 
