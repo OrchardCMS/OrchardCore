@@ -9,7 +9,6 @@ using OrchardCore.Menu.Handlers;
 using OrchardCore.Menu.Models;
 using OrchardCore.Menu.TagHelpers;
 using OrchardCore.Modules;
-using OrchardCore.Mvc;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Menu

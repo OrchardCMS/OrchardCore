@@ -37,7 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static OrchardCoreBuilder AddTheming(this OrchardCoreBuilder builder)
         {
             builder.AddThemingHost()
-                .ConfigureServices((services, serviceProvider) =>
+                .ConfigureServices(services =>
                 {
                     services.Configure<MvcOptions>((options) =>
                     {

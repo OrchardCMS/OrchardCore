@@ -2,18 +2,22 @@ using AspNet.Security.OAuth.Validation;
 using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using OpenIddict;
+using OpenIddict.Abstractions;
+using OpenIddict.Mvc;
+using OpenIddict.Server;
+using OpenIddict.Validation;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Modules;
-using OrchardCore.OpenId.Abstractions.Models;
-using OrchardCore.OpenId.Abstractions.Stores;
+using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Drivers;
 using OrchardCore.OpenId.Handlers;
@@ -23,6 +27,7 @@ using OrchardCore.OpenId.Services.Managers;
 using OrchardCore.OpenId.Tasks;
 using OrchardCore.OpenId.YesSql.Indexes;
 using OrchardCore.OpenId.YesSql.Migrations;
+using OrchardCore.OpenId.YesSql.Models;
 using OrchardCore.OpenId.YesSql.Stores;
 using OrchardCore.Recipes;
 using OrchardCore.Security;
@@ -41,30 +46,57 @@ namespace OrchardCore.OpenId
         }
     }
 
+    [Feature(OpenIdConstants.Features.Client)]
+    public class ClientStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<IOpenIdClientService, OpenIdClientService>();
+            services.AddScoped<IDisplayDriver<ISite>, OpenIdClientSettingsDisplayDriver>();
+
+            // Register the options initializers required by the OpenID Connect client handler.
+            services.TryAddEnumerable(new[]
+            {
+                // Orchard-specific initializers:
+                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, OpenIdClientConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<OpenIdConnectOptions>, OpenIdClientConfiguration>(),
+
+                // Built-in initializers:
+                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>()
+            });
+        }
+    }
+
     [Feature(OpenIdConstants.Features.Server)]
     public class ServerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IOpenIdServerService, OpenIdServerService>();
+            services.TryAddSingleton<IOpenIdServerService, OpenIdServerService>();
             services.AddScoped<IDisplayDriver<ISite>, OpenIdServerSettingsDisplayDriver>();
 
-            services.TryAddScoped<OpenIddictProvider<IOpenIdApplication, IOpenIdAuthorization, IOpenIdScope, IOpenIdToken>>();
+            services.TryAddScoped<IOpenIddictServerEventService, OpenIddictServerEventService>();
+            services.TryAddScoped<OpenIddictServerHandler>();
+            services.TryAddScoped<OpenIddictServerProvider>();
 
-            // Register the options initializers required by OpenIddict,
-            // the JWT handler and the aspnet-contrib validation handler.
+            services.Configure<MvcOptions>(options => options.ModelBinderProviders.Insert(0, new OpenIddictMvcBinderProvider()));
+
+            // Register the options initializers required by OpenIddict and the JWT handler.
             services.TryAddEnumerable(new[]
             {
                 // Orchard-specific initializers:
                 ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, OpenIdServerConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<OpenIddictOptions>, OpenIdServerConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<JwtBearerOptions>, OpenIdServerConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<OpenIddictMvcOptions>, OpenIdServerConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<OpenIddictServerOptions>, OpenIdServerConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<OpenIddictValidationOptions>, OpenIdServerConfiguration>(),
 
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigureOptions>(),
-                ServiceDescriptor.Transient<IPostConfigureOptions<OAuthValidationOptions>, OAuthValidationInitializer>(),
-                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictOptions>, OpenIddictInitializer>(),
-                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictOptions>, OpenIdConnectServerInitializer>()
+                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictServerOptions>, OpenIddictServerInitializer>(),
+                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictServerOptions>, OpenIdConnectServerInitializer>(),
+                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictValidationOptions>, OpenIddictValidationInitializer>(),
+                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictValidationOptions>, OAuthValidationInitializer>()
             });
 
             // Disabling same-site is required for OpenID's module prompt=none support to work correctly.
@@ -80,11 +112,29 @@ namespace OrchardCore.OpenId
             // Note: only the core OpenIddict services (e.g managers and custom stores) are registered here.
             // The OpenIddict/JWT/validation handlers are lazily registered as active authentication handlers
             // depending on the OpenID settings by OpenIdServerConfiguration and OpenIdValidationConfiguration.
-            services.AddOpenIddict<IOpenIdApplication, IOpenIdAuthorization, IOpenIdScope, IOpenIdToken>()
-                .AddApplicationManager<OpenIdApplicationManager>()
-                .AddAuthorizationManager<OpenIdAuthorizationManager>()
-                .AddScopeManager<OpenIdScopeManager>()
-                .AddTokenManager<OpenIdTokenManager>();
+            services.AddOpenIddict()
+                .AddCore(options =>
+                {
+                    options.ReplaceApplicationManager(typeof(OpenIdApplicationManager<>))
+                           .ReplaceAuthorizationManager(typeof(OpenIdAuthorizationManager<>))
+                           .ReplaceScopeManager(typeof(OpenIdScopeManager<>))
+                           .ReplaceTokenManager(typeof(OpenIdTokenManager<>));
+
+                    options.AddApplicationStore(typeof(OpenIdApplicationStore<>))
+                           .AddAuthorizationStore(typeof(OpenIdAuthorizationStore<>))
+                           .AddScopeStore(typeof(OpenIdScopeStore<>))
+                           .AddTokenStore(typeof(OpenIdTokenStore<>));
+
+                    options.SetDefaultApplicationEntity<OpenIdApplication>()
+                           .SetDefaultAuthorizationEntity<OpenIdAuthorization>()
+                           .SetDefaultScopeEntity<OpenIdScope>()
+                           .SetDefaultTokenEntity<OpenIdToken>();
+                });
+
+            services.TryAddScoped(provider => (IOpenIdApplicationManager) provider.GetRequiredService<IOpenIddictApplicationManager>());
+            services.TryAddScoped(provider => (IOpenIdAuthorizationManager) provider.GetRequiredService<IOpenIddictAuthorizationManager>());
+            services.TryAddScoped(provider => (IOpenIdScopeManager) provider.GetRequiredService<IOpenIddictScopeManager>());
+            services.TryAddScoped(provider => (IOpenIdTokenManager) provider.GetRequiredService<IOpenIddictTokenManager>());
 
             services.AddSingleton<IIndexProvider, OpenIdApplicationIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdAuthorizationIndexProvider>();
@@ -92,19 +142,7 @@ namespace OrchardCore.OpenId
             services.AddSingleton<IIndexProvider, OpenIdTokenIndexProvider>();
             services.AddSingleton<IBackgroundTask, OpenIdBackgroundTask>();
 
-            // If no store was explicitly registered at the host level, add the default YesSql-based stores.
-            // They can be later replaced or overriden by a module like the Entity Framework Core module.
-            services.TryAddScoped<IOpenIdApplicationStore, OpenIdApplicationStore>();
-            services.TryAddScoped<IOpenIdAuthorizationStore, OpenIdAuthorizationStore>();
-            services.TryAddScoped<IOpenIdScopeStore, OpenIdScopeStore>();
-            services.TryAddScoped<IOpenIdTokenStore, OpenIdTokenStore>();
-
             services.AddScoped<IRoleRemovedEventHandler, OpenIdApplicationRoleRemovedEventHandler>();
-
-            services.TryAddScoped<OpenIdApplicationManager>();
-            services.TryAddScoped<OpenIdAuthorizationManager>();
-            services.TryAddScoped<OpenIdScopeManager>();
-            services.TryAddScoped<OpenIdTokenManager>();
 
             services.AddScoped<IDataMigration, OpenIdMigrations>();
 
@@ -118,23 +156,25 @@ namespace OrchardCore.OpenId
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IOpenIdValidationService, OpenIdValidationService>();
+            services.TryAddSingleton<IOpenIdValidationService, OpenIdValidationService>();
             services.AddScoped<IDisplayDriver<ISite>, OpenIdValidationSettingsDisplayDriver>();
 
-            // Register the options initializers required by OpenIddict,
-            // the JWT handler and the aspnet-contrib validation handler.
+            services.TryAddScoped<IOpenIddictValidationEventService, OpenIddictValidationEventService>();
+            services.TryAddScoped<OpenIddictValidationHandler>();
+            services.TryAddScoped<OpenIddictValidationProvider>();
+
+            // Register the options initializers required by OpenIddict and the JWT handler.
             services.TryAddEnumerable(new[]
             {
                 // Orchard-specific initializers:
                 ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, OpenIdValidationConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<JwtBearerOptions>, OpenIdValidationConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<OAuthValidationOptions>, OpenIdValidationConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<OpenIddictValidationOptions>, OpenIdValidationConfiguration>(),
 
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigureOptions>(),
-                ServiceDescriptor.Transient<IPostConfigureOptions<OAuthValidationOptions>, OAuthValidationInitializer>(),
-                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictOptions>, OpenIddictInitializer>(),
-                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictOptions>, OpenIdConnectServerInitializer>()
+                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictValidationOptions>, OpenIddictValidationInitializer>(),
+                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictValidationOptions>, OAuthValidationInitializer>()
             });
         }
     }

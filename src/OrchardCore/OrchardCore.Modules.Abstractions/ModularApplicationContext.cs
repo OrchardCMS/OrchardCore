@@ -129,6 +129,7 @@ namespace OrchardCore.Modules
                     ModuleInfo.Description = "Provides core features defined at the application level";
                     ModuleInfo.Priority = int.MinValue.ToString();
                     ModuleInfo.Category = "Application";
+                    ModuleInfo.DefaultTenantOnly = true;
 
                     if (features.Any())
                     {

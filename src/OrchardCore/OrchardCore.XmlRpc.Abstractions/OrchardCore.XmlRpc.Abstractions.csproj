@@ -8,12 +8,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" />
-
-    <!-- Prevent package version downgrade errors, https://github.com/OrchardCMS/OrchardCore/issues/1535  -->
-    <PackageReference Include="Microsoft.Extensions.DependencyModel" />
-    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Handles" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

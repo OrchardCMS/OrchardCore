@@ -1,5 +1,7 @@
 $(document).on('mediaApp:ready', function () {
     $('#fileupload').fileupload({
+        dropZone: $('#mediaApp'),
+        limitConcurrentUploads: 20,
         dataType: 'json',
         url: $('#uploadFiles').val(),
         formData: function () {
@@ -12,12 +14,30 @@ $(document).on('mediaApp:ready', function () {
         },
         done: function (e, data) {
             $.each(data.result.files, function (index, file) {
-                mediaApp.mediaItems.push(file)
+                if (!file.error) {
+                    mediaApp.mediaItems.push(file)
+                }
             });
-            $('#progress .progress-bar').css(
-                'width',
-                0 + '%'
-            );
         }
     });
+});
+
+
+$(document).bind('dragover', function (e) {
+    var dt = e.originalEvent.dataTransfer;
+    if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
+        var dropZone = $('#customdropzone'),
+            timeout = window.dropZoneTimeout;
+        if (timeout) {
+            clearTimeout(timeout);
+        } else {
+            dropZone.addClass('in');
+        }
+        var hoveredDropZone = $(e.target).closest(dropZone);
+        dropZone.toggleClass('hover', hoveredDropZone.length);
+        window.dropZoneTimeout = setTimeout(function () {
+            window.dropZoneTimeout = null;
+            dropZone.removeClass('in hover');
+        }, 100);
+    }    
 });

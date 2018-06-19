@@ -88,7 +88,7 @@ namespace OrchardCore.Workflows.Models
         {
             return Activities[activityId];
         }
-        
+
         public void Fault(Exception exception, ActivityContext activityContext)
         {
             Workflow.Status = WorkflowStatus.Faulted;
@@ -131,7 +131,7 @@ namespace OrchardCore.Workflows.Models
                         yield return parentActivityId;
                     }
                 }
-                
+
             }
         }
     }

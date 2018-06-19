@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,9 @@ namespace OrchardCore.Workflows.Http.Controllers
         private readonly IWorkflowManager _workflowManager;
         private readonly IWorkflowTypeStore _workflowTypeStore;
         private readonly IWorkflowStore _workflowStore;
+        private readonly IActivityLibrary _activityLibrary;
         private readonly ISecurityTokenService _securityTokenService;
+        private readonly IAntiforgery _antiforgery;
         private readonly ILogger<HttpWorkflowController> _logger;
 
         public HttpWorkflowController(
@@ -26,7 +29,9 @@ namespace OrchardCore.Workflows.Http.Controllers
             IWorkflowManager workflowManager,
             IWorkflowTypeStore workflowTypeStore,
             IWorkflowStore workflowStore,
+            IActivityLibrary activityLibrary,
             ISecurityTokenService securityTokenService,
+            IAntiforgery antiforgery,
             ILogger<HttpWorkflowController> logger
         )
         {
@@ -34,7 +39,9 @@ namespace OrchardCore.Workflows.Http.Controllers
             _workflowManager = workflowManager;
             _workflowTypeStore = workflowTypeStore;
             _workflowStore = workflowStore;
+            _activityLibrary = activityLibrary;
             _securityTokenService = securityTokenService;
+            _antiforgery = antiforgery;
             _logger = logger;
         }
 
@@ -72,31 +79,63 @@ namespace OrchardCore.Workflows.Http.Controllers
                 return NotFound();
             }
 
+            // Get the workflow type.
             var workflowType = await _workflowTypeStore.GetAsync(payload.WorkflowId);
 
             if (workflowType == null)
             {
+                _logger.LogWarning("The provided workflow type with ID '{WorkflowTypeId}' could not be found.", payload.WorkflowId);
                 return NotFound();
             }
 
+            // Get the activity record using the activity ID provided by the token.
             var startActivity = workflowType.Activities.FirstOrDefault(x => x.ActivityId == payload.ActivityId);
 
+            if (startActivity == null)
+            {
+                _logger.LogWarning("The provided activity with ID '{ActivityId}' could not be found.", payload.ActivityId);
+                return NotFound();
+            }
+
+            // Instantiate and bind an actual HttpRequestEvent object to check its settings.
+            var httpRequestActivity = _activityLibrary.InstantiateActivity<HttpRequestEvent>(startActivity);
+
+            if (httpRequestActivity == null)
+            {
+                _logger.LogWarning("Activity with name '{ActivityName}' could not be found.", startActivity.Name);
+                return NotFound();
+            }
+
+            // Check if the HttpRequestEvent is configured to perform antiforgery token validation. If so, perform the validation.
+            if (httpRequestActivity.ValidateAntiforgeryToken && (!await _antiforgery.IsRequestValidAsync(HttpContext)))
+            {
+                _logger.LogWarning("Antiforgery token validation failed.");
+                return BadRequest();
+            }
+
+            // If the activity is a start activity, start a new workflow.
             if (startActivity.IsStart)
             {
+                _logger.LogDebug("Invoking new workflow of type {WorkflowTypeId} with start activity {ActivityId}", workflowType.WorkflowTypeId, startActivity.ActivityId);
                 await _workflowManager.StartWorkflowAsync(workflowType, startActivity);
             }
             else
             {
-                var workflows = await _workflowStore.ListAsync(workflowType.WorkflowTypeId, new[] { startActivity.ActivityId });
+                // Otherwise, we need to resume a halted workflow.
+                var workflow = (await _workflowStore.ListAsync(workflowType.WorkflowTypeId, new[] { startActivity.ActivityId })).FirstOrDefault();
 
-                foreach (var workflow in workflows)
+                if (workflow == null)
                 {
-                    var blockingActivity = workflow.BlockingActivities.FirstOrDefault(x => x.ActivityId == startActivity.ActivityId);
+                    _logger.LogWarning("No workflow found that is blocked on activity {ActivityId}", startActivity.ActivityId);
+                    return NotFound();
+                }
 
-                    if (blockingActivity != null)
-                    {
-                        await _workflowManager.ResumeWorkflowAsync(workflow, blockingActivity);
-                    }
+                var blockingActivity = workflow.BlockingActivities.FirstOrDefault(x => x.ActivityId == startActivity.ActivityId);
+
+                if (blockingActivity != null)
+                {
+                    _logger.LogDebug("Resuming workflow with ID {WorkflowId} on activity {ActivityId}", workflow.WorkflowId, blockingActivity.ActivityId);
+                    await _workflowManager.ResumeWorkflowAsync(workflow, blockingActivity);
                 }
             }
 

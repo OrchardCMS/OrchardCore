@@ -17,7 +17,6 @@ namespace OrchardCore.Workflows.Activities
         public abstract string Name { get; }
         public abstract LocalizedString Category { get; }
         public virtual bool HasEditor => true;
-        public virtual bool CanStartWorkflow => false;
 
         public abstract IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
 
@@ -124,13 +123,13 @@ namespace OrchardCore.Workflows.Activities
         protected virtual T GetProperty<T>(Func<T> defaultValue = null, [CallerMemberName]string name = null)
         {
             var item = Properties[name];
-            return item != null ? item.ToObject<T>() : defaultValue != null ? defaultValue() : default(T);
+            return item != null ? item.ToObject<T>() : defaultValue != null ? defaultValue() : default;
         }
 
         protected virtual T GetProperty<T>(Type type, Func<T> defaultValue = null, [CallerMemberName]string name = null)
         {
             var item = Properties[name];
-            return item != null ? (T)item.ToObject(type) : defaultValue != null ? defaultValue() : default(T);
+            return item != null ? (T)item.ToObject(type) : defaultValue != null ? defaultValue() : default;
         }
 
         protected virtual void SetProperty(object value, [CallerMemberName]string name = null)
