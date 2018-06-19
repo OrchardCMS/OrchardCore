@@ -18,9 +18,10 @@ function initializeTemplatePreview(nameElement, editorElement) {
 
     editor = CodeMirror.fromTextArea(editorElement, {
         lineNumbers: true,
+        lineWrapping: true,
         styleActiveLine: true,
         matchBrackets: true,
-        mode: { name: "liquid" },
+        mode: { name: "liquid" }
     });
 
     editor.on('change', function (cm) {
