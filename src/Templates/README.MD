@@ -52,10 +52,12 @@ namespace MyNewWebsite
 
 ### From Command Shell
 
-`dotnet new -i "OrchardCore.Templates.Cms.Web"`  
+```CMD
+dotnet new -i "OrchardCore.Templates.Cms.Web"  
 
-Alternatively from an empty folder not containing any nuget.config file :   
-`dotnet new -i "OrchardCore.Templates.Cms.Web" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
+REM Alternatively from an empty folder not containing any nuget.config file :   
+dotnet new -i "OrchardCore.Templates.Cms.Web" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
+```
 
 `dotnet new ocweb`
 
@@ -109,18 +111,22 @@ Last step is to add our new module to the OrchardCore.Cms.Web project as a refer
 
 #### Initialize module template:
 
-`dotnet new -i "OrchardCore.Templates.Module"`  
+```CMD
+dotnet new -i "OrchardCore.Templates.Module"  
 
-Alternatively from an empty folder not containing any nuget.config file :   
-`dotnet new -i "OrchardCore.Templates.Module" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
+REM Alternatively from an empty folder not containing any nuget.config file :   
+dotnet new -i "OrchardCore.Templates.Module" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
+```
 
 #### Module commands:
 
-`dotnet new ocmodule -n "ModuleName.OrchardCore"`
+```CMD
+dotnet new ocmodule -n "ModuleName.OrchardCore"
 
-`dotnet new ocmodule -n "ModuleName.OrchardCore" -PartName "TestPart"`
+dotnet new ocmodule -n "ModuleName.OrchardCore" -PartName "TestPart"
 
-`dotnet new ocmodule -n "ModuleName.OrchardCore" -PartName "TestPart" -AddPart true`
+dotnet new ocmodule -n "ModuleName.OrchardCore" -PartName "TestPart" -AddPart true
+```
 
 ## Create a new theme
 
@@ -144,10 +150,12 @@ using OrchardCore.DisplayManagement.Manifest;
 
 #### Initialize theme template:
 
-`dotnet new -i "OrchardCore.Templates.Theme"`  
+```CMD
+dotnet new -i "OrchardCore.Templates.Theme"  
 
-Alternatively from an empty folder not containing any nuget.config file :  
-`dotnet new -i "OrchardCore.Templates.Theme" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
+REM Alternatively from an empty folder not containing any nuget.config file :  
+dotnet new -i "OrchardCore.Templates.Theme" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
+```
 
 #### Theme commands:
 
@@ -159,40 +167,40 @@ Alternatively from an empty folder not containing any nuget.config file :
 
 **Initialize:**
 
-`dotnet new -i "OrchardCore.Templates.Cms.Web"`  
+```CMD
+dotnet new -i "OrchardCore.Templates.Cms.Web"  
 
-Alternatively from an empty folder not containing any nuget.config file :  
-`dotnet new -i "OrchardCore.Templates.Cms.Web" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
+REM Alternatively from an empty folder not containing any nuget.config file :  
+dotnet new -i "OrchardCore.Templates.Cms.Web" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 
----
+dotnet new -i "OrchardCore.Templates.Module"   
 
-`dotnet new -i "OrchardCore.Templates.Module"`  
+REM Alternatively from an empty folder not containing any nuget.config file :  
+dotnet new -i "OrchardCore.Templates.Module" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 
-Alternatively from an empty folder not containing any nuget.config file :  
-`dotnet new -i "OrchardCore.Templates.Module" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
+dotnet new -i "OrchardCore.Templates.Theme"  
 
----
-
-`dotnet new -i "OrchardCore.Templates.Theme"`  
-
-Alternatively from an empty folder not containing any nuget.config file :  
-`dotnet new -i "OrchardCore.Templates.Theme" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
+REM Alternatively from an empty folder not containing any nuget.config file :  
+dotnet new -i "OrchardCore.Templates.Theme" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
+```
 
 
 
 **After initializing :**
 
-`dotnet new ocweb`
+```CMD
+dotnet new ocweb
 
-`dotnet new ocmodule -n "Module.OrchardCore"`
+dotnet new ocmodule -n "Module.OrchardCore"
 
-`dotnet new octheme -n "Theme.OrchardCore"`
+dotnet new octheme -n "Theme.OrchardCore"
 
-`dotnet new ocmodule -n "Module.OrchardCore" -PartName "TestPart"`
+dotnet new ocmodule -n "Module.OrchardCore" -PartName "TestPart"
 
-`dotnet new ocweb -AddNLog true`
+dotnet new ocweb -AddNLog true
 
-`dotnet new ocmodule -n "Module.OrchardCore" -PartName "TestPart" -AddPart true`
+dotnet new ocmodule -n "Module.OrchardCore" -PartName "TestPart" -AddPart true
+```
 
 
 **Reinitialize templates :**
