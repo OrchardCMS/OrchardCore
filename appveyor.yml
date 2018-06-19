@@ -26,7 +26,9 @@ install:
   - ps: $IsMasterBranch = ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
 
-build: off
+build_script:
+  - dotnet build -c Release
+  - ps: if ($IsMasterBranch -or $IsDevBranch) { dotnet pack -c Release --no-build }
 
 init:
   - dotnet --version
@@ -35,7 +37,7 @@ init:
   - git config --global core.autocrlf true
 
 test_script:
-  - dotnet test -c Release .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
+  - dotnet test -c Release --no-build .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
   - cd .\test\Functional
   - test-setup.cmd
   - test-run.cmd

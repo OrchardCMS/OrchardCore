@@ -9,6 +9,7 @@ repo_url: https://github.com/OrchardCMS/OrchardCore
 docs_dir: src
 
 extra_css: 
+- docs/css/code-tabs.css
 - docs/css/extra.css
 
 extra_javascript:
@@ -23,7 +24,8 @@ markdown_extensions:
   - markdown.extensions.meta
 #  - markdown.extensions.nl2br
   - markdown.extensions.toc(permalink=Link)
-  
+  - markdown_fenced_code_tabs
+
 # Page tree
 pages:
     - About Orchard Core: index.md
