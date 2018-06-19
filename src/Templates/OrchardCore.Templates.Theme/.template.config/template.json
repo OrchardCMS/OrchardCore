@@ -1,0 +1,37 @@
+{
+  "author": "Orchard Project",
+  "classifications": [ "Web", "CMS", "Orchard Core" ],
+  "name": "OrchardCore Theme",
+  "identity": "orchardcore",
+  "shortName": "octheme",
+  "sourceName": "OrchardCore.Templates.Theme",
+  "preferNameDirectory": true,
+  "symbols": {
+    "AddLiquid": {
+      "type": "parameter",
+      "dataType": "bool",
+      "description": "Add .liquid files in Views",
+      "defaultValue": "true"
+    }
+  },
+  "sources": [
+    {
+      "exclude": [ "Properties/**/*", "**/[Bb]in/**", "**/[Oo]bj/**", ".template.config/**/*", "**/*.filelist", "**/*.user", "**/*.lock.json" ],
+      "modifiers": [
+        {
+          "condition": "(!AddLiquid)",
+          "exclude": [
+            "Views/Layout.liquid",
+            "Views/Menu.liquid",
+            "Views/MenuItem.liquid",
+            "Views/MenuItemLink-LinkMenuItem.liquid"
+          ]
+        }
+      ]
+    }
+  ],
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  }
+}

@@ -1,0 +1,7 @@
+﻿<nav>
+    <ul class="nav navbar-nav navbar-right {{ Model.Classes | join: " " }}">
+        {% for item in Model.Items %}
+            {{ item | shape_render }}
+        {% endfor %}
+    </ul>
+</nav>
