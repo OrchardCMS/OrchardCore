@@ -331,6 +331,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Html", "src\OrchardCore.Modules\OrchardCore.Html\OrchardCore.Html.csproj", "{F0D6909B-52F8-4758-AFDD-13A896FD1221}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{FA7416DC-50F5-4576-9166-78B5129DABA9}"
+	ProjectSection(SolutionItems) = preProject
+		src\Templates\README.md = src\Templates\README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Forms", "src\OrchardCore.Modules\OrchardCore.Forms\OrchardCore.Forms.csproj", "{BBAE1D3D-0F40-4CDB-A7B9-AE959F5EA6B0}"
 EndProject

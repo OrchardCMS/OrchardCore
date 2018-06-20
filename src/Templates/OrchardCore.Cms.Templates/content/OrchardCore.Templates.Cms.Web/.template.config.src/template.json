@@ -12,7 +12,7 @@
       "type": "parameter",
       "dataType": "bool",
       "description": "Add NLog.config file",
-      "defaultValue": "true"
+      "defaultValue": "false"
     },
     "OrchardVersion": {
       "type": "parameter",

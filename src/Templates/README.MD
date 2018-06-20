@@ -6,22 +6,32 @@ https://github.com/dotnet/dotnet-template-samples
 `dotnet new` documentation :  
 https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new
 
+## Installing the Orchard Cms templates
+
+```CMD
+dotnet new -i "OrchardCore.Cms.Templates"  
+```
+
+This will use the most stable release of Orchard Core. In order to use the latest __dev__ branch of Orchard Core, the following command can be used:
+
+```CMD
+dotnet new -i "OrchardCore.Cms.Templates" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
+```
+
 ## Create a new website
 
 ### From Command Shell (automated way)
 
-#### Initialize module template:
-
-```CMD
-dotnet new -i "OrchardCore.Templates.Cms.Web"  
-```
-
-#### Module commands:
+#### Generate an Orchard Cms Web Application
 
 ```CMD
 dotnet new ocweb  
+```
 
-dotnet new ocweb -AddNLog true  
+Logging can be ignored with this command:
+
+```CMD
+dotnet new ocweb -AddNLog false
 ```
 
 ### From Visual Studio (manual way)
@@ -72,12 +82,6 @@ namespace MyNewWebsite
 ## Create a new module
 
 ### From Command Shell (automated way)
-
-#### Initialize module template:
-
-```CMD
-dotnet new -i "OrchardCore.Templates.Module"  
-```
 
 #### Module commands:
 
@@ -135,12 +139,6 @@ Last step is to add our new module to the OrchardCore.Cms.Web project as a refer
 
 ### From Command Shell (automated way)
 
-#### Initialize theme template:
-
-```CMD
-dotnet new -i "OrchardCore.Templates.Theme"  
-```
-
 #### Theme commands:
 
 `dotnet new octheme -n "ThemeName.OrchardCore"`
@@ -160,62 +158,3 @@ using OrchardCore.DisplayManagement.Manifest;
     Description = "The TemplateTheme."
 )]
 ```
-
-## All Commands
-
-**Initialize:**
-
-```CMD
-dotnet new -i "OrchardCore.Templates.Cms.Web"  
-
-dotnet new -i "OrchardCore.Templates.Module"   
-
-dotnet new -i "OrchardCore.Templates.Theme"  
-```
-
-Alternatively from an empty folder not containing any nuget.config file you can use `dotnet new --nuget-source` available with .NET Core 2.1 only :  
-
-```CMD
-dotnet new -i "OrchardCore.Templates.Cms.Web" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
-
-dotnet new -i "OrchardCore.Templates.Module" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
-
-dotnet new -i "OrchardCore.Templates.Theme" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
-```
-
-**After initializing :**
-
-```CMD
-dotnet new ocweb
-
-dotnet new ocmodule -n "Module.OrchardCore"
-
-dotnet new octheme -n "Theme.OrchardCore"
-
-dotnet new ocmodule -n "Module.OrchardCore" -PartName "TestPart"
-
-dotnet new ocweb -AddNLog true
-
-dotnet new ocmodule -n "Module.OrchardCore" -PartName "TestPart" -AddPart true
-```
-
-
-**Reinitialize templates :**
-
-`dotnet new --debug:reinit`
-
-## Adding Orchard Core Nuget Feed
-
-![image](/src/docs/assets/images/templates/38450242-886933f6-39e8-11e8-896c-1f807e5530a0.png)
-
-#### MyGet:
-
-Preview: https://www.myget.org/gallery/orchardcore-preview
-
-Feed: https://www.myget.org/F/orchardcore-preview/api/v3/index.json
-
-
-
-To be able to use these feeds in Visual Studio your will need to add them to the Nuget package source settings that can be found by going to Visual Studio Tools menu under Nuget Package Manager --> Package Manager Settings.
-
-![image](/src/docs/assets/images/templates/38450422-63670f1c-39eb-11e8-9c14-0743f0a4da42.png)
