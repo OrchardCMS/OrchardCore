@@ -21,11 +21,6 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="content\OrchardCore.Templates.Cms.Web\.template.config.src\icon.png" />
-    <None Include="content\OrchardCore.Templates.Cms.Web\.template.config.src\template.json" />
-  </ItemGroup>
-
   <UsingTask TaskName="ReplaceFileText" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
     <ParameterGroup>
       <InputFilename ParameterType="System.String" Required="true" />
