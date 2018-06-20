@@ -54,7 +54,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 created: function () {
                     var self = this;
 
-                    self.dragDropThumbnail.src = '../Images/drag-thumbnail.png';
+                    self.dragDropThumbnail.src = '/OrchardCore.Media/Images/drag-thumbnail.png';
 
                     bus.$on('folderSelected', function (folder) {
                         self.selectedFolder = folder;

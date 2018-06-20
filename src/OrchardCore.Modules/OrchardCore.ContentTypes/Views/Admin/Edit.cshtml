@@ -33,7 +33,7 @@
             {
                 @foreach (var field in orderedFields)
                 {
-                    <li class="list-group-item">
+                    <li class="list-group-item"  style="cursor: move;">
                         <div class="properties">
                             <div class="related">
                                 <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
@@ -56,7 +56,7 @@
         <ul class="list-group sortable" id="parts">
             @foreach (var part in orderedParts)
             {
-                <li class="list-group-item @(part == typePart ? " bg-faded" : null)">
+                <li class="list-group-item @(part == typePart ? " bg-faded" : null)" style="cursor: move;">
                     <div class="properties">
                         @part.DisplayName()
 

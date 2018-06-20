@@ -1,0 +1,17 @@
+@using OrchardCore.Html.ViewModels;
+@model HtmlBodyPartViewModel
+
+@{ 
+    // Morph the current shape to the correct editor shape based on its Editor property
+    var shape = Model as OrchardCore.DisplayManagement.IShape;
+    shape.Metadata.Wrappers.Clear();
+    shape.Metadata.Alternates.Clear();
+    shape.Metadata.Type = "HtmlBody_Editor";
+
+    if (!String.IsNullOrEmpty(Model.TypePartSettings.Editor))
+    {
+        shape.Metadata.Alternates.Add($"HtmlBody_Editor__{Model.TypePartSettings.Editor}");
+    }
+}
+
+@await DisplayAsync(Model)

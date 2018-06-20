@@ -12,7 +12,16 @@ namespace OrchardCore.Workflows.Display
     /// </summary>
     public abstract class ActivityDisplayDriver<TActivity> : DisplayDriver<IActivity, TActivity> where TActivity : class, IActivity
     {
+        private static string ThumbnailshapeType = $"{typeof(TActivity).Name}_Fields_Thumbnail";
+        private static string DesignShapeType = $"{typeof(TActivity).Name}_Fields_Design";
 
+        public override IDisplayResult Display(TActivity model)
+        {
+            return Combine(
+                Shape(ThumbnailshapeType, new ActivityViewModel<TActivity>(model)).Location("Thumbnail", "Content"),
+                Shape(DesignShapeType, new ActivityViewModel<TActivity>(model)).Location("Design", "Content")
+            );
+        }
     }
 
     /// <summary>
@@ -20,35 +29,26 @@ namespace OrchardCore.Workflows.Display
     /// </summary>
     public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : ActivityDisplayDriver<TActivity> where TActivity : class, IActivity where TEditViewModel : class, new()
     {
-        private static string ThumbnailshapeType = $"{typeof(TActivity).Name}_Fields_Thumbnail";
-        private static string DesignShapeType = $"{typeof(TActivity).Name}_Fields_Design";
+
         private static string EditShapeType = $"{typeof(TActivity).Name}_Fields_Edit";
 
-        public override IDisplayResult Display(TActivity activity)
+        public override IDisplayResult Edit(TActivity model)
         {
-            return Combine(
-                Shape(ThumbnailshapeType, new ActivityViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
-                Shape(DesignShapeType, new ActivityViewModel<TActivity>(activity)).Location("Design", "Content")
-            );
-        }
-
-        public override IDisplayResult Edit(TActivity activity)
-        {
-            return Initialize<TEditViewModel>(EditShapeType, model =>
+            return Initialize(EditShapeType, (System.Func<TEditViewModel, Task>)(viewModel =>
             {
-                return EditActivityAsync(activity, model);
-            }).Location("Content");
+                return EditActivityAsync(model, viewModel);
+            })).Location("Content");
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(TActivity activity, IUpdateModel updater)
+        public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
         {
             var viewModel = new TEditViewModel();
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
             {
-                await UpdateActivityAsync(viewModel, activity);
+                await UpdateActivityAsync(viewModel, model);
             }
 
-            return Edit(activity);
+            return Edit(model);
         }
 
         /// <summary>

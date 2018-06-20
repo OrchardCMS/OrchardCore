@@ -12,7 +12,6 @@ namespace OrchardCore.Workflows.Services
 {
     public class ActivityLibrary : IActivityLibrary
     {
-        private readonly IOptions<WorkflowOptions> _workflowOptions;
         private readonly Lazy<IDictionary<string, IActivity>> _activityDictionary;
         private readonly Lazy<IList<LocalizedString>> _activityCategories;
         private readonly IServiceProvider _serviceProvider;
@@ -20,8 +19,7 @@ namespace OrchardCore.Workflows.Services
 
         public ActivityLibrary(IOptions<WorkflowOptions> workflowOptions, IServiceProvider serviceProvider, ILogger<ActivityLibrary> logger)
         {
-            _workflowOptions = workflowOptions;
-            _activityDictionary = new Lazy<IDictionary<string, IActivity>>(() => workflowOptions.Value.ActivityTypes.Select(x => serviceProvider.CreateInstance<IActivity>(x)).OrderBy(x => x.Name).ToDictionary(x => x.Name));
+            _activityDictionary = new Lazy<IDictionary<string, IActivity>>(() => workflowOptions.Value.ActivityTypes.Where(x => !x.IsAbstract).Select(x => serviceProvider.CreateInstance<IActivity>(x)).OrderBy(x => x.Name).ToDictionary(x => x.Name));
             _activityCategories = new Lazy<IList<LocalizedString>>(() => _activityDictionary.Value.Values.OrderBy(x => x.Category.Value).Select(x => x.Category).Distinct(new LocalizedStringComparer()).ToList());
             _serviceProvider = serviceProvider;
             _logger = logger;

@@ -29,6 +29,7 @@ markdown_extensions:
 # Page tree
 pages:
     - About Orchard Core: index.md
+    - Code Generation Templates: Templates/README.md
     - Orchard Core Modules: OrchardCore/OrchardCore.Modules/README.md
     - CMS Modules:
         - Title: OrchardCore.Modules/OrchardCore.Title/README.md
@@ -62,3 +63,5 @@ pages:
         - Scripting: OrchardCore.Modules/OrchardCore.Scripting/README.md
         - Setup: OrchardCore.Modules/OrchardCore.Setup/README.md
         - Workflows: OrchardCore.Modules/OrchardCore.Workflows/README.md
+    - Release Notes:
+        - OrchardCore 1.0 Beta 2: docs/release-notes/OrchardCore-1-0-Beta2.md
