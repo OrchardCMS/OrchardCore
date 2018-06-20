@@ -74,13 +74,9 @@ namespace OrchardCore.OpenId.Configuration
                 }
                 else if (settings.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JWT)
                 {
-                    // Note: unlike most authentication handlers in ASP.NET Core 2.0,
-                    // the JWT bearer handler is not public (which is likely an oversight).
-                    // To work around this issue, the handler type is resolved using reflection.
                     options.AddScheme(OpenIdConstants.Schemes.Userinfo, builder =>
                     {
-                        builder.HandlerType = typeof(JwtBearerOptions).Assembly
-                            .GetType("Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler");
+                        builder.HandlerType = typeof(JwtBearerHandler);
                     });
                 }
                 else
