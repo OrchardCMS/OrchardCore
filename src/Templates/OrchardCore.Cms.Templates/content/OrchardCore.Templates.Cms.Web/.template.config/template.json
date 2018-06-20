@@ -1,7 +1,7 @@
 {
   "author": "Orchard Project",
-  "classifications": [ "Web", "CMS", "Orchard Core" ],
-  "name": "OrchardCore Cms",
+  "classifications": [ "Web", "Orchard Core", "CMS" ],
+  "name": "Orchard Core Cms",
   "identity": "orchardcore",
   "shortName": "occms",
   "sourceName": "OrchardCore.Templates.Cms",

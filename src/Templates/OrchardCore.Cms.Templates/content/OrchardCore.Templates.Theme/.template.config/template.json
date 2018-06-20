@@ -1,7 +1,7 @@
 {
   "author": "Orchard Project",
-  "classifications": [ "Web", "CMS", "Orchard Core" ],
-  "name": "OrchardCore Theme",
+  "classifications": [ "Web", "Orchard Core", "CMS" ],
+  "name": "Orchard Core Theme",
   "identity": "orchardcore",
   "shortName": "octheme",
   "sourceName": "OrchardCore.Templates.Theme",
