@@ -23,6 +23,13 @@ $('#left-nav li.has-items').click(function () {
     $(this).addClass("active");
 });
 
+$(document).on("click", function (event) {
+    var $trigger = $("#left-nav li.has-items");
+    if ($trigger !== event.target && !$trigger.has(event.target).length) {
+        $('#left-nav li.has-items').removeClass("active");
+    }
+});
+
 
 var isCompactExplicit = (isCompactExplicit === undefined) ? false : isCompactExplicit ;
 
