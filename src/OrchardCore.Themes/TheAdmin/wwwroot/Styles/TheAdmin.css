@@ -167,7 +167,7 @@ html {
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   -ms-overflow-style: scrollbar;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
+  -webkit-tap-highlight-color: transparent; }
 
 @-ms-viewport {
   width: device-width; }
@@ -7131,7 +7131,7 @@ body {
   width: 60px; }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li {
     overflow: hidden; }
-  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li.hovered {
+  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li.active {
     overflow: visible;
     width: 320px; }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin li, .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin label, .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin a {

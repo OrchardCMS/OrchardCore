@@ -18,6 +18,12 @@ $('.leftbar-compactor').click(function () {
     $('body').hasClass('left-sidebar-compact') ? unSetCompactStatus() : setCompactStatus(true);
 });
 
+$('#left-nav li.has-items').click(function () {
+    $('#left-nav li.has-items').removeClass("active");
+    $(this).addClass("active");
+});
+
+
 var isCompactExplicit = (isCompactExplicit === undefined) ? false : isCompactExplicit ;
 
 function setCompactStatus(explicit) {
@@ -41,6 +47,7 @@ function setCompactStatus(explicit) {
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', '');
     $('#left-nav').removeClass('ps');
     $('#left-nav').removeClass('ps--active-y'); // need this too because of Edge IE11
+    $('#left-nav li.has-items').removeClass("active");
 
     if (explicit == true) {
         isCompactExplicit = explicit;
@@ -57,6 +64,7 @@ function unSetCompactStatus() {
     $('#left-nav ul.menu-admin > li > div > ul').addClass('collapse');    
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', 'collapse');
     $('#left-nav').addClass('ps');
+    $('#left-nav li.has-items').removeClass("active");
 
     isCompactExplicit = false;
     persistAdminPreferences();

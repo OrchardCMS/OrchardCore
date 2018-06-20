@@ -298,7 +298,7 @@ body {
             overflow: hidden;
         }
 
-        > li.hovered {
+        > li.active {
             overflow: visible;
             width: $left-navigation-width-when-compact + $left-navigation-width;
         }
