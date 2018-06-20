@@ -252,7 +252,7 @@ body {
         background-color: $gray-600;
         border-left: 4px solid $gray-800;
         color: $gray-100 !important;
-        padding-left: $link-padding-left !important;
+        padding-left: (2 * $link-padding-left + 2) !important;
     }
 
     li.has-items.active > a {
