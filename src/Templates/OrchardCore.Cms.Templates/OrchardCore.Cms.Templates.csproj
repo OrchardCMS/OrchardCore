@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\OrchardCore.Build\OrchardCore.Commons.props" />
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeBuildOutput>False</IncludeBuildOutput>
+    <IncludeSource>False</IncludeSource>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <EnableDefaultItems>False</EnableDefaultItems>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <PackageType>Template</PackageType>
+    <NoWarn>CS8021</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Remove="NETStandard.Library" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)\content\**" Pack="true">
+      <PackagePath>content\%(RecursiveDir)%(FileName)%(Extension)</PackagePath>
+    </None>
+  </ItemGroup>
+</Project>
