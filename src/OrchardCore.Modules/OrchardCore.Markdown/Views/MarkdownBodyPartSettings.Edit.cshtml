@@ -6,7 +6,7 @@
 @{ 
     var theme = await ThemeManager.GetThemeAsync();
     var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
-    var markdownEditorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith("Markdown_Option__", StringComparison.OrdinalIgnoreCase));
+    var markdownEditorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith("MarkdownBody_Option__", StringComparison.OrdinalIgnoreCase));
 }
 
 <div class="row">
