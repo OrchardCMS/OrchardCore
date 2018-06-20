@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities.DisplayManagement;
+using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -23,7 +23,6 @@ namespace OrchardCore.OpenId.Drivers
 {
     public class OpenIdClientSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdClientSettings>
     {
-        private const string RestartPendingCacheKey = "OpenIdConnect_RestartPending";
         private const string SettingsGroupId = "OrchardCore.OpenId.Client";
 
         private readonly IAuthorizationService _authorizationService;
@@ -31,8 +30,9 @@ namespace OrchardCore.OpenId.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer<OpenIdClientSettingsDisplayDriver> T;
-        private readonly IMemoryCache _memoryCache;
         private readonly IOpenIdClientService _clientService;
+        private readonly IShellHost _shellHost;
+        private readonly ShellSettings _shellSettings;
 
         public OpenIdClientSettingsDisplayDriver(
             IAuthorizationService authorizationService,
@@ -41,22 +41,21 @@ namespace OrchardCore.OpenId.Drivers
             IHttpContextAccessor httpContextAccessor,
             INotifier notifier,
             IHtmlLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer,
-            IMemoryCache memoryCache)
+            IShellHost shellHost,
+            ShellSettings shellSettings)
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _clientService = clientService;
             _httpContextAccessor = httpContextAccessor;
             _notifier = notifier;
+            _shellHost = shellHost;
+            _shellSettings = shellSettings;
             T = stringLocalizer;
-            _memoryCache = memoryCache;
         }
 
         public override async Task<IDisplayResult> EditAsync(OpenIdClientSettings settings, BuildEditorContext context)
         {
-            if (context.GroupId == SettingsGroupId && _memoryCache.Get(RestartPendingCacheKey) != null)
-                _notifier.Warning(T["The site needs to be restarted for the settings to take effect"]);
-
             var user = _httpContextAccessor.HttpContext?.User;
             if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
             {
@@ -189,10 +188,10 @@ namespace OrchardCore.OpenId.Drivers
                     }
                 }
 
-                if (updater.ModelState.IsValid && _memoryCache.Get(RestartPendingCacheKey) == null)
+                // If the settings are valid, reload the current tenant.
+                if (updater.ModelState.IsValid)
                 {
-                    var entry = _memoryCache.CreateEntry(RestartPendingCacheKey);
-                    _memoryCache.Set(entry.Key, entry, new MemoryCacheEntryOptions() { Priority = CacheItemPriority.NeverRemove });
+                    _shellHost.ReloadShellContext(_shellSettings);
                 }
             }
 
