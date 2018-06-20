@@ -40,7 +40,11 @@ namespace OrchardCore.Html.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(HtmlBodyPart model, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Html);
+            var viewModel = new HtmlBodyPartViewModel();
+
+            await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Source);
+
+            model.Html = viewModel.Source;
 
             return Edit(model);
         }

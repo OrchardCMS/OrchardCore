@@ -40,7 +40,11 @@ namespace OrchardCore.Markdown.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(MarkdownBodyPart model, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Markdown);
+            var viewModel = new MarkdownBodyPartViewModel();
+
+            await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Source);
+
+            model.Markdown = viewModel.Source;
 
             return Edit(model);
         }
