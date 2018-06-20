@@ -1,53 +1,24 @@
+using System;
 using Dapper;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell;
 using YesSql;
 
 namespace OrchardCore.Html
 {
     public class Migrations : DataMigration
     {
-        private const string RENAME_BODYPARTS_SQL = @"
---UPDATES Module definitions
-UPDATE Document SET Content = REPLACE(content, 'OrchardCore.Body', 'OrchardCore.Html') 
-WHERE Type = 'OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor, OrchardCore.Environment.Shell.Abstractions';
-
-UPDATE Document SET Content = REPLACE(content, 'OrchardCore.Body', 'OrchardCore.Html') 
-WHERE Type = 'OrchardCore.Environment.Shell.State.ShellState, OrchardCore.Environment.Shell.Abstractions';
-
-
---UPDATES migrations
-UPDATE Document SET Content = REPLACE(content, 'OrchardCore.Body.Migrations', 'OrchardCore.Html.Migrations') 
-WHERE Type = 'OrchardCore.Data.Migration.Records.DataMigrationRecord, OrchardCore.Data';
-
-
---UPDATES Content Type definitions
-UPDATE Document SET Content = REPLACE(content, 'BodyPart', 'HtmlBodyPart') 
-WHERE Type = 'OrchardCore.ContentManagement.Metadata.Records.ContentDefinitionRecord, OrchardCore.ContentManagement.Abstractions';
-
-UPDATE Document SET Content = REPLACE(content, 'MarkdownPart', 'MarkdownBodyPart') 
-WHERE Type = 'OrchardCore.ContentManagement.Metadata.Records.ContentDefinitionRecord, OrchardCore.ContentManagement.Abstractions';
-
-
---UPDATES content items
-UPDATE Document SET Content = REPLACE(content, 'BodyPart', 'HtmlBodyPart') 
-WHERE Type = 'OrchardCore.ContentManagement.ContentItem, OrchardCore.ContentManagement.Abstractions';
-
-UPDATE Document SET Content = REPLACE(content, 'MarkdownPart', 'MarkdownBodyPart') 
-WHERE Type = 'OrchardCore.ContentManagement.ContentItem, OrchardCore.ContentManagement.Abstractions';
-
-UPDATE Document SET Content = REPLACE(content, '{""Body""', '{""Html""') 
-WHERE Type = 'OrchardCore.ContentManagement.ContentItem, OrchardCore.ContentManagement.Abstractions';
-";
-
         IContentDefinitionManager _contentDefinitionManager;
         private readonly IStore _store;
+        private readonly ShellSettings _shellSettings;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager, IStore store)
+        public Migrations(IContentDefinitionManager contentDefinitionManager, IStore store, ShellSettings shellSettings)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _store = store;
+            _shellSettings = shellSettings;
         }
 
         public int Create()
@@ -68,8 +39,41 @@ WHERE Type = 'OrchardCore.ContentManagement.ContentItem, OrchardCore.ContentMana
         {
             using (var conn = _store.Configuration.ConnectionFactory.CreateConnection())
             {
+                var prefix = String.IsNullOrEmpty(_shellSettings.TablePrefix) ? "" : _shellSettings.TablePrefix + "_";
+                var sql = $@"
+                    --UPDATES Module definitions
+                    UPDATE {prefix}Document SET Content = REPLACE(content, 'OrchardCore.Body', 'OrchardCore.Html') 
+                    WHERE Type = 'OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor, OrchardCore.Environment.Shell.Abstractions';
+
+                    UPDATE {prefix}Document SET Content = REPLACE(content, 'OrchardCore.Body', 'OrchardCore.Html') 
+                    WHERE Type = 'OrchardCore.Environment.Shell.State.ShellState, OrchardCore.Environment.Shell.Abstractions';
+
+                    --UPDATES migrations
+                    UPDATE {prefix}Document SET Content = REPLACE(content, 'OrchardCore.Body.Migrations', 'OrchardCore.Html.Migrations') 
+                    WHERE Type = 'OrchardCore.Data.Migration.Records.DataMigrationRecord, OrchardCore.Data';
+
+
+                    --UPDATES Content Type definitions
+                    UPDATE {prefix}Document SET Content = REPLACE(content, 'BodyPart', 'HtmlBodyPart') 
+                    WHERE Type = 'OrchardCore.ContentManagement.Metadata.Records.ContentDefinitionRecord, OrchardCore.ContentManagement.Abstractions';
+
+                    UPDATE {prefix}Document SET Content = REPLACE(content, 'MarkdownPart', 'MarkdownBodyPart') 
+                    WHERE Type = 'OrchardCore.ContentManagement.Metadata.Records.ContentDefinitionRecord, OrchardCore.ContentManagement.Abstractions';
+
+
+                    --UPDATES content items
+                    UPDATE {prefix}Document SET Content = REPLACE(content, 'BodyPart', 'HtmlBodyPart') 
+                    WHERE Type = 'OrchardCore.ContentManagement.ContentItem, OrchardCore.ContentManagement.Abstractions';
+
+                    UPDATE {prefix}Document SET Content = REPLACE(content, 'MarkdownPart', 'MarkdownBodyPart') 
+                    WHERE Type = 'OrchardCore.ContentManagement.ContentItem, OrchardCore.ContentManagement.Abstractions';
+
+                    UPDATE {prefix}Document SET Content = REPLACE(content, '{{""Body""', '{{""Html""') 
+                    WHERE Type = 'OrchardCore.ContentManagement.ContentItem, OrchardCore.ContentManagement.Abstractions';
+                    ";
+
                 conn.Open();
-                conn.Execute(RENAME_BODYPARTS_SQL);
+                conn.Execute(sql);
             }
             return 2;
         }
