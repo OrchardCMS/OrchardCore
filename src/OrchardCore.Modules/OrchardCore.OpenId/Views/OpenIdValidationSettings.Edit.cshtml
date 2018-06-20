@@ -1,6 +1,7 @@
 @using OrchardCore.OpenId.ViewModels
 @model OpenIdValidationSettingsViewModel
 
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
 <p class="alert alert-warning">
     @T["To be able to validate tokens issued by a separate tenant, " +
