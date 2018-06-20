@@ -20,6 +20,13 @@
       "description": "Add all files required for a part",
       "replaces": "MyTest",
       "defaultValue": ""
+    },
+    "OrchardVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "description": "Specifies which version of Orchard Core packages to use.",
+      "replaces": "$(TemplateOrchardPackageVersion)",
+      "defaultValue": "${TemplateOrchardVersion}"
     }
   },
   "sources": [

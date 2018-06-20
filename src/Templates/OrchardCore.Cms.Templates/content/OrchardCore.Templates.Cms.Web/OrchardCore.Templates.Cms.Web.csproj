@@ -10,9 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OrchardCore.Hosting.Console" Version="1.0.0-beta2-6657" />
-    <PackageReference Include="OrchardCore.Logging.NLog" Version="1.0.0-beta2-6657" />
-    <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="1.0.0-beta2-6657" />
+    <PackageReference Include="OrchardCore.Hosting.Console" Version="$(TemplateOrchardPackageVersion)" />
+    <PackageReference Include="OrchardCore.Logging.NLog" Version="$(TemplateOrchardPackageVersion)" />
+    <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="$(TemplateOrchardPackageVersion)" />
   </ItemGroup>
   
   <ItemGroup>

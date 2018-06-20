@@ -20,4 +20,61 @@
       <PackagePath>content\%(RecursiveDir)%(FileName)%(Extension)</PackagePath>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="content\OrchardCore.Templates.Cms.Web\.template.config.src\icon.png" />
+    <None Include="content\OrchardCore.Templates.Cms.Web\.template.config.src\template.json" />
+  </ItemGroup>
+
+  <UsingTask TaskName="ReplaceFileText" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <InputFilename ParameterType="System.String" Required="true" />
+      <OutputFilename ParameterType="System.String" Required="true" />
+      <MatchExpression ParameterType="System.String" Required="true" />
+      <ReplacementText ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Core" />
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            File.WriteAllText(
+                OutputFilename,
+                Regex.Replace(File.ReadAllText(InputFilename), MatchExpression, ReplacementText)
+                );
+          ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+  
+  <Target Name="TransformTemplateConfigs" BeforeTargets="CoreBuild">
+    <!--
+      For each template, copy its '.template.config.src' directory to '.template.config',
+      removing any earlier output at that location
+    -->
+    <ItemGroup>
+      <_TemplateConfigMainFile Include="content\**\.template.config.src\template.json" />
+      <_TemplateConfigDir Include="@(_TemplateConfigMainFile-&gt;'$([System.IO.Path]::GetDirectoryName('%(_TemplateConfigMainFile.FullPath)'))')" />
+      <_TemplateConfigFileToCopy Include="%(_TemplateConfigDir.Identity)\**\*.*">
+        <DestDir>$([System.IO.Path]::GetDirectoryName('%(_TemplateConfigDir.Identity)'))\.template.config\</DestDir>
+      </_TemplateConfigFileToCopy>
+    </ItemGroup>
+    <RemoveDir Directories="%(_TemplateConfigFileToCopy.DestDir)" />
+    <Copy SourceFiles="%(_TemplateConfigFileToCopy.Identity)" DestinationFolder="%(_TemplateConfigFileToCopy.DestDir)" />
+
+    <!--
+      Modify the .json files in the .template.config dirs to stamp MSBuild properties into them
+    -->
+    <ItemGroup>
+      <GeneratedContent Include="@(_TemplateConfigFileToCopy-&gt;WithMetadataValue('Extension','.json'))">
+        <OutputPath>%(DestDir)%(RecursiveDir)%(Filename)%(Extension)</OutputPath>
+        <Properties>$(GeneratedContentProperties)</Properties>
+      </GeneratedContent>
+    </ItemGroup>
+
+    <ReplaceFileText InputFilename="%(GeneratedContent.OutputPath)" OutputFilename="%(GeneratedContent.OutputPath)" MatchExpression="\$\{TemplateOrchardVersion\}" ReplacementText="$(Version)" />
+     
+  </Target>
 </Project>

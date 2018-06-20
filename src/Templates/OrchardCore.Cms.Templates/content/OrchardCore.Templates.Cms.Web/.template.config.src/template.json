@@ -2,17 +2,24 @@
   "$schema": "http://json.schemastore.org/template",
   "author": "Orchard Project",
   "classifications": [ "Web", "Orchard Core", "CMS" ],
-  "name": "Orchard Core Theme",
-  "identity": "OrchardCore.Templates.Theme",
-  "shortName": "octheme",
-  "sourceName": "OrchardCore.Templates.Theme",
+  "name": "Orchard Core Cms Web App",
+  "identity": "OrchardCore.Templates.Cms",
+  "shortName": "occms",
+  "sourceName": "OrchardCore.Templates.Cms",
   "preferNameDirectory": true,
   "symbols": {
-    "AddLiquid": {
+    "AddNLog": {
       "type": "parameter",
       "dataType": "bool",
-      "description": "Add .liquid files in Views",
+      "description": "Add NLog.config file",
       "defaultValue": "true"
+    },
+    "OrchardVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "description": "Specifies which version of Orchard Core packages to use.",
+      "replaces": "$(TemplateOrchardPackageVersion)",
+      "defaultValue": "${TemplateOrchardVersion}"
     }
   },
   "sources": [
@@ -20,12 +27,9 @@
       "exclude": [ "Properties/**/*", "**/[Bb]in/**", "**/[Oo]bj/**", ".template.config/**/*", "**/*.filelist", "**/*.user", "**/*.lock.json" ],
       "modifiers": [
         {
-          "condition": "(!AddLiquid)",
+          "condition": "(!AddNLog)",
           "exclude": [
-            "Views/Layout.liquid",
-            "Views/Menu.liquid",
-            "Views/MenuItem.liquid",
-            "Views/MenuItemLink-LinkMenuItem.liquid"
+            "NLog.config"
           ]
         }
       ]
