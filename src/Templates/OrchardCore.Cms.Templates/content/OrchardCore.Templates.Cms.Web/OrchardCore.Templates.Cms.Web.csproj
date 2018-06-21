@@ -9,11 +9,9 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
-#if (AddNLog)
   <ItemGroup>
     <None Include="NLog.config" />
   </ItemGroup>
-#endif
   
   <ItemGroup>
     <PackageReference Include="OrchardCore.Hosting.Console" Version="$(TemplateOrchardPackageVersion)" />
