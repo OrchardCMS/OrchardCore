@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\OrchardCore.Build\OrchardCore.Commons.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -54,20 +54,22 @@
       removing any earlier output at that location
     -->
     <ItemGroup>
-      <_TemplateConfigMainFile Include="content\**\.template.config.src\template.json" />
-      <_TemplateConfigDir Include="@(_TemplateConfigMainFile-&gt;'$([System.IO.Path]::GetDirectoryName('%(_TemplateConfigMainFile.FullPath)'))')" />
-      <_TemplateConfigFileToCopy Include="%(_TemplateConfigDir.Identity)\**\*.*">
-        <DestDir>$([System.IO.Path]::GetDirectoryName('%(_TemplateConfigDir.Identity)'))\.template.config\</DestDir>
+      <_TemplateProjectFile Include="content\**\*.csproj" />
+      <_TemplateProjectDir Include="%(_TemplateProjectFile.RootDir)%(Directory)" />
+      <_TemplateConfigFileToCopy Include="%(_TemplateProjectDir.Identity).template.config.src\**">
+        <DestDir>%(Identity).template.config\</DestDir>
       </_TemplateConfigFileToCopy>
     </ItemGroup>
+
     <RemoveDir Directories="%(_TemplateConfigFileToCopy.DestDir)" />
-    <Copy SourceFiles="%(_TemplateConfigFileToCopy.Identity)" DestinationFolder="%(_TemplateConfigFileToCopy.DestDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_TemplateConfigFileToCopy)" DestinationFolder="%(DestDir)" />
 
     <!--
       Modify the .json files in the .template.config dirs to stamp MSBuild properties into them
     -->
+
     <ItemGroup>
-      <GeneratedContent Include="@(_TemplateConfigFileToCopy-&gt;WithMetadataValue('Extension','.json'))">
+      <GeneratedContent Include="@(_TemplateConfigFileToCopy)" Condition="'%(Extension)'=='.json'">
         <OutputPath>%(DestDir)%(RecursiveDir)%(Filename)%(Extension)</OutputPath>
       </GeneratedContent>
     </ItemGroup>
