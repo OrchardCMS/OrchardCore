@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\OrchardCore.Build\OrchardCore.Commons.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -16,14 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)\content\**" Pack="true">
+    <None Include="content\**" Exclude="**\.template.config.src\**" Pack="true">
       <PackagePath>content\%(RecursiveDir)%(FileName)%(Extension)</PackagePath>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="content\OrchardCore.Templates.Cms.Web\Properties\launchSettings.json" />
-    <None Include="content\OrchardCore.Templates.Cms.Web\NLog.config" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,7 +47,7 @@
       </Code>
     </Task>
   </UsingTask>
-  
+
   <Target Name="TransformTemplateConfigs" BeforeTargets="CoreBuild">
     <!--
       For each template, copy its '.template.config.src' directory to '.template.config',
@@ -74,11 +69,10 @@
     <ItemGroup>
       <GeneratedContent Include="@(_TemplateConfigFileToCopy-&gt;WithMetadataValue('Extension','.json'))">
         <OutputPath>%(DestDir)%(RecursiveDir)%(Filename)%(Extension)</OutputPath>
-        <Properties>$(GeneratedContentProperties)</Properties>
       </GeneratedContent>
     </ItemGroup>
 
     <ReplaceFileText InputFilename="%(GeneratedContent.OutputPath)" OutputFilename="%(GeneratedContent.OutputPath)" MatchExpression="\$\{TemplateOrchardVersion\}" ReplacementText="$(Version)" />
-     
+
   </Target>
 </Project>
