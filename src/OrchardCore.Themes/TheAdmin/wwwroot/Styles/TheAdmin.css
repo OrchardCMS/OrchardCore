@@ -7131,7 +7131,7 @@ body {
   width: 60px; }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li {
     overflow: hidden; }
-  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li.active {
+  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li.visible {
     overflow: visible;
     width: 320px; }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin li, .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin label, .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin a {
