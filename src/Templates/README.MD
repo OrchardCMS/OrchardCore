@@ -46,7 +46,7 @@ See [Adding Orchard Core Nuget Feed](#adding-orchard-core-nuget-feed)
 
 ![image](/src/docs/assets/images/templates/orchard-screencast-2.gif)
 
-Finally we will need to register Orchard CMS service in our Startup.cs file like this : 
+Finally we will need to register Orchard CMS service in our `Startup.cs` file like this : 
 
 ```C#
 using Microsoft.AspNetCore.Builder;
@@ -111,7 +111,7 @@ Once done your new module will look like this :
 
 ![image](/src/docs/assets/images/templates/38450628-31c8e2b0-39ef-11e8-9de7-c15f0c6544c5.png)
 
-For Orchard Core to identify this module it will now require a Manifest.cs file. Here is an example of that file:
+For Orchard Core to identify this module it will now require a `Manifest.cs` file. Here is an example of that file:
 
 ```C#
 using OrchardCore.Modules.Manifest;
@@ -129,7 +129,7 @@ using OrchardCore.Modules.Manifest;
 Please refer to Orchard Core documentation about `Manifest.cs` files for further details.  
 http://docs.orchardproject.net/en/latest/Documentation/Manifest-files/
 
-For this module to start we now will need to add a startup.cs file to our new module. See this file as an example:  
+For this module to start we now will need to add a `Startup.cs` file to our new module. See this file as an example:  
 https://github.com/OrchardCMS/OrchardCore/blob/dotnetNewTemplates/src/Templates/OrchardCore.Templates.Module/Startup.cs
 
 Last step is to add our new module to the OrchardCore.Cms.Web project as a reference for including it as part as our website modules. After that, you should be all set for starting building your custom module. You can refer to our template module for examples of what's basically needed normally. https://github.com/OrchardCMS/OrchardCore/blob/dotnetNewTemplates/src/Templates/OrchardCore.Templates.Module/
@@ -144,7 +144,7 @@ Last step is to add our new module to the OrchardCore.Cms.Web project as a refer
 
 ### From Visual Studio (manual way)
 
-Should be the same procedure as with modules but instead we need to reference OrchardCore.Theme.Targets and Manifest.cs file slightly differ : 
+Should be the same procedure as with modules but instead we need to reference OrchardCore.Theme.Targets and `Manifest.cs` file slightly differ : 
 
 ```C#
 using OrchardCore.DisplayManagement.Manifest;
