@@ -22,6 +22,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="content\OrchardCore.Templates.Cms.Web\Properties\launchSettings.json" />
+    <None Include="content\OrchardCore.Templates.Cms.Web\NLog.config" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
   </ItemGroup>
 

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -9,6 +9,12 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
+#if (AddNLog)
+  <ItemGroup>
+    <None Include="NLog.config" />
+  </ItemGroup>
+#endif
+  
   <ItemGroup>
     <PackageReference Include="OrchardCore.Hosting.Console" Version="$(TemplateOrchardPackageVersion)" />
     <PackageReference Include="OrchardCore.Logging.NLog" Version="$(TemplateOrchardPackageVersion)" />
