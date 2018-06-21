@@ -42,7 +42,7 @@ Fire up Visual Studio, create a new solution file (.sln) by creating a new ASP.N
 
 Now that we created a new Web Application we need to add proper dependencies so that this new Web Application be targetted as an Orchard Core application.
 
-[See adding Orchard Core Nuget Feed](#adding-orchard-core-nuget-feed)
+See [Adding Orchard Core Nuget Feed](#adding-orchard-core-nuget-feed)
 
 ![image](/src/docs/assets/images/templates/orchard-screencast-2.gif)
 
@@ -126,8 +126,7 @@ using OrchardCore.Modules.Manifest;
 
 ```
 
-Please refer to Orchard Core documentation about Manifest.cs files for further details.  
-TODO : Orchard Core Manifest documentation. Previous documentation as a reference link below.  
+Please refer to Orchard Core documentation about `Manifest.cs` files for further details.  
 http://docs.orchardproject.net/en/latest/Documentation/Manifest-files/
 
 For this module to start we now will need to add a startup.cs file to our new module. See this file as an example:  
@@ -158,3 +157,10 @@ using OrchardCore.DisplayManagement.Manifest;
     Description = "The TemplateTheme."
 )]
 ```
+
+## Adding Orchard Core Nuget Feed
+
+In order to be able to use the __dev__ feed from Visual Studio, open the Tools menu under Nuget Package Manager --> Package Manager Settings.
+The feed url is https://www.myget.org/F/orchardcore-preview/api/v3/index.json
+
+![image](/src/docs/assets/images/templates/38450422-63670f1c-39eb-11e8-9c14-0743f0a4da42.png)
