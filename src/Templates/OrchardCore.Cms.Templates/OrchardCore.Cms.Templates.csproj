@@ -61,7 +61,7 @@
       </_TemplateConfigFileToCopy>
     </ItemGroup>
     <RemoveDir Directories="%(_TemplateConfigFileToCopy.DestDir)" />
-    <Copy SourceFiles="%(_TemplateConfigFileToCopy.Identity)" DestinationFolder="%(_TemplateConfigFileToCopy.DestDir)" />
+    <Copy SourceFiles="%(_TemplateConfigFileToCopy.Identity)" DestinationFolder="%(_TemplateConfigFileToCopy.DestDir)" SkipUnchangedFiles="true" />
 
     <!--
       Modify the .json files in the .template.config dirs to stamp MSBuild properties into them
