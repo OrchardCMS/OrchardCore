@@ -31,7 +31,7 @@ dotnet new ocweb
 Logging can be ignored with this command:
 
 ```CMD
-dotnet new ocweb -AddNLog false
+dotnet new ocweb --nlog false
 ```
 
 ### From Visual Studio (manual way)
@@ -88,9 +88,9 @@ namespace MyNewWebsite
 ```CMD
 dotnet new ocmodule -n ModuleName.OrchardCore
 
-dotnet new ocmodule -n ModuleName.OrchardCore -PartName TestPart
+dotnet new ocmodule -n ModuleName.OrchardCore --PartName TestPart
 
-dotnet new ocmodule -n ModuleName.OrchardCore -PartName TestPart -AddPart true
+dotnet new ocmodule -n ModuleName.OrchardCore --PartName TestPart --AddPart true
 ```
 
 ### New module from Visual Studio (manual way)
