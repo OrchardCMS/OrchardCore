@@ -2660,7 +2660,7 @@ Vue.component('mediaItemsTable', {
                           :key="media.name" style="height: 80px;"> \
                              <td class="thumbnail-column"> \
                                 <div class="img-wrapper"> \
-                                    <img draggable="false" :src="media.url + \'? width = \' + thumbSize + \' & height=\' + thumbSize" /> \
+                                    <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" /> \
                                 </div> \
                             </td> \
                             <td> \
