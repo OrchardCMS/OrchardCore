@@ -6,22 +6,32 @@ https://github.com/dotnet/dotnet-template-samples
 `dotnet new` documentation :  
 https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new
 
+## Installing the Orchard Cms templates
+
+```CMD
+dotnet new -i "OrchardCore.Cms.Templates"  
+```
+
+This will use the most stable release of Orchard Core. In order to use the latest __dev__ branch of Orchard Core, the following command can be used:
+
+```CMD
+dotnet new -i "OrchardCore.Cms.Templates" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
+```
+
 ## Create a new website
 
 ### From Command Shell (automated way)
 
-#### Initialize module template:
-
-```CMD
-dotnet new -i "OrchardCore.Templates.Cms.Web"  
-```
-
-#### Module commands:
+#### Generate an Orchard Cms Web Application
 
 ```CMD
 dotnet new ocweb  
+```
 
-dotnet new ocweb -AddNLog true  
+Logging can be ignored with this command:
+
+```CMD
+dotnet new ocweb -AddNLog false
 ```
 
 ### From Visual Studio (manual way)
@@ -32,11 +42,11 @@ Fire up Visual Studio, create a new solution file (.sln) by creating a new ASP.N
 
 Now that we created a new Web Application we need to add proper dependencies so that this new Web Application be targetted as an Orchard Core application.
 
-[See adding Orchard Core Nuget Feed](#adding-orchard-core-nuget-feed)
+See [Adding Orchard Core Nuget Feed](#adding-orchard-core-nuget-feed)
 
 ![image](/src/docs/assets/images/templates/orchard-screencast-2.gif)
 
-Finally we will need to register Orchard CMS service in our Startup.cs file like this : 
+Finally we will need to register Orchard CMS service in our `Startup.cs` file like this : 
 
 ```C#
 using Microsoft.AspNetCore.Builder;
@@ -73,12 +83,6 @@ namespace MyNewWebsite
 
 ### From Command Shell (automated way)
 
-#### Initialize module template:
-
-```CMD
-dotnet new -i "OrchardCore.Templates.Module"  
-```
-
 #### Module commands:
 
 ```CMD
@@ -107,7 +111,7 @@ Once done your new module will look like this :
 
 ![image](/src/docs/assets/images/templates/38450628-31c8e2b0-39ef-11e8-9de7-c15f0c6544c5.png)
 
-For Orchard Core to identify this module it will now require a Manifest.cs file. Here is an example of that file:
+For Orchard Core to identify this module it will now require a `Manifest.cs` file. Here is an example of that file:
 
 ```C#
 using OrchardCore.Modules.Manifest;
@@ -122,11 +126,10 @@ using OrchardCore.Modules.Manifest;
 
 ```
 
-Please refer to Orchard Core documentation about Manifest.cs files for further details.  
-TODO : Orchard Core Manifest documentation. Previous documentation as a reference link below.  
+Please refer to Orchard Core documentation about `Manifest.cs` files for further details.  
 http://docs.orchardproject.net/en/latest/Documentation/Manifest-files/
 
-For this module to start we now will need to add a startup.cs file to our new module. See this file as an example:  
+For this module to start we now will need to add a `Startup.cs` file to our new module. See this file as an example:  
 https://github.com/OrchardCMS/OrchardCore/blob/dotnetNewTemplates/src/Templates/OrchardCore.Templates.Module/Startup.cs
 
 Last step is to add our new module to the OrchardCore.Cms.Web project as a reference for including it as part as our website modules. After that, you should be all set for starting building your custom module. You can refer to our template module for examples of what's basically needed normally. https://github.com/OrchardCMS/OrchardCore/blob/dotnetNewTemplates/src/Templates/OrchardCore.Templates.Module/
@@ -135,19 +138,13 @@ Last step is to add our new module to the OrchardCore.Cms.Web project as a refer
 
 ### From Command Shell (automated way)
 
-#### Initialize theme template:
-
-```CMD
-dotnet new -i "OrchardCore.Templates.Theme"  
-```
-
 #### Theme commands:
 
 `dotnet new octheme -n "ThemeName.OrchardCore"`
 
 ### From Visual Studio (manual way)
 
-Should be the same procedure as with modules but instead we need to reference OrchardCore.Theme.Targets and Manifest.cs file slightly differ : 
+Should be the same procedure as with modules but instead we need to reference OrchardCore.Theme.Targets and `Manifest.cs` file slightly differ : 
 
 ```C#
 using OrchardCore.DisplayManagement.Manifest;
@@ -161,61 +158,9 @@ using OrchardCore.DisplayManagement.Manifest;
 )]
 ```
 
-## All Commands
-
-**Initialize:**
-
-```CMD
-dotnet new -i "OrchardCore.Templates.Cms.Web"  
-
-dotnet new -i "OrchardCore.Templates.Module"   
-
-dotnet new -i "OrchardCore.Templates.Theme"  
-```
-
-Alternatively from an empty folder not containing any nuget.config file you can use `dotnet new --nuget-source` available with .NET Core 2.1 only :  
-
-```CMD
-dotnet new -i "OrchardCore.Templates.Cms.Web" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
-
-dotnet new -i "OrchardCore.Templates.Module" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
-
-dotnet new -i "OrchardCore.Templates.Theme" --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
-```
-
-**After initializing :**
-
-```CMD
-dotnet new ocweb
-
-dotnet new ocmodule -n "Module.OrchardCore"
-
-dotnet new octheme -n "Theme.OrchardCore"
-
-dotnet new ocmodule -n "Module.OrchardCore" -PartName "TestPart"
-
-dotnet new ocweb -AddNLog true
-
-dotnet new ocmodule -n "Module.OrchardCore" -PartName "TestPart" -AddPart true
-```
-
-
-**Reinitialize templates :**
-
-`dotnet new --debug:reinit`
-
 ## Adding Orchard Core Nuget Feed
 
-![image](/src/docs/assets/images/templates/38450242-886933f6-39e8-11e8-896c-1f807e5530a0.png)
-
-#### MyGet:
-
-Preview: https://www.myget.org/gallery/orchardcore-preview
-
-Feed: https://www.myget.org/F/orchardcore-preview/api/v3/index.json
-
-
-
-To be able to use these feeds in Visual Studio your will need to add them to the Nuget package source settings that can be found by going to Visual Studio Tools menu under Nuget Package Manager --> Package Manager Settings.
+In order to be able to use the __dev__ feed from Visual Studio, open the Tools menu under Nuget Package Manager --> Package Manager Settings.
+The feed url is https://www.myget.org/F/orchardcore-preview/api/v3/index.json
 
 ![image](/src/docs/assets/images/templates/38450422-63670f1c-39eb-11e8-9c14-0743f0a4da42.png)

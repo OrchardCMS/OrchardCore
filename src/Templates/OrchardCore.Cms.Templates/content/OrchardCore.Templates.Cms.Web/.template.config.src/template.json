@@ -1,8 +1,9 @@
 {
+  "$schema": "http://json.schemastore.org/template",
   "author": "Orchard Project",
-  "classifications": [ "Web", "CMS", "Orchard Core" ],
-  "name": "OrchardCore Cms",
-  "identity": "orchardcore",
+  "classifications": [ "Web", "Orchard Core", "CMS" ],
+  "name": "Orchard Core Cms Web App",
+  "identity": "OrchardCore.Templates.Cms",
   "shortName": "occms",
   "sourceName": "OrchardCore.Templates.Cms",
   "preferNameDirectory": true,
@@ -11,7 +12,14 @@
       "type": "parameter",
       "dataType": "bool",
       "description": "Add NLog.config file",
-      "defaultValue": "true"
+      "defaultValue": "false"
+    },
+    "OrchardVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "description": "Specifies which version of Orchard Core packages to use.",
+      "replaces": "$(TemplateOrchardPackageVersion)",
+      "defaultValue": "${TemplateOrchardVersion}"
     }
   },
   "sources": [
