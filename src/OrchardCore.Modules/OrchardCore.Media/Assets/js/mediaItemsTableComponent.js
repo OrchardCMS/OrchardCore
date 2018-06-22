@@ -4,7 +4,7 @@ Vue.component('mediaItemsTable', {
         <table class="table media-items-table"> \
             <thead> \
                 <tr class="header-row"> \
-                    <th scope="col" class="thumbnail-column" style="padding-left:16px;">{{ T.imageHeader }}</th> \
+                    <th scope="col" class="thumbnail-column">{{ T.imageHeader }}</th> \
                     <th scope="col" v-on:click="changeSort(\'name\')"> \
                        {{ T.nameHeader }} \
                          <sort-indicator colname="name" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
@@ -29,7 +29,7 @@ Vue.component('mediaItemsTable', {
                           :class="{selected: isMediaSelected(media)}" \
                           v-on:click.stop="toggleSelectionOfMedia(media)" \
                           draggable="true" v-on:dragstart="dragStart(media, $event)" \
-                          :key="media.name" style="height: 80px;"> \
+                          :key="media.name"> \
                              <td class="thumbnail-column"> \
                                 <div class="img-wrapper"> \
                                     <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" />  \

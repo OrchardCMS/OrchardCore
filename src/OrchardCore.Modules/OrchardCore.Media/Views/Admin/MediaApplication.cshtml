@@ -50,7 +50,7 @@
                     <button type="button" class="btn btn-secondary btn-sm mr-2 invert-selection-button" v-on:click="invertSelection">@T["Invert"]</button>
                     <button type="button" class="btn btn-secondary btn-sm mr-2 delete-all-button" v-on:click="deleteMediaList"
                             :disabled="selectedMedias.length < 1">
-                        @T["Delete"] <span style="min-width:25px; display:inline-block;">({{ selectedMedias.length}})</span>
+                        @T["Delete"] <span class="selected-count">({{ selectedMedias.length}})</span>
                     </button>
                 </div>
 
@@ -59,12 +59,12 @@
                         <div class="input-group-prepend">
                             <button id="clear-media-filter-button" class="btn btn-outline-secondary" type="button" :disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa fa-times"></i></button>
                         </div>
-                        <input type="text" id="media-filter-input" v-model="mediaFilter" class="form-control input-filter" style="max-width:160px;" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]">
+                        <input type="text" id="media-filter-input" v-model="mediaFilter" class="form-control input-filter" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]">
                     </div>
                 </div>
                 <div class="d-inline-flex mb-1 pt-1">
-                    <div class="btn-group btn-group-sm text-right" style="max-width:300px; width: 100%;">
-                        <label for="fileupload" class="btn btn-sm btn-success fileinput-button upload-button" style="width:100%;">
+                    <div class="btn-group btn-group-sm text-right upload-btn-group">
+                        <label for="fileupload" class="btn btn-sm btn-success fileinput-button upload-button">
                             <input id="fileupload" type="file" name="files" multiple="multiple">
                             <i class="fa fa-upload" aria-hidden="true"></i>
                             @T["Upload files..."]

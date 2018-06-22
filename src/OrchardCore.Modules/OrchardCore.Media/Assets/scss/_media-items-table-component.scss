@@ -12,6 +12,19 @@
             color: $gray-700;
             font-weight: 500 !important;
             user-select: none;
+
+            .thumbnail-column {
+                padding-left: 16px;
+            }
+        }
+    }
+
+    tr.media-item {
+        height: 80px;
+
+        &.selected {
+            background-color: lighten($primary, 45%);
+            border-left: solid 2px $primary;
         }
     }
 
@@ -50,10 +63,6 @@
         cursor: pointer;
     }
 
-    tr.selected {
-        background-color: lighten($primary, 45%);
-        border-left: solid 2px $primary;
-    }
 
     .media-name-cell {
         margin-top: 16px;
@@ -78,5 +87,9 @@
     .btn-link {
         color: $gray-600;
         padding-left: 0;
+    }
+
+    .sort-indicator {
+        display: inline-block;
     }
 }

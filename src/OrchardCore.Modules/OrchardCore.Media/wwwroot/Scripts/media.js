@@ -2631,7 +2631,7 @@ Vue.component('mediaItemsTable', {
         <table class="table media-items-table"> \
             <thead> \
                 <tr class="header-row"> \
-                    <th scope="col" class="thumbnail-column" style="padding-left:16px;">{{ T.imageHeader }}</th> \
+                    <th scope="col" class="thumbnail-column">{{ T.imageHeader }}</th> \
                     <th scope="col" v-on:click="changeSort(\'name\')"> \
                        {{ T.nameHeader }} \
                          <sort-indicator colname="name" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
@@ -2656,7 +2656,7 @@ Vue.component('mediaItemsTable', {
                           :class="{selected: isMediaSelected(media)}" \
                           v-on:click.stop="toggleSelectionOfMedia(media)" \
                           draggable="true" v-on:dragstart="dragStart(media, $event)" \
-                          :key="media.name" style="height: 80px;"> \
+                          :key="media.name"> \
                              <td class="thumbnail-column"> \
                                 <div class="img-wrapper"> \
                                     <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" />  \
@@ -2733,7 +2733,7 @@ Vue.component('mediaItemsTable', {
 // <sort-indicator> component
 Vue.component('sortIndicator', {
     template: '\
-        <div v-show="isActive" style="display: inline-block;"> \
+        <div v-show="isActive" class="sort-indicator"> \
             <span v-show="asc"><i class="small fa fa-chevron-up"></i></span> \
             <span v-show="!asc"><i class="small fa fa-chevron-down"></i></span> \
         </div> \
@@ -2754,7 +2754,7 @@ Vue.component('sortIndicator', {
 Vue.component('upload', {
     template: '\
         <div :class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
-            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning" style=""><i class="fa fa-times"></i> </span>\
+            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa fa-times"></i> </span>\
             <p class="upload-name" :title="model.errorMessage">{{ model.name }}</p> \
             <div> \
                <span v-show="!model.errorMessage" :style="{ width: model.percentage + \'%\'}" class="progress-bar"> </span> \
