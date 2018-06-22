@@ -1,132 +1,43 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!--
-    Defines msbuild tasks on a Bundle package to copy all modules assets (projects and packages) to the "Packages" folder.
+  <!-- 
+    This file is packaged with "OrchardCore.Application.Targets.nupkg" in "./build" such that any
+    Application that references it will embedd in its assembly a list of the referenced modules.
   -->
 
-  <Target Name="CopyPackageAssets" AfterTargets="Build" Condition="'$(IgnorePackageAssets)' != 'true'">
-    <Message Text="Copying package assets" Importance="high" />
-    <Copy
-      SourceFiles="@(PackageAssetFiles)"
-      DestinationFolder="Packages\%(RecursiveDir)"
-      ContinueOnError="true" />
-
+  <Target Name="PublishRazorPagesFiles" BeforeTargets="BeforePublish">
     <ItemGroup>
-      <ModuleProjectReferences
-        Include="@(_MSBuildProjectReferenceExistent)"
-        Condition="Exists('%(RootDir)%(Directory)Module.txt') Or Exists('%(RootDir)%(Directory)obj\Module.txt') Or
-                   Exists('%(RootDir)%(Directory)Theme.txt') Or Exists('%(RootDir)%(Directory)obj\Theme.txt')" />
+      <RazorPagesFiles Include="Pages\**\*.cshtml" />
+      <ResolvedFileToPublish Include="@(RazorPagesFiles)" RelativePath="%(RazorPagesFiles.Identity)" />
     </ItemGroup>
+  </Target>
 
+  <Target Name="ResolveModuleProjectReferences" AfterTargets="AfterResolveReferences">
     <MSBuild
-      Targets="CopyPackageAssetFiles"
+      Targets="GetModuleProject"
       BuildInParallel="$(BuildInParallel)"
-      Properties="ApplicationDirectory=$(MSBuildProjectDirectory)"
-      Projects="@(ModuleProjectReferences)"
-      Condition="'@(ModuleProjectReferences)' != ''"
+      Projects="@(_MSBuildProjectReferenceExistent)"
+      Condition="'@(_MSBuildProjectReferenceExistent)' != ''"
+      SkipNonexistentTargets="true"
       ContinueOnError="true">
+
+      <Output ItemName="ModuleProjects" TaskParameter="TargetOutputs" />
     </MSBuild>
 
     <ItemGroup>
-      <ModuleProjectRazorFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml">
-        <ProjectName>%(Filename)</ProjectName>
-      </ModuleProjectRazorFiles>
-      <ModuleProjectRazorFilesMapping
-        Include="%(ModuleProjectRazorFiles.FullPath)|\Packages\%(ModuleProjectRazorFiles.ProjectName)\%(RecursiveDir)%(Filename)%(Extension)">
-      </ModuleProjectRazorFilesMapping>
+      <ModuleProjectReferences Include="@(ModuleProjects)" />
     </ItemGroup>
-
-    <Message Text="Generating module project razor files mapping file"
-      Condition="'@(ModuleProjectRazorFiles)' != ''" Importance="high" />
-
-    <WriteLinesToFile
-      File="obj\ModuleProjectRazorFiles.map"
-      Lines="@(ModuleProjectRazorFilesMapping)"
-      Condition="'@(ModuleProjectRazorFiles)' != ''"
-      Overwrite="true"
-      Encoding="utf-8"
-      ContinueOnError="true" />
 
     <ItemGroup>
-      <ModuleProjectContentFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)Content\**\*">
-        <ProjectName>%(Filename)</ProjectName>
-      </ModuleProjectContentFiles>
-      <ModuleProjectContentFilesMapping
-        Include="%(ModuleProjectContentFiles.FullPath)|\Packages\%(ModuleProjectContentFiles.ProjectName)\Content\%(RecursiveDir)%(Filename)%(Extension)">
-      </ModuleProjectContentFilesMapping>
+      <ModuleProjectNames Include="%(ModuleProjectReferences.FileName)" />
+      <ModuleNames Include="@(ModulePackageNames);@(ModuleProjectNames)" />
     </ItemGroup>
-
-    <Message Text="Generating module project content files mapping file"
-      Condition="'@(ModuleProjectContentFiles)' != ''" Importance="high" />
-
-    <WriteLinesToFile
-      File="obj\ModuleProjectContentFiles.map"
-      Lines="@(ModuleProjectContentFilesMapping)"
-      Condition="'@(ModuleProjectContentFiles)' != ''"
-      Overwrite="true"
-      Encoding="utf-8"
-      ContinueOnError="true" />
 
     <ItemGroup>
-      <ModuleProjectLiquidFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.liquid">
-        <ProjectName>%(Filename)</ProjectName>
-      </ModuleProjectLiquidFiles>
-      <ModuleProjectLiquidFilesMapping
-        Include="%(ModuleProjectLiquidFiles.FullPath)|\Packages\%(ModuleProjectLiquidFiles.ProjectName)\%(RecursiveDir)%(Filename)%(Extension)">
-      </ModuleProjectLiquidFilesMapping>
-    </ItemGroup>
-
-    <Message Text="Generating module project liquid files mapping file"
-      Condition="'@(ModuleProjectLiquidFiles)' != ''" Importance="high" />
-
-    <WriteLinesToFile
-      File="obj\ModuleProjectLiquidFiles.map"
-      Lines="@(ModuleProjectLiquidFilesMapping)"
-      Condition="'@(ModuleProjectLiquidFiles)' != ''"
-      Overwrite="true"
-      Encoding="utf-8"
-      ContinueOnError="true" />
-
-    <CreateItem Include="@(Content)" Condition="'%(Extension)'=='.cshtml'">
-      <Output TaskParameter="Include" ItemName="MvcContentRazorFiles"/>
-    </CreateItem>
-    <ItemGroup Condition="'@(MvcRazorFilesToCompile)' == ''">
-      <MvcRazorFilesToCompile Include="@(MvcContentRazorFiles);Packages\**\*.cshtml" />
+      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleNameAttribute">
+        <_Parameter1>%(ModuleNames.Identity)</_Parameter1>
+      </AssemblyAttribute>
     </ItemGroup>
   </Target>
-
-  <Target Name="CleanPackageAssets" AfterTargets="Clean"
-          Condition="'$(IgnorePackageAssets)' != 'true' And Exists('Packages')">
-    <ItemGroup>
-      <AllPackageAssetFiles Include="Packages\**" />
-    </ItemGroup>
-    <Delete
-      Files="@(AllPackageAssetFiles)"
-      ContinueOnError="true" />
-    <RemoveDir
-      Directories="Packages\%(AllPackageAssetFiles.RecursiveDir)"
-      ContinueOnError="true" />
-  </Target>
-
-  <!--
-    Defines msbuild props and items on a Bundle package to publish all modules assets (projects and packages).
-  -->
-
-  <PropertyGroup>
-    <MvcRazorExcludeViewFilesFromPublish>false</MvcRazorExcludeViewFilesFromPublish>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Packages\**" />
-    <Content Remove="Packages\**" />
-    <EmbeddedResource Remove="Packages\**" />
-    <None Remove="Packages\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ResolvedFileToPublish Include="Packages\**">
-      <RelativePath>Packages\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
-    </ResolvedFileToPublish>
-  </ItemGroup>
 
 </Project>

@@ -10,11 +10,13 @@ using OrchardCore.Demo.Commands;
 using OrchardCore.Demo.ContentElementDisplays;
 using OrchardCore.Demo.Drivers;
 using OrchardCore.Demo.Services;
+using OrchardCore.Demo.TagHelpers;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Modules;
+using OrchardCore.Mvc;
 using OrchardCore.Mvc.RazorPages;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users.Models;
@@ -25,7 +27,6 @@ namespace OrchardCore.Demo
     {
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-
             routes.MapAreaRoute(
                 name: "Home",
                 areaName: "OrchardCore.Demo",
@@ -67,8 +68,20 @@ namespace OrchardCore.Demo
 
             services.Configure<RazorPagesOptions>(options =>
             {
+                // The module name (if specified) is already defined as a default folder path
+                // options.Conventions.AddModularFolderRoute("/OrchardCore.Demo/Pages", "Orchard Demo");
+
+                // Add a custom folder path
+                options.Conventions.AddModularFolderRoute("/OrchardCore.Demo/Pages", "Demo");
+
+                // Add a custom page route
                 options.Conventions.AddModularPageRoute("/OrchardCore.Demo/Pages/Hello", "Hello");
+
+                // This declaration would define an home page
+                // options.Conventions.AddModularPageRoute("/OrchardCore.Demo/Pages/Hello", "");
             });
+
+            services.AddTagHelpers(typeof(BazTagHelper).Assembly);
         }
     }
 }

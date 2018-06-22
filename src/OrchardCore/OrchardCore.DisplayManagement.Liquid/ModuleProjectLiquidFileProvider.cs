@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
@@ -14,13 +16,10 @@ namespace OrchardCore.DisplayManagement.Liquid
     /// </summary>
     public class ModuleProjectLiquidFileProvider : IFileProvider
     {
-        private const string MappingFileFolder = "obj";
-        private const string MappingFileName = "ModuleProjectLiquidFiles.map";
-
         private static Dictionary<string, string> _paths;
         private static object _synLock = new object();
 
-        public ModuleProjectLiquidFileProvider(string rootPath)
+        public ModuleProjectLiquidFileProvider(IHostingEnvironment environment)
         {
             if (_paths != null)
             {
@@ -31,19 +30,26 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 if (_paths == null)
                 {
-                    var path = Path.Combine(rootPath, MappingFileFolder, MappingFileName);
-
-                    if (File.Exists(path))
+                    if (_paths == null)
                     {
-                        var paths = File.ReadAllLines(path)
-                            .Select(x => x.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
-                            .Where(x => x.Length == 2).ToDictionary(x => x[1].Replace('\\', '/'), x => x[0]);
+                        var assets = new List<Asset>();
+                        var application = environment.GetApplication();
 
-                        _paths = new Dictionary<string, string>(paths);
-                    }
-                    else
-                    {
-                        _paths = new Dictionary<string, string>();
+                        foreach (var name in application.ModuleNames)
+                        {
+                            var module = environment.GetModule(name);
+
+                            if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
+                                != Path.GetDirectoryName(application.Assembly.Location))
+                            {
+                                continue;
+                            }
+
+                            assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath
+                                .EndsWith(".liquid", StringComparison.Ordinal)));
+                        }
+
+                        _paths = assets.ToDictionary(a => a.ModuleAssetPath, a => a.ProjectAssetPath);
                     }
                 }
             }
@@ -51,41 +57,46 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
-            return null;
+            return NotFoundDirectoryContents.Singleton;
         }
 
         public IFileInfo GetFileInfo(string subpath)
         {
             if (subpath == null)
             {
-                return null;
+                return new NotFoundFileInfo(subpath);
             }
 
-            subpath = subpath.Replace("\\", "/");
+            var path = NormalizePath(subpath);
 
-            if (_paths.ContainsKey(subpath))
+            if (_paths.TryGetValue(path, out var projectAssetPath))
             {
-                return new PhysicalFileInfo(new FileInfo(_paths[subpath]));
+                return new PhysicalFileInfo(new FileInfo(projectAssetPath));
             }
 
-            return null;
+            return new NotFoundFileInfo(subpath);
         }
 
         public IChangeToken Watch(string filter)
         {
             if (filter == null)
             {
-                return null;
+                return NullChangeToken.Singleton;
             }
 
-            filter = filter.Replace("\\", "/");
+            var path = NormalizePath(filter);
 
-            if (_paths.ContainsKey(filter))
+            if (_paths.TryGetValue(path, out var projectAssetPath))
             {
-                return new PollingFileChangeToken(new FileInfo(_paths[filter]));
+                return new PollingFileChangeToken(new FileInfo(projectAssetPath));
             }
 
-            return null;
+            return NullChangeToken.Singleton;
+        }
+
+        private string NormalizePath(string path)
+        {
+            return path.Replace('\\', '/').Trim('/');
         }
     }
 }

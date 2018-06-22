@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Extensions.Features
 {

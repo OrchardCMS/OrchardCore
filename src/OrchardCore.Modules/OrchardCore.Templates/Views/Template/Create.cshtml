@@ -1,4 +1,7 @@
 @model TemplateViewModel
+@{    
+    var returnUrl = ViewData["returnUrl"]?.ToString();
+}
 
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/javascript/javascript.min.js" at="Foot"></script>
@@ -10,10 +13,10 @@
 <script asp-src="/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 <script asp-src="/OrchardCore.Templates/templatepreview.edit.js" at="Foot"></script>
 
-<h1>@RenderTitleSegments(T["Edit Template"])</h1>
+<h1>@RenderTitleSegments(T["Create Template"])</h1>
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Create" method="post">
+<form asp-action="Create" asp-route-returnUrl="@ViewData["returnUrl"]" method="post">
     <div class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
         <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>
@@ -36,8 +39,12 @@
     <fieldset>
         <div class="form-group">
             <button class="btn btn-primary" type="submit">@T["Save"]</button>
-            <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
-            <a class="btn btn-secondary" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
+            @if (Url.IsLocalUrl(returnUrl))
+            {                
+                <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
+            }
+            <a class="btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
+
         </div>
     </fieldset>
 </form>

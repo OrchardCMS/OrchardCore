@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.FileProviders;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Mvc.FileProviders;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
@@ -139,7 +139,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 {
                     if (_logger.IsEnabled(LogLevel.Debug))
                     {
-                        _logger.LogDebug("Binding {0} as shape [{1}] for feature {2}",
+                        _logger.LogDebug("Binding '{TemplatePath}' as shape '{ShapeType}' for feature '{FeatureName}'",
                             hit.shapeContext.harvestShapeInfo.RelativePath,
                             iter.shapeContext.harvestShapeHit.ShapeType,
                             feature.Id);

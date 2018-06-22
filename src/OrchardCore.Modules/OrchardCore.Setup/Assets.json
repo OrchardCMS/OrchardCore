@@ -1,18 +1,18 @@
-﻿[
+[
   {
     "generateSourceMaps": false,
     "inputs": [
       "Assets/scss/setup.scss"
     ],
-    "output": "Content/Styles/setup.css"
+    "output": "wwwroot/Styles/setup.css"
   },
   {
     "inputs": [
       "../../OrchardCore.Modules/OrchardCore.Resources/Assets/jQuery/jquery-3.*.js",
-      "../../OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/Js/tether.js",
+      "../../OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/Js/popper.js",
       "../../OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/Js/bootstrap.js",
       "Assets/js/*.js"
     ],
-    "output": "Content/Scripts/setup.js"
+    "output": "wwwroot/Scripts/setup.js"
   }
 ]

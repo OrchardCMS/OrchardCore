@@ -1,4 +1,3 @@
-﻿using Microsoft.AspNetCore.Http;
 using OrchardCore.Environment.Extensions.Features;
 using System;
 using System.Collections.Generic;
@@ -11,16 +10,11 @@ namespace OrchardCore.Environment.Cache.CacheContextProviders
     public class FeaturesCacheContextProvider : ICacheContextProvider
     {
         private const string FeaturesPrefix = "features:";
-
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        
         private readonly IFeatureHash _featureHash;
         
-        public FeaturesCacheContextProvider(
-            IHttpContextAccessor httpContextAccessor,
-            IFeatureHash featureHash
-            )
+        public FeaturesCacheContextProvider(IFeatureHash featureHash)
         {
-            _httpContextAccessor = httpContextAccessor;
             _featureHash = featureHash;
         }
 

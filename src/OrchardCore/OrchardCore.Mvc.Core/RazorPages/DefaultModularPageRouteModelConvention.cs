@@ -1,25 +1,86 @@
+using System;
+using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.Extensions.Primitives;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc.RazorPages
 {
     public class DefaultModularPageRouteModelConvention : IPageRouteModelConvention
     {
+        private readonly IHostingEnvironment _hostingEnvironment;
+
+        public DefaultModularPageRouteModelConvention(IHostingEnvironment hostingEnvironment)
+        {
+            _hostingEnvironment = hostingEnvironment;
+        }
+
         public void Apply(PageRouteModel model)
         {
-            foreach (var selector in model.Selectors)
+            var pageName = model.ViewEnginePath.Trim('/');
+            var tokenizer = new StringTokenizer(pageName, new[] { '/' });
+            int count = tokenizer.Count(), pathIndex = 0;
+
+            for (var i = 0; i < count; i++)
             {
-                var template = selector.AttributeRouteModel.Template;
+                var segment = tokenizer.ElementAt(i);
 
-                if (template.Contains("/Pages/") && !template.StartsWith("/Pages/"))
+                if ("Pages" == segment)
                 {
-                    var pageIndex = template.LastIndexOf("/Pages/");
-                    var moduleFolder = template.Substring(0, pageIndex);
-                    var moduleId = moduleFolder.Substring(moduleFolder.LastIndexOf("/") + 1);
+                    if (i < 2 || i == count - 1)
+                    {
+                        return;
+                    }
 
-                    template = moduleId + template.Replace("/Pages/", "/").Substring(pageIndex);
-                    selector.AttributeRouteModel.Name = template.Replace('/', '.');
-                    selector.AttributeRouteModel.Template = template;
+                    foreach (var selector in model.Selectors)
+                    {
+                        selector.AttributeRouteModel.SuppressLinkGeneration = true;
+                    }
+
+                    var module = tokenizer.ElementAt(i - 1).Value;
+
+                    var template = pageName.Substring(pathIndex - (module.Length + 1));
+
+                    model.Selectors.Add(new SelectorModel
+                    {
+                        AttributeRouteModel = new AttributeRouteModel
+                        {
+                            Template = template,
+                            Name = template.Replace('/', '.')
+                        }
+                    });
+
+                    var name = _hostingEnvironment.GetModule(module).ModuleInfo.Name;
+
+                    if (!String.IsNullOrWhiteSpace(name))
+                    {
+                        module = name;
+                    }
+
+                    if (module != Application.ModuleName)
+                    {
+                        template = module + pageName.Substring(pathIndex + "Pages".Length);
+                    }
+                    else
+                    {
+                        template = pageName.Substring(pathIndex + "Pages".Length + 1);
+                    }
+
+
+                    model.Selectors.Add(new SelectorModel
+                    {
+                        AttributeRouteModel = new AttributeRouteModel
+                        {
+                            Template = template,
+                            Name = template.Replace('/', '.')
+                        }
+                    });
+
+                    break;
                 }
+
+                pathIndex += segment.Length + 1;
             }
         }
     }

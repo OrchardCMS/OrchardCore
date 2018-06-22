@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
@@ -28,7 +28,8 @@ namespace OrchardCore.Nancy.AssemblyCatalogs
         {
             var shellBluePrint = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ShellBlueprint>();
             return shellBluePrint.Dependencies.Keys
-                .Select(type => type.GetTypeInfo().Assembly)
+                .Select(type => type.Assembly)
+                .Distinct()
                 .ToArray();
         }
     }

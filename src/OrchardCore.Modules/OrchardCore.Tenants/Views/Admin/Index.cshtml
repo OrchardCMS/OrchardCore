@@ -46,7 +46,7 @@
                         <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
                         @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
                         {
-                            <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
+                            <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-dark btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
                         }
                         @if (entry.ShellSettings.State == TenantState.Disabled)
                         {
@@ -64,10 +64,10 @@
                         @switch (entry.ShellSettings.State)
                         {
                             case TenantState.Disabled:
-                                <span class="badge badge-default">@T["Disabled"]</span>
+                                <span class="badge badge-dark">@T["Disabled"]</span>
                                 break;
                             case TenantState.Initializing:
-                                <span class="badge badge-Info">@T["Initializing"]</span>
+                                <span class="badge badge-info">@T["Initializing"]</span>
                                 break;
                             case TenantState.Invalid:
                                 <span class="badge badge-warning">@T["Invalid"]</span>

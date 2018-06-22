@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Liquid;
+using OrchardCore.Queries.Deployment;
 using OrchardCore.Queries.Drivers;
 using OrchardCore.Queries.Liquid;
 using OrchardCore.Queries.Recipes;
@@ -30,6 +32,11 @@ namespace OrchardCore.Queries
             services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
             services.AddRecipeExecutionStep<QueryStep>();
             services.AddScoped<IPermissionProvider, Permissions>();
+
+
+            services.AddTransient<IDeploymentSource, AllQueriesDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllQueriesDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllQueriesDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -49,6 +56,8 @@ namespace OrchardCore.Queries
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<ILiquidTemplateEventHandler, QueriesLiquidTemplateEventHandler>();
+
             services.AddLiquidFilter<QueryFilter>("query");
         }
     }

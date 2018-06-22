@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement.Metadata.Builders;
+using OrchardCore.ContentManagement.Metadata.Builders;
 
 namespace OrchardCore.ContentManagement.Metadata.Settings
 {
@@ -18,6 +18,11 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
         public static ContentTypeDefinitionBuilder Draftable(this ContentTypeDefinitionBuilder builder, bool draftable = true)
         {
             return builder.WithSetting("Draftable", draftable.ToString());
+        }
+
+        public static ContentTypeDefinitionBuilder Versionable(this ContentTypeDefinitionBuilder builder, bool versionable = true)
+        {
+            return builder.WithSetting("Versionable", versionable.ToString());
         }
 
         public static ContentTypeDefinitionBuilder Securable(this ContentTypeDefinitionBuilder builder, bool securable = true)

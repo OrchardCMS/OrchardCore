@@ -4,7 +4,7 @@ The Lucene module allows to manage Lucene indices.
 
 ## Recipe step
 
-Lucene indices can be created during recipes using the `lucene-index` step.
+Lucene indices can be created during recipe execution using the `lucene-index` step.
 Here is a sample step:
 
 ```json
@@ -12,7 +12,6 @@ Here is a sample step:
     "name": "lucene-index",
     "Indices": "Indices": [ "Search" ]
 }
-
 ```
 
 ### Queries recipe step
@@ -28,7 +27,6 @@ Here is an example for creating a Lucene query from a Queries recipe step:
     "ReturnContentItems": true
 }
 ```
-
 
 ## Web APIs
 
@@ -46,8 +44,8 @@ Verbs: **POST** and **GET**
 
 ### api/lucene/documents
 
-Executes a query with the specified name and returns the corresponding lucene documents. Only the stored
-fields are returned.
+Executes a query with the specified name and returns the corresponding Lucene documents.
+Only the stored fields are returned.
 
 Verbs: **POST** and **GET**
 
@@ -57,7 +55,7 @@ Verbs: **POST** and **GET**
 | `query` | `{ "query": { "match_all": {} } }` | A Json object representing the query |
 | `parameters` | `{ size: 3}` | A Json object representing the parameters of the query |
 
-# Lucene Worker (OrchardCore.Lucene.Worker)
+## Lucene Worker (OrchardCore.Lucene.Worker)
 
 This feature creates a background task that will keep the local file system index synchronized with
 other instances that could have their own local index. It is recommended to use it only if you are 
@@ -70,6 +68,6 @@ feature.
 
 ### Lucene.net
 
-http://lucenenet.apache.org/index.html
-Copyright 2013 The Apache Software Foundation
-Licensed under the Apache License, Version 2.0. 
+<http://lucenenet.apache.org/index.html>
+Copyright 2013 The Apache Software Foundation  
+Licensed under the Apache License, Version 2.0.

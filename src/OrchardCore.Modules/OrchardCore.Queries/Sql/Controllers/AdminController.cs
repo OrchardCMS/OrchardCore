@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Dapper;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using OrchardCore.Liquid;
+using OrchardCore.Modules;
 using OrchardCore.Queries.Sql.ViewModels;
 using YesSql;
 
@@ -38,7 +38,11 @@ namespace OrchardCore.Queries.Sql.Controllers
         public Task<IActionResult> Query(string query)
         {
             query = String.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
-            return Query(new AdminQueryViewModel { DecodedQuery = query });
+            return Query(new AdminQueryViewModel
+            {
+                DecodedQuery = query,
+                FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName
+            });
         }
 
         [HttpPost]
@@ -66,6 +70,7 @@ namespace OrchardCore.Queries.Sql.Controllers
             var dialect = SqlDialectFactory.For(connection);
 
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
+
             var templateContext = new TemplateContext();
             foreach(var parameter in parameters)
             {
@@ -74,17 +79,19 @@ namespace OrchardCore.Queries.Sql.Controllers
 
             var tokenizedQuery = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, templateContext);
 
-            if (SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, out var rawQuery, out var rawParameters, out var messages))
+            model.FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName;
+
+            if (SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
                 model.RawSql = rawQuery;
-                model.RawParameters = JsonConvert.SerializeObject(rawParameters);
+                model.Parameters = JsonConvert.SerializeObject(parameters, Formatting.Indented);
 
                 try
                 {
                     using (connection)
                     {
                         connection.Open();
-                        model.Documents = await connection.QueryAsync(rawQuery, rawParameters);
+                        model.Documents = await connection.QueryAsync(rawQuery, parameters);
                     }
                 }
                 catch(Exception e)

@@ -12,7 +12,7 @@ namespace OrchardCore.DisplayManagement.Views
     public class ShapeResult : IDisplayResult
     {
         private string _defaultLocation;
-        private IDictionary<string,string> _otherLocations;
+        private IDictionary<string, string> _otherLocations;
         private string _differentiator;
         private string _prefix;
         private string _cacheId;
@@ -24,7 +24,7 @@ namespace OrchardCore.DisplayManagement.Views
         private Action<ShapeDisplayContext> _displaying;
 
         public ShapeResult(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder)
-            :this(shapeType, shapeBuilder, null)
+            : this(shapeType, shapeBuilder, null)
         {
         }
 
@@ -104,6 +104,7 @@ namespace OrchardCore.DisplayManagement.Views
             newShapeMetadata.DisplayType = displayType;
             newShapeMetadata.PlacementSource = placement.Source;
             newShapeMetadata.Tab = placement.GetTab();
+            newShapeMetadata.Type = _shapeType;
 
             if (_displaying != null)
             {
@@ -112,13 +113,13 @@ namespace OrchardCore.DisplayManagement.Views
 
             // The _processing callback is used to delay execution of costly initialization
             // that can be prevented by caching
-            if(_processing != null)
+            if (_processing != null)
             {
                 newShapeMetadata.OnProcessing(_processing);
             }
 
             // Apply cache settings
-            if(!String.IsNullOrEmpty(_cacheId) && _cache != null)
+            if (!String.IsNullOrEmpty(_cacheId) && _cache != null)
             {
                 _cache(newShapeMetadata.Cache(_cacheId));
             }
@@ -146,7 +147,7 @@ namespace OrchardCore.DisplayManagement.Views
 
             dynamic parentShape = context.Shape;
 
-            if(placement.IsLayoutZone())
+            if (placement.IsLayoutZone())
             {
                 parentShape = context.Layout;
             }
@@ -154,9 +155,9 @@ namespace OrchardCore.DisplayManagement.Views
             var position = placement.GetPosition();
             var zones = placement.GetZones();
 
-            foreach(var zone in zones)
+            foreach (var zone in zones)
             {
-                if(parentShape == null)
+                if (parentShape == null)
                 {
                     break;
                 }
@@ -210,7 +211,7 @@ namespace OrchardCore.DisplayManagement.Views
         /// </summary>
         public ShapeResult Location(string displayType, string location)
         {
-            if(_otherLocations == null)
+            if (_otherLocations == null)
             {
                 _otherLocations = new Dictionary<string, string>(2);
             }

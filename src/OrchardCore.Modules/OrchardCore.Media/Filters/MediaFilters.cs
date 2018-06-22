@@ -18,7 +18,7 @@ namespace OrchardCore.Media.Filters
         public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var url = input.ToStringValue();
-            var imageUrl = _mediaFileStore.GetPublicUrl(url);
+            var imageUrl = _mediaFileStore.MapPathToPublicUrl(url);
 
             return Task.FromResult<FluidValue>(new StringValue(imageUrl ?? url));
         }
@@ -54,8 +54,8 @@ namespace OrchardCore.Media.Filters
                 url += "?";
             }
 
-            var width = arguments["width"];
-            var height = arguments["height"];
+            var width = arguments["width"].Or(arguments.At(0));
+            var height = arguments["height"].Or(arguments.At(1));
             var mode = arguments["mode"];
 
             if (!width.IsNil())

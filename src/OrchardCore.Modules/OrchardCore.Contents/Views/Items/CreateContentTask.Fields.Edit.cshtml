@@ -1,0 +1,42 @@
+@using OrchardCore.Contents.Workflows.ViewModels
+@model CreateContentTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="ContentType">
+    <label asp-for="ContentType">@T["Content Type"] <span asp-validation-for="ContentType"></span></label>
+    <select asp-for="ContentType" asp-items="@Model.AvailableContentTypes" class="form-control" asp-validation-class-for="ContentType"></select>
+    <span class="hint">@T["Select the type of content to create."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Publish">
+    <div class="form-check">
+        <label asp-for="Publish" class="form-check-label">
+            <input type="checkbox" asp-for="Publish" class="form-check-input" />
+            @T["Publish"]
+        </label>
+    </div>
+    <span class="hint">@T["Check if you want the content item to be published when being created. Leave unchecked to create a draft version."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="ContentProperties">
+    <label asp-for="ContentProperties">@T["Content Properties"] <span asp-validation-for="ContentProperties"></span></label>
+    <textarea asp-for="ContentProperties" class="form-control"></textarea>
+    <span class="hint">@T["Optionally provide values for the content parts, fields and their properties in JSON format. With Liquid support."]</span>
+</fieldset>
+
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/javascript/javascript.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/simple.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/multiplex.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/xml/xml.min.js" at="Foot"></script>
+<script asp-src="/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<script at="Foot">
+$(function () {
+    var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ContentProperties)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+});
+</script>

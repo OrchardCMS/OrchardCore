@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using System.Threading.Tasks;
@@ -61,7 +61,7 @@ namespace OrchardCore.Demo.Controllers
                 return Unauthorized();
             }
 
-            _contentManager.Create(contentItem);
+            await _contentManager.CreateAsync(contentItem);
 
             return new ObjectResult(contentItem);
         }

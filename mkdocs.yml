@@ -9,6 +9,7 @@ repo_url: https://github.com/OrchardCMS/OrchardCore
 docs_dir: src
 
 extra_css: 
+- docs/css/code-tabs.css
 - docs/css/extra.css
 
 extra_javascript:
@@ -17,19 +18,24 @@ extra_javascript:
 # Extensions
 markdown_extensions:
   - markdown.extensions.admonition
+  - markdown.extensions.codehilite
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
   - markdown.extensions.meta
 #  - markdown.extensions.nl2br
   - markdown.extensions.toc(permalink=Link)
-  
+  - markdown_fenced_code_tabs
+
 # Page tree
 pages:
     - About Orchard Core: index.md
+    - Code Generation Templates: Templates/README.MD
     - Orchard Core Modules: OrchardCore/OrchardCore.Modules/README.md
     - CMS Modules:
         - Title: OrchardCore.Modules/OrchardCore.Title/README.md
-        - Body: OrchardCore.Modules/OrchardCore.Body/README.md
+        - Autoroute: OrchardCore.Modules/OrchardCore.Autoroute/README.md
+        - Html: OrchardCore.Modules/OrchardCore.Html/README.md
+        - Contents: OrchardCore.Modules/OrchardCore.Contents/README.md
         - Content Fields: OrchardCore.Modules/OrchardCore.ContentFields/README.md
         - Content Preview: OrchardCore.Modules/OrchardCore.ContentPreview/README.md
         - Content Types: OrchardCore.Modules/OrchardCore.ContentTypes/README.md
@@ -42,8 +48,10 @@ pages:
         - Lucene: OrchardCore.Modules/OrchardCore.Lucene/README.md
         - Queries: OrchardCore.Modules/OrchardCore.Queries/README.md
         - Templates: OrchardCore.Modules/OrchardCore.Templates/README.md
+        - Themes: OrchardCore.Modules/OrchardCore.Themes/README.md
         - Liquid: OrchardCore.Modules/OrchardCore.Liquid/README.md
         - Custom Settings: OrchardCore.Modules/OrchardCore.CustomSettings/README.md
+        - Widgets: OrchardCore.Modules/OrchardCore.Widgets/README.md
     - Core Modules:
         - Placement: OrchardCore/OrchardCore.DisplayManagement/README.md
         - Dynamic Cache: OrchardCore.Modules/OrchardCore.DynamicCache/README.md
@@ -54,3 +62,4 @@ pages:
         - Roles: OrchardCore.Modules/OrchardCore.Roles/README.md
         - Scripting: OrchardCore.Modules/OrchardCore.Scripting/README.md
         - Setup: OrchardCore.Modules/OrchardCore.Setup/README.md
+        - Workflows: OrchardCore.Modules/OrchardCore.Workflows/README.md

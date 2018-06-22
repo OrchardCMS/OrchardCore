@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="$(MicrosoftAspNetCoreMvcAbstractionsPackageVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="$(MicrosoftAspNetCoreMvcCorePackageVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" />
   </ItemGroup>
 
 </Project>

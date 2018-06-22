@@ -25,6 +25,14 @@
 </fieldset>
 
 <fieldset class="form-group">
+    <label asp-for="Versionable">
+        <input asp-for="Versionable" type="checkbox">
+        @T["Versionable"]
+        <span class="hint">@T["Determines if this content type supports versioning."]</span>
+    </label>
+</fieldset>
+
+<fieldset class="form-group">
     <label asp-for="Securable">
         <input asp-for="Securable" type="checkbox">
         @T["Securable"]

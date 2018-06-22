@@ -1,9 +1,10 @@
-﻿using OrchardCore.Feeds.Models;
+using System.Threading.Tasks;
+using OrchardCore.Feeds.Models;
 
 namespace OrchardCore.Feeds
 {
     public interface IFeedItemBuilder
     {
-        void Populate(FeedContext context);
+        Task PopulateAsync(FeedContext context);
     }
 }

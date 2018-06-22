@@ -1,4 +1,4 @@
-﻿@*@using OrchardCore.Shapes*@
+@*@using OrchardCore.Shapes*@
 @*@{
         var tabs = (IEnumerable<string>)CoreShapes.HarvestAndSortTabs(Model.Content);
         Display.LocalNavigation(Tabs: tabs);
@@ -33,7 +33,7 @@
 
                 @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
-                    <a id="button-cancel" href="@returnUrl" class="button">@T["Cancel"]</a>
+                    <a id="button-cancel" href="@returnUrl" class="btn btn-secondary">@T["Cancel"]</a>
                 }
             </div>
         </div>

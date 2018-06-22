@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Admin
@@ -22,6 +22,22 @@ namespace OrchardCore.Admin
                 new PermissionStereotype
                 {
                     Name = "Administrator",
+                    Permissions = GetPermissions()
+                },
+                new PermissionStereotype {
+                    Name = "Editor",
+                    Permissions = GetPermissions()
+                },
+                new PermissionStereotype {
+                    Name = "Moderator",
+                    Permissions = GetPermissions()
+                },
+                new PermissionStereotype {
+                    Name = "Author",
+                    Permissions = GetPermissions()
+                },
+                new PermissionStereotype {
+                    Name = "Contributor",
                     Permissions = GetPermissions()
                 }
             };

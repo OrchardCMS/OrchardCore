@@ -14,9 +14,9 @@ namespace OrchardCore.Contents.Indexing
             _contentManager = contentManager;
         }
 
-        public Task BuildIndexAsync(BuildIndexContext context)
+        public async Task BuildIndexAsync(BuildIndexContext context)
         {
-            var body = _contentManager.PopulateAspect(context.ContentItem, new BodyAspect());
+            var body = await _contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
 
             if (body != null)
             {
@@ -28,7 +28,7 @@ namespace OrchardCore.Contents.Indexing
                     DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize));
             }
 
-            var contentItemMetadata = _contentManager.PopulateAspect<ContentItemMetadata>(context.ContentItem);
+            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(context.ContentItem);
 
             if (contentItemMetadata?.DisplayText != null)
             {
@@ -46,8 +46,6 @@ namespace OrchardCore.Contents.Indexing
                     DocumentIndex.Types.Text,
                     DocumentIndexOptions.Store));
             }
-
-            return Task.CompletedTask;
         }
     }
 }

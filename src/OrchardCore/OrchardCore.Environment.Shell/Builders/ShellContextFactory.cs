@@ -1,11 +1,10 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Hosting.ShellBuilders;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -32,7 +31,7 @@ namespace OrchardCore.Environment.Shell.Builders
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
+                _logger.LogInformation("Creating shell context for tenant '{TenantName}'", settings.Name);
             }
 
             var describedContext = await CreateDescribedContextAsync(settings, MinimumShellDescriptor());
@@ -68,7 +67,7 @@ namespace OrchardCore.Environment.Shell.Builders
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
-                _logger.LogDebug("Creating described context for tenant {0}", settings.Name);
+                _logger.LogDebug("Creating described context for tenant '{TenantName}'", settings.Name);
             }
 
             var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);

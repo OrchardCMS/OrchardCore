@@ -2,9 +2,24 @@
 
 
 .has-validation-error {
-    @extend .has-danger;
+    @extend .text-danger;
 }
 
 .field-validation-valid {
     display: none;
+}
+
+.form-control:required {
+    background-image: url(../Icons/ic_star_rate_black_18px.svg);
+    background-position: 2px 2px;
+    background-repeat: no-repeat;
+    background-size: 8px;
+}
+
+.form-control:required:valid {
+    background-image: url(../Icons/ic_check_black_18px.svg);
+}
+
+.form-control:invalid {
+    outline: none;
 }

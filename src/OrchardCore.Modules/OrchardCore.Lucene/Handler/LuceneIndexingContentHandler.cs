@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Indexing;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Lucene.Handlers
 {
@@ -15,7 +16,7 @@ namespace OrchardCore.Lucene.Handlers
         private readonly ILogger<LuceneIndexingContentHandler> _logger;
 
         public LuceneIndexingContentHandler(
-            LuceneIndexManager luceneIndexManager, 
+            LuceneIndexManager luceneIndexManager,
             IServiceProvider serviceProvider,
             ILogger<LuceneIndexingContentHandler> logger)
         {
@@ -23,15 +24,15 @@ namespace OrchardCore.Lucene.Handlers
             _serviceProvider = serviceProvider;
             _logger = logger;
         }
-         
-        public override void Published(PublishContentContext context)
+
+        public override async Task PublishedAsync(PublishContentContext context)
         {
             // TODO: ignore if this index is not configured for the content type
 
             var buildIndexContext = new BuildIndexContext(new DocumentIndex(context.ContentItem.ContentItemId), context.ContentItem, context.ContentItem.ContentType);
             // Lazy resolution to prevent cyclic dependency 
             var contentItemIndexHandlers = _serviceProvider.GetServices<IContentItemIndexHandler>();
-            contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger).GetAwaiter().GetResult();
+            await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
 
             foreach (var index in _luceneIndexManager.List())
             {
@@ -40,7 +41,7 @@ namespace OrchardCore.Lucene.Handlers
             }
         }
 
-        public override void Removed(RemoveContentContext context)
+        public override Task RemovedAsync(RemoveContentContext context)
         {
             // TODO: ignore if this index is not configured for the content type
 
@@ -48,9 +49,11 @@ namespace OrchardCore.Lucene.Handlers
             {
                 _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
             }
+
+            return Task.CompletedTask;
         }
 
-        public override void Unpublished(PublishContentContext context)
+        public override Task UnpublishedAsync(PublishContentContext context)
         {
             // TODO: ignore if this index is not configured for the content type
 
@@ -58,6 +61,8 @@ namespace OrchardCore.Lucene.Handlers
             {
                 _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
             }
+
+            return Task.CompletedTask;
         }
     }
 }

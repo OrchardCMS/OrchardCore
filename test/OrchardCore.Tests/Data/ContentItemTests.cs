@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using OrchardCore.ContentManagement;
 using Xunit;
 
@@ -15,7 +15,6 @@ namespace OrchardCore.Tests.Data
             contentItem.ContentType = "Page";
             contentItem.Latest = true;
             contentItem.Published = true;
-            contentItem.Number = 1;
 
             var json = JsonConvert.SerializeObject(contentItem);
 
@@ -26,7 +25,6 @@ namespace OrchardCore.Tests.Data
             Assert.Equal(contentItem.ContentType, contentItem2.ContentType);
             Assert.Equal(contentItem.Latest, contentItem2.Latest);
             Assert.Equal(contentItem.Published, contentItem2.Published);
-            Assert.Equal(contentItem.Number, contentItem2.Number);
         }
 
         [Fact]

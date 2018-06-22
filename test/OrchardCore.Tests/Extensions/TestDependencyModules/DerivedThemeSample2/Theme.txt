@@ -1,5 +1,0 @@
-﻿Name: Derived Theme Sample
-Author: Nicholas Mayne
-Description: Base Theme
-Version: 1.0.0 
-BaseTheme: BaseThemeSample2

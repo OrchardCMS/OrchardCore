@@ -1,22 +1,23 @@
-﻿using System;
-using System.Threading;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
-using OpenIddict.Core;
-using OrchardCore.OpenId.Models;
+using OpenIddict.Abstractions;
+using OrchardCore.OpenId.Abstractions.Descriptors;
+using OrchardCore.OpenId.Abstractions.Managers;
+using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using System.Collections.Generic;
 
 namespace OrchardCore.OpenId.Recipes
 {
     public class OpenIdApplicationStep : IRecipeStepHandler
     {
-        private readonly OpenIddictApplicationManager<OpenIdApplication> _applicationManager;
+        private readonly IOpenIdApplicationManager _applicationManager;
 
         /// <summary>
         /// This recipe step adds an OpenID Connect app.
         /// </summary>
-        public OpenIdApplicationStep(OpenIddictApplicationManager<OpenIdApplication> applicationManager)
+        public OpenIdApplicationStep(IOpenIdApplicationManager applicationManager)
         {
             _applicationManager = applicationManager;
         }
@@ -28,54 +29,60 @@ namespace OrchardCore.OpenId.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<OpenIdApplicationStepModel>();
-            var application = new OpenIdApplication();
-            if (model.Id != 0)
-            {
-                application = await _applicationManager.FindByIdAsync(model.Id.ToString(), CancellationToken.None);
-            }
-            application.ClientId = model.ClientId;
-            application.DisplayName = model.DisplayName;
-            application.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
-            application.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
-            application.AllowHybridFlow = model.AllowHybridFlow;
-            application.AllowImplicitFlow = model.AllowImplicitFlow;
-            application.AllowPasswordFlow = model.AllowPasswordFlow;
-            application.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
-            application.LogoutRedirectUri = model.LogoutRedirectUri;
-            application.RedirectUri = model.RedirectUri;
-            application.SkipConsent = model.SkipConsent;
-            application.RoleNames = model.RoleNames;
-            application.Type = model.Type;
+            var model = context.Step.ToObject<CreateOpenIdApplicationViewModel>();
 
-            if (model.Type == ClientType.Confidential)
+            var descriptor = new OpenIdApplicationDescriptor
             {
-                await _applicationManager.CreateAsync(application, model.ClientSecret, CancellationToken.None);
+                ClientId = model.ClientId,
+                ClientSecret = model.ClientSecret,
+                ConsentType = model.ConsentType,
+                DisplayName = model.DisplayName,
+                Type = model.Type
+            };
+
+            if (model.AllowAuthorizationCodeFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode);
+            }
+            if (model.AllowClientCredentialsFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials);
+            }
+            if (model.AllowImplicitFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.Implicit);
+            }
+            if (model.AllowPasswordFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.Password);
+            }
+            if (model.AllowRefreshTokenFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.RefreshToken);
+            }
+            if (model.AllowAuthorizationCodeFlow || model.AllowImplicitFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Authorization);
+            }
+            if (model.AllowAuthorizationCodeFlow || model.AllowClientCredentialsFlow ||
+                model.AllowPasswordFlow || model.AllowRefreshTokenFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
             }
 
-            else
-            {
-                await _applicationManager.CreateAsync(application, CancellationToken.None);
-            }
+            descriptor.PostLogoutRedirectUris.UnionWith(
+                from uri in model.PostLogoutRedirectUris?.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
+                select new Uri(uri, UriKind.Absolute));
+
+            descriptor.PostLogoutRedirectUris.UnionWith(
+                from uri in model.RedirectUris?.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
+                select new Uri(uri, UriKind.Absolute));
+
+            descriptor.Roles.UnionWith(model.RoleEntries
+                .Where(role => role.Selected)
+                .Select(role => role.Name));
+
+            await _applicationManager.CreateAsync(descriptor);
         }
-    }
-
-    public class OpenIdApplicationStepModel
-    {
-        public string ClientId { get; set; }
-        public string ClientSecret { get; set; }
-        public string DisplayName { get; set; }
-        public int Id { get; set; }
-        public string LogoutRedirectUri { get; set; }
-        public string RedirectUri { get; set; }
-        public ClientType Type { get; set; }
-        public bool SkipConsent { get; set; }
-        public List<string> RoleNames { get; set; } = new List<string>();
-        public bool AllowPasswordFlow { get; set; }
-        public bool AllowClientCredentialsFlow { get; set; }
-        public bool AllowAuthorizationCodeFlow { get; set; }
-        public bool AllowRefreshTokenFlow { get; set; }
-        public bool AllowImplicitFlow { get; set; }
-        public bool AllowHybridFlow { get; set; }
     }
 }

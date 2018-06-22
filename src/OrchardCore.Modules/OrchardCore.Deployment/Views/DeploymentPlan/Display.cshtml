@@ -1,4 +1,4 @@
-﻿@model DisplayDeploymentPlanViewModel
+@model DisplayDeploymentPlanViewModel
 @inject IDeploymentManager DeploymentTargetManager
 @using OrchardCore.Deployment.Services
 @using Microsoft.AspNetCore.Routing
@@ -91,7 +91,7 @@
                         routeWithId["id"] = Model.DeploymentPlan.Id;
 
                         <div class="card">
-                            <div class="card-block">
+                            <div class="card-body">
                                 <h4 class="card-title">@target.Name</h4>
                                 <p>@target.Description</p>
                             </div>

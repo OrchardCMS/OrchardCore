@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -12,7 +14,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Layers.Drivers
+namespace OrchardCore.CustomSettings.Drivers
 {
     /// <summary>
     /// This driver generates an editor for site settings. The GroupId represents the type of 
@@ -23,21 +25,26 @@ namespace OrchardCore.Layers.Drivers
         private readonly CustomSettingsService _customSettingsService;
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
-
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
         private readonly Lazy<IList<ContentTypeDefinition>> _contentTypeDefinitions;
 
         public CustomSettingsDisplayDriver(
-            CustomSettingsService customSettingsService, 
+            CustomSettingsService customSettingsService,
             IContentManager contentManager,
-            IContentItemDisplayManager contentItemDisplayManager)
+            IContentItemDisplayManager contentItemDisplayManager,
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
             _customSettingsService = customSettingsService;
             _contentManager = contentManager;
             _contentItemDisplayManager = contentItemDisplayManager;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
             _contentTypeDefinitions = new Lazy<IList<ContentTypeDefinition>>(() => _customSettingsService.GetSettingsTypes());
         }
 
-        public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
             JToken property;
 
@@ -45,15 +52,22 @@ namespace OrchardCore.Layers.Drivers
 
             if (contentTypeDefinition == null)
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
+
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.CreatePermissionForType(contentTypeDefinition)))
+            {
+                return null;
+            }            
 
             ContentItem contentItem;
             bool isNew;
 
             if (!site.Properties.TryGetValue(contentTypeDefinition.Name, out property))
             {
-                contentItem = _contentManager.New(contentTypeDefinition.Name);
+                contentItem = await _contentManager.NewAsync(contentTypeDefinition.Name);
                 isNew = true;
             }
             else
@@ -63,12 +77,12 @@ namespace OrchardCore.Layers.Drivers
                 isNew = false;
             }
 
-            var shape = Shape<CustomSettingsEditViewModel>("CustomSettings", async ctx =>
+            var shape = Initialize<CustomSettingsEditViewModel>("CustomSettings", async ctx =>
             {
                 ctx.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
             }).Location("Content:3").OnGroup(contentTypeDefinition.Name);
 
-            return Task.FromResult<IDisplayResult>(shape);
+            return shape;
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
@@ -82,12 +96,19 @@ namespace OrchardCore.Layers.Drivers
                 return null;
             }
 
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.CreatePermissionForType(contentTypeDefinition)))
+            {
+                return null;
+            }
+
             ContentItem contentItem;
             bool isNew;
 
             if (!site.Properties.TryGetValue(contentTypeDefinition.Name, out property))
             {
-                contentItem = _contentManager.New(contentTypeDefinition.Name);
+                contentItem = await _contentManager.NewAsync(contentTypeDefinition.Name);
                 isNew = true;
             }
             else

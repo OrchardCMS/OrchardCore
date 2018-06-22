@@ -1,10 +1,10 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
-using System.Threading.Tasks;
 using YesSql;
-using OrchardCore.Admin;
 
 namespace OrchardCore.Demo.Controllers
 {

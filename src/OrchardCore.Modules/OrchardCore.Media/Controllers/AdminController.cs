@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.StorageProviders;
+using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Controllers
 {
@@ -14,16 +16,23 @@ namespace OrchardCore.Media.Controllers
     {
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IContentTypeProvider _contentTypeProvider;
         private readonly ILogger _logger;
+        private readonly IStringLocalizer<AdminController> T;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
             IAuthorizationService authorizationService,
-            ILogger<AdminController> logger)
+            IContentTypeProvider contentTypeProvider,
+            ILogger<AdminController> logger,
+            IStringLocalizer<AdminController> stringLocalizer)
         {
             _mediaFileStore = mediaFileStore;
             _authorizationService = authorizationService;
+            _contentTypeProvider = contentTypeProvider;
             _logger = logger;
+            T = stringLocalizer;
+            
         }
 
         public async Task<IActionResult> Index()
@@ -82,7 +91,7 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            var f = await _mediaFileStore.GetFileAsync(path);
+            var f = await _mediaFileStore.GetFileInfoAsync(path);
 
             if (f == null)
             {
@@ -123,25 +132,16 @@ namespace OrchardCore.Media.Controllers
 
                     using (var stream = file.OpenReadStream())
                     {
-                        if (!await _mediaFileStore.TrySaveStreamAsync(mediaFilePath, stream))
-                        {
-                            result.Add(new
-                            {
-                                name = file.FileName,
-                                size = file.Length,
-                                folder = path,
-                                error = "Couldn't copy the file in the media store"
-                            });
-                        }
+                        await _mediaFileStore.CreateFileFromStream(mediaFilePath, stream);
                     }
 
-                    var mediaFile = await _mediaFileStore.GetFileAsync(mediaFilePath);
+                    var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
 
                     result.Add(CreateFileResult(mediaFile));
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("An error occured while uploading a media: " + ex.Message);
+                    _logger.LogError(ex, "An error occured while uploading a media");
 
                     result.Add(new
                     {
@@ -166,17 +166,17 @@ namespace OrchardCore.Media.Controllers
 
             if (string.IsNullOrEmpty(path))
             {
-                return StatusCode(StatusCodes.Status403Forbidden, "Cannot delete root media folder");
+                return StatusCode(StatusCodes.Status403Forbidden, T["Cannot delete root media folder"]);
             }
 
-            var mediaFolder = await _mediaFileStore.GetFolderAsync(path);
-
-            if (mediaFolder == null || !mediaFolder.IsDirectory)
+            var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(path);
+            if (mediaFolder != null && !mediaFolder.IsDirectory)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, "Cannot delete path");
+                return StatusCode(StatusCodes.Status403Forbidden, T["Cannot delete path because it is not a directory"]);
             }
 
-            await _mediaFileStore.TryDeleteFolderAsync(path);
+            if (await _mediaFileStore.TryDeleteDirectoryAsync(path) == false)
+                return NotFound();
 
             return Ok();
         }
@@ -194,16 +194,106 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            var media = await _mediaFileStore.GetFileAsync(path);
+            if (await _mediaFileStore.TryDeleteFileAsync(path) == false)
+                return NotFound();
 
-            if (media == null || media.IsDirectory)
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MoveMedia(string oldPath, string newPath)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            {
+                return Unauthorized();
+            }
+
+            if (string.IsNullOrEmpty(oldPath) || string.IsNullOrEmpty(newPath))
             {
                 return NotFound();
             }
 
-            await _mediaFileStore.TryDeleteFileAsync(path);
+            if (await _mediaFileStore.GetFileInfoAsync(oldPath) == null)
+            {
+                return NotFound();
+            }
+
+            if (await _mediaFileStore.GetFileInfoAsync(newPath) != null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, T["Cannot move media because a file already exists with the same name"]);
+            }
+
+            await _mediaFileStore.MoveFileAsync(oldPath, newPath);
 
             return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteMediaList(string[] paths)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            {
+                return Unauthorized();
+            }
+
+            if (paths == null)
+            {
+                return NotFound();
+            }
+
+            foreach (var p in paths)
+            {
+                if (await _mediaFileStore.TryDeleteFileAsync(p) == false)
+                    return NotFound();
+            }
+
+            return Ok();
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> MoveMediaList(string[] mediaNames, string sourceFolder, string targetFolder)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            {
+                return Unauthorized();
+            }
+
+            if ((mediaNames == null) || (mediaNames.Length < 1) 
+                || string.IsNullOrEmpty(sourceFolder)
+                || string.IsNullOrEmpty(targetFolder))
+            {
+                return NotFound();
+            }
+
+            sourceFolder = sourceFolder == "root" ? string.Empty : sourceFolder;
+            targetFolder = targetFolder == "root" ? string.Empty : targetFolder;
+
+            var  filesOnError = new List<string>();
+
+            foreach (var name in mediaNames)
+            {
+                var sourcePath = _mediaFileStore.Combine(sourceFolder, name);
+                var targetPath = _mediaFileStore.Combine( targetFolder, name);
+                try
+                {
+                    await _mediaFileStore.MoveFileAsync(sourcePath, targetPath);
+                }
+                catch (FileStoreException)
+                {
+                    filesOnError.Add(sourcePath);                    
+                }                
+            }
+
+            if (filesOnError.Count > 0)
+            {
+                return BadRequest(T["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", string.Join(",", filesOnError)].ToString());
+            }
+            else
+            {
+                return Ok();
+            }
         }
 
         [HttpPost]
@@ -221,25 +311,23 @@ namespace OrchardCore.Media.Controllers
                 path = "";
             }
 
-            var mediaFolder = await _mediaFileStore.GetFolderAsync(path);
-
-            if (mediaFolder == null || !mediaFolder.IsDirectory)
-            {
-                return StatusCode(StatusCodes.Status404NotFound, "Cannot find path");
-            }
-
             var newPath = _mediaFileStore.Combine(path, name);
 
-            mediaFolder = await _mediaFileStore.GetFolderAsync(newPath);
-
+            var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(newPath);
             if (mediaFolder != null)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, "Folder already exists");
+                return StatusCode(StatusCodes.Status403Forbidden, T["Cannot create folder because a folder already exists with the same name"]);
             }
 
-            await _mediaFileStore.TryCreateFolderAsync(newPath);
+            var existingFile = await _mediaFileStore.GetFileInfoAsync(newPath);
+            if (existingFile != null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, T["Cannot create folder because a file already exists with the same name"]);
+            }
 
-            mediaFolder = await _mediaFileStore.GetFolderAsync(newPath);
+            await _mediaFileStore.TryCreateDirectoryAsync(newPath);
+
+            mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(newPath);
 
             return Json(mediaFolder);
         }
@@ -249,16 +337,18 @@ namespace OrchardCore.Media.Controllers
             return View();
         }
 
-        public object CreateFileResult(IFile mediaFile)
+        public object CreateFileResult(IFileStoreEntry mediaFile)
         {
+            _contentTypeProvider.TryGetContentType(mediaFile.Name, out var contentType);
+
             return new
             {
                 name = mediaFile.Name,
                 size = mediaFile.Length,
-                folder = mediaFile.Folder,
-                url = mediaFile.AbsolutePath,
+                folder = mediaFile.DirectoryPath,
+                url = _mediaFileStore.MapPathToPublicUrl(mediaFile.Path),
                 mediaPath = mediaFile.Path,
-                mime = MimeMapping.MimeUtility.GetMimeMapping(mediaFile.Path)
+                mime = contentType ?? "application/octet-stream"
             };
         }
     }

@@ -73,7 +73,7 @@ namespace OrchardCore.Widgets.Drivers
 
         public override IDisplayResult Edit(WidgetsListPart widgetPart, BuildPartEditorContext context)
         {
-            return Shape<WidgetsListPartEditViewModel>("WidgetsListPart_Edit", m =>
+            return Initialize<WidgetsListPartEditViewModel>("WidgetsListPart_Edit", m =>
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(widgetPart.ContentItem.ContentType);
                 var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(WidgetsListPart));
@@ -105,7 +105,7 @@ namespace OrchardCore.Widgets.Drivers
                 var zone = model.Zones[i];
                 var prefix = model.Prefixes[i];
 
-                var contentItem = _contentManager.New(contentType);
+                var contentItem = await _contentManager.NewAsync(contentType);
 
                 contentItem.Weld(new WidgetMetadata());
 

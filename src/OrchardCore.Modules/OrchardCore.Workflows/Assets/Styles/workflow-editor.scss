@@ -1,0 +1,62 @@
+@import "src/OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/scss/_variables";
+@import "src/OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/scss/mixins/_breakpoints";
+@import './workflow-canvas.scss';
+
+.modal-activities {
+    h4.card-title {
+        .svg-inline--fa {
+            margin-right: 0.5em;
+        }
+    }
+}
+
+.workflow-canvas {
+
+    .activity {
+        cursor: move;
+
+        &:hover {
+            box-shadow: 2px 2px 19px #444;
+            -o-box-shadow: 2px 2px 19px #444;
+            -webkit-box-shadow: 2px 2px 19px #444;
+            -moz-box-shadow: 2px 2px 19px #444;
+            opacity: 0.6;
+        }
+
+        .activity-commands {
+            display: none;
+        }
+
+        header {
+            h4 {
+                .svg-inline--fa {
+                    margin-right: 0.5em;
+                }
+            }
+        }
+    }
+
+    .jtk-drag {
+    }
+
+    .jtk-drag-select {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    path, .jtk-endpoint {
+        cursor: pointer;
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    .modal-activities {
+        .modal-lg {
+            max-width: 1200px;
+        }
+    }
+}

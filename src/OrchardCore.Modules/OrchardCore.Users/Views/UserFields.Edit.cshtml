@@ -1,36 +1,51 @@
 @model EditUserViewModel
-    
-<input asp-for="Id" type="hidden"/>
+@using OrchardCore.Entities
+@using OrchardCore.Settings
+@using OrchardCore.Users.Models
+@inject ISiteService Site
 
-<div class="form-group" asp-validation-class-for="UserName">
-    <label asp-for="UserName">@T["User name"]</label>
-    <span asp-validation-for="UserName" class="text-danger">@T["The user name is required."]</span>
-    <input asp-for="UserName" class="form-control" autofocus />
-</div>
+@{
+    var usersMustValidateEmail = (await Site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail;
+}
 
-<div class="form-group" asp-validation-class-for="Email">
-    <label for="Email">@T["Email"]</label>
-    <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
-    <input asp-for="Email" class="form-control" type="email" />
-</div>
+<input asp-for="Id" type="hidden" />
 
-@if (Model.DisplayPasswordFields)
-{
-    <div class="form-group" asp-validation-class-for="Password">
-        <label asp-for="Password">@T["Password"]</label>
-        <span asp-validation-for="Password" class="text-danger"></span>
-        <input asp-for="Password" type="password" class="form-control" />
+<div class="row">
+    <div class="form-group col-md-3" asp-validation-class-for="UserName">
+        <label asp-for="UserName">@T["User name"]</label>
+        <span asp-validation-for="UserName" class="text-danger">@T["The user name is required."]</span>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fa fa-user"></i></span>
+            </div>
+            <input asp-for="UserName" class="form-control" autofocus />
+        </div>
     </div>
-
-    <div class="form-group" asp-validation-class-for="PasswordConfirmation">
-        <label asp-for="PasswordConfirmation">@T["Password Confirmation"]</label>
-        <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
-        <input asp-for="PasswordConfirmation" type="password" class="form-control" />
+</div>
+<div class="row">
+    <div class="form-group col-md-3" asp-validation-class-for="Email">
+        <label asp-for="Email">@T["Email"]</label>
+        <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+            </div>
+            <input asp-for="Email" class="form-control" type="email" />
+        </div>
+    </div>
+</div>
+@if ((await Site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail)
+{
+    <div class="form-group col-md-3">
+        <div class="form-check">
+            <input asp-for="EmailConfirmed" type="checkbox" class="form-check-input" />
+            <label asp-for="EmailConfirmed">@T["Email confirmed"]</label>
+        </div>
     </div>
 }
 
 <h6>@T["Roles"]</h6>
-<div class="form-group">
+<div class="form-group col-md-3">
     @for (var i = 0; i < Model.Roles.Length; i++)
     {
         <div class="form-check">

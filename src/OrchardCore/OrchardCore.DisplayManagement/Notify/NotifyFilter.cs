@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.Environment.Shell;
@@ -19,13 +20,13 @@ namespace OrchardCore.DisplayManagement.Notify
         private readonly INotifier _notifier;
         private readonly dynamic _shapeFactory;
         private readonly ILayoutAccessor _layoutAccessor;
-        private readonly ShellSettings _shellSettings;
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
         private NotifyEntry[] _existingEntries = Array.Empty<NotifyEntry>();
         private bool _shouldDeleteCookie;
         private string _tenantPath;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly ILogger<NotifyFilter> _logger;
 
         public NotifyFilter(
             INotifier notifier,
@@ -33,17 +34,18 @@ namespace OrchardCore.DisplayManagement.Notify
             IShapeFactory shapeFactory,
             ShellSettings shellSettings,
             IDataProtectionProvider dataProtectionProvider,
-            HtmlEncoder htmlEncoder)
+            HtmlEncoder htmlEncoder,
+            ILogger<NotifyFilter> logger)
         {
             _htmlEncoder = htmlEncoder;
+            _logger = logger;
             _dataProtectionProvider = dataProtectionProvider;
-            _shellSettings = shellSettings;
 
             _layoutAccessor = layoutAccessor;
             _notifier = notifier;
             _shapeFactory = shapeFactory;
 
-            _tenantPath = "/" + _shellSettings.RequestUrlPrefix;
+            _tenantPath = "/" + shellSettings.RequestUrlPrefix;
         }
 
         public void OnActionExecuting(ActionExecutingContext filterContext)
@@ -135,11 +137,6 @@ namespace OrchardCore.DisplayManagement.Notify
             filterContext.HttpContext.Response.Cookies.Delete(CookiePrefix, new CookieOptions { Path = _tenantPath });
         }
 
-        private IDataProtector CreateTenantProtector()
-        {
-            return _dataProtectionProvider.CreateProtector(nameof(NotifyFilter), _tenantPath);
-        }
-
         private string SerializeNotifyEntry(NotifyEntry[] notifyEntries)
         {
             var settings = new JsonSerializerSettings();
@@ -147,7 +144,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
             try
             {
-                var protector = CreateTenantProtector();
+                var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
                 var signed = protector.Protect(JsonConvert.SerializeObject(notifyEntries, settings));
                 return WebUtility.UrlEncode(signed);
             }
@@ -164,13 +161,15 @@ namespace OrchardCore.DisplayManagement.Notify
 
             try
             {
-                var protector = CreateTenantProtector();
+                var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
                 var decoded = protector.Unprotect(WebUtility.UrlDecode(value));
                 messageEntries = JsonConvert.DeserializeObject<NotifyEntry[]>(decoded, settings);
             }
             catch
             {
                 messageEntries = null;
+
+                _logger.LogWarning("The notification entries could not be decrypted");
             }
         }
     }

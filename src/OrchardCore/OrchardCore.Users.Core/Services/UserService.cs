@@ -9,11 +9,15 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services
 {
+    /// <summary>
+    /// Implements <see cref="IUserService"/> by using the ASP.NET Core Identity packages.
+    /// </summary>
     public class UserService : IUserService
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
         private readonly IStringLocalizer<UserService> T;
+
         public UserService(UserManager<IUser> userManager, IOptions<IdentityOptions> identityOptions, IStringLocalizer<UserService> stringLocalizer)
         {
             _userManager = userManager;
@@ -21,57 +25,25 @@ namespace OrchardCore.Users.Services
             T = stringLocalizer;
         }
 
-        public async Task<IUser> CreateUserAsync(string userName, string email, string[] roleNames, string password, Action<string, string> reportError)
+        public async Task<IUser> CreateUserAsync(IUser user, string password, Action<string, string> reportError)
         {
-            var result = true;
-
-            if (string.IsNullOrWhiteSpace(userName))
+            if (!(user is User newUser))
             {
-                reportError("UserName", T["A user name is required."]);
-                result = false;
+                throw new ArgumentException("Expected a User instance.", nameof(user));
             }
 
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                reportError("Password", T["A password is required."]);
-                result = false;
-            }
-
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                reportError("Email", T["An email is required."]);
-                result = false;
-            }
-
-            if (!result)
-            {
-                return null;
-            }
-
-            if (await _userManager.FindByEmailAsync(email) != null)
-            {
-                reportError(string.Empty, T["The email is already used."]);
-                return null;
-            }
-
-            var user = new User
-            {
-                UserName = userName,
-                Email = email,
-                RoleNames = new List<string>(roleNames)
-            };
-
-            var identityResult = await _userManager.CreateAsync(user, password);
-
+            // Accounts can be created with no password
+            var identityResult = String.IsNullOrWhiteSpace(password)
+                ? await _userManager.CreateAsync(user)
+                : await _userManager.CreateAsync(user, password);
             if (!identityResult.Succeeded)
             {
-                ProcessValidationErrors(identityResult.Errors, user, reportError);
+                ProcessValidationErrors(identityResult.Errors, newUser, reportError);
                 return null;
             }
 
             return user;
         }
-
 
         public async Task<bool> ChangePasswordAsync(IUser user, string currentPassword, string newPassword, Action<string, string> reportError)
         {
@@ -95,7 +67,94 @@ namespace OrchardCore.Users.Services
             return _userManager.GetUserAsync(principal);
         }
 
-        private void ProcessValidationErrors(IEnumerable<IdentityError> errors, User user, Action<string, string> reportError)
+        public async Task<IUser> GetForgotPasswordUserAsync(string userIdentifier)
+        {
+            if (string.IsNullOrWhiteSpace(userIdentifier))
+            {
+                return await Task.FromResult<IUser>(null);
+            }
+
+            var user = await FindByUsernameOrEmailAsync(userIdentifier) as User;
+            
+            if (user == null)
+            {
+                return await Task.FromResult<IUser>(null);
+            }
+
+            user.ResetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            return user;
+        }
+
+        public async Task<bool> ResetPasswordAsync(string userIdentifier, string resetToken, string newPassword, Action<string, string> reportError)
+        {
+            var result = true;
+            if (string.IsNullOrWhiteSpace(userIdentifier))
+            {
+                reportError("UserName", T["A user name or email is required."]);
+                result = false;
+            }
+
+            if (string.IsNullOrWhiteSpace(newPassword))
+            {
+                reportError("Password", T["A password is required."]);
+                result = false;
+            }
+
+            if (string.IsNullOrWhiteSpace(resetToken))
+            {
+                reportError("Token", T["A token is required."]);
+                result = false;
+            }
+
+            if (!result)
+            {
+                return result;
+            }
+
+            var user = await FindByUsernameOrEmailAsync(userIdentifier) as User;
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            var identityResult = await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
+
+            if (!identityResult.Succeeded)
+            {
+                ProcessValidationErrors(identityResult.Errors, user, reportError);
+            }
+
+            return identityResult.Succeeded;
+        }
+
+        /// <summary>
+        /// Gets the user, if any, associated with the normalized value of the specified identifier, which can refer both to username or email
+        /// </summary>
+        /// <param name="userIdentification">The username or email address to refer to</param>
+        private async Task<IUser> FindByUsernameOrEmailAsync(string userIdentifier)
+        {
+            userIdentifier = userIdentifier.Normalize();
+
+            var user = await _userManager.FindByNameAsync(userIdentifier);
+
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(userIdentifier);
+            }
+
+            return user;
+        }
+
+        public Task<IUser> GetUserAsync(string userName)
+        {
+            userName = userName.Normalize();
+
+            return _userManager.FindByNameAsync(userName);
+        }
+
+        public void ProcessValidationErrors(IEnumerable<IdentityError> errors, User user, Action<string, string> reportError)
         {
             foreach (var error in errors)
             {

@@ -17,7 +17,6 @@ namespace OrchardCore.ContentManagement
             o.Add(new JProperty(nameof(ContentItem.ContentItemVersionId), contentItem.ContentItemVersionId));
             o.Add(new JProperty(nameof(ContentItem.ContentType), contentItem.ContentType));
             o.Add(new JProperty(nameof(ContentItem.Latest), contentItem.Latest));
-            o.Add(new JProperty(nameof(ContentItem.Number), contentItem.Number));
             o.Add(new JProperty(nameof(ContentItem.Published), contentItem.Published));
             o.Add(new JProperty(nameof(ContentItem.ModifiedUtc), contentItem.ModifiedUtc));
             o.Add(new JProperty(nameof(ContentItem.PublishedUtc), contentItem.PublishedUtc));
@@ -68,9 +67,6 @@ namespace OrchardCore.ContentManagement
                         break;
                     case nameof(ContentItem.Latest):
                         contentItem.Latest = reader.ReadAsBoolean() ?? false;
-                        break;
-                    case nameof(ContentItem.Number):
-                        contentItem.Number = reader.ReadAsInt32() ?? 0;
                         break;
                     case nameof(ContentItem.Published):
                         contentItem.Published = reader.ReadAsBoolean() ?? false;

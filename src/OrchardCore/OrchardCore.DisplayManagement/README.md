@@ -6,12 +6,11 @@ Any extension can contain an optional `placement.json` file providing custom pla
 
 ### Format
 
-A `placement.json` file contains an object whose properties are shape names. Each of these properties is an array of 
-placement rules.
+A `placement.json` file contains an object whose properties are shape names. Each of these properties is an array of placement rules.
 
 In the following example, we describe the placement for the `TextField` and `Parts_Contents_Publish` shapes.
 
-```csharp
+```json
 {
   "TextField": [ ... ],
   "Parts_Contents_Publish" : [ ... ]
@@ -21,13 +20,13 @@ In the following example, we describe the placement for the `TextField` and `Par
 A placement rule contains two sets of data:
 
 - Filters
-  - Defines what specific shapes are targetted.
+  - Defines what specific shapes are targeted.
 - Placement information
   - The placement information to apply when the filter is matched.
 
 Currently you can filter shapes by:
 
-- Their original type, which is the property name of the placement rule, like 'TextField'.
+- Their original type, which is the property name of the placement rule, like `TextField`.
 - `display-type` (Optional): The display type, like `Summary` and `Detail` for the most common ones.
 - `differentiator` (Optional): The differentiator which is used to distinguish shape types that are reused for multiple elements, like field names.
 
@@ -38,13 +37,12 @@ Placement information consists of:
 - `wrappers` (Optional): An array of shape types to use as wrappers for the current shape.
 - `shape` (Optional): A substitution shape type.
 
-
 ```json
 {
-  "TextField": [ 
+  "TextField": [
     {
 		"display-type": "Detail",
-		"differentiator": "Article.MyTextField",
+		"differentiator": "Article-MyTextField",
 
 		"place": "Content",
 		"alternates": [ "TextField_Title" ],
@@ -64,11 +62,42 @@ be `Address.City`.
 
 ## Shapes
 
+### What is a shape?
+
+Everything you need to know about Shapes is in [this video](https://youtu.be/gKLjtCIs4GU).
+
+### Tag Helpers
+
+#### Manipulating shape metadata
+
+It's possible to manipulate a shape's metadata by using the `metadata` tag helper as a child of the shape's tag helper. The metadata tag helper allows you to:
+
+- Change the display type
+- Add, remove, or clear alternates
+- Add, remove, or clear wrappers
+
+Metadata tag helper example:
+
+```xml
+<menu alias="alias:main-menu">
+    <metadata display-type="summary">
+        <clear-alternates />
+        <add-alternate name="Menu_Alternate1" />
+        <add-alternate name="Menu_Alternate2" />
+        <remove-alternate name="Menu_Alternate1" />
+        <clear-wrappers />
+        <add-wrapper name="Menu_Wrapper1" />
+        <add-wrapper name="Menu_Wrapper2" />
+        <remove-wrapper name="Menu_Wrapper2" />
+    </metadata>
+</menu>
+```
+
 ### Date Time shapes
 
 #### DateTime
 
-Renders a Date and Time value using the timezone of the request.
+Renders a Date and Time value using the time zone of the request.
 
 | Parameter | Type | Description |
 | --------- | ---- |------------ |
@@ -77,7 +106,7 @@ Renders a Date and Time value using the timezone of the request.
 
 Tag helper example:
 
-```csharp
+```html
 <datetime utc="@contentItem.CreatedUtc" />
 ```
 
@@ -92,10 +121,16 @@ Renders a relative textual representation of a Date and Time interval.
 
 Tag helper example:
 
-```csharp
+```html
 <timespan utc="@contentItem.CreatedUtc" />
 ```
 
-```
+Result:
+
+```text
 3 days ago
 ```
+
+## Shape differentiators
+
+You can find information about shape differenciators in the [Templates documentation](../../OrchardCore.Modules/OrchardCore.Templates/README/#content-field-differentiator)

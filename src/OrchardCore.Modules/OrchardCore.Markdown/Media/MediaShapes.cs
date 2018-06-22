@@ -7,14 +7,14 @@ namespace OrchardCore.Markdown.Media
     {
         public void Discover(ShapeTableBuilder builder)
         {
-            builder.Describe("Markdown_Editor")
+            builder.Describe("MarkdownBody_Editor")
                 .OnDisplaying(displaying =>
                 {
                     IShape editor = displaying.Shape;
 
-                    if (editor.Metadata.Alternates.Contains("Markdown_Editor__Wysiwyg"))
+                    if (editor.Metadata.Alternates.Contains("MarkdownBody_Editor__Wysiwyg"))
                     {
-                        editor.Metadata.Wrappers.Add("Media_Wrapper__Markdown");
+                        editor.Metadata.Wrappers.Add("Media_Wrapper__MarkdownBody");
                     }
                 });
         }

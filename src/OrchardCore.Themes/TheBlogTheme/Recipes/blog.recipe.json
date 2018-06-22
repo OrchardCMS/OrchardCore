@@ -21,10 +21,8 @@
       "disable": [],
       "enable": [
         // SaaS
-        "OrchardCore.Mvc",
         "OrchardCore.HomeRoute",
         "OrchardCore.Admin",
-        "OrchardCore.Commons",
         "OrchardCore.Diagnostics",
         "OrchardCore.DynamicCache",
         "OrchardCore.Features",
@@ -39,7 +37,7 @@
         // Content Management
         "OrchardCore.Alias",
         "OrchardCore.Autoroute",
-        "OrchardCore.Body",
+        "OrchardCore.Html",
         "OrchardCore.ContentFields",
         "OrchardCore.ContentPreview",
         "OrchardCore.Contents",
@@ -95,6 +93,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "False",
             "Stereotype": null
@@ -126,8 +125,8 @@
               }
             },
             {
-              "PartName": "BodyPart",
-              "Name": "BodyPart",
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
               "Settings": {
                 "ContentIndexSettings": {
                   "Included": false,
@@ -137,7 +136,7 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "BodyPartSettings": {
+                "HtmlBodyPartSettings": {
                   "Editor": "Wysiwyg"
                 },
                 "Position": "3"
@@ -159,6 +158,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "False",
             "Stereotype": null
@@ -220,6 +220,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "True",
             "Stereotype": null
@@ -251,8 +252,8 @@
               }
             },
             {
-              "PartName": "MarkdownPart",
-              "Name": "MarkdownPart",
+              "PartName": "MarkdownBodyPart",
+              "Name": "MarkdownBodyPart",
               "Settings": {
                 "Position": "3",
                 "ContentIndexSettings": {
@@ -263,7 +264,7 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "MarkdownPartSettings": {
+                "MarkdownBodyPartSettings": {
                   "Editor": "Wysiwyg"
                 }
               }
@@ -284,6 +285,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": null
@@ -341,8 +343,8 @@
               }
             },
             {
-              "PartName": "BodyPart",
-              "Name": "BodyPart",
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
               "Settings": {
                 "Position": "3"
               }
@@ -355,6 +357,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -382,6 +385,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -402,6 +406,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -422,6 +427,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -442,6 +448,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "False",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "False",
             "Stereotype": null
@@ -469,6 +476,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -489,6 +497,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "False",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -509,6 +518,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Versionable": "True",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": null
@@ -559,11 +569,29 @@
       "ContentParts": [
         {
           "Name": "BlogPost",
-          "Settings": {}
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Subtitle",
+              "Settings": {
+                "DisplayName": "Subtitle"
+              }
+            }
+          ]
         },
         {
           "Name": "Article",
-          "Settings": {}
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Subtitle",
+              "Settings": {
+                "DisplayName": "Subtitle"
+              }
+            }
+          ]
         },
         {
           "Name": "Blockquote",
@@ -693,7 +721,6 @@
           "ContentType": "Menu",
           "ContentItemId": "[js: uuid()]",
           "Latest": true,
-          "Number": 1,
           "Published": true,
           "MenuPart": {},
           "TitlePart": { "Title": "Main Menu" },
@@ -723,15 +750,14 @@
           "ContentType": "Blog",
           "ContentItemId": "[js: variables('blogContentItemId')]",
           "Latest": true,
-          "Number": 1,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": {
             "Title": "Blog"
           },
-          "BodyPart": {
-            "Body": "<p>This is the description of your blog</p>"
+          "HtmlBodyPart": {
+            "Html": "This is the description of your blog"
           },
           "AutoroutePart": {
             "Path": "blog"
@@ -742,7 +768,6 @@
           "ContentType": "BlogPost",
           "ContentItemId": "[js: uuid()]",
           "Latest": true,
-          "Number": 1,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
           "Author": "[js: parameters('AdminUsername')]",
@@ -753,11 +778,16 @@
             "ListContentItemId": "[js: variables('blogContentItemId')]",
             "Order": 0
           },
-          "MarkdownPart": {
+          "MarkdownBodyPart": {
             "Markdown": "Never in all their history have men been able truly to conceive of the world as one: a single sphere, a globe, having the qualities of a globe, a round earth in which all the directions eventually meet, in which there is no center because every point, or none, is center — an equal earth which all men occupy as equals. The airman's earth, if free men make it, will be truly round: a globe in practice, not in theory.\n\nScience cuts two ways, of course; its products can be used for both good and evil. But there's no turning back from science. The early warnings about technological dangers also come from science.\n\nWhat was most significant about the lunar voyage was not that man set foot on the Moon but that they set eye on the earth.\n\nA Chinese tale tells of some men sent to harm a young girl who, upon seeing her beauty, become her protectors rather than her violators. That's how I felt seeing the Earth for the first time. I could not help but love and cherish her.\n\nFor those who have seen the Earth from space, and for the hundreds and perhaps thousands more who will, the experience most certainly changes your perspective. The things that we share in our world are far more valuable than those which divide us."
           },
           "AutoroutePart": {
             "Path": "blog/post-1"
+          },
+          "BlogPost": {
+            "Subtitle": {
+              "Text": "Problems look mighty small from 150 miles up"
+            }
           }
         },
         {
@@ -771,11 +801,16 @@
             "Path": "about",
             "SetHomepage": false
           },
-          "BodyPart": {
-            "Body": "<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe nostrum ullam eveniet pariatur voluptates odit, fuga atque ea nobis sit soluta odio, adipisci quas excepturi maxime quae totam ducimus consectetur?</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius praesentium recusandae illo eaque architecto error, repellendus iusto reprehenderit, doloribus, minus sunt. Numquam at quae voluptatum in officia voluptas voluptatibus, minus!</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum molestiae debitis nobis, quod sapiente qui voluptatum, placeat magni repudiandae accusantium fugit quas labore non rerum possimus, corrupti enim modi! Et.</p>"
+          "HtmlBodyPart": {
+            "Html": "<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe nostrum ullam eveniet pariatur voluptates odit, fuga atque ea nobis sit soluta odio, adipisci quas excepturi maxime quae totam ducimus consectetur?</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius praesentium recusandae illo eaque architecto error, repellendus iusto reprehenderit, doloribus, minus sunt. Numquam at quae voluptatum in officia voluptas voluptatibus, minus!</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum molestiae debitis nobis, quod sapiente qui voluptatum, placeat magni repudiandae accusantium fugit quas labore non rerum possimus, corrupti enim modi! Et.</p>"
           },
           "TitlePart": {
             "Title": "About"
+          },
+          "Article": {
+            "Subtitle": {
+              "Text": "This is what I do."
+            }
           }
         },
         {
@@ -786,7 +821,7 @@
           "Owner": "[js: parameters('AdminUsername')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LayerMetadata": {
-            "Title": "Copyright",
+            "Title": "Footer",
             "Layer": "Always",
             "Zone": "Footer",
             "RenderTitle": false,
@@ -794,7 +829,7 @@
           },
           "RawHtml": {
             "Content": {
-              "Html": "<!-- This widget is configured in the layers section -->\n<div class=\"col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1\">\n    <ul class=\"list-inline text-center\">\n        <li>\n            <a href=\"#\">\n                <span class=\"fa-stack fa-lg\">\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\n                    <i class=\"fa fa-twitter fa-stack-1x fa-inverse\"></i>\n                </span>\n            </a>\n        </li>\n        <li>\n            <a href=\"#\">\n                <span class=\"fa-stack fa-lg\">\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\n                    <i class=\"fa fa-facebook fa-stack-1x fa-inverse\"></i>\n                </span>\n            </a>\n        </li>\n        <li>\n            <a href=\"#\">\n                <span class=\"fa-stack fa-lg\">\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\n                    <i class=\"fa fa-github fa-stack-1x fa-inverse\"></i>\n                </span>\n            </a>\n        </li>\n    </ul>\n    <p class=\"copyright text-muted\">Copyright ©</p></div>"
+              "Html": "[file:text('Snippets/footer.html')]"
             }
           }
         }

@@ -1,0 +1,13 @@
+@model OrchardCore.Users.Models.RegistrationSettings
+
+<fieldset class="form-check" asp-validation-class-for="UsersCanRegister">
+    <input asp-for="UsersCanRegister" type="checkbox" class="form-check-input"/>
+    <label asp-for="UsersCanRegister" class="form-check-label">@T["Users can create new accounts on the site"] <span asp-validation-for="UsersCanRegister"></span></label>
+    <span class="form-text text-muted">@T["Display a link to allow the users to register on the site."]</span>
+</fieldset>
+<fieldset class="form-check col-md-6" asp-validation-class-for="UsersMustValidateEmail">
+    <input asp-for="UsersMustValidateEmail" type="checkbox" class="form-check-input" data-toggle="collapse" data-target="#warnEmailValidation"/>
+    <label asp-for="UsersMustValidateEmail" class="form-check-label">@T["Users must verify their email address"] <span asp-validation-for="UsersMustValidateEmail"></span></label>
+    <span class="form-text text-muted">@T["An email will be sent on registration with a link to confirm the user's email address."]</span>
+    <p class="alert alert-warning collapse" id="warnEmailValidation">@T["The users whose email address has not been confirmed will not be able to login."]</p>
+</fieldset>

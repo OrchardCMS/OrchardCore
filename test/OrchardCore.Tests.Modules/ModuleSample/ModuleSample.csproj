@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\..\src\OrchardCore.Build\Dependencies.props" />
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.props" />
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.targets" />
+
+</Project>

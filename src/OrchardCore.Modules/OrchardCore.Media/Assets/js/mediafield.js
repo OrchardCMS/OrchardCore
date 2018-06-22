@@ -11,13 +11,24 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
         el: mediaFieldEditor.get(0),
         data: {
             mediaItems: [],
-            selectedMedia: null
+            selectedMedia: null,
+            smallThumbs: false
+        },
+        created: function () {
+            var self = this;
+
+            self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
         },
         computed: {
             paths: {
                 get: function () {
                     var mediaPaths = [];
-                    this.mediaItems.forEach(function (x) { mediaPaths.push(x.mediaPath); });
+                    this.mediaItems.forEach(function (x) {
+                        if (x.mediaPath === 'not-found') {
+                            return;
+                        }
+                        mediaPaths.push(x.mediaPath);
+                    });
                     return JSON.stringify(mediaPaths);
                 },
                 set: function (values) {
@@ -25,15 +36,18 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                     var mediaPaths = values || [];
                     var signal = $.Deferred();
                     mediaPaths.forEach(function (x, i) {
+                        self.mediaItems.push({ name: ' ' + x, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
+
                         promise = $.when(signal).done(function () {
                             $.ajax({
                                 url: mediaItemUrl + "?path=" + encodeURIComponent(x),
                                 method: 'GET',
                                 success: function (data) {
-                                    self.mediaItems.push(data);
+                                    self.mediaItems.splice( i, 1, data);
                                 },
                                 error: function (error) {
                                     console.log(JSON.stringify(error));
+                                    self.mediaItems.splice(i, 1, { name: x, mime: '', mediaPath: 'not-found' });
                                 }
                             });
                         });
@@ -50,6 +64,22 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
             },
             canRemoveMedia: function () {
                 return this.selectedMedia || this.mediaItems.length === 1;
+            },
+            thumbSize: function () {
+                return this.smallThumbs ? 120 : 240;
+            },
+            currentPrefs: {
+                get: function () {
+                    return {
+                        smallThumbs: this.smallThumbs                        
+                    }
+                },
+                set: function (newPrefs) {
+                    if (!newPrefs) {
+                        return;
+                    }
+                    this.smallThumbs = newPrefs.smallThumbs;
+                }
             }
 
         },
@@ -66,7 +96,14 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                     $("#mediaApp").show();
                     var modal = $(modalBodyElement).modal();
                     $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
-                        mediaFieldApp.mediaItems.push(mediaApp.selectedMedia);
+                        if ((mediaApp.selectedMedias.length > 1) && (allowMultiple === false)) {
+                            alert($('#onlyOneItemMessage').val());
+                            mediaFieldApp.mediaItems.push(mediaApp.selectedMedias[0]);
+                        } else {
+                            mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(mediaApp.selectedMedias);
+                        }
+                        // we don't want the included medias to be still selected the next time we open the modal.
+                        mediaApp.selectedMedias = [];
 
                         modal.modal('hide');
                         return true;
@@ -86,12 +123,25 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                         this.mediaItems.splice(0, 1);
                     }
                 }
+                this.selectedMedia = null;
+            },
+            selectAndDeleteMedia: function (media) {
+                var self = this;
+                self.selectedMedia = media;
+                // setTimeout because sometimes 
+                // removeSelected was called even before the media was set.
+                setTimeout(function () {                    
+                    self.removeSelected();    
+                }, 100);
             }
         },
         watch: {
             mediaItems: function () {
                 // Trigger preview rendering
                 setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100);
+            },
+            currentPrefs: function (newPrefs) {
+                localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
             }
         }
     }));

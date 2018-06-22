@@ -14,20 +14,20 @@ namespace OrchardCore.ContentManagement
         /// The content item is not yet persisted!
         /// </remarks>
         /// <param name="contentType">The name of the content type</param>
-        ContentItem New(string contentType);
+        Task<ContentItem> NewAsync(string contentType);
 
         /// <summary>
         /// Creates (persists) a new content item
         /// </summary>
         /// <param name="contentItem">The content instance filled with all necessary data</param>
-        void Create(ContentItem contentItem);
+        Task CreateAsync(ContentItem contentItem);
 
         /// <summary>
         /// Creates (persists) a new content item with the specified version
         /// </summary>
         /// <param name="contentItem">The content instance filled with all necessary data</param>
         /// <param name="options">The version to create the item with</param>
-        void Create(ContentItem contentItem, VersionOptions options);
+        Task CreateAsync(ContentItem contentItem, VersionOptions options);
 
         /// <summary>
         /// Gets the published content item with the specified id
@@ -63,14 +63,14 @@ namespace OrchardCore.ContentManagement
         Task DiscardDraftAsync(ContentItem contentItem);
         Task PublishAsync(ContentItem contentItem);
         Task UnpublishAsync(ContentItem contentItem);
-        TAspect PopulateAspect<TAspect>(IContent content, TAspect aspect);
+        Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect);
     }
 
     public static class ContentManagerExtensions
     {
-        public static TAspect PopulateAspect<TAspect>(this IContentManager contentManager, IContent content) where TAspect : new()
+        public static Task<TAspect> PopulateAspectAsync<TAspect>(this IContentManager contentManager, IContent content) where TAspect : new()
         {
-            return contentManager.PopulateAspect(content, new TAspect());
+            return contentManager.PopulateAspectAsync(content, new TAspect());
         }
 
         public static async Task<bool> HasPublishedVersionAsync(this IContentManager contentManager, IContent content)

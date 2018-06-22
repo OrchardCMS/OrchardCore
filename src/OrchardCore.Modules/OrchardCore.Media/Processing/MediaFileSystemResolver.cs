@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -17,6 +16,7 @@ namespace OrchardCore.Media.Processing
     /// </summary>
     public class MediaFileSystemResolver : IImageResolver
     {
+        private readonly IBufferManager bufferManager;
         private readonly IMediaFileStore _mediaStore;
 
         /// <summary>
@@ -24,10 +24,11 @@ namespace OrchardCore.Media.Processing
         /// </summary>
         private readonly ImageSharpMiddlewareOptions options;
 
-        public MediaFileSystemResolver(IMediaFileStore mediaStore, IOptions<ImageSharpMiddlewareOptions> options)
+        public MediaFileSystemResolver(IMediaFileStore mediaStore, IBufferManager bufferManager, IOptions<ImageSharpMiddlewareOptions> options)
         {
             _mediaStore = mediaStore;
             this.options = options.Value;
+            this.bufferManager = bufferManager;
         }
 
         /// <inheritdoc/>
@@ -43,13 +44,12 @@ namespace OrchardCore.Media.Processing
         }
 
         /// <inheritdoc/>
-        public async Task<byte[]> ResolveImageAsync(HttpContext context, ILogger logger)
+        public async Task<IByteBuffer> ResolveImageAsync(HttpContext context, ILogger logger)
         {
             // Path has already been correctly parsed before here.
 
-            var file = await _mediaStore.MapFileAsync(context.Request.Path);
-
-            byte[] buffer;
+            var filePath = _mediaStore.MapPublicUrlToPath(context.Request.PathBase + context.Request.Path.Value);
+            var file = await _mediaStore.GetFileInfoAsync(filePath);
 
             // Check to see if the file exists.
             if (file == null)
@@ -57,11 +57,13 @@ namespace OrchardCore.Media.Processing
                 return null;
             }
 
-            using (Stream stream = file.CreateReadStream())
+            IByteBuffer buffer;
+
+            using (var stream = await _mediaStore.GetFileStreamAsync(filePath))
             {
                 // Buffer is returned to the pool in the middleware
-                buffer = BufferDataPool.Rent((int)stream.Length);
-                await stream.ReadAsync(buffer, 0, (int)stream.Length);
+                buffer = this.bufferManager.Allocate((int)stream.Length);
+                await stream.ReadAsync(buffer.Array, 0, buffer.Length);
             }
 
             return buffer;

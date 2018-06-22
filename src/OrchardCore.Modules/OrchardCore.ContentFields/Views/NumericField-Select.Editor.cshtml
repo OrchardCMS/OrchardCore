@@ -1,4 +1,4 @@
-﻿@model OrchardCore.ContentFields.ViewModels.EditNumericFieldViewModel
+@model OrchardCore.ContentFields.ViewModels.EditNumericFieldViewModel
 @using System.Globalization
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentFields.Settings;
@@ -12,7 +12,7 @@
 }
 
 <fieldset class="form-group">
-    <div class="row col-sm">
+    <div class="row col-xs">
         <label asp-for="Value">@name</label>
         <select asp-for="Value" class="form-control content-preview-select">
             @for (decimal d = from; d <= to; d += step)

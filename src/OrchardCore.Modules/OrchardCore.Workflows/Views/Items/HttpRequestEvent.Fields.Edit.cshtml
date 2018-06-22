@@ -1,0 +1,35 @@
+@using OrchardCore.Workflows.Http.ViewModels;
+@using OrchardCore.Mvc.Core.Utilities;
+@using Microsoft.AspNetCore.Antiforgery;
+@model HttpRequestEventViewModel
+@inject IAntiforgery antiforgery
+
+<fieldset class="form-group" asp-validation-class-for="HttpMethod">
+    <label asp-for="HttpMethod">@T["HTTP Method"] <span asp-validation-for="HttpMethod"></span></label>
+    <select asp-for="HttpMethod" class="form-control" asp-items="Model.GetAvailableHttpMethods()"></select>
+    <span class="hint">@T["The HTTP method to match."]</span>
+</fieldset>
+
+<fieldset>
+    @{
+        var antiforgeryTokenSet = antiforgery.GetTokens(Context);
+    }
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon3">@Url.GetBaseUrl()</span>
+        </div>
+        <input asp-for="Url" type="text" id="workflow-url-text" class="form-control" readonly />
+        <div class="input-group-append">
+            <button class="btn btn-primary" type="button" id="generate-url-button" title="@T["Generate a new URL"]" data-generate-url="@Url.Action("GenerateUrl", "HttpWorkflow")" data-antiforgery-token="@antiforgeryTokenSet.RequestToken" data-antiforgery-header-name="@antiforgeryTokenSet.HeaderName">@T["Regenerate"]</button>
+        </div>
+    </div>
+    <span class="hint"><i class="fa fa-exclamation-triangle"></i> @T["Anyone that invokes this URL will trigger this workflow. Keep it in a safe place."]</span>
+</fieldset>
+
+<fieldset class="form-group">
+    <input type="checkbox" asp-for="ValidateAntiforgeryToken" />
+    <label asp-for="ValidateAntiforgeryToken">@T["Validate Antiforgery Token"]</label>
+    <span class="hint">@T["Uncheck this option if the request comes from a service that invokes this URL as a webhook. If this URL is requested from a form, then keep this option checked to ensure the form values have not been tampered with."]</span>
+</fieldset>
+
+<script depends-on="jQuery" asp-src="~/OrchardCore.Workflows/Scripts/orchard.http-request-event-editor.min.js" debug-src="~/OrchardCore.Workflows/Scripts/orchard.http-request-event-editor.js" type="text/javascript" at="Foot"></script>

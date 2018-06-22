@@ -33,7 +33,7 @@ namespace OrchardCore.Flows.Controllers
         public IHtmlLocalizer T { get; }
 
         public ILogger Logger { get; set; }
-        
+
         public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string targetId, bool flowmetadata)
         {
             if (String.IsNullOrWhiteSpace(id))
@@ -41,7 +41,7 @@ namespace OrchardCore.Flows.Controllers
                 return NotFound();
             }
 
-            var contentItem = _contentManager.New(id);
+            var contentItem = await _contentManager.NewAsync(id);
 
             // Does this editor need the flow metadata editor?
             if (flowmetadata)

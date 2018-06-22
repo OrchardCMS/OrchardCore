@@ -1,21 +1,21 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="OrchardCore.ImageSharp.Web" Version="1.0.0-ci0027" />
-    <!--<PackageReference Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0001" />-->
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="$(MicrosoftAspNetCoreMvcTagHelpersPackageVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="$(MicrosoftAspNetCoreMvcViewFeaturesPackageVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="$(MicrosoftAspNetCoreStaticFilesPackageVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftExtensionsDependencyInjectionPackageVersion)" />
-    <PackageReference Include="MimeMapping" Version="1.0.1.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="SixLabors.ImageSharp.Web" />
+    <PackageReference Include="SixLabors.ImageSharp" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Modules.Abstractions\OrchardCore.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Display\OrchardCore.ContentManagement.Display.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentTypes.Abstractions\OrchardCore.ContentTypes.Abstractions.csproj" />
@@ -28,9 +28,10 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Media.Services\OrchardCore.Media.Services.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.MetaWeblog.Abstractions\OrchardCore.MetaWeblog.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Security.Abstractions\OrchardCore.Security.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Security\OrchardCore.Security.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.StorageProviders.FileSystem\OrchardCore.StorageProviders.FileSystem.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.FileStorage.FileSystem\OrchardCore.FileStorage.FileSystem.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.XmlRpc.Abstractions\OrchardCore.XmlRpc.Abstractions.csproj" />
   </ItemGroup>
 

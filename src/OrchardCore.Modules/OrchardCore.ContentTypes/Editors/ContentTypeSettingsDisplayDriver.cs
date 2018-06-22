@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.Views;
 
@@ -10,13 +10,14 @@ namespace OrchardCore.ContentTypes.Editors
     {
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
         {
-            return Shape<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", model =>
+            return Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", model =>
             {
                 var settings = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>();
 
                 model.Creatable = settings.Creatable;
                 model.Listable = settings.Listable;
                 model.Draftable = settings.Draftable;
+                model.Versionable = settings.Versionable;
                 model.Securable = settings.Securable;
                 model.Stereotype = settings.Stereotype;
             }).Location("Content:5");
@@ -31,6 +32,7 @@ namespace OrchardCore.ContentTypes.Editors
                 context.Builder.Creatable(model.Creatable);
                 context.Builder.Listable(model.Listable);
                 context.Builder.Draftable(model.Draftable);
+                context.Builder.Versionable(model.Versionable);
                 context.Builder.Securable(model.Securable);
                 context.Builder.Stereotype(model.Stereotype);
             }

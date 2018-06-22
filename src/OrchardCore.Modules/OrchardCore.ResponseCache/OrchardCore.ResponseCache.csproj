@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="$(MicrosoftAspNetCoreResponseCachingPackageVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" />
   </ItemGroup>
 
   <ItemGroup>

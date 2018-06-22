@@ -1,198 +1,189 @@
 <Project>
+  <ItemGroup>
+    <PackageManagement Include="Libuv" Version="1.10.0" />
+    <PackageManagement Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.3.0" />
+    <PackageManagement Include="Microsoft.AspNetCore" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.All" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Antiforgery" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.ApplicationInsights.HostingStartup" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Core" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Google" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authorization" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authorization.Policy" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.AzureAppServices.HostingStartup" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.AzureAppServicesIntegration" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.AzureAppServices.SiteExtension" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Buffering" Version="0.2.2" />
+    <PackageManagement Include="Microsoft.AspNetCore.CookiePolicy" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Cors" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Cryptography.Internal" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.AzureStorage" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.AzureStorage" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.Redis" Version="0.4.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.SystemWeb" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.2.2" />
+    <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Diagnostics" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Hosting" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Hosting.Server.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Html.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Http.Extensions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Http.Features" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.HttpOverrides" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Identity" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.JsonPatch" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Localization" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Localization.Routing" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.MiddlewareAnalysis" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.ApiExplorer" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Cors" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.DataAnnotations" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Formatters.Xml" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Localization" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.Extensions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.ViewCompilation" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.NodeServices" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Razor.Language" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Razor" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Razor.Runtime" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.ResponseCaching.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.ResponseCaching" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.ResponseCompression" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Rewrite" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Routing.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Routing" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Server.HttpSys" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Core" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Session" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.SpaServices" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.TestHost" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.WebSockets" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.WebUtilities" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNet.Identity.AspNetCoreCompat" Version="0.3.2" />
+    <PackageManagement Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.1" />
+    <PackageManagement Include="Microsoft.AspNet.WebApi.Client" Version="5.2.4" />
+    <PackageManagement Include="Microsoft.Azure.KeyVault" Version="3.0.0-alpha" />
+    <PackageManagement Include="Microsoft.Build" Version="15.6.85" />
+    <PackageManagement Include="Microsoft.Build.Runtime" Version="15.6.85" />
+    <PackageManagement Include="Microsoft.Build.Tasks.Core" Version="15.6.85" />
+    <PackageManagement Include="Microsoft.Build.Utilities.Core" Version="15.6.85" />
+    <PackageManagement Include="Microsoft.CodeAnalysis.Common" Version="2.7.0" />
+    <PackageManagement Include="Microsoft.CodeAnalysis.CSharp" Version="2.7.0" />
+    <PackageManagement Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.7.0" />
+    <PackageManagement Include="Microsoft.CodeAnalysis.Razor" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.7.0" />
+    <PackageManagement Include="Microsoft.CSharp" Version="4.5.0" />
+    <PackageManagement Include="Microsoft.Data.Sqlite" Version="2.1.0" />
+    <PackageManagement Include="Microsoft.Data.Sqlite.Core" Version="2.1.0" />
+    <PackageManagement Include="Microsoft.DotNet.Watcher.Tools" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Relational.Design.Specification.Tests" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Relational.Specification.Tests" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Specification.Tests" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Caching.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Caching.Memory" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Caching.Redis" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Caching.SqlConfig.Tools" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Caching.SqlServer" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Configuration.AzureKeyVault" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Configuration.Ini" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Configuration.Xml" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.DependencyModel" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.DiagnosticAdapter" Version="2.1.0" />
+    <PackageManagement Include="Microsoft.Extensions.FileProviders.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.FileProviders.Composite" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.FileProviders.Physical" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.FileSystemGlobbing" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Hosting.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Identity.Core" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Identity.Stores" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Localization.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Localization" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Logging.AzureAppServices" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Logging.Configuration" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Logging.Debug" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Logging.EventSource" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Logging" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Logging.TraceSource" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.ObjectPool" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Options" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.Primitives" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.SecretManager.Tools" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.WebEncoders" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Net.Http.Headers" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Owin.Security.Interop" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Contracts" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Core" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Templating" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="2.1.1" />
+  </ItemGroup>
+
   <PropertyGroup>
-    <LibuvPackageVersion>1.10.0</LibuvPackageVersion>
-    <MicrosoftApplicationInsightsAspNetCorePackageVersion>2.1.1</MicrosoftApplicationInsightsAspNetCorePackageVersion>
-    <MicrosoftAspNetCorePackageVersion>2.0.1</MicrosoftAspNetCorePackageVersion>
-    <MicrosoftAspNetCoreAllPackageVersion>2.0.3</MicrosoftAspNetCoreAllPackageVersion>
-    <MicrosoftAspNetCoreAntiforgeryPackageVersion>2.0.1</MicrosoftAspNetCoreAntiforgeryPackageVersion>
-    <MicrosoftAspNetCoreApplicationInsightsHostingStartupPackageVersion>2.0.1</MicrosoftAspNetCoreApplicationInsightsHostingStartupPackageVersion>
-    <MicrosoftAspNetCoreAuthenticationAbstractionsPackageVersion>2.0.1</MicrosoftAspNetCoreAuthenticationAbstractionsPackageVersion>
-    <MicrosoftAspNetCoreAuthenticationCookiesPackageVersion>2.0.1</MicrosoftAspNetCoreAuthenticationCookiesPackageVersion>
-    <MicrosoftAspNetCoreAuthenticationCorePackageVersion>2.0.1</MicrosoftAspNetCoreAuthenticationCorePackageVersion>
-    <MicrosoftAspNetCoreAuthenticationFacebookPackageVersion>2.0.1</MicrosoftAspNetCoreAuthenticationFacebookPackageVersion>
-    <MicrosoftAspNetCoreAuthenticationGooglePackageVersion>2.0.1</MicrosoftAspNetCoreAuthenticationGooglePackageVersion>
-    <MicrosoftAspNetCoreAuthenticationJwtBearerPackageVersion>2.0.1</MicrosoftAspNetCoreAuthenticationJwtBearerPackageVersion>
-    <MicrosoftAspNetCoreAuthenticationMicrosoftAccountPackageVersion>2.0.1</MicrosoftAspNetCoreAuthenticationMicrosoftAccountPackageVersion>
-    <MicrosoftAspNetCoreAuthenticationOAuthPackageVersion>2.0.1</MicrosoftAspNetCoreAuthenticationOAuthPackageVersion>
-    <MicrosoftAspNetCoreAuthenticationOpenIdConnectPackageVersion>2.0.1</MicrosoftAspNetCoreAuthenticationOpenIdConnectPackageVersion>
-    <MicrosoftAspNetCoreAuthenticationPackageVersion>2.0.1</MicrosoftAspNetCoreAuthenticationPackageVersion>
-    <MicrosoftAspNetCoreAuthenticationTwitterPackageVersion>2.0.1</MicrosoftAspNetCoreAuthenticationTwitterPackageVersion>
-    <MicrosoftAspNetCoreAuthorizationPackageVersion>2.0.1</MicrosoftAspNetCoreAuthorizationPackageVersion>
-    <MicrosoftAspNetCoreAuthorizationPolicyPackageVersion>2.0.1</MicrosoftAspNetCoreAuthorizationPolicyPackageVersion>
-    <MicrosoftAspNetCoreAzureAppServicesHostingStartupPackageVersion>2.0.1</MicrosoftAspNetCoreAzureAppServicesHostingStartupPackageVersion>
-    <MicrosoftAspNetCoreAzureAppServicesIntegrationPackageVersion>2.0.1</MicrosoftAspNetCoreAzureAppServicesIntegrationPackageVersion>
-    <MicrosoftAspNetCoreAzureAppServicesSiteExtensionPackageVersion>2.0.1</MicrosoftAspNetCoreAzureAppServicesSiteExtensionPackageVersion>
-    <MicrosoftAspNetCoreBufferingPackageVersion>2.0.1</MicrosoftAspNetCoreBufferingPackageVersion>
-    <MicrosoftAspNetCoreCookiePolicyPackageVersion>2.0.1</MicrosoftAspNetCoreCookiePolicyPackageVersion>
-    <MicrosoftAspNetCoreCorsPackageVersion>2.0.1</MicrosoftAspNetCoreCorsPackageVersion>
-    <MicrosoftAspNetCoreCryptographyInternalPackageVersion>2.0.1</MicrosoftAspNetCoreCryptographyInternalPackageVersion>
-    <MicrosoftAspNetCoreCryptographyKeyDerivationPackageVersion>2.0.1</MicrosoftAspNetCoreCryptographyKeyDerivationPackageVersion>
-    <MicrosoftAspNetCoreDataProtectionAbstractionsPackageVersion>2.0.1</MicrosoftAspNetCoreDataProtectionAbstractionsPackageVersion>
-    <MicrosoftAspNetCoreDataProtectionAzureStoragePackageVersion>2.0.1</MicrosoftAspNetCoreDataProtectionAzureStoragePackageVersion>
-    <MicrosoftAspNetCoreDataProtectionExtensionsPackageVersion>2.0.1</MicrosoftAspNetCoreDataProtectionExtensionsPackageVersion>
-    <MicrosoftAspNetCoreDataProtectionPackageVersion>2.0.1</MicrosoftAspNetCoreDataProtectionPackageVersion>
-    <MicrosoftAspNetCoreDataProtectionRedisPackageVersion>0.3.1</MicrosoftAspNetCoreDataProtectionRedisPackageVersion>
-    <MicrosoftAspNetCoreDataProtectionSystemWebPackageVersion>2.0.1</MicrosoftAspNetCoreDataProtectionSystemWebPackageVersion>
-    <MicrosoftAspNetCoreDiagnosticsAbstractionsPackageVersion>2.0.1</MicrosoftAspNetCoreDiagnosticsAbstractionsPackageVersion>
-    <MicrosoftAspNetCoreDiagnosticsElmPackageVersion>0.2.2</MicrosoftAspNetCoreDiagnosticsElmPackageVersion>
-    <MicrosoftAspNetCoreDiagnosticsEntityFrameworkCorePackageVersion>2.0.1</MicrosoftAspNetCoreDiagnosticsEntityFrameworkCorePackageVersion>
-    <MicrosoftAspNetCoreDiagnosticsIdentityServicePackageVersion>2.0.1</MicrosoftAspNetCoreDiagnosticsIdentityServicePackageVersion>
-    <MicrosoftAspNetCoreDiagnosticsPackageVersion>2.0.1</MicrosoftAspNetCoreDiagnosticsPackageVersion>
-    <MicrosoftAspNetCoreHostingAbstractionsPackageVersion>2.0.1</MicrosoftAspNetCoreHostingAbstractionsPackageVersion>
-    <MicrosoftAspNetCoreHostingPackageVersion>2.0.1</MicrosoftAspNetCoreHostingPackageVersion>
-    <MicrosoftAspNetCoreHostingServerAbstractionsPackageVersion>2.0.1</MicrosoftAspNetCoreHostingServerAbstractionsPackageVersion>
-    <MicrosoftAspNetCoreHostingWindowsServicesPackageVersion>2.0.1</MicrosoftAspNetCoreHostingWindowsServicesPackageVersion>
-    <MicrosoftAspNetCoreHtmlAbstractionsPackageVersion>2.0.0</MicrosoftAspNetCoreHtmlAbstractionsPackageVersion>
-    <MicrosoftAspNetCoreHttpAbstractionsPackageVersion>2.0.1</MicrosoftAspNetCoreHttpAbstractionsPackageVersion>
-    <MicrosoftAspNetCoreHttpExtensionsPackageVersion>2.0.1</MicrosoftAspNetCoreHttpExtensionsPackageVersion>
-    <MicrosoftAspNetCoreHttpFeaturesPackageVersion>2.0.1</MicrosoftAspNetCoreHttpFeaturesPackageVersion>
-    <MicrosoftAspNetCoreHttpOverridesPackageVersion>2.0.1</MicrosoftAspNetCoreHttpOverridesPackageVersion>
-    <MicrosoftAspNetCoreHttpPackageVersion>2.0.1</MicrosoftAspNetCoreHttpPackageVersion>
-    <MicrosoftAspNetCoreIdentityEntityFrameworkCorePackageVersion>2.0.1</MicrosoftAspNetCoreIdentityEntityFrameworkCorePackageVersion>
-    <MicrosoftAspNetCoreIdentityPackageVersion>2.0.1</MicrosoftAspNetCoreIdentityPackageVersion>
-    <MicrosoftAspNetCoreIdentityServiceAbstractionsPackageVersion>2.0.1</MicrosoftAspNetCoreIdentityServiceAbstractionsPackageVersion>
-    <MicrosoftAspNetCoreIdentityServiceAzureKeyVaultPackageVersion>2.0.1</MicrosoftAspNetCoreIdentityServiceAzureKeyVaultPackageVersion>
-    <MicrosoftAspNetCoreIdentityServiceCorePackageVersion>2.0.1</MicrosoftAspNetCoreIdentityServiceCorePackageVersion>
-    <MicrosoftAspNetCoreIdentityServiceEntityFrameworkCorePackageVersion>2.0.1</MicrosoftAspNetCoreIdentityServiceEntityFrameworkCorePackageVersion>
-    <MicrosoftAspNetCoreIdentityServiceIntegratedWebClientPackageVersion>2.0.1</MicrosoftAspNetCoreIdentityServiceIntegratedWebClientPackageVersion>
-    <MicrosoftAspNetCoreIdentityServiceMvcPackageVersion>2.0.1</MicrosoftAspNetCoreIdentityServiceMvcPackageVersion>
-    <MicrosoftAspNetCoreIdentityServicePackageVersion>2.0.1</MicrosoftAspNetCoreIdentityServicePackageVersion>
-    <MicrosoftAspNetCoreIdentityServiceSpecificationTestsPackageVersion>2.0.1</MicrosoftAspNetCoreIdentityServiceSpecificationTestsPackageVersion>
-    <MicrosoftAspNetCoreIdentitySpecificationTestsPackageVersion>2.0.1</MicrosoftAspNetCoreIdentitySpecificationTestsPackageVersion>
-    <MicrosoftAspNetCoreJsonPatchPackageVersion>2.0.0</MicrosoftAspNetCoreJsonPatchPackageVersion>
-    <MicrosoftAspNetCoreLocalizationPackageVersion>2.0.1</MicrosoftAspNetCoreLocalizationPackageVersion>
-    <MicrosoftAspNetCoreLocalizationRoutingPackageVersion>2.0.1</MicrosoftAspNetCoreLocalizationRoutingPackageVersion>
-    <MicrosoftAspNetCoreMiddlewareAnalysisPackageVersion>2.0.1</MicrosoftAspNetCoreMiddlewareAnalysisPackageVersion>
-    <MicrosoftAspNetCoreMvcAbstractionsPackageVersion>2.0.1</MicrosoftAspNetCoreMvcAbstractionsPackageVersion>
-    <MicrosoftAspNetCoreMvcApiExplorerPackageVersion>2.0.1</MicrosoftAspNetCoreMvcApiExplorerPackageVersion>
-    <MicrosoftAspNetCoreMvcCorePackageVersion>2.0.1</MicrosoftAspNetCoreMvcCorePackageVersion>
-    <MicrosoftAspNetCoreMvcCorsPackageVersion>2.0.1</MicrosoftAspNetCoreMvcCorsPackageVersion>
-    <MicrosoftAspNetCoreMvcDataAnnotationsPackageVersion>2.0.1</MicrosoftAspNetCoreMvcDataAnnotationsPackageVersion>
-    <MicrosoftAspNetCoreMvcFormattersJsonPackageVersion>2.0.1</MicrosoftAspNetCoreMvcFormattersJsonPackageVersion>
-    <MicrosoftAspNetCoreMvcFormattersXmlPackageVersion>2.0.1</MicrosoftAspNetCoreMvcFormattersXmlPackageVersion>
-    <MicrosoftAspNetCoreMvcLocalizationPackageVersion>2.0.1</MicrosoftAspNetCoreMvcLocalizationPackageVersion>
-    <MicrosoftAspNetCoreMvcPackageVersion>2.0.1</MicrosoftAspNetCoreMvcPackageVersion>
-    <MicrosoftAspNetCoreMvcRazorExtensionsPackageVersion>2.0.1</MicrosoftAspNetCoreMvcRazorExtensionsPackageVersion>
-    <MicrosoftAspNetCoreMvcRazorPackageVersion>2.0.1</MicrosoftAspNetCoreMvcRazorPackageVersion>
-    <MicrosoftAspNetCoreMvcRazorPagesPackageVersion>2.0.1</MicrosoftAspNetCoreMvcRazorPagesPackageVersion>
-    <MicrosoftAspNetCoreMvcRazorViewCompilationPackageVersion>2.0.1</MicrosoftAspNetCoreMvcRazorViewCompilationPackageVersion>
-    <MicrosoftAspNetCoreMvcTagHelpersPackageVersion>2.0.1</MicrosoftAspNetCoreMvcTagHelpersPackageVersion>
-    <MicrosoftAspNetCoreMvcViewFeaturesPackageVersion>2.0.1</MicrosoftAspNetCoreMvcViewFeaturesPackageVersion>
-    <MicrosoftAspNetCoreMvcWebApiCompatShimPackageVersion>2.0.1</MicrosoftAspNetCoreMvcWebApiCompatShimPackageVersion>
-    <MicrosoftAspNetCoreNodeServicesPackageVersion>2.0.1</MicrosoftAspNetCoreNodeServicesPackageVersion>
-    <MicrosoftAspNetCoreNodeServicesSocketsPackageVersion>2.0.1</MicrosoftAspNetCoreNodeServicesSocketsPackageVersion>
-    <MicrosoftAspNetCoreOwinPackageVersion>2.0.1</MicrosoftAspNetCoreOwinPackageVersion>
-    <MicrosoftAspNetCorePackageVersion>2.0.1</MicrosoftAspNetCorePackageVersion>
-    <MicrosoftAspNetCoreProxyPackageVersion>0.3.1</MicrosoftAspNetCoreProxyPackageVersion>
-    <MicrosoftAspNetCoreRazorLanguagePackageVersion>2.0.1</MicrosoftAspNetCoreRazorLanguagePackageVersion>
-    <MicrosoftAspNetCoreRazorPackageVersion>2.0.1</MicrosoftAspNetCoreRazorPackageVersion>
-    <MicrosoftAspNetCoreRazorRuntimePackageVersion>2.0.1</MicrosoftAspNetCoreRazorRuntimePackageVersion>
-    <MicrosoftAspNetCoreResponseCachingAbstractionsPackageVersion>2.0.1</MicrosoftAspNetCoreResponseCachingAbstractionsPackageVersion>
-    <MicrosoftAspNetCoreResponseCachingPackageVersion>2.0.1</MicrosoftAspNetCoreResponseCachingPackageVersion>
-    <MicrosoftAspNetCoreResponseCompressionPackageVersion>2.0.1</MicrosoftAspNetCoreResponseCompressionPackageVersion>
-    <MicrosoftAspNetCoreRewritePackageVersion>2.0.1</MicrosoftAspNetCoreRewritePackageVersion>
-    <MicrosoftAspNetCoreRoutingAbstractionsPackageVersion>2.0.1</MicrosoftAspNetCoreRoutingAbstractionsPackageVersion>
-    <MicrosoftAspNetCoreRoutingPackageVersion>2.0.1</MicrosoftAspNetCoreRoutingPackageVersion>
-    <MicrosoftAspNetCoreServerHttpSysPackageVersion>2.0.1</MicrosoftAspNetCoreServerHttpSysPackageVersion>
-    <MicrosoftAspNetCoreServerIISIntegrationPackageVersion>2.0.1</MicrosoftAspNetCoreServerIISIntegrationPackageVersion>
-    <MicrosoftAspNetCoreServerKestrelCorePackageVersion>2.0.1</MicrosoftAspNetCoreServerKestrelCorePackageVersion>
-    <MicrosoftAspNetCoreServerKestrelHttpsPackageVersion>2.0.1</MicrosoftAspNetCoreServerKestrelHttpsPackageVersion>
-    <MicrosoftAspNetCoreServerKestrelPackageVersion>2.0.1</MicrosoftAspNetCoreServerKestrelPackageVersion>
-    <MicrosoftAspNetCoreServerKestrelTransportAbstractionsPackageVersion>2.0.1</MicrosoftAspNetCoreServerKestrelTransportAbstractionsPackageVersion>
-    <MicrosoftAspNetCoreServerKestrelTransportLibuvPackageVersion>2.0.1</MicrosoftAspNetCoreServerKestrelTransportLibuvPackageVersion>
-    <MicrosoftAspNetCoreServerKestrelTransportSocketsPackageVersion>2.0.1</MicrosoftAspNetCoreServerKestrelTransportSocketsPackageVersion>
-    <MicrosoftAspNetCoreSessionPackageVersion>2.0.1</MicrosoftAspNetCoreSessionPackageVersion>
-    <MicrosoftAspNetCoreSpaServicesPackageVersion>2.0.1</MicrosoftAspNetCoreSpaServicesPackageVersion>
-    <MicrosoftAspNetCoreStaticFilesPackageVersion>2.0.1</MicrosoftAspNetCoreStaticFilesPackageVersion>
-    <MicrosoftAspNetCoreTestHostPackageVersion>2.0.1</MicrosoftAspNetCoreTestHostPackageVersion>
-    <MicrosoftAspNetCoreWebSocketsPackageVersion>2.0.1</MicrosoftAspNetCoreWebSocketsPackageVersion>
-    <MicrosoftAspNetCoreWebUtilitiesPackageVersion>2.0.1</MicrosoftAspNetCoreWebUtilitiesPackageVersion>
-    <MicrosoftAspNetIdentityAspNetCoreCompatPackageVersion>0.3.1</MicrosoftAspNetIdentityAspNetCoreCompatPackageVersion>
-    <MicrosoftAspNetIdentityEntityFrameworkPackageVersion>2.2.1</MicrosoftAspNetIdentityEntityFrameworkPackageVersion>
-    <MicrosoftAspNetWebApiClientPackageVersion>5.2.2</MicrosoftAspNetWebApiClientPackageVersion>
-    <MicrosoftAzureKeyVaultPackageVersion>2.3.2</MicrosoftAzureKeyVaultPackageVersion>
-    <MicrosoftBuildPackageVersion>15.3.409</MicrosoftBuildPackageVersion>
-    <MicrosoftBuildRuntimePackageVersion>15.3.409</MicrosoftBuildRuntimePackageVersion>
-    <MicrosoftBuildTasksCorePackageVersion>15.3.409</MicrosoftBuildTasksCorePackageVersion>
-    <MicrosoftBuildUtilitiesCorePackageVersion>15.3.409</MicrosoftBuildUtilitiesCorePackageVersion>
-    <MicrosoftCodeAnalysisCommonPackageVersion>2.3.1</MicrosoftCodeAnalysisCommonPackageVersion>
-    <MicrosoftCodeAnalysisCSharpPackageVersion>2.3.1</MicrosoftCodeAnalysisCSharpPackageVersion>
-    <MicrosoftCodeAnalysisCSharpWorkspacesPackageVersion>2.3.1</MicrosoftCodeAnalysisCSharpWorkspacesPackageVersion>
-    <MicrosoftCodeAnalysisRazorPackageVersion>2.0.1</MicrosoftCodeAnalysisRazorPackageVersion>
-    <MicrosoftCodeAnalysisRazorWorkspacesPackageVersion>2.0.1</MicrosoftCodeAnalysisRazorWorkspacesPackageVersion>
-    <MicrosoftCodeAnalysisRemoteRazorPackageVersion>2.0.1</MicrosoftCodeAnalysisRemoteRazorPackageVersion>
-    <MicrosoftCodeAnalysisWorkspacesCommonPackageVersion>2.3.1</MicrosoftCodeAnalysisWorkspacesCommonPackageVersion>
-    <MicrosoftCSharpPackageVersion>4.4.0</MicrosoftCSharpPackageVersion>
-    <MicrosoftDataSqliteCorePackageVersion>2.0.0</MicrosoftDataSqliteCorePackageVersion>
-    <MicrosoftDataSqlitePackageVersion>2.0.0</MicrosoftDataSqlitePackageVersion>
-    <MicrosoftDotNetWatcherToolsPackageVersion>2.0.0</MicrosoftDotNetWatcherToolsPackageVersion>
-    <MicrosoftEntityFrameworkCoreDesignPackageVersion>2.0.1</MicrosoftEntityFrameworkCoreDesignPackageVersion>
-    <MicrosoftEntityFrameworkCoreInMemoryPackageVersion>2.0.1</MicrosoftEntityFrameworkCoreInMemoryPackageVersion>
-    <MicrosoftEntityFrameworkCorePackageVersion>2.0.1</MicrosoftEntityFrameworkCorePackageVersion>
-    <MicrosoftEntityFrameworkCoreRelationalDesignSpecificationTestsPackageVersion>2.0.1</MicrosoftEntityFrameworkCoreRelationalDesignSpecificationTestsPackageVersion>
-    <MicrosoftEntityFrameworkCoreRelationalPackageVersion>2.0.1</MicrosoftEntityFrameworkCoreRelationalPackageVersion>
-    <MicrosoftEntityFrameworkCoreRelationalSpecificationTestsPackageVersion>2.0.1</MicrosoftEntityFrameworkCoreRelationalSpecificationTestsPackageVersion>
-    <MicrosoftEntityFrameworkCoreSpecificationTestsPackageVersion>2.0.1</MicrosoftEntityFrameworkCoreSpecificationTestsPackageVersion>
-    <MicrosoftEntityFrameworkCoreSqliteCorePackageVersion>2.0.1</MicrosoftEntityFrameworkCoreSqliteCorePackageVersion>
-    <MicrosoftEntityFrameworkCoreSqlitePackageVersion>2.0.1</MicrosoftEntityFrameworkCoreSqlitePackageVersion>
-    <MicrosoftEntityFrameworkCoreSqlServerPackageVersion>2.0.1</MicrosoftEntityFrameworkCoreSqlServerPackageVersion>
-    <MicrosoftEntityFrameworkCoreToolsDotNetPackageVersion>2.0.1</MicrosoftEntityFrameworkCoreToolsDotNetPackageVersion>
-    <MicrosoftEntityFrameworkCoreToolsPackageVersion>2.0.1</MicrosoftEntityFrameworkCoreToolsPackageVersion>
-    <MicrosoftExtensionsCachingAbstractionsPackageVersion>2.0.0</MicrosoftExtensionsCachingAbstractionsPackageVersion>
-    <MicrosoftExtensionsCachingMemoryPackageVersion>2.0.0</MicrosoftExtensionsCachingMemoryPackageVersion>
-    <MicrosoftExtensionsCachingRedisPackageVersion>2.0.0</MicrosoftExtensionsCachingRedisPackageVersion>
-    <MicrosoftExtensionsCachingSqlConfigToolsPackageVersion>2.0.0</MicrosoftExtensionsCachingSqlConfigToolsPackageVersion>
-    <MicrosoftExtensionsCachingSqlServerPackageVersion>2.0.0</MicrosoftExtensionsCachingSqlServerPackageVersion>
-    <MicrosoftExtensionsConfigurationAbstractionsPackageVersion>2.0.0</MicrosoftExtensionsConfigurationAbstractionsPackageVersion>
-    <MicrosoftExtensionsConfigurationAzureKeyVaultPackageVersion>2.0.0</MicrosoftExtensionsConfigurationAzureKeyVaultPackageVersion>
-    <MicrosoftExtensionsConfigurationBinderPackageVersion>2.0.0</MicrosoftExtensionsConfigurationBinderPackageVersion>
-    <MicrosoftExtensionsConfigurationCommandLinePackageVersion>2.0.0</MicrosoftExtensionsConfigurationCommandLinePackageVersion>
-    <MicrosoftExtensionsConfigurationEnvironmentVariablesPackageVersion>2.0.0</MicrosoftExtensionsConfigurationEnvironmentVariablesPackageVersion>
-    <MicrosoftExtensionsConfigurationFileExtensionsPackageVersion>2.0.0</MicrosoftExtensionsConfigurationFileExtensionsPackageVersion>
-    <MicrosoftExtensionsConfigurationIniPackageVersion>2.0.0</MicrosoftExtensionsConfigurationIniPackageVersion>
-    <MicrosoftExtensionsConfigurationJsonPackageVersion>2.0.0</MicrosoftExtensionsConfigurationJsonPackageVersion>
-    <MicrosoftExtensionsConfigurationPackageVersion>2.0.0</MicrosoftExtensionsConfigurationPackageVersion>
-    <MicrosoftExtensionsConfigurationUserSecretsPackageVersion>2.0.0</MicrosoftExtensionsConfigurationUserSecretsPackageVersion>
-    <MicrosoftExtensionsConfigurationXmlPackageVersion>2.0.0</MicrosoftExtensionsConfigurationXmlPackageVersion>
-    <MicrosoftExtensionsDependencyInjectionAbstractionsPackageVersion>2.0.0</MicrosoftExtensionsDependencyInjectionAbstractionsPackageVersion>
-    <MicrosoftExtensionsDependencyInjectionPackageVersion>2.0.0</MicrosoftExtensionsDependencyInjectionPackageVersion>
-    <MicrosoftExtensionsDiagnosticAdapterPackageVersion>2.0.0</MicrosoftExtensionsDiagnosticAdapterPackageVersion>
-    <MicrosoftExtensionsFileProvidersAbstractionsPackageVersion>2.0.0</MicrosoftExtensionsFileProvidersAbstractionsPackageVersion>
-    <MicrosoftExtensionsFileProvidersCompositePackageVersion>2.0.0</MicrosoftExtensionsFileProvidersCompositePackageVersion>
-    <MicrosoftExtensionsFileProvidersEmbeddedPackageVersion>2.0.0</MicrosoftExtensionsFileProvidersEmbeddedPackageVersion>
-    <MicrosoftExtensionsFileProvidersPhysicalPackageVersion>2.0.0</MicrosoftExtensionsFileProvidersPhysicalPackageVersion>
-    <MicrosoftExtensionsFileSystemGlobbingPackageVersion>2.0.0</MicrosoftExtensionsFileSystemGlobbingPackageVersion>
-    <MicrosoftExtensionsHostingAbstractionsPackageVersion>2.0.1</MicrosoftExtensionsHostingAbstractionsPackageVersion>
-    <MicrosoftExtensionsIdentityCorePackageVersion>2.0.1</MicrosoftExtensionsIdentityCorePackageVersion>
-    <MicrosoftExtensionsIdentityStoresPackageVersion>2.0.1</MicrosoftExtensionsIdentityStoresPackageVersion>
-    <MicrosoftExtensionsLocalizationAbstractionsPackageVersion>2.0.1</MicrosoftExtensionsLocalizationAbstractionsPackageVersion>
-    <MicrosoftExtensionsLocalizationPackageVersion>2.0.1</MicrosoftExtensionsLocalizationPackageVersion>
-    <MicrosoftExtensionsLoggingAbstractionsPackageVersion>2.0.0</MicrosoftExtensionsLoggingAbstractionsPackageVersion>
-    <MicrosoftExtensionsLoggingAzureAppServicesPackageVersion>2.0.0</MicrosoftExtensionsLoggingAzureAppServicesPackageVersion>
-    <MicrosoftExtensionsLoggingConfigurationPackageVersion>2.0.0</MicrosoftExtensionsLoggingConfigurationPackageVersion>
-    <MicrosoftExtensionsLoggingConsolePackageVersion>2.0.0</MicrosoftExtensionsLoggingConsolePackageVersion>
-    <MicrosoftExtensionsLoggingDebugPackageVersion>2.0.0</MicrosoftExtensionsLoggingDebugPackageVersion>
-    <MicrosoftExtensionsLoggingEventSourcePackageVersion>2.0.0</MicrosoftExtensionsLoggingEventSourcePackageVersion>
-    <MicrosoftExtensionsLoggingPackageVersion>2.0.0</MicrosoftExtensionsLoggingPackageVersion>
-    <MicrosoftExtensionsLoggingTraceSourcePackageVersion>2.0.0</MicrosoftExtensionsLoggingTraceSourcePackageVersion>
-    <MicrosoftExtensionsObjectPoolPackageVersion>2.0.0</MicrosoftExtensionsObjectPoolPackageVersion>
-    <MicrosoftExtensionsOptionsConfigurationExtensionsPackageVersion>2.0.0</MicrosoftExtensionsOptionsConfigurationExtensionsPackageVersion>
-    <MicrosoftExtensionsOptionsPackageVersion>2.0.0</MicrosoftExtensionsOptionsPackageVersion>
-    <MicrosoftExtensionsPrimitivesPackageVersion>2.0.0</MicrosoftExtensionsPrimitivesPackageVersion>
-    <MicrosoftExtensionsSecretManagerToolsPackageVersion>2.0.0</MicrosoftExtensionsSecretManagerToolsPackageVersion>
-    <MicrosoftExtensionsWebEncodersPackageVersion>2.0.0</MicrosoftExtensionsWebEncodersPackageVersion>
-    <MicrosoftNetHttpHeadersPackageVersion>2.0.1</MicrosoftNetHttpHeadersPackageVersion>
-    <MicrosoftOwinSecurityInteropPackageVersion>2.0.1</MicrosoftOwinSecurityInteropPackageVersion>
-    <MicrosoftVisualStudioWebBrowserLinkPackageVersion>2.0.1</MicrosoftVisualStudioWebBrowserLinkPackageVersion>
-    <MicrosoftVisualStudioWebCodeGenerationContractsPackageVersion>2.0.1</MicrosoftVisualStudioWebCodeGenerationContractsPackageVersion>
-    <MicrosoftVisualStudioWebCodeGenerationCorePackageVersion>2.0.1</MicrosoftVisualStudioWebCodeGenerationCorePackageVersion>
-    <MicrosoftVisualStudioWebCodeGenerationDesignPackageVersion>2.0.1</MicrosoftVisualStudioWebCodeGenerationDesignPackageVersion>
-    <MicrosoftVisualStudioWebCodeGenerationEntityFrameworkCorePackageVersion>2.0.1</MicrosoftVisualStudioWebCodeGenerationEntityFrameworkCorePackageVersion>
-    <MicrosoftVisualStudioWebCodeGenerationPackageVersion>2.0.1</MicrosoftVisualStudioWebCodeGenerationPackageVersion>
-    <MicrosoftVisualStudioWebCodeGenerationTemplatingPackageVersion>2.0.1</MicrosoftVisualStudioWebCodeGenerationTemplatingPackageVersion>
-    <MicrosoftVisualStudioWebCodeGenerationToolsPackageVersion>2.0.1</MicrosoftVisualStudioWebCodeGenerationToolsPackageVersion>
-    <MicrosoftVisualStudioWebCodeGenerationUtilsPackageVersion>2.0.1</MicrosoftVisualStudioWebCodeGenerationUtilsPackageVersion>
-    <MicrosoftVisualStudioWebCodeGeneratorsMvcPackageVersion>2.0.1</MicrosoftVisualStudioWebCodeGeneratorsMvcPackageVersion>
-    <MicrosoftWebXdtExtensionsPackageVersion>2.0.1</MicrosoftWebXdtExtensionsPackageVersion>
+    <SystemComponentModelAnnotations>4.5.0</SystemComponentModelAnnotations>
   </PropertyGroup>
 </Project>

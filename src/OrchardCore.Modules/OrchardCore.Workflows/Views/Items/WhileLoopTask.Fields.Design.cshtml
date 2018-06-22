@@ -1,0 +1,6 @@
+@model ActivityViewModel<WhileLoopTask>
+
+<header>
+    <h4><i class="fa fa-circle-o-notch"></i>@Model.Activity.GetTitleOrDefault(() => T["While Loop"])</h4>
+</header>
+<span>@T["Loop while <em>{0}</em> is true", Model.Activity.Condition]</span>

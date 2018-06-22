@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Scripting.Files;
 
 namespace OrchardCore.Scripting
 {
@@ -8,6 +9,8 @@ namespace OrchardCore.Scripting
         {
             services.AddSingleton<IScriptingManager, DefaultScriptingManager>();
             services.AddSingleton<IGlobalMethodProvider, CommonGeneratorMethods>();
+
+            services.AddSingleton<IScriptingEngine, FilesScriptEngine>();
             return services;
         }
     }

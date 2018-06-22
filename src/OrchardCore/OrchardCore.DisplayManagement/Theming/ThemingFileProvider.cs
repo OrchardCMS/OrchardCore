@@ -19,7 +19,7 @@ namespace OrchardCore.DisplayManagement.Theming
         }
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
-            return null;
+            return NotFoundDirectoryContents.Singleton;
         }
 
         public IFileInfo GetFileInfo(string subpath)
@@ -28,13 +28,13 @@ namespace OrchardCore.DisplayManagement.Theming
             {
                 return _viewImportsFileInfo;
             }
-            
-            return null;
+
+            return new NotFoundFileInfo(subpath);
         }
 
         public IChangeToken Watch(string filter)
         {
-            return null;
+            return NullChangeToken.Singleton;
         }
     }
 }

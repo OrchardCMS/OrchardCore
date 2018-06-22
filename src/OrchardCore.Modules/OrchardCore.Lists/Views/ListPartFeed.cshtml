@@ -1,14 +1,14 @@
-﻿@using OrchardCore.Feeds.Models
+@using OrchardCore.Feeds.Models
 @using OrchardCore.ResourceManagement
 @using OrchardCore.ContentManagement
 
 @inject IResourceManager ResourceManager
 @inject IContentManager ContentManager
 
-@{ 
+@{
     ContentItem contentItem = Model.ContentItem;
-    var contentItemMetadata = ContentManager.PopulateAspect<ContentItemMetadata>(contentItem);
-    var feedMetadata = ContentManager.PopulateAspect<FeedMetadata>(contentItem);
+    var contentItemMetadata = await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+    var feedMetadata = await ContentManager.PopulateAspectAsync<FeedMetadata>(contentItem);
     ResourceManager.RegisterLink(new LinkEntry
     {
         Rel = "alternate",

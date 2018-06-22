@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Localization
 {
     public interface ILocalizationFileLocationProvider
     {
-        IEnumerable<string> GetLocations(string cultureName);
+        IEnumerable<IFileInfo> GetLocations(string cultureName);
     }
 }

@@ -18,7 +18,7 @@ else
                 <div class="card theme-card">
                     <h4 class="card-title">@themeEntry.Name</h4>
                     <div class="card-theme-thumbnail" style="background-image:url('@Url.Content($"~/{themeEntry.Extension.Id}/Theme.png")');"></div>
-                    <div class="card-block">
+                    <div class="card-body">
                         <p>@themeEntry.Extension.Manifest.Description</p>
                         @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Author))
                         {

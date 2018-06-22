@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using OrchardCore.Environment.Cache;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +25,7 @@ namespace OrchardCore.Environment.Cache.CacheContextProviders
                 var allKeys = query.Keys.OrderBy(x => x).ToArray();
                 entries.AddRange(allKeys
                     .Select(x => new CacheContextEntry(
-                        key: x.ToLowerInvariant(), 
+                        key: x.ToLowerInvariant(),
                         value: query[x].ToString().ToLowerInvariant())
                     ));
 

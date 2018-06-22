@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Commands
 {
@@ -164,7 +164,7 @@ namespace OrchardCore.Environment.Commands
 
         private static object ConvertToType(Type type, string value)
         {
-            if (type.GetTypeInfo().IsEnum)
+            if (type.IsEnum)
             {
                 try
                 {

@@ -2,9 +2,10 @@ using System;
 using System.IO;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
@@ -12,6 +13,8 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Environment.Shell;
+using OrchardCore.FileStorage;
+using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Drivers;
 using OrchardCore.Media.Fields;
@@ -21,14 +24,17 @@ using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.Settings;
+using OrchardCore.Media.TagHelpers;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
+using OrchardCore.Mvc;
 using OrchardCore.Recipes;
-using OrchardCore.StorageProviders.FileSystem;
+using OrchardCore.Security.Permissions;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
+using SixLabors.ImageSharp.Web.Memory;
 using SixLabors.ImageSharp.Web.Processors;
 
 namespace OrchardCore.Media
@@ -59,10 +65,15 @@ namespace OrchardCore.Media
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
 
-                string mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
-                return new MediaFileStore(new FileSystemStore(mediaPath, shellSettings.RequestUrlPrefix, AssetsUrlPrefix));
+                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
+                var fileStore = new FileSystemStore(mediaPath);
+
+                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsUrlPrefix);
+
+                return new MediaFileStore(fileStore, mediaUrlBase);
             });
 
+            services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddSingleton<ContentPart, ImageMediaPart>();
@@ -80,7 +91,8 @@ namespace OrchardCore.Media
                         options.Configuration = Configuration.Default;
                         options.MaxBrowserCacheDays = 7;
                         options.MaxCacheDays = 365;
-                        options.OnValidate = validation => 
+                        options.CachedNameLength = 12;
+                        options.OnValidate = validation =>
                         {
                             // Force some parameters to prevent disk filling.
                             // For more advanced resize parameters the usage of profiles will be necessary.
@@ -134,9 +146,11 @@ namespace OrchardCore.Media
                         options.OnProcessed = _ => { };
                         options.OnPrepareResponse = _ => { };
                     })
-                    .SetUriParser<QueryCollectionUriParser>()
-                    .SetCache<PhysicalFileSystemCache>()
+                    .SetRequestParser<QueryCollectionRequestParser>()
+                    .SetBufferManager<PooledBufferManager>()
+                    .SetCacheHash<CacheHash>()
                     .SetAsyncKeyLock<AsyncKeyLock>()
+                    .SetCache<PhysicalFileSystemCache>()
                     .AddResolver<MediaFileSystemResolver>()
                     .AddProcessor<ResizeWebProcessor>();
 
@@ -146,6 +160,11 @@ namespace OrchardCore.Media
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
 
             services.AddRecipeExecutionStep<MediaStep>();
+
+            // MIME types
+            services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
+
+            services.AddTagHelpers(typeof(ImageTagHelper).Assembly);
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

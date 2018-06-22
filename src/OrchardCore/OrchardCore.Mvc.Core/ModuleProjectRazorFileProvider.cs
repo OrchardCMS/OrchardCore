@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc
 {
@@ -15,14 +16,10 @@ namespace OrchardCore.Mvc
     /// </summary>
     public class ModuleProjectRazorFileProvider : IFileProvider
     {
-        private const string MappingFileFolder = "obj";
-        private const string MappingFileName = "ModuleProjectRazorFiles.map";
-
         private static Dictionary<string, string> _paths;
-        private static CompositeFileProvider _pagesFileProvider;
         private static object _synLock = new object();
 
-        public ModuleProjectRazorFileProvider(string rootPath)
+        public ModuleProjectRazorFileProvider(IHostingEnvironment environment)
         {
             if (_paths != null)
             {
@@ -33,65 +30,70 @@ namespace OrchardCore.Mvc
             {
                 if (_paths == null)
                 {
-                    var path = Path.Combine(rootPath, MappingFileFolder, MappingFileName);
+                    var assets = new List<Asset>();
+                    var application = environment.GetApplication();
 
-                    if (File.Exists(path))
+                    foreach (var name in application.ModuleNames)
                     {
-                        var paths = File.ReadAllLines(path)
-                            .Select(x => x.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
-                            .Where(x => x.Length == 2).ToDictionary(x => x[1].Replace('\\', '/'), x => x[0].Replace('\\', '/'));
+                        var module = environment.GetModule(name);
 
-                        _paths = new Dictionary<string, string>(paths);
+                        if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
+                            != Path.GetDirectoryName(application.Assembly.Location))
+                        {
+                            continue;
+                        }
+
+                        assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath
+                            .EndsWith(".cshtml", StringComparison.Ordinal)));
                     }
-                    else
-                    {
-                        _paths = new Dictionary<string, string>();
-                    }
-                }
 
-                var roots = new HashSet<string>();
-
-                foreach (var path in _paths.Values.Where(p => p.Contains("/Pages/") && !p.StartsWith("/Pages/")))
-                {
-                    roots.Add(path.Substring(0, path.IndexOf("/Pages/")));
-                }
-
-                if (roots.Count > 0)
-                {
-                    _pagesFileProvider = new CompositeFileProvider(roots.Select(r => new PhysicalFileProvider(r)));
+                    _paths = assets.ToDictionary(a => a.ModuleAssetPath, a => a.ProjectAssetPath);
                 }
             }
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
-            return null;
+            return NotFoundDirectoryContents.Singleton;
         }
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (subpath != null && _paths.ContainsKey(subpath))
+            if (subpath == null)
             {
-                return new PhysicalFileInfo(new FileInfo(_paths[subpath]));
+                return new NotFoundFileInfo(subpath);
             }
 
-            return null;
+            var path = NormalizePath(subpath);
+
+            if (_paths.TryGetValue(path, out var projectAssetPath))
+            {
+                return new PhysicalFileInfo(new FileInfo(projectAssetPath));
+            }
+
+            return new NotFoundFileInfo(subpath);
         }
 
         public IChangeToken Watch(string filter)
         {
-            if (filter != null && _paths.ContainsKey(filter))
+            if (filter == null)
             {
-                return new PollingFileChangeToken(new FileInfo(_paths[filter]));
+                return NullChangeToken.Singleton;
             }
 
-            if (filter != null && _pagesFileProvider != null &&
-                filter.IndexOf("/Pages/**/*" + RazorViewEngine.ViewExtension) != -1)
+            var path = NormalizePath(filter);
+
+            if (_paths.TryGetValue(path, out var projectAssetPath))
             {
-                return _pagesFileProvider.Watch("/Pages/**/*" + RazorViewEngine.ViewExtension);
+                return new PollingFileChangeToken(new FileInfo(projectAssetPath));
             }
 
-            return null;
+            return NullChangeToken.Singleton;
+        }
+
+        private string NormalizePath(string path)
+        {
+            return path.Replace('\\', '/').Trim('/');
         }
     }
 }

@@ -53,9 +53,13 @@ namespace OrchardCore.Lucene
             await _luceneIndexProvider.SearchAsync (luceneQuery.Index, async searcher =>
             {
                 var templateContext = new TemplateContext();
-                foreach(var parameter in parameters)
+
+                if (parameters != null)
                 {
-                    templateContext.SetValue(parameter.Key, parameter.Value);
+                    foreach (var parameter in parameters)
+                    {
+                        templateContext.SetValue(parameter.Key, parameter.Value);
+                    }
                 }
 
                 var tokenizedContent = await _liquidTemplateManager.RenderAsync(luceneQuery.Template, templateContext);

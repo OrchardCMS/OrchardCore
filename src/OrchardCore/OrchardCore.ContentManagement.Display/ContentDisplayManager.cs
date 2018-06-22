@@ -21,7 +21,7 @@ namespace OrchardCore.ContentManagement.Display
     /// <summary>
     /// The default implementation of <see cref="IContentItemDisplayManager"/>. It is used to render
     /// <see cref="ContentItem"/> objects by leveraging any <see cref="IContentDisplayHandler"/>
-    /// implementation. The resulting shapes are targetting the stereotype of the content item
+    /// implementation. The resulting shapes are targeting the stereotype of the content item
     /// to display.
     /// </summary>
     public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplayManager
@@ -60,7 +60,7 @@ namespace OrchardCore.ContentManagement.Display
 
         public async Task<IShape> BuildDisplayAsync(ContentItem contentItem, IUpdateModel updater, string displayType, string groupId)
         {
-            if(contentItem == null)
+            if (contentItem == null)
             {
                 throw new ArgumentNullException(nameof(contentItem));
             }
@@ -92,12 +92,12 @@ namespace OrchardCore.ContentManagement.Display
                 groupId,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
-                updater
+                new ModelStateWrapperUpdater(updater)
             );
 
             await BindPlacementAsync(context);
 
-            await _handlers.InvokeAsync(handler => handler.BuildDisplayAsync(contentItem, context), Logger);
+            await _handlers.InvokeAsync(async handler => await handler.BuildDisplayAsync(contentItem, context), Logger);
 
             return context.Shape;
         }
@@ -128,12 +128,12 @@ namespace OrchardCore.ContentManagement.Display
                 htmlFieldPrefix,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
-                updater
+                new ModelStateWrapperUpdater(updater)
             );
 
             await BindPlacementAsync(context);
 
-            await _handlers.InvokeAsync(handler => handler.BuildEditorAsync(contentItem, context), Logger);
+            await _handlers.InvokeAsync(async handler => await handler.BuildEditorAsync(contentItem, context), Logger);
 
             return context.Shape;
         }
@@ -162,18 +162,16 @@ namespace OrchardCore.ContentManagement.Display
                 htmlFieldPrefix,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
-                updater
+                new ModelStateWrapperUpdater(updater)
             );
 
             await BindPlacementAsync(context);
 
             var updateContentContext = new UpdateContentContext(contentItem, updater);
 
-            _contentHandlers.Invoke(handler => handler.Updating(updateContentContext), Logger);
-
-            await _handlers.InvokeAsync(handler => handler.UpdateEditorAsync(contentItem, context), Logger);
-
-            _contentHandlers.Reverse().Invoke(handler => handler.Updated(updateContentContext), Logger);
+            await _contentHandlers.InvokeAsync(async handler => await handler.UpdatingAsync(updateContentContext), Logger);
+            await _handlers.InvokeAsync(async handler => await handler.UpdateEditorAsync(contentItem, context), Logger);
+            await _contentHandlers.Reverse().InvokeAsync(async handler => await handler.UpdatedAsync(updateContentContext), Logger);
 
             return context.Shape;
         }

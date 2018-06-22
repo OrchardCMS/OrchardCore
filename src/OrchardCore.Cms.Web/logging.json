@@ -1,8 +1,0 @@
-﻿{
-  "IncludeScopes": "false",
-  "LogLevel": {
-    "Default": "Error",
-    "System": "Error",
-    "Microsoft": "Error"
-  }
-}

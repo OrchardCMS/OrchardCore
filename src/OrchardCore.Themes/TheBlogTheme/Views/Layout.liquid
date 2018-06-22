@@ -1,72 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{% page_title Site.SiteName, position: "before", separator: " - " %}</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% page_title Site.SiteName, position: "before", separator: " - " %}</title>
     <link type="image/x-icon" rel="shortcut icon" href="TheBlogTheme/favicon.ico" />
-
-    {% script name:"jquery", use_cdn:"true", at:"Foot" %}
-    {% script name:"bootstrap", use_cdn:"true", version:"3", at:"Foot" %}
-    {% script src:"/TheBlogTheme/Scripts/clean-blog.min.js", debug_src:"/TheBlogTheme/Scripts/clean-blog.js", at:"Foot" %}
-
-    <link rel="stylesheet" href="/TheBlogTheme/Styles/blog.min.css">
-
-    <!-- Custom Fonts -->
+    {% script name:"jQuery", use_cdn:"true", at:"Foot" %}
+    {% script name:"Bootstrap", use_cdn:"true", version:"4", at:"Foot" %}
+    {% script source:"/TheBlogTheme/js/clean-blog.min.js", debug_src:"/TheBlogTheme/js/clean-blog.js", at:"Foot" %}
+    {% script source:"/OrchardCore.Menu/Scripts/activate-links.min.js", debug_src:"/OrchardCore.Menu/Scripts/activate-links.js", at:"Foot" %}
     {% style name:"font-awesome", use_cdn:"true" %}
     <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-
+    <link rel="stylesheet" href="/TheBlogTheme/css/clean-blog-orchard.min.css">
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    
     {% resources type: "Meta" %}
     {% resources type: "HeadLink" %}
     {% resources type: "Stylesheet" %}
     {% resources type: "HeadScript" %}
 </head>
-
 <body>
-    <nav class="navbar navbar-default  navbar-custom navbar-fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
         <div class="container">
-            <div class="navbar-header page-scroll">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">{{ "Toggle navigation" | t }}</span>
-                    {{ "Menu" | t }} <i class="fa fa-bars"></i>
-                </button>
-                <a class="navbar-brand" href="{{ "~/" | href }}">{{ Site.SiteName }}</a>
-            </div>
-
-            <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
-
-                {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_duration: "00:05:00", cache_tag: "alias:main-menu" %}
-
-            </div><!--/.nav-collapse -->
+            <a class="navbar-brand" href="{{ '~/' | href }}">{{ Site.SiteName }}</a>
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="sr-only">{{ "Toggle navigation" | t }}</span>
+                {{ "Menu" | t }} <i class="fa fa-bars"></i>
+            </button>
+            {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_duration: "00:05:00", cache_tag: "alias:main-menu" %}
         </div>
-        <!-- /.container -->
     </nav>
-
     {% render_section "Header", required: false %}
-
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="col-lg-8 col-md-10 mx-auto">
                 {% render_body %}
             </div>
         </div>
-    </div><!-- /.container -->
-
+    </div>
     <footer>
-        <div class="container">
-            <div class="row">
-                {% render_section "Footer", required: false %}
-            </div>
-        </div>
+        {% render_section "Footer", required: false %}
     </footer>
-
     {% resources type: "FootScript" %}
+    <script type="text/javascript">(function($) { $('#mainNav').activateLinks(); })(jQuery);</script>
 </body>
 </html>

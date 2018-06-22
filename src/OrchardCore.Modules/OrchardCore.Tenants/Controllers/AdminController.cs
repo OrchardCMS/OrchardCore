@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Data;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
@@ -19,6 +20,7 @@ namespace OrchardCore.Tenants.Controllers
     {
         private readonly IShellHost _orchardHost;
         private readonly IShellSettingsManager _shellSettingsManager;
+        private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _currentShellSettings;
         private readonly INotifier _notifier;
@@ -28,6 +30,7 @@ namespace OrchardCore.Tenants.Controllers
             ShellSettings currentShellSettings,
             IAuthorizationService authorizationService,
             IShellSettingsManager shellSettingsManager,
+            IEnumerable<DatabaseProvider> databaseProviders,
             INotifier notifier,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
@@ -35,6 +38,7 @@ namespace OrchardCore.Tenants.Controllers
             _orchardHost = orchardHost;
             _authorizationService = authorizationService;
             _shellSettingsManager = shellSettingsManager;
+            _databaseProviders = databaseProviders;
             _currentShellSettings = currentShellSettings;
             _notifier = notifier;
 
@@ -343,6 +347,13 @@ namespace OrchardCore.Tenants.Controllers
 
         private void ValidateViewModel(EditTenantViewModel model, bool newTenant)
         {
+            var selectedProvider = _databaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
+
+            if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(model.ConnectionString))
+            {
+                ModelState.AddModelError(nameof(EditTenantViewModel.ConnectionString), S["The connection string is mandatory for this provider."]);
+            }
+
             if (string.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["The tenant name is mandatory."]);

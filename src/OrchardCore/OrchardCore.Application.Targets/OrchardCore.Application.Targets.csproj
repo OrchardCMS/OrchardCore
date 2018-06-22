@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
 
   <!--
@@ -11,6 +12,10 @@
     You can optionally leave out the $targetFramework subdirectory. 
     Caution: this will make NuGet treat your packages as compatible with “any” target framework.
   -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Modules\OrchardCore.Modules.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="OrchardCore.Application.Targets.targets" Pack="true">

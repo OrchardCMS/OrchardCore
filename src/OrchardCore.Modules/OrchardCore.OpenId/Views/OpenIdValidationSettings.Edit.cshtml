@@ -1,0 +1,56 @@
+@using OrchardCore.OpenId.ViewModels
+@model OpenIdValidationSettingsViewModel
+
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+
+<p class="alert alert-warning">
+    @T["To be able to validate tokens issued by a separate tenant, " +
+       "you must register a custom scope in the server options " +
+       "of the tenant hosting the authorization server."]
+</p>
+
+<fieldset class="form-group" asp-validation-class-for="Tenant">
+    <label asp-for="Tenant">@T["Authorization server tenant"] <span asp-validation-for="Tenant"></span></label>
+    <select asp-for="Tenant" class="form-control">
+        <option value="" selected="@(Model.Tenant == null)">(none)</option>
+        @foreach (var tenant in Model.AvailableTenants)
+        {
+            <option value="@tenant" selected="@(Model.Tenant == tenant)">@tenant</option>
+        }
+    </select>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Authority">
+    <label asp-for="Authority">@T["Authority"] <span asp-validation-for="Authority"></span></label>
+    <input asp-for="Authority" class="form-control" />
+    <span class="hint">@T["The address of the remote OpenID Connect server. Using a HTTPS address is strongly recommended."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Audience">
+    <label asp-for="Audience">@T["Audience"] <span asp-validation-for="Audience"></span></label>
+    <input asp-for="Audience" class="form-control" />
+    <span class="hint">@T["The unique name associated with this tenant. If none is provided, the tenant name is automatically used as the default audience."]</span>
+</fieldset>
+
+<script at="Foot" type="text/javascript">
+    $(function () {
+        var authority = $('#@Html.IdFor(model => model.Authority)');
+        var audience = $('#@Html.IdFor(model => model.Audience)');
+        var tenant = $('#@Html.IdFor(model => model.Tenant)');
+
+        tenant.change(function () {
+            if (tenant.val() != '') {
+                authority.val(null);
+                authority.parent().hide();
+                audience.val(null);
+                audience.parent().hide();
+            }
+            else {
+                authority.parent().show();
+                audience.parent().show();
+            }
+        });
+
+        tenant.trigger('change');
+    });
+</script>

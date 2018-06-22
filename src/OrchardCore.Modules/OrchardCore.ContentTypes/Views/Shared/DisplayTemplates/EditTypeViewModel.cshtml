@@ -1,4 +1,4 @@
-﻿@model EditTypeViewModel
+@model EditTypeViewModel
 @using OrchardCore.ContentManagement.Metadata.Settings;
 @{
     var settings = Model.Settings.ToObject<ContentTypeSettings>();
@@ -15,6 +15,6 @@
     </div>
     @if (!string.IsNullOrWhiteSpace(settings.Stereotype))
     {
-        <span class="badge badge-default badge-pill" title="Stereotype">@settings.Stereotype</span>
+        <span class="badge badge-info badge-pill" title="Stereotype">@settings.Stereotype</span>
     }
 </div>

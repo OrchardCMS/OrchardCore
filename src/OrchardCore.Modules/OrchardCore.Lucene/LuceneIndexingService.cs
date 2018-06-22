@@ -104,6 +104,12 @@ namespace OrchardCore.Lucene
                         if (task.Type == IndexingTaskTypes.Update)
                         {
                             var contentItem = await contentManager.GetAsync(task.ContentItemId);
+
+                            if (contentItem == null)
+                            {
+                                continue;
+                            }
+
                             var context = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, contentItem.ContentType);
 
                             // Update the document from the index if its lastIndexId is smaller than the current task id. 
@@ -161,7 +167,13 @@ namespace OrchardCore.Lucene
         public async Task<LuceneSettings> GetLuceneSettingsAsync()
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            return siteSettings.As<LuceneSettings>();
+
+            if (siteSettings.Has<LuceneSettings>())
+            {
+                return siteSettings.As<LuceneSettings>();
+            }
+
+            return null;
         }
     }
 }

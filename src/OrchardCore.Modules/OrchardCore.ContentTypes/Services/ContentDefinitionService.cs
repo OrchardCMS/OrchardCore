@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentTypes.Events;
 using OrchardCore.ContentTypes.ViewModels;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 using YesSql;
 
@@ -96,7 +96,7 @@ namespace OrchardCore.ContentTypes.Services
             _contentDefinitionManager.StoreTypeDefinition(contentTypeDefinition);
             // Ensure it has its own part
             _contentDefinitionManager.AlterTypeDefinition(name, builder => builder.WithPart(name));
-            _contentDefinitionManager.AlterTypeDefinition(name, cfg => cfg.Creatable().Draftable().Listable().Securable());
+            _contentDefinitionManager.AlterTypeDefinition(name, cfg => cfg.Creatable().Draftable().Versionable().Listable().Securable());
 
             _contentDefinitionEventHandlers.Invoke(x => x.ContentTypeCreated(new ContentTypeCreatedContext { ContentTypeDefinition = contentTypeDefinition }), Logger);
 

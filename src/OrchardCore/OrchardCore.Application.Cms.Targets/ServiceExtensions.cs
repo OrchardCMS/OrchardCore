@@ -1,36 +1,43 @@
-using Microsoft.Extensions.Configuration;
-using OrchardCore.DisplayManagement;
-using OrchardCore.Environment.Commands;
-using OrchardCore.Environment.Extensions;
-using OrchardCore.Environment.Extensions.Manifests;
-using OrchardCore.Environment.Shell.Data;
+using System;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceExtensions
     {
+        /// <summary>
+        /// Adds Orchard CMS services to the application. 
+        /// </summary>
         public static IServiceCollection AddOrchardCms(this IServiceCollection services)
         {
             return AddOrchardCms(services, null);
         }
 
-        public static IServiceCollection AddOrchardCms(this IServiceCollection services, IConfiguration configuration)
+        /// <summary>
+        /// Adds Orchard CMS services to the application and let the app change the
+        /// default tenant behavior and set of features through a configure action.
+        /// </summary>
+        public static IServiceCollection AddOrchardCms(this IServiceCollection services, Action<OrchardCoreBuilder> configure)
         {
-            services.AddThemingHost();
-            services.AddManifestDefinition("Theme.txt", "theme");
-            services.AddExtensionLocation("Themes");
-            services.AddSitesFolder();
-            services.AddCommands();
-            services.AddAuthentication();
-            services.AddModules(modules => 
-            {
-                if (configuration != null)
-                {
-                    modules.WithConfiguration(configuration);
-                }
+            var builder = services.AddOrchardCore()
 
-                modules.WithDefaultFeatures("OrchardCore.Mvc", "OrchardCore.Settings", "OrchardCore.Setup", "OrchardCore.Recipes", "OrchardCore.Commons");
-            });
+                .AddCommands()
+
+                .AddMvc()
+
+                .AddSetupFeatures("OrchardCore.Setup")
+
+                .AddDataAccess()
+                .AddDataStorage()
+                .AddBackgroundTasks()
+                .AddDeferredTasks()
+
+                .AddTheming()
+                .AddLiquidViews()
+                .AddResourceManagement()
+                .AddGeneratorTagFilter()
+                .AddCaching();
+
+            configure?.Invoke(builder);
 
             return services;
         }

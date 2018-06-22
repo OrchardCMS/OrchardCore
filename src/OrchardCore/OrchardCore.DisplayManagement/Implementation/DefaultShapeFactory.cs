@@ -103,13 +103,8 @@ namespace OrchardCore.DisplayManagement.Implementation
                 throw new InvalidOperationException("Invalid base type for shape: " + createdContext.Shape.GetType().ToString());
             }
 
-            if (shape.Metadata == null)
-            {
-                shape.Metadata = new ShapeMetadata();
-            }
-
-            ShapeMetadata shapeMetadata = shape.Metadata;
-            shape.Metadata.Type = shapeType;
+            var shapeMetadata = shape.Metadata;
+            shapeMetadata.Type = shapeType;
 
             // Merge wrappers if there are any
             if (shapeDescriptor != null && shapeMetadata.Wrappers.Count + shapeDescriptor.Wrappers.Count > 0)
