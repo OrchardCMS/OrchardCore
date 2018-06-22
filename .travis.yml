@@ -15,10 +15,9 @@ os:
 osx_image: xcode8.3
 script:
   - curl https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.sh | bash /dev/stdin --version 2.1.301
-  - export PATH="$(pwd)/.dotnet":"$PATH"
+  - if test "$TRAVIS_OS_NAME" == "linux"; then export PATH="/home/travis/.dotnet":"$PATH"; fi
+  - if test "$TRAVIS_OS_NAME" == "osx"; then export PATH="/Users/travis/.dotnet":"$PATH"; fi
   - dotnet --info
-  - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
-  - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
   - if [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
         cd $TRAVIS_BUILD_DIR/src/OrchardCore.Cms.Web;
