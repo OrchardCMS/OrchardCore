@@ -15,7 +15,7 @@ os:
 osx_image: xcode8.3
 script:
   - curl https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.sh | bash /dev/stdin --version 2.1.301
-  - export PATH="/home/travis/.dotnet":"$PATH"
+  - export PATH="$pwd/.dotnet":"$PATH"
   - dotnet --info
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
