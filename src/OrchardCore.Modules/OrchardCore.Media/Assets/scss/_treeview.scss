@@ -1,0 +1,63 @@
+#folder-tree {
+    list-style: none;
+    margin-top: 46px;
+    padding-left: 0;
+    overflow: hidden;
+
+    li.selected > div {
+        font-weight: bold;
+    }
+
+    li.selected > div > a > i.folder:before {
+        content: "\f07c";
+        color: $gray;
+    }
+
+    div {
+        padding: 0.2rem 0.2rem;
+
+        a {
+            color: $gray-dark;
+            text-decoration: none;
+        }
+    }
+
+    ol {
+        padding-left: 1rem;
+        margin-left: 0px;
+    }
+
+    .folder {
+        color: lightgray;
+    }
+
+    .folderhovered {
+        font-weight: bold;
+    }
+
+    li {
+        list-style: none;
+    }
+
+    .expand {
+        /* make both icons be in the center as their widths are different */
+        text-align: center;
+        width: 10px;
+        cursor: pointer;
+    }
+
+    .opened {
+        svg {
+            transform: rotate(90deg);
+            -webkit-transform: rotate(90deg);
+        }
+    }
+
+    .empty {
+        transform: none;
+        visibility: hidden;
+    }
+
+    .closed {
+    }
+}

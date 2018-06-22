@@ -1,0 +1,9 @@
+.media-field-toolbar {
+    display: flex;
+
+    code {
+        flex-grow: 1;
+        padding: 4px;
+        white-space: nowrap;
+    }
+}

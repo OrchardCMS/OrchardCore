@@ -1,0 +1,50 @@
+.media-container-navigation h5 {
+    padding-top: 10px;
+    margin-bottom: 38px;
+    color: $gray-700;
+}
+
+.media-container-main {
+
+    .action-bar {
+        background-color: $gray-200;
+        justify-content: flex-start;
+        flex-grow: 1;
+        text-align: left;
+        margin-bottom: 16px;
+
+        .media-filter {
+            flex-grow: 1;
+        }
+    }
+
+    .breadcrumb {
+        background-color: transparent;
+        border-bottom: $media-border-content;
+        border-radius: 0px;
+
+        .breadcrumb-buttons {
+            justify-content: flex-start;
+            flex-grow: 1;
+            margin-top: -5px;
+        }
+
+        .visibility-buttons {
+            justify-content: flex-end;
+            flex-grow: 0;
+            margin-top: -5px;
+
+            .selected {
+                color: $primary;
+            }
+        }
+    }
+}
+
+
+
+.message-warning {
+    padding: 20px;
+    margin-bottom: 8px;
+}
+

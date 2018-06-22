@@ -1,0 +1,13 @@
+// duplicates of bootstrap.
+$gray-base: #000 !default;
+$gray-dark: lighten($gray-base, 20%) !default; // #333
+$gray: lighten($gray-base, 33.5%) !default; // #555
+$gray-700: #495057 !default;
+$gray-600: #6c757d !default;
+$gray-300: #dee2e6 !default;
+$gray-200: #e9ecef !default;
+$primary: #007bff;
+
+// media-specific
+$media-border-content: 1px solid rgba(0, 0, 0, 0.1);
+

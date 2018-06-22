@@ -525,10 +525,9 @@ $(document).bind('dragover', function (e) {
             dropZone.addClass('in');
         }
         var hoveredDropZone = $(e.target).closest(dropZone);
-        dropZone.toggleClass('hover', hoveredDropZone.length);
         window.dropZoneTimeout = setTimeout(function () {
             window.dropZoneTimeout = null;
-            dropZone.removeClass('in hover');
+            dropZone.removeClass('in');
         }, 100);
     }    
 });
@@ -2567,7 +2566,7 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
 // <media-items-grid> component
 Vue.component('mediaItemsGrid', {
     template: '\
-        <ol class="row">\
+        <ol class="row media-items-grid">\
                 <li v-for="media in filteredMediaItems" \
                     :key="media.name" \
                     class="media-item media-container-main-list-item card" \
@@ -2660,7 +2659,7 @@ Vue.component('mediaItemsTable', {
                           :key="media.name" style="height: 80px;"> \
                              <td class="thumbnail-column"> \
                                 <div class="img-wrapper"> \
-                                    <img draggable="false" :src="media.url + \'? width = \' + thumbSize + \' & height=\' + thumbSize" /> \
+                                    <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" />  \
                                 </div> \
                             </td> \
                             <td> \
