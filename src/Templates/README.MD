@@ -9,13 +9,13 @@ More information about `dotnet new` can be found at <https://docs.microsoft.com/
 Once the .NET Core SDK has been installed, type the following command to install the templates for creating Orchard Core Cms web applications.
 
 ```CMD
-dotnet new -i OrchardCore.Cms.Templates::1.0.0-beta2
+dotnet new -i OrchardCore.Cms.Templates::1.0.0-beta2-*
 ```
 
 This will use the most stable release of Orchard Core. In order to use the latest __dev__ branch of Orchard Core, the following command can be used:
 
 ```CMD
-dotnet new -i OrchardCore.Cms.Templates::1.0.0-beta2 --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
+dotnet new -i OrchardCore.Cms.Templates::1.0.0-beta2-* --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
 ```
 
 ## Create a new website
