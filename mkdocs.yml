@@ -63,5 +63,3 @@ pages:
         - Scripting: OrchardCore.Modules/OrchardCore.Scripting/README.md
         - Setup: OrchardCore.Modules/OrchardCore.Setup/README.md
         - Workflows: OrchardCore.Modules/OrchardCore.Workflows/README.md
-    - Release Notes:
-        - OrchardCore 1.0 Beta 2: docs/release-notes/OrchardCore-1-0-Beta2.md
