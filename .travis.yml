@@ -23,7 +23,7 @@ script:
         cd $TRAVIS_BUILD_DIR/src/OrchardCore.Cms.Web;
         dotnet publish -c Release -o $TRAVIS_BUILD_DIR/.build/release;
         cd $TRAVIS_BUILD_DIR;
-        docker build -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:1.0.0-beta2 .;
+        docker build -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:1.0.0-beta3 .;
         docker login -u="$DOCKER_USER" -p="$DOCKER_PASS";
         docker push orchardproject/orchardcore-cms-linux;
     fi;
