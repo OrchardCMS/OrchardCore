@@ -8,7 +8,7 @@ using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.OpenId.Services.Managers;
+using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
 
@@ -133,7 +133,7 @@ namespace OrchardCore.OpenId.Services
                     var context = _shellHost.GetOrCreateShellContext(tenant);
                     using (var scope = context.EnterServiceScope())
                     {
-                        var manager = scope.ServiceProvider.GetService<OpenIdScopeManager>();
+                        var manager = scope.ServiceProvider.GetService<IOpenIdScopeManager>();
                         if (manager == null)
                         {
                             results.Add(new ValidationResult(T["The specified tenant is not valid."], new[]

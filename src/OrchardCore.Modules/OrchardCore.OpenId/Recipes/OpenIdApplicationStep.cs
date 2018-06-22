@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using OpenIddict.Core;
+using OpenIddict.Abstractions;
 using OrchardCore.OpenId.Abstractions.Descriptors;
-using OrchardCore.OpenId.Services.Managers;
+using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -12,12 +12,12 @@ namespace OrchardCore.OpenId.Recipes
 {
     public class OpenIdApplicationStep : IRecipeStepHandler
     {
-        private readonly OpenIdApplicationManager _applicationManager;
+        private readonly IOpenIdApplicationManager _applicationManager;
 
         /// <summary>
         /// This recipe step adds an OpenID Connect app.
         /// </summary>
-        public OpenIdApplicationStep(OpenIdApplicationManager applicationManager)
+        public OpenIdApplicationStep(IOpenIdApplicationManager applicationManager)
         {
             _applicationManager = applicationManager;
         }

@@ -4,9 +4,10 @@ var widgetTemplate = function (data, prefixesName, prefix, contentTypesName, con
 };
 function guid() {
     function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000)
-          .toString(16)
-          .substring(1);
+        return Math
+            .floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
     }
     return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
 }
@@ -22,8 +23,7 @@ $(function () {
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
             url: createEditorUrl + "/" + type + "?prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata
-        })
-        .done(function (data) {
+        }).done(function (data) {
             var result = JSON.parse(data);
             $(document.getElementById(targetId)).append(widgetTemplate(result.Content, prefixesName, prefix, contentTypesName, type));
 
@@ -44,8 +44,7 @@ $(function () {
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
             url: createEditorUrl + "/" + type + "?prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata
-        })
-        .done(function (data) {
+        }).done(function (data) {
             var result = JSON.parse(data);
             $(widgetTemplate(result.Content, prefixesName, prefix, contentTypesName, type)).insertBefore(target);
 
@@ -69,4 +68,12 @@ $(function () {
         $(this).closest('.widget-editor').toggleClass('collapsed');
     });
 
+    $(document).on('keyup', '.widget-editor-body .form-group input.content-caption-text', function () {
+        var headerTextLabel = $(this).closest('.widget-editor').find('.widget-editor-header:first .widget-editor-header-text');
+        var contentTypeDisplayText = headerTextLabel.data('content-type-display-text');
+        var title = $(this).val();
+        var newDisplayText = title + ' ' + contentTypeDisplayText;
+
+        headerTextLabel.text(newDisplayText);
+    });
 });

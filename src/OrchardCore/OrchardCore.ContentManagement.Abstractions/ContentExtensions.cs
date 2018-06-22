@@ -14,7 +14,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// Gets a content element by its name.
         /// </summary>
-        /// <typeparam name="TElement">The expected type of the content paelementrt.</typeparam>
+        /// <typeparam name="TElement">The expected type of the content element.</typeparam>
         /// <typeparam name="name">The name of the content element.</typeparam>
         /// <returns>The content element instance or <code>null</code> if it doesn't exist.</returns>
         public static TElement Get<TElement>(this ContentElement contentElement, string name) where TElement : ContentElement

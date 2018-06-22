@@ -87,9 +87,14 @@ namespace OrchardCore.FileStorage.AzureBlob
         {
             await _verifyContainerTask;
 
-            var blobDirectory = GetBlobDirectoryReference(path);
+            var placeholderBlob = GetBlobReference(this.Combine(path, _directoryMarkerFileName));
 
-            return new BlobDirectory(path, _clock.UtcNow);
+            if (await placeholderBlob.ExistsAsync())
+            {
+                var blobDirectory = GetBlobDirectoryReference(path);
+                return new BlobDirectory(path, _clock.UtcNow);
+            }
+            return null;
         }
 
         public async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = "")

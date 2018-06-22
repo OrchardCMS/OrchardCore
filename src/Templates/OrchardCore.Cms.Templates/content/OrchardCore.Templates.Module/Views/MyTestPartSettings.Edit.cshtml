@@ -1,0 +1,9 @@
+@model OrchardCore.Templates.Module.Settings.MyTestPartSettingsViewModel
+
+<fieldset class="form-group">
+    <div class="row col-lg">
+        <label asp-for="MySetting">@T["Setting"]</label>
+        <input asp-for="MySetting" class="form-control" />
+        <span class="hint">@T["The setting."]</span>
+    </div>
+</fieldset>

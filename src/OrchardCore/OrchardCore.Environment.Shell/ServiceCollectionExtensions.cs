@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -19,6 +20,7 @@ namespace OrchardCore.Environment.Shell
             {
                 // Use a single default site by default, i.e. if AddMultiTenancy hasn't been called before
                 services.TryAddSingleton<IShellSettingsManager, SingleShellSettingsManager>();
+                services.AddTransient<IConfigureOptions<ShellOptions>, ShellOptionsSetup>();
 
                 services.AddSingleton<IShellContextFactory, ShellContextFactory>();
                 {

@@ -98,19 +98,6 @@ namespace OrchardCore.Mvc
                 provider.PopulateFeature(assemblyParts, feature);
             }
 
-            var application = _hostingEnvironment.GetApplication();
-
-            foreach (var descriptor in feature.ViewDescriptors)
-            {
-                if (descriptor.RelativePath.StartsWith(Application.ModulesRoot) ||
-                    !(descriptor.ViewAttribute?.ViewType.Name.StartsWith("Pages_") ?? false))
-                {
-                    continue;
-                }
-
-                descriptor.RelativePath = '/' + application.ModulePath + descriptor.RelativePath;
-            }
-
             if (!_hostingEnvironment.IsDevelopment())
             {
                 var moduleNames = _hostingEnvironment.GetApplication().ModuleNames;
@@ -119,11 +106,6 @@ namespace OrchardCore.Mvc
                 foreach (var name in moduleNames)
                 {
                     var module = _hostingEnvironment.GetModule(name);
-
-                    if (module.Name == application.Name)
-                    {
-                        continue;
-                    }
 
                     var precompiledAssemblyPath = Path.Combine(Path.GetDirectoryName(module.Assembly.Location),
                         module.Assembly.GetName().Name + ".Views.dll");
