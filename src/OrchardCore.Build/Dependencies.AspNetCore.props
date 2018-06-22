@@ -108,9 +108,9 @@
     <PackageManagement Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.7.0" />
     <PackageManagement Include="Microsoft.CodeAnalysis.Razor" Version="2.1.1" />
     <PackageManagement Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.7.0" />
-    <PackageManagement Include="Microsoft.CSharp" Version="4.5.0-rc1" />
-    <PackageManagement Include="Microsoft.Data.Sqlite.Core" Version="2.1.0" />
+    <PackageManagement Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageManagement Include="Microsoft.Data.Sqlite" Version="2.1.0" />
+    <PackageManagement Include="Microsoft.Data.Sqlite.Core" Version="2.1.0" />
     <PackageManagement Include="Microsoft.DotNet.Watcher.Tools" Version="2.1.1" />
     <PackageManagement Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.1" />
     <PackageManagement Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.1" />
@@ -143,7 +143,7 @@
     <PackageManagement Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
     <PackageManagement Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
     <PackageManagement Include="Microsoft.Extensions.DependencyModel" Version="2.1.1" />
-    <PackageManagement Include="Microsoft.Extensions.DiagnosticAdapter" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.Extensions.DiagnosticAdapter" Version="2.1.0" />
     <PackageManagement Include="Microsoft.Extensions.FileProviders.Abstractions" Version="2.1.1" />
     <PackageManagement Include="Microsoft.Extensions.FileProviders.Composite" Version="2.1.1" />
     <PackageManagement Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.1.1" />
