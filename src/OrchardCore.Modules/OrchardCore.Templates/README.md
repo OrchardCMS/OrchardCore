@@ -77,7 +77,7 @@ This template is called when a widget is rendered on a page.
 
 Each driver is free to return a shape type of its choosing, but the usage is 
 to render a content part using a shape with a name that matches the type name.
-For instance the `BodyPart` content part will return a single shape of type `BodyPart`, but the `ListPart` returns many
+For instance the `HtmlBodyPart` content part will return a single shape of type `HtmlBodyPart`, but the `ListPart` returns many
 shapes, one among them being `ListPart`.
 
 As a consequence the following list of templates use the `[ShapeType]` term where 
@@ -97,7 +97,7 @@ This template is called when a Content Part is rendered.
 
 | Template | Filename|
 | --------- | ------------ |
-| `BodyPart` | `BodyPart.cshtml` |
+| `HtmlBodyPart` | `HtmlBodyPart.cshtml` |
 | `ListPartFeed` | `ListPartFeed.cshtml` |
 
 ### `[ShapeType]_[DisplayType]`
@@ -108,7 +108,7 @@ This template is called when a Content Part shape type is rendered in a specific
 
 | Template | Filename|
 | --------- | ------------ |
-| `BodyPart_Summary` | `BodyPart.Summary.cshtml` |
+| `HtmlBodyPart_Summary` | `HtmlBodyPart.Summary.cshtml` |
 
 ### `[ContentType]_[DisplayType]__[PartType]`
 
@@ -118,9 +118,9 @@ This template is called when a content part type is rendered for a given content
 
 | Template | Filename|
 | --------- | ------------ |
-| `Blog__BodyPart` | `Blog-BodyPart.cshtml` |
+| `Blog__HtmlBodyPart` | `Blog-HtmlBodyPart.cshtml` |
 | `LandingPage__BagPart` | `LandingPage-BagPart.cshtml` |
-| `Blog_Summary__BodyPart` | `Blog-BodyPart.Summary.cshtml` |
+| `Blog_Summary__HtmlBodyPart` | `Blog-HtmlBodyPart.Summary.cshtml` |
 | `LandingPage_Summary__BagPart` | `LandingPage-BagPart.Summary.cshtml` |
 
 ### `[ContentType]``_[DisplayType]__[PartName]`
@@ -186,8 +186,8 @@ This template is called when a content field name is rendered for a given conten
 
 | Template | Filename|
 | --------- | ------------ |
-|  `BodyPart__Description` |  `BodyPart-Description.cshtml` |
-|  `BodyPart_Summary__Description` |  `BodyPart-Description.Summary.cshtml` |
+|  `HtmlBodyPart__Description` |  `HtmlBodyPart-Description.cshtml` |
+|  `HtmlBodyPart_Summary__Description` |  `HtmlBodyPart-Description.Summary.cshtml` |
 
 ### `[ContentType]__[PartName]__[FieldName]`
 
@@ -197,9 +197,9 @@ This template is called when a content field name is rendered for a given conten
 
 | Template | Filename|
 | --------- | ------------ |
-| `Blog__BodyPart__Description` | `Blog-BodyPart-Description.cshtml` |
+| `Blog__HtmlBodyPart__Description` | `Blog-HtmlBodyPart-Description.cshtml` |
 | `LandingPage__Services__Image` | `LandingPage-Services-Image.cshtml` |
-| `Blog_Summary__BodyPart__Description` | `Blog-BodyPart-Description.Summary.cshtml` |
+| `Blog_Summary__HtmlBodyPart__Description` | `Blog-HtmlBodyPart-Description.Summary.cshtml` |
 | `LandingPage_Summary__Services__Image` | `LandingPage-Services-Image.Summary.cshtml` |
 
 ### `[ContentType]__[FieldType]`
@@ -232,8 +232,8 @@ This template is called when a content field shape type is rendered for a given 
 
 | Template | Filename|
 | --------- | ------------ |
-|  `BodyPart__Description__CustomFieldSummary`| `BodyPart__Description__CustomFieldSummary.cshtml` |
-|  `BodyPart_Summary__Description__CustomFieldSummary`| `BodyPart__Description__CustomFieldSummary.Summary.cshtml` |
+|  `HtmlBodyPart__Description__CustomFieldSummary`| `HtmlBodyPart__Description__CustomFieldSummary.cshtml` |
+|  `HtmlBodyPart_Summary__Description__CustomFieldSummary`| `HtmlBodyPart__Description__CustomFieldSummary.Summary.cshtml` |
 
 ### `[ContentType]__[PartName]__[FieldName]__[ShapeType]`
 
@@ -243,9 +243,9 @@ This template is called when a content field shape type is rendered for a given 
 
 | Template | Filename|
 | --------- | ------------ |
-| `Blog__BodyPart__Description__CustomFieldSummary` | `Blog-BodyPart-Description-CustomFieldSummary.cshtml` |
+| `Blog__HtmlBodyPart__Description__CustomFieldSummary` | `Blog-HtmlBodyPart-Description-CustomFieldSummary.cshtml` |
 | `LandingPage__Services__Description__CustomFieldSummary` | `LandingPage-Services-Description-CustomFieldSummary.cshtml` |
-| `Blog_Summary__BodyPart__Description__CustomFieldSummary` | `Blog-BodyPart-Description-CustomFieldSummary.Summary.cshtml` |
+| `Blog_Summary__HtmlBodyPart__Description__CustomFieldSummary` | `Blog-HtmlBodyPart-Description-CustomFieldSummary.Summary.cshtml` |
 | `LandingPage_Summary__Services__Description__CustomFieldSummary` | `LandingPage-Services-Description-CustomFieldSummary.Summary.cshtml` |
 
 ### `[ContentType]__[FieldType]__[ShapeType]`
@@ -268,37 +268,37 @@ Differentiators can be used to configure the placement information (c.f. [Placem
 
 ### Content Part differentiator
 
-If the shape type is the same as the content part name, the shape will be named `[PartName]`, e.g. `BodyPart`, `Services`.
+If the shape type is the same as the content part name, the shape will be named `[PartName]`, e.g. `HtmlBodyPart`, `Services`.
 If the shape type is different than the content part name, it will be `[PartName]-[ShapeType]`, e.g. `ListPart-ListPartFeed`
 
 ### Content Field differentiator
 
-If the shape type is the same as the content field name, the shape will be named `[PartName]-[FieldName]`, e.g. `BodyPart-Description`, `Services-Image`.
-If the shape type is different than the content field name, it will be `[PartName]-[FieldName]-[ShapeType]`, e.g. `BodyPart-Description-CustomFieldSummary`, `Services-Image-ImageFieldSummary`
+If the shape type is the same as the content field name, the shape will be named `[PartName]-[FieldName]`, e.g. `HtmlBodyPart-Description`, `Services-Image`.
+If the shape type is different than the content field name, it will be `[PartName]-[FieldName]-[ShapeType]`, e.g. `HtmlBodyPart-Description-CustomFieldSummary`, `Services-Image-ImageFieldSummary`
 
 #### Razor
 
 Access a specific shape by name
 ```
-Model.Content.BodyPart
+Model.Content.HtmlBodyPart
 ```
 
 Removing a specific shape by name
 ```
-Model.Content.Remove("BodyPart");
+Model.Content.Remove("HtmlBodyPart");
 ```
 
 #### Liquid
 
 Display a shape after removing a specific shape by name
 ```liquid
-{% shape_remove_item Model.Content "BodyPart" %}
+{% shape_remove_item Model.Content "HtmlBodyPart" %}
 {{ Model.Content | shape_render }}
 ```
 
 Display a specific shape by name
 ```liquid
-{{ Model.Content.BodyPart | shape_render }}
+{{ Model.Content.HtmlBodyPart | shape_render }}
 ```
 
 To access or render the shapes for a field that is added to the content type directly, the `[PartName]` is equal to the content type.

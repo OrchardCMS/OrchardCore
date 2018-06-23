@@ -484,12 +484,12 @@ Removes a shape by its name in a Zone.
 Input
 
 ```liquid
-{% shape_remove_item Model.Content "BodyPart" %}
+{% shape_remove_item Model.Content "HtmlBodyPart" %}
 {{ Model.Content | shape_render }}
 ```
 
-In this example, the `Model.Content` property evaluates to a zone shape, typically from a Content Item shape template, which contains the `BodyPart` shape
-rendered for the Body Part element. This call will remove the specific shape named `BodyPart`.
+In this example, the `Model.Content` property evaluates to a zone shape, typically from a Content Item shape template, which contains the `HtmlBodyPart` shape
+rendered for the Body Part element. This call will remove the specific shape named `HtmlBodyPart`.
 
 ### shape_pager
 

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -8,7 +8,7 @@
     <PackageReference Include="NLog.Web.AspNetCore" />
 
     <!-- Used to fix conflicting referenced versions -->
-    <PackageReference Include="System.Security.AccessControl" Version="4.4.0" />
+    <PackageReference Include="System.Security.AccessControl" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Orchard Project",
+  "classifications": [ "Web", "Orchard Core", "CMS" ],
+  "name": "Orchard Core Cms Web App",
+  "identity": "OrchardCore.Templates.Cms.Web",
+  "shortName": "occms",
+  "sourceName": "OrchardCore.Templates.Cms.Web",
+  "preferNameDirectory": true,
+  "symbols": {
+    "UseNLog": {
+      "type": "parameter",
+      "dataType": "bool",
+      "description": "Configures NLog as the logger component.",
+      "defaultValue": "true"
+    },
+    "OrchardVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "description": "Specifies which version of Orchard Core packages to use.",
+      "replaces": "$(TemplateOrchardPackageVersion)",
+      "defaultValue": "${TemplateOrchardVersion}"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(!UseNLog)",
+          "exclude": [
+            "NLog.config"
+          ]
+        }
+      ]
+    }
+  ],
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  }
+}

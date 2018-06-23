@@ -7094,6 +7094,12 @@ body {
   #ta-left-sidebar li a:visited {
     color: #495057;
     text-decoration: none;
+    padding-left: 16px; }
+  #ta-left-sidebar li.has-items label,
+  #ta-left-sidebar li.has-items a,
+  #ta-left-sidebar li.has-items a:hover,
+  #ta-left-sidebar li.has-items a:active,
+  #ta-left-sidebar li.has-items a:visited {
     padding-left: 12px; }
   #ta-left-sidebar li a:hover, #ta-left-sidebar li label:hover {
     background-color: #495057;
@@ -7102,6 +7108,8 @@ body {
     background-color: #6c757d;
     border-left: 4px solid #343a40;
     color: #f8f9fa !important;
+    padding-left: 34px !important; }
+  #ta-left-sidebar li.has-items.active > a {
     padding-left: 34px !important; }
   #ta-left-sidebar li.active > label {
     background-color: #b4bdc4;
@@ -7123,20 +7131,14 @@ body {
   width: 60px; }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li {
     overflow: hidden; }
-  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li:hover {
+  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li.visible {
     overflow: visible;
     width: 320px; }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin li, .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin label, .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin a {
     min-height: 40px; }
-  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > div {
+  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > ul {
     position: absolute;
     left: 60px;
-    width: 290px;
-    padding-bottom: 30px;
-    padding-right: 30px;
-    padding-top: 70px;
-    top: -30px; }
-  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > div > ul {
     width: 260px;
     top: 40px; }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > label {
@@ -7161,19 +7163,6 @@ body {
     background-color: #495057; }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > label span:last-child {
     color: rgba(255, 0, 0, 0); }
-  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin .hover-free-zone {
-    position: absolute;
-    padding: 0;
-    width: 20px;
-    height: 20px;
-    font-size: 1px;
-    margin-left: -999px;
-    bottom: -20px;
-    top: auto;
-    z-index: 1000; }
-  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li:hover > div.hover-free-zone {
-    margin-left: -20px;
-    top: auto; }
 
 html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > label {
   background-color: #f8f9fa !important; }

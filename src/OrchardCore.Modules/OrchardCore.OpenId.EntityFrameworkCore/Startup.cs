@@ -3,9 +3,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using OpenIddict.Abstractions;
+using OpenIddict.EntityFrameworkCore;
+using OpenIddict.EntityFrameworkCore.Models;
 using OrchardCore.Modules;
-using OrchardCore.OpenId.Abstractions.Stores;
-using OrchardCore.OpenId.EntityFrameworkCore.Models;
 using OrchardCore.OpenId.EntityFrameworkCore.Services;
 
 namespace OrchardCore.OpenId.EntityFrameworkCore
@@ -39,32 +40,35 @@ namespace OrchardCore.OpenId.EntityFrameworkCore
 
                 var (applicationType, authorizationType, scopeType, tokenType) = GetEntityTypes(keyType);
 
-                services.Replace(ServiceDescriptor.Scoped(
-                    typeof(IOpenIdApplicationStore),
-                    typeof(OpenIdApplicationStore<,,,,>).MakeGenericType(
-                        applicationType, authorizationType,
-                        tokenType, contextType, keyType)));
+                services.AddOpenIddict()
+                    .AddCore(builder =>
+                    {
+                        builder.UseEntityFrameworkCore()
+                               .UseDbContext(contextType);
 
-                services.Replace(ServiceDescriptor.Scoped(
-                    typeof(IOpenIdAuthorizationStore),
-                    typeof(OpenIdAuthorizationStore<,,,,>).MakeGenericType(
-                        authorizationType, applicationType,
-                        tokenType, contextType, keyType)));
+                        builder.SetDefaultApplicationEntity(applicationType)
+                               .SetDefaultAuthorizationEntity(authorizationType)
+                               .SetDefaultScopeEntity(scopeType)
+                               .SetDefaultTokenEntity(tokenType);
+                    });
 
-                services.Replace(ServiceDescriptor.Scoped(
-                    typeof(IOpenIdScopeStore),
-                    typeof(OpenIdScopeStore<,,>).MakeGenericType(
-                        scopeType, contextType, keyType)));
+                // Remove the YesSql stores registered by the main OpenID module.
+                services.RemoveAll(typeof(IOpenIddictApplicationStore<>));
+                services.RemoveAll(typeof(IOpenIddictAuthorizationStore<>));
+                services.RemoveAll(typeof(IOpenIddictScopeStore<>));
+                services.RemoveAll(typeof(IOpenIddictTokenStore<>));
 
-                services.Replace(ServiceDescriptor.Scoped(
-                    typeof(IOpenIdTokenStore),
-                    typeof(OpenIdTokenStore<,,,,>).MakeGenericType(
-                        tokenType, applicationType,
-                        authorizationType, contextType, keyType)));
+                // Override the default Entity Framework Core stores used by OpenIddict by the Orchard ones.
+                services.Replace(ServiceDescriptor.Scoped(typeof(OpenIddictApplicationStore<,,,,>), typeof(OpenIdApplicationStore<,,,,>)));
+                services.Replace(ServiceDescriptor.Scoped(typeof(OpenIddictAuthorizationStore<,,,,>), typeof(OpenIdAuthorizationStore<,,,,>)));
+                services.Replace(ServiceDescriptor.Scoped(typeof(OpenIddictScopeStore<,,>), typeof(OpenIdScopeStore<,,>)));
+                services.Replace(ServiceDescriptor.Scoped(typeof(OpenIddictTokenStore<,,,,>), typeof(OpenIdTokenStore<,,,,>)));
             }
             catch (Exception exception)
             {
                 _logger.LogWarning(exception, "An error occurred while registering the OpenID Entity Framework Core stores.");
+
+                return;
             }
         }
 
@@ -80,11 +84,20 @@ namespace OrchardCore.OpenId.EntityFrameworkCore
                 return (applicationType, authorizationType, scopeType, tokenType);
             }
 
+            if (keyType == typeof(string))
+            {
+                return (
+                    applicationType:   typeof(OpenIddictApplication),
+                    authorizationType: typeof(OpenIddictAuthorization),
+                    scopeType:         typeof(OpenIddictScope),
+                    tokenType:         typeof(OpenIddictToken));
+            }
+
             return (
-                applicationType:   typeof(OpenIdApplication<>).MakeGenericType(keyType),
-                authorizationType: typeof(OpenIdAuthorization<>).MakeGenericType(keyType),
-                scopeType:         typeof(OpenIdScope<>).MakeGenericType(keyType),
-                tokenType:         typeof(OpenIdToken<>).MakeGenericType(keyType));
+                applicationType:   typeof(OpenIddictApplication<>).MakeGenericType(keyType),
+                authorizationType: typeof(OpenIddictAuthorization<>).MakeGenericType(keyType),
+                scopeType:         typeof(OpenIddictScope<>).MakeGenericType(keyType),
+                tokenType:         typeof(OpenIddictToken<>).MakeGenericType(keyType));
         }
 
         private Type GetConfigurationNodeAsType(string node)

@@ -19,7 +19,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
-            // e.g., BodyPart.Summary, BodyPart-BlogPost, BagPart-LandingPage-Services
+            // e.g., HtmlBodyPart.Summary, HtmlBodyPart-BlogPost, BagPart-LandingPage-Services
             // context.Shape is the ContentItem shape, we need to alter the part shape
 
             var result = base.Factory(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
@@ -33,7 +33,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 if (partType == shapeType)
                 {
-                    // BodyPart, Services
+                    // HtmlBodyPart, Services
                     result.Differentiator($"{partName}");
                 }
                 else
@@ -46,14 +46,14 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 {
                     var displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
 
-                    // [ShapeType]_[DisplayType], e.g. BodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
+                    // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
                     ctx.ShapeMetadata.Alternates.Add($"{shapeType}_{ctx.ShapeMetadata.DisplayType}");
 
                     if (shapeType == partType)
                     {
                         foreach (var displayType in displayTypes)
                         {
-                            // [ContentType]_[DisplayType]__[PartType], e.g. Blog-BodyPart, LandingPage-BagPart
+                            // [ContentType]_[DisplayType]__[PartType], e.g. Blog-HtmlBodyPart, LandingPage-BagPart
                             ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partType}");
                         }
 

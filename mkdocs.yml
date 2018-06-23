@@ -29,11 +29,12 @@ markdown_extensions:
 # Page tree
 pages:
     - About Orchard Core: index.md
+    - Code Generation Templates: Templates/README.MD
     - Orchard Core Modules: OrchardCore/OrchardCore.Modules/README.md
     - CMS Modules:
         - Title: OrchardCore.Modules/OrchardCore.Title/README.md
         - Autoroute: OrchardCore.Modules/OrchardCore.Autoroute/README.md
-        - Body: OrchardCore.Modules/OrchardCore.Body/README.md
+        - Html: OrchardCore.Modules/OrchardCore.Html/README.md
         - Contents: OrchardCore.Modules/OrchardCore.Contents/README.md
         - Content Fields: OrchardCore.Modules/OrchardCore.ContentFields/README.md
         - Content Preview: OrchardCore.Modules/OrchardCore.ContentPreview/README.md

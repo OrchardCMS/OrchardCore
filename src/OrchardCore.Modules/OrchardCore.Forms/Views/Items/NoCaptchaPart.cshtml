@@ -1,0 +1,11 @@
+@using OrchardCore.Forms.ViewModels
+@model NoCaptchaPartViewModel
+@if (Model.SettingsAreConfigured)
+{
+    <div class="g-recaptcha" data-sitekey="@Model.SiteKey"></div>
+    <script at="Foot" src="https://www.google.com/recaptcha/api.js"></script>
+}
+else
+{
+    <div class="alert alert-warning">@T["NoCaptcha settings are not configured."]</div>
+}

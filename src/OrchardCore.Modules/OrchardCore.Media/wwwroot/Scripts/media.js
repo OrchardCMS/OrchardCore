@@ -54,7 +54,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 created: function () {
                     var self = this;
 
-                    self.dragDropThumbnail.src = '../Images/drag-thumbnail.png';
+                    self.dragDropThumbnail.src = '/OrchardCore.Media/Images/drag-thumbnail.png';
 
                     bus.$on('folderSelected', function (folder) {
                         self.selectedFolder = folder;
@@ -2660,7 +2660,7 @@ Vue.component('mediaItemsTable', {
                           :key="media.name" style="height: 80px;"> \
                              <td class="thumbnail-column"> \
                                 <div class="img-wrapper"> \
-                                    <img draggable="false" :src="media.url + \'? width = \' + thumbSize + \' & height=\' + thumbSize" /> \
+                                    <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" /> \
                                 </div> \
                             </td> \
                             <td> \
