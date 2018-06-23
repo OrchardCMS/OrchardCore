@@ -2,7 +2,7 @@
     Layout = null;
 }
 
-<div id="mediaApp" style="display:none" v-on:dragover="handleScrollWhileDrag($event)">
+<div id="mediaApp" style="display:none; height:100%; margin-left: -15px; margin-top: 0; border-top: 1px solid rgba(0, 0, 0, 0.1);" v-on:dragover="handleScrollWhileDrag($event)">
     <div id="customdropzone">
         <h3>@T["Drop your media here"]</h3>
         <p>@T["Your files will be uploaded to the current folder when you drop them here"]</p>
@@ -16,18 +16,26 @@
         </ul>
     </div>
 
-    <div class="media-container row">
-        <div id="navigationApp" class="media-container-navigation col-md-3" v-cloak>
-            <h5>Media Explorer</h5>
+
+
+    <div style="border: 1px purple; height:100%;" class="media-container d-flex align-items-stretch ">
+        <div id="navigationApp"
+             style="border-right: 1px solid rgba(0, 0, 0, 0.1); width:240px; padding-left: 16px;"
+             class="media-container-navigation" v-cloak>
+            <h5 style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); height: 52px; margin-left: -15px; padding-left:15px;">Media Explorer</h5>
             <ol id="folder-tree">
                 <folder :model="root" ref="rootFolder" :selected-in-media-app="selectedFolder">
                 </folder>
             </ol>
         </div>
 
-        <div class="media-container-main col-md-9" v-cloak>
 
-            <nav class="navbar action-bar">
+
+        <div class="media-container-main flex-grow-1 pl-3" 
+             style="border: 1px green;"
+             v-cloak>
+
+            <nav class="navbar action-bar" style="background-color: transparent;">
                 <div class="dropdown d-lg-none visible-on-modal mb-1 pt-1">
                     <button class="btn btn-secondary dropdown-toggle btn-sm mr-2" type="button" id="selectionButtonsDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         @T["Actions"]
@@ -45,7 +53,7 @@
                 </div>
 
                 <div class="d-lg-inline-flex d-none mb-1 pt-1 hidden-on-modal">
-                    <button type="button" class="btn btn-secondary btn-sm mr-1 select-all-button" v-on:click="selectAll">@T["Select All"]</button>
+                    <button type="button btn-link" class="btn btn-secondary btn-sm mr-1 select-all-button" v-on:click="selectAll">@T["Select All"]</button>
                     <button type="button" class="btn btn-secondary btn-sm mr-1 select-none-button" v-on:click="unSelectAll" :disabled="selectedMedias.length < 1">@T["Select None"]</button>
                     <button type="button" class="btn btn-secondary btn-sm mr-2 invert-selection-button" v-on:click="invertSelection">@T["Invert"]</button>
                     <button type="button" class="btn btn-secondary btn-sm mr-2 delete-all-button" v-on:click="deleteMediaList"

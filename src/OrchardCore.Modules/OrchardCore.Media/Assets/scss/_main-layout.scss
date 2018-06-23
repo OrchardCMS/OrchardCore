@@ -1,7 +1,20 @@
+h1, h2, h3, h4, h5 {
+    color: $gray-700;
+}
+h1 {
+    font-size: 1.5rem;
+    font-weight:normal;
+    height: 42px;
+}
+
+h4 {
+
+}
 .media-container-navigation h5 {
     padding-top: 10px;
-    margin-bottom: 38px;
-    color: $gray-700;
+    /*margin-bottom: 38px;*/
+    font-size: 1.25rem;
+    font-weight: normal;
 }
 
 .message-warning {
