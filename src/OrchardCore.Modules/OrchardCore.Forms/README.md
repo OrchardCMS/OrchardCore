@@ -89,6 +89,14 @@ Click on the **NoCaptcha Settings** link that is displayed within the message. A
 The Forms settings shows two fields: **SiteKey** and **Site Secret**. You can get these values for free from [https://developers.google.com/recaptcha/](https://developers.google.com/recaptcha/). The widget uses **reCaptcha V2**, so make sure to create Site Key and Site Secret for that version.
 Once you have generated a Site Key and Site Secret with Google, copy & paste those values in the SiteKey and Site Secret fields, repsectively, and click the Save button.
 
+The final form configuration should look something like this:
+
+![Contact Form - Expanded](./Docs/contact-form-expanded-1.png)
+
+And on the front-end, it will look like this:
+
+![Contact Form - front-end](./Docs/contact-form-front-end-1.png)
+
 ### Create the Contact Form Workflow
 
 In order to validate the form input and send an email, we will create a workflow. 
