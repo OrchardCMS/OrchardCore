@@ -1,5 +1,6 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Themes.Services
 {
@@ -7,6 +8,7 @@ namespace OrchardCore.Themes.Services
     {
         Task<IExtensionInfo> GetSiteThemeAsync();
         Task SetSiteThemeAsync(string themeName);
+        Task SetSiteThemeAsync(string themeName, RecipeDescriptor recipeDescriptor);
         Task<string> GetCurrentThemeNameAsync();
     }
 }

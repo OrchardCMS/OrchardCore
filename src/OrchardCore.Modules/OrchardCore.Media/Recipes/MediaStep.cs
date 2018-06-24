@@ -37,7 +37,7 @@ namespace OrchardCore.Media.Recipes
                 var file = item.ToObject<MediaStepFile>();
                 using (var stream = new MemoryStream(Convert.FromBase64String(file.Base64)))
                 {
-                    await _mediaFileStore.CreateFileFromStream(file.Path, stream);
+                    await _mediaFileStore.CreateFileFromStream(file.Path, stream, true);
                 }                    
             }
         }
