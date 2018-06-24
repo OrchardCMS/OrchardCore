@@ -20,4 +20,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Docs\" />
+  </ItemGroup>
+
 </Project>
