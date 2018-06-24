@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -43,7 +42,8 @@ namespace OrchardCore.Forms.Workflows.Activities
                 throw new InvalidOperationException("Cannot add model validation errors when there's no Updater present.");
             }
 
-            var outcome = updater.ModelState.ValidationState == ModelValidationState.Invalid ? "Invalid" : "Valid";
+            var isValid = updater.ModelState.ErrorCount == 0;
+            var outcome = isValid ? "Valid" : "Invalid";
             return Outcomes(outcome);
         }
     }
