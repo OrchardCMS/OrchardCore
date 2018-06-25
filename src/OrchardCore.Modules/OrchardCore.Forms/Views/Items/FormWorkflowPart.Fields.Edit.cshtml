@@ -1,0 +1,8 @@
+@using OrchardCore.Forms.Workflows.ViewModels;
+@model FormWorkflowPartEditViewModel
+
+<fieldset class="form-group">
+    <label asp-for="WorkflowTypeId">@T["Workflow Type"]</label>
+    <select asp-for="WorkflowTypeId" asp-items="Model.AvailableWorkflowTypes" class="form-control"></select>
+    <span class="hint">@T["Optionally select a workflow to invoke when the form is submitted."]</span>
+</fieldset>

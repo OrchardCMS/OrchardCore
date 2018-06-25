@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Forms.Workflows.Activities;
 using OrchardCore.Forms.Workflows.Drivers;
 using OrchardCore.Modules;
@@ -11,6 +12,7 @@ namespace OrchardCore.Forms.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IContentPartDisplayDriver, FormWorkflowPartDisplay>();
             services.AddActivity<ValidateAntiforgeryTokenTask, ValidateAntiforgeryTokenTaskDisplay>();
             services.AddActivity<ValidateNoCaptchaTask, ValidateNoCaptchaTaskDisplay>();
             services.AddActivity<AddModelValidationErrorTask, AddModelValidationErrorTaskDisplay>();
