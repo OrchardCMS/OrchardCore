@@ -4,7 +4,7 @@ The Forms module provides components in the form of widgets and workflow activit
 
 ## General Concepts
 
-When building a form, there are primarily two parts involved:
+When building a form, there are primarily two aspects involved:
 
 1. Building the form.
 2. Processing the form when submitted.
