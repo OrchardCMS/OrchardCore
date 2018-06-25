@@ -3,6 +3,9 @@ ol.media-items-grid {
     flex-direction: row;
     align-items: stretch;
 
+    &.row {
+        margin-left: 0;
+    }
     li {
         margin-bottom: 16px;
         cursor: pointer;

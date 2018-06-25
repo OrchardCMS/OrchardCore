@@ -12,14 +12,20 @@ h1 {
   height: 42px; }
 
 .media-container-navigation h5 {
-  padding-top: 10px;
-  /*margin-bottom: 38px;*/
+  /*padding-top: 10px;
+    margin-bottom: 0;*/
   font-size: 1.25rem;
   font-weight: normal; }
 
 .message-warning {
   padding: 20px;
   margin-bottom: 8px; }
+
+a.disabled {
+  cursor: default; }
+
+a.nav-link:not(.disabled):hover {
+  background-color: #e6f2ff; }
 
 .upload {
   background-color: rgba(0, 0, 0, 0.05);
@@ -89,6 +95,8 @@ ol.media-items-grid {
   align-items: stretch;
   list-style: none;
   padding-left: 0; }
+  ol.media-items-grid.row {
+    margin-left: 0; }
   ol.media-items-grid li {
     margin-bottom: 16px;
     cursor: pointer;
@@ -175,11 +183,11 @@ ol.media-items-grid {
     display: inline-block; }
 
 .action-bar {
-  background-color: #e9ecef;
-  justify-content: flex-start;
-  flex-grow: 1;
-  text-align: left;
-  margin-bottom: 16px; }
+  /*background-color: $gray-200;
+    justify-content: flex-start;
+    flex-grow: 1;
+    text-align: left;
+    margin-bottom: 16px;*/ }
   .action-bar .media-filter {
     flex-grow: 1; }
     .action-bar .media-filter .input-filter {

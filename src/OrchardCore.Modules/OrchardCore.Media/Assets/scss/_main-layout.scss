@@ -11,8 +11,8 @@ h4 {
 
 }
 .media-container-navigation h5 {
-    padding-top: 10px;
-    /*margin-bottom: 38px;*/
+    /*padding-top: 10px;
+    margin-bottom: 0;*/
     font-size: 1.25rem;
     font-weight: normal;
 }
@@ -20,4 +20,12 @@ h4 {
 .message-warning {
     padding: 20px;
     margin-bottom: 8px;
+}
+
+a.disabled {
+    cursor: default;
+}
+
+a.nav-link:not(.disabled):hover {
+    background-color: lighten($primary, 45%);
 }
