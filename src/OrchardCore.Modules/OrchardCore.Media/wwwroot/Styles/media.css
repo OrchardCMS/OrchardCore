@@ -182,19 +182,9 @@ ol.media-items-grid {
   .media-items-table .sort-indicator {
     display: inline-block; }
 
-.action-bar {
-  /*background-color: $gray-200;
-    justify-content: flex-start;
-    flex-grow: 1;
-    text-align: left;
-    margin-bottom: 16px;*/ }
-  .action-bar .media-filter {
-    flex-grow: 1; }
-    .action-bar .media-filter .input-filter {
-      max-width: 160px; }
-  .action-bar .selected-count {
-    min-width: 25px;
-    display: inline-block; }
+.action-bar .selected-count {
+  min-width: 25px;
+  display: inline-block; }
 
 .breadcrumb {
   background-color: transparent;
@@ -219,10 +209,8 @@ ol.media-items-grid {
 .upload-button {
   margin: 0;
   padding: 0;
-  border: 0; }
-  .upload-button label {
-    width: 100%;
-    margin-bottom: 0; }
+  border: 0;
+  border-radius: 0px !important; }
 
 .fileinput-button {
   cursor: pointer; }
@@ -233,6 +221,11 @@ ol.media-items-grid {
     overflow: hidden;
     position: absolute;
     z-index: -1; }
+
+input[type="text"], textarea {
+  outline: none;
+  box-shadow: none !important;
+  border: 1px solid #ccc !important; }
 
 #folder-tree {
   list-style: none;

@@ -1,15 +1,7 @@
 .action-bar {
-    /*background-color: $gray-200;
-    justify-content: flex-start;
-    flex-grow: 1;
-    text-align: left;
-    margin-bottom: 16px;*/
-
     .media-filter {
-        flex-grow: 1;
-
         .input-filter {
-            max-width: 160px;
+            
         }
     }
 
@@ -51,11 +43,7 @@
     margin: 0;
     padding: 0;
     border: 0;
-
-    label {
-        width: 100%;
-        margin-bottom: 0; // there is a margin below the label that makes the navbar fattier
-    }
+    border-radius: 0px !important;
 }
 
 .fileinput-button {
@@ -69,5 +57,13 @@
         position: absolute;
         z-index: -1;
     }
+}
+
+
+// hide glow on inputs
+input[type="text"], textarea {
+    outline: none;
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
 }
 
