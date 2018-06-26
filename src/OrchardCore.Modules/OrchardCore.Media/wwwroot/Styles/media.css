@@ -190,6 +190,8 @@ ol.media-items-grid {
   background-color: transparent;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 0px; }
+  .breadcrumb .breadcrumb-item a {
+    color: #6c757d; }
   .breadcrumb .breadcrumb-buttons {
     justify-content: flex-start;
     flex-grow: 1;

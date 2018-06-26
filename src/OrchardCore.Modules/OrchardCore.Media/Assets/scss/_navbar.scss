@@ -16,6 +16,10 @@
     border-bottom: $media-border-content;
     border-radius: 0px;
 
+    .breadcrumb-item a {
+        color: $gray-600;
+    }
+
     .breadcrumb-buttons {
         justify-content: flex-start;
         flex-grow: 1;
