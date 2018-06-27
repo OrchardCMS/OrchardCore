@@ -1,16 +1,15 @@
 .media-items-table {
-    border: solid 1px $gray-200;
     padding: 20px;
     font-size: 0.875rem;
 
     .header-row {
-        background-color: rgba(0,0,0, 0.03);
-
         th {
+            border-top: none !important;
             padding-top: 8px;
             padding-bottom: 8px;
             color: $gray-700;
-            font-weight: 500 !important;
+            font-size: 0.8125rem;
+            font-weight: 700 !important;
             user-select: none;
 
             .thumbnail-column {
@@ -21,6 +20,9 @@
 
     tr.media-item {
         height: 80px;
+        td {
+            border-top: $media-border-content;
+        }
 
         &.selected {
             background-color: $selected-background-color;
@@ -34,8 +36,6 @@
         width: 80px;
         padding-left: 16px;
         padding-right: 16px;
-        border-right: dashed 1px #ddd;
-
         .image-wrapper {
             width: 80px;
             height: 80px;

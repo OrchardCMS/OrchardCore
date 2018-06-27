@@ -104,8 +104,10 @@ ol.media-items-grid {
     margin-bottom: 16px;
     cursor: pointer;
     margin-left: 0.9em;
-    margin-right: 0.7em; }
+    margin-right: 0.7em;
+    border-radius: 0; }
     ol.media-items-grid li .inline-media-button {
+      color: #495057;
       opacity: 0;
       padding-top: 0px;
       position: absolute;
@@ -127,21 +129,22 @@ ol.media-items-grid {
     justify-content: center; }
 
 .media-items-table {
-  border: solid 1px #e9ecef;
   padding: 20px;
   font-size: 0.875rem; }
-  .media-items-table .header-row {
-    background-color: rgba(0, 0, 0, 0.03); }
-    .media-items-table .header-row th {
-      padding-top: 8px;
-      padding-bottom: 8px;
-      color: #495057;
-      font-weight: 500 !important;
-      user-select: none; }
-      .media-items-table .header-row th .thumbnail-column {
-        padding-left: 16px; }
+  .media-items-table .header-row th {
+    border-top: none !important;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    color: #495057;
+    font-size: 0.8125rem;
+    font-weight: 700 !important;
+    user-select: none; }
+    .media-items-table .header-row th .thumbnail-column {
+      padding-left: 16px; }
   .media-items-table tr.media-item {
     height: 80px; }
+    .media-items-table tr.media-item td {
+      border-top: 1px solid rgba(0, 0, 0, 0.1); }
     .media-items-table tr.media-item.selected {
       background-color: #e6f2ff;
       border-left: solid 2px #007bff; }
@@ -149,8 +152,7 @@ ol.media-items-grid {
     text-align: center;
     width: 80px;
     padding-left: 16px;
-    padding-right: 16px;
-    border-right: dashed 1px #ddd; }
+    padding-right: 16px; }
     .media-items-table .thumbnail-column .image-wrapper {
       width: 80px;
       height: 80px;
@@ -205,21 +207,21 @@ ol.media-items-grid {
     margin-bottom: 4px;
     margin-right: 8px; }
     #breadcrumb .breadcrumb-path .breadcrumb-item a {
-      color: #6c757d; }
+      color: #495057; }
   #breadcrumb .breadcrumb-buttons {
     justify-content: flex-start;
     flex-grow: 1;
     margin-top: -5px; }
     #breadcrumb .breadcrumb-buttons a {
       border-radius: 0px !important;
-      color: #6c757d; }
+      color: #495057; }
   #breadcrumb .visibility-buttons {
     justify-content: flex-end;
     flex-grow: 0;
     margin-top: -5px; }
     #breadcrumb .visibility-buttons button {
       border-radius: 0px !important;
-      color: #6c757d; }
+      color: #495057; }
     #breadcrumb .visibility-buttons .selected {
       color: #007bff; }
 
@@ -230,9 +232,10 @@ ol.media-items-grid {
 
 .upload-button {
   margin: 0;
-  padding: 0;
+  padding: 0px 15px 0px 0px;
   border: 0;
-  border-radius: 0px !important; }
+  border-radius: 0px !important;
+  min-width: 120px; }
 
 .fileinput-button {
   cursor: pointer; }

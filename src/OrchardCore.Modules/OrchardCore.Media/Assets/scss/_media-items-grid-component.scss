@@ -6,13 +6,16 @@ ol.media-items-grid {
     &.row {
         margin-left: 0;
     }
+
     li {
         margin-bottom: 16px;
         cursor: pointer;
         margin-left: 0.9em;
         margin-right: 0.7em;
+        border-radius: 0;
 
         .inline-media-button {
+            color: $gray-700;
             opacity: 0;
             padding-top: 0px;
             position: absolute;

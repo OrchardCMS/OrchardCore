@@ -27,7 +27,7 @@
         margin-right: 8px;
 
         .breadcrumb-item a {
-            color: $gray-600;
+            color: $gray-700;
         }
     }
 
@@ -39,7 +39,7 @@
 
         a {
             border-radius: 0px !important;
-            color: $gray-600;
+            color: $gray-700;
         }
     }
 
@@ -50,7 +50,7 @@
 
         button {
             border-radius: 0px !important;
-            color: $gray-600;
+            color: $gray-700;
         }
 
         .selected {
@@ -67,9 +67,10 @@
 
 .upload-button {
     margin: 0;
-    padding: 0;
+    padding: 0px 15px 0px 0px;
     border: 0;
     border-radius: 0px !important;
+    min-width: 120px;
 }
 
 .fileinput-button {
