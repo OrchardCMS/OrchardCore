@@ -1,38 +1,59 @@
 #folder-tree {
     list-style: none;
-    margin-top: 46px;
     padding-left: 0;
     overflow: hidden;
 
-    li.selected > div {
-        font-weight: bold;
+
+    .treeroot {
+        color: red !important;
+        font-weight: 600;
+        height: 40px;
+        border-bottom: $media-border-content;
+
+        a {
+            font-size: 1rem !important;
+        }
     }
 
-    li.selected > div > a > i.folder:before {
-        content: "\f07c";
-        color: $gray;
+    li.selected > div:not(.treeroot) {
+        font-weight: bold;
+        background-color: $selected-background-color;
+
+        a {
+            color: $primary;
+        }
+    }
+
+    li div a:hover, .folderhovered {
+        background-color: $selected-background-color;
+    }
+
+    li div {
+        height: 40px;
+        padding: 0;
+        font-size: 0.875rem;
+
+        a {
+            display: block;
+            padding-top: 8px;
+            height: 100%;
+        }
     }
 
     div {
-        padding: 0.2rem 0.2rem;
-
+        /*padding: 0.2rem 0.2rem;*/
         a {
-            color: $gray-dark;
+            color: $gray-700;
             text-decoration: none;
         }
     }
 
     ol {
-        padding-left: 1rem;
-        margin-left: 0px;
+        padding-left: 0;
     }
 
     .folder {
         color: lightgray;
-    }
-
-    .folderhovered {
-        font-weight: bold;
     }
 
     li {
@@ -42,8 +63,10 @@
     .expand {
         /* make both icons be in the center as their widths are different */
         text-align: center;
-        width: 10px;
+        width: 16px;
         cursor: pointer;
+        font-size: 0.875rem;
+        display: inline-block;
     }
 
     .opened {

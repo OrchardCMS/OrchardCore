@@ -1,7 +1,10 @@
 .action-bar {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    height: 40px;
+
     .media-filter {
         .input-filter {
-            
+            max-width: 240px;
         }
     }
 
@@ -11,25 +14,44 @@
     }
 }
 
-.breadcrumb {
+#breadcrumb {
     background-color: transparent;
     border-bottom: $media-border-content;
     border-radius: 0px;
+    height: 50px;
+    padding-bottom: 8px;
+    font-size: 0.875rem;
 
-    .breadcrumb-item a {
-        color: $gray-600;
+    .breadcrumb-path {
+        margin-bottom: 4px;
+        margin-right: 8px;
+
+        .breadcrumb-item a {
+            color: $gray-600;
+        }
     }
+
 
     .breadcrumb-buttons {
         justify-content: flex-start;
         flex-grow: 1;
         margin-top: -5px;
+
+        a {
+            border-radius: 0px !important;
+            color: $gray-600;
+        }
     }
 
     .visibility-buttons {
         justify-content: flex-end;
         flex-grow: 0;
         margin-top: -5px;
+
+        button {
+            border-radius: 0px !important;
+            color: $gray-600;
+        }
 
         .selected {
             color: $primary;

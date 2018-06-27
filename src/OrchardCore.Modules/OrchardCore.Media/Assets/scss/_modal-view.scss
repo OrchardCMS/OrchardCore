@@ -1,4 +1,4 @@
-.modal-body .media-container {
+.modal-body #mediaContainer {
     // on modal the available space is smaller. So the buttons overlap.
     // Breakpoints that switches visibility of buttons on full screen are not OK for the modal.
     // So we use these classes to enforce the same layout we have on small screen even when the screen size is not small.

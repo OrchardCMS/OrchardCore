@@ -23,7 +23,7 @@
         height: 80px;
 
         &.selected {
-            background-color: lighten($primary, 45%);
+            background-color: $selected-background-color;
             border-left: solid 2px $primary;
         }
     }

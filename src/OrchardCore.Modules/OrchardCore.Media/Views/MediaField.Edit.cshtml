@@ -51,7 +51,7 @@
 
         </fieldset>
         <fieldset class="form-group">
-                <div class="media-container-main" v-cloak>
+                <div id="mediaContainerMain" v-cloak>
                     <draggable :list="mediaItems" element="ol" class="row media-items-grid">
                         <li v-for="media in mediaItems"
                             :key="media.name"

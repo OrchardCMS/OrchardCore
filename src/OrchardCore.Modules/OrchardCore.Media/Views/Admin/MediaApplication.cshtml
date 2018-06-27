@@ -2,71 +2,60 @@
     Layout = null;
 }
 
-<div id="mediaApp" style="display:none; height:100%; margin: 0px -15px 0px -15px;  margin-top: 0; border-top: 0px solid rgba(0, 0, 0, 0.1);" v-on:dragover="handleScrollWhileDrag($event)">
+<div id="mediaApp" style="display:none;" v-on:dragover="handleScrollWhileDrag($event)">
     <div id="customdropzone">
         <h3>@T["Drop your media here"]</h3>
         <p>@T["Your files will be uploaded to the current folder when you drop them here"]</p>
     </div>
 
     <div class="alert message-warning" v-if="errors.length > 0">
-        <ul>
-            <li v-for="e in errors">
-                <p>{{e}}</p>
-            </li>
-        </ul>
+        <ul> <li v-for="e in errors"> <p>{{e}}</p> </li> </ul>
     </div>
 
-    <div style="border: 1px purple; height:100%;" class="media-container d-flex align-items-stretch ">
-        <div id="navigationApp"
-             style="border-right: 1px solid rgba(0, 0, 0, 0.1); border-top: 1px solid rgba(0, 0, 0, 0.1); width:240px; padding:0; margin:0;"
-             class="media-container-navigation flex-shrink-0" v-cloak>
-            <div class="d-flex align-items-center" style="height:40px; border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                <p style="padding: 0 0 0 15px; font-weight:600; color: rgb(64, 64, 64); margin:0;">Media Explorer</p>                
-            </div>
-            
-            <ol style="padding-left:15px;" id="folder-tree">
-                <folder :model="root" ref="rootFolder" :selected-in-media-app="selectedFolder">
+    <div id="mediaContainer" class="d-flex align-items-stretch">
+        
+        <div id="navigationApp" class="media-container-navigation flex-shrink-0 m-0 p-0"  v-cloak>
+            <ol id="folder-tree">
+                <folder :model="root" ref="rootFolder" :selected-in-media-app="selectedFolder" :level="1">
                 </folder>
             </ol>
         </div>
 
-        <div class="media-container-main flex-grow-1 pl-0 ml-3 mr-3" 
-             style="border-top: 1px solid rgba(0, 0, 0, 0.1);"
-             v-cloak>
+        <div id="mediaContainerMain" class="flex-grow-1 pl-0 ml-3 mr-3" v-cloak>
 
-            <nav class="nav action-bar align-items-center" style="background-color: transparent; border-bottom: 1px solid rgba(0, 0, 0, 0.1); height:40px;">
+            <nav class="nav action-bar align-items-stretch">
                 <div class="nav-item ">
                     <a href="javascript:;" class="nav-link active" v-on:click="selectAll">
-                        @*<i class="fa fa-trash"></i>*@ @T["Select All"]
+                        @T["Select All"]
                     </a>
                 </div>
                 <div class="nav-item ">
                     <a href="javascript:;" class="nav-link active" v-on:click="unSelectAll" :disabled="selectedMedias.length < 1">
-                        @*<i class="fa fa-trash"></i>*@ @T["Select None"]
+                        @T["Select None"]
                     </a>
                 </div>
                 <div class="nav-item ">
                     <a href="javascript:;" class="nav-link active" v-on:click="invertSelection">
-                        @*<i class="fa fa-trash"></i>*@ @T["Invert"]
+                        @T["Invert"]
                     </a>
                 </div>
                 <div class="nav-item ">
                     <a href="javascript:;" class="nav-link active" v-on:click="deleteMediaList" :class="{disabled: selectedMedias.length < 1 }">
-                        @*<i class="fa fa-trash"></i>*@ @T["Delete"] <span class="selected-count">({{ selectedMedias.length}})</span>
+                        @T["Delete"] <span class="selected-count">({{ selectedMedias.length}})</span>
                     </a>
                 </div>
                 <div class="media-filter d-inline-flex text-right mr-2 mb-1 pt-1 flex-grow-1">
                     <div class="input-group input-group-sm" >
                         <div class="input-group-prepend" >
-                            <button id="clear-media-filter-button" style="border-radius:0px;" class="btn btn-outline-secondary" type="button" :disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa fa-times"></i></button>
+                            <button id="clear-media-filter-button" class="btn btn-outline-secondary" type="button" :disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa fa-times"></i></button>
                         </div>
-                        <input type="text" id="media-filter-input" v-model="mediaFilter" style="border-radius:0px;" class="form-control input-filter" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]">
+                        <input type="text" id="media-filter-input" v-model="mediaFilter" class="form-control input-filter" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]">
                     </div>
                 </div>
 
                 <div class="d-inline-flex ml-auto mr-3 mb-1 pt-1">
                     <div class="btn-group btn-group-sm text-right upload-btn-group">
-                        <label for="fileupload" class="btn btn-sm btn-success fileinput-button upload-button">
+                        <label for="fileupload" class="btn btn-sm btn-primary fileinput-button upload-button">
                             <input id="fileupload" type="file" name="files" multiple="multiple">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                             @T["Upload"]
@@ -75,8 +64,8 @@
                 </div>
             </nav>
 
-            <nav class="breadcrumb" style="display:flex; align-items:flex-end; height: 80px;">
-                <div class="breadcrumb-path" style="margin-bottom: 4px; margin-right:8px;">
+            <nav id="breadcrumb" class="d-flex justify-content-end align-items-end pl-3 pr-3 mb-4">
+                <div class="breadcrumb-path">
                     <span class="breadcrumb-item" :class="{ active: isHome }"><a :href="isHome ? null : '#'" v-on:click="selectRoot">@T["Media Library"]</a></span>
                     <span v-for="(folder, i) in parents" v-cloak
                           class="breadcrumb-item"

@@ -1,31 +1,41 @@
-h1, h2, h3, h4, h5 {
-    color: $gray-700;
+#mediaApp {    
+    margin: 0px -15px 0px -15px;
+    margin-top: 0;
+    
+    #navigationApp {
+        border-right: $media-border-content;
+        border-top: $media-border-content;
+        width: 240px;
+    }
+
+    #mediaContainerMain {
+        /*border-top: $media-border-content;*/
+    }
+
+    .message-warning {
+        padding: 20px;
+        margin-bottom: 8px;
+    }
+
+    a.disabled {
+        cursor: default;
+    }
+
+    a.nav-link:not(.disabled):hover {
+        background-color: $selected-background-color;
+    }
+
+    button, a, input {
+        border-radius: 0px;
+    }
 }
+
 h1 {
     font-size: 1.5rem;
-    font-weight:normal;
+    font-weight: normal;
     height: 42px;
 }
 
-h4 {
-
-}
-.media-container-navigation h5 {
-    /*padding-top: 10px;
-    margin-bottom: 0;*/
-    font-size: 1.25rem;
-    font-weight: normal;
-}
-
-.message-warning {
-    padding: 20px;
-    margin-bottom: 8px;
-}
-
-a.disabled {
-    cursor: default;
-}
-
-a.nav-link:not(.disabled):hover {
-    background-color: lighten($primary, 45%);
+#mediaApp, #mediaContainer, #navigationApp {
+    height: 100%;
 }

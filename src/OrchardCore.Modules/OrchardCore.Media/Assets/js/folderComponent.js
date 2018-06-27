@@ -5,32 +5,34 @@ Vue.component('folder', {
                 v-on:dragleave.prevent = "handleDragLeave($event);" \
                 v-on:dragover.prevent.stop="handleDragOver($event);" \
                 v-on:drop.prevent.stop = "moveMediaToFolder(model, $event)" >\
-            <div :class="{folderhovered: isHovered}" >\
-                <a href="javascript:;" v-on:click="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
-                <a href="javascript:;" v-on:click="select" draggable="false" >\
-                    <i class="folder fa fa-folder"></i>\
-                    {{model.name}}\
+            <div :class="{folderhovered: isHovered, treeroot: level == 1}">\
+                <a href="javascript:;" :style="{ paddingLeft: level * padding + \'px\' }" v-on:click="select"  draggable="false" >\
+                  <span v-on:click.stop="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-chevron-right"></i></span>  \
+                  {{model.name}}\
                 </a>\
             </div>\
             <ol v-show="open">\
                 <folder v-for="folder in children"\
                         :key="folder.path"\
                         :model="folder" \
-                        :selected-in-media-app="selectedInMediaApp">\
+                        :selected-in-media-app="selectedInMediaApp" \
+                        :level="level + 1">\
                 </folder>\
             </ol>\
         </li>\
         ',
     props: {
         model: Object,
-        selectedInMediaApp: Object
+        selectedInMediaApp: Object,
+        level: Number
     },
     data: function () {
         return {
             open: false,
             children: null, // not initialized state (for lazy-loading)
             parent: null,
-            isHovered : false
+            isHovered: false,
+            padding: 8
         }
     },
     computed: {
@@ -86,12 +88,14 @@ Vue.component('folder', {
             return false;
         },
         toggle: function () {
+            console.log('toggling');
             this.open = !this.open;
             if (this.open && !this.children) {
                 this.loadChildren();
             }
         },
         select: function () {
+            console.log('selecting');
             bus.$emit('folderSelected', this.model);
             this.loadChildren();
         },
