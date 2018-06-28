@@ -9,7 +9,7 @@
   #mediaApp #navigationApp {
     border-right: 1px solid rgba(0, 0, 0, 0.1);
     border-top: 1px solid rgba(0, 0, 0, 0.1);
-    width: 240px; }
+    width: 260px; }
   #mediaApp #mediaContainerMain {
     /*border-top: $media-border-content;*/ }
   #mediaApp .message-warning {
@@ -257,7 +257,6 @@ input[type="text"], textarea {
   padding-left: 0;
   overflow: hidden; }
   #folder-tree .treeroot {
-    color: red !important;
     font-weight: 600;
     height: 40px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
@@ -266,8 +265,6 @@ input[type="text"], textarea {
   #folder-tree li.selected > div:not(.treeroot) {
     font-weight: bold;
     background-color: #e6f2ff; }
-    #folder-tree li.selected > div:not(.treeroot) a {
-      color: #007bff; }
   #folder-tree li div a:hover, #folder-tree .folderhovered {
     background-color: #e6f2ff; }
   #folder-tree li div {

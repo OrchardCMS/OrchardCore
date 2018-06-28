@@ -5,7 +5,6 @@
 
 
     .treeroot {
-        color: red !important;
         font-weight: 600;
         height: 40px;
         border-bottom: $media-border-content;
@@ -18,10 +17,6 @@
     li.selected > div:not(.treeroot) {
         font-weight: bold;
         background-color: $selected-background-color;
-
-        a {
-            color: $primary;
-        }
     }
 
     li div a:hover, .folderhovered {

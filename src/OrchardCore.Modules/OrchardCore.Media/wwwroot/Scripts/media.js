@@ -538,8 +538,8 @@ Vue.component('folder', {
                 v-on:dragleave.prevent = "handleDragLeave($event);" \
                 v-on:dragover.prevent.stop="handleDragOver($event);" \
                 v-on:drop.prevent.stop = "moveMediaToFolder(model, $event)" >\
-            <div :class="{folderhovered: isHovered, treeroot: level == 1}">\
-                <a href="javascript:;" :style="{ paddingLeft: level * padding + \'px\' }" v-on:click="select"  draggable="false" >\
+            <div :class="{folderhovered: isHovered , treeroot: level == 1}">\
+                <a href="javascript:;" :style="{ paddingLeft: padding + \'px\' }" v-on:click="select"  draggable="false" >\
                   <span v-on:click.stop="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-chevron-right"></i></span>  \
                   {{model.name}}\
                 </a>\
@@ -565,7 +565,7 @@ Vue.component('folder', {
             children: null, // not initialized state (for lazy-loading)
             parent: null,
             isHovered: false,
-            padding: 8
+            padding: 0
         }
     },
     computed: {
@@ -580,6 +580,8 @@ Vue.component('folder', {
         if ((this.isRoot() == false) && (this.isAncestorOfSelectedFolder())){
             this.toggle();
         }
+
+        this.padding = this.level < 3 ?  26 : 26 + (this.level * 8);
     },
     created: function () {
         var self = this;
