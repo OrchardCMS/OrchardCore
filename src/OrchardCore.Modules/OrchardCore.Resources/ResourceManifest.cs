@@ -109,6 +109,13 @@ namespace OrchardCore.Resources
                 ;
 
             manifest
+                .DefineStyle("font-awesome")
+                .SetCdn("https://use.fontawesome.com/releases/v5.1.0/css/all.css")
+                .SetCdnIntegrity("sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt")
+                .SetVersion("5.1.0")
+                ;
+
+            manifest
                 .DefineScript("font-awesome")
                 .SetCdn("https://use.fontawesome.com/releases/v5.1.0/js/all.js")
                 .SetCdnIntegrity("sha384-3LK/3kTpDE/Pkp8gTNp2gR/2gOiwQ6QaO7Td0zV76UFJVhqLl4Vl3KL1We6q6wR9")
