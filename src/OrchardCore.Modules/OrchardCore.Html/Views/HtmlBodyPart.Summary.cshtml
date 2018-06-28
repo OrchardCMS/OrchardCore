@@ -1,0 +1,16 @@
+@using Fluid;
+@using OrchardCore.Liquid;
+@using OrchardCore.Mvc.Utilities;
+@model OrchardCore.Html.ViewModels.HtmlBodyPartViewModel
+@inject ILiquidTemplateManager TemplateManager
+
+@{
+    string body = Model.Source;
+    var templateContext = new TemplateContext();
+    templateContext.SetValue("ContentItem", Model.HtmlBodyPart.ContentItem);
+
+    var renderedBody = await TemplateManager.RenderAsync(body, templateContext);
+}
+
+@Html.Raw(renderedBody.RemoveTags(true).Ellipsize(200))
+

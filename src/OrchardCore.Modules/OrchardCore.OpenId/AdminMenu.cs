@@ -32,23 +32,32 @@ namespace OrchardCore.OpenId
             {
                 category.AddClass("openid").Id("openid");
 
-                var features = _shellDescriptor.Features.ToImmutableArray();
-                if (features.Any(feature => feature.Id == OpenIdConstants.Features.Server) ||
-                    features.Any(feature => feature.Id == OpenIdConstants.Features.Validation))
+                var features = _shellDescriptor.Features.Select(feature => feature.Id).ToImmutableArray();
+                if (features.Contains(OpenIdConstants.Features.Client) ||
+                    features.Contains(OpenIdConstants.Features.Server) ||
+                    features.Contains(OpenIdConstants.Features.Validation))
                 {
                     category.Add(T["Settings"], "1", settings =>
                     {
-                        if (features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
+                        if (features.Contains(OpenIdConstants.Features.Client))
                         {
-                            settings.Add(T["Authorization server"], "1", server => server
+                            settings.Add(T["Authentication client"], "1", client => client
+                                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "OrchardCore.OpenId.Client" })
+                                    .Permission(Permissions.ManageClientSettings)
+                                    .LocalNav());
+                        }
+
+                        if (features.Contains(OpenIdConstants.Features.Server))
+                        {
+                            settings.Add(T["Authorization server"], "2", server => server
                                     .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "OrchardCore.OpenId.Server" })
                                     .Permission(Permissions.ManageServerSettings)
                                     .LocalNav());
                         }
 
-                        if (features.Any(feature => feature.Id == OpenIdConstants.Features.Validation))
+                        if (features.Contains(OpenIdConstants.Features.Validation))
                         {
-                            settings.Add(T["Token validation"], "2", validation => validation
+                            settings.Add(T["Token validation"], "3", validation => validation
                                     .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "OrchardCore.OpenId.Validation" })
                                     .Permission(Permissions.ManageValidationSettings)
                                     .LocalNav());
@@ -56,7 +65,7 @@ namespace OrchardCore.OpenId
                     });
                 }
 
-                if (features.Any(feature => feature.Id == OpenIdConstants.Features.Management))
+                if (features.Contains(OpenIdConstants.Features.Management))
                 {
                     category.Add(T["Management"], "2", management =>
                     {

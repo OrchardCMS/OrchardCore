@@ -27,4 +27,4 @@ To edit this permission open the Roles editor and go to the OrchardCore.CustomSe
 The Custom Settings like other settings are available in the `{{ Site.Properties }}` object.
 Each section is made available using its name. 
 
-For instance the `BodyPart` of a custom settings section named `BlogSettings` would be accessible using `{{ Site.Properties.BlogSettings.BodyPart }}`.
+For instance the `HtmlBodyPart` of a custom settings section named `BlogSettings` would be accessible using `{{ Site.Properties.BlogSettings.HtmlBodyPart }}`.

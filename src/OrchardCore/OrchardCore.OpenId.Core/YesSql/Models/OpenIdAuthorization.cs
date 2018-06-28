@@ -1,10 +1,9 @@
 using System.Collections.Immutable;
 using Newtonsoft.Json.Linq;
-using OrchardCore.OpenId.Abstractions.Models;
 
 namespace OrchardCore.OpenId.YesSql.Models
 {
-    public class OpenIdAuthorization : IOpenIdAuthorization
+    public class OpenIdAuthorization
     {
         /// <summary>
         /// Gets or sets the unique identifier

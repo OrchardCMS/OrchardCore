@@ -1,8 +1,3 @@
-using System.IO;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
@@ -66,6 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IShellSettingsConfigurationProvider, FileShellSettingsConfigurationProvider>();
             services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
             services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
+            services.AddTransient<IConfigureOptions<ShellOptions>, ShellOptionsSetup>();
             services.AddScoped<ShellSettingsWithTenants>();
 
             return builder;
@@ -82,83 +78,6 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             builder.ApplicationServices.AddSetFeaturesDescriptor();
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds host and tenant level antiforgery services.
-        /// </summary>
-        public static OrchardCoreBuilder AddAntiForgery(this OrchardCoreBuilder builder)
-        {
-            builder.ApplicationServices.AddAntiforgery();
-
-            builder.ConfigureServices((services, serviceProvider) =>
-            {
-                var settings = serviceProvider.GetRequiredService<ShellSettings>();
-
-                var tenantName = settings.Name;
-                var tenantPrefix = "/" + settings.RequestUrlPrefix;
-
-                services.AddAntiforgery(options =>
-                {
-                    options.Cookie.Name = "orchantiforgery_" + tenantName;
-                    options.Cookie.Path = tenantPrefix;
-                });
-            });
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds host and tenant level authentication services and configuration.
-        /// </summary>
-        public static OrchardCoreBuilder AddAuthentication(this OrchardCoreBuilder builder)
-        {
-            builder.ApplicationServices.AddAuthentication();
-
-            builder.ConfigureServices(services =>
-            {
-                services.AddAuthentication();
-
-                // Note: IAuthenticationSchemeProvider is already registered at the host level.
-                // We need to register it again so it is taken into account at the tenant level.
-                services.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
-
-            })
-            .Configure(app =>
-            {
-                app.UseAuthentication();
-            });
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds tenant level data protection services.
-        /// </summary>
-        public static OrchardCoreBuilder AddDataProtection(this OrchardCoreBuilder builder)
-        {
-            builder.ConfigureServices((services, serviceProvider) =>
-            {
-                var settings = serviceProvider.GetRequiredService<ShellSettings>();
-                var options = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
-
-                var directory = Directory.CreateDirectory(Path.Combine(
-                options.Value.ShellsApplicationDataPath,
-                options.Value.ShellsContainerName,
-                settings.Name, "DataProtection-Keys"));
-
-                // Re-register the data protection services to be tenant-aware so that modules that internally
-                // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that
-                // manages its own key ring and doesn't allow decrypting payloads encrypted by another tenant.
-                // By default, the key ring is stored in the tenant directory of the configured App_Data path.
-                services.Add(new ServiceCollection()
-                    .AddDataProtection()
-                    .PersistKeysToFileSystem(directory)
-                    .SetApplicationName(settings.Name)
-                    .Services);
-            });
 
             return builder;
         }

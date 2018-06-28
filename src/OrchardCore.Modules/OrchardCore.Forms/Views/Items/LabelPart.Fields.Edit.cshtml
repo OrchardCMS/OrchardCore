@@ -1,0 +1,8 @@
+@using OrchardCore.Forms.ViewModels;
+@model LabelPartEditViewModel
+
+<fieldset class="form-group">
+    <label asp-for="For">@T["For"]</label>
+    <input asp-for="For" type="text" class="form-control content-preview-text"></input>
+    <span class="hint">@T["The ID of the form element to associate with this label."]</span>
+</fieldset>

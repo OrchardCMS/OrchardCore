@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Orchard Project",
+  "classifications": [ "Web", "Orchard Core", "CMS" ],
+  "name": "Orchard Core Theme",
+  "identity": "OrchardCore.Templates.Theme",
+  "shortName": "octheme",
+  "sourceName": "OrchardCore.Templates.Theme",
+  "preferNameDirectory": true,
+  "symbols": {
+    "AddLiquid": {
+      "type": "parameter",
+      "dataType": "bool",
+      "description": "Add .liquid files in Views",
+      "defaultValue": "true"
+    },
+    "OrchardVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "description": "Specifies which version of Orchard Core packages to use.",
+      "replaces": "$(TemplateOrchardPackageVersion)",
+      "defaultValue": "${TemplateOrchardVersion}"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(!AddLiquid)",
+          "exclude": [
+            "Views/Layout.liquid",
+            "Views/Menu.liquid",
+            "Views/MenuItem.liquid",
+            "Views/MenuItemLink-LinkMenuItem.liquid"
+          ]
+        }
+      ]
+    }
+  ],
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  }
+}

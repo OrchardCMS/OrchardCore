@@ -18,7 +18,7 @@ The following properties are available on the `ListPartViewModel` class.
 | --------- | ---- |------------ |
 | `ListPart` | `ListPart` | The `ListPart` instance |
 | `ContentItems` | `IEnumerable<ContentItem>` | The content items the part is made of |
-| `ContainedContentTypeDefinitions` | IEnumerable<ContentTypeDefinition> | The content types the list accepts |
+| `ContainedContentTypeDefinitions` | `IEnumerable<ContentTypeDefinition>` | The content types the list accepts |
 | `Context` | `BuildPartDisplayContext` | The current display context |
 | `Pager` | `dynamic` | The pager for the list |
 
@@ -41,8 +41,8 @@ For instance it can be set in a file named `Blog-ListPart.liquid` to override th
     {{ item | shape_build_display: "Summary" | shape_render }}
 {% endfor %}
 
-{% assign previousText = "← Newer Posts" | t %}
-{% assign nextText = "Older Posts →" | t %}
+{% assign previousText = "Newer Posts" | t %}
+{% assign nextText = "Older Posts" | t %}
 {% assign previousClass = "previous" | t %}
 {% assign nextClass = "next" | t %}
 

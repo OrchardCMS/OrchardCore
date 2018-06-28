@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
-using OpenIddict.Core;
+using OpenIddict.Abstractions;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Filters;
 using OrchardCore.Users;

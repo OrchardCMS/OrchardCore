@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Services;
 using OrchardCore.Entities.DisplayManagement;
@@ -17,16 +18,32 @@ namespace OrchardCore.Email.Drivers
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IShellHost _orchardHost;
         private readonly ShellSettings _currentShellSettings;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
-        public SmtpSettingsDisplayDriver(IDataProtectionProvider dataProtectionProvider, IShellHost orchardHost, ShellSettings currentShellSettings)
+        public SmtpSettingsDisplayDriver(
+            IDataProtectionProvider dataProtectionProvider, 
+            IShellHost orchardHost, 
+            ShellSettings currentShellSettings,
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
             _dataProtectionProvider = dataProtectionProvider;
             _orchardHost = orchardHost;
             _currentShellSettings = currentShellSettings;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
         }
 
-        public override IDisplayResult Edit(SmtpSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(SmtpSettings section, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
+            {
+                return null;
+            }
+
             var shapes = new List<IDisplayResult>
             {
                 Initialize<SmtpSettings>("SmtpSettings_Edit", model =>
@@ -52,12 +69,19 @@ namespace OrchardCore.Email.Drivers
             return Combine(shapes);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SmtpSettings section, IUpdateModel updater, string groupId)
+        public override async Task<IDisplayResult> UpdateAsync(SmtpSettings section, BuildEditorContext context)
         {
-            if (groupId == GroupId)
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
+            {
+                return null;
+            }
+
+            if (context.GroupId == GroupId)
             {
                 var previousPassword = section.Password;
-                await updater.TryUpdateModelAsync(section, Prefix);
+                await context.Updater.TryUpdateModelAsync(section, Prefix);
 
                 // Restore password if the input is empty, meaning that it has not been reset.
                 if (string.IsNullOrWhiteSpace(section.Password))
@@ -75,7 +99,7 @@ namespace OrchardCore.Email.Drivers
                 _orchardHost.ReloadShellContext(_currentShellSettings);
             }
 
-            return Edit(section);
+            return await EditAsync(section, context);
         }
     }
 }

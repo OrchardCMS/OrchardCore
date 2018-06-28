@@ -10,7 +10,7 @@ namespace OrchardCore.Markdown.RemotePublishing
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IMetaWeblogDriver, MarkdownMetaWeblogDriver>();
+            services.AddScoped<IMetaWeblogDriver, MarkdownBodyMetaWeblogDriver>();
         }
     }
 }

@@ -7,23 +7,21 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AspNet.Security.OpenIdConnect.Extensions;
 using AspNet.Security.OpenIdConnect.Primitives;
-using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OpenIddict.Core;
+using OpenIddict.Abstractions;
+using OpenIddict.Server;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ActionConstraints;
-using OrchardCore.OpenId.Abstractions.Models;
+using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Filters;
 using OrchardCore.OpenId.Services;
-using OrchardCore.OpenId.Services.Managers;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Users;
@@ -33,10 +31,10 @@ namespace OrchardCore.OpenId.Controllers
     [Authorize, Feature(OpenIdConstants.Features.Server), OpenIdController]
     public class AccessController : Controller
     {
-        private readonly OpenIdApplicationManager _applicationManager;
-        private readonly OpenIdAuthorizationManager _authorizationManager;
+        private readonly IOpenIdApplicationManager _applicationManager;
+        private readonly IOpenIdAuthorizationManager _authorizationManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
-        private readonly OpenIdScopeManager _scopeManager;
+        private readonly IOpenIdScopeManager _scopeManager;
         private readonly ShellSettings _shellSettings;
         private readonly SignInManager<IUser> _signInManager;
         private readonly RoleManager<IRole> _roleManager;
@@ -44,11 +42,11 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IStringLocalizer<AccessController> T;
 
         public AccessController(
-            OpenIdApplicationManager applicationManager,
-            OpenIdAuthorizationManager authorizationManager,
+            IOpenIdApplicationManager applicationManager,
+            IOpenIdAuthorizationManager authorizationManager,
             IOptions<IdentityOptions> identityOptions,
             IStringLocalizer<AccessController> localizer,
-            OpenIdScopeManager scopeManager,
+            IOpenIdScopeManager scopeManager,
             ShellSettings shellSettings,
             IOpenIdServerService serverService,
             RoleManager<IRole> roleManager,
@@ -67,10 +65,8 @@ namespace OrchardCore.OpenId.Controllers
         }
 
         [AllowAnonymous, HttpGet, HttpPost, IgnoreAntiforgeryToken]
-        public async Task<IActionResult> Authorize()
+        public async Task<IActionResult> Authorize(OpenIdConnectRequest request)
         {
-            var request = HttpContext.GetOpenIdConnectRequest();
-
             // Retrieve the claims stored in the authentication cookie.
             // If they can't be extracted, redirect the user to the login page.
             var result = await HttpContext.AuthenticateAsync();
@@ -138,10 +134,8 @@ namespace OrchardCore.OpenId.Controllers
 
         [ActionName(nameof(Authorize))]
         [FormValueRequired("submit." + nameof(Accept)), HttpPost]
-        public async Task<IActionResult> Accept()
+        public async Task<IActionResult> Accept(OpenIdConnectRequest request)
         {
-            var request = HttpContext.GetOpenIdConnectRequest();
-
             var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
             if (application == null)
             {
@@ -180,7 +174,7 @@ namespace OrchardCore.OpenId.Controllers
         [FormValueRequired("submit." + nameof(Deny)), HttpPost]
         public IActionResult Deny()
         {
-            return Forbid(OpenIdConnectServerDefaults.AuthenticationScheme);
+            return Forbid(OpenIddictServerDefaults.AuthenticationScheme);
         }
 
         [AllowAnonymous, HttpGet]
@@ -188,13 +182,13 @@ namespace OrchardCore.OpenId.Controllers
         {
             await _signInManager.SignOutAsync();
 
-            return SignOut(OpenIdConnectServerDefaults.AuthenticationScheme);
+            return SignOut(OpenIddictServerDefaults.AuthenticationScheme);
         }
 
         [AllowAnonymous, HttpPost]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
-        public async Task<IActionResult> Token()
+        public async Task<IActionResult> Token(OpenIdConnectRequest request)
         {
             // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override
             // the global antiforgery token validation policy applied by the MVC modules stack,
@@ -202,7 +196,6 @@ namespace OrchardCore.OpenId.Controllers
             // To prevent effective CSRF/session fixation attacks, this action MUST NOT return
             // an authentication cookie or try to establish an ASP.NET Core user session.
 
-            var request = HttpContext.GetOpenIdConnectRequest();
             if (request.IsPasswordGrantType())
             {
                 return await ExchangePasswordGrantType(request);
@@ -235,7 +228,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var identity = new ClaimsIdentity(
-                OpenIdConnectServerDefaults.AuthenticationScheme,
+                OpenIddictServerDefaults.AuthenticationScheme,
                 OpenIdConnectConstants.Claims.Name,
                 OpenIdConnectConstants.Claims.Role);
 
@@ -262,7 +255,7 @@ namespace OrchardCore.OpenId.Controllers
             var ticket = new AuthenticationTicket(
                 new ClaimsPrincipal(identity),
                 new AuthenticationProperties(),
-                OpenIdConnectServerDefaults.AuthenticationScheme);
+                OpenIddictServerDefaults.AuthenticationScheme);
 
             ticket.SetResources(await GetResourcesAsync(request.GetScopes()));
 
@@ -354,7 +347,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             // Retrieve the claims principal stored in the authorization code/refresh token.
-            var info = await HttpContext.AuthenticateAsync(OpenIdConnectServerDefaults.AuthenticationScheme);
+            var info = await HttpContext.AuthenticateAsync(OpenIddictServerDefaults.AuthenticationScheme);
             Debug.Assert(info.Principal != null, "The user principal shouldn't be null.");
 
             // Retrieve the user profile corresponding to the authorization code/refresh token.
@@ -387,7 +380,7 @@ namespace OrchardCore.OpenId.Controllers
 
         private async Task<IActionResult> IssueTokensAsync(
             ClaimsPrincipal principal, OpenIdConnectRequest request,
-            IOpenIdApplication application, IOpenIdAuthorization authorization = null)
+            object application, object authorization = null)
         {
             // Retrieve the profile of the logged in user.
             var user = await _userManager.GetUserAsync(principal);
@@ -407,7 +400,7 @@ namespace OrchardCore.OpenId.Controllers
         }
 
         private async Task<AuthenticationTicket> CreateTicketAsync(
-            IUser user, IOpenIdApplication application, IOpenIdAuthorization authorization,
+            IUser user, object application, object authorization,
             OpenIdConnectRequest request, AuthenticationProperties properties = null)
         {
             Debug.Assert(request.IsAuthorizationRequest() || request.IsTokenRequest(),
@@ -428,7 +421,7 @@ namespace OrchardCore.OpenId.Controllers
 
             // Create a new authentication ticket holding the user identity.
             var ticket = new AuthenticationTicket(principal, properties,
-                OpenIdConnectServerDefaults.AuthenticationScheme);
+                OpenIddictServerDefaults.AuthenticationScheme);
 
             if (request.IsAuthorizationRequest() || (!request.IsAuthorizationCodeGrantType() &&
                                                      !request.IsRefreshTokenGrantType()))
@@ -514,7 +507,7 @@ namespace OrchardCore.OpenId.Controllers
                 [OpenIdConnectConstants.Properties.ErrorUri] = response.ErrorUri,
             });
 
-            return Forbid(properties, OpenIdConnectServerDefaults.AuthenticationScheme);
+            return Forbid(properties, OpenIddictServerDefaults.AuthenticationScheme);
         }
 
         private IActionResult RedirectToLoginPage(OpenIdConnectRequest request)

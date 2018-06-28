@@ -9,6 +9,7 @@
     {% script name:"jQuery", use_cdn:"true", at:"Foot" %}
     {% script name:"Bootstrap", use_cdn:"true", version:"4", at:"Foot" %}
     {% script source:"/TheBlogTheme/js/clean-blog.min.js", debug_src:"/TheBlogTheme/js/clean-blog.js", at:"Foot" %}
+    {% script source:"/OrchardCore.Menu/Scripts/activate-links.min.js", debug_src:"/OrchardCore.Menu/Scripts/activate-links.js", at:"Foot" %}
     {% style name:"font-awesome", use_cdn:"true" %}
     <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
@@ -45,5 +46,6 @@
         {% render_section "Footer", required: false %}
     </footer>
     {% resources type: "FootScript" %}
+    <script type="text/javascript">(function($) { $('#mainNav').activateLinks(); })(jQuery);</script>
 </body>
 </html>
