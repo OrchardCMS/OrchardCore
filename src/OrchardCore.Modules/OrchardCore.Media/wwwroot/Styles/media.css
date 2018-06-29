@@ -223,6 +223,10 @@ ol.media-items-grid {
     align-self: center; }
   .action-bar .nav-item {
     margin-top: 2px !important; }
+    .action-bar .nav-item .badge-light {
+      font-size: 0.875rem;
+      background-color: #e9ecef;
+      color: #495057; }
   .action-bar .selected-count {
     min-width: 25px;
     display: inline-block; }

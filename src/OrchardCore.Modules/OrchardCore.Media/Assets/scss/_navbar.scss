@@ -42,6 +42,11 @@
 
     .nav-item {
         margin-top: 2px !important; // fixing a gap at the bottom of each nav-item
+        .badge-light {
+            font-size: 0.875rem;
+            background-color: $gray-200;
+            color: $gray-700;
+        }
     }
 
     .selected-count {
