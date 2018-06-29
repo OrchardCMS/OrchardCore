@@ -2,8 +2,14 @@
 @{
     var culture = @CultureInfo.GetCultureInfo(Model);
 }
-<strong>
-    @if (!String.IsNullOrEmpty(culture.Name))
-    {<text>@culture.Name | </text>}
-    @culture.DisplayName
-</strong>
+<tr class="table-success">
+    <td class="align-middle">
+        <strong>
+            @if (!String.IsNullOrEmpty(culture.Name))
+            {<text>@culture.Name</text>}
+        </strong>
+    </td>
+    <td class="align-middle"><strong>@culture.DisplayName</strong></td>
+    <td class="align-middle"><strong>@Model</strong></td>
+    <td class="align-middle">&nbsp;</td>
+</tr>

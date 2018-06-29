@@ -2,18 +2,20 @@
 @{ 
     var culture = @CultureInfo.GetCultureInfo(Model);
 }
-<form name="delete-culture" asp-action="DeleteCulture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
-    <div class="d-flex w-100 justify-content-between">
-        <div>
+<tr>
+    <form name="delete-culture" asp-action="DeleteCulture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
+        <td class="align-middle">
             @if (!String.IsNullOrEmpty(culture.Name))
-            {<text>@culture.Name | </text>}
-            @culture.DisplayName
-        </div>
-        <div>
+            {<text>@culture.Name</text>}
+        </td>
+        <td class="align-middle">@culture.DisplayName</td>
+        <td class="align-middle">@Model</td>
+        <td class="align-middle text-center">
             @Html.Hidden("cultureName", (string)Model, new { id = "" })
             <button type="submit" class="btn btn-link" title="@T["Delete"]">
                 <i class="fas fa-times"></i>
             </button>
-        </div>
-    </div>
-</form>
+        </td>
+
+    </form>
+</tr>

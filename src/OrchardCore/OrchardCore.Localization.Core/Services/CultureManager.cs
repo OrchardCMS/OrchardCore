@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.Localization.Models;
@@ -77,7 +78,11 @@ namespace OrchardCore.Localization.Services
             try
             {
                 CultureInfo.GetCultureInfo(cultureName);
-                return true;
+                if (Regex.IsMatch(cultureName, @"^[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*$"))
+                {
+                    return true;
+                }
+                return false;                
             }
             catch(CultureNotFoundException) {
                 return false;
