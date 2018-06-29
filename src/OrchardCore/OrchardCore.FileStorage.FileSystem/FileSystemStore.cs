@@ -43,11 +43,12 @@ namespace OrchardCore.FileStorage.FileSystem
         public Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = null)
         {
             var physicalPath = GetPhysicalPath(path);
+            var results = new List<IFileStoreEntry>();
 
             if (!Directory.Exists(physicalPath))
-                throw new FileStoreException($"Cannot get content of directory '{path}' because it does not exist.");
-
-            var results = new List<IFileStoreEntry>();
+            {
+                return Task.FromResult((IEnumerable<IFileStoreEntry>)results);
+            }
 
             // Add directories.
             results.AddRange(
