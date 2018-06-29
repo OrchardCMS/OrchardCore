@@ -196,8 +196,15 @@ ol.media-items-grid {
   /* Upload button */ }
   .action-bar .media-filter {
     margin-top: 3px; }
+    .action-bar .media-filter .input-filter {
+      border-color: #ced4da;
+      border-right: none;
+      max-width: 240px;
+      padding-left: 32px; }
+      .action-bar .media-filter .input-filter:focus, .action-bar .media-filter .input-filter:focus + .input-group-append > button {
+        border-color: #495057; }
     .action-bar .media-filter .input-group-append button {
-      border-color: #495057;
+      border-color: #ced4da;
       opacity: 1;
       border-left: none; }
     .action-bar .media-filter .input-group-append button[disabled] {
@@ -209,11 +216,6 @@ ol.media-items-grid {
       z-index: 1070;
       pointer-events: none;
       color: #6c757d; }
-    .action-bar .media-filter .input-filter {
-      border-color: #495057;
-      border-right: none;
-      max-width: 240px;
-      padding-left: 32px; }
   .action-bar .nav-bar-divider {
     background-color: #6c757d;
     margin: 2px 4px 0 4px;
