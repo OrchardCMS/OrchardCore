@@ -142,7 +142,6 @@ ol.media-items-grid {
     padding-bottom: 8px;
     color: #495057;
     font-size: 0.8125rem;
-    font-weight: 700 !important;
     user-select: none; }
     .media-items-table .header-row th .thumbnail-column {
       padding-left: 16px; }
