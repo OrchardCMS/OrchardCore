@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace OrchardCore.Settings.ViewModels
 {
@@ -6,6 +7,6 @@ namespace OrchardCore.Settings.ViewModels
     {
         public string CurrentCulture { get; set; }
         public IEnumerable<string> SiteCultures { get; set; }
-        public IEnumerable<string> AvailableSystemCultures { get; set; }
+        public IEnumerable<CultureInfo> AvailableSystemCultures { get; set; }
     }
 }

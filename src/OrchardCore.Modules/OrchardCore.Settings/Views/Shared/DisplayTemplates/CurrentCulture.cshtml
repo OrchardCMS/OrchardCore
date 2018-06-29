@@ -1,1 +1,9 @@
-﻿<strong>@Model</strong>
+@using System.Globalization
+@{
+    var culture = @CultureInfo.GetCultureInfo(Model);
+}
+<strong>
+    @if (!String.IsNullOrEmpty(culture.Name))
+    {<text>@culture.Name | </text>}
+    @culture.DisplayName
+</strong>

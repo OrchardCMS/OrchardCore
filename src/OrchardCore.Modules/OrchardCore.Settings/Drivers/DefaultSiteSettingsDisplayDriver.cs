@@ -4,12 +4,22 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings.ViewModels;
 using OrchardCore.Modules;
+using OrchardCore.Localization.Services;
+using System.Linq;
+using System.Globalization;
 
 namespace OrchardCore.Settings.Drivers
 {
     public class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
     {
         public const string GroupId = "general";
+
+        private readonly ICultureManager _cultureManager;
+
+        public DefaultSiteSettingsDisplayDriver(ICultureManager cultureManager)
+        {
+            _cultureManager = cultureManager;
+        }
 
         public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
@@ -20,6 +30,7 @@ namespace OrchardCore.Settings.Drivers
                         model.BaseUrl = site.BaseUrl;
                         model.TimeZone = site.TimeZoneId;
                         model.Culture = site.Culture;
+                        model.SiteCultures = _cultureManager.ListCultures().Select(x => CultureInfo.GetCultureInfo(x.Culture));
                     }).Location("Content:1").OnGroup(GroupId)
             );
         }

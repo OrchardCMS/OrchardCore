@@ -7,10 +7,11 @@ namespace OrchardCore.Localization.Services {
         IEnumerable<CultureRecord> ListCultures();
         void AddCulture(string cultureName);
         void DeleteCulture(string cultureName);
-        string GetCurrentCulture(HttpContext requestContext);
+        string GetCurrentCulture();
         CultureRecord GetCultureById(int id);
         CultureRecord GetCultureByName(string cultureName);
         string GetSiteCulture();
         bool IsValidCulture(string cultureName);
+        bool CultureExist(string cultureName);
     }
 }

@@ -1,6 +1,14 @@
+@using System.Globalization
+@{ 
+    var culture = @CultureInfo.GetCultureInfo(Model);
+}
 <form name="delete-culture" asp-action="DeleteCulture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
     <div class="d-flex w-100 justify-content-between">
-        <div>@Model</div>
+        <div>
+            @if (!String.IsNullOrEmpty(culture.Name))
+            {<text>@culture.Name | </text>}
+            @culture.DisplayName
+        </div>
         <div>
             @Html.Hidden("cultureName", (string)Model, new { id = "" })
             <button type="submit" class="btn btn-link" title="@T["Delete"]">

@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -95,15 +96,15 @@ namespace OrchardCore.Settings.Controllers
             {
                 return Unauthorized();
             }
-
+            
             var model = new SiteCulturesViewModel
             {
-                //CurrentCulture = _cultureManager.GetCurrentCulture(HttpContext),
+                CurrentCulture = _cultureManager.GetCurrentCulture(),
                 SiteCultures = _cultureManager.ListCultures().Select(x => x.Culture)
             };
             model.AvailableSystemCultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => c.Name != string.Empty)
-                .Select(ci => ci.Name)
-                .Where(s => !model.SiteCultures.Contains(s));
+                .Select(ci => CultureInfo.GetCultureInfo(ci.Name))
+                .Where(s => !model.SiteCultures.Contains(s.Name));
 
             return View(model);
         }
@@ -118,7 +119,7 @@ namespace OrchardCore.Settings.Controllers
 
             cultureName = string.IsNullOrWhiteSpace(cultureName) ? systemCultureName : cultureName;
 
-            if (!string.IsNullOrWhiteSpace(cultureName))
+            if (!string.IsNullOrWhiteSpace(cultureName) && _cultureManager.IsValidCulture(cultureName))
             {
                 _cultureManager.AddCulture(cultureName);
             }

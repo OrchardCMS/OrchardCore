@@ -32,13 +32,14 @@
     <fieldset class="form-group col-lg-6" asp-validation-class-for="Culture">
         <label asp-for="Culture">@T["Default Culture"] <span asp-validation-for="Culture"></span></label>
         <select asp-for="Culture" class="form-control">
-            @foreach (var culture in CultureInfo.GetCultures(CultureTypes.AllCultures))
+            <option value="">@CultureInfo.InvariantCulture.DisplayName</option>
+            @foreach (var culture in Model.SiteCultures)
             {
-                <option value="@culture.Name" selected="@(Model.Culture == culture.Name)">
-                    @if (!String.IsNullOrEmpty(culture.Name))
-                    {<text>@culture.Name | </text>}
-                    @culture.DisplayName
-                </option>
+            <option value="@culture" selected="@(Model.Culture == culture.Name)">
+                @if (!String.IsNullOrEmpty(culture.Name))
+                {<text>@culture.Name | </text>}
+                @culture.DisplayName
+            </option>
             }
         </select>
         <span class="hint">@T["Determines the default culture used"]</span>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
@@ -67,30 +68,25 @@ namespace OrchardCore.Localization.Services
             throw new NotImplementedException();
         }
 
-        public string GetCurrentCulture(HttpContext requestContext)
+        public string GetCurrentCulture()
         {
-            throw new NotImplementedException();
+            return CultureInfo.CurrentCulture.Name;
         }
 
-        // "<languagecode2>" or
-        // "<languagecode2>-<country/regioncode2>" or
-        // "<languagecode2>-<scripttag>-<country/regioncode2>"
         public bool IsValidCulture(string cultureName) {
-            var segments = cultureName.Split('-');
-
-            if (segments.Length == 0) {
+            try
+            {
+                CultureInfo.GetCultureInfo(cultureName);
+                return true;
+            }
+            catch(CultureNotFoundException) {
                 return false;
             }
+        }
 
-            if (segments.Length > 3) {
-                return false;
-            }
-
-            if (segments.Any(s => s.Length < 2)) {
-                return false;
-            }
-
-            return true;
+        public bool CultureExist(string cultureName)
+        {
+            return CultureInfo.GetCultures(CultureTypes.AllCultures).Any(culture => string.Equals(culture.Name, cultureName, StringComparison.CurrentCultureIgnoreCase));
         }
 
     }
