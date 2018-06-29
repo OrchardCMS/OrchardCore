@@ -1,16 +1,58 @@
 .action-bar {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    height: 40px;
-
+    border-bottom: $media-border-content;
+    /*height: 40px;*/
     .media-filter {
-        .input-filter {
-            max-width: 240px;
+        margin-top: 3px;
+
+        .input-group-append button {
+            border-color: $gray-700;
+            opacity: 1;
+            border-left: none;
         }
+
+        .input-group-append button[disabled] {
+            color: transparent;
+        }
+
+        .icon-inside-input {
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            z-index: 1070; // when integrated with bootstrap variables you replace this value by $zindex-tooltip.
+            pointer-events: none;
+            color: $gray-600;
+        }
+
+        .input-filter {
+            border-color: $gray-700;
+            border-right: none;
+            max-width: 240px;
+            padding-left: 32px;
+        }
+    }
+
+    .nav-bar-divider {
+        background-color: $gray-600;
+        margin: 2px 4px 0 4px;
+        width: 1px;
+        min-width: 1px;
+        height: 22px;
+        align-self: center;
+    }
+
+    .nav-item {
+        margin-top: 2px !important; // fixing a gap at the bottom of each nav-item
     }
 
     .selected-count {
         min-width: 25px;
         display: inline-block;
+    }
+    // hide glow on filter input
+    input[type="text"] {
+        outline: none;
+        box-shadow: none !important;
+        /*border: 1px solid red !important;*/
     }
 }
 
@@ -85,12 +127,3 @@
         z-index: -1;
     }
 }
-
-
-// hide glow on inputs
-input[type="text"], textarea {
-    outline: none;
-    box-shadow: none !important;
-    border: 1px solid #ccc !important;
-}
-

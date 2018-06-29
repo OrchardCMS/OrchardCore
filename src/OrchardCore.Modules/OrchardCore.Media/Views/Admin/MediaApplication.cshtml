@@ -44,16 +44,22 @@
                         @T["Delete"] <span class="selected-count">({{ selectedMedias.length}})</span>
                     </a>
                 </div>
-                <div class="media-filter d-inline-flex text-right mr-2 mb-1 pt-1 flex-grow-1">
-                    <div class="input-group input-group-sm" >
-                        <div class="input-group-prepend" >
-                            <button id="clear-media-filter-button" class="btn btn-outline-secondary" type="button" :disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa fa-times"></i></button>
+                <div class="nav-item ml-auto">                   
+                    <div class="media-filter">
+                        <div class="input-group input-group-sm" >
+                            <span class="fa fa-filter icon-inside-input"></span>
+                            <input type="text" id="media-filter-input" v-model="mediaFilter" class="form-control input-filter" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]">
+                            <div class="input-group-append">
+                                <button id="clear-media-filter-button" class="btn btn-outline-secondary" type="button" :disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa fa-times"></i></button>
+                            </div>
                         </div>
-                        <input type="text" id="media-filter-input" v-model="mediaFilter" class="form-control input-filter" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]">
                     </div>
+
+
                 </div>
 
-                <div class="d-inline-flex ml-auto mr-3 mb-1 pt-1">
+
+                <div class="d-inline-flex ml-2 mr-3 mb-1 pt-1">
                     <div class="btn-group btn-group-sm text-right upload-btn-group">
                         <label for="fileupload" class="btn btn-sm btn-primary fileinput-button upload-button">
                             <input id="fileupload" type="file" name="files" multiple="multiple">

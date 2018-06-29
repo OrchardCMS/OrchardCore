@@ -1,4 +1,4 @@
-#mediaApp {    
+#mediaApp {
     margin: 0px -15px 0px -15px;
     margin-top: 0;
     
@@ -21,8 +21,17 @@
         cursor: default;
     }
 
+    a.nav-link {
+        font-size: 0.9375rem;
+        color: $gray-700;
+    }
+
+    a.nav-link.disabled {
+        color: $gray-500;
+    }
+
     a.nav-link:not(.disabled):hover {
-        background-color: $selected-background-color;
+        background-color: $gray-200;
     }
 
     button, a, input {
