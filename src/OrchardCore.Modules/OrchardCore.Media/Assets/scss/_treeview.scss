@@ -12,6 +12,11 @@
         a {
             font-size: 1rem !important;
         }
+
+        .expand {
+            font-size: 0.875rem;
+            padding: 0;
+        }
     }
 
     li.selected > div:not(.treeroot) {
@@ -60,8 +65,10 @@
         text-align: center;
         width: 16px;
         cursor: pointer;
-        font-size: 0.875rem;
+        font-size: 0.625rem;
         display: inline-block;
+        padding: 12px 6px 12px 6px;
+        margin-top: -12px;
     }
 
     .opened {

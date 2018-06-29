@@ -286,6 +286,9 @@ ol.media-items-grid {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
     #folder-tree .treeroot a {
       font-size: 1rem !important; }
+    #folder-tree .treeroot .expand {
+      font-size: 0.875rem;
+      padding: 0; }
   #folder-tree li.selected > div:not(.treeroot) {
     font-weight: bold;
     background-color: #e6f2ff; }
@@ -315,8 +318,10 @@ ol.media-items-grid {
     text-align: center;
     width: 16px;
     cursor: pointer;
-    font-size: 0.875rem;
-    display: inline-block; }
+    font-size: 0.625rem;
+    display: inline-block;
+    padding: 12px 6px 12px 6px;
+    margin-top: -12px; }
   #folder-tree .opened svg {
     transform: rotate(90deg);
     -webkit-transform: rotate(90deg); }
