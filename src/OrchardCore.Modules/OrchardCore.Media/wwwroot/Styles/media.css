@@ -292,7 +292,7 @@ ol.media-items-grid {
   #folder-tree li.selected > div:not(.treeroot) {
     font-weight: bold;
     background-color: #e6f2ff; }
-  #folder-tree li div a:hover, #folder-tree .folderhovered {
+  #folder-tree li div:not(.treeroot) a:hover, #folder-tree .folderhovered {
     background-color: #e6f2ff; }
   #folder-tree li div {
     height: 40px;

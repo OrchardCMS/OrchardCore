@@ -24,7 +24,7 @@
         background-color: $selected-background-color;
     }
 
-    li div a:hover, .folderhovered {
+    li div:not(.treeroot) a:hover, .folderhovered {
         background-color: $selected-background-color;
     }
 
