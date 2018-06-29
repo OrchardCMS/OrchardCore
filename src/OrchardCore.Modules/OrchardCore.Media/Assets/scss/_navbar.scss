@@ -1,6 +1,6 @@
 .action-bar {
     border-bottom: $media-border-content;
-    /*height: 40px;*/
+
     .media-filter {
         margin-top: 3px;
 
@@ -48,6 +48,30 @@
         min-width: 25px;
         display: inline-block;
     }
+    
+    /* Upload button */
+    .fileinput-button {
+        cursor: pointer;
+        margin: 0;
+        padding: 5px 16px 0px 16px;
+        border: 0;
+        border-radius: 0px !important;
+
+        svg {
+            margin-right: 6px;
+        }
+
+        input {
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            z-index: -1;
+        }
+    }
+
+
     // hide glow on filter input
     input[type="text"] {
         outline: none;
@@ -98,32 +122,5 @@
         .selected {
             color: $primary;
         }
-    }
-}
-
-/* Upload button */
-.upload-btn-group {
-    max-width: 300px;
-    width: 100%;
-}
-
-.upload-button {
-    margin: 0;
-    padding: 0px 15px 0px 0px;
-    border: 0;
-    border-radius: 0px !important;
-    min-width: 120px;
-}
-
-.fileinput-button {
-    cursor: pointer;
-
-    input {
-        width: 0.1px;
-        height: 0.1px;
-        opacity: 0;
-        overflow: hidden;
-        position: absolute;
-        z-index: -1;
     }
 }

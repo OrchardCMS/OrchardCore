@@ -194,7 +194,7 @@ ol.media-items-grid {
 
 .action-bar {
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  /*height: 40px;*/ }
+  /* Upload button */ }
   .action-bar .media-filter {
     margin-top: 3px; }
     .action-bar .media-filter .input-group-append button {
@@ -227,6 +227,21 @@ ol.media-items-grid {
   .action-bar .selected-count {
     min-width: 25px;
     display: inline-block; }
+  .action-bar .fileinput-button {
+    cursor: pointer;
+    margin: 0;
+    padding: 5px 16px 0px 16px;
+    border: 0;
+    border-radius: 0px !important; }
+    .action-bar .fileinput-button svg {
+      margin-right: 6px; }
+    .action-bar .fileinput-button input {
+      width: 0.1px;
+      height: 0.1px;
+      opacity: 0;
+      overflow: hidden;
+      position: absolute;
+      z-index: -1; }
   .action-bar input[type="text"] {
     outline: none;
     box-shadow: none !important;
@@ -260,28 +275,6 @@ ol.media-items-grid {
       color: #495057; }
     #breadcrumb .visibility-buttons .selected {
       color: #007bff; }
-
-/* Upload button */
-.upload-btn-group {
-  max-width: 300px;
-  width: 100%; }
-
-.upload-button {
-  margin: 0;
-  padding: 0px 15px 0px 0px;
-  border: 0;
-  border-radius: 0px !important;
-  min-width: 120px; }
-
-.fileinput-button {
-  cursor: pointer; }
-  .fileinput-button input {
-    width: 0.1px;
-    height: 0.1px;
-    opacity: 0;
-    overflow: hidden;
-    position: absolute;
-    z-index: -1; }
 
 #folder-tree {
   list-style: none;
