@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 
@@ -15,7 +15,7 @@ namespace OrchardCore.Markdown
 
         public int Create()
         {
-            _contentDefinitionManager.AlterPartDefinition("MarkdownPart", builder => builder
+            _contentDefinitionManager.AlterPartDefinition("MarkdownBodyPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a Markdown formatted body for your content item."));
 

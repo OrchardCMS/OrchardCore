@@ -49,7 +49,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 created: function () {
                     var self = this;
 
-                    self.dragDropThumbnail.src = '../Images/drag-thumbnail.png';
+                    self.dragDropThumbnail.src = '/OrchardCore.Media/Images/drag-thumbnail.png';
 
                     bus.$on('folderSelected', function (folder) {
                         self.selectedFolder = folder;
@@ -219,7 +219,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 self.sortAsc = true;
                             },
                             error: function (error) {
-                                console.error(error.responseText);
+                                console.log('error loading folder:' + folder.path);                                
+                                self.selectRoot();                
                             }
                         });
                     },

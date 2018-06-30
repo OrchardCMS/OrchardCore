@@ -10,12 +10,14 @@ namespace OrchardCore.Workflows.Http.Drivers
         {
             model.HttpMethod = activity.HttpMethod;
             model.Url = activity.Url;
+            model.ValidateAntiforgeryToken = activity.ValidateAntiforgeryToken;
         }
 
         protected override void UpdateActivity(HttpRequestEventViewModel model, HttpRequestEvent activity)
         {
             activity.HttpMethod = model.HttpMethod?.Trim();
             activity.Url = model.Url?.Trim();
+            activity.ValidateAntiforgeryToken = model.ValidateAntiforgeryToken;
         }
     }
 }

@@ -1,0 +1,24 @@
+@model OrchardCore.Html.Settings.HtmlBodyPartSettingsViewModel
+
+@inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
+@inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
+
+@{ 
+    var theme = await ThemeManager.GetThemeAsync();
+    var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
+    var bodyEditorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith("HtmlBody_Option__", StringComparison.OrdinalIgnoreCase));
+}
+
+<div class="row">
+    <fieldset class="form-group col-sm-6">
+        <label asp-for="Editor">@T["What type of editor should be used?"]</label>
+        <select asp-for="Editor" class="form-control">
+            @foreach (var bodyEditorShape in bodyEditorShapes)
+            {
+                dynamic shape = await Factory.CreateAsync(bodyEditorShape);
+                shape.Editor = Model.Editor;
+                @await DisplayAsync(shape)
+            }
+        </select>
+    </fieldset>
+</div>

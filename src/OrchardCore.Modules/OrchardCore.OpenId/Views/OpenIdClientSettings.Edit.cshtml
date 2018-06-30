@@ -2,6 +2,7 @@
 @using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 @model OpenIdClientSettingsViewModel;
 
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
 <fieldset class="form-group" asp-validation-class-for="DisplayName">
     <label>@T["Display Name"] <span asp-validation-for="DisplayName"></span></label>
