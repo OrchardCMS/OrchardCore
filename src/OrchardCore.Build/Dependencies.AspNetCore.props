@@ -79,6 +79,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.ResponseCaching" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.ResponseCompression" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Rewrite" Version="2.1.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Routing.Abstractions" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Routing" Version="2.1.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Server.HttpSys" Version="2.1.0" />

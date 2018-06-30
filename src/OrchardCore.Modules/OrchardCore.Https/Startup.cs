@@ -49,8 +49,9 @@ namespace OrchardCore.Https
 
             services.AddHsts(options =>
             {
-                options.Preload = true;
-                options.IncludeSubDomains = true;                
+                options.Preload = false;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(365);
             });
 
         }
