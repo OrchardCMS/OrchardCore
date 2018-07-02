@@ -1,0 +1,77 @@
+@model RecipeViewModel[]
+@using OrchardCore.Recipes.ViewModels;
+
+
+<h1>@(T["Recipes"])</h1>
+
+<form asp-action="Recipes">
+    @{
+        var recipeGroups = Model.GroupBy(f => f.Feature).ToList();
+        foreach (var recipeGroup in recipeGroups)
+        {
+            var groupName = recipeGroup.Key;
+
+            <div class="recipe-group">
+                @{
+                    var groupRecipeNames = String.Join(" ", recipeGroup.Select(r => r.Name));
+                }
+                <h4 data-filter-value="@groupName @groupRecipeNames">@groupName</h4>
+                <ul class="list-group" data-filter-value="@groupName @groupRecipeNames">
+                    @{
+                        foreach (var recipe in recipeGroup)
+                        {
+                            <li class="list-group-item" data-filter-value="@groupName @recipe.Name">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <h5>@recipe.Name</h5>
+
+                                        <p class="text-muted">@recipe.Description</p>
+                                        <div>
+                                            @if (recipe.Tags != null && recipe.Tags.Any())
+                                            {
+                                                @foreach (var tag in recipe.Tags)
+                                                {
+                                                    <span class="badge badge-info">
+                                                        @tag
+                                                    </span>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <a asp-route-area="OrchardCore.Recipes" asp-controller="Admin" asp-action="Execute" asp-route-path="@recipe.Path" class="btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Run"]</a>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+    }
+</form>
+<script at="Foot" type="text/javascript">
+    //<![CDATA[
+    $(function () {
+        var searchBox = $('#search-box');
+
+        // On each keypress filter the list of features
+        searchBox.keyup(function (e) {
+            var search = $(this).val().toLowerCase();
+            var elementsToFilter = $("[data-filter-value]");
+
+            // On ESC, clear the search box and display all features
+            if (e.keyCode == 27 || search == '') {
+                searchBox.val('');
+                elementsToFilter.toggle(true);
+            } else {
+                elementsToFilter.each(function () {
+                    var text = $(this).data('filter-value').toLowerCase();
+                    var found = text.indexOf(search) > -1;
+                    $(this).toggle(found);
+                });
+            }
+        });
+    });
+    //]]>
+</script>
