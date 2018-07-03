@@ -36,11 +36,9 @@ namespace OrchardCore.Recipes
             routes.MapAreaRoute(
                 name: "ExecuteRecipe",
                 areaName: "OrchardCore.Recipes",
-                template: "Admin/Execute/{path}",
+                template: "Admin/Recipes/Execute/{path}",
                 defaults: new { controller = "Admin", action = "Execute" }
             );
-
-            base.Configure(app, routes, serviceProvider);
         }
     }
 }

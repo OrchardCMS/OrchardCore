@@ -3,7 +3,13 @@
 
 
 <h1>@(T["Recipes"])</h1>
-
+<nav class="admin-toolbar">
+    <div class="nav justify-content-end">  
+        <form class="form-inline float-right" autocomplete="off" method="get">
+            <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+        </form>
+    </div>
+</nav>
 <form asp-action="Recipes">
     @{
         var recipeGroups = Model.GroupBy(f => f.Feature).ToList();
@@ -39,7 +45,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-2 text-right">
-                                        <a asp-route-area="OrchardCore.Recipes" asp-controller="Admin" asp-action="Execute" asp-route-path="@recipe.Path" class="btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Run"]</a>
+                                        <a asp-route-action="ExecuteRecipe" asp-route-path="@recipe.Path" role="button" class="btn btn-primary btn-sm" role="button">@T["Run"]</a>
                                     </div>
                                 </div>
                             </li>
