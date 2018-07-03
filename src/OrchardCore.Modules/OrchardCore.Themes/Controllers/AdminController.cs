@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
+using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Themes.Models;
 using OrchardCore.Themes.Services;
@@ -27,6 +28,7 @@ namespace OrchardCore.Themes.Controllers
         private readonly IShellDescriptorManager _shellDescriptorManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IRecipeHarvester _recipeHarvester;
         private readonly INotifier _notifier;
 
         public AdminController(
@@ -39,11 +41,13 @@ namespace OrchardCore.Themes.Controllers
             IShellDescriptorManager shellDescriptorManager,
             IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
+            IRecipeHarvester recipeHarvester,
             INotifier notifier)
         {
             _siteThemeService = siteThemeService;
             _adminThemeService = adminThemeService;
             _themeService = themeService;
+            _recipeHarvester = recipeHarvester;
             _shellSettings = shellSettings;
             _extensionManager = extensionManager;
             _shellDescriptorManager = shellDescriptorManager;
@@ -139,7 +143,11 @@ namespace OrchardCore.Themes.Controllers
                 if (isAdmin)
                     await _adminThemeService.SetAdminThemeAsync(id);
                 else
-                    await _siteThemeService.SetSiteThemeAsync(id);
+                {
+                    var recipes = await _recipeHarvester.HarvestRecipesAsync();
+                    var recipe = recipes.FirstOrDefault(c => c.IsSetupRecipe == false && c.BasePath.StartsWith(feature.Extension.SubPath, StringComparison.OrdinalIgnoreCase));
+                    await _siteThemeService.SetSiteThemeAsync(id, recipe);
+                }
 
                 // Enable the feature lastly to avoid accessing a disposed IMemoryCache (due to the current shell being disposed after updating).
                 var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
