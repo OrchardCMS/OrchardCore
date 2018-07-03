@@ -22,7 +22,7 @@ namespace OrchardCore.Settings.Services
             return Task.FromResult(new CultureSelectorResult
             {
                 Priority = 0,
-                Name = () => _siteService.GetSiteSettingsAsync().ContinueWith(x => x.Result?.Culture)
+                Name = async () => (await _siteService.GetSiteSettingsAsync())?.Culture
             });
         }
     }
