@@ -57,7 +57,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddLogging();
             services.AddOptions();
 
-            services.AddScoped<ILocalCulture, LocalCulture>();
             // These services might be moved at a higher level if no components from OrchardCore needs them.
             services.AddLocalization();
             services.AddWebEncoders();
@@ -69,7 +68,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IClock, Clock>();
             services.AddScoped<ILocalClock, LocalClock>();
-            
+            services.AddScoped<ILocalCulture, LocalCulture>();
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
             services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
