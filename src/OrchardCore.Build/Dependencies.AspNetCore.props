@@ -36,9 +36,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.SystemWeb" Version="2.1.1" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Abstractions" Version="2.1.1" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.2.2" />
-
-    <PackageManagement Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.1.1" />
- 
+    <PackageManagement Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.1.1" /> 
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="2.1.1" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics" Version="2.1.1" />
     <PackageManagement Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.1.1" />
@@ -98,7 +96,6 @@
     <PackageManagement Include="Microsoft.AspNetCore.TestHost" Version="2.1.1" />
     <PackageManagement Include="Microsoft.AspNetCore.WebSockets" Version="2.1.1" />
     <PackageManagement Include="Microsoft.AspNetCore.WebUtilities" Version="2.1.1" />
-
     <PackageManagement Include="Microsoft.AspNet.Identity.AspNetCoreCompat" Version="0.3.2" />
     <PackageManagement Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.1" />
     <PackageManagement Include="Microsoft.AspNet.WebApi.Client" Version="5.2.4" />
