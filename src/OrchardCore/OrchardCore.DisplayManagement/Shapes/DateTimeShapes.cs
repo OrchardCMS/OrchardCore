@@ -93,7 +93,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
 
             //return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.InvariantCulture)));
-            return Html.Raw(Html.Encode(zonedTime.ToString(Format, currentCulture)));
+            return Html.Raw(Html.Encode(zonedTime.ToString("F", currentCulture)));
         }
     }
 

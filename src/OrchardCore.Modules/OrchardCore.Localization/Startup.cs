@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data.Migration;
 using OrchardCore.Localization.Indexes;
 using OrchardCore.Localization.Services;
@@ -31,10 +32,27 @@ namespace OrchardCore.Localization
 
             services.AddScoped<IDataMigration, Migrations>();
             services.AddSingleton<IIndexProvider, CultureIndexProvider>();
+
+            // Configure supported cultures and localization options
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                // You can change which providers are configured to determine the culture for requests, or even add a custom
+                // provider with your own logic. The providers will be asked in order to provide a culture for each request,
+                // and the first to provide a non-null result that is in the configured supported cultures list will be used.
+                // By default, the following built-in providers are configured:
+                // - QueryStringRequestCultureProvider, sets culture via "culture" and "ui-culture" query string values, useful for testing
+                // - CookieRequestCultureProvider, sets culture via "ASPNET_CULTURE" cookie
+                // - AcceptLanguageHeaderRequestCultureProvider, sets culture via the "Accept-Language" request header
+                //options.RequestCultureProviders.Clear();
+                options.RequestCultureProviders.Insert(0, new DefaultRequestCultureProvider());
+            });
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+
+            var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+
             var siteCulture = serviceProvider.GetService<ISiteService>().GetSiteSettingsAsync().Result?.Culture;
             var siteCultures = serviceProvider.GetService<ICultureManager>().ListCultures();
             IList<CultureInfo> supportedCultures = new List<CultureInfo>();
@@ -44,16 +62,11 @@ namespace OrchardCore.Localization
                 supportedCultures.Add(new CultureInfo(culture.Culture));
             }
 
-            var requestLocalizationOptions = new RequestLocalizationOptions
-            {
-                DefaultRequestCulture = new RequestCulture(siteCulture),
-                SupportedCultures = supportedCultures,
-                SupportedUICultures = supportedCultures
-            };
+            locOptions.Value.DefaultRequestCulture = new RequestCulture(siteCulture);
+            locOptions.Value.SupportedCultures = supportedCultures;
+            locOptions.Value.SupportedUICultures = supportedCultures;
 
-            requestLocalizationOptions.RequestCultureProviders.Add(new DefaultRequestCultureProvider());
-
-            app.UseRequestLocalization(requestLocalizationOptions);
+            app.UseRequestLocalization(locOptions.Value);
 
         }
     }

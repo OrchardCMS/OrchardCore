@@ -28,48 +28,9 @@ namespace OrchardCore.Modules.Services
             return _culture;
         }
 
-        private async Task<CultureInfo> LoadLocalCultureAsync()
+        private Task<CultureInfo> LoadLocalCultureAsync()
         {
-            var test = _httpContextAccessor.HttpContext.Features.Get<IRequestCultureProvider>();
-            var providers = new RequestLocalizationOptions().RequestCultureProviders;
-            var cultureResults = new List<CultureInfo>();
-
-            if (providers != null)
-            {
-                foreach (var provider in providers)
-                {
-                    var providerCultureResult = await provider.DetermineProviderCultureResult(_httpContextAccessor.HttpContext);
-                    if (providerCultureResult == null)
-                    {
-                        continue;
-                    }
-                    
-                    foreach (var cultureInfo in providerCultureResult.Cultures) {
-                        cultureResults.Add(CultureInfo.GetCultureInfo(cultureInfo.ToString()));
-                    }
-                }
-            }
-
-            if (cultureResults.Count == 0)
-            {
-                return CultureInfo.InvariantCulture;
-            }
-            //else if (cultureResults.Count > 1)
-            //{
-            //    cultureResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
-            //}
-
-            //foreach (var result in cultureResults)
-            //{
-            //    var value = await result.Name();
-
-            //    if (!String.IsNullOrEmpty(value))
-            //    {
-            //        return CultureInfo.GetCultureInfo(value);
-            //    }
-            //}
-
-            return CultureInfo.InvariantCulture;
+            return Task.FromResult(_httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture.Culture);
         }
     }
 }

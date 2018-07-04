@@ -4,20 +4,30 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.Localization.Models;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Localization.Services
 {
-    public class CultureManager : ICultureManager {
+    public class CultureManager : ICultureManager
+    {
         private readonly ICultureStore _cultureStore;
         private readonly IDistributedCache _distributedCache;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ISiteService _siteService;
 
         public CultureManager(
             ICultureStore cultureStore,
-            IDistributedCache distributedCache) {
+            IDistributedCache distributedCache,
+            IHttpContextAccessor httpContextAccessor,
+            ISiteService siteService)
+        {
             _cultureStore = cultureStore;
             _distributedCache = distributedCache;
+            _httpContextAccessor = httpContextAccessor;
+            _siteService = siteService;
         }
 
         public IEnumerable<CultureRecord> ListCultures()
@@ -37,7 +47,7 @@ namespace OrchardCore.Localization.Services
                 return;
             }
 
-            _cultureStore.SaveAsync(new CultureRecord{ Culture = cultureName }, new System.Threading.CancellationToken());
+            _cultureStore.SaveAsync(new CultureRecord { Culture = cultureName }, new System.Threading.CancellationToken());
         }
 
         public void DeleteCulture(string cultureName)
@@ -66,15 +76,16 @@ namespace OrchardCore.Localization.Services
 
         public string GetSiteCulture()
         {
-            throw new NotImplementedException();
+            return _siteService.GetSiteSettingsAsync().Result.Culture;
         }
 
         public string GetCurrentCulture()
         {
-            return CultureInfo.CurrentCulture.Name;
+            return _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>().Provider != null ? _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name : CultureInfo.CurrentCulture.Name;
         }
 
-        public bool IsValidCulture(string cultureName) {
+        public bool IsValidCulture(string cultureName)
+        {
             try
             {
                 CultureInfo.GetCultureInfo(cultureName);
@@ -82,9 +93,10 @@ namespace OrchardCore.Localization.Services
                 {
                     return true;
                 }
-                return false;                
+                return false;
             }
-            catch(CultureNotFoundException) {
+            catch (CultureNotFoundException)
+            {
                 return false;
             }
         }
