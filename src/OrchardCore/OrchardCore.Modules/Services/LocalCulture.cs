@@ -1,28 +1,28 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 
 namespace OrchardCore.Modules.Services
 {
     public class LocalCulture : ILocalCulture
     {
-        private static readonly Task<CultureInfo> Empty = Task.FromResult<CultureInfo>(null);
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private CultureInfo _culture;
 
-        private readonly IEnumerable<ICultureSelector> _cultureSelectors;
-        private Task<CultureInfo> _culture = Empty;
-
-        public LocalCulture(IEnumerable<ICultureSelector> cultureSelectors)
+        public LocalCulture(IHttpContextAccessor httpContextAccessor)
         {
-            _cultureSelectors = cultureSelectors;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public Task<CultureInfo> GetLocalCultureAsync()
+        public async Task<CultureInfo> GetLocalCultureAsync()
         {
             // Caching the result per request
-            if (_culture == Empty)
+            if (_culture == null)
             {
-                _culture = LoadLocalCultureAsync();
+                _culture = await LoadLocalCultureAsync();
             }
 
             return _culture;
@@ -30,15 +30,23 @@ namespace OrchardCore.Modules.Services
 
         private async Task<CultureInfo> LoadLocalCultureAsync()
         {
-            var cultureResults = new List<CultureSelectorResult>();
+            var test = _httpContextAccessor.HttpContext.Features.Get<IRequestCultureProvider>();
+            var providers = new RequestLocalizationOptions().RequestCultureProviders;
+            var cultureResults = new List<CultureInfo>();
 
-            foreach (var cultureSelector in _cultureSelectors)
+            if (providers != null)
             {
-                var cultureResult = await cultureSelector.GetCultureAsync();
-
-                if (cultureResult != null)
+                foreach (var provider in providers)
                 {
-                    cultureResults.Add(cultureResult);
+                    var providerCultureResult = await provider.DetermineProviderCultureResult(_httpContextAccessor.HttpContext);
+                    if (providerCultureResult == null)
+                    {
+                        continue;
+                    }
+                    
+                    foreach (var cultureInfo in providerCultureResult.Cultures) {
+                        cultureResults.Add(CultureInfo.GetCultureInfo(cultureInfo.ToString()));
+                    }
                 }
             }
 
@@ -46,20 +54,20 @@ namespace OrchardCore.Modules.Services
             {
                 return CultureInfo.InvariantCulture;
             }
-            else if (cultureResults.Count > 1)
-            {
-                cultureResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
-            }
+            //else if (cultureResults.Count > 1)
+            //{
+            //    cultureResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
+            //}
 
-            foreach (var result in cultureResults)
-            {
-                var value = await result.Name();
+            //foreach (var result in cultureResults)
+            //{
+            //    var value = await result.Name();
 
-                if (!String.IsNullOrEmpty(value))
-                {
-                    return CultureInfo.GetCultureInfo(value);
-                }
-            }
+            //    if (!String.IsNullOrEmpty(value))
+            //    {
+            //        return CultureInfo.GetCultureInfo(value);
+            //    }
+            //}
 
             return CultureInfo.InvariantCulture;
         }

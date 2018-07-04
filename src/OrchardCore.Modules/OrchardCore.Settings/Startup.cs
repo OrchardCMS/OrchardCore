@@ -1,13 +1,14 @@
 using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Liquid;
+using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
-using OrchardCore.Modules.Services;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Drivers;
@@ -39,7 +40,9 @@ namespace OrchardCore.Settings
             services.AddScoped<ILiquidTemplateEventHandler, SiteLiquidTemplateEventHandler>();
 
             services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
-            services.AddScoped<ICultureSelector, DefaultCultureSelector>();
+            services.AddScoped<IRequestCultureProvider, DefaultRequestCultureProvider>();
+            services.AddScoped<ICultureStore, CultureStore>();
+            services.AddScoped<ICultureManager, CultureManager>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
