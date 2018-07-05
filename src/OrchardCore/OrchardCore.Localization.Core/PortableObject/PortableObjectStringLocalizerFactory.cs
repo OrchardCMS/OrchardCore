@@ -1,25 +1,36 @@
 using System;
 using System.Globalization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Localization.Services;
+using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Localization.PortableObject
 {
     public class PortableObjectStringLocalizerFactory : IStringLocalizerFactory
     {
         private readonly ILocalizationManager _localizationManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
-        public PortableObjectStringLocalizerFactory(ILocalizationManager localizationManager, ILogger<PortableObjectStringLocalizerFactory> logger)
+        public PortableObjectStringLocalizerFactory(
+            ILocalizationManager localizationManager,
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<PortableObjectStringLocalizerFactory> logger)
         {
             _localizationManager = localizationManager;
+            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
 
         public IStringLocalizer Create(Type resourceSource)
         {
-            return new PortableObjectStringLocalizer(CultureInfo.CurrentUICulture, resourceSource.FullName, _localizationManager, _logger);
+            var culture = _httpContextAccessor.HttpContext.RequestServices
+                .GetRequiredService<ILocalCulture>().GetLocalCultureAsync().Result;
+
+            return new PortableObjectStringLocalizer(culture, resourceSource.FullName, _localizationManager, _logger);
         }
 
         public IStringLocalizer Create(string baseName, string location)

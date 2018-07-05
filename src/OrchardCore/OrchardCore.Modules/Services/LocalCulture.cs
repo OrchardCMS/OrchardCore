@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 
@@ -30,7 +28,7 @@ namespace OrchardCore.Modules.Services
 
         private Task<CultureInfo> LoadLocalCultureAsync()
         {
-            return Task.FromResult(_httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture);
+            return Task.FromResult(_httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture ?? CultureInfo.CurrentCulture);
         }
     }
 }

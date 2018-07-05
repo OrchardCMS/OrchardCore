@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.Localization.Models;
+using OrchardCore.Modules.Services;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Localization.Services
@@ -15,18 +14,18 @@ namespace OrchardCore.Localization.Services
     {
         private readonly ICultureStore _cultureStore;
         private readonly IDistributedCache _distributedCache;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILocalCulture _localCulture;
         private readonly ISiteService _siteService;
 
         public CultureManager(
             ICultureStore cultureStore,
             IDistributedCache distributedCache,
-            IHttpContextAccessor httpContextAccessor,
+            ILocalCulture localCulture,
             ISiteService siteService)
         {
             _cultureStore = cultureStore;
             _distributedCache = distributedCache;
-            _httpContextAccessor = httpContextAccessor;
+            _localCulture = localCulture;
             _siteService = siteService;
         }
 
@@ -81,7 +80,7 @@ namespace OrchardCore.Localization.Services
 
         public string GetCurrentCulture()
         {
-            return _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture.Name ?? CultureInfo.CurrentCulture.Name;
+            return _localCulture.GetLocalCultureAsync().Result.Name;
         }
 
         public bool IsValidCulture(string cultureName)
