@@ -1,19 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using OrchardCore.Data.Migration;
-using OrchardCore.Localization.Indexes;
 using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
-using OrchardCore.Settings;
-using OrchardCore.Settings.Services;
-using YesSql.Indexes;
 
 namespace OrchardCore.Localization
 {
@@ -23,15 +16,13 @@ namespace OrchardCore.Localization
     public class Startup : StartupBase
     {
         public override int Order => -10;
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
 
             // Override the default localization file locations with Orchard specific ones
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
-
-            services.AddScoped<IDataMigration, Migrations>();
-            services.AddSingleton<IIndexProvider, CultureIndexProvider>();
 
             // Configure supported cultures and localization options
             services.Configure<RequestLocalizationOptions>(options =>
@@ -50,24 +41,18 @@ namespace OrchardCore.Localization
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var cultureManager = serviceProvider.GetService<ICultureManager>();
+            var options = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
 
-            var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
-
-            var siteCulture = serviceProvider.GetService<ISiteService>().GetSiteSettingsAsync().Result?.Culture;
-            var siteCultures = serviceProvider.GetService<ICultureManager>().ListCultures();
-            IList<CultureInfo> supportedCultures = new List<CultureInfo>();
-
-            foreach (var culture in siteCultures)
+            if (cultureManager != null)
             {
-                supportedCultures.Add(new CultureInfo(culture.Culture));
+                var siteCultures = cultureManager.ListCultures().Select(c => c.Culture).ToArray();
+                options.SetDefaultCulture(cultureManager.GetSiteCulture());
+                options.AddSupportedCultures(siteCultures);
+                options.AddSupportedUICultures(siteCultures);
             }
 
-            locOptions.Value.DefaultRequestCulture = new RequestCulture(siteCulture);
-            locOptions.Value.SupportedCultures = supportedCultures;
-            locOptions.Value.SupportedUICultures = supportedCultures;
-
-            app.UseRequestLocalization(locOptions.Value);
-
+            app.UseRequestLocalization(options);
         }
     }
 }

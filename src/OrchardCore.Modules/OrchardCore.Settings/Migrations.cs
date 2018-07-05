@@ -1,7 +1,7 @@
 using OrchardCore.Data.Migration;
 using OrchardCore.Localization.Indexes;
 
-namespace OrchardCore.Localization
+namespace OrchardCore.Settings
 {
     public class Migrations : DataMigration
     {
@@ -13,6 +13,5 @@ namespace OrchardCore.Localization
 
             return 1;
         }
-
     }
 }

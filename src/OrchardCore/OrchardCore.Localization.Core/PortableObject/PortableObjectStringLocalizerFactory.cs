@@ -3,23 +3,29 @@ using System.Globalization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Localization.Services;
+using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Localization.PortableObject
 {
     public class PortableObjectStringLocalizerFactory : IStringLocalizerFactory
     {
         private readonly ILocalizationManager _localizationManager;
+        private readonly ILocalCulture _localCulture;
         private readonly ILogger _logger;
 
-        public PortableObjectStringLocalizerFactory(ILocalizationManager localizationManager, ILogger<PortableObjectStringLocalizerFactory> logger)
+        public PortableObjectStringLocalizerFactory(
+            ILocalizationManager localizationManager,
+            ILocalCulture localCulture,
+            ILogger<PortableObjectStringLocalizerFactory> logger)
         {
             _localizationManager = localizationManager;
+            _localCulture = localCulture;
             _logger = logger;
         }
 
         public IStringLocalizer Create(Type resourceSource)
         {
-            return new PortableObjectStringLocalizer(CultureInfo.CurrentUICulture, resourceSource.FullName, _localizationManager, _logger);
+            return new PortableObjectStringLocalizer(_localCulture.GetLocalCultureAsync().Result, resourceSource.FullName, _localizationManager, _logger);
         }
 
         public IStringLocalizer Create(string baseName, string location)

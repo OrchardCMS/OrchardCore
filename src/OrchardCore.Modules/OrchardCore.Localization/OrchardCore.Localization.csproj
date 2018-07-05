@@ -14,8 +14,6 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Shell\OrchardCore.Environment.Shell.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Localization.Core\OrchardCore.Localization.Core.csproj" />
-    <ProjectReference Include="..\OrchardCore.Features\OrchardCore.Features.csproj" />
-    <ProjectReference Include="..\OrchardCore.Settings\OrchardCore.Settings.csproj" />
   </ItemGroup>
 
 </Project>
