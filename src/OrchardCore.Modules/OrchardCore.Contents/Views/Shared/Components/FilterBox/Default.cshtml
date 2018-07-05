@@ -1,0 +1,24 @@
+<div class="row">
+    <div class="col-md-2 col-xl-1 form-group">
+        <label for="contentResults" class="label col-form-label">@T["Filter"]</label>
+    </div>
+    <div class="col-md-4 col-xl-3 form-group">
+        <select id="contentTypes" class="form-control" name="Options.TypeName" asp-items="@Model.ContentTypes"></select>
+    </div>    
+    <div class="col-md-2 col-xl-1 form-group">
+        <label for="filterStatuses" class="label col-form-label">@T["Show"]</label>
+    </div>
+    <div class="col-md-4 col-xl-2 form-group">
+        <select id="filterStatuses" class="form-control" name="Options.ContentsStatus" asp-items="@Model.ContentStatuses"></select>
+    </div>
+    <div class="col-md-2 col-xl-1 form-group">
+        <label for="filterSorts" class="label col-form-label">@T["Sort by"]</label>
+    </div>
+    <div class="col-md-4 col-xl-3 form-group">
+        <select id="filterSorts" class="form-control" name="Options.OrderBy" asp-items="@Model.ContentSorts"></select>
+    </div>
+    <div class="col-md-2 col-xl-1 form-group">
+        <button type="submit" class="btn btn-primary" name="submit.Filter">@T["Apply"]</button>
+    </div>
+</div>
+

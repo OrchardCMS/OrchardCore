@@ -71,14 +71,14 @@ namespace OrchardCore.Contents.Controllers
 
         public ILogger Logger { get; set; }
 
-        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters)
+        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, FilterBoxViewModel filterBoxModel)
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             Pager pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             var query = _session.Query<ContentItem, ContentItemIndex>();
 
-            switch (model.Options.ContentsStatus)
+            switch (filterBoxModel.Options.ContentsStatus)
             {
                 case ContentsStatus.Published:
                     query = query.With<ContentItemIndex>(x => x.Published);
@@ -94,9 +94,9 @@ namespace OrchardCore.Contents.Controllers
                     break;
             }
 
-            if (!string.IsNullOrEmpty(model.TypeName))
+            if (!string.IsNullOrEmpty(filterBoxModel.Options.TypeName))
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.TypeName);
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(filterBoxModel.Options.TypeName);
                 if (contentTypeDefinition == null)
                     return NotFound();
 
@@ -104,7 +104,7 @@ namespace OrchardCore.Contents.Controllers
 
                 // We display a specific type even if it's not listable so that admin pages
                 // can reuse the Content list page for specific types.
-                query = query.With<ContentItemIndex>(x => x.ContentType == model.TypeName);
+                query = query.With<ContentItemIndex>(x => x.ContentType == filterBoxModel.Options.TypeName);
             }
             else
             {
@@ -115,7 +115,7 @@ namespace OrchardCore.Contents.Controllers
                 }
             }
 
-            switch (model.Options.OrderBy)
+            switch (filterBoxModel.Options.OrderBy)
             {
                 case ContentsOrder.Modified:
                     query = query.OrderByDescending(x => x.ModifiedUtc);
@@ -131,24 +131,7 @@ namespace OrchardCore.Contents.Controllers
                     break;
             }
 
-            //if (!String.IsNullOrWhiteSpace(model.Options.SelectedCulture))
-            //{
-            //    query = _cultureFilter.FilterCulture(query, model.Options.SelectedCulture);
-            //}
-
-            //if (model.Options.ContentsStatus == ContentsStatus.Owner)
-            //{
-            //    query = query.Where<CommonPartRecord>(cr => cr.OwnerId == Services.WorkContext.CurrentUser.Id);
-            //}
-
-            model.Options.SelectedFilter = model.TypeName;
-            model.Options.FilterOptions = (await GetListableTypesAsync())
-                .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
-                .ToList().OrderBy(kvp => kvp.Value);
-
-            //model.Options.Cultures = _cultureManager.ListCultures();
-
-            // Invoke any service that could alter the query
+            // Invoke any service that could alter the query            
             await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, model, pagerParameters, this), Logger);
 
             var maxPagedCount = siteSettings.MaxPagedCount;
@@ -167,7 +150,7 @@ namespace OrchardCore.Contents.Controllers
             var viewModel = (await New.ViewModel())
                 .ContentItems(contentItemSummaries)
                 .Pager(pagerShape)
-                .Options(model.Options)
+                .FilterBoxViewModel(filterBoxModel)
                 .TypeDisplayName(model.TypeDisplayName ?? "");
 
             return View(viewModel);

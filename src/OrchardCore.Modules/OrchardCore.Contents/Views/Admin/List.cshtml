@@ -11,7 +11,7 @@
         createLinkText = T["Create New {0}", (string)typeDisplayName];
     }
 
-    IEnumerable<string> cultures = Model.Options.Cultures;
+    //IEnumerable<string> cultures = Model.Options.Cultures;
     List<SelectListItem> contentStatuses = new List<SelectListItem>() {
         new SelectListItem() { Text = T["latest"].Value, Value = ContentsStatus.Latest.ToString() },
         new SelectListItem() { Text = T["owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
@@ -49,55 +49,9 @@
                 }
             </select>
     </fieldset>*@
-    <fieldset class="filter-options container-fluid">
-        <div class="row">
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="contentResults" class="label col-form-label">@T["Filter"]</label>
-            </div>
-            <div class="col-md-4 col-xl-3 form-group">
-                <select id="contentResults" class="form-control" name="Id">
-                    <option value="">@T["All content types"]</option>
-                    @foreach (var option in Model.Options.FilterOptions)
-                    {
-                        string isSelected = option.Key == Model.Options.SelectedFilter ? "selected='selected'" : string.Empty;
-                        <!option @isSelected value="@option.Key">@option.Value</!option>
-                    }
-                </select>
-            </div>   
-            @*@if (cultures.Count() > 1) {
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="filterCultures" class="label col-form-label">@T["Culture"]</label>
-            </div>
-            <div class="col-md-4 col-xl-3 form-group">
-                <select id="filterCultures" class="form-control" name="Options.SelectedCulture">
-                    <option value="">@T["All cultures"]</option>
-                    @foreach (string culture in cultures) {
-                        string isSelected = culture == Model.Options.SelectedCulture ? "selected='selected'" : string.Empty;
-                        <!option @isSelected value="culture">@System.Globalization.CultureInfo.GetCultureInfo(culture).DisplayName</!option>
-                    }
-                </select>
-            </div>   
-            }*@
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="filterResults" class="label col-form-label">@T["Show"]</label>
-            </div>
-            <div class="col-md-4 col-xl-2 form-group">
-                <select id="filterResults" class="form-control" name="Options.ContentsStatus" asp-items="@contentStatuses">
-                </select>
-            </div>
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="orderResults" class="label col-form-label">@T["Sort by"]</label>
-            </div>
-            <div class="col-md-4 col-xl-3 form-group">
-                <select id="orderResults" class="form-control" name="Options.OrderBy" asp-items="@contentSorts">
-                </select>
-            </div>        
-            <div class="col-md-2 col-xl-1 form-group">
-                <button type="submit" class="btn btn-primary" name="submit.Filter">@T["Apply"]</button>
-            </div>
-        </div>
+    <fieldset class="container-fluid">
+            @await Component.InvokeAsync("FilterBox",  new { vm = Model.FilterBoxViewModel  })
     </fieldset>
-
     @if (Model.ContentItems.Count > 0)
     {
         <ul class="list-group">
