@@ -1,7 +1,5 @@
 using System;
 using System.Globalization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Localization.Services;
@@ -12,25 +10,22 @@ namespace OrchardCore.Localization.PortableObject
     public class PortableObjectStringLocalizerFactory : IStringLocalizerFactory
     {
         private readonly ILocalizationManager _localizationManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILocalCulture _localCulture;
         private readonly ILogger _logger;
 
         public PortableObjectStringLocalizerFactory(
             ILocalizationManager localizationManager,
-            IHttpContextAccessor httpContextAccessor,
+            ILocalCulture localCulture,
             ILogger<PortableObjectStringLocalizerFactory> logger)
         {
             _localizationManager = localizationManager;
-            _httpContextAccessor = httpContextAccessor;
+            _localCulture = localCulture;
             _logger = logger;
         }
 
         public IStringLocalizer Create(Type resourceSource)
         {
-            var culture = _httpContextAccessor.HttpContext.RequestServices
-                .GetRequiredService<ILocalCulture>().GetLocalCultureAsync().Result;
-
-            return new PortableObjectStringLocalizer(culture, resourceSource.FullName, _localizationManager, _logger);
+            return new PortableObjectStringLocalizer(_localCulture.GetLocalCultureAsync().Result, resourceSource.FullName, _localizationManager, _logger);
         }
 
         public IStringLocalizer Create(string baseName, string location)
