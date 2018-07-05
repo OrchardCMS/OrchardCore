@@ -36,6 +36,7 @@ namespace OrchardCore.Contents.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IQueryFromFilterBox _queryFromFilterBox;
         private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
 
         public AdminController(
@@ -49,7 +50,8 @@ namespace OrchardCore.Contents.Controllers
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> localizer,
             IAuthorizationService authorizationService,
-            IEnumerable<IContentAdminFilter> contentAdminFilters
+            IEnumerable<IContentAdminFilter> contentAdminFilters,
+            IQueryFromFilterBox queryFromFilterBox
             )
         {
             _contentAdminFilters = contentAdminFilters;
@@ -60,6 +62,7 @@ namespace OrchardCore.Contents.Controllers
             _siteService = siteService;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
+            _queryFromFilterBox = queryFromFilterBox;
 
             T = localizer;
             New = shapeFactory;
@@ -75,61 +78,7 @@ namespace OrchardCore.Contents.Controllers
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             Pager pager = new Pager(pagerParameters, siteSettings.PageSize);
-
-            var query = _session.Query<ContentItem, ContentItemIndex>();
-
-            switch (filterBoxModel.Options.ContentsStatus)
-            {
-                case ContentsStatus.Published:
-                    query = query.With<ContentItemIndex>(x => x.Published);
-                    break;
-                case ContentsStatus.Draft:
-                    query = query.With<ContentItemIndex>(x => x.Latest && !x.Published);
-                    break;
-                case ContentsStatus.AllVersions:
-                    query = query.With<ContentItemIndex>(x => x.Latest);
-                    break;
-                default:
-                    query = query.With<ContentItemIndex>(x => x.Latest);
-                    break;
-            }
-
-            if (!string.IsNullOrEmpty(filterBoxModel.Options.TypeName))
-            {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(filterBoxModel.Options.TypeName);
-                if (contentTypeDefinition == null)
-                    return NotFound();
-
-                model.TypeDisplayName = contentTypeDefinition.ToString();
-
-                // We display a specific type even if it's not listable so that admin pages
-                // can reuse the Content list page for specific types.
-                query = query.With<ContentItemIndex>(x => x.ContentType == filterBoxModel.Options.TypeName);
-            }
-            else
-            {
-                var listableTypes = (await GetListableTypesAsync()).Select(t => t.Name).ToArray();
-                if (listableTypes.Any())
-                {
-                    query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
-                }
-            }
-
-            switch (filterBoxModel.Options.OrderBy)
-            {
-                case ContentsOrder.Modified:
-                    query = query.OrderByDescending(x => x.ModifiedUtc);
-                    break;
-                case ContentsOrder.Published:
-                    query = query.OrderByDescending(cr => cr.PublishedUtc);
-                    break;
-                case ContentsOrder.Created:
-                    query = query.OrderByDescending(cr => cr.CreatedUtc);
-                    break;
-                default:
-                    query = query.OrderByDescending(cr => cr.ModifiedUtc);
-                    break;
-            }
+            var query = await _queryFromFilterBox.ApplyFilterBoxOptionsToQuery(_session.Query<ContentItem, ContentItemIndex>(), filterBoxModel);
 
             // Invoke any service that could alter the query            
             await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, model, pagerParameters, this), Logger);
@@ -156,6 +105,8 @@ namespace OrchardCore.Contents.Controllers
             return View(viewModel);
         }
 
+
+
         private async Task<IEnumerable<ContentTypeDefinition>> GetCreatableTypesAsync()
         {
             var creatable = new List<ContentTypeDefinition>();
@@ -171,23 +122,6 @@ namespace OrchardCore.Contents.Controllers
                 }
             }
             return creatable;
-        }
-
-        private async Task<IEnumerable<ContentTypeDefinition>> GetListableTypesAsync()
-        {
-            var listable = new List<ContentTypeDefinition>();
-            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
-            {
-                if (ctd.Settings.ToObject<ContentTypeSettings>().Listable)
-                {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
-                    if (authorized)
-                    {
-                        listable.Add(ctd);
-                    }
-                }
-            }
-            return listable;
         }
 
         //[HttpPost, ActionName("List")]
