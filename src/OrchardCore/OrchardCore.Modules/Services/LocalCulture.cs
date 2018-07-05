@@ -26,7 +26,7 @@ namespace OrchardCore.Modules.Services
 
         public bool IsLocalizationEnabled()
         {
-            return _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>() == null ? false : true;
+            return _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>() != null;
         }
     }
 }
