@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -11,8 +12,14 @@ namespace OrchardCore.Localization
     {
         public override Task<ProviderCultureResult> DetermineProviderCultureResult(HttpContext httpContext)
         {
+            if (httpContext == null)
+            {
+                throw new ArgumentNullException(nameof(httpContext));
+            }
+
             var siteService = httpContext.RequestServices.GetRequiredService<ISiteService>();
             var siteCulture = siteService.GetSiteSettingsAsync().Result?.Culture ?? CultureInfo.InvariantCulture.Name;
+
             return Task.FromResult(new ProviderCultureResult(siteCulture));
         }
     }

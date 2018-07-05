@@ -47,6 +47,7 @@ namespace OrchardCore.Localization
             if (cultureManager != null)
             {
                 var siteCultures = cultureManager.ListCultures().Select(c => c.Culture).ToArray();
+
                 options.SetDefaultCulture(cultureManager.GetSiteCulture());
                 options.AddSupportedCultures(siteCultures);
                 options.AddSupportedUICultures(siteCultures);
