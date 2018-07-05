@@ -75,7 +75,8 @@ namespace OrchardCore.Localization.Services
 
         public string GetSiteCulture()
         {
-            return _siteService.GetSiteSettingsAsync().Result.Culture;
+            var result = _siteService.GetSiteSettingsAsync().Result.Culture;
+            return result != null ? result : CultureInfo.InvariantCulture.Name;
         }
 
         public string GetCurrentCulture()

@@ -10,5 +10,11 @@ namespace OrchardCore.Modules.Services
         /// Returns the local culture.
         /// </summary>
         Task<CultureInfo> GetLocalCultureAsync();
+
+        /// <summary>
+        /// Returns true if there is a RequestCultureProvider set from any module
+        /// </summary>
+        /// <returns></returns>
+        bool IsLocalizationEnabled();
     }
 }

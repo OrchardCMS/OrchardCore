@@ -8,6 +8,7 @@ namespace OrchardCore.Settings.ViewModels
         public string SiteName { get; set; }
         public string BaseUrl { get; set; }
         public string TimeZone { get; set; }
+        public bool LocalizationEnabled { get; set; }
         public string Culture { get; set; }
         public IEnumerable<CultureInfo> SiteCultures { get; set; }
     }
