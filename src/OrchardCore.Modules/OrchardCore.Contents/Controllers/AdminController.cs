@@ -99,8 +99,7 @@ namespace OrchardCore.Contents.Controllers
             var viewModel = (await New.ViewModel())
                 .ContentItems(contentItemSummaries)
                 .Pager(pagerShape)
-                .FilterBoxViewModel(filterBoxModel)
-                .TypeDisplayName(model.TypeDisplayName ?? "");
+                .FilterBoxViewModel(filterBoxModel);
 
             return View(viewModel);
         }

@@ -28,6 +28,7 @@ namespace OrchardCore.Contents.ViewModels
             //BulkAction = ContentsBulkAction.None;
         }
         public string TypeName { get; set; }
+        public string TypeDisplayName { get; set; }
         public ContentsOrder OrderBy { get; set; }
         public ContentsStatus ContentsStatus { get; set; }
 

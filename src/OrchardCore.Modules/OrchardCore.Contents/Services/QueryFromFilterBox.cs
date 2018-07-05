@@ -55,7 +55,7 @@ namespace OrchardCore.Contents.Services
                 if (contentTypeDefinition == null)
                     throw new System.ArgumentException($"The content type {filterBoxModel.Options.TypeName} does not exist.");
 
-                //model.TypeDisplayName = contentTypeDefinition.ToString();
+                filterBoxModel.Options.TypeDisplayName = contentTypeDefinition.ToString();
 
                 // We display a specific type even if it's not listable so that admin pages
                 // can reuse the Content list page for specific types.

@@ -5,7 +5,6 @@ namespace OrchardCore.Contents.ViewModels
 {
     public class ListContentsViewModel
     {
-        public string TypeDisplayName { get; set; }
         public int? Page { get; set; }
         public IList<Entry> Entries { get; set; }
         

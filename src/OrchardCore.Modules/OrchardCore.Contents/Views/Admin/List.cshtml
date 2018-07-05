@@ -2,7 +2,7 @@
 @using OrchardCore.Contents.ViewModels;
 @inject IContentManager ContentManager
 @{
-    var typeDisplayName = Model.TypeDisplayName;
+    var typeDisplayName = Model.FilterBoxViewModel.Options.TypeDisplayName;
     var pageTitle = T["Manage Content"];
     var createLinkText = T["Create New Content"];
     if (!string.IsNullOrWhiteSpace(typeDisplayName))
