@@ -81,7 +81,7 @@ namespace OrchardCore.Localization.Services
 
         public string GetCurrentCulture()
         {
-            return _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>().Provider != null ? _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture.Name : CultureInfo.CurrentCulture.Name;
+            return _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture.Name ?? CultureInfo.CurrentCulture.Name;
         }
 
         public bool IsValidCulture(string cultureName)
