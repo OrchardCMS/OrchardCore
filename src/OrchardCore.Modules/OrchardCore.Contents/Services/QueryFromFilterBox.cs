@@ -92,16 +92,20 @@ namespace OrchardCore.Contents.Services
             switch (filterBoxModel.Options.OrderBy)
             {
                 case ContentsOrder.Modified:
-                    query = query.OrderByDescending(x => x.ModifiedUtc);
+                    query = filterBoxModel.Options.SortDirection == SortDirection.Ascending ?
+                                    query.OrderBy(x => x.ModifiedUtc) : query.OrderByDescending(x => x.ModifiedUtc);
                     break;
                 case ContentsOrder.Published:
-                    query = query.OrderByDescending(cr => cr.PublishedUtc);
+                    query = filterBoxModel.Options.SortDirection == SortDirection.Ascending ?
+                                    query.OrderBy(cr => cr.PublishedUtc) : query.OrderByDescending(cr => cr.PublishedUtc);
                     break;
                 case ContentsOrder.Created:
-                    query = query.OrderByDescending(cr => cr.CreatedUtc);
+                    query = filterBoxModel.Options.SortDirection == SortDirection.Ascending ?
+                                    query.OrderBy(cr => cr.CreatedUtc) : query.OrderByDescending(cr => cr.CreatedUtc);
                     break;
                 default:
-                    query = query.OrderByDescending(cr => cr.ModifiedUtc);
+                    query = filterBoxModel.Options.SortDirection == SortDirection.Ascending ?
+                                    query.OrderBy(cr => cr.ModifiedUtc) : query.OrderByDescending(cr => cr.ModifiedUtc);
                     break;
             }
 

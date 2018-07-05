@@ -15,6 +15,7 @@ namespace OrchardCore.Contents.ViewModels
         public List<SelectListItem> ContentStatuses { get; set; }
         public List<SelectListItem> ContentSorts { get; set; }
         public List<SelectListItem> ContentTypes { get; set; }
+        public List<SelectListItem> SortDirections { get; set; }
     }
 
 
@@ -30,6 +31,7 @@ namespace OrchardCore.Contents.ViewModels
         public string TypeName { get; set; }
         public string TypeDisplayName { get; set; }
         public ContentsOrder OrderBy { get; set; }
+        public SortDirection SortDirection { get; set; }
         public ContentsStatus ContentsStatus { get; set; }
 
         //public string SelectedCulture { get; set; }
@@ -44,6 +46,7 @@ namespace OrchardCore.Contents.ViewModels
         Created
     }
 
+
     public enum ContentsStatus
     {
         Draft,
@@ -53,6 +56,11 @@ namespace OrchardCore.Contents.ViewModels
         Owner
     }
 
+    public enum SortDirection
+    {
+        Descending,
+        Ascending
+    }
     //public enum ContentsBulkAction
     //{
     //    None,

@@ -63,6 +63,7 @@ namespace OrchardCore.Contents.ViewComponents
             var viewModel = (await New.ViewModel())
                 .Options(vm.Options)
                 .ContentSorts(GetContentSortsSelectList(vm.Options.OrderBy))
+                .SortDirections(GetSortDirectionsSelectList(vm.Options.SortDirection))
                 .ContentStatuses(GetContentStatusesSelectList(vm.Options.ContentsStatus))
                 .ContentTypes(await GetContentTypes(vm.Options.TypeName, currentUser));
 
@@ -93,6 +94,17 @@ namespace OrchardCore.Contents.ViewComponents
                 new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() }
             };
             result.Where(item => item.Value == selectedSort.ToString()).FirstOrDefault().Selected = true;
+
+            return result;
+        }
+
+        private List<SelectListItem> GetSortDirectionsSelectList(SortDirection selectedSortDirection)
+        {
+            var result = new List<SelectListItem>() {
+                new SelectListItem() { Text = T["Descending"].Value, Value = SortDirection.Descending.ToString() },
+                new SelectListItem() { Text = T["Ascending"].Value, Value = SortDirection.Ascending.ToString() }                
+            };
+            result.Where(item => item.Value == selectedSortDirection.ToString()).FirstOrDefault().Selected = true;
 
             return result;
         }
