@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Localization.Indexes;
 using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
@@ -44,6 +45,8 @@ namespace OrchardCore.Settings
             services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
             services.AddScoped<ICultureStore, CultureStore>();
             services.AddScoped<ICultureManager, CultureManager>();
+
+            services.AddOrderedRequestCultureProvider(new DefaultRequestCultureProvider(), -25);
 
             services.AddScoped<IDataMigration, Migrations>();
             services.AddSingleton<IIndexProvider, CultureIndexProvider>();
