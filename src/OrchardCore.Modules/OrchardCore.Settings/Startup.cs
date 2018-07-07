@@ -46,7 +46,7 @@ namespace OrchardCore.Settings
             services.AddScoped<ICultureStore, CultureStore>();
             services.AddScoped<ICultureManager, CultureManager>();
 
-            services.AddOrderedRequestCultureProvider(new DefaultRequestCultureProvider(), -25);
+            services.AddOrUpdateOrderedRequestCultureProvider(new DefaultRequestCultureProvider(), -25);
 
             services.AddScoped<IDataMigration, Migrations>();
             services.AddSingleton<IIndexProvider, CultureIndexProvider>();

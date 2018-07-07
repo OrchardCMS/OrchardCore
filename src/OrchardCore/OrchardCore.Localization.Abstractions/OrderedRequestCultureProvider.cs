@@ -1,13 +1,13 @@
-using Microsoft.AspNetCore.Builder;
+using System;
+using System.Linq;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Localization
 {
     public interface IOrderedRequestCultureProvider
     {
-        int Order { get; }
+        int Order { get; set; }
         IRequestCultureProvider RequestCultureProvider { get; }
     }
 
@@ -19,23 +19,38 @@ namespace OrchardCore.Localization
             RequestCultureProvider = requestCultureProvider;
         }
 
-        public int Order { get; }
+        public int Order { get; set; }
         public IRequestCultureProvider RequestCultureProvider { get; }
     }
 
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddOrderedRequestCultureProvider(this IServiceCollection services, IRequestCultureProvider requestCultureProvider, int order = 0)
+        public static IServiceCollection AddOrUpdateOrderedRequestCultureProvider(this IServiceCollection services, IRequestCultureProvider provider, int order = 0)
         {
-            return services.AddSingleton<IOrderedRequestCultureProvider>(sp =>
-            {
-                if (requestCultureProvider is RequestCultureProvider provider)
-                {
-                    provider.Options = sp.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
-                }
+            var descriptor = services.FirstOrDefault(s => s.ServiceType == typeof(IOrderedRequestCultureProvider) &&
+                ((IOrderedRequestCultureProvider)s.ImplementationInstance).RequestCultureProvider.GetType() == provider.GetType());
 
-                return new OrderedRequestCultureProvider(requestCultureProvider, order);
-            });
+            if (descriptor == null)
+            {
+                return services.AddSingleton<IOrderedRequestCultureProvider>(new OrderedRequestCultureProvider(provider, order));
+            }
+
+            ((IOrderedRequestCultureProvider)descriptor.ImplementationInstance).Order = order;
+
+            return services;
+        }
+
+        public static IServiceCollection RemoveOrderedRequestCultureProvider(this IServiceCollection services, Type instanceType)
+        {
+            var descriptor = services.FirstOrDefault(s => s.ServiceType == typeof(IOrderedRequestCultureProvider) &&
+                ((IOrderedRequestCultureProvider)s.ImplementationInstance).RequestCultureProvider.GetType() == instanceType);
+
+            if (descriptor != null)
+            {
+                services.Remove(descriptor);
+            }
+
+            return services;
         }
     }
 }
