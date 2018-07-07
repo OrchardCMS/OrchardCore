@@ -37,26 +37,30 @@ namespace OrchardCore.Localization
             // - AcceptLanguageHeaderRequestCultureProvider, sets culture via the "Accept-Language" request header.
 
             services
-                .AddOrUpdateOrderedRequestCultureProvider(new QueryStringRequestCultureProvider(), -20)
-                .AddOrUpdateOrderedRequestCultureProvider(new CookieRequestCultureProvider(), -15)
-                .AddOrUpdateOrderedRequestCultureProvider(new RouteDataRequestCultureProvider(), -10)
-                .AddOrUpdateOrderedRequestCultureProvider(new AcceptLanguageHeaderRequestCultureProvider(), -5);
+                .AddOrderedRequestCultureProvider(new QueryStringRequestCultureProvider(), -20)
+                .AddOrderedRequestCultureProvider(new CookieRequestCultureProvider(), -15)
+                .AddOrderedRequestCultureProvider(new RouteDataRequestCultureProvider(), -10)
+                .AddOrderedRequestCultureProvider(new AcceptLanguageHeaderRequestCultureProvider(), -5);
+
+            // services.RemoveOrderedRequestCultureProvider(typeof(CookieRequestCultureProvider));
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var options = serviceProvider.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
 
-            options.RequestCultureProviders = serviceProvider
-                .GetServices<IOrderedRequestCultureProvider>()
-                .OrderBy(cp => cp.Order)
-                .Select(cp =>
+            options.RequestCultureProviders = serviceProvider.GetServices<IOrderedRequestCultureProvider>()
+                .GroupBy(p => p.RequestCultureProviderType)
+                .Select(g => g.Last())
+                .Where(p => p.RequestCultureProvider != null)
+                .OrderBy(p => p.Order)
+                .Select(p =>
                 {
-                    if (cp.RequestCultureProvider is RequestCultureProvider provider)
+                    if (p.RequestCultureProvider is RequestCultureProvider provider)
                     {
                         provider.Options = options;
                     }
-                    return cp.RequestCultureProvider;
+                    return p.RequestCultureProvider;
                 })
                 .ToList();
 
