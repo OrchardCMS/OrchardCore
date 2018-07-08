@@ -13,6 +13,7 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -25,12 +26,14 @@ namespace OrchardCore.Contents.ViewComponents
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUserContentTypesProvider _userContentTypesProvider;
 
         public FilterBoxViewComponent(
             IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,
+            IUserContentTypesProvider userContentTypesProvider,
             IShapeFactory shapeFactory,
             IStringLocalizer<FilterBoxViewComponent> localizer)
         {
@@ -38,6 +41,7 @@ namespace OrchardCore.Contents.ViewComponents
             _contentDefinitionManager = contentDefinitionManager;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
+            _userContentTypesProvider = userContentTypesProvider;
 
             New = shapeFactory;
             T = localizer;
@@ -114,7 +118,7 @@ namespace OrchardCore.Contents.ViewComponents
         {
             var result = new List<SelectListItem>();
 
-            IEnumerable<ContentTypeDefinition> listable = (await GetListableTypesAsync(user)).ToList().OrderBy(ctd => ctd.Name);
+            IEnumerable<ContentTypeDefinition> listable = (await _userContentTypesProvider.GetListableTypesAsync(user)).ToList().OrderBy(ctd => ctd.Name);
             result.Add(new SelectListItem() { Text = T["All content types"], Value = "" });
             foreach (ContentTypeDefinition t in listable)
             {
@@ -122,24 +126,6 @@ namespace OrchardCore.Contents.ViewComponents
             }
 
             return result;
-        }
-
-
-        private async Task<IEnumerable<ContentTypeDefinition>> GetListableTypesAsync(ClaimsPrincipal user)
-        {
-            var listable = new List<ContentTypeDefinition>();
-            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
-            {
-                if (ctd.Settings.ToObject<ContentTypeSettings>().Listable)
-                {
-                    var authorized = await _authorizationService.AuthorizeAsync(user, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
-                    if (authorized)
-                    {
-                        listable.Add(ctd);
-                    }
-                }
-            }
-            return listable;
         }
     }
 }

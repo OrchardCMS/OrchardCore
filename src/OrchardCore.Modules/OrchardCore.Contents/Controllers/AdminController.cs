@@ -38,7 +38,7 @@ namespace OrchardCore.Contents.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IQueryFromFilterBox _queryFromFilterBox;
         private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
-
+        
         public AdminController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
@@ -62,7 +62,7 @@ namespace OrchardCore.Contents.Controllers
             _siteService = siteService;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
-            _queryFromFilterBox = queryFromFilterBox;
+            _queryFromFilterBox = queryFromFilterBox;            
 
             T = localizer;
             New = shapeFactory;
@@ -104,24 +104,6 @@ namespace OrchardCore.Contents.Controllers
             return View(viewModel);
         }
 
-
-
-        private async Task<IEnumerable<ContentTypeDefinition>> GetCreatableTypesAsync()
-        {
-            var creatable = new List<ContentTypeDefinition>();
-            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
-            {
-                if (ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
-                {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
-                    if (authorized)
-                    {
-                        creatable.Add(ctd);
-                    }
-                }
-            }
-            return creatable;
-        }
 
         //[HttpPost, ActionName("List")]
         //[Mvc.FormValueRequired("submit.Filter")]
