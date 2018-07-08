@@ -1,5 +1,5 @@
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 
 namespace OrchardCore.Html
@@ -19,7 +19,7 @@ namespace OrchardCore.Html
                 .Attachable()
                 .WithDescription("Provides an HTML Body for your content item."));
 
-            return 1;
+            return 2;
         }
     }
 }

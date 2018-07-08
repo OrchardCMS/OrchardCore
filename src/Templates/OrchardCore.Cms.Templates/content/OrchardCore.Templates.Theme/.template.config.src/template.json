@@ -1,8 +1,9 @@
 {
+  "$schema": "http://json.schemastore.org/template",
   "author": "Orchard Project",
-  "classifications": [ "Web", "CMS", "Orchard Core" ],
-  "name": "OrchardCore Theme",
-  "identity": "orchardcore",
+  "classifications": [ "Web", "Orchard Core", "CMS" ],
+  "name": "Orchard Core Theme",
+  "identity": "OrchardCore.Templates.Theme",
   "shortName": "octheme",
   "sourceName": "OrchardCore.Templates.Theme",
   "preferNameDirectory": true,
@@ -12,11 +13,17 @@
       "dataType": "bool",
       "description": "Add .liquid files in Views",
       "defaultValue": "true"
+    },
+    "OrchardVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "description": "Specifies which version of Orchard Core packages to use.",
+      "replaces": "$(TemplateOrchardPackageVersion)",
+      "defaultValue": "${TemplateOrchardVersion}"
     }
   },
   "sources": [
     {
-      "exclude": [ "Properties/**/*", "**/[Bb]in/**", "**/[Oo]bj/**", ".template.config/**/*", "**/*.filelist", "**/*.user", "**/*.lock.json" ],
       "modifiers": [
         {
           "condition": "(!AddLiquid)",

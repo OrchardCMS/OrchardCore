@@ -92,7 +92,7 @@ namespace OrchardCore.ContentManagement.Display
                 groupId,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
-                updater
+                new ModelStateWrapperUpdater(updater)
             );
 
             await BindPlacementAsync(context);
@@ -128,7 +128,7 @@ namespace OrchardCore.ContentManagement.Display
                 htmlFieldPrefix,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
-                updater
+                new ModelStateWrapperUpdater(updater)
             );
 
             await BindPlacementAsync(context);
@@ -162,7 +162,7 @@ namespace OrchardCore.ContentManagement.Display
                 htmlFieldPrefix,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
-                updater
+                new ModelStateWrapperUpdater(updater)
             );
 
             await BindPlacementAsync(context);

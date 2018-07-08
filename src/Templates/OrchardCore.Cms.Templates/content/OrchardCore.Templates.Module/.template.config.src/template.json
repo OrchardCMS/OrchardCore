@@ -1,8 +1,9 @@
 {
+  "$schema": "http://json.schemastore.org/template",
   "author": "Orchard Project",
-  "classifications": [ "Web", "CMS", "Orchard Core" ],
-  "name": "OrchardCore Module",
-  "identity": "orchardcore",
+  "classifications": [ "Web", "Orchard Core", "CMS" ],
+  "name": "Orchard Core Module",
+  "identity": "OrchardCore.Templates.Module",
   "shortName": "ocmodule",
   "sourceName": "OrchardCore.Templates.Module",
   "preferNameDirectory": true,
@@ -18,15 +19,21 @@
       "datatype": "string",
       "description": "Add all files required for a part",
       "replaces": "MyTest",
-      "FileRename": "MyTest"
+      "defaultValue": ""
+    },
+    "OrchardVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "description": "Specifies which version of Orchard Core packages to use.",
+      "replaces": "$(TemplateOrchardPackageVersion)",
+      "defaultValue": "${TemplateOrchardVersion}"
     }
   },
   "sources": [
     {
-      "exclude": [ "Properties/**/*", "**/[Bb]in/**", "**/[Oo]bj/**", ".template.config/**/*", "**/*.filelist", "**/*.user", "**/*.lock.json" ],
       "modifiers": [
         {
-          "condition": "(PartName==\"\")",
+          "condition": "(PartName=='')",
           "exclude": [
             "Migrations.cs",
             "Drivers/MyTestPartDisplayDriver.cs",

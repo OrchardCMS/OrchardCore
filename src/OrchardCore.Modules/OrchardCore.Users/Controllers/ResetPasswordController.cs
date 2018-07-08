@@ -69,11 +69,11 @@ namespace OrchardCore.Users.Controllers
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
                     // returns to confirmation page anyway: we don't want to let scrapers know if a username or an email exist
-                    return RedirectToLocal(Url.Action("ForgotPasswordConfirmation", "Password"));
+                    return RedirectToLocal(Url.Action("ForgotPasswordConfirmation", "ResetPassword"));
                 }
 
                 user.ResetToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(user.ResetToken));
-                var resetPasswordUrl = Url.Action("ResetPassword", "Password", new { code = user.ResetToken }, HttpContext.Request.Scheme);
+                var resetPasswordUrl = Url.Action("ResetPassword", "ResetPassword", new { code = user.ResetToken }, HttpContext.Request.Scheme);
                 // send email with callback link
                 await SendEmailAsync(user.Email, T["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl }, "TemplateUserLostPassword");
             }

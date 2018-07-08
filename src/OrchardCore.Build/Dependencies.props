@@ -8,9 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageManagement Include="AspNet.Security.OAuth.Validation" Version="2.0.0-rc2-final" />
     <PackageManagement Include="AspNet.Security.OpenIdConnect.Primitives" Version="2.0.0-rc3-final" />
-    <PackageManagement Include="Castle.Core" Version="4.3.0" />
+    <PackageManagement Include="Castle.Core" Version="4.3.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
     <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9442" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-1210" />
@@ -35,7 +34,7 @@
     <PackageManagement Include="xunit.analyzers" Version="0.8.0" />
     <PackageManagement Include="xunit" Version="2.3.1" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.3.1" />  
-    <PackageManagement Include="YamlDotNet" Version="4.3.2" />
+    <PackageManagement Include="YamlDotNet" Version="5.0.1" />
     <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1215" />
     <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1215" />
     <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1215" />

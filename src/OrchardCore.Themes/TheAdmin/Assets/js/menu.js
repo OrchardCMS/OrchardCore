@@ -18,6 +18,19 @@ $('.leftbar-compactor').click(function () {
     $('body').hasClass('left-sidebar-compact') ? unSetCompactStatus() : setCompactStatus(true);
 });
 
+$('#left-nav li.has-items').click(function () {
+    $('#left-nav li.has-items').removeClass("visible");
+    $(this).addClass("visible");
+});
+
+$(document).on("click", function (event) {
+    var $trigger = $("#left-nav li.has-items");
+    if ($trigger !== event.target && !$trigger.has(event.target).length) {
+        $('#left-nav li.has-items').removeClass("visible");
+    }
+});
+
+
 var isCompactExplicit = (isCompactExplicit === undefined) ? false : isCompactExplicit ;
 
 function setCompactStatus(explicit) {
@@ -36,11 +49,12 @@ function setCompactStatus(explicit) {
     // When leftbar is expanded  all ul tags are collapsed.
     // When leftbar is compacted we don't want the first level collapsed. 
     // We want it expanded so that hovering over the root buttons shows the full submenu
-    $('#left-nav ul.menu-admin > li > div > ul').removeClass('collapse');
+    $('#left-nav ul.menu-admin > li > ul').removeClass('collapse');
     // When hovering, don't want toggling when clicking on label
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', '');
     $('#left-nav').removeClass('ps');
     $('#left-nav').removeClass('ps--active-y'); // need this too because of Edge IE11
+    $('#left-nav li.has-items').removeClass("visible");
 
     if (explicit == true) {
         isCompactExplicit = explicit;
@@ -54,16 +68,11 @@ function unSetCompactStatus() {
     $('body').removeClass('left-sidebar-compact');
 
     // resetting what we disabled for compact state
-    $('#left-nav ul.menu-admin > li > div > ul').addClass('collapse');    
+    $('#left-nav ul.menu-admin > li > ul').addClass('collapse');    
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', 'collapse');
     $('#left-nav').addClass('ps');
+    $('#left-nav li.has-items').removeClass("visible");
 
     isCompactExplicit = false;
     persistAdminPreferences();
 }
-
-$(function () {
-    function showSubmenu(el) { $(this).addClass('hovered'); }
-    function hideSubmenu(el) { $(this).removeClass('hovered'); }
-    $(".left-sidebar-compact #ta-left-sidebar ul.menu-admin li").hoverIntent(showSubmenu, hideSubmenu);
-});
