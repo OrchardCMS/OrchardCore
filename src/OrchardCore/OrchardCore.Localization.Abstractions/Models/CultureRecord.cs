@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using OrchardCore.Entities;
 
 namespace OrchardCore.Localization.Models
 {
-    public class CultureRecord : Entity
+    public class CultureRecord
     {
         public CultureRecord()
         {
