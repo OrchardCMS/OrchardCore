@@ -5,8 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using OpenIddict.Core;
-using OrchardCore.OpenId.Abstractions.Models;
 using OrchardCore.OpenId.Abstractions.Stores;
 using OrchardCore.OpenId.YesSql.Indexes;
 using OrchardCore.OpenId.YesSql.Models;
@@ -15,7 +13,8 @@ using YesSql.Services;
 
 namespace OrchardCore.OpenId.YesSql.Stores
 {
-    public class OpenIdScopeStore : IOpenIdScopeStore
+    public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
+        where TScope : OpenIdScope, new()
     {
         private readonly ISession _session;
 
@@ -36,7 +35,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.Query<OpenIdScope>().CountAsync();
+            return await _session.Query<TScope>().CountAsync();
         }
 
         /// <summary>
@@ -49,7 +48,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the number of scopes that match the specified query.
         /// </returns>
-        public virtual Task<long> CountAsync<TResult>(Func<IQueryable<OpenIdScope>, IQueryable<TResult>> query, CancellationToken cancellationToken)
+        public virtual Task<long> CountAsync<TResult>(Func<IQueryable<TScope>, IQueryable<TResult>> query, CancellationToken cancellationToken)
             => throw new NotSupportedException();
 
         /// <summary>
@@ -60,7 +59,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task CreateAsync(OpenIdScope scope, CancellationToken cancellationToken)
+        public virtual Task CreateAsync(TScope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
@@ -81,7 +80,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task DeleteAsync(OpenIdScope scope, CancellationToken cancellationToken)
+        public virtual Task DeleteAsync(TScope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
@@ -104,7 +103,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the authorization corresponding to the identifier.
         /// </returns>
-        public virtual Task<OpenIdScope> FindByIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual Task<TScope> FindByIdAsync(string identifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -113,7 +112,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<OpenIdScope, OpenIdScopeIndex>(index => index.ScopeId == identifier).FirstOrDefaultAsync();
+            return _session.Query<TScope, OpenIdScopeIndex>(index => index.ScopeId == identifier).FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -125,7 +124,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the scope corresponding to the specified name.
         /// </returns>
-        public virtual Task<OpenIdScope> FindByNameAsync(string name, CancellationToken cancellationToken)
+        public virtual Task<TScope> FindByNameAsync(string name, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -134,7 +133,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<OpenIdScope, OpenIdScopeIndex>(index => index.Name == name).FirstOrDefaultAsync();
+            return _session.Query<TScope, OpenIdScopeIndex>(index => index.Name == name).FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -146,7 +145,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the scopes corresponding to the specified names.
         /// </returns>
-        public virtual async Task<ImmutableArray<OpenIdScope>> FindByNamesAsync(
+        public virtual async Task<ImmutableArray<TScope>> FindByNamesAsync(
             ImmutableArray<string> names, CancellationToken cancellationToken)
         {
             if (names.Any(name => string.IsNullOrEmpty(name)))
@@ -156,7 +155,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return (await _session.Query<OpenIdScope, OpenIdScopeIndex>(index => index.Name.IsIn(names)).ListAsync()).ToImmutableArray();
+            return (await _session.Query<TScope, OpenIdScopeIndex>(index => index.Name.IsIn(names)).ListAsync()).ToImmutableArray();
         }
 
         /// <summary>
@@ -168,7 +167,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the scope corresponding to the identifier.
         /// </returns>
-        public virtual Task<OpenIdScope> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual Task<TScope> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -177,7 +176,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.GetAsync<OpenIdScope>(int.Parse(identifier, CultureInfo.InvariantCulture));
+            return _session.GetAsync<TScope>(int.Parse(identifier, CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -189,7 +188,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the scopes associated with the specified resource.
         /// </returns>
-        public virtual async Task<ImmutableArray<OpenIdScope>> FindByResourceAsync(string resource, CancellationToken cancellationToken)
+        public virtual async Task<ImmutableArray<TScope>> FindByResourceAsync(string resource, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(resource))
             {
@@ -199,7 +198,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return ImmutableArray.CreateRange(
-                await _session.Query<OpenIdScope, OpenIdScopeByResourceIndex>(
+                await _session.Query<TScope, OpenIdScopeByResourceIndex>(
                     index => index.Resource == resource).ListAsync());
         }
 
@@ -216,7 +215,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// whose result returns the first element returned when executing the query.
         /// </returns>
         public virtual Task<TResult> GetAsync<TState, TResult>(
-            Func<IQueryable<OpenIdScope>, TState, IQueryable<TResult>> query,
+            Func<IQueryable<TScope>, TState, IQueryable<TResult>> query,
             TState state, CancellationToken cancellationToken)
             => throw new NotSupportedException();
 
@@ -226,17 +225,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="scope">The scope.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the description associated with the specified scope.
         /// </returns>
-        public virtual Task<string> GetDescriptionAsync(OpenIdScope scope, CancellationToken cancellationToken)
+        public virtual ValueTask<string> GetDescriptionAsync(TScope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            return Task.FromResult(scope.Description);
+            return new ValueTask<string>(scope.Description);
         }
 
         /// <summary>
@@ -245,17 +244,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="scope">The scope.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the display name associated with the scope.
         /// </returns>
-        public virtual Task<string> GetDisplayNameAsync(OpenIdScope scope, CancellationToken cancellationToken)
+        public virtual ValueTask<string> GetDisplayNameAsync(TScope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            return Task.FromResult(scope.DisplayName);
+            return new ValueTask<string>(scope.DisplayName);
         }
 
         /// <summary>
@@ -264,17 +263,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="scope">The scope.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the unique identifier associated with the scope.
         /// </returns>
-        public virtual Task<string> GetIdAsync(OpenIdScope scope, CancellationToken cancellationToken)
+        public virtual ValueTask<string> GetIdAsync(TScope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            return Task.FromResult(scope.ScopeId);
+            return new ValueTask<string>(scope.ScopeId);
         }
 
         /// <summary>
@@ -283,17 +282,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="scope">The scope.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the name associated with the specified scope.
         /// </returns>
-        public virtual Task<string> GetNameAsync(OpenIdScope scope, CancellationToken cancellationToken)
+        public virtual ValueTask<string> GetNameAsync(TScope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            return Task.FromResult(scope.Name);
+            return new ValueTask<string>(scope.Name);
         }
 
         /// <summary>
@@ -302,17 +301,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="scope">The scope.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the physical identifier associated with the scope.
         /// </returns>
-        public virtual Task<string> GetPhysicalIdAsync(OpenIdScope scope, CancellationToken cancellationToken)
+        public virtual ValueTask<string> GetPhysicalIdAsync(TScope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            return Task.FromResult(scope.Id.ToString(CultureInfo.InvariantCulture));
+            return new ValueTask<string>(scope.Id.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -321,17 +320,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="scope">The scope.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose
-        /// result returns all the additional properties associated with the scope.
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns all the additional properties associated with the scope.
         /// </returns>
-        public virtual Task<JObject> GetPropertiesAsync(OpenIdScope scope, CancellationToken cancellationToken)
+        public virtual ValueTask<JObject> GetPropertiesAsync(TScope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            return Task.FromResult(scope.Properties ?? new JObject());
+            return new ValueTask<JObject>(scope.Properties ?? new JObject());
         }
 
         /// <summary>
@@ -340,17 +339,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="scope">The scope.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns all the resources associated with the scope.
         /// </returns>
-        public virtual Task<ImmutableArray<string>> GetResourcesAsync(OpenIdScope scope, CancellationToken cancellationToken)
+        public virtual ValueTask<ImmutableArray<string>> GetResourcesAsync(TScope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            return Task.FromResult(scope.Resources);
+            return new ValueTask<ImmutableArray<string>>(scope.Resources);
         }
 
         /// <summary>
@@ -358,11 +357,11 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the instantiated scope, that can be persisted in the database.
         /// </returns>
-        public virtual Task<OpenIdScope> InstantiateAsync(CancellationToken cancellationToken)
-            => Task.FromResult(new OpenIdScope { ScopeId = Guid.NewGuid().ToString("n") });
+        public virtual ValueTask<TScope> InstantiateAsync(CancellationToken cancellationToken)
+            => new ValueTask<TScope>(new TScope { ScopeId = Guid.NewGuid().ToString("n") });
 
         /// <summary>
         /// Executes the specified query and returns all the corresponding elements.
@@ -374,9 +373,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns all the elements returned when executing the specified query.
         /// </returns>
-        public virtual async Task<ImmutableArray<OpenIdScope>> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
+        public virtual async Task<ImmutableArray<TScope>> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
         {
-            var query = _session.Query<OpenIdScope>();
+            var query = _session.Query<TScope>();
 
             if (offset.HasValue)
             {
@@ -404,7 +403,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// whose result returns all the elements returned when executing the specified query.
         /// </returns>
         public virtual Task<ImmutableArray<TResult>> ListAsync<TState, TResult>(
-            Func<IQueryable<OpenIdScope>, TState, IQueryable<TResult>> query,
+            Func<IQueryable<TScope>, TState, IQueryable<TResult>> query,
             TState state, CancellationToken cancellationToken)
             => throw new NotSupportedException();
 
@@ -417,7 +416,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetDescriptionAsync(OpenIdScope scope, string description, CancellationToken cancellationToken)
+        public virtual Task SetDescriptionAsync(TScope scope, string description, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
@@ -438,7 +437,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetDisplayNameAsync(OpenIdScope scope, string name, CancellationToken cancellationToken)
+        public virtual Task SetDisplayNameAsync(TScope scope, string name, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
@@ -459,7 +458,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetNameAsync(OpenIdScope scope, string name, CancellationToken cancellationToken)
+        public virtual Task SetNameAsync(TScope scope, string name, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
@@ -480,7 +479,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetPropertiesAsync(OpenIdScope scope, JObject properties, CancellationToken cancellationToken)
+        public virtual Task SetPropertiesAsync(TScope scope, JObject properties, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
@@ -501,7 +500,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetResourcesAsync(OpenIdScope scope, ImmutableArray<string> resources, CancellationToken cancellationToken)
+        public virtual Task SetResourcesAsync(TScope scope, ImmutableArray<string> resources, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
@@ -521,7 +520,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task UpdateAsync(OpenIdScope scope, CancellationToken cancellationToken)
+        public virtual Task UpdateAsync(TScope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
@@ -534,100 +533,5 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             return _session.CommitAsync();
         }
-
-        // Note: the following methods are deliberately implemented as explicit methods so they are not
-        // exposed by Intellisense. Their logic MUST be limited to dealing with casts and downcasts.
-        // Developers who need to customize the logic SHOULD override the methods taking concretes types.
-
-        // -------------------------------------------------------
-        // Methods defined by the IOpenIddictScopeStore interface:
-        // -------------------------------------------------------
-
-        Task<long> IOpenIddictScopeStore<IOpenIdScope>.CountAsync(CancellationToken cancellationToken)
-            => CountAsync(cancellationToken);
-
-        Task<long> IOpenIddictScopeStore<IOpenIdScope>.CountAsync<TResult>(Func<IQueryable<IOpenIdScope>, IQueryable<TResult>> query, CancellationToken cancellationToken)
-            => CountAsync(query, cancellationToken);
-
-        Task IOpenIddictScopeStore<IOpenIdScope>.CreateAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => CreateAsync((OpenIdScope) scope, cancellationToken);
-
-        Task IOpenIddictScopeStore<IOpenIdScope>.DeleteAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => DeleteAsync((OpenIdScope) scope, cancellationToken);
-
-        async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
-            => await FindByIdAsync(identifier, cancellationToken);
-
-        async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.FindByNameAsync(string name, CancellationToken cancellationToken)
-            => await FindByNameAsync(name, cancellationToken);
-
-        async Task<ImmutableArray<IOpenIdScope>> IOpenIddictScopeStore<IOpenIdScope>.FindByNamesAsync(
-            ImmutableArray<string> names, CancellationToken cancellationToken)
-            => (await FindByNamesAsync(names, cancellationToken)).CastArray<IOpenIdScope>();
-
-        Task<TResult> IOpenIddictScopeStore<IOpenIdScope>.GetAsync<TState, TResult>(
-            Func<IQueryable<IOpenIdScope>, TState, IQueryable<TResult>> query,
-            TState state, CancellationToken cancellationToken)
-            => GetAsync(query, state, cancellationToken);
-
-        Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetDescriptionAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => GetDescriptionAsync((OpenIdScope) scope, cancellationToken);
-
-        Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetDisplayNameAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => GetDisplayNameAsync((OpenIdScope) scope, cancellationToken);
-
-        Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetIdAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => GetIdAsync((OpenIdScope) scope, cancellationToken);
-
-        Task<string> IOpenIddictScopeStore<IOpenIdScope>.GetNameAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => GetNameAsync((OpenIdScope) scope, cancellationToken);
-
-        Task<JObject> IOpenIddictScopeStore<IOpenIdScope>.GetPropertiesAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => GetPropertiesAsync((OpenIdScope) scope, cancellationToken);
-
-        Task<ImmutableArray<string>> IOpenIddictScopeStore<IOpenIdScope>.GetResourcesAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => GetResourcesAsync((OpenIdScope) scope, cancellationToken);
-
-        async Task<IOpenIdScope> IOpenIddictScopeStore<IOpenIdScope>.InstantiateAsync(CancellationToken cancellationToken)
-            => await InstantiateAsync(cancellationToken);
-
-        async Task<ImmutableArray<IOpenIdScope>> IOpenIddictScopeStore<IOpenIdScope>.ListAsync(int? count, int? offset, CancellationToken cancellationToken)
-            => (await ListAsync(count, offset, cancellationToken)).CastArray<IOpenIdScope>();
-
-        Task<ImmutableArray<TResult>> IOpenIddictScopeStore<IOpenIdScope>.ListAsync<TState, TResult>(
-            Func<IQueryable<IOpenIdScope>, TState, IQueryable<TResult>> query,
-            TState state, CancellationToken cancellationToken)
-            => ListAsync(query, state, cancellationToken);
-
-        Task IOpenIddictScopeStore<IOpenIdScope>.SetDescriptionAsync(IOpenIdScope scope, string description, CancellationToken cancellationToken)
-            => SetDescriptionAsync((OpenIdScope) scope, description, cancellationToken);
-
-        Task IOpenIddictScopeStore<IOpenIdScope>.SetDisplayNameAsync(IOpenIdScope scope, string name, CancellationToken cancellationToken)
-            => SetDisplayNameAsync((OpenIdScope) scope, name, cancellationToken);
-
-        Task IOpenIddictScopeStore<IOpenIdScope>.SetNameAsync(IOpenIdScope scope, string name, CancellationToken cancellationToken)
-            => SetNameAsync((OpenIdScope) scope, name, cancellationToken);
-
-        Task IOpenIddictScopeStore<IOpenIdScope>.SetPropertiesAsync(IOpenIdScope scope, JObject properties, CancellationToken cancellationToken)
-            => SetPropertiesAsync((OpenIdScope) scope, properties, cancellationToken);
-
-        Task IOpenIddictScopeStore<IOpenIdScope>.SetResourcesAsync(IOpenIdScope scope, ImmutableArray<string> resources, CancellationToken cancellationToken)
-            => SetResourcesAsync((OpenIdScope) scope, resources, cancellationToken);
-
-        Task IOpenIddictScopeStore<IOpenIdScope>.UpdateAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => UpdateAsync((OpenIdScope) scope, cancellationToken);
-
-        // ---------------------------------------------------
-        // Methods defined by the IOpenIdScopeStore interface:
-        // ---------------------------------------------------
-
-        async Task<IOpenIdScope> IOpenIdScopeStore.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
-            => await FindByPhysicalIdAsync(identifier, cancellationToken);
-
-        async Task<ImmutableArray<IOpenIdScope>> IOpenIdScopeStore.FindByResourceAsync(string resource, CancellationToken cancellationToken)
-            => (await FindByResourceAsync(resource, cancellationToken)).CastArray<IOpenIdScope>();
-
-        Task<string> IOpenIdScopeStore.GetPhysicalIdAsync(IOpenIdScope scope, CancellationToken cancellationToken)
-            => GetPhysicalIdAsync((OpenIdScope) scope, cancellationToken);
     }
 }

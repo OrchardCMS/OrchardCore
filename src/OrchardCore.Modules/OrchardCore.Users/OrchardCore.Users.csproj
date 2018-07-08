@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNet.Security.OpenIdConnect.Primitives" />
+    <PackageReference Include="AspNet.Security.OpenIdConnect.Primitives" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />

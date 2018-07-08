@@ -1,0 +1,19 @@
+@model OrchardCore.Forms.ViewModels.NoCaptchaSettingsViewModel
+
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+
+<fieldset class="form-group" asp-validation-class-for="SiteKey">
+    <label asp-for="SiteKey">@T["Site Key"] <span asp-validation-for="SiteKey"></span></label>
+    <input asp-for="SiteKey" class="form-control" type="text" />
+    <span class="hint">@T["Your Google's NoCaptcha Site Key."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="SiteSecret">
+    <label asp-for="SiteSecret">@T["Site Secret"] <span asp-validation-for="SiteSecret"></span></label>
+    <input asp-for="SiteSecret" class="form-control" type="text" />
+    <span class="hint">@T["Your Google's NoCaptcha Site Secret."]</span>
+</fieldset>
+
+<fieldset class="form-group">
+    <span class="hint">@T["Get your NoCaptcha at"] <a href="https://developers.google.com/recaptcha/" target="_blank">https://developers.google.com/recaptcha/</a></span>
+</fieldset>

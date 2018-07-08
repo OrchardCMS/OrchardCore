@@ -1,18 +1,17 @@
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
-using OpenIddict.Core;
-using OrchardCore.OpenId.Abstractions.Models;
+using OpenIddict.Abstractions;
 
 namespace OrchardCore.OpenId.Abstractions.Stores
 {
-    public interface IOpenIdApplicationStore : IOpenIddictApplicationStore<IOpenIdApplication>
+    public interface IOpenIdApplicationStore<TApplication> : IOpenIddictApplicationStore<TApplication> where TApplication : class
     {
-        Task<IOpenIdApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken);
-        Task<string> GetPhysicalIdAsync(IOpenIdApplication application, CancellationToken cancellationToken);
+        Task<TApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken);
+        ValueTask<string> GetPhysicalIdAsync(TApplication application, CancellationToken cancellationToken);
 
-        Task<ImmutableArray<string>> GetRolesAsync(IOpenIdApplication application, CancellationToken cancellationToken);
-        Task<ImmutableArray<IOpenIdApplication>> ListInRoleAsync(string role, CancellationToken cancellationToken);
-        Task SetRolesAsync(IOpenIdApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken);
+        ValueTask<ImmutableArray<string>> GetRolesAsync(TApplication application, CancellationToken cancellationToken);
+        Task<ImmutableArray<TApplication>> ListInRoleAsync(string role, CancellationToken cancellationToken);
+        Task SetRolesAsync(TApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken);
     }
 }

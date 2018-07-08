@@ -28,7 +28,6 @@ Here is an example for creating a Lucene query from a Queries recipe step:
 }
 ```
 
-
 ## Web APIs
 
 ### api/lucene/content
@@ -56,7 +55,7 @@ Verbs: **POST** and **GET**
 | `query` | `{ "query": { "match_all": {} } }` | A Json object representing the query |
 | `parameters` | `{ size: 3}` | A Json object representing the parameters of the query |
 
-# Lucene Worker (OrchardCore.Lucene.Worker)
+## Lucene Worker (OrchardCore.Lucene.Worker)
 
 This feature creates a background task that will keep the local file system index synchronized with
 other instances that could have their own local index. It is recommended to use it only if you are 
@@ -69,6 +68,6 @@ feature.
 
 ### Lucene.net
 
-http://lucenenet.apache.org/index.html
-Copyright 2013 The Apache Software Foundation
-Licensed under the Apache License, Version 2.0. 
+<http://lucenenet.apache.org/index.html>
+Copyright 2013 The Apache Software Foundation  
+Licensed under the Apache License, Version 2.0.

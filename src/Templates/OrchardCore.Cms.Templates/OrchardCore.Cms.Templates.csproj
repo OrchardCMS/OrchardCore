@@ -1,0 +1,80 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\OrchardCore.Build\OrchardCore.Commons.props" />
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeBuildOutput>False</IncludeBuildOutput>
+    <IncludeSource>False</IncludeSource>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <EnableDefaultItems>False</EnableDefaultItems>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <PackageType>Template</PackageType>
+    <NoWarn>CS8021</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Remove="NETStandard.Library" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="content\**" Exclude="**\.template.config.src\**" Pack="true">
+      <PackagePath>content\%(RecursiveDir)%(FileName)%(Extension)</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
+  </ItemGroup>
+
+  <UsingTask TaskName="ReplaceFileText" TaskFactory="CodeTaskFactory" AssemblyFile="$(RoslynCodeTaskFactory)" Condition=" '$(RoslynCodeTaskFactory)' != '' ">
+    <ParameterGroup>
+      <InputFilename ParameterType="System.String" Required="true" />
+      <OutputFilename ParameterType="System.String" Required="true" />
+      <MatchExpression ParameterType="System.String" Required="true" />
+      <ReplacementText ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Core" />
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            File.WriteAllText(
+                OutputFilename,
+                Regex.Replace(File.ReadAllText(InputFilename), MatchExpression, ReplacementText)
+                );
+          ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="TransformTemplateConfigs" BeforeTargets="CoreBuild">
+    <!--
+      For each template, copy its '.template.config.src' directory to '.template.config',
+      removing any earlier output at that location
+    -->
+    <ItemGroup>
+      <_TemplateProjectFile Include="content\**\*.csproj" />
+      <_TemplateProjectDir Include="%(_TemplateProjectFile.RootDir)%(Directory)" />
+      <_TemplateConfigFileToCopy Include="%(_TemplateProjectDir.Identity).template.config.src\**">
+        <DestDir>%(Identity).template.config\</DestDir>
+      </_TemplateConfigFileToCopy>
+    </ItemGroup>
+
+    <RemoveDir Directories="%(_TemplateConfigFileToCopy.DestDir)" />
+    <Copy SourceFiles="@(_TemplateConfigFileToCopy)" DestinationFolder="%(DestDir)" />
+
+    <!--
+      Modify the .json files in the .template.config dirs to stamp MSBuild properties into them
+    -->
+
+    <ItemGroup>
+      <GeneratedContent Include="@(_TemplateConfigFileToCopy)" Condition="'%(Extension)'=='.json'">
+        <OutputPath>%(DestDir)%(RecursiveDir)%(Filename)%(Extension)</OutputPath>
+      </GeneratedContent>
+    </ItemGroup>
+
+    <ReplaceFileText InputFilename="%(GeneratedContent.OutputPath)" OutputFilename="%(GeneratedContent.OutputPath)" MatchExpression="\$\{TemplateOrchardVersion\}" ReplacementText="$(Version)" />
+
+  </Target>
+</Project>
