@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Apis.JsonApi.Client.Builders
 {
@@ -20,8 +22,9 @@ namespace OrchardCore.Apis.JsonApi.Client.Builders
             return this;
         }
         
-        internal string Build() {
-            return null;
+        internal JProperty Build() {
+            return
+               new JProperty(ContentPartName, new JArray(new JObject(_properties.Select(p => new JProperty(p.Key, p.Value)))));
         }
     }
 }

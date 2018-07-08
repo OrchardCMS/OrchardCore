@@ -22,7 +22,7 @@ namespace OrchardCore.Apis.JsonApi.Client
             var variables = contentTypeBuilder.Build();
 
 
-            return Task.FromResult("");
+            return Task.FromResult(variables);
         }
     }
 }
