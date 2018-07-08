@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Localization" />
-    <PackageReference Include="Microsoft.AspNetCore.Localization.Routing" />
   </ItemGroup>
 
   <ItemGroup>

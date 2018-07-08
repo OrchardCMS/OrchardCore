@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Localization.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -32,14 +31,12 @@ namespace OrchardCore.Localization
 
             // By default, the following built-in providers are configured:
             // - QueryStringRequestCultureProvider, sets culture via "culture" and "ui-culture" query string values, useful for testing.
-            // - CookieRequestCultureProvider, sets culture via "ASPNET_CULTURE" cookie.
-            // - RouteDataRequestCultureProvider, determines the culture information for a request via values in the route data.
+            // - CookieRequestCultureProvider, sets culture via the value of the ".AspNetCore.Culture" request cookie.
             // - AcceptLanguageHeaderRequestCultureProvider, sets culture via the "Accept-Language" request header.
 
             services
                 .AddOrderedRequestCultureProvider(new QueryStringRequestCultureProvider(), -20)
                 .AddOrderedRequestCultureProvider(new CookieRequestCultureProvider(), -15)
-                .AddOrderedRequestCultureProvider(new RouteDataRequestCultureProvider(), -10)
                 .AddOrderedRequestCultureProvider(new AcceptLanguageHeaderRequestCultureProvider(), -5);
 
             // services.RemoveOrderedRequestCultureProvider(typeof(CookieRequestCultureProvider));
