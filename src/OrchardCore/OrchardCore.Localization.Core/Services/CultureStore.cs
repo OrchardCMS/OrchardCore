@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using OrchardCore.Localization.Indexes;
 using OrchardCore.Localization.Models;
 using YesSql;
 
@@ -22,11 +20,19 @@ namespace OrchardCore.Localization.Services
         {
         }
 
-        public Task<IEnumerable<CultureRecord>> GetAllCultures() {
-            return _session.Query<CultureRecord, CultureIndex>().ListAsync();
+        public async Task<CultureRecord> GetCultureRecordAsync()
+        {
+            var cultureRecord = await _session.Query<CultureRecord>().FirstOrDefaultAsync();
+            if (cultureRecord == null)
+            {
+                cultureRecord = new CultureRecord();
+                _session.Save(cultureRecord);
+            }
+
+            return cultureRecord;
         }
 
-        public Task SaveAsync(CultureRecord culture, CancellationToken cancellationToken)
+        public Task SaveAsync(string culture, CancellationToken cancellationToken)
         {
             if (culture == null)
             {
@@ -35,11 +41,18 @@ namespace OrchardCore.Localization.Services
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(culture);
-            return _session.CommitAsync();
+            var cultureRecord = GetCultureRecordAsync().Result;
+
+            if (!cultureRecord.Cultures.Any(c => c.CultureName == culture))
+            {
+                cultureRecord.Cultures.Add(new Culture { CultureName = culture });
+                _session.Save(cultureRecord);
+                return _session.CommitAsync();
+            }
+            return null;
         }
 
-        public Task DeleteAsync(CultureRecord culture, CancellationToken cancellationToken)
+        public Task DeleteAsync(string culture, CancellationToken cancellationToken)
         {
             if (culture == null)
             {
@@ -48,20 +61,17 @@ namespace OrchardCore.Localization.Services
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Delete(culture);
-            return _session.CommitAsync();
-        }
+            var cultureRecord = GetCultureRecordAsync().Result;
+            var recordToDelete = cultureRecord.Cultures.Where(c => c.CultureName == culture).FirstOrDefault();
 
-        public Task<CultureRecord> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrEmpty(identifier))
+            if (recordToDelete != null)
             {
-                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
+                cultureRecord.Cultures.Remove(recordToDelete);
+                _session.Save(cultureRecord);
+                return _session.CommitAsync();
             }
 
-            cancellationToken.ThrowIfCancellationRequested();
-
-            return _session.GetAsync<CultureRecord>(int.Parse(identifier, CultureInfo.InvariantCulture));
+            return null;
         }
     }
 }

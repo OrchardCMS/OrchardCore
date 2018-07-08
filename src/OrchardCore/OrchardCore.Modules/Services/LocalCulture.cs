@@ -26,7 +26,10 @@ namespace OrchardCore.Modules.Services
 
         public bool IsLocalizationEnabled()
         {
-            return _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>() != null;
+            //TODO need to find a proper way to tell that the Localization module is disabled
+            // on a clean install if we have a default culture set to Invariant we will never 
+            // be able to edit the localization if we hide the form with this function returned value.
+            return _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>() != null && _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>().Provider != null;
         }
     }
 }

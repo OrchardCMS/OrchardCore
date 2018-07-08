@@ -12,6 +12,9 @@ namespace OrchardCore.Localization.Services
 {
     public class CultureManager : ICultureManager
     {
+        private const string CacheKey = "SiteCultures";
+        private readonly TimeSpan SlidingExpiration = TimeSpan.FromMinutes(1);
+
         private readonly ICultureStore _cultureStore;
         private readonly IDistributedCache _distributedCache;
         private readonly ILocalCulture _localCulture;
@@ -29,9 +32,9 @@ namespace OrchardCore.Localization.Services
             _siteService = siteService;
         }
 
-        public IEnumerable<CultureRecord> ListCultures()
+        public IEnumerable<Culture> ListCultures()
         {
-            return _cultureStore.GetAllCultures().Result;
+            return _cultureStore.GetCultureRecordAsync().Result.Cultures;
         }
 
         public void AddCulture(string cultureName)
@@ -41,12 +44,7 @@ namespace OrchardCore.Localization.Services
                 throw new ArgumentException("cultureName");
             }
 
-            if (ListCultures().Any(culture => culture.Culture == cultureName))
-            {
-                return;
-            }
-
-            _cultureStore.SaveAsync(new CultureRecord { Culture = cultureName }, new System.Threading.CancellationToken());
+            _cultureStore.SaveAsync(cultureName, new System.Threading.CancellationToken());
         }
 
         public void DeleteCulture(string cultureName)
@@ -56,21 +54,7 @@ namespace OrchardCore.Localization.Services
                 throw new ArgumentException("cultureName");
             }
 
-            if (ListCultures().Any(culture => culture.Culture == cultureName))
-            {
-                var culture = ListCultures().Where(cr => cr.Culture == cultureName).FirstOrDefault();
-                _cultureStore.DeleteAsync(culture, new System.Threading.CancellationToken());
-            }
-        }
-
-        public CultureRecord GetCultureById(int id)
-        {
-            return ListCultures().Where(c => c.Id == id).FirstOrDefault();
-        }
-
-        public CultureRecord GetCultureByName(string cultureName)
-        {
-            return ListCultures().Where(c => c.Culture == cultureName).FirstOrDefault();
+            _cultureStore.DeleteAsync(cultureName, new System.Threading.CancellationToken());
         }
 
         public string GetSiteCulture()
@@ -89,11 +73,7 @@ namespace OrchardCore.Localization.Services
             try
             {
                 CultureInfo.GetCultureInfo(cultureName);
-                if (Regex.IsMatch(cultureName, @"^[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*$"))
-                {
-                    return true;
-                }
-                return false;
+                return Regex.IsMatch(cultureName, @"^[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*$") ? true : false;
             }
             catch (CultureNotFoundException)
             {
@@ -103,7 +83,7 @@ namespace OrchardCore.Localization.Services
 
         public bool CultureExist(string cultureName)
         {
-            return CultureInfo.GetCultures(CultureTypes.AllCultures).Any(culture => string.Equals(culture.Name, cultureName, StringComparison.CurrentCultureIgnoreCase));
+            return CultureInfo.GetCultures(CultureTypes.AllCultures).Any(culture => String.Equals(culture.Name, cultureName, StringComparison.CurrentCultureIgnoreCase));
         }
 
     }

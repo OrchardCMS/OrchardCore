@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Localization.Services;
@@ -34,7 +33,7 @@ namespace OrchardCore.Settings.Drivers
                         model.BaseUrl = site.BaseUrl;
                         model.TimeZone = site.TimeZoneId;
                         model.Culture = site.Culture;
-                        model.SiteCultures = _cultureManager.ListCultures().Select(x => CultureInfo.GetCultureInfo(x.Culture));
+                        model.SiteCultures = _cultureManager.ListCultures()?.Select(x => CultureInfo.GetCultureInfo(x.CultureName));
                         model.LocalizationEnabled = _localCulture.IsLocalizationEnabled();
                     }).Location("Content:1").OnGroup(GroupId)
             );
@@ -51,10 +50,7 @@ namespace OrchardCore.Settings.Drivers
                     site.SiteName = model.SiteName;
                     site.BaseUrl = model.BaseUrl;
                     site.TimeZoneId = model.TimeZone;
-                    if (_localCulture.IsLocalizationEnabled())
-                    {
-                        site.Culture = model.Culture;
-                    }
+                    site.Culture = model.Culture;
                 }
             }
 

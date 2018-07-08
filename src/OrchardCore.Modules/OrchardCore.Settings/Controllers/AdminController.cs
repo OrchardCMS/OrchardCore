@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -49,10 +50,11 @@ namespace OrchardCore.Settings.Controllers
 
             var site = await _siteService.GetSiteSettingsAsync();
 
-            var viewModel = new AdminIndexViewModel();
-
-            viewModel.GroupId = groupId;
-            viewModel.Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, this, false, groupId);
+            var viewModel = new AdminIndexViewModel
+            {
+                GroupId = groupId,
+                Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, this, false, groupId)
+            };
 
             return View(viewModel);
         }
@@ -73,10 +75,11 @@ namespace OrchardCore.Settings.Controllers
 
             var site = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(cachedSite, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }), cachedSite.GetType()) as ISite;
 
-            var viewModel = new AdminIndexViewModel();
-
-            viewModel.GroupId = groupId;
-            viewModel.Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, this, false, groupId);
+            var viewModel = new AdminIndexViewModel
+            {
+                GroupId = groupId,
+                Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, this, false, groupId)
+            };
 
             if (ModelState.IsValid)
             {
@@ -96,14 +99,14 @@ namespace OrchardCore.Settings.Controllers
             {
                 return Unauthorized();
             }
-            
+
             var model = new SiteCulturesViewModel
             {
                 CurrentCulture = _cultureManager.GetCurrentCulture(),
-                SiteCultures = _cultureManager.ListCultures().Select(x => x.Culture)
+                SiteCultures = _cultureManager.ListCultures().Select(x => x.CultureName)
             };
 
-            model.AvailableSystemCultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => c.Name != string.Empty)
+            model.AvailableSystemCultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => c.Name != String.Empty)
                 .Select(ci => CultureInfo.GetCultureInfo(ci.Name))
                 .Where(s => !model.SiteCultures.Contains(s.Name));
 
@@ -118,9 +121,9 @@ namespace OrchardCore.Settings.Controllers
                 return Unauthorized();
             }
 
-            cultureName = string.IsNullOrWhiteSpace(cultureName) ? systemCultureName : cultureName;
+            cultureName = String.IsNullOrWhiteSpace(cultureName) ? systemCultureName : cultureName;
 
-            if (!string.IsNullOrWhiteSpace(cultureName) && _cultureManager.IsValidCulture(cultureName))
+            if (!String.IsNullOrWhiteSpace(cultureName) && _cultureManager.IsValidCulture(cultureName))
             {
                 _cultureManager.AddCulture(cultureName);
             }
