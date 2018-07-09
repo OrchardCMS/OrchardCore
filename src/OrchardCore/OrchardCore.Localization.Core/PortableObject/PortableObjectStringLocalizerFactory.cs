@@ -48,7 +48,7 @@ namespace OrchardCore.Localization.PortableObject
 
             var relativeName = baseName.Substring(index);
 
-            return new PortableObjectStringLocalizer(CultureInfo.CurrentUICulture, relativeName, _localizationManager, _logger);
+            return new PortableObjectStringLocalizer(_localCulture.GetLocalCultureAsync().Result, relativeName, _localizationManager, _logger);
         }
     }
 }

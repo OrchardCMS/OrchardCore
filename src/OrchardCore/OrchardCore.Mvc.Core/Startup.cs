@@ -46,6 +46,7 @@ namespace OrchardCore.Mvc
             // builder.AddRazorViewEngine();
             // the above is called here
             builder.AddViewLocalization();
+            builder.AddDataAnnotationsLocalization();
 
             AddModularFrameworkParts(_serviceProvider, builder.PartManager);
 
