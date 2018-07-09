@@ -213,8 +213,9 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
                 }
 
-                // Remove the 'KeyManagementOptionsSetup' registered at the host level.
+                // Remove options setups registered at the host level.
                 services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();
+                services.RemoveAll<IConfigureOptions<DataProtectionOptions>>();
 
                 services.Add(collection);
             });
