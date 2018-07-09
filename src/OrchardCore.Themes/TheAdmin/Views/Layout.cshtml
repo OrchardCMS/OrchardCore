@@ -3,7 +3,7 @@
         var site = await SiteService.GetSiteSettingsAsync();
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@site.Culture">
 <head>
     <title>@RenderTitleSegments(site.SiteName, "before")</title>
     <meta charset="utf-8">
