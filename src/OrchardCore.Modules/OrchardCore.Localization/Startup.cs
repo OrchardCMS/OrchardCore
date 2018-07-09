@@ -40,7 +40,7 @@ namespace OrchardCore.Localization
                 .AddOrderedRequestCultureProvider(new DefaultRequestCultureProvider(), -10);
                 //.AddOrderedRequestCultureProvider(new AcceptLanguageHeaderRequestCultureProvider(), -5);
 
-             // services.RemoveOrderedRequestCultureProvider(typeof(AcceptLanguageHeaderRequestCultureProvider));
+            // services.RemoveOrderedRequestCultureProvider(typeof(AcceptLanguageHeaderRequestCultureProvider));
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
