@@ -50,7 +50,10 @@ namespace OrchardCore.Settings.Drivers
                     site.SiteName = model.SiteName;
                     site.BaseUrl = model.BaseUrl;
                     site.TimeZoneId = model.TimeZone;
-                    site.Culture = model.Culture;
+                    if (_localCulture.IsLocalizationEnabled())
+                    {
+                        site.Culture = model.Culture;
+                    }
                 }
             }
 
