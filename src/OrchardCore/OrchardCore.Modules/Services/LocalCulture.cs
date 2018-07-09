@@ -21,7 +21,6 @@ namespace OrchardCore.Modules.Services
         /// <returns></returns>
         public Task<CultureInfo> GetLocalCultureAsync()
         {
-            var test = _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture ?? CultureInfo.InvariantCulture;
             return Task.FromResult(_httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture ?? CultureInfo.InvariantCulture);
         }
 
