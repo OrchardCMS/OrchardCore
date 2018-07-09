@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 using OrchardCore.Localization.Models;
 using OrchardCore.Modules.Services;
 using OrchardCore.Settings;
@@ -32,9 +34,17 @@ namespace OrchardCore.Localization.Services
             _siteService = siteService;
         }
 
-        public IEnumerable<Culture> ListCultures()
+        public async Task<IEnumerable<Culture>> ListCultures()
         {
-            return _cultureStore.GetCultureRecordAsync().Result.Cultures;
+            var cultures = await _distributedCache.GetStringAsync(CacheKey);
+
+            if(cultures == null)
+            {
+                cultures = JsonConvert.SerializeObject(_cultureStore.GetCultureRecordAsync().Result);
+                await _distributedCache.SetStringAsync(CacheKey, cultures);
+            }
+
+            return JsonConvert.DeserializeObject<CultureRecord>(cultures).Cultures;
         }
 
         public void AddCulture(string cultureName)
@@ -44,6 +54,7 @@ namespace OrchardCore.Localization.Services
                 throw new ArgumentException("cultureName");
             }
 
+            _distributedCache.RemoveAsync(CacheKey);
             _cultureStore.SaveAsync(cultureName, new System.Threading.CancellationToken());
         }
 
@@ -54,6 +65,7 @@ namespace OrchardCore.Localization.Services
                 throw new ArgumentException("cultureName");
             }
 
+            _distributedCache.RemoveAsync(CacheKey);
             _cultureStore.DeleteAsync(cultureName, new System.Threading.CancellationToken());
         }
 

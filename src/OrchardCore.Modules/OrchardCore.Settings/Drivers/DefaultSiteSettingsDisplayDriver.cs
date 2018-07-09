@@ -33,7 +33,7 @@ namespace OrchardCore.Settings.Drivers
                         model.BaseUrl = site.BaseUrl;
                         model.TimeZone = site.TimeZoneId;
                         model.Culture = site.Culture;
-                        model.SiteCultures = _cultureManager.ListCultures()?.Select(x => CultureInfo.GetCultureInfo(x.CultureName));
+                        model.SiteCultures = _cultureManager.ListCultures().Result?.Select(x => CultureInfo.GetCultureInfo(x.CultureName));
                         model.LocalizationEnabled = _localCulture.IsLocalizationEnabled();
                     }).Location("Content:1").OnGroup(GroupId)
             );

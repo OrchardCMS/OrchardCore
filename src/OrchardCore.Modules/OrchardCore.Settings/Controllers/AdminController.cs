@@ -103,7 +103,7 @@ namespace OrchardCore.Settings.Controllers
             var model = new SiteCulturesViewModel
             {
                 CurrentCulture = _cultureManager.GetCurrentCulture(),
-                SiteCultures = _cultureManager.ListCultures().Select(x => x.CultureName)
+                SiteCultures = _cultureManager.ListCultures().Result.Select(x => x.CultureName)
             };
 
             model.AvailableSystemCultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => c.Name != String.Empty)
