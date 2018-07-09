@@ -37,9 +37,10 @@ namespace OrchardCore.Localization
             services
                 .AddOrderedRequestCultureProvider(new QueryStringRequestCultureProvider(), -20)
                 .AddOrderedRequestCultureProvider(new CookieRequestCultureProvider(), -15)
-                .AddOrderedRequestCultureProvider(new AcceptLanguageHeaderRequestCultureProvider(), -5);
+                .AddOrderedRequestCultureProvider(new DefaultRequestCultureProvider(), -10);
+                //.AddOrderedRequestCultureProvider(new AcceptLanguageHeaderRequestCultureProvider(), -5);
 
-            // services.RemoveOrderedRequestCultureProvider(typeof(CookieRequestCultureProvider));
+             // services.RemoveOrderedRequestCultureProvider(typeof(AcceptLanguageHeaderRequestCultureProvider));
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

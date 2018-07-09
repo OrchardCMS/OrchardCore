@@ -43,7 +43,7 @@ namespace OrchardCore.Settings
             services.AddScoped<ICultureStore, CultureStore>();
             services.AddScoped<ICultureManager, CultureManager>();
 
-            services.AddOrderedRequestCultureProvider(new DefaultRequestCultureProvider(), -25);
+            services.AddOrderedRequestCultureProvider(new DefaultRequestCultureProvider(), -10);
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
