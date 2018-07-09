@@ -2,6 +2,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Serilog;
+using Serilog.Core;
 
 namespace OrchardCore.Logging
 {
@@ -9,25 +10,13 @@ namespace OrchardCore.Logging
     {
         public static IWebHostBuilder UseSerilogWeb(this IWebHostBuilder builder)
         {
-            builder.ConfigureAppConfiguration((context, configBuilder) =>
+            return builder.UseSerilog((hostingContext, configBuilder) =>
             {
-                var env = context.HostingEnvironment;
-
-                (configBuilder as ConfigurationBuilder).AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                      .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
-
-                var config = configBuilder.Build();
-                
-                Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .MinimumLevel.Debug()
-                .WriteTo.RollingFile(Path.Combine(env.ContentRootPath, "/logs/{Date}.txt"),
-                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] [{SourceContext}] [{EventId}] [{HttpContext.TenantName}] {Message}{NewLine}{Exception}")
-                .ReadFrom.Configuration(config)
-                .CreateLogger();
+                configBuilder.WriteTo.Console()
+                .MinimumLevel.Verbose()
+                .ReadFrom.Configuration(hostingContext.Configuration)
+                .Enrich.FromLogContext();
             });
-
-            return builder;
         }
     }
 }
