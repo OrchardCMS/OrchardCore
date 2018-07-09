@@ -17,6 +17,7 @@ namespace OrchardCore.Environment.Extensions
     public class ExtensionManager : IExtensionManager
     {
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IApplicationContext _applicationContext;
 
         private readonly IEnumerable<IExtensionDependencyStrategy> _extensionDependencyStrategies;
         private readonly IEnumerable<IExtensionPriorityStrategy> _extensionPriorityStrategies;
@@ -51,6 +52,7 @@ namespace OrchardCore.Environment.Extensions
 
         public ExtensionManager(
             IHostingEnvironment hostingEnvironment,
+            IApplicationContext applicationContext,
             IEnumerable<IExtensionDependencyStrategy> extensionDependencyStrategies,
             IEnumerable<IExtensionPriorityStrategy> extensionPriorityStrategies,
             ITypeFeatureProvider typeFeatureProvider,
@@ -58,6 +60,7 @@ namespace OrchardCore.Environment.Extensions
             ILogger<ExtensionManager> logger)
         {
             _hostingEnvironment = hostingEnvironment;
+            _applicationContext = applicationContext;
             _extensionDependencyStrategies = extensionDependencyStrategies;
             _extensionPriorityStrategies = extensionPriorityStrategies;
             _typeFeatureProvider = typeFeatureProvider;
@@ -238,14 +241,12 @@ namespace OrchardCore.Environment.Extensions
                     return;
                 }
 
-                var moduleNames = _hostingEnvironment.GetApplication().ModuleNames;
+                var modules = _applicationContext.Application.Modules;
                 var loadedExtensions = new ConcurrentDictionary<string, ExtensionEntry>();
 
                 // Load all extensions in parallel
-                Parallel.ForEach(moduleNames, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (name) =>
+                Parallel.ForEach(modules, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (module) =>
                 {
-                    var module = _hostingEnvironment.GetModule(name);
-
                     if (!module.ModuleInfo.Exists)
                     {
                         return;

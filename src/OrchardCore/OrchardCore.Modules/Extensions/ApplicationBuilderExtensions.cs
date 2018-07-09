@@ -14,9 +14,10 @@ namespace Microsoft.AspNetCore.Builder
         public static IApplicationBuilder UseOrchardCore(this IApplicationBuilder app, Action<IApplicationBuilder> configure = null)
         {
             var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
+            var appContext = app.ApplicationServices.GetRequiredService<IApplicationContext>();
 
             env.ContentRootFileProvider = new CompositeFileProvider(
-                new ModuleEmbeddedFileProvider(env),
+                new ModuleEmbeddedFileProvider(appContext),
                 env.ContentRootFileProvider);
 
             app.UseMiddleware<PoweredByMiddleware>();

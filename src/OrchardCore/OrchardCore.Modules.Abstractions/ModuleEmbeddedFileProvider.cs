@@ -17,14 +17,14 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleEmbeddedFileProvider : IFileProvider
     {
-        private readonly IHostingEnvironment _environment;
+        private readonly IApplicationContext _applicationContext;
 
-        public ModuleEmbeddedFileProvider(IHostingEnvironment hostingEnvironment)
+        public ModuleEmbeddedFileProvider(IApplicationContext applicationContext)
         {
-            _environment = hostingEnvironment;
+            _applicationContext = applicationContext;
         }
 
-        private Application Application => _environment.GetApplication();
+        private Application Application => _applicationContext.Application;
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
@@ -43,8 +43,8 @@ namespace OrchardCore.Modules
             }
             else if (folder == Application.ModulesPath)
             {
-                entries.AddRange(Application.ModuleNames
-                    .Select(n => new EmbeddedDirectoryInfo(n)));
+                entries.AddRange(Application.Modules
+                    .Select(n => new EmbeddedDirectoryInfo(n.Name)));
             }
             else if (folder == Application.ModulePath)
             {
@@ -64,7 +64,7 @@ namespace OrchardCore.Modules
                 var path = folder.Substring(Application.ModulesRoot.Length);
                 var index = path.IndexOf('/');
                 var name = index == -1 ? path : path.Substring(0, index);
-                var assetPaths = _environment.GetModule(name).AssetPaths;
+                var assetPaths = Application.GetModule(name).AssetPaths;
                 var folders = new HashSet<string>(StringComparer.Ordinal);
                 var folderSlash = folder + '/';
 
@@ -113,7 +113,7 @@ namespace OrchardCore.Modules
                 {
                     var module = path.Substring(0, index);
                     var fileSubPath = path.Substring(index + 1);
-                    return _environment.GetModule(module).GetFileInfo(fileSubPath);
+                    return Application.GetModule(module).GetFileInfo(fileSubPath);
                 }
             }
 
