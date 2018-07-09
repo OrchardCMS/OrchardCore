@@ -37,7 +37,6 @@ namespace OrchardCore.Localization
             services
                 .AddOrderedRequestCultureProvider(new QueryStringRequestCultureProvider(), -20)
                 .AddOrderedRequestCultureProvider(new CookieRequestCultureProvider(), -15)
-                .AddOrderedRequestCultureProvider(new DefaultRequestCultureProvider(), -10);
                 //.AddOrderedRequestCultureProvider(new AcceptLanguageHeaderRequestCultureProvider(), -5);
 
             // services.RemoveOrderedRequestCultureProvider(typeof(AcceptLanguageHeaderRequestCultureProvider));
