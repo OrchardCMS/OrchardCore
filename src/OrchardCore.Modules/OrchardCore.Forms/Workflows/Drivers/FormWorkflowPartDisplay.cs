@@ -6,13 +6,13 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Forms.Models;
+using OrchardCore.Forms.Workflows.Models;
 using OrchardCore.Forms.Workflows.ViewModels;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Forms.Workflows.Drivers
 {
-    public class FormWorkflowPartDisplay : ContentPartDisplayDriver<FormPart>
+    public class FormWorkflowPartDisplay : ContentPartDisplayDriver<FormWorkflowPart>
     {
         private readonly IWorkflowTypeStore _workflowTypeStore;
 
@@ -21,7 +21,7 @@ namespace OrchardCore.Forms.Workflows.Drivers
             _workflowTypeStore = workflowTypeStore;
         }
 
-        public override IDisplayResult Edit(FormPart part, BuildPartEditorContext context)
+        public override IDisplayResult Edit(FormWorkflowPart part, BuildPartEditorContext context)
         {
             return Initialize<FormWorkflowPartEditViewModel>("FormWorkflowPart_Fields_Edit", async m =>
             {
@@ -30,7 +30,7 @@ namespace OrchardCore.Forms.Workflows.Drivers
             });
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(FormPart part, IUpdateModel updater)
+        public async override Task<IDisplayResult> UpdateAsync(FormWorkflowPart part, IUpdateModel updater)
         {
             var viewModel = new FormWorkflowPartEditViewModel();
 
@@ -45,12 +45,15 @@ namespace OrchardCore.Forms.Workflows.Drivers
         private async Task<IList<SelectListItem>> GetAvailableWorkflowTypesAsync(string selectedWorkflowTypeId)
         {
             var workflowTypes = await _workflowTypeStore.ListAsync();
-            return workflowTypes.OrderBy(x => x.Name).Select(x => new SelectListItem
+            var options = workflowTypes.OrderBy(x => x.Name).Select(x => new SelectListItem
             {
                 Value = x.WorkflowTypeId,
                 Text = x.Name,
                 Selected = x.WorkflowTypeId == selectedWorkflowTypeId
             }).ToList();
+
+            options.Insert(0, new SelectListItem());
+            return options;
         }
     }
 }
