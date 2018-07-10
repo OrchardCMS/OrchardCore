@@ -21,12 +21,12 @@ namespace OrchardCore.Tests.Apis
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOrchardCms().AddOrchardCore()
-                .AddGlobalFeatures(
+            services.AddOrchardCms(builder =>
+                builder.AddGlobalFeatures(
                     "OrchardCore.Apis.GraphQL",
                     "OrchardCore.Apis.JsonApi",
                     "OrchardCore.Apis.OpenApi"
-                );
+                ));
 
             services.AddScoped<IAuthorizationHandler, AlwaysLoggedInAuthHandler>();
 
