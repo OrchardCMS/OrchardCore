@@ -92,9 +92,9 @@ namespace OrchardCore.Contents.ViewComponents
         private List<SelectListItem> GetContentSortsSelectList(ContentsOrder selectedSort)
         {
             var result = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
-                new SelectListItem() { Text = T["recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
-                new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() }
+                new SelectListItem() { Text = T["creation date"].Value, Value = ContentsOrder.Created.ToString() },
+                new SelectListItem() { Text = T["modification date"].Value, Value = ContentsOrder.Modified.ToString() },
+                new SelectListItem() { Text = T["publication date"].Value, Value = ContentsOrder.Published.ToString() }
             };
             result.Where(item => item.Value == selectedSort.ToString()).FirstOrDefault().Selected = true;
 
