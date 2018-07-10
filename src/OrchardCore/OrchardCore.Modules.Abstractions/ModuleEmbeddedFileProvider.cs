@@ -46,7 +46,7 @@ namespace OrchardCore.Modules
                 entries.AddRange(Application.ModuleNames
                     .Select(n => new EmbeddedDirectoryInfo(n)));
             }
-            else if (folder == Application.ModulePath && Application.Path != null)
+            else if (folder == Application.ModulePath)
             {
                 return new PhysicalDirectoryContents(Application.Path);
             }
