@@ -34,7 +34,6 @@ namespace OrchardCore.Contents.ViewComponents
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,
             IUserContentTypesProvider userContentTypesProvider,
-            IShapeFactory shapeFactory,
             IStringLocalizer<FilterBoxViewComponent> localizer)
         {
             _contentManager = contentManager;
@@ -43,11 +42,9 @@ namespace OrchardCore.Contents.ViewComponents
             _httpContextAccessor = httpContextAccessor;
             _userContentTypesProvider = userContentTypesProvider;
 
-            New = shapeFactory;
             T = localizer;
         }
 
-        public dynamic New { get; set; }
         public IStringLocalizer T { get; }
 
         public async Task<IViewComponentResult> InvokeAsync(FilterBoxViewModel vm)
@@ -64,12 +61,15 @@ namespace OrchardCore.Contents.ViewComponents
                 return null;
             }
 
-            var viewModel = (await New.ViewModel())
-                .Options(vm.Options)
-                .ContentSorts(GetContentSortsSelectList(vm.Options.OrderBy))
-                .SortDirections(GetSortDirectionsSelectList(vm.Options.SortDirection))
-                .ContentStatuses(GetContentStatusesSelectList(vm.Options.ContentsStatus))
-                .ContentTypes(await GetContentTypes(vm.Options.TypeName, currentUser));
+            var viewModel = new FilterBoxViewModel
+            {
+                Options = vm.Options,
+                ContentSorts = GetContentSortsSelectList(vm.Options.OrderBy),
+                SortDirections = GetSortDirectionsSelectList(vm.Options.SortDirection),
+                ContentStatuses = GetContentStatusesSelectList(vm.Options.ContentsStatus),
+                ContentTypes = await GetContentTypes(vm.Options.TypeName, currentUser)
+            };
+              
 
             return View(viewModel);
         }
@@ -79,7 +79,6 @@ namespace OrchardCore.Contents.ViewComponents
         {
             var result = new List<SelectListItem>(){
                 new SelectListItem() { Text = T["latest"].Value, Value = ContentsStatus.Latest.ToString()},
-                new SelectListItem() { Text = T["owned by me"].Value, Value = ContentsStatus.Owner.ToString()},
                 new SelectListItem() { Text = T["published"].Value, Value = ContentsStatus.Published.ToString()},
                 new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString()},
                 new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString()}

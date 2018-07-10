@@ -30,6 +30,7 @@ namespace OrchardCore.Contents.ViewModels
         }
         public string TypeName { get; set; }
         public string TypeDisplayName { get; set; }
+        public bool OwnedByMe { get; set; }
         public ContentsOrder OrderBy { get; set; }
         public SortDirection SortDirection { get; set; }
         public ContentsStatus ContentsStatus { get; set; }
@@ -52,8 +53,7 @@ namespace OrchardCore.Contents.ViewModels
         Draft,
         Published,
         AllVersions,
-        Latest,
-        Owner
+        Latest
     }
 
     public enum SortDirection

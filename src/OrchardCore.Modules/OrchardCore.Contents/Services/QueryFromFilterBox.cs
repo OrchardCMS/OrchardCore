@@ -88,6 +88,11 @@ namespace OrchardCore.Contents.Services
                     break;
             }
 
+            if (filterBoxModel.Options.OwnedByMe)
+            {
+                var UserName = _httpContextAccessor.HttpContext?.User.Identity.Name;
+                query = query.With<ContentItemIndex>(x => x.Owner == UserName);
+            }
 
             switch (filterBoxModel.Options.OrderBy)
             {
