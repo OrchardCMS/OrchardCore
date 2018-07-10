@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Logging;
 
 namespace OrchardCore.Cms.Web
 {
@@ -18,9 +17,10 @@ namespace OrchardCore.Cms.Web
             {
                 app.UseDeveloperExceptionPage();
             }
+
             app.UseStaticFiles();
+
             app.UseOrchardCore();
-            //app.UseOrchardCore(c => c.UseSerilogTenantNameLoggingMiddleware());
         }
     }
 }
