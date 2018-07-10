@@ -12,9 +12,7 @@ namespace OrchardCore.Logging
         {
             return builder.UseSerilog((hostingContext, configBuilder) =>
             {
-                configBuilder.WriteTo.Console()
-                .MinimumLevel.Verbose()
-                .ReadFrom.Configuration(hostingContext.Configuration)
+                configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
                 .Enrich.FromLogContext();
             });
         }

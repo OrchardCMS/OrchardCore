@@ -18,9 +18,9 @@ namespace OrchardCore.Cms.Web
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseSerilogTenantNameLoggingMiddleware();
             app.UseStaticFiles();
             app.UseOrchardCore();
-            app.UseSerilogWeb();
         }
     }
 }
