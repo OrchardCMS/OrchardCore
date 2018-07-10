@@ -6,7 +6,7 @@ using OrchardCore.Hosting.ShellBuilders;
 using Serilog;
 using Serilog.Context;
 
-namespace OrchardCore.Logging.Serilog
+namespace OrchardCore.Logging
 {
     public static class ApplicationBuilderExtensions
     {

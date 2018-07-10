@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.Hosting.ShellBuilders;
 using Serilog.Context;
 
-namespace OrchardCore.Logging.Serilog
+namespace OrchardCore.Logging
 {
     public class SerilogTenantNameLoggingMiddleware
     {
@@ -19,7 +19,7 @@ namespace OrchardCore.Logging.Serilog
 
         public async Task Invoke(HttpContext context)
         {
-            string tenantName = ((ShellContext)context.RequestServices.GetService(typeof(ShellContext)))?.Settings?.Name ?? "None";
+            string tenantName = context.Features.Get<ShellContext>()?.Settings?.Name ?? "None";
             using (LogContext.PushProperty("TenantName", tenantName))
             {
                 await _next.Invoke(context);

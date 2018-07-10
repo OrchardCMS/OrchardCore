@@ -12,7 +12,8 @@ namespace OrchardCore.Cms.Web
 
         public static IWebHost BuildWebHost(string[] args)
             => WebHost.CreateDefaultBuilder(args)
-                .UseSerilogWeb()
+                .UseNLogWeb()
+                //.UseSerilogWeb()
                 .UseStartup<Startup>()
                 .Build();
     }
