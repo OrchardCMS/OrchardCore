@@ -1,14 +1,14 @@
 using System.Threading.Tasks;
-using OrchardCore.OpenId.Services.Managers;
+using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.Security;
 
 namespace OrchardCore.OpenId.Handlers
 {
     public class OpenIdApplicationRoleRemovedEventHandler : IRoleRemovedEventHandler
     {
-        private readonly OpenIdApplicationManager _manager;
+        private readonly IOpenIdApplicationManager _manager;
 
-        public OpenIdApplicationRoleRemovedEventHandler(OpenIdApplicationManager manager)
+        public OpenIdApplicationRoleRemovedEventHandler(IOpenIdApplicationManager manager)
         {
             _manager = manager;
         }

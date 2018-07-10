@@ -1,12 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using OpenIddict.Core;
-using OrchardCore.OpenId.Abstractions.Models;
+using OpenIddict.Abstractions;
 using OrchardCore.OpenId.Abstractions.Stores;
 using OrchardCore.OpenId.YesSql.Indexes;
 using OrchardCore.OpenId.YesSql.Models;
@@ -14,7 +14,8 @@ using YesSql;
 
 namespace OrchardCore.OpenId.YesSql.Stores
 {
-    public class OpenIdTokenStore : IOpenIdTokenStore
+    public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
+        where TToken : OpenIdToken, new()
     {
         private readonly ISession _session;
 
@@ -35,7 +36,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.Query<OpenIdToken>().CountAsync();
+            return await _session.Query<TToken>().CountAsync();
         }
 
         /// <summary>
@@ -48,7 +49,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the number of tokens that match the specified query.
         /// </returns>
-        public virtual Task<long> CountAsync<TResult>(Func<IQueryable<OpenIdToken>, IQueryable<TResult>> query, CancellationToken cancellationToken)
+        public virtual Task<long> CountAsync<TResult>(Func<IQueryable<TToken>, IQueryable<TResult>> query, CancellationToken cancellationToken)
             => throw new NotSupportedException();
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task CreateAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual Task CreateAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -78,7 +79,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="token">The token to delete.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>A <see cref="Task"/> that can be used to monitor the asynchronous operation.</returns>
-        public virtual Task DeleteAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual Task DeleteAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -101,7 +102,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the tokens corresponding to the specified application.
         /// </returns>
-        public virtual async Task<ImmutableArray<OpenIdToken>> FindByApplicationIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual async Task<ImmutableArray<TToken>> FindByApplicationIdAsync(string identifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -111,7 +112,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return ImmutableArray.CreateRange(
-                await _session.Query<OpenIdToken, OpenIdTokenIndex>(
+                await _session.Query<TToken, OpenIdTokenIndex>(
                     index => index.ApplicationId == identifier).ListAsync());
         }
 
@@ -124,7 +125,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the tokens corresponding to the specified authorization.
         /// </returns>
-        public virtual async Task<ImmutableArray<OpenIdToken>> FindByAuthorizationIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual async Task<ImmutableArray<TToken>> FindByAuthorizationIdAsync(string identifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -134,7 +135,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return ImmutableArray.CreateRange(
-                await _session.Query<OpenIdToken, OpenIdTokenIndex>(
+                await _session.Query<TToken, OpenIdTokenIndex>(
                     index => index.AuthorizationId == identifier).ListAsync());
         }
 
@@ -148,7 +149,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the tokens corresponding to the specified reference identifier.
         /// </returns>
-        public virtual Task<OpenIdToken> FindByReferenceIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual Task<TToken> FindByReferenceIdAsync(string identifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -157,7 +158,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<OpenIdToken, OpenIdTokenIndex>(index => index.ReferenceId == identifier).FirstOrDefaultAsync();
+            return _session.Query<TToken, OpenIdTokenIndex>(index => index.ReferenceId == identifier).FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -169,7 +170,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the token corresponding to the unique identifier.
         /// </returns>
-        public virtual Task<OpenIdToken> FindByIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual Task<TToken> FindByIdAsync(string identifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -178,7 +179,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<OpenIdToken, OpenIdTokenIndex>(index => index.TokenId == identifier).FirstOrDefaultAsync();
+            return _session.Query<TToken, OpenIdTokenIndex>(index => index.TokenId == identifier).FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -190,7 +191,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the token corresponding to the physical identifier.
         /// </returns>
-        public virtual Task<OpenIdToken> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual Task<TToken> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -199,7 +200,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.GetAsync<OpenIdToken>(int.Parse(identifier, CultureInfo.InvariantCulture));
+            return _session.GetAsync<TToken>(int.Parse(identifier, CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -211,7 +212,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the tokens corresponding to the specified subject.
         /// </returns>
-        public virtual async Task<ImmutableArray<OpenIdToken>> FindBySubjectAsync(string subject, CancellationToken cancellationToken)
+        public virtual async Task<ImmutableArray<TToken>> FindBySubjectAsync(string subject, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(subject))
             {
@@ -220,7 +221,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return ImmutableArray.CreateRange(await _session.Query<OpenIdToken, OpenIdTokenIndex>(index => index.Subject == subject).ListAsync());
+            return ImmutableArray.CreateRange(await _session.Query<TToken, OpenIdTokenIndex>(index => index.Subject == subject).ListAsync());
         }
 
         /// <summary>
@@ -236,7 +237,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// whose result returns the first element returned when executing the query.
         /// </returns>
         public virtual Task<TResult> GetAsync<TState, TResult>(
-            Func<IQueryable<OpenIdToken>, TState, IQueryable<TResult>> query,
+            Func<IQueryable<TToken>, TState, IQueryable<TResult>> query,
             TState state, CancellationToken cancellationToken)
             => throw new NotSupportedException();
 
@@ -246,17 +247,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="token">The token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the application identifier associated with the token.
         /// </returns>
-        public virtual Task<string> GetApplicationIdAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual ValueTask<string> GetApplicationIdAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return Task.FromResult(token.ApplicationId?.ToString(CultureInfo.InvariantCulture));
+            return new ValueTask<string>(token.ApplicationId?.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -265,17 +266,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="token">The token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the authorization identifier associated with the token.
         /// </returns>
-        public virtual Task<string> GetAuthorizationIdAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual ValueTask<string> GetAuthorizationIdAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return Task.FromResult(token.AuthorizationId);
+            return new ValueTask<string>(token.AuthorizationId);
         }
 
         /// <summary>
@@ -284,17 +285,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="token">The token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the creation date associated with the specified token.
         /// </returns>
-        public virtual Task<DateTimeOffset?> GetCreationDateAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual ValueTask<DateTimeOffset?> GetCreationDateAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return Task.FromResult(token.CreationDate);
+            return new ValueTask<DateTimeOffset?>(token.CreationDate);
         }
 
         /// <summary>
@@ -303,17 +304,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="token">The token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the expiration date associated with the specified token.
         /// </returns>
-        public virtual Task<DateTimeOffset?> GetExpirationDateAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual ValueTask<DateTimeOffset?> GetExpirationDateAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return Task.FromResult(token.ExpirationDate);
+            return new ValueTask<DateTimeOffset?>(token.ExpirationDate);
         }
 
         /// <summary>
@@ -322,17 +323,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="token">The token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the unique identifier associated with the token.
         /// </returns>
-        public virtual Task<string> GetIdAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual ValueTask<string> GetIdAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return Task.FromResult(token.TokenId);
+            return new ValueTask<string>(token.TokenId);
         }
 
         /// <summary>
@@ -341,17 +342,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="token">The token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the payload associated with the specified token.
         /// </returns>
-        public virtual Task<string> GetPayloadAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual ValueTask<string> GetPayloadAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return Task.FromResult(token.Payload);
+            return new ValueTask<string>(token.Payload);
         }
 
         /// <summary>
@@ -360,17 +361,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="token">The token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the physical identifier associated with the token.
         /// </returns>
-        public virtual Task<string> GetPhysicalIdAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual ValueTask<string> GetPhysicalIdAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return Task.FromResult(token.Id.ToString(CultureInfo.InvariantCulture));
+            return new ValueTask<string>(token.Id.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -379,17 +380,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="token">The token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose
-        /// result returns all the additional properties associated with the token.
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns all the additional properties associated with the token.
         /// </returns>
-        public virtual Task<JObject> GetPropertiesAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual ValueTask<JObject> GetPropertiesAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return Task.FromResult(token.Properties ?? new JObject());
+            return new ValueTask<JObject>(token.Properties ?? new JObject());
         }
 
         /// <summary>
@@ -400,17 +401,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="token">The token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the reference identifier associated with the specified token.
         /// </returns>
-        public virtual Task<string> GetReferenceIdAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual ValueTask<string> GetReferenceIdAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return Task.FromResult(token.ReferenceId);
+            return new ValueTask<string>(token.ReferenceId);
         }
 
         /// <summary>
@@ -419,17 +420,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="token">The token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the status associated with the specified token.
         /// </returns>
-        public virtual Task<string> GetStatusAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual ValueTask<string> GetStatusAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return Task.FromResult(token.Status);
+            return new ValueTask<string>(token.Status);
         }
 
         /// <summary>
@@ -438,17 +439,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="token">The token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the subject associated with the specified token.
         /// </returns>
-        public virtual Task<string> GetSubjectAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual ValueTask<string> GetSubjectAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return Task.FromResult(token.Subject);
+            return new ValueTask<string>(token.Subject);
         }
 
         /// <summary>
@@ -457,17 +458,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="token">The token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the token type associated with the specified token.
         /// </returns>
-        public virtual Task<string> GetTokenTypeAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual ValueTask<string> GetTokenTypeAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return Task.FromResult(token.Type);
+            return new ValueTask<string>(token.Type);
         }
 
         /// <summary>
@@ -475,11 +476,11 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the instantiated token, that can be persisted in the database.
         /// </returns>
-        public virtual Task<OpenIdToken> InstantiateAsync(CancellationToken cancellationToken)
-            => Task.FromResult(new OpenIdToken { TokenId = Guid.NewGuid().ToString("n") } );
+        public virtual ValueTask<TToken> InstantiateAsync(CancellationToken cancellationToken)
+            => new ValueTask<TToken>(new TToken { TokenId = Guid.NewGuid().ToString("n") } );
 
         /// <summary>
         /// Executes the specified query and returns all the corresponding elements.
@@ -491,9 +492,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
         /// whose result returns all the elements returned when executing the specified query.
         /// </returns>
-        public virtual async Task<ImmutableArray<OpenIdToken>> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
+        public virtual async Task<ImmutableArray<TToken>> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
         {
-            var query = _session.Query<OpenIdToken>();
+            var query = _session.Query<TToken>();
 
             if (offset.HasValue)
             {
@@ -521,38 +522,58 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// whose result returns all the elements returned when executing the specified query.
         /// </returns>
         public virtual Task<ImmutableArray<TResult>> ListAsync<TState, TResult>(
-            Func<IQueryable<OpenIdToken>, TState, IQueryable<TResult>> query,
+            Func<IQueryable<TToken>, TState, IQueryable<TResult>> query,
             TState state, CancellationToken cancellationToken)
             => throw new NotSupportedException();
 
         /// <summary>
-        /// Lists the tokens that are marked as expired or invalid
-        /// and that can be safely removed from the database.
+        /// Removes the tokens that are marked as expired or invalid.
         /// </summary>
-        /// <param name="count">The number of results to return.</param>
-        /// <param name="offset">The number of results to skip.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
-        /// whose result returns all the elements returned when executing the specified query.
+        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual async Task<ImmutableArray<OpenIdToken>> ListInvalidAsync(int? count, int? offset, CancellationToken cancellationToken)
+        public virtual async Task PruneAsync(CancellationToken cancellationToken = default)
         {
-            IQuery<OpenIdToken> query = _session.Query<OpenIdToken, OpenIdTokenIndex>(
-                token => token.ExpirationDate < DateTimeOffset.UtcNow ||
-                         token.Status != OpenIddictConstants.Statuses.Valid);
+            // Note: Entity Framework Core doesn't support set-based deletes, which prevents removing
+            // entities in a single command without having to retrieve and materialize them first.
+            // To work around this limitation, entities are manually listed and deleted using a batch logic.
 
-            if (offset.HasValue)
+            IList<Exception> exceptions = null;
+
+            for (var offset = 0; offset < 100_000; offset = offset + 1_000)
             {
-                query = query.Skip(offset.Value);
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var tokens = await _session.Query<TToken, OpenIdTokenIndex>(
+                    token => token.ExpirationDate < DateTimeOffset.UtcNow ||
+                             token.Status != OpenIddictConstants.Statuses.Valid).Skip(offset).Take(1_000).ListAsync();
+
+                foreach (var token in tokens)
+                {
+                    _session.Delete(token);
+                }
+
+                try
+                {
+                    await _session.CommitAsync();
+                }
+
+                catch (Exception exception)
+                {
+                    if (exceptions == null)
+                    {
+                        exceptions = new List<Exception>(capacity: 1);
+                    }
+
+                    exceptions.Add(exception);
+                }
             }
 
-            if (count.HasValue)
+            if (exceptions != null)
             {
-                query = query.Take(count.Value);
+                throw new AggregateException("An error occurred while pruning authorizations.", exceptions);
             }
-
-            return ImmutableArray.CreateRange(await query.ListAsync());
         }
 
         /// <summary>
@@ -564,7 +585,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetApplicationIdAsync(OpenIdToken token, string identifier, CancellationToken cancellationToken)
+        public virtual Task SetApplicationIdAsync(TToken token, string identifier, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -592,7 +613,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetAuthorizationIdAsync(OpenIdToken token, string identifier, CancellationToken cancellationToken)
+        public virtual Task SetAuthorizationIdAsync(TToken token, string identifier, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -620,7 +641,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetCreationDateAsync(OpenIdToken token, DateTimeOffset? date, CancellationToken cancellationToken)
+        public virtual Task SetCreationDateAsync(TToken token, DateTimeOffset? date, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -641,7 +662,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetExpirationDateAsync(OpenIdToken token, DateTimeOffset? date, CancellationToken cancellationToken)
+        public virtual Task SetExpirationDateAsync(TToken token, DateTimeOffset? date, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -662,7 +683,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetPayloadAsync(OpenIdToken token, string payload, CancellationToken cancellationToken)
+        public virtual Task SetPayloadAsync(TToken token, string payload, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -683,7 +704,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetPropertiesAsync(OpenIdToken token, JObject properties, CancellationToken cancellationToken)
+        public virtual Task SetPropertiesAsync(TToken token, JObject properties, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -706,7 +727,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetReferenceIdAsync(OpenIdToken token, string identifier, CancellationToken cancellationToken)
+        public virtual Task SetReferenceIdAsync(TToken token, string identifier, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -727,7 +748,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetStatusAsync(OpenIdToken token, string status, CancellationToken cancellationToken)
+        public virtual Task SetStatusAsync(TToken token, string status, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -753,7 +774,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetSubjectAsync(OpenIdToken token, string subject, CancellationToken cancellationToken)
+        public virtual Task SetSubjectAsync(TToken token, string subject, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -779,7 +800,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetTokenTypeAsync(OpenIdToken token, string type, CancellationToken cancellationToken)
+        public virtual Task SetTokenTypeAsync(TToken token, string type, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -804,7 +825,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task UpdateAsync(OpenIdToken token, CancellationToken cancellationToken)
+        public virtual Task UpdateAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -817,135 +838,5 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             return _session.CommitAsync();
         }
-
-        // Note: the following methods are deliberately implemented as explicit methods so they are not
-        // exposed by Intellisense. Their logic MUST be limited to dealing with casts and downcasts.
-        // Developers who need to customize the logic SHOULD override the methods taking concretes types.
-
-        // -------------------------------------------------------
-        // Methods defined by the IOpenIddictTokenStore interface:
-        // -------------------------------------------------------
-
-        Task<long> IOpenIddictTokenStore<IOpenIdToken>.CountAsync(CancellationToken cancellationToken)
-            => CountAsync(cancellationToken);
-
-        Task<long> IOpenIddictTokenStore<IOpenIdToken>.CountAsync<TResult>(Func<IQueryable<IOpenIdToken>, IQueryable<TResult>> query, CancellationToken cancellationToken)
-            => CountAsync(query, cancellationToken);
-
-        Task IOpenIddictTokenStore<IOpenIdToken>.CreateAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => CreateAsync((OpenIdToken) token, cancellationToken);
-
-        Task IOpenIddictTokenStore<IOpenIdToken>.DeleteAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => DeleteAsync((OpenIdToken) token, cancellationToken);
-
-        async Task<ImmutableArray<IOpenIdToken>> IOpenIddictTokenStore<IOpenIdToken>.FindByApplicationIdAsync(string identifier, CancellationToken cancellationToken)
-            => (await FindByApplicationIdAsync(identifier, cancellationToken)).CastArray<IOpenIdToken>();
-
-        async Task<ImmutableArray<IOpenIdToken>> IOpenIddictTokenStore<IOpenIdToken>.FindByAuthorizationIdAsync(string identifier, CancellationToken cancellationToken)
-            => (await FindByAuthorizationIdAsync(identifier, cancellationToken)).CastArray<IOpenIdToken>();
-
-        async Task<IOpenIdToken> IOpenIddictTokenStore<IOpenIdToken>.FindByReferenceIdAsync(string identifier, CancellationToken cancellationToken)
-            => await FindByReferenceIdAsync(identifier, cancellationToken);
-
-        async Task<IOpenIdToken> IOpenIddictTokenStore<IOpenIdToken>.FindByIdAsync(string identifier, CancellationToken cancellationToken)
-            => await FindByIdAsync(identifier, cancellationToken);
-
-        async Task<ImmutableArray<IOpenIdToken>> IOpenIddictTokenStore<IOpenIdToken>.FindBySubjectAsync(string subject, CancellationToken cancellationToken)
-            => (await FindBySubjectAsync(subject, cancellationToken)).CastArray<IOpenIdToken>();
-
-        Task<TResult> IOpenIddictTokenStore<IOpenIdToken>.GetAsync<TState, TResult>(
-            Func<IQueryable<IOpenIdToken>, TState, IQueryable<TResult>> query,
-            TState state, CancellationToken cancellationToken)
-            => GetAsync(query, state, cancellationToken);
-
-        Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetApplicationIdAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetApplicationIdAsync((OpenIdToken) token, cancellationToken);
-
-        Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetAuthorizationIdAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetAuthorizationIdAsync((OpenIdToken) token, cancellationToken);
-
-        Task<DateTimeOffset?> IOpenIddictTokenStore<IOpenIdToken>.GetCreationDateAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetCreationDateAsync((OpenIdToken) token, cancellationToken);
-
-        Task<DateTimeOffset?> IOpenIddictTokenStore<IOpenIdToken>.GetExpirationDateAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetExpirationDateAsync((OpenIdToken) token, cancellationToken);
-
-        Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetIdAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetIdAsync((OpenIdToken) token, cancellationToken);
-
-        Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetPayloadAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetPayloadAsync((OpenIdToken) token, cancellationToken);
-
-        Task<JObject> IOpenIddictTokenStore<IOpenIdToken>.GetPropertiesAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetPropertiesAsync((OpenIdToken) token, cancellationToken);
-
-        Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetReferenceIdAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetReferenceIdAsync((OpenIdToken) token, cancellationToken);
-
-        Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetStatusAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetStatusAsync((OpenIdToken) token, cancellationToken);
-
-        Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetSubjectAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetSubjectAsync((OpenIdToken) token, cancellationToken);
-
-        Task<string> IOpenIddictTokenStore<IOpenIdToken>.GetTokenTypeAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetTokenTypeAsync((OpenIdToken) token, cancellationToken);
-
-        async Task<IOpenIdToken> IOpenIddictTokenStore<IOpenIdToken>.InstantiateAsync(CancellationToken cancellationToken)
-            => await InstantiateAsync(cancellationToken);
-
-        async Task<ImmutableArray<IOpenIdToken>> IOpenIddictTokenStore<IOpenIdToken>.ListAsync(int? count, int? offset, CancellationToken cancellationToken)
-            => (await ListAsync(count, offset, cancellationToken)).CastArray<IOpenIdToken>();
-
-        Task<ImmutableArray<TResult>> IOpenIddictTokenStore<IOpenIdToken>.ListAsync<TState, TResult>(
-            Func<IQueryable<IOpenIdToken>, TState, IQueryable<TResult>> query,
-            TState state, CancellationToken cancellationToken)
-            => ListAsync(query, state, cancellationToken);
-
-        async Task<ImmutableArray<IOpenIdToken>> IOpenIddictTokenStore<IOpenIdToken>.ListInvalidAsync(int? count, int? offset, CancellationToken cancellationToken)
-            => (await ListInvalidAsync(count, offset, cancellationToken)).CastArray<IOpenIdToken>();
-
-        Task IOpenIddictTokenStore<IOpenIdToken>.SetApplicationIdAsync(IOpenIdToken token, string identifier, CancellationToken cancellationToken)
-            => SetApplicationIdAsync((OpenIdToken) token, identifier, cancellationToken);
-
-        Task IOpenIddictTokenStore<IOpenIdToken>.SetAuthorizationIdAsync(IOpenIdToken token, string identifier, CancellationToken cancellationToken)
-            => SetAuthorizationIdAsync((OpenIdToken) token, identifier, cancellationToken);
-
-        Task IOpenIddictTokenStore<IOpenIdToken>.SetCreationDateAsync(IOpenIdToken token, DateTimeOffset? date, CancellationToken cancellationToken)
-            => SetCreationDateAsync((OpenIdToken) token, date, cancellationToken);
-
-        Task IOpenIddictTokenStore<IOpenIdToken>.SetExpirationDateAsync(IOpenIdToken token, DateTimeOffset? date, CancellationToken cancellationToken)
-            => SetExpirationDateAsync((OpenIdToken) token, date, cancellationToken);
-
-        Task IOpenIddictTokenStore<IOpenIdToken>.SetPayloadAsync(IOpenIdToken token, string payload, CancellationToken cancellationToken)
-            => SetPayloadAsync((OpenIdToken) token, payload, cancellationToken);
-
-        Task IOpenIddictTokenStore<IOpenIdToken>.SetPropertiesAsync(IOpenIdToken token, JObject properties, CancellationToken cancellationToken)
-            => SetPropertiesAsync((OpenIdToken) token, properties, cancellationToken);
-
-        Task IOpenIddictTokenStore<IOpenIdToken>.SetReferenceIdAsync(IOpenIdToken token, string identifier, CancellationToken cancellationToken)
-            => SetReferenceIdAsync((OpenIdToken) token, identifier, cancellationToken);
-
-        Task IOpenIddictTokenStore<IOpenIdToken>.SetStatusAsync(IOpenIdToken token, string status, CancellationToken cancellationToken)
-            => SetStatusAsync((OpenIdToken) token, status, cancellationToken);
-
-        Task IOpenIddictTokenStore<IOpenIdToken>.SetSubjectAsync(IOpenIdToken token, string subject, CancellationToken cancellationToken)
-            => SetSubjectAsync((OpenIdToken) token, subject, cancellationToken);
-
-        Task IOpenIddictTokenStore<IOpenIdToken>.SetTokenTypeAsync(IOpenIdToken token, string type, CancellationToken cancellationToken)
-            => SetTokenTypeAsync((OpenIdToken) token, type, cancellationToken);
-
-        Task IOpenIddictTokenStore<IOpenIdToken>.UpdateAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => UpdateAsync((OpenIdToken) token, cancellationToken);
-
-        // ---------------------------------------------------
-        // Methods defined by the IOpenIdTokenStore interface:
-        // ---------------------------------------------------
-
-        async Task<IOpenIdToken> IOpenIdTokenStore.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
-            => await FindByPhysicalIdAsync(identifier, cancellationToken);
-
-        Task<string> IOpenIdTokenStore.GetPhysicalIdAsync(IOpenIdToken token, CancellationToken cancellationToken)
-            => GetPhysicalIdAsync((OpenIdToken) token, cancellationToken);
     }
 }

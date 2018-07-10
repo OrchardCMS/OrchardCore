@@ -1,0 +1,6 @@
+@model ActivityViewModel<AddModelValidationErrorTask>
+
+<header>
+    <h4><i class="fa fa-exclamation-triangle"></i>@Model.Activity.GetTitleOrDefault(() => T["Add Form Validation Error"])</h4>
+</header>
+<span>@T["<em>{0}</em>: <em>{1}</em>", Model.Activity.Key, Model.Activity.ErrorMessage]</span>

@@ -22,4 +22,8 @@ $(() => {
     $('#generate-url-button').on('click', e => {
         generateWorkflowUrl();
     });
+
+    if ($('#workflow-url-text').val() == '') {
+        generateWorkflowUrl();
+    }
 });

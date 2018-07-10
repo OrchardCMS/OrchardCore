@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -60,6 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IShellSettingsConfigurationProvider, FileShellSettingsConfigurationProvider>();
             services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
             services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
+            services.AddTransient<IConfigureOptions<ShellOptions>, ShellOptionsSetup>();
             services.AddScoped<ShellSettingsWithTenants>();
 
             return builder;

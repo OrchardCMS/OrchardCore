@@ -10,25 +10,28 @@
 
 <input asp-for="Id" type="hidden" />
 
-<div class="form-group col-md-3" asp-validation-class-for="UserName">
-    <label asp-for="UserName">@T["User name"]</label>
-    <span asp-validation-for="UserName" class="text-danger">@T["The user name is required."]</span>
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fa fa-user"></i></span>
+<div class="row">
+    <div class="form-group col-md-3" asp-validation-class-for="UserName">
+        <label asp-for="UserName">@T["User name"]</label>
+        <span asp-validation-for="UserName" class="text-danger">@T["The user name is required."]</span>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fa fa-user"></i></span>
+            </div>
+            <input asp-for="UserName" class="form-control" autofocus />
         </div>
-        <input asp-for="UserName" class="form-control" autofocus />
     </div>
 </div>
-
-<div class="form-group col-md-3" asp-validation-class-for="Email">
-    <label asp-for="Email">@T["Email"]</label>
-    <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+<div class="row">
+    <div class="form-group col-md-3" asp-validation-class-for="Email">
+        <label asp-for="Email">@T["Email"]</label>
+        <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+            </div>
+            <input asp-for="Email" class="form-control" type="email" />
         </div>
-        <input asp-for="Email" class="form-control" type="email" />
     </div>
 </div>
 @if ((await Site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail)
