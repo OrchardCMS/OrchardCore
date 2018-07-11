@@ -78,10 +78,9 @@ namespace OrchardCore.Contents.ViewComponents
         private List<SelectListItem> GetContentStatusesSelectList(ContentsStatus selectedStatus)
         {
             var result = new List<SelectListItem>(){
-                new SelectListItem() { Text = T["latest"].Value, Value = ContentsStatus.Latest.ToString()},
+                new SelectListItem() { Text = T["all"].Value, Value = ContentsStatus.AllVersions.ToString()},
                 new SelectListItem() { Text = T["published"].Value, Value = ContentsStatus.Published.ToString()},
-                new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString()},
-                new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString()}
+                new SelectListItem() { Text = T["drafts"].Value, Value = ContentsStatus.Draft.ToString()}                
             };
 
             result.Where(item => item.Value == selectedStatus.ToString()).FirstOrDefault().Selected = true;

@@ -1,27 +1,27 @@
 @model OrchardCore.Contents.ViewModels.FilterBoxViewModel;
 
 <div class="form-row mt-2 mb-4">
-        <div class="form-inline">
-            <div class="form-group mr-4">
-                <label for="filterContentTypes" class="label mr-2">@T["Filter"]</label>
-                <select id="filterContentTypes" class="form-control" name="Options.TypeName" asp-items="@Model.ContentTypes"></select>
-            </div>
-            <div class="form-group mr-4">
-                <label for="filterStatuses" class="label mr-2">@T["Show"]</label>
-                <select id="filterStatuses" class="form-control" name="Options.ContentsStatus" asp-items="@Model.ContentStatuses"></select>
-            </div>
-            <div class="form-check mr-4">
-                <input id="filterOwnedByMe" class="form-check-input" asp-for="@Model.Options.OwnedByMe" />
-                <label for="filterOwnedByMe" class="form-check-label"> @T["Owned by me"]</label>
-            </div>
-            <div class="form-group mr-4">
-                <label for="filterSorts" class="label mr-2">@T["Sort by"]</label>
-                <select id="filterSorts" class="form-control" name="Options.OrderBy" asp-items="@Model.ContentSorts"></select>
-            </div>
-            <div class="form-group mr-4">
-                <label for="filterSortDirection" class="label mr-2">@T["Sort Direction"]</label>
-                <select id="filterSortDirection" class="form-control" name="Options.SortDirection" asp-items="@Model.SortDirections"></select>
-            </div>
-            <button type="submit" class="btn btn-primary" name="submit.Filter">@T["Apply"]</button>
+    <div class="form-inline">
+        <div class="form-group mr-4">
+            <label for="filterContentTypes" class="label mr-2">@T["Filter"]</label>
+            <select id="filterContentTypes" class="form-control" name="Options.TypeName" asp-items="@Model.ContentTypes"></select>
         </div>
+        <div class="form-group mr-4">
+            <label for="filterStatuses" class="label mr-2">@T["Show"]</label>
+            <select id="filterStatuses" class="form-control" name="Options.ContentsStatus" asp-items="@Model.ContentStatuses"></select>
+        </div>
+        <div class="form-check mr-4">
+            <input id="filterOwnedByMe" class="form-check-input" asp-for="@Model.Options.OwnedByMe" />
+            <label for="filterOwnedByMe" class="form-check-label"> @T["Owned by me"]</label>
+        </div>
+        <div class="form-group mr-4">
+            <label for="filterSorts" class="label mr-2">@T["Sort by"]</label>
+            <select id="filterSorts" class="form-control" name="Options.OrderBy" asp-items="@Model.ContentSorts"></select>
+        </div>
+        <div class="form-group mr-4">
+            <label for="filterSortDirection" class="label mr-2">@T["Sort Direction"]</label>
+            <select id="filterSortDirection" class="form-control" name="Options.SortDirection" asp-items="@Model.SortDirections"></select>
+        </div>
+        <button type="submit" class="btn btn-primary" name="submit.Filter">@T["Apply"]</button>
     </div>
+</div>

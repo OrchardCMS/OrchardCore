@@ -24,7 +24,7 @@ namespace OrchardCore.Contents.ViewModels
         public ContentOptions()
         {
             OrderBy = ContentsOrder.Modified;        
-            ContentsStatus = ContentsStatus.Latest;
+            ContentsStatus = ContentsStatus.AllVersions;
 
             //BulkAction = ContentsBulkAction.None;
         }
@@ -52,8 +52,7 @@ namespace OrchardCore.Contents.ViewModels
     {
         Draft,
         Published,
-        AllVersions,
-        Latest
+        AllVersions
     }
 
     public enum SortDirection
