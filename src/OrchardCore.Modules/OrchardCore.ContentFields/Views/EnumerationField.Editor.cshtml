@@ -1,0 +1,20 @@
+@model OrchardCore.ContentFields.ViewModels.EditEnumerationFieldViewModel
+@using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<EnumerationFieldSettings>();
+    string[] options = (!String.IsNullOrWhiteSpace(settings.Options)) ? settings.Options.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None) : new string[] { T["Select an option"].Value };
+}
+
+<div class="row">
+    <fieldset class="form-group form-check">
+        <label class="form-check-label" asp-for="Value">
+            @Html.DropDownListFor(m => m.Value, new SelectList(options, Model.Value), settings.Required ? new { required = "required", @class = "form-control" } : null)
+
+            @if (!String.IsNullOrEmpty(settings.Hint))
+            {
+                <span class="hint">@T["— {0}", settings.Hint]</span>
+            }
+        </label>
+    </fieldset>
+</div>

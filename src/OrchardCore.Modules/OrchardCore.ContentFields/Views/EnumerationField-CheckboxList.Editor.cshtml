@@ -1,0 +1,30 @@
+@model OrchardCore.ContentFields.ViewModels.EditEnumerationFieldViewModel
+@using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<EnumerationFieldSettings>();
+    string[] options = (!String.IsNullOrWhiteSpace(settings.Options)) ? settings.Options.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None) : new string[] { T["Select an option"].Value };
+}
+
+<fieldset class="form-group">
+
+
+        @foreach (var option in options)
+        {
+            if (!string.IsNullOrWhiteSpace(option))
+            {
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" asp-for="@option">@T[option]
+                    </label>
+                </div>
+            }
+        }
+
+
+        @if (!String.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@T["— {0}", settings.Hint]</span>
+        }
+
+</fieldset>

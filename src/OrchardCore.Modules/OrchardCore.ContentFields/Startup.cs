@@ -35,6 +35,8 @@ namespace OrchardCore.ContentFields
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayDateFieldViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<TimeField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTimeFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<EnumerationField>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayEnumerationFieldViewModel>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -86,6 +88,12 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, TimeFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TimeFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TimeFieldIndexHandler>();
+
+            // Enumeration Field
+            services.AddSingleton<ContentField, EnumerationField>();
+            services.AddScoped<IContentFieldDisplayDriver, EnumerationFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, EnumerationFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, EnumerationFieldIndexHandler>();
         }
     }
 }
